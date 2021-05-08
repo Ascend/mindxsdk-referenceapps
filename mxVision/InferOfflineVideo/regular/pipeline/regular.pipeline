@@ -1,0 +1,60 @@
+{
+    "inferofflinevideo": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "props": {
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxx/input.264",
+                "channelId": "0"
+            },
+            "factory": "mxpi_rtspsrc",
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV12",
+                "deviceId": "0",
+                "vdecChannelId": "0"
+            },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_modelinfer0"
+        },
+        "mxpi_modelinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./models/yolov3/yolov3_tf_bs1_fp16.om",
+                "postProcessConfigPath": "./models/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "./models/yolov3/coco.names",
+                "postProcessLibPath": "libMpYOLOv3PostProcessor.so",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_modelinfer",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_modelinfer0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "409600000"
+                },
+            "factory": "appsink"
+        }
+    }
+}
