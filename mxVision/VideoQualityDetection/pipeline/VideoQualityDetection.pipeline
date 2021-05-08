@@ -1,0 +1,70 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "factory": "mxpi_rtspsrc",
+            "props": {
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxxx.264",
+                "channelId": "0"
+            },
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "factory": "mxpi_videodecoder",
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV12",
+                "vdecChannelId": "0"
+            },
+            "former": "mxpi_rtspsrc0",
+            "next": "mxpi_qualitydetection0"
+        },
+        "mxpi_qualitydetection0": {
+            "props": {
+                "qualityDetectionConfigContent": {
+                    "FRAME_LIST_LEN": "20",
+                    "BRIGHTNESS_SWITCH": "true",
+                    "BRIGHTNESS_FRAME_INTERVAL": "10",
+                    "BRIGHTNESS_THRESHOLD": "1",
+                    "OCCLUSION_SWITCH": "true",
+                    "OCCLUSION_FRAME_INTERVAL": "10",
+                    "OCCLUSION_THRESHOLD": "0.32",
+                    "BLUR_SWITCH": "true",
+                    "BLUR_FRAME_INTERVAL": "10",
+                    "BLUR_THRESHOLD": "2000",
+                    "NOISE_SWITCH": "true",
+                    "NOISE_FRAME_INTERVAL": "10",
+                    "NOISE_THRESHOLD": "0.005",
+                    "COLOR_CAST_SWITCH": "true",
+                    "COLOR_CAST_FRAME_INTERVAL": "10",
+                    "COLOR_CAST_THRESHOLD": "1.5",
+                    "STRIPE_SWITCH": "true",
+                    "STRIPE_FRAME_INTERVAL": "10",
+                    "STRIPE_THRESHOLD": "0.0015",
+                    "DARK_SWITCH": "true",
+                    "DARK_FRAME_INTERVAL": "10",
+                    "DARK_THRESHOLD": "0.72",
+                    "VIDEO_FREEZE_SWITCH": "true",
+                    "VIDEO_FREEZE_FRAME_INTERVAL": "10",
+                    "VIDEO_FREEZE_THRESHOLD": "0.1",
+                    "VIEW_SHAKE_SWITCH": "true",
+                    "VIEW_SHAKE_FRAME_INTERVAL": "10",
+                    "VIEW_SHAKE_THRESHOLD": "20",
+                    "SCENE_MUTATION_SWITCH": "true",
+                    "SCENE_MUTATION_FRAME_INTERVAL": "10",
+                    "SCENE_MUTATION_THRESHOLD": "0.5",
+                    "PTZ_MOVEMENT_SWITCH": "true",
+                    "PTZ_MOVEMENT_FRAME_INTERVAL": "10",
+                    "PTZ_MOVEMENT_THRESHOLD": "0.95"
+                }
+            },
+            "factory": "mxpi_qualitydetection",
+            "next": "fakesink0"
+        },
+        "fakesink0": {
+            "factory": "fakesink"
+        }
+   }
+}

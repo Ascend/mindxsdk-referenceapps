@@ -1,0 +1,9 @@
+easydict
+pycoco
+pycocotools
+mindspore
+numpy
+opencv-python
+Pillow
+pytorch
+tensorflow==1.15

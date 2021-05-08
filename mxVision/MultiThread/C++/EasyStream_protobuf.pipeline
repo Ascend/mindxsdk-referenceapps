@@ -1,0 +1,255 @@
+{
+    "detection0": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "queue0"
+        },
+        "appsink0": {
+              "factory": "appsink"
+        },
+    "mxpi_datatransfer0": {
+        "props": {
+            "dataSource": "appsrc1",
+            "transferMode": "auto",
+            "removeSourceData": "yes"
+        },
+        "factory": "mxpi_datatransfer",
+        "next": "queue2"
+    },
+        "queue0": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_datatransfer0"
+        },
+        "queue2": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_modelinfer0"
+        },
+
+    "mxpi_modelinfer0": {
+            "props": {
+                "parentName": "mxpi_datatransfer0",
+                "modelPath": "../models/yolov3/yolov3_tf_bs1_fp16.om",
+          "postProcessConfigPath": "../models/yolov3/yolov3_tf_bs1_fp16.cfg",
+          "labelPath": "../models/yolov3/coco.names",
+          "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
+            },
+            "factory": "mxpi_modelinfer",
+            "next": "queue1"
+        },
+    "queue1": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_modelinfer0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        }
+    },
+    "detection1": {
+        "stream_config": {
+          "deviceId": "1"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "queue0"
+        },
+        "appsink0": {
+              "factory": "appsink"
+        },
+    "mxpi_datatransfer0": {
+        "props": {
+            "dataSource": "appsrc1",
+            "transferMode": "auto",
+            "removeSourceData": "yes"
+        },
+        "factory": "mxpi_datatransfer",
+        "next": "queue2"
+    },
+        "queue0": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_datatransfer0"
+        },
+        "queue2": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_modelinfer0"
+        },
+    "mxpi_modelinfer0": {
+            "props": {
+                "parentName": "mxpi_datatransfer0",
+                "modelPath": "../models/yolov3/yolov3_tf_bs1_fp16.om",
+                "postProcessConfigPath": "../models/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "../models/yolov3/coco.names",
+                "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
+            },
+            "factory": "mxpi_modelinfer",
+            "next": "queue1"
+        },
+    "queue1": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_modelinfer0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        }
+    },
+    "detection2": {
+        "stream_config": {
+          "deviceId": "2"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "queue0"
+        },
+        "appsink0": {
+            "factory": "appsink"
+        },
+        "mxpi_datatransfer0": {
+            "props": {
+                "dataSource": "appsrc1",
+                "transferMode": "auto",
+                "removeSourceData": "yes"
+            },
+            "factory": "mxpi_datatransfer",
+            "next": "queue2"
+        },
+        "queue0": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_datatransfer0"
+        },
+        "queue2": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_modelinfer0"
+        },
+    "mxpi_modelinfer0": {
+            "props": {
+                "parentName": "mxpi_datatransfer0",
+                "modelPath": "../models/yolov3/yolov3_tf_bs1_fp16.om",
+          "postProcessConfigPath": "../models/yolov3/yolov3_tf_bs1_fp16.cfg",
+          "labelPath": "../models/yolov3/coco.names",
+          "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
+            },
+            "factory": "mxpi_modelinfer",
+            "next": "queue1"
+        },
+    "queue1": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_modelinfer0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        }
+    },
+    "detection3": {
+    "stream_config": {
+            "deviceId": "3"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "queue0"
+        },
+        "appsink0": {
+              "factory": "appsink"
+        },
+    "mxpi_datatransfer0": {
+        "props": {
+            "dataSource": "appsrc1",
+            "transferMode": "auto",
+            "removeSourceData": "yes"
+        },
+        "factory": "mxpi_datatransfer",
+        "next": "queue2"
+    },
+        "queue0": {
+            "props": {
+                  "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_datatransfer0"
+        },
+        "queue2": {
+            "props": {
+                    "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_modelinfer0"
+        },
+    "mxpi_modelinfer0": {
+            "props": {
+                  "parentName": "mxpi_datatransfer0",
+                  "modelPath": "../models/yolov3/yolov3_tf_bs1_fp16.om",
+            "postProcessConfigPath": "../models/yolov3/yolov3_tf_bs1_fp16.cfg",
+            "labelPath": "../models/yolov3/coco.names",
+            "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
+            },
+              "factory": "mxpi_modelinfer",
+              "next": "queue1"
+        },
+    "queue1": {
+            "props": {
+                      "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+              "props": {
+                    "outputDataKeys": "mxpi_modelinfer0"
+              },
+              "factory": "mxpi_dataserialize",
+              "next": "appsink0"
+        }
+    }
+}
