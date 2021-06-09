@@ -222,3 +222,7 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE \
 make -j8
 ```
 
+## 7. 测试数据来源
+
+ICDAR2013数据集
+

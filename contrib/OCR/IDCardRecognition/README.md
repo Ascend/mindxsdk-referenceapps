@@ -208,3 +208,6 @@ cmake -DCMAKE_BUILD_TYPE=RELEASE \
 make -j8
 ```
 
+## 7.测试数据来源
+
+比赛数据：https://www.datafountain.cn/competitions/346
