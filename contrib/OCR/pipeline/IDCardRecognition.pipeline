@@ -1,0 +1,112 @@
+   {
+    "IDCardRecognition": {
+        "stream_config": {
+        "deviceId": "0"
+    },
+    "mxpi_imagedecoder0": {
+        "props": {
+            "deviceId": "0"
+        },
+        "factory": "mxpi_imagedecoder",
+        "next": "mxpi_imageresize0"
+    },
+    "mxpi_imageresize0": {
+        "props": {
+            "dataSource": "mxpi_imagedecoder0",
+            "resizeType": "Resizer_Stretch",
+            "resizeHeight": "608",
+            "resizeWidth": "1072"
+        },
+        "factory": "mxpi_imageresize",
+        "next": "mxpi_tensorinfer0"
+    },
+    "mxpi_tensorinfer0": {
+        "props": {
+            "dataSource":"mxpi_imageresize0",
+            "modelPath": "../models/ctpn/ctpn_yuv.om"
+        },
+        "factory": "mxpi_tensorinfer",
+        "next": "mxpi_textobjectpostprocessor0"
+    },
+
+    "mxpi_textobjectpostprocessor0":{
+        "props":{
+            "dataSource":"mxpi_tensorinfer0",
+            "postProcessConfigPath": "../models/ctpn/ctpn.cfg",
+            "postProcessLibPath": "/home/song2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libctpnpostprocess.so"
+        },
+        "factory": "mxpi_textobjectpostprocessor",
+        "next": "mxpi_warpperspective0"
+    }, 
+
+    "mxpi_warpperspective0": {
+        "props": {
+            "debugMode": "true"
+        },
+        "factory": "mxpi_warpperspective",
+        "next": "mxpi_imageresize1"
+    },
+
+
+    "mxpi_imageresize1": {
+        "props": {
+            "deviceId": "0",
+            "handleMethod": "opencv",
+            "resizeType": "Resizer_Rescale_Double",
+            "resizeHeight": "32",
+            "resizeWidth": "320",
+				 "paddingHeight":"32",
+            "paddingWidth":"320",
+				"paddingType":"Padding_RightDown",
+				"paddingColorB": "128",
+            "paddingColorG": "128",
+            "paddingColorR": "129",
+            "parentName": "mxpi_warpperspective0"
+        },
+        "factory": "mxpi_imageresize",
+        "next": "crnn_recognition"
+    },
+    "crnn_recognition": {
+        "props": {
+            "dataSource": "mxpi_imageresize1",
+            "modelPath": "../models/paddlecrnn/ch_ppocr_server_v2.0_rec_infer_bs1.om"
+        },
+        "factory": "mxpi_tensorinfer",
+        "next": "mxpi_textgenerationpostprocessor0"
+    },
+    "mxpi_textgenerationpostprocessor0": {
+        "props": {
+            "dataSource": "crnn_recognition",
+            "postProcessConfigPath": "../models/paddlecrnn/crnn.cfg",
+            "labelPath": "../models/paddlecrnn/ppocr_keys_v1.txt",
+            "postProcessLibPath": "/home/song2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libcrnnpostprocess.so"
+        },  
+        "factory": "mxpi_textgenerationpostprocessor",
+        "next": "mxpi_dataserialize0"
+        },
+
+    "mxpi_dataserialize0": {
+        "props": {
+            "outputDataKeys":"mxpi_textobjectpostprocessor0,mxpi_textgenerationpostprocessor0",
+            "deviceId": "0"
+        },
+        "factory": "mxpi_dataserialize",
+        "next": "appsink0"
+    },
+    "appsrc0": {
+      "props": {
+        "blocksize": "409600"
+      },
+      "factory": "appsrc",
+      "next": "mxpi_imagedecoder0"
+    },
+    "appsink0": {
+        "props": {
+        "blocksize": "4096000"
+        },
+        "factory": "appsink"
+        }
+    } 
+}
+
+ 
