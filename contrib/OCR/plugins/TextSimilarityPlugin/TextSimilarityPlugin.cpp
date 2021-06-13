@@ -1,8 +1,6 @@
 #include "TextSimilarityPlugin.h"
 #include <iostream>
 #include "MxBase/Log/Log.h"
-
-
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
 #include <mutex>
@@ -25,7 +23,6 @@ using namespace MxTools;
 using namespace MxPlugins;
 using namespace std;
 
-
 APP_ERROR TextSimilarityPlugin::Init(std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     LogInfo << "Begin to initialize TextInfoPlugin(" << pluginName_ << ").";
@@ -42,7 +39,6 @@ APP_ERROR TextSimilarityPlugin::DeInit()
     LogInfo << "End to deinitialize MxpiFairmot(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
-
 
 void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPackageList,
                 std::vector<MxBase::TensorBase> &tensors) {
@@ -100,7 +96,6 @@ namespace {
     MX_PLUGIN_GENERATE(TextSimilarityPlugin)
 }
 
-
 void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
             std::vector<MxBase::TextsInfo> &textsInfoVec)
 {
@@ -157,7 +152,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
         }
     }
 
-
     MxpiBuffer *inputMxpiBuffer1 = mxpiBuffer[1];   // deviceID[1]
     MxpiMetadataManager mxpiMetadataManager1(*inputMxpiBuffer1);
 
@@ -195,7 +189,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     void *idPtr2 =  tensors2[0].GetBuffer();
     int  length1= *(int *) idPtr2;
 
-
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer3 = mxpiBuffer[3];   // deviceID[3]
     MxpiMetadataManager mxpiMetadataManager3(*inputMxpiBuffer3);
@@ -221,7 +214,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::vector<MxBase::TextsInfo> textsInfoVec0 = {};
     Covert(mxpiTextsInfoList4, textsInfoVec0);
 
-
     // Get the metadata from buffer
     MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[5]
     MxpiMetadataManager mxpiMetadataManager5(*inputMxpiBuffer5);
@@ -238,7 +230,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
             float temp = similarity(input1[i],input2[j]);
             if(temp>thresh) {
                 LogInfo<<"text:"<< textsInfoVec0[0].text[i - 1]
-                << " keyword:" << textsInfoVec1[0].text[j - 1] << " 相似度" << temp;
+                << " keyword:" << textsInfoVec1[0].text[j - 1] << " 相似�? << temp;
                 has_kay = true;
             }
         }
@@ -267,6 +259,6 @@ float TextSimilarityPlugin::linalg(vector<float> a) {
     return res;
 }
 
-float TextSimilarityPlugin::similarity(vector<float> a, vector<float> b) {
+float TextSimilarityPlugin::similarity(vector<float> &a, vector<float> &b) {//
     return scalar_product(a, b) / (linalg(a) * linalg(b));
 }

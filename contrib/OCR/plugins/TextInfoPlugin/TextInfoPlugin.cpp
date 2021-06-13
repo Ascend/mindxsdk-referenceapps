@@ -21,12 +21,10 @@
 #include <sstream>
 #include <boost/algorithm/string/join.hpp>
 
-
 using namespace MxBase;
 using namespace MxTools;
 using namespace MxPlugins;
 using namespace std;
-
 
 APP_ERROR TextInfoPlugin::Init(std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
@@ -36,10 +34,10 @@ APP_ERROR TextInfoPlugin::Init(std::map<std::string, std::shared_ptr<void>> &con
     do_lower_case_ = false;
     never_split_ = { "[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]" };
     map<string, int> vocab;
-    vocab_=vocab;
+    vocab_ = vocab;
     unk_token_="[UNK]";
     max_input_chars_per_word_=100;
-    maxlen_=512;
+    maxlen_ = 512;
     LogInfo << "End to initialize MxpiFairmot(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
@@ -48,12 +46,13 @@ vector<float> TextInfoPlugin::convert_tokens_to_ids(vector<std::string> tokens, 
 {
     vector<float> ids;
     vector<std::string>::iterator ptr;
-    for (ptr = tokens.begin(); ptr < tokens.end(); ptr++)
+    for (ptr = tokens.begin(); ptr < tokens.end(); ++ptr)
     {
         ids.push_back(int(vocab[*ptr]));
     }
-    if (ids.size() > maxlen_)
+    if (ids.size() > maxlen_){
         cout << "Token indices sequence length is longer than the specified maximum";
+    }
     return ids;
 }
 APP_ERROR TextInfoPlugin::DeInit()
@@ -62,7 +61,6 @@ APP_ERROR TextInfoPlugin::DeInit()
     LogInfo << "End to deinitialize MxpiFairmot(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
-
 
 void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
             std::vector<MxBase::TextsInfo> &textsInfoVec)
@@ -82,7 +80,7 @@ void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
     }
 }
 void TextInfoPlugin::encode(vector<std::string> tokens_A, vector<float>& input_ids, vector<float>& input_mask,
-                            vector<float>& segment_ids, int max_seq_length, map<string, int> vocab, int maxlen_) {
+                            vector<float>& segment_ids, int max_seq_length, map<string, int> &vocab, int maxlen_) {//
 
     tokens_A.insert(tokens_A.begin(), "[CLS]");
     tokens_A.push_back("[SEP]");
@@ -174,14 +172,10 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     const std::string key5 = elementName_+"_text";
 
-
-
     auto dataSize_id      = res_input_ids.size() * sizeof(int);
     auto dataSize_mask    = res_input_mask.size() * sizeof(int);
     auto dataSize_segment = res_input_segment.size() * sizeof(int);
     auto dataSize_length = res_input_length.size() * sizeof(int);
-
-
 
     auto dataPtr_id      = &res_input_ids[0];
     auto dataPtr_mask    = &res_input_mask[0];
@@ -208,7 +202,6 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,  MxTools::g_deleteFuncMxpiTensorPackageList);
     auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,  MxTools::g_deleteFuncMxpiTensorPackageList);
 
-
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
     auto tensorPackage_mask    = tensorPackageList_mask->add_tensorpackagevec();
     auto tensorPackage_segment = tensorPackageList_segment->add_tensorpackagevec();
@@ -224,14 +217,13 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_segment->set_tensordataptr((uint64_t)memoryDst_segment.ptrData);
     tensorVec_length->set_tensordataptr((uint64_t)memoryDst_length.ptrData);
 
-
     tensorVec_id->set_tensordatasize(res_input_ids.size());
     tensorVec_mask->set_tensordatasize(res_input_mask.size());
     tensorVec_segment->set_tensordatasize(res_input_segment.size());
     tensorVec_length->set_tensordatasize(res_input_length.size());
 
     tensorVec_id->set_tensordatatype(MxBase::TENSOR_DTYPE_INT32);
-    tensorVec_mask->set_tensordatatype (MxBase::TENSOR_DTYPE_INT32);
+    tensorVec_mask->set_tensordatatype(MxBase::TENSOR_DTYPE_INT32);
     tensorVec_segment->set_tensordatatype(MxBase::TENSOR_DTYPE_INT32);
     tensorVec_length->set_tensordatatype(MxBase::TENSOR_DTYPE_INT32);
 
@@ -259,8 +251,7 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_mask->add_tensorshape(res_input_mask.size());
     tensorVec_segment->add_tensorshape(res_input_segment.size());
     tensorVec_length->add_tensorshape(res_input_length.size());
-
-
+    
     APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1, static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
     APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2, static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
     APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata(key3, static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
@@ -291,7 +282,7 @@ std::string TextInfoPlugin::rtrim(std::string str)
     return regex_replace(str, regex("\\s+$"), std::string(""));
 }
 
-std::string TextInfoPlugin::trim(std::string str)
+std::string TextInfoPlugin::trim(std::string &str)
 {
     return ltrim(rtrim(str));
 }
@@ -324,8 +315,9 @@ vector<std::string> TextInfoPlugin::whitespace_tokenize(std::string text)
 
 bool TextInfoPlugin::_is_whitespace(char letter)
 {
-    if (letter == ' ' or letter == '\t' or letter == '\n' or letter == '\r')
+    if (letter == ' ' or letter == '\t' or letter == '\n' or letter == '\r'){
         return true;
+    }
     return false;
 }
 
@@ -333,15 +325,17 @@ bool TextInfoPlugin::_is_punctuation(char letter)
 {
     int cp = int(letter);
     if ((cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or
-        (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126))
+        (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126)){
         return true;
+    }
     return false;
 }
 
 bool TextInfoPlugin::_is_control(char letter)
 {
-    if (letter == '\t' or letter == '\n' or letter == '\r')
+    if (letter == '\t' or letter == '\n' or letter == '\r'){
         return false;
+    }
     return false;
 }
 
@@ -376,12 +370,15 @@ std::string TextInfoPlugin::_clean_text(std::string text)
     while (char_array[len] != '\0')
     {
         int cp = int(char_array[len]);
-        if (cp == 0 or cp == 0xfffd or _is_control(char_array[len]))
+        if (cp == 0 or cp == 0xfffd or _is_control(char_array[len])){
             continue;
-        if (_is_whitespace(char_array[len]))
+        }
+        if (_is_whitespace(char_array[len])){
             output = output + " ";
-        else
+        }
+        else{
             output = output + char_array[len];
+        }
         ++len;
     }
     return output;
@@ -423,57 +420,60 @@ vector<std::string> TextInfoPlugin::_run_split_on_punc(std::string text)
     }
     vector<std::string> final_output;
     vector<vector<char>>::iterator ptr;
-    for (ptr = output.begin(); ptr < output.end(); ptr++)
+    for (ptr = output.begin(); ptr < output.end(); ++ptr)//
     {
         vector<char> out = *ptr;
         std::string word = "";
         vector<char>::iterator itr;
-        for (itr = out.begin(); itr < out.end(); itr++)
+        for (itr = out.begin(); itr < out.end(); ++itr)//
         {
             word = word + *itr;
         }
         final_output.push_back(word);
     }
+    delete char_array;
     return final_output;
 }
 
-vector<std::string> TextInfoPlugin::tokenize1(std::string text) //basic的tokenize
+vector<std::string> TextInfoPlugin::tokenize1(std::string &text) //basic的tokenize
 {
     vector<std::string> orig_tokens = whitespace_tokenize(text);
     vector<std::string> split_tokens;
     vector<std::string>::iterator itr;
-    for (itr = orig_tokens.begin(); itr < orig_tokens.end(); itr++)
+    for (itr = orig_tokens.begin(); itr < orig_tokens.end(); ++itr)//
     {
         std::string temp = *itr;
         if (do_lower_case_ and not bool(find(never_split_.begin(), never_split_.end(), *itr) != never_split_.end()))
         {
-            transform(temp.begin(), temp.end(), temp.begin(), [](unsigned char c) { return std::tolower(c); });
+            transform(temp.begin(), temp.end(), temp.begin(), [](unsigned char c) { 
+            return std::tolower(c); 
+            });
         }
         vector<std::string> split = _run_split_on_punc(temp);
         split_tokens.insert(split_tokens.end(), split.begin(), split.end());
     }
     std::string temp_text;
     vector<std::string>::iterator ptr;
-    for (ptr = split_tokens.begin(); ptr < split_tokens.end(); ptr++)
+    for (ptr = split_tokens.begin(); ptr < split_tokens.end(); ++ptr)//
     {
         temp_text = temp_text + " " + *ptr;
     }
     return whitespace_tokenize(temp_text);
 }
 
-void TextInfoPlugin::add_vocab1(map<std::string, int> vocab)
+void TextInfoPlugin::add_vocab1(map<std::string, int> &vocab)//
 {
     vocab_ = vocab;
     unk_token_ = "[UNK]";
     max_input_chars_per_word_ = 100;
 }
 
-vector<std::string> TextInfoPlugin::tokenize2(std::string text)
+vector<std::string> TextInfoPlugin::tokenize2(std::string &text)
 {
     vector<std::string> output_tokens;
     vector<std::string> whitespace_tokens = whitespace_tokenize(text);
     vector<std::string>::iterator ptr;
-    for (ptr = whitespace_tokens.begin(); ptr < whitespace_tokens.end(); ptr++)
+    for (ptr = whitespace_tokens.begin(); ptr < whitespace_tokens.end(); ++ptr)//
     {
 
         std::string token = *ptr;
@@ -497,10 +497,12 @@ vector<std::string> TextInfoPlugin::tokenize2(std::string text)
             while (start < end)
             {
                 std::string substr;
-                for (int c = start; c < end; c++)
+                for (int c = start; c < end; c++){
                     substr = substr + char_array[c];
-                if (start > 0)
+                }
+                if (start > 0){
                     substr = "##" + substr;
+                }
                 if (vocab_.count(substr) == 1)
                 {
                     cur_substr = substr;
@@ -516,28 +518,31 @@ vector<std::string> TextInfoPlugin::tokenize2(std::string text)
             sub_tokens.push_back(cur_substr);
             start = end;
         }
-        if (is_bad)
+        if (is_bad){
             output_tokens.push_back(unk_token_);
+        }
         else
         {
             output_tokens.insert(output_tokens.end(), sub_tokens.begin(), sub_tokens.end());
         }
     }
+    delete char_array;
     return output_tokens;
 }
 
 void TextInfoPlugin::add_vocab2(const char* vocab_file)
 {
     vocab = read_vocab(vocab_file);
-    for (map<std::string, int>::iterator i = vocab.begin(); i != vocab.end(); ++i)
+    for (map<std::string, int>::iterator i = vocab.begin(); i != vocab.end(); ++i){
         ids_to_tokens[i->second] = i->first;
+    }
     do_basic_tokenize_ = true;
     do_lower_case_ = true;
     add_vocab1(vocab);
     maxlen_ = 128;
 }
 
-vector<std::string> TextInfoPlugin::tokenize3(std::string text)
+vector<std::string> TextInfoPlugin::tokenize3(std::string &text)//
 {
     vector<std::string> split_tokens;
     if (!do_basic_tokenize_)
@@ -545,7 +550,7 @@ vector<std::string> TextInfoPlugin::tokenize3(std::string text)
 
         vector<std::string> temp_tokens = tokenize1(text);
         vector<std::string>::iterator ptr;
-        for (ptr = temp_tokens.begin(); ptr < temp_tokens.end(); ptr++)
+        for (ptr = temp_tokens.begin(); ptr < temp_tokens.end(); ++ptr)//
         {
             vector<std::string> subtokens = tokenize2(*ptr);
             split_tokens.insert(split_tokens.end(), subtokens.begin(), subtokens.end());
@@ -569,7 +574,6 @@ std::vector<std::shared_ptr<void>> TextInfoPlugin::DefineProperties()
             "the name of cropped image source",
             "default", "NULL", "NULL"
     });
-
 
     properties.push_back(datasource);
     return properties;
