@@ -82,7 +82,8 @@ if __name__ == '__main__':
     img = Image.open(img_path)
     draw = ImageDraw.ImageDraw(img)
     for bbox in bboxes:
-        draw.polygon([(bbox['x0'], bbox['y0']), (bbox['x1'], bbox['y1']), (bbox['x2'], bbox['y2']), (bbox['x3'], bbox['y3'])], outline=(255, 0, 0))
+        draw.polygon([(bbox['x0'], bbox['y0']), (bbox['x1'], bbox['y1']), 
+            (bbox['x2'], bbox['y2']), (bbox['x3'], bbox['y3'])], outline=(255, 0, 0))
         fontStyle = ImageFont.truetype("heiTC-Bold.otf", 13, encoding="utf-8")
         text = ""
         for item in bbox['text']:

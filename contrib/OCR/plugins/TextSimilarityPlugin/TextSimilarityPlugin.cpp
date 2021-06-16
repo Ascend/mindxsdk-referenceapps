@@ -53,8 +53,9 @@ void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPac
             for (int k = 0; k < tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
                 outputShape.push_back((uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape(k));
             }
-            MxBase::TensorBase tmpTensor(memoryData, true, outputShape,
-                                         (MxBase::TensorDataType)tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatatype());
+            auto tensorpackage = tensorPackageList->tensorpackagevec(i);
+            auto dataDtype = (MxBase::TensorDataType)tensorpackage.tensorvec(j).tensordatatype();
+            MxBase::TensorBase tmpTensor(memoryData, true, outputShape, dataDtype);
             tensors.push_back(tmpTensor);
         }
     }
@@ -134,7 +135,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata0 = mxpiMetadataManager.GetMetadata(names[0]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr0 = std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
+    auto srcTensorPackageListSptr0 = std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors0 = {};
@@ -157,7 +158,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata1 = mxpiMetadataManager1.GetMetadata(names[1]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr1 = std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
+    auto srcTensorPackageListSptr1 = std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors1 = {};
@@ -180,7 +181,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata2 = mxpiMetadataManager2.GetMetadata(names[2]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr2 = std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
+    auto srcTensorPackageListSptr2 = std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors2 = {};
@@ -195,7 +196,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata3 = mxpiMetadataManager3.GetMetadata(names[3]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr3 = std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
+    auto srcTensorPackageListSptr3 = std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors3 = {};
@@ -210,7 +211,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata4 = mxpiMetadataManager4.GetMetadata(names[4]);
-    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList4 = std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
+    auto mxpiTextsInfoList4 = std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
     std::vector<MxBase::TextsInfo> textsInfoVec0 = {};
     Covert(mxpiTextsInfoList4, textsInfoVec0);
 
@@ -218,7 +219,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[5]
     MxpiMetadataManager mxpiMetadataManager5(*inputMxpiBuffer5);
     std::shared_ptr<void> metadata5 = mxpiMetadataManager5.GetMetadata(names[5]);
-    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
+    auto mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
     std::vector<MxBase::TextsInfo> textsInfoVec1 = {};
     Covert(mxpiTextsInfoList5, textsInfoVec1);
 
