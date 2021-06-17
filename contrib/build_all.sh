@@ -17,7 +17,7 @@ set -e
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 SAMPLE_FOLDER=(
-	../mxVision/MediaCodec
+	../mxVision/MediaCodec/script
 )
 
 
