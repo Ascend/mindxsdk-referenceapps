@@ -46,7 +46,10 @@ void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPac
         for (int j = 0; j < tensorPackageList->tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
             memoryData.deviceId = tensorPackageList->tensorpackagevec(i).tensorvec(j).deviceid();
-            memoryData.type = (MxBase::MemoryData::MemoryType)tensorPackageList->tensorpackagevec(i).tensorvec(j).memtype();
+            
+            auto tensorpackage = tensorPackageList->tensorpackagevec(i);
+            auto dataDtype = (MxBase::TensorDataType)tensorpackage.tensorvec(j).tensordatatype();
+            memoryData.type = dataDtype;
             memoryData.size = (uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatasize();
             memoryData.ptrData = (void *) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordataptr();
             std::vector<uint32_t> outputShape = {};
@@ -71,8 +74,6 @@ std::vector<std::shared_ptr<void>> TextSimilarityPlugin::DefineProperties()
             "the name of cropped image source",
             "default", "NULL", "NULL"
     });
-
-
     properties.push_back(datasource);
     return properties;
 }
