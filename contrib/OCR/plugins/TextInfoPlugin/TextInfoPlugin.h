@@ -18,8 +18,6 @@
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include <chrono>
 
-using namespace std;
-
 /**
  * This plugin is to stack frames based on detected objects.
 */
