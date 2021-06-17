@@ -197,13 +197,13 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     APP_ERROR res_segment = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_segment, memorySrc_segment);
     APP_ERROR res_length = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_length, memorySrc_length);
 
-    auto tensorPackageList_id      = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList, 
+    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
     								MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_mask    = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList, 
+    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList, 
     								MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,  
+    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
     								MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,  
+    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
     								MxTools::g_deleteFuncMxpiTensorPackageList);
 
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
