@@ -90,7 +90,7 @@ if __name__ == '__main__':
             text += item 
         draw.text((bbox['x0'], bbox['y0']-16), text, (255, 0, 0), font=fontStyle)
        
-    out_path="../data/out_idcard/"+img_path.split('/')[-1]
+    out_path="../data/out_idcard/" + img_path.split('/')[-1]
     img.save(out_path)
     
     # destroy streams
