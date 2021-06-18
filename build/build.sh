@@ -16,6 +16,8 @@
 set -e 
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
+export MX_SDK_HOME=/opt/buildtools/mindxsdk/mxVision
+
 bash $current_folder/../contrib/build_all.sh
 
 exit 0
