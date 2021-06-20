@@ -1,0 +1,40 @@
+{
+	"speech_recognition": {
+		"stream_config": {
+		  "deviceId": "3"
+		},
+		"appsrc0": {
+			"props": {
+				"blocksize": "320324"
+			},
+			"factory": "appsrc",
+			"next": "mxpi_tensorinfer0"
+		},
+		"mxpi_tensorinfer0": {
+			"props": {
+				"dataSource": "appsrc0",
+				"modelPath": "/home/cd_zhong/speech_recognition_project/speech_recognition/model/am_conform_batch_one.om"
+			},
+			"factory": "mxpi_tensorinfer",
+			"next": "mxpi_tensorinfer1"
+	    },
+		"mxpi_tensorinfer1": {
+			"props": {
+				"dataSource": "mxpi_tensorinfer0",
+				"modelPath": "/home/cd_zhong/speech_recognition_project/speech_recognition/model/lm_transform_batch_one.om"
+			},
+			"factory": "mxpi_tensorinfer",
+			"next": "mxpi_dataserialize0"
+        },
+		"mxpi_dataserialize0": {
+			"props": {
+				"outputDataKeys": "mxpi_tensorinfer1"
+			},
+			"factory": "mxpi_dataserialize",
+			"next": "appsink0"
+		},
+		"appsink0": {
+			"factory": "appsink"
+		}
+	}
+}
