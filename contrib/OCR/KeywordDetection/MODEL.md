@@ -188,6 +188,54 @@ https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
 	atc --model=./ch_ppocr_server_v2.0_rec_infer_modify.onnx --framework=5 --output_type=FP32 --output=ch_ppocr_server_v2.0_rec_infer_modify_dy_bs --input_format=NCHW --input_shape="x:-1,3,32,320" --dynamic_batch_size="1,2,4,8" --soc_version=Ascend310 --insert_op_conf="rec_aipp.cfg"
 
+# 语言模型（Bert）
+
+## Bert模型链接
+
+https://github.com/google-research/bert
+
+## ckpt模型转pb模型
+
+```python
+import tensorflow as tf
+from tensorflow.python.framework import graph_util
+from tensorflow.python.platform import gfile
+ 
+def freeze_graph(ckpt, output_graph):
+    output_node_names = 'bert/encoder/Reshape_13'
+    # saver = tf.train.import_meta_graph(ckpt+'.meta', clear_devices=True)
+    saver = tf.compat.v1.train.import_meta_graph(ckpt+'.meta', clear_devices=True)
+    graph = tf.get_default_graph()
+    input_graph_def = graph.as_graph_def()
+ 
+    with tf.Session() as sess:
+        saver.restore(sess, ckpt)
+        output_graph_def = graph_util.convert_variables_to_constants(
+            sess=sess,
+            input_graph_def=input_graph_def,
+            output_node_names=output_node_names.split(',')
+        )
+        with tf.gfile.GFile(output_graph, 'wb') as fw:
+            fw.write(output_graph_def.SerializeToString())
+        print ('{} ops in the final graph.'.format(len(output_graph_def.node)))
+ 
+ckpt = '/home/wzz/project/bert/uncased/bert_model.ckpt'
+pb   = '/home/wzz/project/bert/uncased/bert_model_new.pb'
+ 
+if __name__ == '__main__':
+    freeze_graph(ckpt, pb)
+```
+
+## 转om模型命令
+
+```shell
+atc --model=./bert_model_new.pb \
+--framework=3 --input_shape "Placeholder:1,128;Placeholder_1:1,128;Placeholder_2:1,128" \
+--output=model_bert --soc_version=Ascend310
+```
+
+
+
 ## 相关文档
 
 - [Paddle2ONNX](https://github.com/PaddlePaddle/Paddle2ONNX/blob/develop/README_zh.md "	Paddle2ONNX")
