@@ -18,7 +18,7 @@
 ![image.png](img/1623207353906.png 'image.png')  
   
 >若提示报错则表示权限缺失，下图为可能的样例。  
-![image.png](img/1623207817848.png 'image.png')
+![image.png](img/1623207817848.png 'image.png')  
 >此时需切换到root用户下，执行以下命令将开发用户添加到HwHiAiUser用户组，username为当前用户名，请自行替换。
 ```bash
   usermod -a -G HwHiAiUser username
