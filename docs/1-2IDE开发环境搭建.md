@@ -70,10 +70,10 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 
 **步骤3**  断点调试
 
-对测试代码加断点，在左端行号前面点击，会出现红色断点
+对测试代码加断点，在左端行号前面点击，会出现红色断点  
 ![7.png](img/1623221481373.png '7.png')
 
-点击任务栏的RUN->Debug(shift + F9)程序会执行到上一步断点位置，可以观察当前变量的值，后续可以使用单步调试。
+点击任务栏的RUN->Debug(shift + F9)程序会执行到上一步断点位置，可以观察当前变量的值，后续可以使用单步调试。  
 ![8.png](img/1623221646773.png '8.png')
 
 若断点不生效，在CMakeLists文件中加入以下语句，设置编译类型为Dedug。
@@ -96,9 +96,9 @@ set(CMAKE_BUILD_TYPE Debug)
 ![image.png](img/1623309361995.png 'image.png')
 
 
-**步骤2**  配置本地目录和远程映射路径。选择File->Settings，在Project ${项目名} -> Path mappings 点击文件符号。 
+**步骤2**  配置本地目录和远程映射路径。选择File->Settings，在Project ${项目名} -> Path mappings 点击文件符号。  
 ![image.png](img/1623316129521.png 'image.png')
-进入Edit Project Path Mappings 点击加号  添加本地项目路径和远程映射路径
+进入Edit Project Path Mappings 点击加号  添加本地项目路径和远程映射路径  
 ![image.png](img/1623316215637.png 'image.png')
 
 
@@ -121,11 +121,11 @@ ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolki
 ## 补充：pyCharm中添加路径解决导入到报红的问题
 
 - 选择File->Settings，在Project ${项目名} -> Python Interpreter 选择设置 -> Show All
-![image.png](img/1623315719375.png 'image.png')
+![image.png](img/1623315719375.png 'image.png')  
 
 
 - 选择远程Remote 上的 的符号 添加SDK安装目录下的Python路径
-![image.png](img/1623315806818.png 'image.png')
-![image.png](img/1623755172684.png 'image.png')
+![image.png](img/1623315806818.png 'image.png')  
+![image.png](img/1623755172684.png 'image.png')  
 
 
