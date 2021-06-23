@@ -124,7 +124,7 @@ ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolki
 ![image.png](img/1623315719375.png 'image.png')  
 
 
-- 选择远程Remote 上的 的符号 添加SDK安装目录下的Python路径
+- 选择远程Remote 上的 的符号 添加SDK安装目录下的Python路径  
 ![image.png](img/1623315806818.png 'image.png')  
 ![image.png](img/1623755172684.png 'image.png')  
 
