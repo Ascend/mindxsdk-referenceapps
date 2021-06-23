@@ -21,7 +21,7 @@
 ![1_3·.png](img/1622101236396.png '1_3·.png')
 
 **步骤4**  点开Build Execution Deployment -> Deployment 修改上一步创建的Remote-Host中的远程映射路径： 
-![2.png](img/1623220168055.png '2.png')
+![2.png](img/1623220168055.png '2.png')  
 首次创建好连接路径后CLion会自动同步两端文件。
 **此后若修改文件，可通过右击工程 Deployment->Upload to...，把项目上传到设置的远程路径中去；通过右击工程 Deployment->Download from...从远程环境中将修改后的项目下载到本地路径中。**  
 ![3.png](img/1623220230223.png '3.png')  
@@ -97,7 +97,7 @@ set(CMAKE_BUILD_TYPE Debug)
 
 
 **步骤2**  配置本地目录和远程映射路径。选择File->Settings，在Project ${项目名} -> Path mappings 点击文件符号。  
-![image.png](img/1623316129521.png 'image.png')
+![image.png](img/1623316129521.png 'image.png')  
 进入Edit Project Path Mappings 点击加号  添加本地项目路径和远程映射路径  
 ![image.png](img/1623316215637.png 'image.png')
 
