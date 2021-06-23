@@ -9,8 +9,8 @@
 <ins>当多个线程同时调用SendData接口时，GetResult获取的结果顺序不确定。SendData接口支持多个appsrc输入元件，GetResult支持多个appsink输出元件。</ins>
 
 
-**图 1-1** SendData-GetResult 数据流图
-![截图.PNG](img/1621941610975.PNG '截图.PNG')
+**图 1-1** SendData-GetResult 数据流图  
+![截图.PNG](img/1621941610975.png '1621941610975.png ')
 
 
 SendData接口输入有三种传入参数方式
@@ -54,8 +54,8 @@ dataBuffer|MxBufferInput|待发送的buffer数据。
 <span style="background-color:#92cddc;"><span style="font-size:18px;">**须知**</span></span>
 <ins>运行该程序之前需要自己手动下载一张包含动物的图片（例如一只狗的图片），并将该图片命名为test.jpg，然后放到python目录下。</ins>
 
-**图 1-2** SendDataWithUniqueId-GetDataWithUniqueId 数据流图
-![截图.PNG](img/1621941652252.PNG '截图.PNG')
+**图 1-2** SendDataWithUniqueId-GetDataWithUniqueId 数据流图  
+![截图.PNG](img/1621941652252.png '截图.png')
 
 
 SendDataWithUniqueId接口输入有两种传入参数方式
@@ -88,8 +88,8 @@ dataBuffer|请参考MxDataInput。|待发送的数据。
 <span style="background-color:#92cddc;"><span style="font-size:18px;">**须知**</span></span>
 <ins>当多个线程同时调用SendProtobuf接口时，GetProtobuf获取的结果顺序不确定。SendProtobuf接口支持多个appsrc输入插件，GetProtobuf支持多个appsink输出元件。</ins>
 
-**图 1-3** SendProtobuf-GetProtobuf 数据流图
-![截图.PNG](img/1622173570842.PNG '截图.PNG')
+**图 1-3** SendProtobuf-GetProtobuf 数据流图  
+![截图.PNG](img/1622173570842.png '截图.png')
 
 SendProtobuf接口输入有两种传入参数方式
 以下是Python函数原型与输入参数说明，C++参数类似，可参考C++流程管理API参考部分[SendProtobuf](https://support.huaweicloud.com/ug-mfac-mindxsdk201/atlasmx_02_0395.html)：
@@ -158,14 +158,14 @@ GST_PLUGIN_PATH=/home/*****/home/work/MindX_SDK/mxManufacture/opensource/lib/gst
 
 配置CMakeLists.txt中的MX_SDK_HOME环境变量，配置安装了MindX SDK的路径
 
-set(MX_SDK_HOME ${SDK安装路径}/mxManufacture)
+set(MX_SDK_HOME ${SDK安装路径}/mxManufacture)  
 
-![image.png](img/1623388882981.png 'image.png')
+![image.png](img/1623388882981.png 'image.png')  
 
 
 配置LD_LIBRARY_PATH环境变量
 clion任务栏 file->settings->Build Execution Deployment -> Cmake -> Environment 选择文件图标，加号添加环境变量
-变量名 LD_LIBRARY_PATH ， 值 /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64/
+变量名 LD_LIBRARY_PATH，值/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64/  
 ![image.png](img/1623749681297.png 'image.png')
 #### 步骤 4 编译 运行
 
@@ -176,8 +176,8 @@ clion任务栏 file->settings->Build Execution Deployment -> Cmake -> Environmen
 ####  步骤 5 切换输入插件
 clion任务栏 Run->Edit Configurations->Environment Program arguments
 
-Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见表 1-1 中的对应关系。
-![image.png](img/1623236074913.png 'image.png')
+Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见表 1-1 中的对应关系。  
+![image.png](img/1623236074913.png 'image.png')  
 
 **表 1-1** 对应关系表
 
@@ -188,12 +188,12 @@ Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见�
 | 2 | SendProtobuffer 接口|(streamName: bytes, elementName: bytes, metadataVec: MetadataInputVector, databuffer: MxBufferInput)|  
  
 ####  步骤 6 查看输出结果
-结果打印 result:hello 则运行成功
+结果打印 result:hello 则运行成功  
 ![image.png](img/1623236387023.png 'image.png')
 
 
 #### 补充：处理头文件报错
-如果头文件报错可以将配置好CMakeList.txt 右键执行**Reload CMake Project**操作
+如果头文件报错可以将配置好CMakeList.txt 右键执行**Reload CMake Project**操作  
 ![image.png](img/1623224745826.png 'image.png')
 
 
@@ -220,7 +220,7 @@ python 样例在**XXXXXXXXXXXXXX**路径下。
 
 - pyCharm 任务栏 Run->Edit Configurations->Parameters
 
-Program arguments 传入[1-9]可以切换调用接口，对应关系可以见表 1-2 中的对应关系。
+Program arguments 传入[1-9]可以切换调用接口，对应关系可以见表 1-2 中的对应关系。  
 ![image.png](img/1623236074913.png 'image.png')
 
 **表 1-2** 对应关系表
@@ -239,6 +239,6 @@ Program arguments 传入[1-9]可以切换调用接口，对应关系可以见表
 
  
 ####  步骤 5 查看输出结果
-结果打印 result:success 则运行成功
+结果打印 result:success 则运行成功  
 
 ![image.png](img/1623324184025.png 'image.png')
