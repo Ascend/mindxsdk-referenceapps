@@ -8,7 +8,7 @@
 ### 2.1.2.1 模型转换
 **步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
 
-**步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"，如：
+**步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"，如：  
 ![9.png](img/1623229532350.png '9.png')
 
 **步骤3** 模型转换
@@ -57,7 +57,7 @@
 ### 2.2.2.2 配置pipeline
 python pipeline在脚本main.py内部，其中模型路径和工程中model文件夹路径和SDK安装路径相匹配的，一般情况下不需要修改。
 **注意**将pipeline中红框部分的${SDK安装路径}替换为自己的SDK安装路径。  
-![image.png](img/1624007242093.png 'image.png')
+![image.png](img/1624007242093.png 'image.png')  
 如果有修改路径需求可以通过`find -name libyolov3postprocess.so`相关命令搜索到需要的依赖文件，更改pipeline中的值。  
 ![12.png](img/1623231850273.png '12.png')
 ### 2.2.2.3 模型转换
