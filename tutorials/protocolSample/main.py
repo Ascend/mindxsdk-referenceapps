@@ -4,7 +4,7 @@ from os import pipe
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, \
     MxDataInput, MxProtobufIn, InProtobufVector, MxBufferInput, \
-        MxMetadataInput, MetadataInputVector, StringVector
+    MxMetadataInput, MetadataInputVector, StringVector
 
 if __name__ == '__main__':
     # type1:SendData    type2:SendProtobuf
@@ -20,9 +20,9 @@ if __name__ == '__main__':
     # creat streams by pipeline file
     with open("./pipeSample.pipeline", 'rb') as f:
         pipeline_str = f.read()
-    ret = stream_mgr_api.CreatMultipleStream(pipeline_str)
+    ret = stream_mgr_api.CreateMultipleStream(pipeline_str)
     if ret != 0:
-        print("Failed to creat stream, ret=%s" %str(ret))
+        print("Failed to create stream, ret=%s" %str(ret))
         exit()    
 
     # Construct the input of the stream
@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     stream_name = b'pipeSample'
     inplugin_id = 0
-    element_name = b'appsrc0'
+    elment_name = b'appsrc0'
 
     if INTERFACE_TYPE == 1:
         # streamName: bytes, elementName: bytes, data_input: MxDataInput
@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
         # build senddata data source
         frame_info = MxpiDataType.MxpiFrameInfo()
-        frame_info.FrameId = 0
+        frame_info.frameId = 0
         frame_info.channelId = 0
 
         vision_list = MxpiDataType.MxpiVisionList()
@@ -52,23 +52,23 @@ if __name__ == '__main__':
         buffer_input.mxpiVisionInfo = vision_vec.SerializeToString()
         buffer_input.data = data_input.data
 
-        metadata_input = MxMetadataInput()
-        metadata_input.dataSource = element_name
-        metadata_input.dataType = b"MxTools.MxpiVisionList"
-        metadata_input.serializedMetadaata = vision_list.SerializeToString()
+        metedata_input = MxMetadataInput()
+        metedata_input.dataSource = elment_name
+        metedata_input.dataType = b"MxTools.MxpiVisionList"
+        metedata_input.serializedMetadaata = vision_list.SerializeToString()
 
-        metadata_vec = MetadataInputVector()
-        metadata_vec.push_back(metadata_input)
+        metedata_vec = MetadataInputVector()
+        metedata_vec.push_back(metedata_input)
 
         error_code = stream_mgr_api.\
-            SendData(stream_name, element_name, metadata_vec, buffer_input)
+            SendData(stream_name, elment_name, metedata_vec, buffer_input)
 
         if error_code < 0:
             print("Failed to send data to stream.")
             exit()
-        
+
         data_source_vector = StringVector()
-        data_source_vector.push_back(element_name)
+        data_source_vector.push_back(elment_name)
 
         infer_result = stream_mgr_api.\
             GetResult(stream_name, b'appsink0', data_source_vector)
@@ -93,21 +93,21 @@ if __name__ == '__main__':
         vision_vec.visionData.dataStr = data_input.data
 
         protobuf = MxProtobufIn()
-        protobuf.key = element_name
+        protobuf.key = elment_name
         protobuf.type = b'MxTools.MxpiVisionList'
         protobuf.protobuf = vision_list.SerializeToString()
         protobuf_vec = InProtobufVector()
         protobuf_vec.push_back(protobuf)
 
-        error_code = stream_mgr_api.\
+        error_code = stream_mgr_api. \
             SendProtobuf(stream_name, inplugin_id, protobuf_vec)
         if error_code < 0:
             print("Failed to send data to stream.")
             exit()
 
         key_vec = StringVector()
-        key_vec.push_back(element_name)
-        infer_result = stream_mgr_api.\
+        key_vec.push_back(elment_name)
+        infer_result = stream_mgr_api. \
             GetProtobuf(stream_name, inplugin_id, key_vec)
         if infer_result.size() == 0:
             print("infer_result is null")
@@ -118,7 +118,7 @@ if __name__ == '__main__':
             exit()
 
         # print the infer result
-        print("GetProtobuf errorCdoe=%d" % (infer_result[0].errorCode))
+        print("GetProtobuf errorCode=%d" % (infer_result[0].errorCode))
         print("KEY: {}".format(str(infer_result[0].messageName)))
 
         result_visionlist = MxpiDataType.MxpiVisionList()
