@@ -1,24 +1,24 @@
 {
     "pipeSample":{
         "stream_config":{
-            "deciveId":"0"
+            "deviceId":"0"
         },
         "appsrc0":{
             "props":{
-                "blocksize":"409600"
+                "blocksize":"4096000"
             },
             "factory":"appsrc",
             "next":"mxpi_dataserialize0"
         },
         "mxpi_dataserialize0":{
-            "props":                
+            "props": {               
             },
             "factory":"mxpi_dataserialize",
             "next":"appsink0"
         },
         "appsink0":{
             "props":{
-                "blocksize":"409600"
+                "blocksize":"4096000"
             },
             "factory":"appsink"
         }
