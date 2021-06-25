@@ -4,6 +4,8 @@
 提供的demo，实现输入输出插件的样例运行
 
 ### 准备工作
+样例获取链接(https://gitee.com/zhangdwe/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/python)
+
 将样例目录python 从mxsdkreferenceapps/tutorials/pipelineInputOuputSample文件夹下 移动到${SDK安装路径}/mxVision/samples/mxVision/python/路径下
 
 可以使用mv 命令

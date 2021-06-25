@@ -4,6 +4,8 @@
 提供的demo，实现 pipeline输入输出调用不同的输入插件的样例运行
 
 ### 准备工作
+样例获取链接(https://gitee.com/zhangdwe/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/C++)
+
 将项目目录从mindxsdk-referenceapps\tutorials\PipelineInputOutputSample\C++移动到运行样例的目录下
 
 ### 配置SDK路径

@@ -4,7 +4,8 @@
 提供的demo，实现图像检测样例运行并且输出检测结果写入图片result.jpg
 
 ### 准备工作
-将样例目录python 从mxsdkreferenceapps/utorials/ImageDetectionSample文件夹下 移动到${SDK安装路径}/mxVision/samples/mxVision/python/路径下
+样例获取链接(https://gitee.com/zhangdwe/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python)
+将样例目录python 从mxsdkreferenceapps/tutorials/ImageDetectionSample文件夹下 移动到${SDK安装路径}/mxVision/samples/mxVision/python/路径下
 
 可以使用mv 命令
 进入到移动后的工程路径下
