@@ -13,7 +13,7 @@
 		"mxpi_tensorinfer0": {
 			"props": {
 				"dataSource": "appsrc0",
-				"modelPath": "/home/cd_zhong/speech_recognition_project/speech_recognition/model/am_conform_batch_one.om"
+				"modelPath": "model/am_conform_batch_one.om"
 			},
 			"factory": "mxpi_tensorinfer",
 			"next": "mxpi_tensorinfer1"
@@ -21,7 +21,7 @@
 		"mxpi_tensorinfer1": {
 			"props": {
 				"dataSource": "mxpi_tensorinfer0",
-				"modelPath": "/home/cd_zhong/speech_recognition_project/speech_recognition/model/lm_transform_batch_one.om"
+				"modelPath": "model/lm_transform_batch_one.om"
 			},
 			"factory": "mxpi_tensorinfer",
 			"next": "mxpi_dataserialize0"

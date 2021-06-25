@@ -1,18 +1,16 @@
-# /*
-#  * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
-#  *
-#  * Licensed under the Apache License, Version 2.0 (the "License");
-#  * you may not use this file except in compliance with the License.
-#  * You may obtain a copy of the License at
-#  *
-#  * http://www.apache.org/licenses/LICENSE-2.0
-#  *
-#  * Unless required by applicable law or agreed to in writing, software
-#  * distributed under the License is distributed on an "AS IS" BASIS,
-#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  * See the License for the specific language governing permissions and
-#  * limitations under the License.
-#  */
+# Copyright 2021 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import os
 import numpy as np
@@ -45,9 +43,10 @@ if __name__ == "__main__":
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    # if the data are raw file
+    # if the data is raw file
     wav_file_path = os.path.join(cwd_path, "data/BAC009S0009W0133.wav")
     feat_data, len_data = make_model_input([wav_file_path])
+    # if the data is numpy file
     # feat_data = np.load(os.path.join(cwd_path, "data/feat_data.npy"))
     # len_data = np.load(os.path.join(cwd_path, "data/len_data.npy"))
 
@@ -55,29 +54,40 @@ if __name__ == "__main__":
     mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
     tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
 
-    # add feature data begin
+    # add feature data #begin
+    # set feature data shape
+    batch_size = 1
+    feature_width = 1001
+    feature_height = 80
+    feature_channel = 1
+
     tensorVec = tensor_package_vec.tensorVec.add()
     tensorVec.memType = 1
     tensorVec.deviceId = 0
-    tensorVec.tensorDataSize = int(1001 * 80 * 4)
-    tensorVec.tensorDataType = 0
-    tensorShape = [1, 1001, 80, 1]
+    tensorVec.tensorDataSize = int(
+        feature_width*feature_height*4)  # 4: bytes of float32
+    tensorVec.tensorDataType = 0  # float32
+    tensorShape = [batch_size, feature_width, feature_height, feature_channel]
     for i in range(4):
         tensorVec.tensorShape.append(tensorShape[i])
     tensorVec.dataStr = feat_data.tobytes()
-    # add feature data end
+    # add feature data #end
 
-    # add length data begin
+    # add length data #begin
+    # set length data shape
+    length_batch = 1
+    length_dim = 1   # length data is a constant
+
     tensorVec2 = tensor_package_vec.tensorVec.add()
     tensorVec2.memType = 1
     tensorVec2.deviceId = 0
-    tensorVec2.tensorDataSize = int(4)
-    tensorVec2.tensorDataType = 3
+    tensorVec2.tensorDataSize = int(4)  # 4: btyes of int32
+    tensorVec2.tensorDataType = 3  # int32
     tensorShape2 = [1, 1]
     for i in range(2):
         tensorVec2.tensorShape.append(tensorShape2[i])
     tensorVec2.dataStr = len_data.tobytes()
-    # add length data end
+    # add length data #end
 
     protobuf = MxProtobufIn()
     protobuf.key = tensor_key
@@ -87,7 +97,6 @@ if __name__ == "__main__":
 
     unique_id = stream_manager.SendProtobuf(
         stream_name, in_plugin_id, protobuf_vec)
-    # uniqueId = stream_manager.SendDataWithUniqueId(stream_name, in_plugin_id, dataInput)
     if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
