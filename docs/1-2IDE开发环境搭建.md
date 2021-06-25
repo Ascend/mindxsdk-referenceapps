@@ -30,7 +30,7 @@
 
 ## 1.2.3 远程运行调试文件
 **步骤1**  加载CMakeLists.txt文件
-参考[CMake学习](wiki/常见资料获取/CMake学习)修改CMakeLists.txt文件。
+参考[CMake学习](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/Cmake%E4%BB%8B%E7%BB%8D.md)修改CMakeLists.txt文件。
 修改好CMakeLists文件后，重新加载CMakeLists文件,cmake-build-debug构建目录也会被重新生成。  
   ![1.png](img/1622518642593.png '1.png')
   
