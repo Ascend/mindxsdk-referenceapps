@@ -42,6 +42,7 @@ static APP_ERROR  ReadFile(const std::string& filePath, MxStream::MxstDataInput&
         dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize];
         if(dataBuffer.dataPtr == nullptr){
             LogError << "allocate memory with \"new uint32_t\" failed.";
+            fclose(fp);
             return APP_ERR_COMM_FAILURE;
         }
 

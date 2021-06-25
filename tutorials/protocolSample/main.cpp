@@ -18,11 +18,11 @@
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
 
-// protocol_sample Does not contain running part in main()
+// protocol_example Does not contain running part in main()
 namespace protocol_example {
     constexpr int COS_VALUE_INPUT = 0;
 
-#pragma region proto_encode_sample 
+#pragma region proto_encode_example
     APP_ERROR MakeMxpiFrame(MxStream::MxstDataInput dataBuffer,
                             const std::string& elementName,
                             MxStream::MxstProtobufIn &protoBufBuffer)
@@ -34,14 +34,14 @@ namespace protocol_example {
         MxTools::MxpiVision *mxpiVision = visionList->add_visionvec();
 
         // mutable_* creat a pointer to the mutable object,which mean you can change it`s value later
-        MxTools::MxpiVisionInfo * visioninfo = mxpiVision->mutable_visioninfo();
+        MxTools::MxpiVisionInfo *visioninfo = mxpiVision->mutable_visioninfo();
         visioninfo->set_format(COS_VALUE_INPUT); // set_* change a exist object value
         visioninfo->set_width(COS_VALUE_INPUT);
         visioninfo->set_height(COS_VALUE_INPUT);
         visioninfo->set_widthaligned(COS_VALUE_INPUT);
         visioninfo->set_heightaligned(COS_VALUE_INPUT);
 
-        MxTools::MxpiVisionData *visiondata = mxpiopensourceision->mutable_visiondata();
+        MxTools::MxpiVisionData *visiondata = mxpiVision->mutable_visiondata();
         visiondata->set_dataptr((uint64_t) dataBuffer.dataPtr);
         visiondata->set_datasize(dataBuffer.dataSize);
         visiondata->set_memtype(MxTools::MXPI_MEMORY_HOST_NEW);
@@ -135,7 +135,7 @@ namespace {
         fseek(fp, 0, SEEK_END);
         long fileSize = ftell(fp);
         fseek(fp, 0, SEEK_SET);
-        // If file not empty read it into FileInfo and return it
+        // If file not empty, read it into FileInfo and return it
         if (fileSize > 0) {
             dataBuffer.dataSize = fileSize;
             dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize];
@@ -162,7 +162,7 @@ namespace {
     {
         std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
         if (file.is_open() == false) {
-            LogError << pipelineConfigPath <<" file dose not exist.";
+            LogError << pipelineConfigPath << " file dose not exist.";
             return "";
         }
         file.seekg(0, std::ifstream::end);
@@ -180,7 +180,7 @@ namespace {
                                 std::vector<MxStream::MxstMetadataInput> &metedataVec,
                                 MxStream::MxstBufferInput &bufferInput)
     {
-        // MakemxpiFrame
+        // MakeMxpiFrame
         auto visionList = std::make_shared<MxTools::MxpiVisionList>();
         MxTools::MxpiVision *mxpiVision = visionList->add_visionvec();
         MxTools::MxpiVisionInfo *visioninfo = mxpiVision->mutable_visioninfo();
@@ -204,16 +204,16 @@ namespace {
         metedataInput.dataSource = elementName;
         metedataInput.messagePtr = std::static_pointer_cast<google::protobuf::Message>(visionList);
 
-        auto frameBuffer =std::make_shared<MxTools::MxpiFrame>();
+        auto frameBuffer = std::make_shared<MxTools::MxpiFrame>();
         frameBuffer->mutable_frameinfo()->CopyFrom(*frameInfo);
 
         // write proto data structure
         bufferInput.mxpiFrameInfo = *frameInfo;
         bufferInput.mxpiVisionInfo = *visioninfo;
-        bufferInput.dataSize = dataBuffer.dataSize();
-        bufferInput.dataPtr = dataBuffer.dataPtr();
+        bufferInput.dataSize = dataBuffer.dataSize;
+        bufferInput.dataPtr = dataBuffer.dataPtr;
 
-        metadataVec.push_back(metedataInput);
+        metedataVec.push_back(metedataInput);
 
         return APP_ERR_OK;
     }
@@ -286,7 +286,7 @@ namespace {
         APP_ERROR ret = APP_ERR_OK;
         // build proto data with SendProtobuf()
         MxStream::MxstProtobufIn protoBufBuffer;
-        ret = MakeSendProtobuf(dataBuffer, elemmentName, protoBufBuffer);
+        ret = MakeSendProtobuf(dataBuffer, elementName, protoBufBuffer);
         if (ret != APP_ERR_OK) {
             LogError << GetError(ret) << "Failed to MakeProto data.";
             return ret;
@@ -298,7 +298,7 @@ namespace {
         if (ret != APP_ERR_OK) {
             LogError << GetError(ret) << "Failed to send data into stream.";
             return ret;
-        }       
+        }
 
         std::vector<std::string> keyVec;
         keyVec.push_back(protoBufBuffer.key);
@@ -311,7 +311,7 @@ namespace {
             LogError << "GetProtobuf error. errorCode=" << output[0].errorCode;
             return output[0].errorCode;
         }
-        LogInfo << "key=" << outout[0].messageName;
+        LogInfo << "key=" << output[0].messageName;
         LogInfo << "value=" << output[0].messagePtr.get()->DebugString();
         output.clear();
 
@@ -350,7 +350,7 @@ int main(int argc, char* argv[])
     // create stream by pipeline config file
     ret = mxStreamManager.CreateMultipleStreams(pipelineConfig);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret) << "Failed to create stream.";
+        LogError << GetError(ret) << "Failed to create Stream.";
         return ret;
     }
 
@@ -372,7 +372,6 @@ int main(int argc, char* argv[])
             return ret;
         }
     }
-}      
 
     // destroy streams
     mxStreamManager.DestroyAllStreams();
