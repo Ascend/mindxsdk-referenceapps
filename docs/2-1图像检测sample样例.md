@@ -50,6 +50,7 @@
 
 ## 2.2.2 运行前准备
 请参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)章节搭建好项目运行环境。
+将项目从（[项目文件地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python)）移动到运行项目的目录下。
 ### 2.2.2.1 模型转换
 确认*.om模型文件存在model 路径下。
 如果不存在则需要执行模型转换步骤，请参考本章节C++ 样例运行 模型转换步骤。
