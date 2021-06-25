@@ -1,6 +1,6 @@
 ## 2.1.1 样例介绍
 提供了一个图像检测sample样例，实现对本地图片进行YOLOv3目标检测，并把可视化结果保存到本地。
-[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/C++)
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample)
 
 ## 2.1.2 运行前准备
 参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节搭建好项目运行环境。
