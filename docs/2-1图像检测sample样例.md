@@ -1,9 +1,10 @@
 ## 2.1.1 样例介绍
 提供了一个图像检测sample样例，实现对本地图片进行YOLOv3目标检测，并把可视化结果保存到本地。
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample)
 
 ## 2.1.2 运行前准备
-参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)章节搭建好项目运行环境。
-参考[CMake学习](wiki/常见资料获取/CMake学习)修改CMakeLists.txt文件。
+参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节搭建好项目运行环境。
+参考[CMake学习](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/Cmake%E4%BB%8B%E7%BB%8D.md)修改CMakeLists.txt文件。
 
 ### 2.1.2.1 模型转换
 **步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
@@ -27,7 +28,7 @@
 ![12.png](img/1623231850273.png '12.png')
 
 ### 2.1.2.3 配置Clion运行配置
-参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)在Clion中添加环境变量。
+参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)在Clion中添加环境变量。
 
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。  
 ![13.png](img/1623232978995.png '13.png')
@@ -49,7 +50,8 @@
 提供了一个图像检测sample样例，实现对本地图片进行YOLOv3目标检测，并把可视化结果保存到本地。
 
 ## 2.2.2 运行前准备
-请参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)章节搭建好项目运行环境。
+请参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节搭建好项目运行环境。
+将项目从（[项目文件地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python)）移动到运行项目的目录下。
 ### 2.2.2.1 模型转换
 确认*.om模型文件存在model 路径下。
 如果不存在则需要执行模型转换步骤，请参考本章节C++ 样例运行 模型转换步骤。
@@ -65,7 +67,7 @@ python pipeline在脚本main.py内部，其中模型路径和工程中model文�
 
 
 ### 2.2.2.4 配置pyCharm运行配置
-参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)在pyCharm中添加环境变量。
+参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)在pyCharm中添加环境变量。
 
 点击pyCharm任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。  
 ![image.png](img/1623389741249.png 'image.png')
