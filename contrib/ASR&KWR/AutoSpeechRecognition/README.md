@@ -35,6 +35,7 @@
 ```
 .
 |-------- data                                 //wav格式音频数据
+|--------   |---- lm_tokens.txt                //字典文件
 |-------- model
 |           |---- am_conform_batch_one.om      //conformer声学模型
 |           |---- lm_transform_batch_one.om    //transformer语言模型
