@@ -1,14 +1,30 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+"""
+Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import json
 import os
 import cv2
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput
 
 if __name__ == '__main__':
-    # init stream manager
     streamManagerApi = StreamManagerApi()
+    # init stream manager
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
@@ -109,11 +125,11 @@ if __name__ == '__main__':
                   'text': bbox['classVec'][0]['className']}
     img_path = "test.jpg"
     img = cv2.imread(img_path)
-    text = "{}{}".format(str(bboxes['confidence'])," ")
+    text = "{}{}".format(str(bboxes['confidence']), " ")
 
     for item in bboxes['text']:
         text += item
-    cv2.putText(img, text, (bboxes['x0'] + 10, bboxes['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0 , 0), 1)
+    cv2.putText(img, text, (bboxes['x0'] + 10, bboxes['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
     cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
 
     cv2.imwrite("./result.jpg", img)
