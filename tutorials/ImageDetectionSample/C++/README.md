@@ -128,7 +128,7 @@ Scanning dependencies of target sample
 
 ```
 chmod +x run.sh
-./run.sh
+bash run.sh
 ```
 
 ### 查看结果
