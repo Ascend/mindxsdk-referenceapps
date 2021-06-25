@@ -162,7 +162,7 @@ namespace {
     {
         std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
         if (file.is_open() == false) {
-            LogError << pipelineConfigPath <<" file dose not exist.";
+            LogError << pipelineConfigPath << " file dose not exist.";
             return "";
         }
         file.seekg(0, std::ifstream::end);
