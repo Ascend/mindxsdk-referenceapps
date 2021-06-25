@@ -49,7 +49,7 @@
 提供了一个图像检测sample样例，实现对本地图片进行YOLOv3目标检测，并把可视化结果保存到本地。
 
 ## 2.2.2 运行前准备
-请参考[IDE开发环境搭建](wiki/1开发环境/1-2IDE开发环境搭建)章节搭建好项目运行环境。
+请参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)(wiki/1开发环境/1-2IDE开发环境搭建)章节搭建好项目运行环境。
 将项目从（[项目文件地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python)）移动到运行项目的目录下。
 ### 2.2.2.1 模型转换
 确认*.om模型文件存在model 路径下。
