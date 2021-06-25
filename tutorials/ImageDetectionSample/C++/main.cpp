@@ -7,13 +7,13 @@
 
 namespace {
     const uint32_t YUV_BYTES_NU = 3;
-    const uint32_t YUV_BYTES_DE = 3;
+    const uint32_t YUV_BYTES_DE = 2;
 }
 
 // 读取文件中的信息
 static APP_ERROR  ReadFile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
 {
-    char c[PATH_MAX + 1] = {0X00};
+    char c[PATH_MAX + 1] = {0x00};
     size_t count = filePath.copy(c, PATH_MAX +1);
     if(count != filePath.length()){
         LogError << "Failed to copy file path(" << c << ").";
