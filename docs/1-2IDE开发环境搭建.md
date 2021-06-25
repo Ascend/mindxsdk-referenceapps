@@ -1,6 +1,7 @@
 # IDE开发环境搭建--Clion
 
-以图像检测项目sample为例演示基于本地ID--Clion的开发调试。
+以图像检测项目sample为例演示基于本地IDE--Clion的开发调试。
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample)
 
 ## 1.2.1 获得项目文件
 **情况1** 当项目文件在远程环境中时，需要从远程环境中将想要开发的C++项目文件下载到本地，用CLion打开项目，并按以下操作同步本地与远程环境。  
@@ -65,7 +66,7 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 请仔细检查自己的环境变量与上文所给的环境变量是否有差别，若缺少路径，执行*vi .bashrc*命令，在.bashrc文件中添加缺少的环境变量。
 保存退出后，执行*source ~/.bashrc*命令使环境变量生效。
 
-配置好环境变量，点击Run运行程序（项目运行所需操作请参考[图像检测sample样例运行](wiki/2初级开发/2-1图像检测sample样例运行)）。
+配置好环境变量，点击Run运行程序（项目运行所需操作请参考[图像检测sample样例运行](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/2-1%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8Bsample%E6%A0%B7%E4%BE%8B.md)）。
 
 
 **步骤3**  断点调试
@@ -83,6 +84,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 
 # IDE开发环境搭建--pyCharm
+
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample)
 
 ## 获取项目
 当项目文件在远程环境中时，需要从远程环境中将想要开发的Python项目文件下载到本地，用pyCharm打开项目，并按以下操作同步本地与远程环境。
