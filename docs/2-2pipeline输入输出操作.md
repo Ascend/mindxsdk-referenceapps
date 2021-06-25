@@ -130,7 +130,7 @@ SendProtobuf-GetProtobuf |protobuf|protobuf|否| 是 |否 |支持单线程有序
 #### 步骤 1 Clion开发环境搭建
 参见 IDE开发环境搭建--基于Clion开发调试章节，实现安装clion和远程环境连接。
 
-C++ 样例在（[项目目录地址](http://https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/C++)）路径下。
+C++ 样例在（[项目目录地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/C++)）路径下。
 将路径下的IOsample文件夹下载到本地用Clion打开该项目文件。
 
 #### 步骤2 配置环境变量
