@@ -103,11 +103,11 @@ namespace MxPlugins {
         vector<string> never_split_;
         map<string, int> vocab_;
         string unk_token_;
-        int max_input_chars_per_word_;
+        const int max_input_chars_per_word_ = 100;
         map<string, int> vocab;
         map<int, string> ids_to_tokens;
         bool do_basic_tokenize_;
-        int maxlen_;
+        const int maxlen_ = 512;
 
     };
 }

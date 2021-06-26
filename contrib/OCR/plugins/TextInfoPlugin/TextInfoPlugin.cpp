@@ -36,8 +36,6 @@ APP_ERROR TextInfoPlugin::Init(std::map<std::string, std::shared_ptr<void>> &con
     map<string, int> vocab;
     vocab_ = vocab;
     unk_token_="[UNK]";
-    max_input_chars_per_word_=100;
-    maxlen_ = 512;
     LogInfo << "End to initialize MxpiFairmot(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
@@ -474,7 +472,6 @@ void TextInfoPlugin::add_vocab1(map<std::string, int> &vocab)//
 {
     vocab_ = vocab;
     unk_token_ = "[UNK]";
-    max_input_chars_per_word_ = 100;
 }
 
 vector<std::string> TextInfoPlugin::tokenize2(std::string &text)
