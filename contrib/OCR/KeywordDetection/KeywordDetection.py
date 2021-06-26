@@ -25,8 +25,8 @@ import numpy as np
 if __name__ == '__main__':
     pipeline_path = "../pipeline/KeywordDetection.pipeline"
     streamName = b'KeywordDetection'
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = StreamManagerApi()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -34,22 +34,22 @@ if __name__ == '__main__':
     # create streams by pipeline config file
     with open(pipeline_path, 'rb') as f:
         pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = stream_manager_api.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
         
     inplugin_id = 0    
     # Construct the input of the stream
-    dataInput = MxDataInput()
+    data_input = MxDataInput()
     img_path = "../data/en_text/1.jpg"
     
     
     with open(img_path, 'rb') as f:
-        dataInput.data = f.read()
+        data_input.data = f.read()
     inplugin_id = 0
-    uniqueId = streamManagerApi.SendData(streamName, inplugin_id, dataInput)
-    if uniqueId < 0:
+    unique_id = stream_manager_api.SendData(streamName, inplugin_id, data_input)
+    if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
     
@@ -68,27 +68,27 @@ if __name__ == '__main__':
         textsInfoVec_key.text.append(key)
         
     key1 = b'appsrc1'
-    protobufVec = InProtobufVector()
+    protobuf_vec = InProtobufVector()
     protobuf_key = MxProtobufIn()
     protobuf_key.key = key1
     protobuf_key.type = b'MxTools.MxpiTextsInfoList'
     protobuf_key.protobuf = mxpiTextsInfoList_key.SerializeToString()
-    protobufVec.push_back(protobuf_key)
+    protobuf_vec.push_back(protobuf_key)
     
 
-    uniqueId = streamManagerApi.SendProtobuf(streamName, inplugin_key, protobufVec)
-    if uniqueId < 0:
+    unique_id = stream_manager_api.SendProtobuf(streamName, inplugin_key, protobuf_vec)
+    if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
 
-    keyVec = StringVector()
-    keyVec.push_back(b'appsrc0')
-    inferResult = streamManagerApi.GetProtobuf(streamName, inplugin_id, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
+    key_vec = StringVector()
+    key_vec.push_back(b'appsrc0')
+    infer_result = stream_manager_api.GetProtobuf(streamName, inplugin_id, key_vec)
+    if infer_result.size() == 0:
+        print("infer_result is null")
         exit()
     if inferResult[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d" % (
             inferResult[0].errorCode))
         exit()
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()
