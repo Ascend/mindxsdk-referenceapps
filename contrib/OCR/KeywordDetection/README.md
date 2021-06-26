@@ -128,8 +128,8 @@ export ARCH_PATTERN=x86_64-linux
 **步骤2**：修改代码目录中：```plugins/```下的各个插件中```CMakeLists.txt```文件中的路径为实际安装依赖包的路径。修改代码路径如下所示：
 
 ```cmake
-set(MX_SDK_HOME /home/song2/MindX_SDK/mxVision-2.0.2/)						       # Host侧SDK 请修改为实际路径
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY /home/song2/MindX_SDK/mxVision-2.0.2/lib/plugins) # Host侧插件 请修改为实际路径
+set(MX_SDK_HOME ${XXX}/MindX_SDK/mxVision-2.0.2/)						       # Host侧SDK 请修改为实际路径
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${XM_SDK_HOME}/lib/plugins) # Host侧插件 请修改为实际路径
 ```
 
 **步骤3**：编译插件，生成.so文件

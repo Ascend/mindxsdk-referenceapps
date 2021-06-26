@@ -31,5 +31,4 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 export PYTHONPATH=$PYTHONPATH:${MX_SDK_HOME}/python
 
 python3.7 KeywordDetection.py
-#gdb python3.7 
 exit 0

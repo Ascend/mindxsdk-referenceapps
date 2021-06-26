@@ -333,8 +333,8 @@ bool TextInfoPlugin::_is_whitespace(char letter)
 bool TextInfoPlugin::_is_punctuation(char letter)
 {
     int cp = int(letter);
-    if ((cp >= 33 and cp <= 47) or (cp >= 58 and cp <= 64) or
-        (cp >= 91 and cp <= 96) or (cp >= 123 and cp <= 126)){
+    if ((cp >= '!' and cp <= '/') or (cp >= ':' and cp <= '@') or
+        (cp >= '[' and cp <= `) or (cp >= '{' and cp <= '~')){
         return true;
     }
     return false;

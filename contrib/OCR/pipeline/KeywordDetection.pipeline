@@ -48,14 +48,11 @@
         "props":{
             "dataSource":"mxpi_tensorinfer0",
             "postProcessConfigPath": "../models/ctpn/ctpn.cfg",
-            "postProcessLibPath": "/home/song2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libctpnpostprocess.so"
+            "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libctpnpostprocess.so"
         },
         "factory": "mxpi_textobjectpostprocessor",
         "next": "mxpi_warpperspective0"
     }, 
-
-    
-
     "mxpi_warpperspective0": {
         "props": {
             "debugMode": "true"
@@ -63,8 +60,6 @@
         "factory": "mxpi_warpperspective",
         "next": "mxpi_imageresize1"
     },
-
-
     "mxpi_imageresize1": {
         "props": {
             "deviceId": "0",
@@ -96,7 +91,7 @@
             "dataSource": "crnn_recognition",
             "postProcessConfigPath": "../models/paddlecrnn/crnn.cfg",
             "labelPath": "../models/paddlecrnn/ppocr_keys_v1.txt",
-            "postProcessLibPath": "/home/song2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libcrnnpostprocess.so"
+            "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libcrnnpostprocess.so"
         },  
         "factory": "mxpi_textgenerationpostprocessor",
        "next": "textinfo0"

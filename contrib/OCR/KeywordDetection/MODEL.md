@@ -2,9 +2,13 @@
 
 ## pb模型链接
 
+```
 https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
 参考: https://www.hiascend.com/zh/software/modelzoo/detail/1/4536a28cddcc4588ae89338a3693cfbb
+```
+
+
 
 ## pb模型转om模型
 
@@ -34,14 +38,16 @@ https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
 #### 转om模型命令
 
-	/usr/local/Ascend/ascend-toolkit/latest/atc/bin/atc --model=ctpn_tf.pb \
-		--output=ctpn_yuv \
-		--framework=3 \
-		--input_shape="input_image:1,608,1072,3" \
-		--insert_op_conf=./aipp_yuv.cfg \
-		--soc_version=Ascend310 \
-		--log=error \
-		--enable_scope_fusion_passes=ScopeDynamicRNNPass
+```shell
+/usr/local/Ascend/ascend-toolkit/latest/atc/bin/atc --model=ctpn_tf.pb \
+	--output=ctpn_yuv \
+	--framework=3 \
+	--input_shape="input_image:1,608,1072,3" \
+	--insert_op_conf=./aipp_yuv.cfg \
+	--soc_version=Ascend310 \
+	--log=error \
+	--enable_scope_fusion_passes=ScopeDynamicRNNPass
+```
 
 # Text Recognition Model（CRNN）
 
@@ -192,7 +198,9 @@ https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
 ## Bert模型链接
 
+```
 https://github.com/google-research/bert
+```
 
 ## ckpt模型转pb模型
 

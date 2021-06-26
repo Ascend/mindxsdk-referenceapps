@@ -2,22 +2,21 @@
 # coding=utf-8
 
 """
-Copyright 2020 Huawei Technologies Co., Ltd
+ Copyright 2020 Huawei Technologies Co., Ltd
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 """
 
-# import StreamManagerApi.py
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import *
 import json
@@ -26,9 +25,6 @@ import numpy as np
 if __name__ == '__main__':
     pipeline_path = "../pipeline/KeywordDetection.pipeline"
     streamName = b'KeywordDetection'
-    
-    
-
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
@@ -43,7 +39,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
         
-    inPluginId = 0    
+    inplugin_id = 0    
     # Construct the input of the stream
     dataInput = MxDataInput()
     img_path = "../data/en_text/1.jpg"
@@ -51,14 +47,13 @@ if __name__ == '__main__':
     
     with open(img_path, 'rb') as f:
         dataInput.data = f.read()
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    inplugin_id = 0
+    uniqueId = streamManagerApi.SendData(streamName, inplugin_id, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
     
-    
-    inPluginId_key = 1
+    inplugin_key = 1
     #key
     key_file = open("./bert_key.txt", 'r')
     key_dict = []
@@ -81,14 +76,14 @@ if __name__ == '__main__':
     protobufVec.push_back(protobuf_key)
     
 
-    uniqueId = streamManagerApi.SendProtobuf(streamName, inPluginId_key, protobufVec)
+    uniqueId = streamManagerApi.SendProtobuf(streamName, inplugin_key, protobufVec)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
 
     keyVec = StringVector()
     keyVec.push_back(b'appsrc0')
-    inferResult = streamManagerApi.GetProtobuf(streamName, inPluginId, keyVec)
+    inferResult = streamManagerApi.GetProtobuf(streamName, inplugin_id, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
