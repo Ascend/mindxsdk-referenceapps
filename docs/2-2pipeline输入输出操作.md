@@ -130,8 +130,8 @@ SendProtobuf-GetProtobuf |protobuf|protobuf|否| 是 |否 |支持单线程有序
 #### 步骤 1 Clion开发环境搭建
 参见 IDE开发环境搭建--基于Clion开发调试章节，实现安装clion和远程环境连接。
 
-C++ 样例在**XXXXXXXXXXXXXX**路径下。
-将路径下的IOsample文件夹下载到本地用Clion打开该项目文件。
+C++ 样例在（[项目目录地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/C++)）路径下。
+将路径下的整个C++文件夹下载到本地用Clion打开该项目文件。
 
 #### 步骤2 配置环境变量
 可参考2-1图像检测样例运行章节
@@ -204,8 +204,8 @@ Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见�
 #### 步骤 1 pyCharm开发环境搭建
 参见 IDE开发环境搭建--基于pyCharm开发调试章节，实现安装pyCharm和远程环境连接。
 
-python 样例在**XXXXXXXXXXXXXX**路径下。
-将路径下的IOsample文件夹下载到本地用pyCharm打开该项目文件。
+python 样例在（[项目目录地址](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/PipelineInputOutputSample/python)）路径下。
+将路径下的整个python文件夹下载到本地用pyCharm打开该项目文件。
 
 #### 步骤 2 配置SDK路径
 
@@ -213,7 +213,7 @@ python 样例在**XXXXXXXXXXXXXX**路径下。
 
 #### 步骤 3 编译 运行
 
-执行pyCharm->Run->Run"xxxx"
+执行pyCharm->Run->Run"main"
 
 ####  步骤 4 切换输入插件
 样例默认使用的是SendData的第一种传参方式即SendData(streamName: bytes, inPluginId: int, dataInput: MxDataInput)，如果需要切换其他输入方式需要执行以下操作。命令行切换可以参考README.md
