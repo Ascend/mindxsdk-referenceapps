@@ -17,7 +17,6 @@
 #include "MxTools/PluginToolkit/MxpiDataTypeWrapper/MxpiDataTypeDeleter.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include <chrono>
-
 /**
  * This plugin is to stack frames based on detected objects.
 */
@@ -76,18 +75,18 @@ namespace MxPlugins {
 
         std::map<std::string, int> read_vocab(const char* filename);
         std::string _clean_text(std::string text);
-        vector<std::string> _run_split_on_punc(std::string text);
-        vector<std::string> tokenize1(std::string text);
-        void add_vocab1(map<std::string, int> vocab);
-        vector<std::string> tokenize2(std::string text);
+        std::vector<std::string> _run_split_on_punc(std::string text);
+        std::vector<std::string> tokenize1(std::string text);
+        void add_vocab1(std::map<std::string, int> vocab);
+        std::vector<std::string> tokenize2(std::string text);
 
         void add_vocab2(const char* vocab_file);
-        void encode(vector<std::string> tokens_A, vector<float>& input_ids, 
-                    vector<float>& input_mask, vector<float>& segment_ids, int max_seq_length,
-                    map<string, int> vocab, int maxlen_);
+        void encode(std::vector<std::string> tokens_A, std::vector<float>& input_ids,
+                    std::vector<float>& input_mask, std::vector<float>& segment_ids, int max_seq_length,
+                    std::map<std::string, int> vocab, int maxlen_);
 
-        vector<float> convert_tokens_to_ids(vector<std::string> tokens, map<string, int> &vocab, int maxlen_);
-        vector<std::string> tokenize3(std::string text);
+        std::vector<float> convert_tokens_to_ids(std::vector<std::string> tokens, std::map<std::string, int> vocab, int maxlen_);
+        std::vector<std::string> tokenize3(std::string text);
 
 
         /**
@@ -100,12 +99,12 @@ namespace MxPlugins {
     private:
         std::string dataSource_ = "";
         bool do_lower_case_;
-        vector<string> never_split_;
-        map<string, int> vocab_;
-        string unk_token_;
+        std::vector<std::string> never_split_;
+        std::map<std::string, int> vocab_;
+        std::string unk_token_;
         const int max_input_chars_per_word_ = 100;
-        map<string, int> vocab;
-        map<int, string> ids_to_tokens;
+        std::map<std::string, int> vocab;
+        std::map<int, std::string> ids_to_tokens;
         bool do_basic_tokenize_;
         const int maxlen_ = 512;
 
