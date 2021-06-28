@@ -332,7 +332,7 @@ bool TextInfoPlugin::_is_punctuation(char letter)
 {
     int cp = int(letter);
     if ((cp >= '!' and cp <= '/') or (cp >= ':' and cp <= '@') or
-        (cp >= '[' and cp <= `) or (cp >= '{' and cp <= '~')){
+        (cp >= '[' and cp <= '`') or (cp >= '{' and cp <= '~')){
         return true;
     }
     return false;
