@@ -77,9 +77,9 @@ void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
         textsInfoVec.push_back(text);
     }
 }
-void TextInfoPlugin::encode(vector<std::string> tokens_A, vector<float>& input_ids, vector<float>& input_mask,
-                            vector<float>& segment_ids, int max_seq_length, map<string, int> &vocab, int maxlen_) {//
 
+void TextInfoPlugin::encode(vector<std::string> tokens_A, vector<float>& input_ids, vector<float>& input_mask,
+	                        vector<float>& segment_ids, int max_seq_length, map<string, int> &vocab, int maxlen_) {
     tokens_A.insert(tokens_A.begin(), "[CLS]");
     tokens_A.push_back("[SEP]");
     for (int i = 0; i < tokens_A.size(); i++)

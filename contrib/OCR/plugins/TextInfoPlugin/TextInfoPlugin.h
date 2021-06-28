@@ -83,10 +83,10 @@ namespace MxPlugins {
 
         void add_vocab2(const char* vocab_file);
         void encode(vector<std::string> tokens_A, vector<float>& input_ids, 
-                    vector<float>& input_mask, vector<float>& segment_ids, int max_seq_length ,
+                    vector<float>& input_mask, vector<float>& segment_ids, int max_seq_length,
                     map<string, int> vocab, int maxlen_);
 
-        vector<float> convert_tokens_to_ids(vector<std::string> tokens, map<string, int> vocab, int maxlen_);
+        vector<float> convert_tokens_to_ids(vector<std::string> tokens, map<string, int> &vocab, int maxlen_);
         vector<std::string> tokenize3(std::string text);
 
 
