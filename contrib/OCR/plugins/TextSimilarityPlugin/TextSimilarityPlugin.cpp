@@ -1,6 +1,8 @@
 #include "TextSimilarityPlugin.h"
 #include <iostream>
 #include "MxBase/Log/Log.h"
+
+
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
 #include <mutex>
@@ -23,6 +25,7 @@ using namespace MxTools;
 using namespace MxPlugins;
 using namespace std;
 
+
 APP_ERROR TextSimilarityPlugin::Init(std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     LogInfo << "Begin to initialize TextInfoPlugin(" << pluginName_ << ").";
@@ -40,25 +43,22 @@ APP_ERROR TextSimilarityPlugin::DeInit()
     return APP_ERR_OK;
 }
 
+
 void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPackageList,
                 std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList->tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList->tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
             memoryData.deviceId = tensorPackageList->tensorpackagevec(i).tensorvec(j).deviceid();
-            
-            auto tensorpackage = tensorPackageList->tensorpackagevec(i);
-            auto dataDtype = (MxBase::TensorDataType)tensorpackage.tensorvec(j).tensordatatype();
-            memoryData.type = dataDtype;
+            memoryData.type = (MxBase::MemoryData::MemoryType)tensorPackageList->tensorpackagevec(i).tensorvec(j).memtype();
             memoryData.size = (uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatasize();
             memoryData.ptrData = (void *) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordataptr();
             std::vector<uint32_t> outputShape = {};
             for (int k = 0; k < tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
                 outputShape.push_back((uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape(k));
             }
-            auto tensorpackage = tensorPackageList->tensorpackagevec(i);
-            auto dataDtype = (MxBase::TensorDataType)tensorpackage.tensorvec(j).tensordatatype();
-            MxBase::TensorBase tmpTensor(memoryData, true, outputShape, dataDtype);
+            MxBase::TensorBase tmpTensor(memoryData, true, outputShape,
+                                         (MxBase::TensorDataType)tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatatype());
             tensors.push_back(tmpTensor);
         }
     }
@@ -74,6 +74,8 @@ std::vector<std::shared_ptr<void>> TextSimilarityPlugin::DefineProperties()
             "the name of cropped image source",
             "default", "NULL", "NULL"
     });
+
+
     properties.push_back(datasource);
     return properties;
 }
@@ -97,6 +99,7 @@ MxpiPortInfo TextSimilarityPlugin::DefineOutputPorts()
 namespace {
     MX_PLUGIN_GENERATE(TextSimilarityPlugin)
 }
+
 
 void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
             std::vector<MxBase::TextsInfo> &textsInfoVec)
@@ -136,7 +139,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata0 = mxpiMetadataManager.GetMetadata(names[0]);
-    auto srcTensorPackageListSptr0 = std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr0 = std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors0 = {};
@@ -154,12 +157,13 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
         }
     }
 
-    MxpiBuffer *inputMxpiBuffer1 = mxpiBuffer[1];   // deviceID[1]
+
+    MxpiBuffer *inputMxpiBuffer1 = mxpiBuffer[1];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager1(*inputMxpiBuffer1);
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata1 = mxpiMetadataManager1.GetMetadata(names[1]);
-    auto srcTensorPackageListSptr1 = std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr1 = std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors1 = {};
@@ -177,12 +181,12 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     }
 
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
-    MxpiBuffer *inputMxpiBuffer2 = mxpiBuffer[2];   // deviceID[2]
+    MxpiBuffer *inputMxpiBuffer2 = mxpiBuffer[2];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager2(*inputMxpiBuffer2);
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata2 = mxpiMetadataManager2.GetMetadata(names[2]);
-    auto srcTensorPackageListSptr2 = std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr2 = std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors2 = {};
@@ -191,13 +195,14 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     void *idPtr2 =  tensors2[0].GetBuffer();
     int  length1= *(int *) idPtr2;
 
+
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
-    MxpiBuffer *inputMxpiBuffer3 = mxpiBuffer[3];   // deviceID[3]
+    MxpiBuffer *inputMxpiBuffer3 = mxpiBuffer[3];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager3(*inputMxpiBuffer3);
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata3 = mxpiMetadataManager3.GetMetadata(names[3]);
-    auto srcTensorPackageListSptr3 = std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr3 = std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors3 = {};
@@ -207,20 +212,21 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     int  length2= *(int *) idPtr3;
 
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
-    MxpiBuffer *inputMxpiBuffer4 = mxpiBuffer[4];   // deviceID[4]
+    MxpiBuffer *inputMxpiBuffer4 = mxpiBuffer[4];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager4(*inputMxpiBuffer4);
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata4 = mxpiMetadataManager4.GetMetadata(names[4]);
-    auto mxpiTextsInfoList4 = std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
+    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList4 = std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
     std::vector<MxBase::TextsInfo> textsInfoVec0 = {};
     Covert(mxpiTextsInfoList4, textsInfoVec0);
 
+
     // Get the metadata from buffer
-    MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[5]
+    MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager5(*inputMxpiBuffer5);
     std::shared_ptr<void> metadata5 = mxpiMetadataManager5.GetMetadata(names[5]);
-    auto mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
+    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
     std::vector<MxBase::TextsInfo> textsInfoVec1 = {};
     Covert(mxpiTextsInfoList5, textsInfoVec1);
 
@@ -232,13 +238,13 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
             float temp = similarity(input1[i],input2[j]);
             if(temp>thresh) {
                 LogInfo<<"text:"<< textsInfoVec0[0].text[i - 1]
-                << " keyword:" << textsInfoVec1[0].text[j - 1] << " ç›¸ä¼¼åº? << temp;
+                << " keyword:" << textsInfoVec1[0].text[j - 1] << " ÏàËÆ¶È" << temp;
                 has_kay = true;
             }
         }
     }
 
-    LogInfo<<"å›¾ç‰‡æ˜¯å¦å«æœ‰å…³é”®å­—ï¼š"<<has_kay;
+    LogInfo<<"Í¼Æ¬ÊÇ·ñº¬ÓÐ¹Ø¼ü×Ö£º"<<has_kay;
     // Send the data to downstream plugin
     SendData(0, *inputMxpiBuffer0);
     LogInfo << "End to process TextInfoPlugin(" << elementName_ << ").";
@@ -261,6 +267,6 @@ float TextSimilarityPlugin::linalg(vector<float> a) {
     return res;
 }
 
-float TextSimilarityPlugin::similarity(vector<float> &a, vector<float> &b) {//
+float TextSimilarityPlugin::similarity(vector<float> a, vector<float> b) {
     return scalar_product(a, b) / (linalg(a) * linalg(b));
 }

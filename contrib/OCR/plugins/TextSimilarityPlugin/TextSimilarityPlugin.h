@@ -69,7 +69,7 @@ namespace MxPlugins {
         float scalar_product(std::vector<float> a, std::vector<float> b);
 
         float linalg(std::vector<float> a);
-        float similarity(std::vector<float> &a, std::vector<float> &b);
+        float similarity(std::vector<float> a, std::vector<float> b);
         /**
          * @api
          * @brief Get the >confidence objects and responding id feature
