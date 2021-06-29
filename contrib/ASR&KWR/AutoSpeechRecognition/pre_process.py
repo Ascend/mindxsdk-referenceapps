@@ -221,7 +221,7 @@ class SpeechFeaturizer(object):
         pitches = pitches.T
 
         # num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)
-        if (self.num_feature_bins > self.frame_length // 2 + 1):
+        if self.num_feature_bins > self.frame_length // 2 + 1:
             logging.warning(
                 "num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)")
 
@@ -239,7 +239,7 @@ class SpeechFeaturizer(object):
         features = 20 * np.log10(powspec.T)
 
         # num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)
-        if (self.num_feature_bins > self.frame_length // 2 + 1):
+        if self.num_feature_bins > self.frame_length // 2 + 1:
             logging.warning(
                 "num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)")
 
@@ -249,7 +249,7 @@ class SpeechFeaturizer(object):
         return features
 
     def _compute_mfcc_feature(self, signal: np.ndarray) -> np.ndarray:
-        log_power_Mel_spectrogram = np.square(
+        log_power_mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
                                   n_fft=self.frame_length,
@@ -266,13 +266,13 @@ class SpeechFeaturizer(object):
         mfcc = librosa.feature.mfcc(
             sr=self.sample_rate,
             S=librosa.core.power_to_db(
-                np.dot(mel_basis, log_power_Mel_spectrogram) + 1e-20),
+                np.dot(mel_basis, log_power_mel_spectrogram) + 1e-20),
             n_mfcc=self.num_feature_bins)
 
         return mfcc.T
 
     def _compute_logfbank_feature(self, signal: np.ndarray) -> np.ndarray:
-        log_power_Mel_spectrogram = np.square(
+        log_power_mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
                                   n_fft=self.frame_length,
@@ -286,7 +286,7 @@ class SpeechFeaturizer(object):
                                         fmin=0,
                                         fmax=int(self.sample_rate / 2))
 
-        return np.log(np.dot(mel_basis, log_power_Mel_spectrogram) + 1e-20).T
+        return np.log(np.dot(mel_basis, log_power_mel_spectrogram) + 1e-20).T
 
 
 def make_one_data(wav_path, speech_feat: SpeechFeaturizer):
