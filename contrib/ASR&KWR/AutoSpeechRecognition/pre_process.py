@@ -15,19 +15,32 @@
 import os
 import io
 import time
+import logging
 import numpy as np
 import librosa
 import soundfile as sf
 
 
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(levelname)s:%(asctime)s:%(message)s'
+)
+
+
 def read_raw_audio(audio, sample_rate=16000):
+    """ Read audio data and transform it into numpy format
+    Args:
+      audio: it can be a filepath of audio data or bytes audio data or numpy audio data.
+    Return:
+      wave: numpy format audio data
+    """
     if isinstance(audio, str):
         wave, _ = librosa.load(os.path.expanduser(audio), sr=sample_rate)
     elif isinstance(audio, bytes):
-        wave, sr = sf.read(io.BytesIO(audio))
+        wave, sample_rate_ = sf.read(io.BytesIO(audio))
         wave = np.asfortranarray(wave)
-        if sr != sample_rate:
-            wave = librosa.resample(wave, sr, sample_rate)
+        if sample_rate_ != sample_rate:
+            wave = librosa.resample(wave, sample_rate_, sample_rate)
     elif isinstance(audio, np.ndarray):
         return audio
     else:
@@ -59,14 +72,18 @@ def preemphasis(signal: np.ndarray, coeff=0.97):
 def deemphasis(signal: np.ndarray, coeff=0.97):
     if not coeff or coeff <= 0.0:
         return signal
-    x = np.zeros(signal.shape[0], dtype=np.float32)
-    x[0] = signal[0]
-    for n in range(1, signal.shape[0], 1):
-        x[n] = coeff * x[n - 1] + signal[n]
-    return x
+    de_emphasis_signal = np.zeros(signal.shape[0], dtype=np.float32)
+    de_emphasis_signal[0] = signal[0]
+    for i in range(1, signal.shape[0], 1):
+        de_emphasis_signal[i] = coeff * de_emphasis_signal[i - 1] + signal[i]
+    return de_emphasis_signal
 
 
-class SpeechFeaturizer:
+class SpeechFeaturizer(object):
+    '''SpeechFeaturizer offers 3 types of feature extraction: \
+        'mfcc', 'logfbank' , 'spectrogram'.
+    '''
+
     def __init__(
             self,
             sample_rate=16000,
@@ -77,10 +94,10 @@ class SpeechFeaturizer:
             delta=False,
             delta_delta=False,
             pitch=False,
-            preemphasis=0.97,
-            normalize_signal=True,
-            normalize_feature=True,
-            normalize_per_feature=False):
+            preemphasis_rate=0.97,
+            is_normalize_signal=True,
+            is_normalize_feature=True,
+            is_normalize_per_feature=False):
 
         # Samples
         self.sample_rate = sample_rate
@@ -92,11 +109,11 @@ class SpeechFeaturizer:
         self.delta = delta
         self.delta_delta = delta_delta
         self.pitch = pitch
-        self.preemphasis = preemphasis
+        self.preemphasis_rate = preemphasis_rate
         # Normalization
-        self.normalize_signal = normalize_signal
-        self.normalize_feature = normalize_feature
-        self.normalize_per_feature = normalize_per_feature
+        self.is_normalize_signal = is_normalize_signal
+        self.is_normalize_feature = is_normalize_feature
+        self.is_normalize_per_feature = is_normalize_per_feature
 
     def load_wav(self, path):
         wav = read_raw_audio(path, self.sample_rate)
@@ -109,15 +126,21 @@ class SpeechFeaturizer:
         return int(1 + (total_frames - self.frame_length) // self.frame_step)
 
     def pad_signal(self, wavs, max_length=None):
+        '''padding data before featrure extraction'''
         if not max_length:
             max_length = self.sample_rate*10
         wavs = np.pad(wavs, (0, max_length-wavs.shape[0]), 'constant')
         return wavs
 
-    def pad_feat(self, feat, max_length=1001):
-        feat = np.pad(
-            feat, ((0, max_length-feat.shape[0]),
-            (0, 0), (0, 0)), 'constant')
+    @classmethod
+    def pad_feat(cls, feat, max_length=1001):
+        '''padding data after feature extraction'''
+        if feat.shape[0] > max_length:
+            feat = feat[0:max_length+1]
+        else:
+            feat = np.pad(
+                feat, ((0, max_length-feat.shape[0]),
+                       (0, 0), (0, 0)), 'constant')
         return feat
 
     def compute_feature_dim(self) -> tuple:
@@ -135,9 +158,9 @@ class SpeechFeaturizer:
         return self.num_feature_bins, channel_dim
 
     def extract(self, signal: np.ndarray) -> np.ndarray:
-        if self.normalize_signal:
+        if self.is_normalize_signal:
             signal = normalize_signal(signal)
-        signal = preemphasis(signal, self.preemphasis)
+        signal = preemphasis(signal, self.preemphasis_rate)
 
         if self.feature_type == "mfcc":
             features = self._compute_mfcc_feature(signal)
@@ -153,33 +176,33 @@ class SpeechFeaturizer:
 
         original_features = np.copy(features)
 
-        if self.normalize_feature:
+        if self.is_normalize_feature:
             features = normalize_audio_feature(
-                features, per_feature=self.normalize_per_feature)
+                features, per_feature=self.is_normalize_per_feature)
 
         features = np.expand_dims(features, axis=-1)
 
         if self.delta:
             delta = librosa.feature.delta(original_features.T).T
-            if self.normalize_feature:
+            if self.is_normalize_feature:
                 delta = normalize_audio_feature(
-                    delta, per_feature=self.normalize_per_feature)
+                    delta, per_feature=self.is_normalize_per_feature)
             features = np.concatenate(
                 [features, np.expand_dims(delta, axis=-1)], axis=-1)
 
         if self.delta_delta:
             delta_delta = librosa.feature.delta(original_features.T, order=2).T
-            if self.normalize_feature:
+            if self.is_normalize_feature:
                 delta_delta = normalize_audio_feature(
-                    delta_delta, per_feature=self.normalize_per_feature)
+                    delta_delta, per_feature=self.is_normalize_per_feature)
             features = np.concatenate(
                 [features, np.expand_dims(delta_delta, axis=-1)], axis=-1)
 
         if self.pitch:
             pitches = self._compute_pitch_feature(signal)
-            if self.normalize_feature:
+            if self.is_normalize_feature:
                 pitches = normalize_audio_feature(
-                    pitches, per_feature=self.normalize_per_feature)
+                    pitches, per_feature=self.is_normalize_per_feature)
             features = np.concatenate(
                 [features, np.expand_dims(pitches, axis=-1)], axis=-1)
 
@@ -197,9 +220,10 @@ class SpeechFeaturizer:
 
         pitches = pitches.T
 
-        assert self.num_feature_bins <= self.frame_length // 2 + 1, \
-            "num_features for spectrogram should \
-        be <= (sample_rate * window_size // 2 + 1)"
+        # num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)
+        if (self.num_feature_bins > self.frame_length // 2 + 1):
+            logging.warning(
+                "num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)")
 
         return pitches[:, :self.num_feature_bins]
 
@@ -214,9 +238,10 @@ class SpeechFeaturizer:
         # remove small bins
         features = 20 * np.log10(powspec.T)
 
-        assert self.num_feature_bins <= self.frame_length // 2 + 1, \
-            "num_features for spectrogram should \
-        be <= (sample_rate * window_size // 2 + 1)"
+        # num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)
+        if (self.num_feature_bins > self.frame_length // 2 + 1):
+            logging.warning(
+                "num_features for spectrogram should be <= (sample_rate * window_size // 2 + 1)")
 
         # cut high frequency part, keep num_feature_bins features
         features = features[:, :self.num_feature_bins]
@@ -224,7 +249,7 @@ class SpeechFeaturizer:
         return features
 
     def _compute_mfcc_feature(self, signal: np.ndarray) -> np.ndarray:
-        S = np.square(
+        log_power_Mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
                                   n_fft=self.frame_length,
@@ -240,13 +265,14 @@ class SpeechFeaturizer:
 
         mfcc = librosa.feature.mfcc(
             sr=self.sample_rate,
-            S=librosa.core.power_to_db(np.dot(mel_basis, S) + 1e-20),
+            S=librosa.core.power_to_db(
+                np.dot(mel_basis, log_power_Mel_spectrogram) + 1e-20),
             n_mfcc=self.num_feature_bins)
 
         return mfcc.T
 
     def _compute_logfbank_feature(self, signal: np.ndarray) -> np.ndarray:
-        S = np.square(
+        log_power_Mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
                                   n_fft=self.frame_length,
@@ -260,7 +286,7 @@ class SpeechFeaturizer:
                                         fmin=0,
                                         fmax=int(self.sample_rate / 2))
 
-        return np.log(np.dot(mel_basis, S) + 1e-20).T
+        return np.log(np.dot(mel_basis, log_power_Mel_spectrogram) + 1e-20).T
 
 
 def make_one_data(wav_path, speech_feat: SpeechFeaturizer):
@@ -285,9 +311,6 @@ def make_model_input(wav_path_list):
       length_data_batch: one batch data of the length which shows how many \
     words one speech contains.
     '''
-    len_of_path = len(wav_path_list)
-    if len_of_path > 8 or len_of_path % 2 == 1:
-        assert "length of path list must be 1, 2, 4, 8"
     wav_data_list = []
     length_data_list = []
     speech_feat = SpeechFeaturizer()
@@ -308,6 +331,3 @@ if __name__ == '__main__':
     wav_data_batch, length_data_batch = make_model_input(wav_path_list)
     end = time.time()
     print("total time: ", end - start)
-    # Save the feature extraction data as a NumPy array
-    # np.save("feat_data.npy", wav_data_batch)
-    # np.save("len_data.npy", length_data_batch)

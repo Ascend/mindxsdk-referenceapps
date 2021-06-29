@@ -34,13 +34,16 @@
 
 ```
 .
-|-------- data                                 //wav格式音频数据
+|-------- data
+|--------   |---- BAC009S0009W0133.wav         //样例原始数据
+|--------   |---- feat_data_sample.npy         //样例数据
+|--------   |---- len_data_sample.npy          //样例数据
 |--------   |---- lm_tokens.txt                //字典文件
 |-------- model
 |           |---- am_conform_batch_one.om      //conformer声学模型
 |           |---- lm_transform_batch_one.om    //transformer语言模型
 |-------- pipline
-|           |---- am_lm.pipeline               //声学模型和语言模型的流水线配置文件
+|           |---- am_lm.pipeline               //声学模型-语言模型流水线配置文件
 |-------- main.py                              //测试样例
 |-------- post_process.py                      //将推理的结果解码成文字
 |-------- pre_process.py                       //对语音数据进行特征提取和对齐
@@ -54,7 +57,6 @@
 |-----------|----------|
 | python    | 3.7.5    |
 | numpy     | 1.18.2   |
-| librosa   | 0.8.0    |
 | MindX SDK | 2.0.2    |
 
 ## 5 运行

@@ -15,11 +15,12 @@
 import codecs
 
 
-class TextFeaturizer:
+class TextFeaturizer(object):
     """
     Establishes a mapping of indexs to tokens.
     0 unused, 1 for start 'S' and 2 for end '\S'.
     """
+
     def __init__(self, token_path):
 
         self.num_classes = 0
@@ -70,8 +71,7 @@ class TextFeaturizer:
         return tokens
 
     def deocde_without_start_end(self, ids):
-        """Convert a list of integers to a list of tokens \
-        without 'S' and '\S' """
+        """Convert a list of integers to a list of tokens without 'S' and '\S' """
         tokens = []
         for i in ids:
             if i == self.startid():
@@ -86,7 +86,7 @@ class TextFeaturizer:
 if __name__ == '__main__':
     # Sample test
     # token_path is the filepath of the dictionary you want to decode.
-    token_path = "LMmodel/lm_tokens.txt"
+    token_path = "./data/lm_tokens.txt"
     text_feat = TextFeaturizer(token_path)
 
     sample_string = '今天是个好日子'

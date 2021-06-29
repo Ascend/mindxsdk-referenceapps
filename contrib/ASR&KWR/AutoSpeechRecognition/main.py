@@ -15,9 +15,8 @@
 import os
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector
 
-from pre_process import make_model_input
 from post_process import TextFeaturizer
 
 
@@ -43,49 +42,35 @@ if __name__ == "__main__":
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    # if the data is raw file
-    wav_file_path = os.path.join(cwd_path, "data/BAC009S0009W0133.wav")
-    feat_data, len_data = make_model_input([wav_file_path])
-    # if the data is numpy file
-    # feat_data = np.load(os.path.join(cwd_path, "data/feat_data.npy"))
-    # len_data = np.load(os.path.join(cwd_path, "data/len_data.npy"))
+
+    feat_data = np.load(os.path.join(cwd_path, "data/feat_data_sample.npy"))
+    len_data = np.load(os.path.join(cwd_path, "data/len_data_sample.npy"))
 
     protobuf_vec = InProtobufVector()
     mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
     tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
 
     # add feature data #begin
-    # set feature data shape
-    batch_size = 1
-    feature_width = 1001
-    feature_height = 80
-    feature_channel = 1
-
     tensorVec = tensor_package_vec.tensorVec.add()
     tensorVec.memType = 1
     tensorVec.deviceId = 0
     tensorVec.tensorDataSize = int(
-        feature_width*feature_height*4)  # 4: bytes of float32
+        feat_data.shape[1]*feat_data.shape[2]*4)
     tensorVec.tensorDataType = 0  # float32
-    tensorShape = [batch_size, feature_width, feature_height, feature_channel]
-    for i in range(4):
-        tensorVec.tensorShape.append(tensorShape[i])
+    for i in feat_data.shape:
+        tensorVec.tensorShape.append(i)
     tensorVec.dataStr = feat_data.tobytes()
     # add feature data #end
 
     # add length data #begin
-    # set length data shape
-    length_batch = 1
-    length_dim = 1   # length data is a constant
-
     tensorVec2 = tensor_package_vec.tensorVec.add()
     tensorVec2.memType = 1
     tensorVec2.deviceId = 0
-    tensorVec2.tensorDataSize = int(4)  # 4: btyes of int32
+    # int(4)  4: btyes of int32
+    tensorVec2.tensorDataSize = int(4)
     tensorVec2.tensorDataType = 3  # int32
-    tensorShape2 = [1, 1]
-    for i in range(2):
-        tensorVec2.tensorShape.append(tensorShape2[i])
+    for i in len_data.shape:
+        tensorVec2.tensorShape.append(i)
     tensorVec2.dataStr = len_data.tobytes()
     # add length data #end
 
@@ -120,7 +105,6 @@ if __name__ == "__main__":
     print("key:" + str(infer_result[0].messageName))
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(infer_result[0].messageBuf)
-    # print(result.tensorPackageVec[0].tensorVec[0].dataStr)
     print("result.tensorPackageVec size: ", len(result.tensorPackageVec))
     print("result.tensorPackageVec[0].tensorVec size: ", len(
         result.tensorPackageVec[0].tensorVec))
@@ -133,4 +117,5 @@ if __name__ == "__main__":
     lm_tokens_path = os.path.join(cwd_path, "data/lm_tokens.txt")
     text_featurizer = TextFeaturizer(lm_tokens_path)
     text = text_featurizer.deocde_without_start_end(ids)
-    print("The recognition result: ", text)
+    print("The reality:            ", "宝龙地产的收入较二零一三年增加约百分之三十三点一")
+    print("The recognition result: ", ''.join(text))
