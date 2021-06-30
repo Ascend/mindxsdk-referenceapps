@@ -22,6 +22,9 @@ from post_process import TextFeaturizer
 
 if __name__ == "__main__":
 
+    # data type switch
+    data_raw = False
+
     cwd_path = os.getcwd()
     pipeline_path = os.path.join(cwd_path, "pipeline/am_lm.pipeline")
 
@@ -43,8 +46,15 @@ if __name__ == "__main__":
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    feat_data = np.load(os.path.join(cwd_path, "data/feat_data_sample.npy"))
-    len_data = np.load(os.path.join(cwd_path, "data/len_data_sample.npy"))
+    # if data is wav file
+    if data_raw == True:
+        from pre_process import make_model_input  # not needed if data is numpy file
+        wav_file_path = os.path.join(cwd_path, "data/BAC009S0009W0133.wav")
+        feat_data, len_data = make_model_input([wav_file_path])
+    # if data is numpy file
+    else:
+        feat_data = np.load(os.path.join(cwd_path, "data/feat_data_sample.npy"))
+        len_data = np.load(os.path.join(cwd_path, "data/len_data_sample.npy"))
 
     protobuf_vec = InProtobufVector()
     mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
