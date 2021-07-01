@@ -39,6 +39,7 @@ def read_raw_audio(audio, sample_rate=16000):
     elif isinstance(audio, bytes):
         wave, sample_rate_ = sf.read(io.BytesIO(audio))
         wave = np.asfortranarray(wave)
+        # If the sampling rates do not match, resampling will be done.
         if sample_rate_ != sample_rate:
             wave = librosa.resample(wave, sample_rate_, sample_rate)
     elif isinstance(audio, np.ndarray):
@@ -49,7 +50,7 @@ def read_raw_audio(audio, sample_rate=16000):
 
 
 def normalize_audio_feature(audio_feature: np.ndarray, per_feature=False):
-    """ Mean and variance normalization """
+    """ mean and variance normalization """
     axis = 0 if per_feature else None
     mean = np.mean(audio_feature, axis=axis)
     std_dev = np.std(audio_feature, axis=axis) + 1e-9
@@ -64,6 +65,7 @@ def normalize_signal(signal: np.ndarray):
 
 
 def preemphasis(signal: np.ndarray, coeff=0.97):
+    '''improve the high frequency data of speech'''
     if not coeff or coeff <= 0.0:
         return signal
     return np.append(signal[0], signal[1:] - coeff * signal[:-1])
@@ -123,25 +125,32 @@ class SpeechFeaturizer(object):
         '''padding data before featrure extraction'''
         if not max_length:
             max_length = self.sample_rate*10
+        # use 0 for padding
         wavs = np.pad(wavs, (0, max_length-wavs.shape[0]), 'constant')
         return wavs
 
+    # Defining it as a class method can make your program run faster
     @classmethod
     def pad_feat(cls, feat, max_length=1001):
         '''padding data after feature extraction'''
+
+        # Truncate data that exceeds the maximum length
         if feat.shape[0] > max_length:
             feat = feat[0:max_length+1]
         else:
+            # Use 0 for padding to max_length at axis 0.
             feat = np.pad(
                 feat, ((0, max_length-feat.shape[0]),
                        (0, 0), (0, 0)), 'constant')
         return feat
 
     def extract(self, signal: np.ndarray) -> np.ndarray:
+        """feature extraction according to feature type"""
+        # 1. Normalize signal
         if self.is_normalize_signal:
             signal = normalize_signal(signal)
         signal = preemphasis(signal, self.preemphasis_rate)
-
+        # 2. Compute feature
         if self.feature_type == "mfcc":
             features = self._compute_mfcc_feature(signal)
         elif self.feature_type == "logfbank":
@@ -153,8 +162,9 @@ class SpeechFeaturizer(object):
                 "feature_type must be either 'mfcc', 'logfbank' or \
                 'spectrogram'"
             )
-
+        # 3. Normalize feature
         if self.is_normalize_feature:
+            # mean and variance normalization
             features = normalize_audio_feature(
                 features, per_feature=self.is_normalize_per_feature)
 
@@ -204,6 +214,7 @@ class SpeechFeaturizer(object):
 
     # compute mfcc feature
     def _compute_mfcc_feature(self, signal: np.ndarray) -> np.ndarray:
+        # 1. The Fourier transform is used to get the mel spectral characteristics
         log_power_mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
@@ -211,13 +222,13 @@ class SpeechFeaturizer(object):
                                   hop_length=self.frame_step,
                                   win_length=self.frame_length,
                                   center=True)))
-
+        # 2. Use librosa tool to get mel basis
         mel_basis = librosa.filters.mel(self.sample_rate,
                                         self.frame_length,
                                         n_mels=128,
                                         fmin=0,
                                         fmax=int(self.sample_rate / 2))
-
+        # 3. Obtain mfcc characteristics
         mfcc = librosa.feature.mfcc(
             sr=self.sample_rate,
             S=librosa.core.power_to_db(
@@ -228,6 +239,7 @@ class SpeechFeaturizer(object):
 
     # compute logbank feature
     def _compute_logfbank_feature(self, signal: np.ndarray) -> np.ndarray:
+        # 1. The Fourier transform is used to get the mel spectral characteristics
         log_power_mel_spectrogram = np.square(
             np.abs(
                 librosa.core.stft(signal,
@@ -236,31 +248,35 @@ class SpeechFeaturizer(object):
                                   win_length=self.frame_length,
                                   center=True)))
 
+        # 2. Use librosa tool to get mel basis
         mel_basis = librosa.filters.mel(self.sample_rate,
                                         self.frame_length,
                                         n_mels=self.num_feature_bins,
                                         fmin=0,
                                         fmax=int(self.sample_rate / 2))
 
+        # 3. Dot product mel_basi and log_power_mel_spectrogram to get logfbank feature
         return np.log(np.dot(mel_basis, log_power_mel_spectrogram) + 1e-20).T
 
 
 def make_one_data(wav_path, speech_feat: SpeechFeaturizer):
     '''Extract the features of a speech'''
 
+    # Load data and extract features.
     wav_data = speech_feat.load_wav(wav_path)
     feat_data = speech_feat.extract(wav_data)
-    # Padding the data after feature extraction
+    # Padding the data after feature extraction.
     feat_data = speech_feat.pad_feat(feat_data)
+    # Calculates the length of the text corresponding to the speech data.
     length = feat_data.shape[0]//4
     return feat_data, length
 
 
 def make_model_input(wav_path_list):
-    '''Build batch data with batch sizes of 1, 2, 4, 8.
+    '''Build batch data with batch sizes of length of wav path list.
 
     Args:
-      wav_path_list: The list of wav file paths with the length of 1, 2, 4, 8.
+      wav_path_list: The list of wav file paths.
 
     Returns:
       wav_data_batch: one batch data of extracted speech featrues.
@@ -269,11 +285,13 @@ def make_model_input(wav_path_list):
     '''
     wav_data_list = []
     length_data_list = []
+    # Instantiate SpeechFeaturizer
     speech_feat = SpeechFeaturizer()
     for wav_path in wav_path_list:
         wav_data, length_data = make_one_data(wav_path, speech_feat)
         wav_data_list.append(wav_data)
         length_data_list.append([length_data])
+    # Convert list to NumPy data
     wav_data_batch = np.array(wav_data_list, dtype='float32')
     length_data_batch = np.array(length_data_list, dtype='int32')
     return wav_data_batch, length_data_batch

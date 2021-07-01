@@ -28,6 +28,7 @@ def match(r):
             match = re.search((keyword), r)
             if match is not None:
                 print("KeyWord：", match.group())
+                # Key words recognition success
                 flag = 1
     # Strictly match text synonyms with lexicon
     if flag == 0:
@@ -37,6 +38,7 @@ def match(r):
 # Matching after synonym substitution
 def match_2(r):
     flag = 0
+    # Open the custom synonyms table
     with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
             json_data1 = json.load(fp)
             for m in range(len(json_data1)):
@@ -52,8 +54,10 @@ def match_2(r):
 
 def match_3(l,match):
     flag = 0
+    # Open the custom keyword table
     with open('data/keyword.json', 'r', encoding='utf8')as fp:
         json_data = json.load(fp)
+    # Open the custom synonyms table
     with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
         json_data1 = json.load(fp)
     for m in range(len(json_data1)):
@@ -61,6 +65,7 @@ def match_3(l,match):
         fields = json_data1[m]["TihuanWord"].strip()
         fields = fields.split(" ")
         lists.append(fields)
+    # Matches successfully and outputs the keyword
     if match is not None:
         for j in range(len(lists[l])):
             for k in range(len(json_data)):
@@ -68,6 +73,7 @@ def match_3(l,match):
                 match = re.search((keyword), lists[l][j])
                 if match is not None:
                     print("KeyWord：", match.group())
+                    # Key words recognition success
                     flag = 1
     return flag
 
@@ -93,6 +99,7 @@ def sy_keyword(r):
         for i in range(len(keywords)):
             key = keywords[i]
             for l in range(5):
+                # Perform synonym recognition in turn
                 synonyms.nearby(key)
                 word = synonyms.nearby(key)[0][l + 1]
                 flag2 = match(word)
@@ -116,5 +123,6 @@ def keyword(r):
 
 
 if __name__ == "__main__":
+    # Test text
     r = '他经常上学打架。'
     keyword(r)
