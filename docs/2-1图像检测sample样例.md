@@ -13,8 +13,8 @@
 ![9.png](img/1623229532350.png '9.png')
 
 **步骤3** 模型转换
-具体模型转换步骤请参考C++样例目录下的README.md文件
-在'%样例%/model'目录下执行完模型转换脚本后，会生成相应的.om模型文件。
+具体模型转换步骤请参考C++样例目录下的README.md文件  
+在步骤2目录中执行完模型转换脚本后，会生成相应的.om模型文件。
 >模型转换使用了ATC工具，如需更多信息请参考:  https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 ### 2.1.2.2 配置pipeline
 在test.pipeline文件中配置所需的模型路径与模型后处理插件路径。  
