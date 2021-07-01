@@ -65,7 +65,7 @@ namespace MxPlugins {
         static MxTools::MxpiPortInfo DefineOutputPorts();
         std::string ltrim(std::string str);
         std::string rtrim(std::string str);
-        std::string trim(std::string str);
+        std::string trim(std::string& str);
         std::vector<std::string> split(const std::string& str, char delimiter);
         std::vector<std::string> whitespace_tokenize(std::string text);
 
@@ -76,17 +76,17 @@ namespace MxPlugins {
         std::map<std::string, int> read_vocab(const char* filename);
         std::string _clean_text(std::string text);
         std::vector<std::string> _run_split_on_punc(std::string text);
-        std::vector<std::string> tokenize1(std::string text);
-        void add_vocab1(std::map<std::string, int> vocab);
-        std::vector<std::string> tokenize2(std::string text);
+        std::vector<std::string> tokenize1(std::string& text);
+        void add_vocab1(std::map<std::string, int>& vocab);
+        std::vector<std::string> tokenize2(std::string& text);
 
         void add_vocab2(const char* vocab_file);
         void encode(std::vector<std::string> tokens_A, std::vector<float>& input_ids,
                     std::vector<float>& input_mask, std::vector<float>& segment_ids, int max_seq_length,
-                    std::map<std::string, int> vocab, int maxlen_);
+                    std::map<std::string, int>& vocab, int maxlen_);
 
         std::vector<float> convert_tokens_to_ids(std::vector<std::string> tokens, std::map<std::string, int> vocab, int maxlen_);
-        std::vector<std::string> tokenize3(std::string text);
+        std::vector<std::string> tokenize3(std::string& text);
 
 
         /**

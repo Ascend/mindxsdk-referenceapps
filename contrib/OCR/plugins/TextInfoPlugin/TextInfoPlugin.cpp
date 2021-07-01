@@ -79,8 +79,8 @@ void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
 }
 
 void TextInfoPlugin::encode(std::vector<std::string> tokens_A, std::vector<float>& input_ids,
-            std::vector<float>& input_mask, std::vector<float>& segment_ids, int max_seq_length,
-            std::map<std::string, int> vocab, int maxlen_){
+                            std::vector<float>& input_mask, std::vector<float>& segment_ids, int max_seq_length,
+                            std::map<std::string, int>& vocab, int maxlen_){
     tokens_A.insert(tokens_A.begin(), "[CLS]");
     tokens_A.push_back("[SEP]");
     for (int i = 0; i < tokens_A.size(); i++)
@@ -196,14 +196,18 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     APP_ERROR res_segment = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_segment, memorySrc_segment);
     APP_ERROR res_length = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_length, memorySrc_length);
 
-    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
-                                                                                MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
-                                                                                  MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
-                                                                                     MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new MxTools::MxpiTensorPackageList,
-                                                                                    MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>
+            (new MxTools::MxpiTensorPackageList,
+             MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>
+            (new MxTools::MxpiTensorPackageList,
+             MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>
+            (new MxTools::MxpiTensorPackageList,
+             MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>
+            (new MxTools::MxpiTensorPackageList,
+             MxTools::g_deleteFuncMxpiTensorPackageList);
 
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
     auto tensorPackage_mask    = tensorPackageList_mask->add_tensorpackagevec();
@@ -256,14 +260,14 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_length->add_tensorshape(res_input_length.size());
 
 
-    APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1,
-                                                              static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
-    APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2,
-                                                                static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
-    APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata(key3,
-                                                                   static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
-    APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata(key4,
-                                                                  static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
+    APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata
+            (key1,static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
+    APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata
+            (key2,static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
+    APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata
+            (key3,static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
+    APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata
+            (key4,static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
 
     shared_ptr<MxpiTextsInfoList> mxpiTextsInfoList = ConstructProtobuf(res_input_text, key5);
 
@@ -290,7 +294,7 @@ std::string TextInfoPlugin::rtrim(std::string str)
     return regex_replace(str, regex("\\s+$"), std::string(""));
 }
 
-std::string TextInfoPlugin::trim(std::string str)
+std::string TextInfoPlugin::trim(std::string& str)
 {
     return ltrim(rtrim(str));
 }
@@ -443,7 +447,7 @@ vector<std::string> TextInfoPlugin::_run_split_on_punc(std::string text)
     return final_output;
 }
 
-std::vector<std::string> TextInfoPlugin::tokenize1(std::string text) //basic的tokenize
+std::vector<std::string> TextInfoPlugin::tokenize1(std::string& text)
 {
     vector<std::string> orig_tokens = whitespace_tokenize(text);
     vector<std::string> split_tokens;
@@ -469,13 +473,13 @@ std::vector<std::string> TextInfoPlugin::tokenize1(std::string text) //basic的t
     return whitespace_tokenize(temp_text);
 }
 
-void TextInfoPlugin::add_vocab1(std::map<std::string, int> vocab)//
+void TextInfoPlugin::add_vocab1(std::map<std::string, int>& vocab)//
 {
     vocab_ = vocab;
     unk_token_ = "[UNK]";
 }
 
-std::vector<std::string> TextInfoPlugin::tokenize2(std::string text)
+std::vector<std::string> TextInfoPlugin::tokenize2(std::string& text)
 {
     vector<std::string> output_tokens;
     vector<std::string> whitespace_tokens = whitespace_tokenize(text);
@@ -548,7 +552,7 @@ void TextInfoPlugin::add_vocab2(const char* vocab_file)
     //maxlen_ = 128;
 }
 
-std::vector<std::string> TextInfoPlugin::tokenize3(std::string text)
+std::vector<std::string> TextInfoPlugin::tokenize3(std::string& text)
 {
     vector<std::string> split_tokens;
     if (!do_basic_tokenize_)
