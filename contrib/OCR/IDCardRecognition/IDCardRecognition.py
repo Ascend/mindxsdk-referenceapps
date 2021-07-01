@@ -17,7 +17,7 @@
  limitations under the License.
 """
 
-from StreamManagerApi import *
+import StreamManagerApi
 import json
 import cv2
 import numpy as np
@@ -37,15 +37,11 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-
     # Construct the input of the stream
     dataInput = MxDataInput()
-    
     img_path = "../data/idcard/test1.jpg"
-   
     with open(img_path, 'rb') as f:
         dataInput.data = f.read()
-    
     # Inputs data to a specified stream based on streamName.
     streamName = b'IDCardRecognition'
     inPluginId = 0
@@ -53,14 +49,12 @@ if __name__ == '__main__':
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
-
     # Obtain the inference result by specifying streamName and uniqueId.
     inferResult = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
     if inferResult.errorCode != 0:
         print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
             inferResult.errorCode, inferResult.data.decode()))
         exit()
-
     results = json.loads(inferResult.data.decode())
     print(results)
     bboxes = []
@@ -76,7 +70,6 @@ if __name__ == '__main__':
                        'confidence': round(bbox['confidence'], 4),
                        'text': bbox['MxpiTextsInfo'][0]['text']    
                    })
-    
     from PIL import Image, ImageDraw, ImageFont
     img = Image.open(img_path)
     draw = ImageDraw.ImageDraw(img)
@@ -88,9 +81,7 @@ if __name__ == '__main__':
         for item in bbox['text']:
             text += item 
         draw.text((bbox['x0'], bbox['y0']-16), text, (255, 0, 0), font=fontStyle)
-       
     out_path="../data/out_idcard/" + img_path.split('/')[-1]
     img.save(out_path)
-    
     # destroy streams
     streamManagerApi.DestroyAllStreams()
