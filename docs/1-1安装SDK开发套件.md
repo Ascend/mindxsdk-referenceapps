@@ -91,7 +91,7 @@ Verifying archive integrity... 100% SHA256 checksums are OK. All good.
   ./Ascend-mindxsdk-mxvision_{version}_linux-{arch}.run --install
   ```
 
-   安装完成后，若未出现错误信息，表示软件成功安装于指定或默认路径下：
+   安装完成后，若未出现错误信息，表示软件成功安装于指定或默认路径(/usr/local/Ascend/mindx_sdk/mxVision/)下：
 ```
 Uncompressing ASCEND MINDXSDK RNN PACKAGE 100%
 ```
