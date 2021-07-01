@@ -29,10 +29,15 @@ def match(r):
             if match is not None:
                 print("KeyWord：", match.group())
                 flag = 1
-
     # Strictly match text synonyms with lexicon
-    if(flag == 0):
-        with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
+    if flag == 0:
+        match_2(r)
+    return flag
+
+# Matching after synonym substitution
+def match_2(r):
+    flag = 0
+    with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
             json_data1 = json.load(fp)
             for m in range(len(json_data1)):
                 lists = []
@@ -42,60 +47,74 @@ def match(r):
             for l in range(len(lists)):
                 for i in range(len(lists[l])):
                     match = re.search((lists[l][i]), r)
-                    if match is not None:
-                        for j in range(len(lists[l])):
-                            for k in range(len(json_data)):
-                                keyword = json_data[k]["name"]
-                                match = re.search((keyword), lists[l][j])
-                                if match is not None:
-                                    print("KeyWord：", match.group())
-                                    flag = 1
+                    flag=match_3(l,match)
     return flag
 
+def match_3(l,match):
+    flag = 0
+    with open('data/keyword.json', 'r', encoding='utf8')as fp:
+        json_data = json.load(fp)
+    with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
+        json_data1 = json.load(fp)
+    for m in range(len(json_data1)):
+        lists = []
+        fields = json_data1[m]["TihuanWord"].strip()
+        fields = fields.split(" ")
+        lists.append(fields)
+    if match is not None:
+        for j in range(len(lists[l])):
+            for k in range(len(json_data)):
+                keyword = json_data[k]["name"]
+                match = re.search((keyword), lists[l][j])
+                if match is not None:
+                    print("KeyWord：", match.group())
+                    flag = 1
+    return flag
 
 # TextRank keyword extraction
-def getKeywords_textrank(data, topK):
+def getkeywords_textrank(data, topk):
     # Concatenating headings and abstracts
     text = '%s' % (data)
     # Loading custom stop word
     jieba.analyse.set_stop_words("data/stopWord.txt")
     # TextRank keyword extraction, part-of-speech filtering
-    keywords = jieba.analyse.textrank(text, topK=topK, allowPOS=('n', 'nz', 'v',
+    keywords = jieba.analyse.textrank(text, topK=topk, allowPOS=('n', 'nz', 'v',
                                                                  'vd', 'vn', 'l', 'a', 'd'))
     return keywords
 
 
 # Extract synonyms of keywords
-def Sy_KeyWord(r):
-    keywords = getKeywords_textrank(r, 5)
-    if (len(keywords) == 0):
+def sy_keyword(r):
+    keywords = getkeywords_textrank(r, 5)
+    if len(keywords) == 0:
         k = 0
     else:
+        # Synonym matching after keyword extraction
         for i in range(len(keywords)):
             key = keywords[i]
             for l in range(5):
                 synonyms.nearby(key)
                 word = synonyms.nearby(key)[0][l + 1]
                 flag2 = match(word)
-                if (flag2 == 1):
+                if flag2 == 1:
                     k = 1
     return k
 
 # Specific process function
-
-
 def keyword(r):
     flag1 = match(r)
     k = 0
-    if (flag1 == 1):
+    # Strict text matching
+    if flag1 == 1:
         k = 1
-    if (flag1 == 0):
-        k = Sy_KeyWord(r)
-    if (k == 0):
+    # Extract keywords for synonym matching
+    if flag1 == 0:
+        k = sy_keyword(r)
+    # Keyword recognition failure
+    if k == 0:
         print("Keyword not matched!")
 
 
 if __name__ == "__main__":
-    # r='他去网吧。'
     r = '他经常上学打架。'
     keyword(r)

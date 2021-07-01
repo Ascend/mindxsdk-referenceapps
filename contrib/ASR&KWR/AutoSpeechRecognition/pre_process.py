@@ -91,9 +91,6 @@ class SpeechFeaturizer(object):
             stride_ms=10,
             num_feature_bins=80,
             feature_type='logfbank',
-            delta=False,
-            delta_delta=False,
-            pitch=False,
             preemphasis_rate=0.97,
             is_normalize_signal=True,
             is_normalize_feature=True,
@@ -106,9 +103,6 @@ class SpeechFeaturizer(object):
         # Features
         self.num_feature_bins = num_feature_bins
         self.feature_type = feature_type
-        self.delta = delta
-        self.delta_delta = delta_delta
-        self.pitch = pitch
         self.preemphasis_rate = preemphasis_rate
         # Normalization
         self.is_normalize_signal = is_normalize_signal
@@ -143,20 +137,6 @@ class SpeechFeaturizer(object):
                        (0, 0), (0, 0)), 'constant')
         return feat
 
-    def compute_feature_dim(self) -> tuple:
-        channel_dim = 1
-
-        if self.delta:
-            channel_dim += 1
-
-        if self.delta_delta:
-            channel_dim += 1
-
-        if self.pitch:
-            channel_dim += 1
-
-        return self.num_feature_bins, channel_dim
-
     def extract(self, signal: np.ndarray) -> np.ndarray:
         if self.is_normalize_signal:
             signal = normalize_signal(signal)
@@ -174,38 +154,11 @@ class SpeechFeaturizer(object):
                 'spectrogram'"
             )
 
-        original_features = np.copy(features)
-
         if self.is_normalize_feature:
             features = normalize_audio_feature(
                 features, per_feature=self.is_normalize_per_feature)
 
         features = np.expand_dims(features, axis=-1)
-
-        if self.delta:
-            delta = librosa.feature.delta(original_features.T).T
-            if self.is_normalize_feature:
-                delta = normalize_audio_feature(
-                    delta, per_feature=self.is_normalize_per_feature)
-            features = np.concatenate(
-                [features, np.expand_dims(delta, axis=-1)], axis=-1)
-
-        if self.delta_delta:
-            delta_delta = librosa.feature.delta(original_features.T, order=2).T
-            if self.is_normalize_feature:
-                delta_delta = normalize_audio_feature(
-                    delta_delta, per_feature=self.is_normalize_per_feature)
-            features = np.concatenate(
-                [features, np.expand_dims(delta_delta, axis=-1)], axis=-1)
-
-        if self.pitch:
-            pitches = self._compute_pitch_feature(signal)
-            if self.is_normalize_feature:
-                pitches = normalize_audio_feature(
-                    pitches, per_feature=self.is_normalize_per_feature)
-            features = np.concatenate(
-                [features, np.expand_dims(pitches, axis=-1)], axis=-1)
-
         return features
 
     def _compute_pitch_feature(self, signal: np.ndarray) -> np.ndarray:
@@ -227,6 +180,7 @@ class SpeechFeaturizer(object):
 
         return pitches[:, :self.num_feature_bins]
 
+    # compute spectrogram feature
     def _compute_spectrogram_feature(self, signal: np.ndarray) -> np.ndarray:
         powspec = np.abs(
             librosa.core.stft(signal,
@@ -248,6 +202,7 @@ class SpeechFeaturizer(object):
 
         return features
 
+    # compute mfcc feature
     def _compute_mfcc_feature(self, signal: np.ndarray) -> np.ndarray:
         log_power_mel_spectrogram = np.square(
             np.abs(
@@ -271,6 +226,7 @@ class SpeechFeaturizer(object):
 
         return mfcc.T
 
+    # compute logbank feature
     def _compute_logfbank_feature(self, signal: np.ndarray) -> np.ndarray:
         log_power_mel_spectrogram = np.square(
             np.abs(
@@ -326,8 +282,10 @@ def make_model_input(wav_path_list):
 if __name__ == '__main__':
     # Test the time of feature extraction
     start = time.time()
-    wav_path = r"./BAC009S0764W0121.wav"
+    wav_path = r"./data/BAC009S0008W0121.wav"
+    # Put the path to the recognized voice file in a list
     wav_path_list = [wav_path]
-    wav_data_batch, length_data_batch = make_model_input(wav_path_list)
+    feat_data_batch, length_data_batch = make_model_input(wav_path_list)
     end = time.time()
+    # print the time of feature extraction
     print("total time: ", end - start)
