@@ -48,9 +48,9 @@ LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/
 然后便可以点击Build编译该项目了。出现如下语句则表示编译成功。  
 ![5.png](img/1623220827671.png '5.png')
 
- **步骤2**  项目运行
-打开Run -> Run Configurations配置运行参数。配置执行路径和执行时的环境变量。
-主要有以下的环境变量：
+ **步骤2**  项目运行  
+打开Run -> Run Configurations配置运行参数。配置执行路径和执行时需要的环境变量。
+需要添加以下的环境变量：
 **注意${}中的路径需要替换为实际的值，否则Clion无法读取对应目录**
 ```
 MX_SDK_HOME=${SDK安装路径}
