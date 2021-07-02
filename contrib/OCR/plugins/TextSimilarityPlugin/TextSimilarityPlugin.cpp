@@ -39,7 +39,6 @@ APP_ERROR TextSimilarityPlugin::DeInit()
     return APP_ERR_OK;
 }
 
-
 void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPackageList,
                 std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList->tensorpackagevec_size(); ++i) {
@@ -132,7 +131,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata0 = mxpiMetadataManager.GetMetadata(names[0]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr0 = std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr0 =
+            std::static_pointer_cast<MxpiTensorPackageList>(metadata0);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors0 = {};
@@ -155,7 +155,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata1 = mxpiMetadataManager1.GetMetadata(names[1]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr1 = std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr1 =
+            std::static_pointer_cast<MxpiTensorPackageList>(metadata1);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors1 = {};
@@ -178,7 +179,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata2 = mxpiMetadataManager2.GetMetadata(names[2]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr2 = std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr2 =
+            std::static_pointer_cast<MxpiTensorPackageList>(metadata2);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors2 = {};
@@ -193,7 +195,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata3 = mxpiMetadataManager3.GetMetadata(names[3]);
-    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr3 = std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
+    std::shared_ptr<MxpiTensorPackageList> srcTensorPackageListSptr3 =
+            std::static_pointer_cast<MxpiTensorPackageList>(metadata3);
 
     // Get tensorbase
     std::vector<MxBase::TensorBase> tensors3 = {};
@@ -208,7 +211,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 
     // Get the metadata from buffer
     std::shared_ptr<void> metadata4 = mxpiMetadataManager4.GetMetadata(names[4]);
-    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList4 = std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
+    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList4 =
+            std::static_pointer_cast<MxpiTextsInfoList>(metadata4);
     std::vector<MxBase::TextsInfo> textsInfoVec0 = {};
     Covert(mxpiTextsInfoList4, textsInfoVec0);
 
@@ -216,7 +220,8 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager5(*inputMxpiBuffer5);
     std::shared_ptr<void> metadata5 = mxpiMetadataManager5.GetMetadata(names[5]);
-    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
+    std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList5 =
+            std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
     std::vector<MxBase::TextsInfo> textsInfoVec1 = {};
     Covert(mxpiTextsInfoList5, textsInfoVec1);
     bool has_kay = false;
@@ -242,8 +247,9 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 float TextSimilarityPlugin::scalar_product(vector<float> a, vector<float> b)
 {
     float product = 0;
-    for (int i = 0; i <= a.size() - 1; i++)
+    for (int i = 0; i <= a.size() - 1; i++){
         product = product + (a[i]) * (b[i]);
+    }
     return product;
 }
 
