@@ -53,13 +53,13 @@ void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPac
                     tensorpackagevec(i).tensorvec(j).tensordataptr();
             std::vector<uint32_t> outputShape = {};
             for (int k = 0; k < tensorPackageList->
-                tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
+                    tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
                 outputShape.push_back((uint32_t) tensorPackageList->
-                tensorpackagevec(i).tensorvec(j).tensorshape(k));
+                        tensorpackagevec(i).tensorvec(j).tensorshape(k));
             }
             MxBase::TensorBase tmpTensor(memoryData, true, outputShape,
                                          (MxBase::TensorDataType)tensorPackageList->
-                                         tensorpackagevec(i).tensorvec(j).tensordatatype());
+                                                 tensorpackagevec(i).tensorvec(j).tensordatatype());
             tensors.push_back(tmpTensor);
         }
     }
@@ -121,7 +121,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     /*
      * get the MxpiVisionList and MxpiTrackletList
      * */
-    LogInfo<< "Begin to process MxpiMotSimpleSort(" << elementName_ << ").";
+    LogInfo << "Begin to process MxpiMotSimpleSort(" << elementName_ << ").";
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer0 = mxpiBuffer[0];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager(*inputMxpiBuffer0);
@@ -149,7 +149,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     void *idPtr0 =  tensors0[0].GetBuffer();
     for(uint32_t i = 0; i < shape0[0]; i++) {
         for (uint32_t j = 0; j < shape0[1]; j++) {
-            for(int k=0;k<shape0[2];k++){
+            for(int k = 0;k < shape0[2];k++){
                 float x0 = *((float *) idPtr0 + k+j*shape0[2]);
                 input1[j][k] = x0;
             }
@@ -172,7 +172,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     void *idPtr1 =  tensors1[0].GetBuffer();
     for(uint32_t i = 0; i < shape1[0]; i++) {
         for (uint32_t j = 0; j < shape1[1]; j++) {
-            for(int k=0;k<shape1[2];k++){
+            for(int k = 0;k < shape1[2];k++){
                 float x0 = *((float *) idPtr1 + k+j*shape1[2]);
                 input2[j][k] = x0;
             }
@@ -193,7 +193,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     GetTensors(srcTensorPackageListSptr2, tensors2);
     auto shape2 = tensors2[0].GetShape();
     void *idPtr2 =  tensors2[0].GetBuffer();
-    int  length1= *(int *) idPtr2;
+    int  length1 = *(int *) idPtr2;
 
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer3 = mxpiBuffer[3];   // deviceID[0]
@@ -209,7 +209,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     GetTensors(srcTensorPackageListSptr3, tensors3);
     auto shape3 = tensors3[0].GetShape();
     void *idPtr3 =  tensors3[0].GetBuffer();
-    int  length2= *(int *) idPtr3;
+    int  length2 = *(int *) idPtr3;
 
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer4 = mxpiBuffer[4];   // deviceID[0]
@@ -231,19 +231,19 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::vector<MxBase::TextsInfo> textsInfoVec1 = {};
     Covert(mxpiTextsInfoList5, textsInfoVec1);
     bool has_kay = false;
-    float thresh=0.7;
+    float thresh = 0.7;
     for(int i = 1; i< length1 - 1; i++) {
         for(int j = 1; j < length2 - 1; j++) {
             float temp = similarity(input1[i],input2[j]);
             if(temp>thresh) {
-                LogInfo<<"text:"<< textsInfoVec0[0].text[i - 1]
-                << " keyword:" << textsInfoVec1[0].text[j - 1] << " 相似度" << temp;
+                LogInfo <<"text:"<< textsInfoVec0[0].text[i - 1]
+                       << " keyword:" << textsInfoVec1[0].text[j - 1] << " 相似度" << temp;
                 has_kay = true;
             }
         }
     }
 
-    LogInfo<<"图片是否含有关键字："<<has_kay;
+    LogInfo << "图片是否含有关键字：" << has_kay;
     // Send the data to downstream plugin
     SendData(0, *inputMxpiBuffer0);
     LogInfo << "End to process TextInfoPlugin(" << elementName_ << ").";
