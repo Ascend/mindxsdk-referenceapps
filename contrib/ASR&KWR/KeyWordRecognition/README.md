@@ -1,8 +1,12 @@
 # 语音转文本后关键词识别
 
 ## 第三方依赖库
-> jieba、synonyms、numpy
+> jieba  
+> synonyms  
+> numpy  
 
+请使用pip3 install * 安装以上依赖
+其中jieba提取关键词时需要词库，正常情况会自动获取，也可手动下载后放置于对应目录[github链接v3.15.0](https://github.com/chatopera/Synonyms/releases/download/3.15.0/words.vector.gz) ，或者使用自定义词库。词库大小影响匹配速度。
 ## 目录结构
 ```
 .
