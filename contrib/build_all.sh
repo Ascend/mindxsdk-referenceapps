@@ -16,7 +16,15 @@
 set -e 
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
+
 SAMPLE_FOLDER=(
+/ActionRecognition/plugins/MxpiStackFrame/
+/ActionRecognition/plugins/PluginAlone/
+/ActionRecognition/plugins/PluginClimb/
+/ActionRecognition/plugins/PluginCounter/
+/ActionRecognition/plugins/PluginOutOfBed/
+/ActionRecognition/plugins/PluginOverSpeed/
+/ActionRecognition/plugins/PluginViolentAction/
 )
 
 
