@@ -236,7 +236,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
         for(int j = 1; j < length2 - 1; j++) {
             float temp = similarity(input1[i],input2[j]);
             if(temp>thresh) {
-                LogInfo <<"text:"<< textsInfoVec0[0].text[i - 1]
+                LogInfo << "text:" << textsInfoVec0[0].text[i - 1]
                        << " keyword:" << textsInfoVec1[0].text[j - 1] << " ÏàËÆ¶È" << temp;
                 has_kay = true;
             }
