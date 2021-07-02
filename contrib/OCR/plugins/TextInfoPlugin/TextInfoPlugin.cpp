@@ -189,18 +189,18 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     APP_ERROR res_segment = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_segment, memorySrc_segment);
     APP_ERROR res_length = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_length, memorySrc_length);
 
-    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-                                                                                        MxTools::MxpiTensorPackageList,
-                                                                                MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-                                                                                          MxTools::MxpiTensorPackageList,
-                                                                                  MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-                                                                                             MxTools::MxpiTensorPackageList,
-                                                                                     MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-                                                                                            MxTools::MxpiTensorPackageList,
-                                                                                    MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(
+            new MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(
+            new MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(
+            new MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(
+            new MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
 
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
     auto tensorPackage_mask    = tensorPackageList_mask->add_tensorpackagevec();
@@ -253,13 +253,13 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_length->add_tensorshape(res_input_length.size());
 
     APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1,
-                                                              static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
+                        static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
     APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2,
-                                                                static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
+                        static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
     APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata(key3,
-                                                                   static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
+                        static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
     APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata(key4,
-                                                                  static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
+                        static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
 
     shared_ptr<MxpiTextsInfoList> mxpiTextsInfoList = ConstructProtobuf(res_input_text, key5);
 
