@@ -77,7 +77,7 @@ namespace MxPlugins {
         */
         static int calculate(std::vector<int> &data_queue, int confthres_, float confratio_,
                              std::shared_ptr<MxTools::MxpiTrackLetList> srcTrackLetListSptr,
-                             std::shared_ptr<<MxTools::MxpiObjectList> srcObjectListSptr);
+                             std::shared_ptr<MxTools::MxpiObjectList> srcObjectListSptr);
         /**
         * @api
         * @brief Data processing.

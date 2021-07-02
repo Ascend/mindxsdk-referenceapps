@@ -88,7 +88,7 @@ namespace MxPlugins {
         * @param int
         * @return int
         */
-        int calculate(int bufferlength_, int highthresh_, float ratio_, vector<cv::Point> roi,
+        int calculate(int bufferlength_, int highthresh_, float ratio_, std::vector<cv::Point> roi,
                       std::shared_ptr<MxTools::MxpiTrackLetList> srcTrackLetListSptr,
                       std::shared_ptr<MxTools::MxpiObjectList> srcObjectListSptr);
         /**
