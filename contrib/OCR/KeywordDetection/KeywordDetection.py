@@ -18,7 +18,7 @@
 """
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi
 import json
 import cv2
 import numpy as np
