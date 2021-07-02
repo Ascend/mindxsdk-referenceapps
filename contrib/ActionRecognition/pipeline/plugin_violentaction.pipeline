@@ -1,0 +1,125 @@
+{
+    "detection+action recognition": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "props": {
+                "rtspUrl": "rtsp_Url"
+                },
+            "factory": "mxpi_rtspsrc",
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0":{
+            "props": {
+                "vdecChannelId": "0"
+                },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0":{            
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0":{
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./models/yolov3/yolov3_tf_bs1_fp16.om"
+                },
+            "factory": "mxpi_tensorinfer",
+             "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "funcLanguage":"c++",
+                "postProcessConfigPath": "./models/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "./models/yolov3/coco.names",
+                "postProcessLibPath": "../../lib/modelpostprocessors/libyolov3postprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_distributor0"
+        },
+        "mxpi_distributor0": {
+             "props": {
+                "dataSource": "mxpi_objectpostprocessor0",
+                "classIds": "0"
+            },
+            "factory": "mxpi_distributor",
+            "next": "mxpi_motsimplesort0"
+        },
+        "mxpi_motsimplesort0": {
+             "props": {
+                "dataSourceDetection": "mxpi_distributor0_0"
+            },
+            "factory": "mxpi_motsimplesort",
+            "next": "mxpi_imagecrop0"
+        },
+        "mxpi_imagecrop0": {
+            "props": {
+                "dataSource": "mxpi_distributor0_0",
+                "dataSourceImage": "mxpi_videodecoder0",
+                "resizeHeight": "224",
+                "resizeWidth": "224",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imagecrop",
+            "next": "mxpi_stackframe0"
+        },
+        "mxpi_stackframe0":{
+            "props": {
+                "visionSource": "mxpi_imagecrop0",
+                "trackSource": "mxpi_motsimplesort0",
+                "frameNum": "3"
+                },
+            "factory": "mxpi_stackframe",
+            "next": "mxpi_tensorinfer1"
+        },
+        "mxpi_tensorinfer1":{
+            "props": {
+                "dataSource": "mxpi_stackframe0",
+                "skipModelCheck": "1",
+                "modelPath": "./models/ECONet/ECONet.om"
+                },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_classpostprocessor0"
+        },
+        "mxpi_classpostprocessor0":{
+            "props": {
+                "dataSource": "mxpi_tensorinfer1",
+                "postProcessConfigPath": "./models/ECONet/eco_post.cfg",
+                "labelPath": "./models/ECONet/ucf101.names",
+                "postProcessLibPath": "../../lib/modelpostprocessors/libresnet50postprocess.so"
+                },
+            "factory": "mxpi_classpostprocessor",
+            "next": "mxpi_violentaction0"
+       },
+       "mxpi_violentaction0":{
+            "props": {
+                "classSource": "mxpi_classpostprocessor0",
+                "filePath": "./data/roi/ViolentAction/aoi.txt",
+                "detectSleep": "5"
+                },
+            "factory": "mxpi_violentaction",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_violentaction0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
