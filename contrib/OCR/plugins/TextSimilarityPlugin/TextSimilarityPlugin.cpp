@@ -45,15 +45,21 @@ void GetTensors(const std::shared_ptr<MxTools::MxpiTensorPackageList> &tensorPac
         for (int j = 0; j < tensorPackageList->tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
             memoryData.deviceId = tensorPackageList->tensorpackagevec(i).tensorvec(j).deviceid();
-            memoryData.type = (MxBase::MemoryData::MemoryType)tensorPackageList->tensorpackagevec(i).tensorvec(j).memtype();
-            memoryData.size = (uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatasize();
-            memoryData.ptrData = (void *) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordataptr();
+            memoryData.type = (MxBase::MemoryData::MemoryType)tensorPackageList->
+                    tensorpackagevec(i).tensorvec(j).memtype();
+            memoryData.size = (uint32_t) tensorPackageList->
+                    tensorpackagevec(i).tensorvec(j).tensordatasize();
+            memoryData.ptrData = (void *) tensorPackageList->
+                    tensorpackagevec(i).tensorvec(j).tensordataptr();
             std::vector<uint32_t> outputShape = {};
-            for (int k = 0; k < tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
-                outputShape.push_back((uint32_t) tensorPackageList->tensorpackagevec(i).tensorvec(j).tensorshape(k));
+            for (int k = 0; k < tensorPackageList->
+                tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
+                outputShape.push_back((uint32_t) tensorPackageList->
+                tensorpackagevec(i).tensorvec(j).tensorshape(k));
             }
             MxBase::TensorBase tmpTensor(memoryData, true, outputShape,
-                                         (MxBase::TensorDataType)tensorPackageList->tensorpackagevec(i).tensorvec(j).tensordatatype());
+                                         (MxBase::TensorDataType)tensorPackageList->
+                                         tensorpackagevec(i).tensorvec(j).tensordatatype());
             tensors.push_back(tmpTensor);
         }
     }
