@@ -385,6 +385,7 @@ std::string TextInfoPlugin::_clean_text(std::string text)
         }
         ++len;
     }
+    delete [] char_array;
     return output;
 }
 
@@ -528,6 +529,7 @@ std::vector<std::string> TextInfoPlugin::tokenize2(std::string& text)
         {
             output_tokens.insert(output_tokens.end(), sub_tokens.begin(), sub_tokens.end());
         }
+        delete [] char_array;
     }
     return output_tokens;
 }
