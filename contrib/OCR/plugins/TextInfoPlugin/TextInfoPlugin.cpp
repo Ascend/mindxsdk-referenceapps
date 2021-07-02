@@ -33,7 +33,7 @@ APP_ERROR TextInfoPlugin::Init(std::map<std::string, std::shared_ptr<void>> &con
     never_split_ = { "[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]" };
     map<string, int> vocab;
     vocab_ = vocab;
-    unk_token_="[UNK]";
+    unk_token_ = "[UNK]";
     LogInfo << "End to initialize MxpiFairmot(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
@@ -103,8 +103,8 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     /*
      * get the MxpiVisionList and MxpiTrackletList
      * */
-    LogInfo<< "ProcessProcessProcess";
-    LogInfo<< "Begin to process MxpiMotSimpleSort(" << elementName_ << ").";
+    LogInfo << "ProcessProcessProcess";
+    LogInfo << "Begin to process MxpiMotSimpleSort(" << elementName_ << ").";
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer = mxpiBuffer[0];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager(*inputMxpiBuffer);
@@ -113,11 +113,11 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(dataSource_);
     auto textInfoList = std::static_pointer_cast<MxTools::MxpiTextsInfoList>(metadata);
     std::vector<MxBase::TextsInfo> texts;
-    int length=0;
+    int length = 0;
     Covert(textInfoList, texts);
     std::string input;
-    for(int i=0; i<texts.size(); i++){
-        for(int j=0; j<texts[i].text.size();j++){
+    for(int i = 0; i<texts.size(); i++){
+        for(int j = 0; j<texts[i].text.size();j++){
             std::string temp=static_cast<string>(texts[i].text[j]);
             input = input + temp;
             input += " ";
@@ -143,7 +143,7 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     encode(tokens_a, input_ids, input_mask, segment_ids, 512, vocab, 512);
 
     for (int i = 0; i < input_mask.size(); ++i) {
-        if((int)input_mask[i]==0){
+        if((int)input_mask[i] == 0){
             break;
         }
         length++;
@@ -190,17 +190,17 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     APP_ERROR res_length = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_length, memorySrc_length);
 
     auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-            MxTools::MxpiTensorPackageList,
-            MxTools::g_deleteFuncMxpiTensorPackageList);
+                                                                                        MxTools::MxpiTensorPackageList,
+                                                                                MxTools::g_deleteFuncMxpiTensorPackageList);
     auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-            MxTools::MxpiTensorPackageList,
-            MxTools::g_deleteFuncMxpiTensorPackageList);
+                                                                                          MxTools::MxpiTensorPackageList,
+                                                                                  MxTools::g_deleteFuncMxpiTensorPackageList);
     auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-            MxTools::MxpiTensorPackageList,
-            MxTools::g_deleteFuncMxpiTensorPackageList);
+                                                                                             MxTools::MxpiTensorPackageList,
+                                                                                     MxTools::g_deleteFuncMxpiTensorPackageList);
     auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
-            MxTools::MxpiTensorPackageList,
-            MxTools::g_deleteFuncMxpiTensorPackageList);
+                                                                                            MxTools::MxpiTensorPackageList,
+                                                                                    MxTools::g_deleteFuncMxpiTensorPackageList);
 
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
     auto tensorPackage_mask    = tensorPackageList_mask->add_tensorpackagevec();
@@ -253,13 +253,13 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_length->add_tensorshape(res_input_length.size());
 
     APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1,
-              static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
+                                                              static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
     APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2,
-              static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
+                                                                static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
     APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata(key3,
-              static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
+                                                                   static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
     APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata(key4,
-              static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
+                                                                  static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
 
     shared_ptr<MxpiTextsInfoList> mxpiTextsInfoList = ConstructProtobuf(res_input_text, key5);
 
