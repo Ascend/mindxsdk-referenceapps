@@ -1,8 +1,6 @@
 #include "TextSimilarityPlugin.h"
 #include <iostream>
 #include "MxBase/Log/Log.h"
-
-
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
 #include <mutex>
@@ -19,12 +17,10 @@
 #include <cstdint>
 #include <istream>
 #include <sstream>
-
 using namespace MxBase;
 using namespace MxTools;
 using namespace MxPlugins;
 using namespace std;
-
 
 APP_ERROR TextSimilarityPlugin::Init(std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
@@ -74,8 +70,6 @@ std::vector<std::shared_ptr<void>> TextSimilarityPlugin::DefineProperties()
             "the name of cropped image source",
             "default", "NULL", "NULL"
     });
-
-
     properties.push_back(datasource);
     return properties;
 }
@@ -99,7 +93,6 @@ MxpiPortInfo TextSimilarityPlugin::DefineOutputPorts()
 namespace {
     MX_PLUGIN_GENERATE(TextSimilarityPlugin)
 }
-
 
 void Covert(const std::shared_ptr<MxTools::MxpiTextsInfoList> &textsInfoList,
             std::vector<MxBase::TextsInfo> &textsInfoVec)
@@ -157,7 +150,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
         }
     }
 
-
     MxpiBuffer *inputMxpiBuffer1 = mxpiBuffer[1];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager1(*inputMxpiBuffer1);
 
@@ -195,7 +187,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     void *idPtr2 =  tensors2[0].GetBuffer();
     int  length1= *(int *) idPtr2;
 
-
     // Get MxpiVisionList and MxpiTrackletList from mxpibuffer
     MxpiBuffer *inputMxpiBuffer3 = mxpiBuffer[3];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager3(*inputMxpiBuffer3);
@@ -221,7 +212,6 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::vector<MxBase::TextsInfo> textsInfoVec0 = {};
     Covert(mxpiTextsInfoList4, textsInfoVec0);
 
-
     // Get the metadata from buffer
     MxpiBuffer *inputMxpiBuffer5 = mxpiBuffer[5];   // deviceID[0]
     MxpiMetadataManager mxpiMetadataManager5(*inputMxpiBuffer5);
@@ -229,9 +219,7 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::shared_ptr<MxTools::MxpiTextsInfoList> mxpiTextsInfoList5 = std::static_pointer_cast<MxpiTextsInfoList>(metadata5);
     std::vector<MxBase::TextsInfo> textsInfoVec1 = {};
     Covert(mxpiTextsInfoList5, textsInfoVec1);
-
     bool has_kay = false;
-
     float thresh=0.7;
     for(int i = 1; i< length1 - 1; i++) {
         for(int j = 1; j < length2 - 1; j++) {
@@ -258,6 +246,7 @@ float TextSimilarityPlugin::scalar_product(vector<float> a, vector<float> b)
         product = product + (a[i]) * (b[i]);
     return product;
 }
+
 float TextSimilarityPlugin::linalg(vector<float> a) {
     float res = 0;
     for (int i = 0; i < a.size(); i++) {
@@ -267,6 +256,6 @@ float TextSimilarityPlugin::linalg(vector<float> a) {
     return res;
 }
 
-float TextSimilarityPlugin::similarity(vector<float> a, vector<float> b) {
+float TextSimilarityPlugin::similarity(vector<float>& a, vector<float>& b) {
     return scalar_product(a, b) / (linalg(a) * linalg(b));
 }

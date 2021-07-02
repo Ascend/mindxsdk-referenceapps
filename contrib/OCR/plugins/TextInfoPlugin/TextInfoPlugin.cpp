@@ -252,7 +252,6 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_segment->add_tensorshape(res_input_segment.size());
     tensorVec_length->add_tensorshape(res_input_length.size());
 
-
     APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1,
               static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
     APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2,

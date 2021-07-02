@@ -1,6 +1,5 @@
 #ifndef MXPLUGINS_TEXTINFOPLUGIN_H
 #define MXPLUGINS_TEXTINFOPLUGIN_H
-
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxTools/PluginToolkit/base/MxPluginGenerator.h"
 #include "MxTools/PluginToolkit/base/MxPluginBase.h"
@@ -69,7 +68,7 @@ namespace MxPlugins {
         float scalar_product(std::vector<float> a, std::vector<float> b);
 
         float linalg(std::vector<float> a);
-        float similarity(std::vector<float> a, std::vector<float> b);
+        float similarity(std::vector<float>& a, std::vector<float>& b);
         /**
          * @api
          * @brief Get the >confidence objects and responding id feature
@@ -79,8 +78,6 @@ namespace MxPlugins {
          */
     private:
         std::string dataSource_ = "";
-
     };
 }
-
 #endif
