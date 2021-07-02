@@ -25,7 +25,7 @@ if __name__ == "__main__":
     # data type switch
     data_raw = False
 
-    # Gets the path to the current directory.
+    # get the path to the current directory
     cwd_path = os.getcwd()
     pipeline_path = os.path.join(cwd_path, "pipeline/am_lm.pipeline")
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
     key_vec = StringVector()
     key_vec.push_back(b'mxpi_tensorinfer1')
-    # Get inference result.
+    # get inference result
     infer_result = stream_manager.GetProtobuf(
         stream_name, in_plugin_id, key_vec)
     if infer_result.size() == 0:
@@ -132,6 +132,5 @@ if __name__ == "__main__":
     lm_tokens_path = os.path.join(cwd_path, "data/lm_tokens.txt")
     text_featurizer = TextFeaturizer(lm_tokens_path)
     text = text_featurizer.deocde_without_start_end(ids)
-    # The result of the inference is compared with the real text
-    print("The reality:            ", "宝龙地产的收入较二零一三年增加约百分之三十三点一")
+    # convert list to string and print recognition result
     print("The recognition result: ", ''.join(text))

@@ -35,24 +35,27 @@ def match(r):
         match_2(r)
     return flag
 
+
 # Matching after synonym substitution
 def match_2(r):
     flag = 0
     # Open the custom synonyms table
     with open('data/TihuanWords.json', 'r', encoding='utf8')as fp:
-            json_data1 = json.load(fp)
-            for m in range(len(json_data1)):
-                lists = []
-                fields = json_data1[m]["TihuanWord"].strip()
-                fields = fields.split(" ")
-                lists.append(fields)
-            for l in range(len(lists)):
-                for i in range(len(lists[l])):
-                    match = re.search((lists[l][i]), r)
-                    flag=match_3(l,match)
+        json_data1 = json.load(fp)
+        for m in range(len(json_data1)):
+            lists = []
+            fields = json_data1[m]["TihuanWord"].strip()
+            fields = fields.split(" ")
+            # Replace synonyms in the custom library
+            lists.append(fields)
+        for l in range(len(lists)):
+            for i in range(len(lists[l])):
+                match = re.search((lists[l][i]), r)
+                flag = match_3(l, match)
     return flag
 
-def match_3(l,match):
+
+def match_3(l, match):
     flag = 0
     # Open the custom keyword table
     with open('data/keyword.json', 'r', encoding='utf8')as fp:
@@ -77,6 +80,7 @@ def match_3(l,match):
                     flag = 1
     return flag
 
+
 # TextRank keyword extraction
 def getkeywords_textrank(data, topk):
     # Concatenating headings and abstracts
@@ -91,21 +95,45 @@ def getkeywords_textrank(data, topk):
 
 # Extract synonyms of keywords
 def sy_keyword(r):
+    k1 = 0
     keywords = getkeywords_textrank(r, 5)
+    # No Keywords
     if len(keywords) == 0:
-        k = 0
+        k1 = 0
+    # Have Keywords
     else:
         # Synonym matching after keyword extraction
         for i in range(len(keywords)):
             key = keywords[i]
-            for l in range(5):
-                # Perform synonym recognition in turn
-                synonyms.nearby(key)
-                word = synonyms.nearby(key)[0][l + 1]
-                flag2 = match(word)
-                if flag2 == 1:
-                    k = 1
-    return k
+            k1 = sy_synonyms(key)
+            # Return the condition value directly
+            if k1 == 1:
+                return k1
+    return k1
+
+
+# Determine whether the word has synonyms
+def sy_synonyms(key):
+    k2 = 0
+    len1 = len(synonyms.nearby(key)[0])
+    # No synonyms
+    if len1 == 0:
+        k2 = 0
+    # Have synonyms
+    else:
+        # Take the top five synonyms
+        for l in range(5):
+            # Perform synonym recognition in turn
+            synonyms.nearby(key)
+            word = synonyms.nearby(key)[0][l + 1]
+            flag2 = match(word)
+            # Keyword recognition success
+            if flag2 == 1:
+                # Return the condition value directly
+                k2 = 1
+                return k2
+    return k2
+
 
 # Specific process function
 def keyword(r):
@@ -124,5 +152,5 @@ def keyword(r):
 
 if __name__ == "__main__":
     # Test text
-    r = '他经常上学打架。'
+    r = '她上学经常打架。'
     keyword(r)
