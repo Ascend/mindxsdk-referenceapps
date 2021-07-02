@@ -435,7 +435,7 @@ vector<std::string> TextInfoPlugin::_run_split_on_punc(std::string text)
         }
         final_output.push_back(word);
     }
-    delete char_array;
+    delete [] char_array;
     return final_output;
 }
 
