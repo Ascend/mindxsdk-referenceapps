@@ -23,7 +23,6 @@
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/ErrorCode/ErrorCode.h"
 
-using namespace MxTools;
 /**
 * @api
 * @brief Definition of PluginAlone class.
@@ -77,8 +76,8 @@ namespace MxPlugins {
         * @return MxpiPortInfo
         */
         static int calculate(std::vector<int> &data_queue, int confthres_, float confratio_,
-                             std::shared_ptr<MxpiTrackLetList> srcTrackLetListSptr,
-                             std::shared_ptr<MxpiObjectList> srcObjectListSptr);
+                             std::shared_ptr<MxTools::MxpiTrackLetList> srcTrackLetListSptr,
+                             std::shared_ptr<<MxTools::MxpiObjectList> srcObjectListSptr);
         /**
         * @api
         * @brief Data processing.

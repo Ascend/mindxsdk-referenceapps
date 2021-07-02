@@ -23,8 +23,6 @@
 #include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 
-using namespace std;
-
 /**
 * @api
 * @brief Definition of PluginClimb class.
