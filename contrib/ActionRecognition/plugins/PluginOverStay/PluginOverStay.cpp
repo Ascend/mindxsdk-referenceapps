@@ -188,8 +188,7 @@ namespace MxPlugins {
         // calculate data
         if (frame_num == confframes_) {
             frame_num = 0;
-            map<int, vector<int >>::iterator iter;
-            for (iter = trackdata.begin(); iter != trackdata.end(); iter++) {
+            for (auto iter = trackdata.begin(); iter != trackdata.end(); iter++) {
                 if (trackdata[iter->first][2] >= (int) (confratio_ * confthresh_)) {
                     alarm = 1;
                     break;
