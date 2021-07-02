@@ -2,7 +2,6 @@
 #include <iostream>
 #include "MxBase/Log/Log.h"
 #include "MxTools/PluginToolkit/MxpiDataTypeWrapper/MxpiDataTypeConverter.h"
-
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
 #include <mutex>
@@ -20,7 +19,6 @@
 #include <istream>
 #include <sstream>
 #include <boost/algorithm/string/join.hpp>
-
 using namespace MxBase;
 using namespace MxTools;
 using namespace MxPlugins;
@@ -53,6 +51,7 @@ vector<float> TextInfoPlugin::convert_tokens_to_ids(vector<string> tokens, map<s
     }
     return ids;
 }
+
 APP_ERROR TextInfoPlugin::DeInit()
 {
     LogInfo << "Begin to deinitialize MxpiFairmot(" << pluginName_ << ").";
@@ -115,11 +114,8 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     auto textInfoList = std::static_pointer_cast<MxTools::MxpiTextsInfoList>(metadata);
     std::vector<MxBase::TextsInfo> texts;
     int length=0;
-
     Covert(textInfoList, texts);
-
     std::string input;
-
     for(int i=0; i<texts.size(); i++){
         for(int j=0; j<texts[i].text.size();j++){
             std::string temp=static_cast<string>(texts[i].text[j]);
@@ -127,11 +123,8 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
             input += " ";
         }
     }
-
     transform(input.begin(), input.end(), input.begin(), ::tolower);
-
     const char*  vocab_file = "./vocab.txt";
-
     add_vocab2(vocab_file);
     vector<std::string> tokens_a = tokenize3(input);
     map<string, int> vocab = read_vocab(vocab_file);
@@ -196,18 +189,18 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     APP_ERROR res_segment = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_segment, memorySrc_segment);
     APP_ERROR res_length = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst_length, memorySrc_length);
 
-    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>
-            (new MxTools::MxpiTensorPackageList,
-             MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>
-            (new MxTools::MxpiTensorPackageList,
-             MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>
-            (new MxTools::MxpiTensorPackageList,
-             MxTools::g_deleteFuncMxpiTensorPackageList);
-    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>
-            (new MxTools::MxpiTensorPackageList,
-             MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_id = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
+            MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_mask = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
+            MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_segment = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
+            MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
+    auto tensorPackageList_length = std::shared_ptr<MxTools::MxpiTensorPackageList>(new
+            MxTools::MxpiTensorPackageList,
+            MxTools::g_deleteFuncMxpiTensorPackageList);
 
     auto tensorPackage_id      = tensorPackageList_id->add_tensorpackagevec();
     auto tensorPackage_mask    = tensorPackageList_mask->add_tensorpackagevec();
@@ -260,14 +253,14 @@ APP_ERROR TextInfoPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     tensorVec_length->add_tensorshape(res_input_length.size());
 
 
-    APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata
-            (key1,static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
-    APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata
-            (key2,static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
-    APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata
-            (key3,static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
-    APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata
-            (key4,static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
+    APP_ERROR error_id = mxpiMetadataManager.AddProtoMetadata(key1,
+              static_pointer_cast<google::protobuf::Message>(tensorPackageList_id));
+    APP_ERROR error_mask = mxpiMetadataManager.AddProtoMetadata(key2,
+              static_pointer_cast<google::protobuf::Message>(tensorPackageList_mask));
+    APP_ERROR error_segment = mxpiMetadataManager.AddProtoMetadata(key3,
+              static_pointer_cast<google::protobuf::Message>(tensorPackageList_segment));
+    APP_ERROR error_length = mxpiMetadataManager.AddProtoMetadata(key4,
+              static_pointer_cast<google::protobuf::Message>(tensorPackageList_length));
 
     shared_ptr<MxpiTextsInfoList> mxpiTextsInfoList = ConstructProtobuf(res_input_text, key5);
 
