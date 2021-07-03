@@ -87,7 +87,7 @@ if __name__ == '__main__':
     if infer_result.size() == 0:
         print("infer_result is null")
         exit()
-    if inferResult[0].errorCode != 0:
+    if infer_result[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d" % (
             inferResult[0].errorCode))
         exit()
