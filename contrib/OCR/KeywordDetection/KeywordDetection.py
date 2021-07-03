@@ -37,7 +37,7 @@ if __name__ == '__main__':
     ret = stream_manager_api.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-        exit()    
+        exit()
     inplugin_id = 0
     # Construct the input of the stream
     data_input = MxDataInput()
