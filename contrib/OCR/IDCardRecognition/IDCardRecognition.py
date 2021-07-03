@@ -84,4 +84,5 @@ if __name__ == '__main__':
     img.save(out_path)
     # destroy streams
     streamManagerApi.DestroyAllStreams()
-    
+
+ 

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     inplugin_id = 0
     # Construct the input of the stream
     data_input = MxDataInput()
-    img_path = "../data/en_text/1.jpg" 
+    img_path = "../data/en_text/1.jpg"
     with open(img_path, 'rb') as f:
         data_input.data = f.read()
     inplugin_id = 0
