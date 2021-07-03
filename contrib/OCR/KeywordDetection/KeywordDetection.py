@@ -78,6 +78,6 @@ if __name__ == '__main__':
         exit()
     if infer_result[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d" % (
-            inferResult[0].errorCode))
+            infer_result[0].errorCode))
         exit()
     stream_manager_api.DestroyAllStreams()
