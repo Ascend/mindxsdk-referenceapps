@@ -68,20 +68,20 @@ if __name__ == '__main__':
                        'y2': int(bbox['y2']),
                        'y3': int(bbox['y3']),
                        'confidence': round(bbox['confidence'], 4),
-                       'text': bbox['MxpiTextsInfo'][0]['text']    
-                   })
+                       'text': bbox['MxpiTextsInfo'][0]['text']})
     from PIL import Image, ImageDraw, ImageFont
     img = Image.open(img_path)
     draw = ImageDraw.ImageDraw(img)
     for bbox in bboxes:
-        draw.polygon([(bbox['x0'], bbox['y0']), (bbox['x1'], bbox['y1']), 
+        draw.polygon([(bbox['x0'], bbox['y0']), (bbox['x1'], bbox['y1']),
             (bbox['x2'], bbox['y2']), (bbox['x3'], bbox['y3'])], outline=(255, 0, 0))
         fontStyle = ImageFont.truetype("heiTC-Bold.otf", 13, encoding="utf-8")
         text = ""
         for item in bbox['text']:
-            text += item 
+            text += item
         draw.text((bbox['x0'], bbox['y0']-16), text, (255, 0, 0), font=fontStyle)
     out_path="../data/out_idcard/" + img_path.split('/')[-1]
     img.save(out_path)
     # destroy streams
     streamManagerApi.DestroyAllStreams()
+    
