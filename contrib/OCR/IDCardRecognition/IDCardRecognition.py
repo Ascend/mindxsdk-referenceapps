@@ -17,7 +17,7 @@
  limitations under the License.
 """
 
-import StreamManagerApi
+from StreamManagerApi import StreamManagerApi, MxDataInput
 import json
 import cv2
 import numpy as np
