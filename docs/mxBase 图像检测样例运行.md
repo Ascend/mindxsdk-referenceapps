@@ -34,4 +34,4 @@ set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的
 右击工程 Deployment->Download from...，将远程生成的结果文件下载到本地中，同步两端文件，然后用户就可以在本地中查看项目运行结果了。
 本样例中输出结果为在输入的test.jpg中，将可识别的对象画框并显示识别类型后输出的result.jpg  
 ![2.png](https://images.gitee.com/uploads/images/2021/0705/161717_53ea80c0_9323271.png "2.png")
-![3.png](https://images.gitee.com/uploads/images/2021/0705/164234_e7b0c52d_9323271.png "3.png")
+![3.png](https://images.gitee.com/uploads/images/2021/0705/164518_b091bb6d_9323271.png "3.png")
