@@ -17,7 +17,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# import StreamManagerApi.py
 import json
 import time
 from StreamManagerApi import *

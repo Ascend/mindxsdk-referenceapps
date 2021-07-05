@@ -21,6 +21,7 @@
 #include "MxTools/Proto/MxpiOSDType.pb.h"
 
 namespace {
+const int SLEEP_TIME = 2;
 APP_ERROR ReadFile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
 {
     char c[PATH_MAX + 1] = { 0x00 };
@@ -157,7 +158,7 @@ int main(int argc, char* argv[])
         return ret;
     }
 
-    sleep(2);
+    sleep(SLEEP_TIME);
 
     // destroy streams
     mxStreamManager.DestroyAllStreams();
