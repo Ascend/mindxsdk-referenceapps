@@ -7,8 +7,9 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 ## 2.1.2 运行前准备
 参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节搭建好项目运行环境。
 参考[CMake学习](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/Cmake%E4%BB%8B%E7%BB%8D.md)修改CMakeLists.txt文件。
+```
 set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的SDK安装路径
-
+```
 ### 2.1.2.1 模型转换
 **步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
 
