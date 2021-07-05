@@ -227,8 +227,8 @@ def freeze_graph(ckpt, output_graph):
             fw.write(output_graph_def.SerializeToString())
         print ('{} ops in the final graph.'.format(len(output_graph_def.node)))
  
-ckpt = '/home/wzz/project/bert/uncased/bert_model.ckpt'
-pb   = '/home/wzz/project/bert/uncased/bert_model_new.pb'
+ckpt = './bert_model.ckpt'
+pb   = './bert_model_new.pb'
  
 if __name__ == '__main__':
     freeze_graph(ckpt, pb)

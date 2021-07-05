@@ -155,16 +155,15 @@ export LD_LIBRARY_PATH=$ASCEND_HOME/ascend-toolkit/latest/acllib/lib64:$LD_LIBRA
 export PATH=/usr/local/python3.7.5/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=/usr/local/Ascend/ascend-toolkit/latest/opp
-export LD_LIBRARY_PATH=/home/song2/project/opencv/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH="/home/song2/mxManufacture/lib:/home/song2/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
-export PYTHONPATH="/home/song2/mxManufacture/python:${PYTHONPATH}"
-export MX_SDK_HOME="/home/song2/MindX_SDK/mxVision"
-export LD_LIBRARY_PATH="/home/song2/MindX_SDK/mxManufacture/lib:/home/song2/MindX_SDK/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
-export GST_PLUGIN_SCANNER="/home/song2/MindX_SDK/mxManufacture/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="/home/song2/MindX_SDK/mxManufacture/opensource/lib/gstreamer-1.0:/home/song2/MindX_SDK/mxManufacture/lib/plugins"
-export PYTHONPATH="/home/song2/MindX_SDK/mxManufacture/python:${PYTHONPATH}"
+export LD_LIBRARY_PATH=${XXX}/project/opencv/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${XXX}/mxManufacture/lib:${XXX}/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
+export PYTHONPATH="${XXX}/mxManufacture/python:${PYTHONPATH}"
+export MX_SDK_HOME="${XXX}/MindX_SDK/mxVision"
+export LD_LIBRARY_PATH="${XXX}/MindX_SDK/mxManufacture/lib:${XXX}/MindX_SDK/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
+export GST_PLUGIN_SCANNER="${XXX}/MindX_SDK/mxManufacture/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
+export GST_PLUGIN_PATH="${XXX}/MindX_SDK/mxManufacture/opensource/lib/gstreamer-1.0:${XXX}/MindX_SDK/mxManufacture/lib/plugins"
+export PYTHONPATH="${XXX}/MindX_SDK/mxManufacture/python:${PYTHONPATH}"
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export BERT_BASE_DIR=/home/song2/project/bert-master/
 ```
 
 **步骤3**：在```KeywordDetection.py```中，更改```pipeline```路径。
