@@ -152,6 +152,8 @@ export PYTHONPATH="${XXX}/MindX_SDK/mxManufacture/python:${PYTHONPATH}"
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
 ```
 
+注意：请把${XXX}替换为具体的SDK安装路径
+
 **步骤3**：在```IDCardRecognition.py```中，更改```pipeline```路径。
 
 ### 4.2 运行
