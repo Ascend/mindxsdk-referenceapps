@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 
     // send osd instances protobuf.
     std::string result = ReadFileContent("./ExternalOsdInstances.json");
-    auto osdInstancesList = std::make_shared<MxTools/MxpiOsdInstancesList>();
+    auto osdInstancesList = std::make_shared<MxTools::MxpiOsdInstancesList>();
     google::protobuf::util::JsonStringToMessage(result, osdInstancesList.get());
     MxStream::MxstProtobufIn protobuf;
     protobuf.key = "mxpi_parallel2serial0";
