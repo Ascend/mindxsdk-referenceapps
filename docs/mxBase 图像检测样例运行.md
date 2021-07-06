@@ -17,17 +17,20 @@ set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的
 
 **步骤3** 模型转换
 具体模型转换步骤请样例项目目录下的README.md文件  
-在步骤2目录中执行完模型转换脚本后，会生成相应的.om模型文件。
->模型转换使用了ATC工具，如需更多信息请参考:  https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 
 ### 2.1.2.2 配置Clion运行配置
-参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)在Clion中添加环境变量。
-
+参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)在Clion中添加环境变量。(${MX_SDK_HOME}需要替换为具体的SDK安装路径)
+```
+ASCEND_HOME=/usr/local/Ascend
+ASCEND_VERSION=nnrt/latest
+ARCH_PATTERN=.
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:
+```
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。在Program arguments处填入输入参数./test.jpg
 ![1.png](https://images.gitee.com/uploads/images/2021/0705/162627_f43bec43_9323271.png "1.png")
 
 ## 2.1.3 项目运行
-完成前置步骤后，点击Run->Run"xxxx"（项目名称）运行项目。
+完成前置步骤后，点击build->build Project成功后，点击Run->Run"xxxx"（项目名称）运行项目。
   
 成功运行项目后，程序会将检测结果保存在远程环境项目目录下result.jpg中。
 
