@@ -57,6 +57,7 @@ APP_ERROR MxpiStackFrame::DeInit() {
     if (thread_->joinable()) {
         thread_->join();
     }
+    ObjectFrame.reset();
     LogInfo << "End to deinitialize MxpiStackFrame(" << pluginName_ << ").";
     return APP_ERR_OK;
 }
