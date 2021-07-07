@@ -436,7 +436,12 @@ RTSP视频拉流插件配置范例：
 
 其中rtsp_Url的格式是 rtsp:://host:port/Data，host:port/路径映射到mediaServer/目录下，Data为视频文件的路径。
 
-RTSP拉流教程：[live555链接](https://bbs.huaweicloud.com/forum/thread-68720-1-1.html)中第七步视频循环推流，按照提示修改cpp文件可以使自主搭建的rtsp循环推流，如果不作更改，则为有限的视频流。
+RTSP拉流教程：[live555链接](https://bbs.huaweicloud.com/forum/thread-68720-1-1.html)中第七步视频循环推流，按照提示修改cpp文件可以使自主搭建的rtsp循环推流，如果不作更改，则为有限的视频流；同时第六步高分辨率帧花屏，修改mediaServer/DynamicRTSPServer.cpp文件，将OutPacketBuffer::maxSize增大，例如"500000"，避免出现”The input frame data was too large for our buffer“问题，导致丢帧。修改完后，需要重新运行以下命令：
+
+```cmake
+./genMakefiles <os-platform>
+make
+```
 
 ### 7.4 运行Shell脚本
 
