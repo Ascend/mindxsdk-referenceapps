@@ -19,54 +19,54 @@ limitations under the License.
 
 import json
 import time
-from StreamManagerApi import *
+from stream_manager_api import *
 import MxpiOSDType_pb2 as MxpiOSDType
 from google.protobuf.json_format import *
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = stream_manager_api()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
     # create streams by pipeline config file
     with open("../pipeline/SampleOsd.pipeline", 'rb') as f:
-        pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+        pipeline_str = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # Construct the input of the stream
-    dataInput = MxDataInput()
+    data_input = Mxdata_input()
     with open("test.jpg", 'rb') as f:
-        dataInput.data = f.read()
+        data_input.data = f.read()
 
     # Send image.
-    streamName = b'encoder'
-    inPluginId = 0
-    ret = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    stream_name = b'encoder'
+    in_plugin_id = 0
+    ret = stream_manager_api.SendData(stream_name, in_plugin_id, data_input)
     if ret < 0:
         print("Failed to send data to stream.")
         exit()
 
     # Send osd instances protobuf.
     with open("ExternalOsdInstances.json", "r") as f:
-        messageJson = json.load(f)
-    print(messageJson)
-    inPluginId = 1
-    osdInstancesList = MxpiOSDType.MxpiOsdInstancesList()
-    osdInstancesList = ParseDict(messageJson, osdInstancesList)
+        message_json = json.load(f)
+    print(message_json)
+    in_plugin_id = 1
+    osd_instances_list = MxpiOSDType.Mxpiosd_instances_list()
+    osd_instances_list = ParseDict(message_json, osd_instances_list)
 
-    protobufVec = InProtobufVector()
+    protobuf_vec = Inprotobuf_vector()
     protobuf = MxProtobufIn()
-    protobuf.key = b'mxpi_parallel2serial0'
-    protobuf.type = b'MxTools.MxpiOsdInstancesList'
-    protobuf.protobuf = osdInstancesList.SerializeToString()
-    protobufVec.push_back(protobuf)
-    ret = streamManagerApi.SendProtobuf(streamName, inPluginId, protobufVec)
+    protobuf.key = b'appsrc1'
+    protobuf.type = b'MxTools.Mxpiosd_instances_list'
+    protobuf.protobuf = osd_instances_list.SerializeToString()
+    protobuf_vec.push_back(protobuf)
+    ret = stream_manager_api.SendProtobuf(stream_name, in_plugin_id, protobuf_vec)
     if ret < 0:
         print("Failed to send protobuf to stream.")
         exit()
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     time.sleep(2)
 
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()

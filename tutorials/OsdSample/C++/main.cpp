@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include 
+#include <cstring>
 #include <google/protobuf/util/json_util.h>
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
@@ -144,12 +144,12 @@ int main(int argc, char* argv[])
 
     // send osd instances protobuf.
     std::string result = ReadFileContent("./ExternalOsdInstances.json");
-    auto osdInstancesList = std::make_shared();
+    auto osdInstancesList = std::make_shared<MxTools::MxpiOsdInstancesList>();
     google::protobuf::util::JsonStringToMessage(result, osdInstancesList.get());
     MxStream::MxstProtobufIn protobuf;
-    protobuf.key = "mxpi_parallel2serial0";
-    protobuf.messagePtr = std::static_pointer_cast(osdInstancesList);
-    std::vector dataBufferVec;
+    protobuf.key = "appsrc1";
+    protobuf.messagePtr = std::static_pointer_cast<google::protobuf::Message>(osdInstancesList);
+    std::vector<MxStream::MxstProtobufIn> dataBufferVec;
     dataBufferVec.push_back(protobuf);
     // send data into stream
     ret = mxStreamManager.SendProtobuf(streamName, 1, dataBufferVec);
