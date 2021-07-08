@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     protobufVec = InProtobufVector()
     protobuf = MxProtobufIn()
-    protobuf.key = b'mxpi_parallel2serial0'
+    protobuf.key = b'appsrc1'
     protobuf.type = b'MxTools.MxpiOsdInstancesList'
     protobuf.protobuf = osdInstancesList.SerializeToString()
     protobufVec.push_back(protobuf)

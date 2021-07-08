@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
     auto osdInstancesList = std::make_shared<MxTools::MxpiOsdInstancesList>();
     google::protobuf::util::JsonStringToMessage(result, osdInstancesList.get());
     MxStream::MxstProtobufIn protobuf;
-    protobuf.key = "mxpi_parallel2serial0";
+    protobuf.key = "appsrc1";
     protobuf.messagePtr = std::static_pointer_cast<google::protobuf::Message>(osdInstancesList);
     std::vector<MxStream::MxstProtobufIn> dataBufferVec;
     dataBufferVec.push_back(protobuf);
