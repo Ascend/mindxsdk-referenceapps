@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-path_cur="$(dirname $0)"
+path_cur="$(dirname "$0")"
 
 function check_env()
 {
