@@ -25,6 +25,7 @@ namespace {
     const uint32_t CLASS_NU = 80;
     const uint32_t BIASES_NU = 18;
     const uint32_t ANCHOR_DIM = 3;
+    const uint32_t YOLO_TYPE = 3;
 }
 
 void SplitString(const std::string &s, std::vector<std::string> &v, const std::string &c)
@@ -56,7 +57,7 @@ void InitYolov3Param(InitParam &initParam)
     initParam.objectnessThresh = "0.001";
     initParam.iouThresh = "0.5";
     initParam.scoreThresh = "0.001";
-    initParam.yoloType = ANCHOR_DIM;
+    initParam.yoloType = YOLO_TYPE;
     initParam.modelType = 0;
     initParam.inputType = 0;
     initParam.anchorDim = ANCHOR_DIM;
