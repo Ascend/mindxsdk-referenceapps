@@ -1,0 +1,82 @@
+{
+    "detection+tracking": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "props": {
+                "rtspUrl": "rtsp_Url"
+                },
+            "factory": "mxpi_rtspsrc",
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0":{
+            "props": {
+                "vdecChannelId": "0"
+                },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0":{            
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0":{
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./models/yolov3/yolov3_tf_bs1_fp16.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "funcLanguage":"c++",
+                "postProcessConfigPath": "./models/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "./models/yolov3/coco.names",
+                "postProcessLibPath": "../../lib/modelpostprocessors/libyolov3postprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_motsimplesort0"
+        },
+        "mxpi_motsimplesort0": {
+            "props": {
+                "dataSourceDetection": "mxpi_objectpostprocessor0"
+            },
+            "factory": "mxpi_motsimplesort",
+            "next": "mxpi_pluginclimb0"
+        },
+        "mxpi_pluginclimb0": {
+            "props": {
+                "dataSourceTrack": "mxpi_motsimplesort0",
+                "dataSourceDetection": "mxpi_objectpostprocessor0",
+                "detectRatio":  "0.6",
+                "filePath": "./data/roi/Climbup/*.txt",
+                "detectSleep": "30",
+                "bufferLength": "8",
+                "highThresh": "10"
+            },
+            "factory": "mxpi_pluginclimb",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_pluginclimb0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
