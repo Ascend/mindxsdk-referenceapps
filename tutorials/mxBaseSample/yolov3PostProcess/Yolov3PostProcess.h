@@ -70,6 +70,7 @@ protected:
                                const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos = {});
 
     void CompareProb(int& classID, float& maxProb, float classProb, int classNum);
+    void CodeDuplicationSetDet(float& x, float& y, float& width, float& height);
     void SelectClassNCHW(std::shared_ptr<void> netout, NetInfo info, std::vector<MxBase::ObjectInfo>& detBoxes,
                          int stride, OutputLayer layer);
     void SelectClassNHWC(std::shared_ptr<void> netout, NetInfo info, std::vector<MxBase::ObjectInfo>& detBoxes,

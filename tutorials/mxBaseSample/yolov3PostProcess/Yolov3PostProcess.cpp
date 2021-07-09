@@ -20,24 +20,24 @@
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
 
 namespace {
-const int SCALE = 32;
-const int BIASESDIM = 2;
-const int OFFSETWIDTH = 2;
-const int OFFSETHEIGHT = 3;
-const int OFFSETBIASES = 1;
-const int OFFSETOBJECTNESS = 1;
+    const int SCALE = 32;
+    const int BIASESDIM = 2;
+    const int OFFSETWIDTH = 2;
+    const int OFFSETHEIGHT = 3;
+    const int OFFSETBIASES = 1;
+    const int OFFSETOBJECTNESS = 1;
 
-const int NHWC_HEIGHTINDEX = 1;
-const int NHWC_WIDTHINDEX = 2;
-const int NCHW_HEIGHTINDEX = 2;
-const int NCHW_WIDTHINDEX = 3;
-const int YOLO_INFO_DIM = 5;
+    const int NHWC_HEIGHTINDEX = 1;
+    const int NHWC_WIDTHINDEX = 2;
+    const int NCHW_HEIGHTINDEX = 2;
+    const int NCHW_WIDTHINDEX = 3;
+    const int YOLO_INFO_DIM = 5;
 
-auto uint8Deleter = [] (uint8_t* p) { };
+    auto uint8Deleter = [](uint8_t *p) {};
 }
 using namespace MxBase;
-Yolov3PostProcess& Yolov3PostProcess::operator=(const Yolov3PostProcess &other)
-{
+
+Yolov3PostProcess &Yolov3PostProcess::operator=(const Yolov3PostProcess &other) {
     if (this == &other) {
         return *this;
     }
@@ -54,8 +54,7 @@ Yolov3PostProcess& Yolov3PostProcess::operator=(const Yolov3PostProcess &other)
     return *this;
 }
 
-APP_ERROR Yolov3PostProcess::Init(const std::map<std::string, std::shared_ptr<void>>& postConfig)
-{
+APP_ERROR Yolov3PostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) {
     LogDebug << "Start to Init Yolov3PostProcess.";
     APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
     if (ret != APP_ERR_OK) {
@@ -82,14 +81,12 @@ APP_ERROR Yolov3PostProcess::Init(const std::map<std::string, std::shared_ptr<vo
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3PostProcess::DeInit()
-{
+APP_ERROR Yolov3PostProcess::DeInit() {
     return APP_ERR_OK;
 }
 
-bool Yolov3PostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) const
-{
-    if (tensors.size() != (size_t)yoloType_) {
+bool Yolov3PostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) const {
+    if (tensors.size() != (size_t) yoloType_) {
         LogError << "number of tensors (" << tensors.size() << ") " << "is unequal to yoloType_("
                  << yoloType_ << ")";
         return false;
@@ -118,10 +115,9 @@ bool Yolov3PostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) c
     }
 }
 
-void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase>& tensors,
-                                              std::vector<std::vector<ObjectInfo>>& objectInfos,
-                                              const std::vector<ResizedImageInfo>& resizedImageInfos)
-{
+void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
+                                              std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                              const std::vector<ResizedImageInfo> &resizedImageInfos) {
     LogDebug << "Yolov3PostProcess start to write results.";
     if (tensors.size() == 0) {
         return;
@@ -142,13 +138,13 @@ void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase>& ten
             shape = tensors[j].GetShape();
             std::vector<size_t> featLayerShape = {};
             for (auto s : shape) {
-                featLayerShape.push_back((size_t)s);
+                featLayerShape.push_back((size_t) s);
             }
             featLayerShapes.push_back(featLayerShape);
         }
         std::vector<ObjectInfo> objectInfo;
         GenerateBbox(featLayerData, objectInfo, featLayerShapes, resizedImageInfos[i].widthResize,
-            resizedImageInfos[i].heightResize);
+                     resizedImageInfos[i].heightResize);
         MxBase::NmsSort(objectInfo, iouThresh_);
         objectInfos.push_back(objectInfo);
     }
@@ -158,8 +154,7 @@ void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase>& ten
 APP_ERROR Yolov3PostProcess::Process(const std::vector<TensorBase> &tensors,
                                      std::vector<std::vector<ObjectInfo>> &objectInfos,
                                      const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                     const std::map<std::string, std::shared_ptr<void>> &paramMap)
-{
+                                     const std::map<std::string, std::shared_ptr<void>> &paramMap) {
     LogDebug << "Start to Process Yolov3PostProcess.";
     APP_ERROR ret = APP_ERR_OK;
     if (resizedImageInfos.size() == 0) {
@@ -188,14 +183,20 @@ APP_ERROR Yolov3PostProcess::Process(const std::vector<TensorBase> &tensors,
  * @description: Compare the confidences between 2 classes and get the larger one
  * @描述：比较两个类之间的信任度，得到较大的一个
  */
-void Yolov3PostProcess::CompareProb(int& classID, float& maxProb, float classProb, int classNum)
-{
+void Yolov3PostProcess::CompareProb(int &classID, float &maxProb, float classProb, int classNum) {
     if (classProb > maxProb) {
         maxProb = classProb;
         classID = classNum;
     }
 }
 
+void Yolov3PostProcess::CodeDuplicationSetDet(float &x, float &y, float &width, float &height) {
+    MxBase::ObjectInfo det;
+    det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
+    det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
+    det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
+    det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
+}
 /*
  * @description: Select the highest confidence class name for each predicted box
  * @param netout  The feature data which contains box coordinates, objectness value and confidence of each class
@@ -204,17 +205,16 @@ void Yolov3PostProcess::CompareProb(int& classID, float& maxProb, float classPro
  * @param stride  Stride of output feature data
  * @param layer  Yolo output layer
  */
- /*
-*@description:为每个预测框选择置信度最高的类名
-*@param netout 特征数据，包括盒子坐标、目标值和每个类的置信度
-*@param info Yolo Yolo层信息，包含类号、框尺寸等
-*@param detBoxes ObjectInfo向量，其中所有ObjectInfo的置信度都大于阈值
-*@param stride 输出特征数据的步长
-*@param layer Yolo输出层
-*/
+/*
+ * @description:为每个预测框选择置信度最高的类名
+ * @param netout 特征数据，包括盒子坐标、目标值和每个类的置信度
+ * @param info Yolo Yolo层信息，包含类号、框尺寸等
+ * @param detBoxes ObjectInfo向量，其中所有ObjectInfo的置信度都大于阈值
+ * @param stride 输出特征数据的步长
+ * @param layer Yolo输出层
+ */
 void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo info,
-                                          std::vector<MxBase::ObjectInfo>& detBoxes, int stride, OutputLayer layer)
-{
+                                        std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
             int bIdx = (info.bboxDim + 1 + info.classNum) * stride * k + j; // begin index
@@ -230,8 +230,8 @@ void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo in
             // Compare the confidence of the 3 anchors, select the largest one
             // 比较3个anchors的置信度，选择最大的一个
             for (int c = 0; c < info.classNum; ++c) {
-                classProb = fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
-                    (info.bboxDim + OFFSETOBJECTNESS + c) * stride]) * objectness;
+                classProb = fastmath::sigmoid(static_cast<float *>
+                        (netout.get())[bIdx + (info.bboxDim + OFFSETOBJECTNESS + c) * stride]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
             if (classID < 0) continue;
@@ -241,13 +241,11 @@ void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo in
             float x = (col + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx])) / layer.width;
             float y = (row + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx + stride])) / layer.height;
             float width = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETWIDTH * stride]) *
-                        layer.anchors[BIASESDIM * k] / info.netWidth;
+                          layer.anchors[BIASESDIM * k] / info.netWidth;
             float height = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETHEIGHT * stride]) *
-                         layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
-            det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
-            det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
-            det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
-            det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
+                           layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
+
+            CodeDuplicationSetDet(x, y, width, height);
             det.classId = classID;
             det.className = configData_.GetClassName(classID);
             det.confidence = maxProb;
@@ -260,8 +258,7 @@ void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo in
 }
 
 void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo info,
-                                           std::vector<MxBase::ObjectInfo>& detBoxes, int stride, OutputLayer layer)
-{
+                                         std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     LogDebug << " out size " << sizeof(netout.get());
     const int offsetY = 1;
     for (int j = 0; j < stride; ++j) {
@@ -271,16 +268,15 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
             int oIdx = bIdx + info.bboxDim; // objectness index
             // check obj
             float objectness = fastmath::sigmoid(static_cast<float *>(netout.get())[oIdx]);
-            if (objectness <= objectnessThresh_) {
-                continue;
-            }
+            if (objectness <= objectnessThresh_) continue;
             int classID = -1;
             float maxProb = scoreThresh_;
             float classProb;
             // Compare the confidence of the 3 anchors, select the largest one
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
-                    (info.bboxDim + OFFSETOBJECTNESS + c)]) * objectness;
+                                                                                 (info.bboxDim + OFFSETOBJECTNESS +
+                                                                                  c)]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
             if (classID < 0) continue;
@@ -288,20 +284,19 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
             int row = j / layer.width;
             int col = j % layer.width;
             float x = (col + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx]) * COORDINATE_PARAM -
-                     MEAN_PARAM) / layer.width;
+                       MEAN_PARAM) / layer.width;
             float y = (row + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx + offsetY]) *
-                           COORDINATE_PARAM - MEAN_PARAM) / layer.height;
+                             COORDINATE_PARAM - MEAN_PARAM) / layer.height;
             float width = (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx + OFFSETWIDTH]) *
-                         COORDINATE_PARAM) * (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
-                         OFFSETWIDTH]) * COORDINATE_PARAM) * layer.anchors[BIASESDIM * k] / info.netWidth;
+                           COORDINATE_PARAM) * (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
+                                                                                                     OFFSETWIDTH]) *
+                                                COORDINATE_PARAM) * layer.anchors[BIASESDIM * k] / info.netWidth;
             float height = (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx + OFFSETHEIGHT]) *
-                          COORDINATE_PARAM) * (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
-                          OFFSETHEIGHT]) * COORDINATE_PARAM) * layer.anchors[BIASESDIM * k + OFFSETBIASES] /
-                          info.netHeight;
-            det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
-            det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
-            det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
-            det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
+                            COORDINATE_PARAM) * (fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
+                                                                                                      OFFSETHEIGHT]) *
+                                                 COORDINATE_PARAM) * layer.anchors[BIASESDIM * k + OFFSETBIASES] /
+                           info.netHeight;
+            CodeDuplicationSetDet(x, y, width, height);
             det.classId = classID;
             det.className = configData_.GetClassName(classID);
             det.confidence = maxProb;
@@ -319,10 +314,9 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
  * @param stride  Stride of output feature data
  * @param layer  Yolo output layer
  */
- 
+
 void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo info,
-                                          std::vector<MxBase::ObjectInfo>& detBoxes, int stride, OutputLayer layer)
-{
+                                        std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     const int offsetY = 1;
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
@@ -339,8 +333,8 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
             float classProb;
             // Compare the confidence of the 3 anchors, select the largest one
             for (int c = 0; c < info.classNum; ++c) {
-                classProb = fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
-                    (info.bboxDim + OFFSETOBJECTNESS + c)]) * objectness;
+                classProb = fastmath::sigmoid(static_cast<float *>
+                        (netout.get())[bIdx + (info.bboxDim + OFFSETOBJECTNESS + c)]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
             if (classID < 0) continue;
@@ -352,11 +346,12 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
             float width = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETWIDTH]) *
                           layer.anchors[BIASESDIM * k] / info.netWidth;
             float height = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETHEIGHT]) *
-                         layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
+                           layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
             det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
             det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
             det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
             det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
+
             det.classId = classID;
             det.className = configData_.GetClassName(classID);
             det.confidence = maxProb;
@@ -375,12 +370,11 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
                 3 outputlayer(eg. 13*13, 26*26, 52*52)
  * @param detBoxes  ObjectInfo vector where all ObjectInfoes's confidences are greater than threshold
  */
- 
+
 void Yolov3PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLayerData,
                                      std::vector<MxBase::ObjectInfo> &detBoxes,
-                                     const std::vector<std::vector<size_t>>& featLayerShapes, const int netWidth,
-                                     const int netHeight)
-{
+                                     const std::vector<std::vector<size_t>> &featLayerShapes, const int netWidth,
+                                     const int netHeight) {
     NetInfo netInfo;
     netInfo.anchorDim = anchorDim_;
     netInfo.bboxDim = BOX_DIM;
@@ -413,8 +407,7 @@ void Yolov3PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLaye
     }
 }
 
-APP_ERROR Yolov3PostProcess::GetBiases(std::string& strBiases)
-{
+APP_ERROR Yolov3PostProcess::GetBiases(std::string &strBiases) {
     if (biasesNum_ <= 0) {
         LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "Failed to get biasesNum (" << biasesNum_ << ").";
         return APP_ERR_COMM_INVALID_PARAM;
@@ -432,11 +425,9 @@ APP_ERROR Yolov3PostProcess::GetBiases(std::string& strBiases)
     }
     if (i != biasesNum_ - 1 || strBiases.size() <= 0) {
         LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "biasesNum (" << biasesNum_
-                 << ") is not equal to total number of biases (" << strBiases <<").";
+                 << ") is not equal to total number of biases (" << strBiases << ").";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     biases_.push_back(stof(strBiases));
     return APP_ERR_OK;
 }
-
-
