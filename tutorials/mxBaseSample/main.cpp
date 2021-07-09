@@ -24,7 +24,7 @@ std::vector<double> g_inferCost;
 namespace {
     const uint32_t CLASS_NU = 80;
     const uint32_t BIASES_NU = 18;
-    const uint32_t THREE_NU = 3;
+    const uint32_t ANCHOR_DIM = 3;
 }
 
 void SplitString(const std::string &s, std::vector<std::string> &v, const std::string &c)
@@ -56,10 +56,10 @@ void InitYolov3Param(InitParam &initParam)
     initParam.objectnessThresh = "0.001";
     initParam.iouThresh = "0.5";
     initParam.scoreThresh = "0.001";
-    initParam.yoloType = THREE_NU;
+    initParam.yoloType = ANCHOR_DIM;
     initParam.modelType = 0;
     initParam.inputType = 0;
-    initParam.anchorDim = THREE_NU;
+    initParam.anchorDim = ANCHOR_DIM;
 }
 
 APP_ERROR ReadImagesPath(const std::string &path, std::vector<std::string> &imagesPath)
