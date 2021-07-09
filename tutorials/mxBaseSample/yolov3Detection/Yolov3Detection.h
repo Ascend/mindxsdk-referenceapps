@@ -61,7 +61,6 @@ protected:
 private:
     std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_;
     std::shared_ptr<MxBase::ModelInferenceProcessor> model_;
-    // Yolov3PostProcess post_;
     std::shared_ptr<Yolov3PostProcess> post_;
     MxBase::ModelDesc modelDesc_ = {};
     std::map<int, std::string> labelMap_ = {};

@@ -21,6 +21,12 @@
 
 std::vector<double> g_inferCost;
 
+namespace {
+    const uint32_t CLASS_NU = 80;
+    const uint32_t BIASES_NU = 18;
+    const uint32_t THREE_NU = 3;
+}
+
 void SplitString(const std::string &s, std::vector<std::string> &v, const std::string &c)
 {
     std::string::size_type pos1, pos2;
@@ -41,19 +47,19 @@ void SplitString(const std::string &s, std::vector<std::string> &v, const std::s
 void InitYolov3Param(InitParam &initParam)
 {
     initParam.deviceId = 0;
-    initParam.labelPath = "../model/coco.names";
+    initParam.labelPath = "./model/coco.names";
     initParam.checkTensor = true;
-    initParam.modelPath = "../model/yolov3_tf_aipp.om";
-    initParam.classNum = 80;
-    initParam.biasesNum = 18;
+    initParam.modelPath = "./model/yolov3_tf_aipp.om";
+    initParam.classNum = CLASS_NU;
+    initParam.biasesNum = BIASES_NU;
     initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
     initParam.objectnessThresh = "0.001";
     initParam.iouThresh = "0.5";
     initParam.scoreThresh = "0.001";
-    initParam.yoloType = 3;
+    initParam.yoloType = THREE_NU;
     initParam.modelType = 0;
     initParam.inputType = 0;
-    initParam.anchorDim = 3;
+    initParam.anchorDim = THREE_NU;
 }
 
 APP_ERROR ReadImagesPath(const std::string &path, std::vector<std::string> &imagesPath)

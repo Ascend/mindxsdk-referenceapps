@@ -100,7 +100,7 @@ APP_ERROR Yolov3DetectionOpencv::Init(const InitParam &initParam) {
     post_ = std::make_shared<Yolov3PostProcess>();
     ret = post_->Init(config);
     if (ret != APP_ERR_OK) {
-        LogError << "Resnet50PostProcess init failed, ret=" << ret << ".";
+        LogError << "Yolov3PostProcess init failed, ret=" << ret << ".";
         return ret;
     }
     // load labels from file

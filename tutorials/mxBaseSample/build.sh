@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-path_cur=$(dirname $0)
+path_cur="$(dirname $0)"
 
 function check_env()
 {
@@ -37,10 +37,10 @@ function check_env()
 
 function build_yolov3()
 {
-    cd $path_cur
+    cd "$path_cur" || exit
     rm -rf build
     mkdir -p build
-    cd build
+    cd build || exit
     cmake ..
     make
     ret=$?
