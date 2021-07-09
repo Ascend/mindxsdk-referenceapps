@@ -162,7 +162,7 @@
 
 **步骤5：** 配置环境变量MX_SDK_HOME：
 
-```cmake
+```bash
 export MX_SDK_HOME=/MindX_SDK/mxVision/								
 # 此处MX_SDK_HOME请使用MindX_SDK的实际路径
 ```
@@ -275,7 +275,7 @@ chmod +x build.sh
    
 2. 配置范例
 
-   ```json
+   ```
    ## PluginClimb
    "mxpi_pluginclimb0": {
                "props": {
@@ -290,7 +290,7 @@ chmod +x build.sh
                "factory": "mxpi_pluginclimb",
                "next": "mxpi_dataserialize0"
            }
-   ## Yolov3
+   ## /*Yolov3*/
    "mxpi_tensorinfer0":{
                "props": {
                    "dataSource": "mxpi_imageresize0",
@@ -370,7 +370,7 @@ chmod +x run.sh
 #### 问题描述：
 
 攀高检测与离床检测出现如下报错：
-```c++
+```bash
 terminate called after throwing an instance of 'cv::Exception'
   what():  OpenCV(4.2.0) /usr1/workspace/MindX_SDK_Multi_DailyBuild/opensource/opensource-scl7/opencv/modules/imgproc/src/geometry.cpp:103: error: (-215:Assertion failed) total >= 0 && (depth == CV_32S || depth == CV_32F) in function 'pointPolygonTest'
 ```
