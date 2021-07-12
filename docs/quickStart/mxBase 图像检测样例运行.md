@@ -5,8 +5,8 @@
 Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 ## 2.1.2 运行前准备
-参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节搭建好项目运行环境。
-参考[CMake学习](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/Cmake%E4%BB%8B%E7%BB%8D.md)修改CMakeLists.txt文件。
+参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)章节搭建好项目运行环境。
+参考[CMake介绍](./Cmake介绍.md)修改CMakeLists.txt文件。
 ```
 set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的SDK安装路径
 ```
@@ -19,7 +19,7 @@ set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的
 具体模型转换步骤请样例项目目录下的README.md文件  
 
 ### 2.1.2.2 配置Clion运行配置
-参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)在Clion中添加环境变量。(${MX_SDK_HOME}需要替换为具体的SDK安装路径)
+参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)在Clion中添加环境变量。(${MX_SDK_HOME}需要替换为具体的SDK安装路径)
 ```
 ASCEND_HOME=/usr/local/Ascend
 ASCEND_VERSION=nnrt/latest
@@ -27,7 +27,7 @@ ARCH_PATTERN=.
 LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:
 ```
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。在Program arguments处填入输入参数./test.jpg
-![1.png](https://images.gitee.com/uploads/images/2021/0705/162627_f43bec43_9323271.png "1.png")
+![1.png](img/162627_f43bec43_9323271.png "1.png")
 
 ## 2.1.3 项目运行
 完成前置步骤后，点击build->build Project成功后，点击Run->Run"xxxx"（项目名称）运行项目。
@@ -37,5 +37,5 @@ LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_S
 
 右击工程 Deployment->Download from...，将远程生成的结果文件下载到本地中，同步两端文件，然后用户就可以在本地中查看项目运行结果了。
 本样例中输出结果为在输入的test.jpg中，将可识别的对象画框并显示识别类型后输出的result.jpg  
-![2.png](https://images.gitee.com/uploads/images/2021/0705/161717_53ea80c0_9323271.png "2.png")
-![3.png](https://images.gitee.com/uploads/images/2021/0705/164518_b091bb6d_9323271.png "3.png")
+![2.png](img/161717_53ea80c0_9323271.png "2.png")
+![3.png](img/164518_b091bb6d_9323271.png "3.png")
