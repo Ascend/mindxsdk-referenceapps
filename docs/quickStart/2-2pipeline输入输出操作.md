@@ -134,7 +134,7 @@ C++ 样例在（[项目目录地址](https://gitee.com/ascend/mindxsdk-reference
 将路径下的整个C++文件夹下载到本地用Clion打开该项目文件。
 
 #### 步骤2 配置环境变量
-可参考2-1图像检测样例运行章节
+可参考[2-1图像检测样例运行章节](./2-1图像检测sample样例.md)
 
 clion任务栏 Run->Edit Configurations->Environment variables 添加环境变量
 
@@ -209,7 +209,7 @@ python 样例在（[项目目录地址](https://gitee.com/ascend/mindxsdk-refere
 
 #### 步骤 2 配置SDK路径
 
-配置pyCharm中MX_SDK_HOME和LD_LIBRARY_PATH环境变量，参考章节1 IDE开发环境搭建
+配置pyCharm中MX_SDK_HOME和LD_LIBRARY_PATH环境变量，参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)
 
 #### 步骤 3 编译 运行
 
