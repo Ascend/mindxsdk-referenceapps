@@ -20,7 +20,9 @@ limitations under the License.
 import json
 import os
 import cv2
-from StreamManagerApi import StreamManagerApi, MxDataInput
+
+import MxpiDataType_pb2 as MxpiDataType
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -36,41 +38,46 @@ if __name__ == '__main__':
             "stream_config": {
                 "deviceId": "0"
             },
-            "mxpi_imagedecoder0": {
-                "factory": "mxpi_imagedecoder",
-                "next": "mxpi_imageresize0"
-            },
-            "mxpi_imageresize0": {
-                "factory": "mxpi_imageresize",
-                "next": "mxpi_modelinfer0"
-            },
-            "mxpi_modelinfer0": {
-                "props": {
-                    "modelPath": "models/yolov3_tf_bs1_fp16.om",
-                    "postProcessConfigPath": "models/yolov3_tf_bs1_fp16.cfg",
-                    "labelPath": "models/coco.names",
-                    "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
-                },
-                "factory": "mxpi_modelinfer",
-                "next": "mxpi_imagecrop0"
-            },
-            "mxpi_imagecrop0": {
-                "factory": "mxpi_imagecrop",
-                "next": "mxpi_dataserialize0"
-            },
-            "mxpi_dataserialize0": {
-                "props": {
-                    "outputDataKeys": "mxpi_modelinfer0"
-                },
-                "factory": "mxpi_dataserialize",
-                "next": "appsink0"
-            },
             "appsrc0": {
                 "props": {
                     "blocksize": "409600"
                 },
                 "factory": "appsrc",
                 "next": "mxpi_imagedecoder0"
+            },
+            "mxpi_imagedecoder0": {
+                "props": {
+                    "deviceId": "0"
+                },
+                "factory": "mxpi_imagedecoder",
+                "next": "mxpi_imageresize0"
+            },
+            "mxpi_imageresize0": {
+                "props": {
+                    "dataSource": "mxpi_imagedecoder0",
+                    "resizeHeight": "416",
+                    "resizeWidth": "416"
+                },
+                "factory": "mxpi_imageresize",
+                "next": "mxpi_tensorinfer0"
+            },
+            "mxpi_tensorinfer0": {
+                "props": {
+                    "dataSource": "mxpi_imageresize0",
+                    "modelPath": "models/yolov3_tf_bs1_fp16.om"
+                },
+                "factory": "mxpi_tensorinfer",
+                "next": "mxpi_objectpostprocessor0"
+            },
+            "mxpi_objectpostprocessor0": {
+                "props": {
+                    "dataSource": "mxpi_tensorinfer0",
+                    "postProcessConfigPath": "models/yolov3_tf_bs1_fp16.cfg",
+                    "labelPath": "models/coco.names",
+                    "postProcessLibPath": "${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
+                },
+                "factory": "mxpi_objectpostprocessor",
+                "next": "appsink0"
             },
             "appsink0": {
                 "props": {
@@ -98,31 +105,43 @@ if __name__ == '__main__':
     # Inputs data to a specified stream based on streamName.
     streamName = b'detection'
     inPluginId = 0
-    uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
+
+    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
 
-    # Obtain the inference result by specifying streamName and uniqueId.
-    infer_result = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
-    if infer_result.errorCode != 0:
-        print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
-            infer_result.errorCode, infer_result.data.decode()))
+    key = b"mxpi_objectpostprocessor0"
+    keyVec = StringVector()
+    keyVec.push_back(key)
+
+    infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+
+    if infer_result.size() == 0:
+        print("infer_result is null")
         exit()
 
-    # print the infer result
-    print(infer_result.data.decode())
+    if infer_result[0].errorCode != 0:
+        print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
+            infer_result[0].errorCode, infer_result[0].data.decode()))
+        exit()
 
-    results = json.loads(infer_result.data.decode())
+    # mxpi_objectpostprocessor0模型后处理插件输出信息
+    objectList = MxpiDataType.MxpiObjectList()
+    objectList.ParseFromString(infer_result[0].messageBuf)
+
+    # print the infer result
+    print(objectList)
+    results = objectList.objectVec[0]
+
     bboxes = []
-    for bbox in results['MxpiObject']:
-        bboxes = {'x0': int(bbox['x0']),
-                  'x1': int(bbox['x1']),
-                  'y0': int(bbox['y0']),
-                  'y1': int(bbox['y1']),
-                  'confidence': round(bbox['classVec'][0]['confidence'], 4),
-                  'text': bbox['classVec'][0]['className']}
+    bboxes = {'x0': int(results.x0),
+              'x1': int(results.x1),
+              'y0': int(results.y0),
+              'y1': int(results.y1),
+              'confidence': round(results.classVec[0].confidence, 4),
+              'text': results.classVec[0].className}
     img_path = "test.jpg"
     img = cv2.imread(img_path)
     text = "{}{}".format(str(bboxes['confidence']), " ")

@@ -4,8 +4,7 @@
 提供的demo，实现图像检测样例运行并且输出检测结果写入图片result.jpg
 
 ### 准备工作
-样例获取链接(https://gitee.com/zhangdwe/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python)
-将样例目录python 从mxsdkreferenceapps/tutorials/ImageDetectionSample文件夹下 移动到${SDK安装路径}/mxVision/samples/mxVision/python/路径下
+将样例目录python 从mxsdkreferenceapps/utorials/ImageDetectionSample文件夹下 移动到${SDK安装路径}/mxVision/samples/mxVision/python/路径下
 
 可以使用mv 命令
 进入到移动后的工程路径下
@@ -18,7 +17,7 @@ bash model_conversion.sh
 ```
 
 ### pipeline 准备
-将main.py 文件中 mxpi_modelinfer0插件中的labelPath路径中的${SDK安装路径} 替换为自己的SDK安装路径
+将main.py 文件中 mxpi_objectpostprocessor0插件中的postProcessLibPath路径中的${SDK安装路径} 替换为自己的SDK安装路径
 
 ### 配置环境变量
 将${SDK安装路径}替换为自己的SDK安装路径; 将${MX_SDK_HOME}替换成对应路径
