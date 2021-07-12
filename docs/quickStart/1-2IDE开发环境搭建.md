@@ -31,7 +31,7 @@
 
 ## 1.2.3 远程运行调试文件
 **步骤1**  加载CMakeLists.txt文件
-参考[CMake学习](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/Cmake%E4%BB%8B%E7%BB%8D.md)修改CMakeLists.txt文件。
+参考[CMake学习](./Cmake介绍.md)修改CMakeLists.txt文件。
 修改好CMakeLists文件后，重新加载CMakeLists文件,cmake-build-debug构建目录也会被重新生成。  
   ![1.png](img/1622518642593.png '1.png')
   
@@ -66,7 +66,7 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 请仔细检查自己的环境变量与上文所给的环境变量是否有差别，若缺少路径，执行*vi .bashrc*命令，在.bashrc文件中添加缺少的环境变量。
 保存退出后，执行*source ~/.bashrc*命令使环境变量生效。
 
-配置好环境变量，点击Run运行程序（项目运行所需操作请参考[图像检测sample样例运行](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/2-1%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8Bsample%E6%A0%B7%E4%BE%8B.md)）。
+配置好环境变量，点击Run运行程序（项目运行所需操作请参考[图像检测sample样例运行](./2-1图像检测sample样例.md)）。
 
 
 **步骤3**  断点调试
