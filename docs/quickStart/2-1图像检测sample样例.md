@@ -58,7 +58,7 @@
 ### 2.2.2.2 配置pipeline
 python pipeline在脚本main.py内部，其中模型路径和工程中model文件夹路径和SDK安装路径相匹配的，一般情况下不需要修改。
 **注意**将pipeline中红框部分的${SDK安装路径}替换为自己的SDK安装路径。  
-![image.png](img/1624007242093.png 'image.png')  
+![image.png](img/20210712150707.png 'image.png')  
 如果有修改路径需求可以通过`find -name libyolov3postprocess.so`相关命令搜索到需要的依赖文件，更改pipeline中的值。  
 ![12.png](img/1623231850273.png '12.png')
 ### 2.2.2.3 模型转换
