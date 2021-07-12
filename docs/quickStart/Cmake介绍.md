@@ -90,7 +90,7 @@ Cmake用”#”注释，"#"后面为注释的内容，从"#"字符开始到此�
   
   ## 
   **前提条件**：
-  参考[IDE开发环境搭建](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/1-2IDE%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA.md)章节，将本地IDE与远程环境连接起来，并同步好项目文件。
+  参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)章节，将本地IDE与远程环境连接起来，并同步好项目文件。
 
   ##
  编写CMakeLists文件，编写时请参考以下内容：
