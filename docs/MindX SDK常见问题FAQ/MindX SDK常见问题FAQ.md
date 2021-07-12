@@ -1,10 +1,8 @@
 # MindX SDK常见问题FAQ
 
-- [1 xxx问题](###1 xxx问题)
+- [1 xxx问题](#1-xxx问题)
 
-- [2 xxx问题](###2 xxx问题)
-
-
+- [2 xxx问题](#2-xxx问题)
 
 
 
