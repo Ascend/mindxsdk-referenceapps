@@ -27,7 +27,7 @@ ARCH_PATTERN=.
 LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:
 ```
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。在Program arguments处填入输入参数./test.jpg
-![1.png](img/162627_f43bec43_9323271.png "1.png")
+![1.png](img/20210712140926.png "1.png")
 
 ## 2.1.3 项目运行
 完成前置步骤后，点击build->build Project成功后，点击Run->Run"xxxx"（项目名称）运行项目。
@@ -37,5 +37,5 @@ LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_S
 
 右击工程 Deployment->Download from...，将远程生成的结果文件下载到本地中，同步两端文件，然后用户就可以在本地中查看项目运行结果了。
 本样例中输出结果为在输入的test.jpg中，将可识别的对象画框并显示识别类型后输出的result.jpg  
-![2.png](img/161717_53ea80c0_9323271.png "2.png")
-![3.png](img/164518_b091bb6d_9323271.png "3.png")
+![2.png](img/20210712141316.png "2.png")
+![3.png](img/20210712141205.png "3.png")
