@@ -1,6 +1,6 @@
 ## 5.1.1 样例介绍
 本开发样例是基于mxBase开发的端到端推理的C++应用程序，可在昇腾芯片上进行 yolov3 目标检测，并把可视化结果保存到本地。
-[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/MxbaseDetectionSample)
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/mxBaseSample)
 该Sample的主要处理流程为：
 Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
