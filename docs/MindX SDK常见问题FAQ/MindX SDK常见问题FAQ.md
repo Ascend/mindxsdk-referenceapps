@@ -2,7 +2,7 @@
     - [1 模型训练时报libtorch_npu.so: undefined symbol: aclopSetCompileFlag错误](#1-模型训练时报libtorch_npuso-undefined-symbol-aclopsetcompileflag错误)
     - [2 driver安装crl报错](#2-driver安装crl报错)
     - [3 导入mindspore包时提示libgraph.so文件找不到](#3-导入mindspore包时提示libgraph.so文件找不到)
-    - [4 项目运行时"does not have GetInstance function which can be found by dlsym"报错](#4-项目运行时"does not have GetInstance function which can be found by dlsym"报错)
+    - [4 项目运行时"does not have GetInstance function which can be found by dlsym"报错](#3-导入mindspore包时提示libgraph.so文件找不到)
 
 
 
