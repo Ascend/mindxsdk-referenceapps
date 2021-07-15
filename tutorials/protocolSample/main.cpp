@@ -246,7 +246,7 @@ namespace {
 
     // send data to stream and get result
     APP_ERROR SendData2Stream(MxStream::MxStreamManager& mxStreamManager, MxStream::MxstDataInput& dataBuffer,
-                                const std::string streamName, const int& inPluginId, const std::string& elemmentName)
+                                const std::string streamName, const int& inPluginId, const std::string& elementName)
     {
         APP_ERROR ret = APP_ERR_OK;
         // build proto data with SendData()
@@ -281,7 +281,7 @@ namespace {
 
     // send protobuf to stream and get result
     APP_ERROR SendProto2Stream(MxStream::MxStreamManager& mxStreamManager, MxStream::MxstDataInput& dataBuffer,
-                                const std::string streamName, const int& inPluginId, const std::string& elemmentName)
+                                const std::string streamName, const int& inPluginId, const std::string& elementName)
     {
         APP_ERROR ret = APP_ERR_OK;
         // build proto data with SendProtobuf()
