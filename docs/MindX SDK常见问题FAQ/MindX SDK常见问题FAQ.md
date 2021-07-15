@@ -2,7 +2,7 @@
     - [1 模型训练时报libtorch_npu.so: undefined symbol: aclopSetCompileFlag错误](#1-模型训练时报libtorch_npuso-undefined-symbol-aclopsetcompileflag错误)
     - [2 driver安装crl报错](#2-driver安装crl报错)
     - [3 导入mindspore包时提示libgraph.so文件找不到](#3-导入mindspore包时提示libgraph.so文件找不到)
-    - [4 项目运行时"does not have GetInstance function which can be found by dlsym"报错](#3-导入mindspore包时提示libgraph.so文件找不到)
+    - [4 项目运行时does not have GetInstance function which can be found by dlsym报错](#4-项目运行时does_not_have_GetInstance_function_which_can_be_found_by_dlsym报错)
 
 
 
@@ -62,7 +62,7 @@ export PYTHONPATH=${TBE_IMPL_PATH}:${PYTHONPATH}
 ```
 将上述代码拷贝至 env_ms.sh，执行source env_ms.sh
 
-## 4 项目运行时"does not have GetInstance function which can be found by dlsym"报错
+## 4 项目运行时does not have GetInstance function which can be found by dlsym报错
 
 ### 现象描述
 
