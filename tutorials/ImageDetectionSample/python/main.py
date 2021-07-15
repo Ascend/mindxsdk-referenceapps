@@ -20,6 +20,7 @@ limitations under the License.
 import json
 import os
 import cv2
+import numpy as np
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -112,9 +113,10 @@ if __name__ == '__main__':
         print("Failed to send data to stream.")
         exit()
 
-    key = b"mxpi_objectpostprocessor0"
+    keys = [b"mxpi_objectpostprocessor0", b"mxpi_imagedecoder0"]
     keyVec = StringVector()
-    keyVec.push_back(key)
+    for key in keys:
+        keyVec.push_back(key)
 
     infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
 
@@ -130,9 +132,21 @@ if __name__ == '__main__':
     # mxpi_objectpostprocessor0模型后处理插件输出信息
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[0].messageBuf)
+    print(objectList)
+
+    # mxpi_imagedecoder0 图像解码插件输出信息
+    visionList = MxpiDataType.MxpiVisionList()
+    visionList.ParseFromString(infer_result[1].messageBuf)
+
+    vision_data = visionList.visionVec[0].visionData.dataStr
+    visionInfo = visionList.visionVec[0].visionInfo
+
+    # 用输出原件信息初始化OpenCV图像信息矩阵
+    img_yuv = np.frombuffer(vision_data, np.uint8)
+    img_bgr = img_yuv.reshape(visionInfo.heightAligned * 3 // 2, visionInfo.widthAligned)
+    img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
 
     # print the infer result
-    print(objectList)
     results = objectList.objectVec[0]
 
     bboxes = []
@@ -142,8 +156,7 @@ if __name__ == '__main__':
               'y1': int(results.y1),
               'confidence': round(results.classVec[0].confidence, 4),
               'text': results.classVec[0].className}
-    img_path = "test.jpg"
-    img = cv2.imread(img_path)
+
     text = "{}{}".format(str(bboxes['confidence']), " ")
 
     for item in bboxes['text']:
