@@ -2,6 +2,7 @@
     - [1 模型训练时报libtorch_npu.so: undefined symbol: aclopSetCompileFlag错误](#1-模型训练时报libtorch_npuso-undefined-symbol-aclopsetcompileflag错误)
     - [2 driver安装crl报错](#2-driver安装crl报错)
     - [3 导入mindspore包时提示libgraph.so文件找不到](#3-导入mindspore包时提示libgraph.so文件找不到)
+    - [4 项目运行时"does not have GetInstance function which can be found by dlsym"报错](## 4 项目运行时"does not have GetInstance function which can be found by dlsym"报错)
 
 
 
@@ -60,3 +61,17 @@ export PATH=${LOCAL_ASCEND}/ascend-toolkit/latest/fwkacllib/ccec_compiler/bin/:$
 export PYTHONPATH=${TBE_IMPL_PATH}:${PYTHONPATH}   
 ```
 将上述代码拷贝至 env_ms.sh，执行source env_ms.sh
+
+## 4 项目运行时"does not have GetInstance function which can be found by dlsym"报错
+
+### 现象描述
+
+![](img/sdk_faq4_0401.png)
+
+### 可能原因
+
+后处理插件与推理插件不匹配
+
+### 处理办法
+
+例如 与图中的resnet后处理插件配套的推理插件为tensorinfer插件，pipeline中需使用mxpi_tensorinfer0
