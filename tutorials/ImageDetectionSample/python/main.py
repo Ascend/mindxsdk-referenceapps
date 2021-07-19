@@ -129,6 +129,8 @@ if __name__ == '__main__':
             infer_result[0].errorCode, infer_result[0].data.decode()))
         exit()
 
+    YUV_BYTES_NU = 3
+    YUV_BYTES_DE = 2
     # mxpi_objectpostprocessor0模型后处理插件输出信息
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[0].messageBuf)
@@ -143,7 +145,8 @@ if __name__ == '__main__':
 
     # 用输出原件信息初始化OpenCV图像信息矩阵
     img_yuv = np.frombuffer(vision_data, np.uint8)
-    img_bgr = img_yuv.reshape(visionInfo.heightAligned * 3 // 2, visionInfo.widthAligned)
+
+    img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
     img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
 
     # print the infer result
