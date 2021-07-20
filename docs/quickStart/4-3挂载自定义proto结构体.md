@@ -2,9 +2,10 @@
 
 本章节将指导在SDK自带的图像分类识别样例中挂载自定义proto结构并输出的流程。  
 在执行本样例前，应已成功远程部署并运行4-1章节的自定义插件样例。  
-[点击跳转代码样例](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/SamplePostProcess)
+[点击跳转代码样例](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/sampleCustomProto)
 
-## 自定义proto结构说明  
+## 自定义proto结构说明
+
 stream支持挂载特定格式的proto结构体到metadata中并向下传递  
 必须具备以下结构：  
 - 使用list封装
@@ -101,7 +102,7 @@ link_directories(${PROJECT_SOURCE_DIR}/../../../proto/lib)
         return ret;
     }
 
-```  
+```
 - MxpiMetaHeader结构体的赋值（131-133行）在本样例中非必须，此处注释后不影响实际输出。
 - sampleProtoName对应该proto结构在metadata中的名词，与pipeline中outputDataKeys取值对应
 
