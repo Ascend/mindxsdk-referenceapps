@@ -8,11 +8,11 @@ set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${MX_SDK_HOME}/../../include)
-include_directories(${MX_SDK_HOME}/../../opensource/include)
-include_directories(${MX_SDK_HOME}/../../opensource/include/gstreamer-1.0)
-include_directories(${MX_SDK_HOME}/../../opensource/include/glib-2.0)
-include_directories(${MX_SDK_HOME}/../../opensource/lib/glib-2.0/include)
+include_directories(${MX_SDK_HOME}/include)
+include_directories(${MX_SDK_HOME}/opensource/include)
+include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
+include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
+include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
 
 link_directories(${MX_SDK_HOME}/lib)
 link_directories(${MX_SDK_HOME}/opensource/lib)
@@ -26,5 +26,5 @@ add_library(${TARGET_LIBRARY} SHARED MxpiSamplePlugin.cpp)
 
 target_link_libraries(${TARGET_LIBRARY} glib-2.0 gstreamer-1.0 gobject-2.0 gstbase-1.0 gmodule-2.0)
 
-target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase protobuf)
+target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase mindxsdk_protobuf)
 #target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
