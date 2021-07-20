@@ -36,6 +36,10 @@ cd mediaServer
 ./live555MediaServer
 ```
 
+
+[img](img/20210720145058139.png)
+其中rtsp_Url的格式是 rtsp:://host:port/Data，host:port/路径映射到mediaServer/目录下，Data为视频文件的路径。
+
 # 补充
 
 ## 1. 视频循环推流
