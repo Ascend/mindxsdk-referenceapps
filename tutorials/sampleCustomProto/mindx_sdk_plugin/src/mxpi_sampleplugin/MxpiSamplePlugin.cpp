@@ -21,6 +21,8 @@ using namespace MxTools;
 using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiObjectList";
+    const int SAMPLE_INT = 648;
+    const string SAMPLE_STRING = "sample proton string with id 648";
 }
 
 APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
@@ -132,8 +134,8 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     dstMxpiMetaHeaderList->set_datasource(parentName_);
     dstMxpiMetaHeaderList->set_memberid(0);
 
-    mxpiSampleProtoptr->set_intsample(648);
-    mxpiSampleProtoptr->set_stringsample("sample proton string with id 648");
+    mxpiSampleProtoptr->set_intsample(SAMPLE_INT);
+    mxpiSampleProtoptr->set_stringsample(SAMPLE_STRING);
 
     std::string sampleProtoName = "mxpi_sampleproto";
     ret = mxpiMetadataManager.AddProtoMetadata(sampleProtoName, static_pointer_cast<void>(mxpiSampleProtoListptr));
