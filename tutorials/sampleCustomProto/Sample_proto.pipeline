@@ -19,13 +19,6 @@
                 "postProcessLibPath": "libMpYOLOv3PostProcessor.so"
             },
             "factory": "mxpi_modelinfer",
-            "next": "mxpi_sampleplugin0"
-        },
-        "mxpi_sampleplugin0": {
-            "props": {
-                "descriptionMessage": "SamplePluginMessage"
-            },
-            "factory": "mxpi_sampleplugin",
             "next": "mxpi_imagecrop0"
         },
         "mxpi_imagecrop0": {
@@ -44,6 +37,13 @@
                 "postProcessLibPath": "libresnet50postprocessor.so"
             },
             "factory": "mxpi_modelinfer",
+            "next": "mxpi_sampleplugin0"
+        },
+        "mxpi_sampleplugin0": {
+            "props": {
+                "descriptionMessage": "SamplePluginMessage"
+            },
+            "factory": "mxpi_sampleplugin",
             "next": "mxpi_dataserialize0"
         },
         "mxpi_dataserialize0": {
