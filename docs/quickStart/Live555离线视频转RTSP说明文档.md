@@ -107,7 +107,7 @@ ffmpeg官网下载地址：https://ffmpeg.org/download.html
 
 点击链接下载即可
 
-把下载得到的7z压缩包解压到文件夹，进入解压后的文件夹，找到bin文件夹，然后将里面的三个exe文件悉数复制到你的 Windows\system32\ 文件夹中
+把下载得到的7z压缩包解压到文件夹，进入解压后的文件夹，找到bin文件夹，然后将里面的三个exe文件悉数复制到你的 Windows\System32\ 文件夹中
 
 ![img](img/20210722191821287.png)
 
