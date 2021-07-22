@@ -42,7 +42,7 @@ cd mediaServer
 
 ## 5. 视频文件格式转换
 
-根据提示当前只支持部分视频格式，并不支持.mp4后缀的文件，但可以通过ffmpeg转换生成，如下所示为MP4转换为h.264命令：
+根据提示当前只支持部分视频格式，并不支持.mp4后缀的文件，但可以通过ffmpeg转换生成[ffmpeg安装教程](##3.-pc端ffmpeg安装教程)，如下所示为MP4转换为h.264命令：
 
 ```
 ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test1.264
@@ -100,3 +100,15 @@ make
 ## 3. pc端ffmpeg安装教程
 
 ffmpeg官网下载地址：https://ffmpeg.org/download.html
+
+![img](img/20210722160540018.png)
+
+![img](img/20210722160846743.png)
+
+点击链接下载即可
+
+把下载得到的7z压缩包解压到文件夹，进入解压后的文件夹，找到bin文件夹，然后将里面的三个exe文件悉数复制到你的 Windows\system32\ 文件夹中
+
+打开控制台，输入ffmpeg命令得到一下信息时说明FFmpeg安装正确，可以使用了。
+
+![img](img/20210722191031307.png)
