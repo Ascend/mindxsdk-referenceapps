@@ -17,6 +17,10 @@ include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
 link_directories(${MX_SDK_HOME}/lib)
 link_directories(${MX_SDK_HOME}/opensource/lib)
 
+# add custom proto dir
+include_directories(${PROJECT_SOURCE_DIR}/../../../proto)
+link_directories(${PROJECT_SOURCE_DIR}/../../../proto/lib)
+
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")
 
@@ -26,5 +30,5 @@ add_library(${TARGET_LIBRARY} SHARED MxpiSamplePlugin.cpp)
 
 target_link_libraries(${TARGET_LIBRARY} glib-2.0 gstreamer-1.0 gobject-2.0 gstbase-1.0 gmodule-2.0 glog)
 
-target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase mindxsdk_protobuf)
+target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase mindxsdk_protobuf mxpisampleproto)
 #target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)

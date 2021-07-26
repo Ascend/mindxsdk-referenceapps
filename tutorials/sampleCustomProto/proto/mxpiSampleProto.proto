@@ -1,0 +1,20 @@
+syntax = "proto3";
+package sampleproto;
+message MxpiMetaHeader
+{
+    string parentName = 1;
+    int32 memberId = 2;
+    string dataSource = 3;
+}
+
+message MxpiSampleProto
+{
+    repeated MxpiMetaHeader headerVec = 1;
+    int32 intSample = 2;
+    string stringSample = 3;
+    bytes bytesSample = 4;
+}
+message MxpiSampleProtoList
+{
+    repeated MxpiSampleProto sampleProtoVec = 1;
+}
