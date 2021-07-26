@@ -111,14 +111,16 @@ Scanning dependencies of target stream_pull_test
 # stream_pull_test就是CMakeLists文件中指定生成的可执行文件。
 ```
 
-### 运行可执行文件
+### 执行脚本
+
+执行run.sh脚本前请先确认可执行文件stream_pull_test已生成。
 
 ```
-chmod +x stream_pull_test
-./stream_pull_test
+chmod +x run.sh
+bash run.sh
 ```
 
 ### 查看结果
 
-执行stream_pull_test完毕后，可视化结果会被保存在工程目录下result文件夹中。
+执行run.sh完毕后，可视化结果会被保存在工程目录下result文件夹中。
 
