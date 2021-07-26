@@ -52,7 +52,8 @@ APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int
     return APP_ERR_OK;
 }
 
-void Yolov3Detection::SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config)
+void Yolov3Detection::SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, 
+                                                std::shared_ptr<void>> &config)
 {
     MxBase::ConfigData configData;
     const std::string checkTensor = initParam.checkTensor ? "true" : "false";
@@ -93,7 +94,7 @@ APP_ERROR Yolov3Detection::FrameInit(const InitParam &initParam)
         return ret;
     }
     model = std::make_shared<MxBase::ModelInferenceProcessor>();
-    LogInfo << "model path: " <<initParam.modelPath;
+    LogInfo << "model path: " << initParam.modelPath;
     ret = model->Init(initParam.modelPath, modelDesc);
     if (ret != APP_ERR_OK) {
         LogError << "ModelInferenceProcessor init failed, ret=" << ret << ".";

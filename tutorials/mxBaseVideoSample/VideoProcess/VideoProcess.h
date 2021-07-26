@@ -36,8 +36,10 @@ extern "C"{
 
 class VideoProcess {
 private:
-    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, void *userData);
-    APP_ERROR VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, const uint32_t &width, void *userData);
+    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, 
+	                                    MxBase::DvppDataInfo &inputDataInfo, void *userData);
+    APP_ERROR VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, 
+	                    const uint32_t &width, void *userData);
     APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData> resulInfo, const uint32_t frameId,
                          const std::vector<std::vector<MxBase::ObjectInfo>> objInfos);
 public:
@@ -45,9 +47,11 @@ public:
     APP_ERROR StreamDeInit();
     APP_ERROR VideoDecodeInit();
     APP_ERROR VideoDecodeDeInit();
-    static void GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue,  std::shared_ptr<VideoProcess> videoProcess);
-    static void GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> blockingQueue, std::shared_ptr<Yolov3Detection> yolov3Detection,
-                           std::shared_ptr<VideoProcess> videoProcess);
+    static void GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue, 
+	                      std::shared_ptr<VideoProcess> videoProcess);
+    static void GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> blockingQueue, 
+	                       std::shared_ptr<Yolov3Detection> yolov3Detection, 
+						   std::shared_ptr<VideoProcess> videoProcess);
 private:
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
     const uint32_t CHANNEL_ID = 0;

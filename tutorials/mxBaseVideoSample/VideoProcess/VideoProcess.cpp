@@ -61,7 +61,8 @@ APP_ERROR VideoProcess::StreamDeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoProcess::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, void *userData)
+APP_ERROR VideoProcess::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, 
+                                            void *userData)
 {
     auto deleter = [] (MxBase::MemoryData *mempryData) {
         if (mempryData == nullptr) {
@@ -121,7 +122,8 @@ APP_ERROR VideoProcess::VideoDecodeDeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, const uint32_t &width, void *userData)
+APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, 
+                                    const uint32_t &width, void *userData)
 {
     static uint32_t frameId = 0;
     MxBase::MemoryData dvppMemory((size_t)streamData.size,
@@ -149,7 +151,8 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
     return APP_ERR_OK;
 }
 
-void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue, std::shared_ptr<VideoProcess> videoProcess)
+void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue, 
+                            std::shared_ptr<VideoProcess> videoProcess)
 {
     MxBase::DeviceContext device;
     device.devId = DEVICE_ID;
@@ -238,7 +241,8 @@ APP_ERROR VideoProcess::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInf
     return APP_ERR_OK;
 }
 
-void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> blockingQueue, std::shared_ptr<Yolov3Detection> yolov3Detection,
+void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> blockingQueue, 
+                              std::shared_ptr<Yolov3Detection> yolov3Detection,
                               std::shared_ptr<VideoProcess> videoProcess)
 {
     uint32_t frameId = 0;

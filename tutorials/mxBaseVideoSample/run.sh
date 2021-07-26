@@ -13,10 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-CUR_PATH=$(cd "$(dirname "$0")"; pwd)
+path_cur="$(dirname "$0")"
 
-echo $CUR_PATH
-
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64":"/usr/local/Ascend/driver/lib64/ ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:${FFMPEG_PATH}/lib":${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64":"/usr/local/Ascend/driver/lib64/":"/usr/local/python3.7.5/lib":"/usr/local/ffmpeg/lib":${LD_LIBRARY_PATH}
 
 ./stream_pull_test
