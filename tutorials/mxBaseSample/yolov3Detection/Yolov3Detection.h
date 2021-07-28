@@ -21,10 +21,7 @@
 #include <Yolov3PostProcess.h>
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
-#include "MxBase/postprocess/include/ObjectPostProcessors/Yolov3PostProcess.h"
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
-
-extern std::vector<double> g_inferCost;
 
 struct InitParam {
     uint32_t deviceId;
@@ -48,15 +45,15 @@ public:
     APP_ERROR Init(const InitParam &initParam);
     APP_ERROR DeInit();
     APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &outputs,
+    APP_ERROR PostProcess(const MxBase::TensorBase &tensor, const std::vector<MxBase::TensorBase> &outputs,
                           std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
     APP_ERROR Process(const std::string &imgPath);
 protected:
-    void ReadImage(const std::string &imgPath, cv::Mat &imageMat);
-    void Resize(cv::Mat &srcImageMat, cv::Mat &dstImageMat);
-    APP_ERROR CVMatToTensorBase(const cv::Mat &imageMat, MxBase::TensorBase &tensorBase);
+    APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
+    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor);
     APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
-    APP_ERROR WriteResult(const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
+    APP_ERROR WriteResult(MxBase::TensorBase &tensor,
+                         const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
     void SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 private:
     std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_;
@@ -65,8 +62,6 @@ private:
     MxBase::ModelDesc modelDesc_ = {};
     std::map<int, std::string> labelMap_ = {};
     uint32_t deviceId_ = 0;
-    uint32_t imageWidth_ = 0;
-    uint32_t imageHeight_ = 0;
 
 };
 #endif

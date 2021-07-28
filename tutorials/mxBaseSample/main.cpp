@@ -19,8 +19,6 @@
 #include <Yolov3Detection.h>
 #include "MxBase/Log/Log.h"
 
-std::vector<double> g_inferCost;
-
 namespace {
     const uint32_t CLASS_NU = 80;
     const uint32_t BIASES_NU = 18;
@@ -28,29 +26,12 @@ namespace {
     const uint32_t YOLO_TYPE = 3;
 }
 
-void SplitString(const std::string &s, std::vector<std::string> &v, const std::string &c)
-{
-    std::string::size_type pos1, pos2;
-    pos2 = s.find(c);
-    pos1 = 0;
-    while (std::string::npos != pos2) {
-        v.push_back(s.substr(pos1, pos2 - pos1));
-
-        pos1 = pos2 + c.size();
-        pos2 = s.find(c, pos1);
-    }
-
-    if (pos1 != s.length()) {
-        v.push_back(s.substr(pos1));
-    }
-}
-
 void InitYolov3Param(InitParam &initParam)
 {
     initParam.deviceId = 0;
     initParam.labelPath = "./model/coco.names";
     initParam.checkTensor = true;
-    initParam.modelPath = "./model/yolov3_tf_aipp.om";
+    initParam.modelPath = "./model/yolov3_tf_bs1_fp16.om";
     initParam.classNum = CLASS_NU;
     initParam.biasesNum = BIASES_NU;
     initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
@@ -61,32 +42,6 @@ void InitYolov3Param(InitParam &initParam)
     initParam.modelType = 0;
     initParam.inputType = 0;
     initParam.anchorDim = ANCHOR_DIM;
-}
-
-APP_ERROR ReadImagesPath(const std::string &path, std::vector<std::string> &imagesPath)
-{
-    std::ifstream inFile;
-    inFile.open(path, std::ios_base::in);
-    std::string line;
-    // Check images path file validity
-    if (inFile.fail()) {
-        LogError << "Failed to open label file: " << path;
-        return APP_ERR_COMM_OPEN_FAIL;
-    }
-    std::vector<std::string> vectorStr;
-    std::string splitStr = " ";
-    // construct label map
-    while (std::getline(inFile, line)) {
-        if (line.find('#') <= 1) {
-            continue;
-        }
-        vectorStr.clear();
-        SplitString(line, vectorStr, splitStr);
-        imagesPath.push_back(vectorStr[1]);
-    }
-
-    inFile.close();
-    return APP_ERR_OK;
 }
 
 int main(int argc, char* argv[])
