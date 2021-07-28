@@ -8,8 +8,6 @@
 
 > 模型转换
 
-步骤1 在
-
 **步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"。
@@ -45,7 +43,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 
 main.cpp文件中，添加模型路径与 rtsp 流源地址（需要自行准备可用的视频流，视频流格式为H264）
 
-[Live555拉流教程](../../docs/参考资料/Live555离线视频转RTSP说明文档)
+[Live555拉流教程](../../docs/参考资料/Live555离线视频转RTSP说明文档.md)
 
 ```
 ...

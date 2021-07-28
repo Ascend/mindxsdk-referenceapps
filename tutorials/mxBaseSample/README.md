@@ -27,7 +27,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```
 (2) 转换模型
 ```
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_aipp --output_type=FP32 --soc_version=Ascend310 --input_shape="input/input_data:1,416,416,3" --log=info --insert_op_conf=./yolov3_tf_aipp.cfg --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 ```
 
 ## 编译与运行

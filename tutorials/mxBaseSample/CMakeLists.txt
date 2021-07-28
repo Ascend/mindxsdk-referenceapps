@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(mxBase_sample)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
 include_directories(./yolov3PostProcess)
 include_directories(./yolov3Detection)
 file(GLOB_RECURSE YOLOV3_POSTPROCESS ${PROJECT_SOURCE_DIR}/yolov3PostProcess/*cpp)
@@ -21,7 +23,6 @@ link_directories(
         ${MX_SDK_HOME}/lib
         ${MX_SDK_HOME}/opensource/lib
         ${MX_SDK_HOME}/lib/modelpostprocessors
-        ${MX_SDK_HOME}/include/MxBase/postprocess/include
         /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
         /usr/local/Ascend/driver/lib64/
 )
@@ -33,4 +34,3 @@ target_link_libraries(mxBase_sample
         cpprest
         opencv_world
         )
-install(TARGETS ${TARGET} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/)
