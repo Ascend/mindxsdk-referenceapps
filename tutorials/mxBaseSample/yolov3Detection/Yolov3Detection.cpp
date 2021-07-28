@@ -132,7 +132,8 @@ APP_ERROR Yolov3DetectionOpencv::ReadImage(const std::string &imgPath, MxBase::T
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -163,14 +164,15 @@ APP_ERROR Yolov3DetectionOpencv::Resize(const MxBase::TensorBase &inputTensor, M
         LogError << "VpcResize failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DVPP, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
     shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
-    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase:: TENSOR_DTYPE_UINT8);
+    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
 
@@ -200,7 +202,8 @@ APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase>
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::PostProcess(const MxBase::TensorBase &tensor, const std::vector<MxBase::TensorBase> &outputs,
+APP_ERROR Yolov3DetectionOpencv::PostProcess(const MxBase::TensorBase &tensor, 
+                                             const std::vector<MxBase::TensorBase> &outputs,
                                              std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     auto shape = tensor.GetShape();
