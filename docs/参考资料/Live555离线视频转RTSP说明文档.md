@@ -42,7 +42,7 @@ cd mediaServer
 
 ## 5. 视频文件格式转换
 
-根据提示当前只支持部分视频格式，并不支持.mp4后缀的文件，但可以通过ffmpeg转换生成[ffmpeg安装教程](./pc端ffmpeg安装教程)，如下所示为MP4转换为h.264命令：
+根据提示当前只支持部分视频格式，并不支持.mp4后缀的文件，但可以通过ffmpeg转换生成[ffmpeg安装教程](./pc端ffmpeg安装教程.md)，如下所示为MP4转换为h.264命令：
 
 ```
 ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test1.264
