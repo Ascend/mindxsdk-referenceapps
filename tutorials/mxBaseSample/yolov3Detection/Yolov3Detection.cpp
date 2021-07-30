@@ -19,7 +19,12 @@
 #include "MxBase/Log/Log.h"
 #include <unistd.h>
 #include <sys/stat.h>
-#include <Yolov3PostProcess.h>
+
+namespace{
+    const uint32_t YUV_BYTE_NU = 3;
+    const uint32_t YUV_BYTE_DE = 2;
+    const uint32_t VPC_H_ALIGN = 2;
+}
 
 APP_ERROR Yolov3DetectionOpencv::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap) {
     std::ifstream infile;
@@ -120,33 +125,54 @@ APP_ERROR Yolov3DetectionOpencv::DeInit() {
     return APP_ERR_OK;
 }
 
-void Yolov3DetectionOpencv::ReadImage(const std::string &imgPath, cv::Mat &imageMat) {
-    imageMat = cv::imread(imgPath, cv::IMREAD_COLOR);
-    imageWidth_ = imageMat.cols;
-    imageHeight_ = imageMat.rows;
-    return;
-}
-
-void Yolov3DetectionOpencv::Resize(cv::Mat &srcImageMat, cv::Mat &dstImageMat) {
-    static constexpr uint32_t resizeHeight = 416;
-    static constexpr uint32_t resizeWidth = 416;
-
-    cv::resize(srcImageMat, dstImageMat, cv::Size(resizeWidth, resizeHeight));
-    return;
-}
-
-APP_ERROR Yolov3DetectionOpencv::CVMatToTensorBase(const cv::Mat &imageMat, MxBase::TensorBase &tensorBase) {
-    const uint32_t dataSize = imageMat.cols * imageMat.rows * MxBase::YUV444_RGB_WIDTH_NU;
-    MxBase::MemoryData memoryDataDst(dataSize, MxBase::MemoryData::MEMORY_DEVICE, deviceId_);
-    MxBase::MemoryData memoryDataSrc(imageMat.data, dataSize, MxBase::MemoryData::MEMORY_HOST_MALLOC);
-
-    APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDataDst, memoryDataSrc);
+APP_ERROR Yolov3DetectionOpencv::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
+    MxBase::DvppDataInfo output = {};
+    APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret) << "Memory malloc failed.";
+        LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
-    std::vector<uint32_t> shape = {imageMat.rows * MxBase::YUV444_RGB_WIDTH_NU, static_cast<uint32_t>(imageMat.cols)};
-    tensorBase = MxBase::TensorBase(memoryDataDst, false, shape, MxBase::TENSOR_DTYPE_UINT8);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    if (output.heightStride % VPC_H_ALIGN != 0) {
+        LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
+        MxBase::MemoryHelper::MxbsFree(memoryData);
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
+    tensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
+    return APP_ERR_OK;
+}
+
+APP_ERROR Yolov3DetectionOpencv::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
+    auto shape = inputTensor.GetShape();
+    MxBase::DvppDataInfo input = {};
+    input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.width = shape[1];
+    input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.widthStride = shape[1];
+    input.dataSize = inputTensor.GetByteSize();
+    input.data = (uint8_t*)inputTensor.GetBuffer();
+    const uint32_t resizeHeight = 416;
+    const uint32_t resizeWidth = 416;
+    MxBase::ResizeConfig resize = {};
+    resize.height = resizeHeight;
+    resize.width = resizeWidth;
+    MxBase::DvppDataInfo output = {};
+    APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
+    if (ret != APP_ERR_OK) {
+        LogError << "VpcResize failed, ret=" << ret << ".";
+        return ret;
+    }
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    if (output.heightStride % VPC_H_ALIGN != 0) {
+        LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
+        MxBase::MemoryHelper::MxbsFree(memoryData);
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
+    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
 
@@ -156,7 +182,7 @@ APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase>
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
         for (size_t j = 0; j < modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
-            shape.push_back((uint32_t) modelDesc_.outputTensors[i].tensorDims[j]);
+            shape.push_back((uint32_t)modelDesc_.outputTensors[i].tensorDims[j]);
         }
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
@@ -166,14 +192,9 @@ APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase>
         }
         outputs.push_back(tensor);
     }
-
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
-    auto startTime = std::chrono::high_resolution_clock::now();
     APP_ERROR ret = model_->ModelInference(inputs, outputs, dynamicInfo);
-    auto endTime = std::chrono::high_resolution_clock::now();
-    double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-    g_inferCost.push_back(costMs);
     if (ret != APP_ERR_OK) {
         LogError << "ModelInference failed, ret=" << ret << ".";
         return ret;
@@ -181,11 +202,14 @@ APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase>
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::PostProcess(const std::vector<MxBase::TensorBase> &outputs,
-                                             std::vector<std::vector<MxBase::ObjectInfo>> &objInfos) {
+APP_ERROR Yolov3DetectionOpencv::PostProcess(const MxBase::TensorBase &tensor, 
+                                             const std::vector<MxBase::TensorBase> &outputs,
+                                             std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
+{
+    auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
-    imgInfo.widthOriginal = imageWidth_;
-    imgInfo.heightOriginal = imageHeight_;
+    imgInfo.widthOriginal = shape[1];
+    imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     imgInfo.widthResize = 416;
     imgInfo.heightResize = 416;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
@@ -207,68 +231,77 @@ APP_ERROR Yolov3DetectionOpencv::PostProcess(const std::vector<MxBase::TensorBas
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::WriteResult(const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos) {
-
-    cv::Mat imgBgr;                            //无参构造
-    imgBgr = cv::imread("test.jpg");
+APP_ERROR Yolov3DetectionOpencv::WriteResult(MxBase::TensorBase &tensor,
+                                            const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
+{
+    APP_ERROR ret = tensor.ToHost();
+    if (ret != APP_ERR_OK) {
+        LogError << "ToHost faile";
+        return ret;
+    }
+    auto shape = tensor.GetShape();
+    // 用输出原件信息初始化OpenCV图像信息矩阵
+    cv::Mat imgYuv = cv::Mat(shape[0], shape[1], CV_8UC1, tensor.GetBuffer());
+    cv::Mat imgBgr = cv::Mat(shape[0] * YUV_BYTE_DE / YUV_BYTE_NU, shape[1], CV_8UC3);
+    // 颜色空间转换
+    cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 
     uint32_t batchSize = objInfos.size();
-    // write inference result to result.jpg
-    std::double_t max_confidence = 0;
-    uint32_t x0 = 0;
-    uint32_t y0 = 0;
-    std::uint32_t x1 = 0;
-    std::uint32_t y1 = 0;
-    std::uint32_t classId = 0;
-    std::string lable;
+    std::vector<MxBase::ObjectInfo> resultInfo;
     for (uint32_t i = 0; i < batchSize; i++) {
+        float maxConfidence = 0;
+        uint32_t  index;
         for (uint32_t j = 0; j < objInfos[i].size(); j++) {
-            std::double_t confidence = objInfos[i][j].confidence;
-            if (confidence > max_confidence) {
-                max_confidence = objInfos[i][j].confidence;
-                lable = labelMap_[objInfos[i][j].classId];
-                x0 = objInfos[i][j].x0;
-                y0 = objInfos[i][j].y0;
-                x1 = objInfos[i][j].x1;
-                y1 = objInfos[i][j].y1;
-                classId = objInfos[i][j].classId;
+            if(objInfos[i][j].confidence > maxConfidence) {
+                maxConfidence = objInfos[i][j].confidence;
+                index = j;
             }
         }
-        LogDebug << " box: " << x0 << " " << y0 << " " << x1 << " " << y1
-                 << ", confidence: " << max_confidence << ", lable: " << lable
-                 << ", id: " << classId << std::endl;
-    }
-    const cv::Scalar green = cv::Scalar(0, 255, 0);
-    const uint32_t thickness = 4;
-    const uint32_t xOffset = 10;
-    const uint32_t yOffset = 10;
-    const uint32_t lineType = 8;
-    const float fontScale = 1.0;
-    cv::putText(imgBgr, lable, cv::Point(x0 + xOffset, y0 + yOffset),
-                cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
-    cv::rectangle(imgBgr, cv::Rect(x0, y0, x1 - x0, y1 - y0), green, thickness);
-    cv::imwrite("./result.jpg", imgBgr);
+        resultInfo.push_back(objInfos[i][index]);
+        LogInfo << "id: " << resultInfo[i].classId << "; lable: " << resultInfo[i].className
+                << "; confidence: " << resultInfo[i].confidence
+                << "; box: [ (" << resultInfo[i].x0 << "," << resultInfo[i].y0 << ") "
+                << "(" << resultInfo[i].x1 << "," << resultInfo[i].y1 << ") ]" ;
 
+        const cv::Scalar green = cv::Scalar(0, 255, 0);
+        const uint32_t thickness = 4;
+        const uint32_t xOffset = 10;
+        const uint32_t yOffset = 10;
+        const uint32_t lineType = 8;
+        const float fontScale = 1.0;
+
+        // 在图像上绘制文字
+        cv::putText(imgBgr, resultInfo[i].className, cv::Point(resultInfo[i].x0 + xOffset, resultInfo[i].y0 + yOffset),
+                    cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
+        // 绘制矩形
+        cv::rectangle(imgBgr,cv::Rect(resultInfo[i].x0, resultInfo[i].y0,
+                                      resultInfo[i].x1 - resultInfo[i].x0, resultInfo[i].y1 - resultInfo[i].y0),
+                      green, thickness);
+    }
+    // 把Mat类型的图像矩阵保存为图像到指定位置。
+    cv::imwrite("./result.jpg", imgBgr);
     return APP_ERR_OK;
 }
 
 APP_ERROR Yolov3DetectionOpencv::Process(const std::string &imgPath) {
     // process image
-    cv::Mat imageMat;
-    ReadImage(imgPath, imageMat);
-
-    Resize(imageMat, imageMat);
-
-    std::vector<MxBase::TensorBase> inputs = {};
-    std::vector<MxBase::TensorBase> outputs = {};
-    MxBase::TensorBase tensorBase;
-    APP_ERROR ret = CVMatToTensorBase(imageMat, tensorBase);
+    MxBase::TensorBase inTensor;
+    APP_ERROR ret = ReadImage(imgPath, inTensor);
     if (ret != APP_ERR_OK) {
-        LogError << "CVMatToTensorBase failed, ret=" << ret << ".";
+        LogError << "ReadImage failed, ret=" << ret << ".";
         return ret;
     }
 
-    inputs.push_back(tensorBase);
+    MxBase::TensorBase outTensor;
+    ret = Resize(inTensor, outTensor);
+    if (ret != APP_ERR_OK) {
+        LogError << "Resize failed, ret=" << ret << ".";
+        return ret;
+    }
+
+    std::vector<MxBase::TensorBase> inputs = {};
+    std::vector<MxBase::TensorBase> outputs = {};
+    inputs.push_back(outTensor);
     ret = Inference(inputs, outputs);
     if (ret != APP_ERR_OK) {
         LogError << "Inference failed, ret=" << ret << ".";
@@ -276,17 +309,16 @@ APP_ERROR Yolov3DetectionOpencv::Process(const std::string &imgPath) {
     }
 
     std::vector<std::vector<MxBase::ObjectInfo>> objInfos;
-    ret = PostProcess(outputs, objInfos);
+    ret = PostProcess(inTensor, outputs, objInfos);
     if (ret != APP_ERR_OK) {
         LogError << "PostProcess failed, ret=" << ret << ".";
         return ret;
     }
 
-    ret = WriteResult(objInfos);
+    ret = WriteResult(inTensor, objInfos);
     if (ret != APP_ERR_OK) {
         LogError << "Save result failed, ret=" << ret << ".";
         return ret;
     }
-    imageMat.release();
     return APP_ERR_OK;
 }

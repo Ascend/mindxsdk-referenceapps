@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef MXBASE_YOLOV3DETECTIONOPENCV_H
-#define MXBASE_YOLOV3DETECTIONOPENCV_H
+#ifndef STREAM_PULL_SAMPLE_YOLOV3DETECTION_H
+#define STREAM_PULL_SAMPLE_YOLOV3DETECTION_H
 
-#include <opencv2/opencv.hpp>
-#include <Yolov3PostProcess.h>
 #include "MxBase/DvppWrapper/DvppWrapper.h"
-#include "MxBase/ModelInfer/ModelInferenceProcessor.h"
+#include "MxBase/MemoryHelper/MemoryHelper.h"
+#include "MxBase/DeviceManager/DeviceManager.h"
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
+#include "MxBase/ModelInfer/ModelInferenceProcessor.h"
+#include "ObjectPostProcessors/Yolov3PostProcess.h"
+#include "opencv2/opencv.hpp"
+
+extern std::vector<double> g_inferCost;
 
 struct InitParam {
     uint32_t deviceId;
@@ -40,28 +44,24 @@ struct InitParam {
     uint32_t anchorDim;
 };
 
-class Yolov3DetectionOpencv {
-public:
-    APP_ERROR Init(const InitParam &initParam);
-    APP_ERROR DeInit();
-    APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const MxBase::TensorBase &tensor, const std::vector<MxBase::TensorBase> &outputs,
-                          std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
-    APP_ERROR Process(const std::string &imgPath);
+class Yolov3Detection {
 protected:
-    APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
-    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor);
     APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
-    APP_ERROR WriteResult(MxBase::TensorBase &tensor,
-                         const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
     void SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
+public:
+    APP_ERROR FrameInit(const InitParam &initParam);
+    APP_ERROR FrameDeInit();
+    APP_ERROR ResizeFrame(const std::shared_ptr<MxBase::MemoryData> frameInfo, const uint32_t &height,
+                          const uint32_t &width, MxBase::TensorBase &tensor);
+    APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &outputs,const uint32_t &height,
+                          const uint32_t &width, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
 private:
-    std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_;
-    std::shared_ptr<MxBase::ModelInferenceProcessor> model_;
-    std::shared_ptr<Yolov3PostProcess> post_;
-    MxBase::ModelDesc modelDesc_ = {};
-    std::map<int, std::string> labelMap_ = {};
-    uint32_t deviceId_ = 0;
-
+    std::shared_ptr<MxBase::DvppWrapper> yDvppWrapper;
+    std::shared_ptr<MxBase::ModelInferenceProcessor> model;
+    std::shared_ptr<MxBase::Yolov3PostProcess> post;
+    MxBase::ModelDesc modelDesc = {};
+    std::map<int, std::string> labelMap = {};
+    uint32_t deviceId = 0;
 };
-#endif
+#endif //STREAM_PULL_SAMPLE_YOLOV3DETECTION_H
