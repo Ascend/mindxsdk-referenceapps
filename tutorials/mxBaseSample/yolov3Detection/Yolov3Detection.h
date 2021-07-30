@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#ifndef MXBASE_YOLOV3DETECTIONOPENCV_H
-#define MXBASE_YOLOV3DETECTIONOPENCV_H
+#ifndef MXBASE_YOLOV3DETECTION_H
+#define MXBASE_YOLOV3DETECTION_H
 
-#include <opencv2/opencv.hpp>
 #include <Yolov3PostProcess.h>
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
@@ -40,7 +39,7 @@ struct InitParam {
     uint32_t anchorDim;
 };
 
-class Yolov3DetectionOpencv {
+class Yolov3Detection {
 public:
     APP_ERROR Init(const InitParam &initParam);
     APP_ERROR DeInit();

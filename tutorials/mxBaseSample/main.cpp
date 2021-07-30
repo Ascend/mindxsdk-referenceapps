@@ -53,17 +53,17 @@ int main(int argc, char* argv[])
 
     InitParam initParam;
     InitYolov3Param(initParam);
-    auto yolov3 = std::make_shared<Yolov3DetectionOpencv>();
+    auto yolov3 = std::make_shared<Yolov3Detection>();
     APP_ERROR ret = yolov3->Init(initParam);
     if (ret != APP_ERR_OK) {
-        LogError << "Yolov3DetectionOpencv init failed, ret=" << ret << ".";
+        LogError << "Yolov3Detection init failed, ret=" << ret << ".";
         return ret;
     }
 
     std::string imgPath = argv[1];
     ret = yolov3->Process(imgPath);
     if (ret != APP_ERR_OK) {
-        LogError << "Yolov3DetectionOpencv process failed, ret=" << ret << ".";
+        LogError << "Yolov3Detection process failed, ret=" << ret << ".";
         yolov3->DeInit();
         return ret;
     }
