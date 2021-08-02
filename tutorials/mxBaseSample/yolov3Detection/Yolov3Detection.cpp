@@ -26,7 +26,7 @@ namespace{
     const uint32_t VPC_H_ALIGN = 2;
 }
 
-APP_ERROR Yolov3DetectionOpencv::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap) {
+APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap) {
     std::ifstream infile;
     // open label file
     infile.open(labelPath, std::ios_base::in);
@@ -54,7 +54,7 @@ APP_ERROR Yolov3DetectionOpencv::LoadLabels(const std::string &labelPath, std::m
     return APP_ERR_OK;
 }
 
-void Yolov3DetectionOpencv::SetYolov3PostProcessConfig(const InitParam &initParam,
+void Yolov3Detection::SetYolov3PostProcessConfig(const InitParam &initParam,
                                                        std::map<std::string, std::shared_ptr<void>> &config) {
     MxBase::ConfigData configData;
     const std::string checkTensor = initParam.checkTensor ? "true" : "false";
@@ -75,7 +75,7 @@ void Yolov3DetectionOpencv::SetYolov3PostProcessConfig(const InitParam &initPara
     config["labelPath"] = std::make_shared<std::string>(initParam.labelPath);
 }
 
-APP_ERROR Yolov3DetectionOpencv::Init(const InitParam &initParam) {
+APP_ERROR Yolov3Detection::Init(const InitParam &initParam) {
     deviceId_ = initParam.deviceId;
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
@@ -117,7 +117,7 @@ APP_ERROR Yolov3DetectionOpencv::Init(const InitParam &initParam) {
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::DeInit() {
+APP_ERROR Yolov3Detection::DeInit() {
     dvppWrapper_->DeInit();
     model_->DeInit();
     post_->DeInit();
@@ -125,7 +125,7 @@ APP_ERROR Yolov3DetectionOpencv::DeInit() {
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
+APP_ERROR Yolov3Detection::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
@@ -144,7 +144,7 @@ APP_ERROR Yolov3DetectionOpencv::ReadImage(const std::string &imgPath, MxBase::T
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
+APP_ERROR Yolov3Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -176,7 +176,7 @@ APP_ERROR Yolov3DetectionOpencv::Resize(const MxBase::TensorBase &inputTensor, M
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase> &inputs,
+APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inputs,
                                            std::vector<MxBase::TensorBase> &outputs) {
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
@@ -202,7 +202,7 @@ APP_ERROR Yolov3DetectionOpencv::Inference(const std::vector<MxBase::TensorBase>
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::PostProcess(const MxBase::TensorBase &tensor, 
+APP_ERROR Yolov3Detection::PostProcess(const MxBase::TensorBase &tensor, 
                                              const std::vector<MxBase::TensorBase> &outputs,
                                              std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
@@ -231,7 +231,7 @@ APP_ERROR Yolov3DetectionOpencv::PostProcess(const MxBase::TensorBase &tensor,
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::WriteResult(MxBase::TensorBase &tensor,
+APP_ERROR Yolov3Detection::WriteResult(MxBase::TensorBase &tensor,
                                             const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     APP_ERROR ret = tensor.ToHost();
@@ -283,7 +283,7 @@ APP_ERROR Yolov3DetectionOpencv::WriteResult(MxBase::TensorBase &tensor,
     return APP_ERR_OK;
 }
 
-APP_ERROR Yolov3DetectionOpencv::Process(const std::string &imgPath) {
+APP_ERROR Yolov3Detection::Process(const std::string &imgPath) {
     // process image
     MxBase::TensorBase inTensor;
     APP_ERROR ret = ReadImage(imgPath, inTensor);
