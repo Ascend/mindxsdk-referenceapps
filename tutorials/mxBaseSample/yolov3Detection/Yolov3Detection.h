@@ -55,10 +55,10 @@ protected:
                          const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
     void SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 private:
-    std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_;
-    std::shared_ptr<MxBase::ModelInferenceProcessor> model_;
+    std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_; // 封装DVPP基本编码、解码、扣图功能
+    std::shared_ptr<MxBase::ModelInferenceProcessor> model_; // 模型推理功能处理
     std::shared_ptr<Yolov3PostProcess> post_;
-    MxBase::ModelDesc modelDesc_ = {};
+    MxBase::ModelDesc modelDesc_ = {}; // 模型描述信息
     std::map<int, std::string> labelMap_ = {};
     uint32_t deviceId_ = 0;
 
