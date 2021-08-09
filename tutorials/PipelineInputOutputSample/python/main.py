@@ -41,7 +41,8 @@ def prepare_data():
 # 调取GetResultWithUniqueId接口，获取并打印结果
 def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
     if unique_id_sp < 0:
-        print("Failed to send data to stream.")
+        message = "Failed to send data to stream."
+        print(message)
         exit()
 
     # Obtain the inference result by specifying streamName and uniqueId.
@@ -69,7 +70,6 @@ def get_proto_buffer_sample(receive_key, receive_stream_name, receive_in_plugin_
         print("GetProtobuf error.errorCode=%d" % (infer_result_sample[0].errorCode))
         exit()
 
-    # 打印推理结果
     print("GetProtobuf errorCode=%d" % (infer_result_sample[0].errorCode))
     print("key: {}".format(str(infer_result_sample[0].messageName)))
 
