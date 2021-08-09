@@ -21,11 +21,11 @@ import sys
 import json
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import MxProtobufIn, InProtobufVector, StringVector, StreamManagerApi, MxDataInput, MxBufferInput, \
-    MxMetadataInput, MetadataInputVector
+from StreamManagerApi import MxProtobufIn, InProtobufVector, StringVector, StreamManagerApi, MxDataInput, \
+   MxBufferInput, MxMetadataInput, MetadataInputVector
 
 # 为SendProtobuf接口准备protobuf_vec参数
-def prepare_data(): 
+def prepare_data():
     vision_list_sample = MxpiDataType.MxpiVisionList()
     vision_vec_sample = vision_list_sample.visionVec.add()
     vision_vec_sample.visionData.dataStr = data_input.data
@@ -39,7 +39,7 @@ def prepare_data():
     return protobuf_vec_sample
 
 # 调取GetResultWithUniqueId接口，获取并打印结果
-def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name): 
+def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
     if unique_id_sp < 0:
         print("Failed to send data to stream.")
         exit()
@@ -214,7 +214,7 @@ if __name__ == '__main__':
         if infer_result.bufferOutput.data is None:
             print("bufferOutput nullptr")
             exit()
-        # print result
+        # 打印结果
         print("result3: {}".format(infer_result.bufferOutput.data.decode()))
 
     elif INTERFACE_TYPE == 4:
