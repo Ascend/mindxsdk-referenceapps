@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     streamName = b'detection'
     inPluginId = 0
-     
+    
     # 根据流名将检测目标传入流中
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 

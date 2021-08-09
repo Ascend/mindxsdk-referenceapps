@@ -214,14 +214,14 @@ void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo in
             }
             int classID = -1;
             float maxProb = scoreThresh_;
-            float classProb;
+            float classProb = 0.0;
 
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float *>
                         (netout.get())[bIdx + (info.bboxDim + OFFSETOBJECTNESS + c) * stride]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
-            if (classID < 0) continue;
+            if (classID < 0) {continue};
 
             MxBase::ObjectInfo det;
             int row = j / layer.width;
@@ -255,10 +255,10 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
                        j * (info.bboxDim + 1 + info.classNum);
             int oIdx = bIdx + info.bboxDim;
             float objectness = fastmath::sigmoid(static_cast<float *>(netout.get())[oIdx]);
-            if (objectness <= objectnessThresh_) continue;
+            if (objectness <= objectnessThresh_) {continue};
             int classID = -1;
             float maxProb = scoreThresh_;
-            float classProb;
+            float classProb = 0.0;
 
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
@@ -334,7 +334,7 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
                 CompareProb(classID, maxProb, classProb, c);
             }
 
-            if (classID < 0) continue;
+            if (classID < 0) {continue};
             MxBase::ObjectInfo det;
             int row = j / layer.width;
             int col = j % layer.width;

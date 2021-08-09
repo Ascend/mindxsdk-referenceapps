@@ -24,8 +24,8 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import MxProtobufIn, InProtobufVector, StringVector, StreamManagerApi, MxDataInput, MxBufferInput, \
     MxMetadataInput, MetadataInputVector
 
-def prepare_data():
-    # 为SendProtobuf接口准备protobuf_vec参数
+# 为SendProtobuf接口准备protobuf_vec参数
+def prepare_data(): 
     vision_list_sample = MxpiDataType.MxpiVisionList()
     vision_vec_sample = vision_list_sample.visionVec.add()
     vision_vec_sample.visionData.dataStr = data_input.data
@@ -38,9 +38,8 @@ def prepare_data():
     protobuf_vec_sample.push_back(protobuf)
     return protobuf_vec_sample
 
-
-def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
-    # 调取GetResultWithUniqueId接口，获取并打印结果
+# 调取GetResultWithUniqueId接口，获取并打印结果
+def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name): 
     if unique_id_sp < 0:
         print("Failed to send data to stream.")
         exit()
@@ -54,9 +53,8 @@ def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
     # print the infer result
     print("result: {}".format(infer_result_sample.data.decode()))
 
-
+# 调取GetProtobuf接口，获取并打印结果
 def get_proto_buffer_sample(receive_key, receive_stream_name, receive_in_plugin_id):
-    # 调取GetProtobuf接口，获取并打印结果
     key_vec_sample = StringVector()
     key_vec_sample.push_back(receive_key)
 
