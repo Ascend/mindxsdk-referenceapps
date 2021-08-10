@@ -76,7 +76,8 @@ apt-get install liblzma-dev
 
 1. 获取om模型
 > 由于gitee对于文件大小的限制，om模型超过100M无法上传，可以从以下链接获取并放到项目的 model 目录下：<br/>
-> [模型下载链接](https://pan.baidu.com/s/1Pw3Fq0FXs8OkEJboE7FTcw) 提取码：kj44
+> [om模型下载链接](https://pan.baidu.com/s/1AvJ1m_olBqvIOKoxKbt3aA) 提取码：4s4e
+> [pb模型下载链接](https://pan.baidu.com/s/1lUquThnwRv7zGcyIz2x_ww) 提取码：0wam
 2. run.sh脚本中LD_LIBRARY_PATH设置了ACL动态库链接路径为/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64，如果实际环境中路径不一致，需要替换为实际的目录。
 3. 如果环境变量中没有MX_SDK_HOME变量，则需要在run.sh脚本中设置MX_SDK_HOME变量为你实际的MX_SDK安装目录。
 4. 执行以下脚本
