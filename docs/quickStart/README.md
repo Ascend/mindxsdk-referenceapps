@@ -5,12 +5,12 @@ MindX SDK快速入门教程
 - **开发环境**
   - [环境安装](1-1安装SDK开发套件.md)
   - [IDE开发环境搭建](1-2IDE开发环境搭建.md)
-  - [MindStuido开发环境搭建](1-3MindStuido开发环境搭建)
+  - [MindStuido开发环境搭建](1-3MindStuido开发环境搭建.md)
   - [MIND_SDK总体结构](1-4MindX_SDK总体结构.md)
   
 - **初级开发**
   - [图像检测样例运行](2-1图像检测sample样例.md)
-  - [基于MindStuido的图像检测sample样例运行](2-2基于MindStuido的图像检测sample样例运行)
+  - [基于MindStuido的图像检测sample样例运行](2-2基于MindStuido的图像检测sample样例运行.md)
   - [pipeline输入输出操作](2-3pipeline输入输出操作.md)
   
 - **中级开发**
