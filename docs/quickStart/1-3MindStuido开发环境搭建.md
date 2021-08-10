@@ -1,5 +1,24 @@
 # 基于MindStuido的SDK应用开发环境搭建
 
+## 安装前准备
+
+将MindStudio安装在Windows服务器上时，Windows服务器为本地环境，Linux服务器为远端环境。
+
+#### 本地环境要求
+
+Windows 10 x86_64操作系统
+
+#### 本地安装依赖
+
+- JDK 11
+- Python3.7.5
+- MinGW
+- CMake
+
+具体安装步骤参考https://support.huaweicloud.com/devg-mindstudio302/atlasms_02_0423.html
+
+## 安装MindStudio
+
 **步骤1**  [MindStudio下载链接](https://www.hiascend.com/software/mindstudio/download)，下载Window系统的安装包，下载完成后点击下载的安装包安装MindStudio
 
 ![image-20210807143734419](img/image-20210807143734419.png)
