@@ -21,10 +21,10 @@ import sys
 import json
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import MxProtobufIn, InProtobufVector, StringVector, StreamManagerApi, MxDataInput, MxBufferInput, \
-    MxMetadataInput, MetadataInputVector
+from StreamManagerApi import MxProtobufIn, InProtobufVector, StringVector, StreamManagerApi, MxDataInput, \
+   MxBufferInput, MxMetadataInput, MetadataInputVector
 
-
+# 为SendProtobuf接口准备protobuf_vec参数
 def prepare_data():
     vision_list_sample = MxpiDataType.MxpiVisionList()
     vision_vec_sample = vision_list_sample.visionVec.add()
@@ -38,10 +38,11 @@ def prepare_data():
     protobuf_vec_sample.push_back(protobuf)
     return protobuf_vec_sample
 
-
+# 调取GetResultWithUniqueId接口，获取并打印结果
 def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
     if unique_id_sp < 0:
-        print("Failed to send data to stream.")
+        message = "Failed to send data to stream."
+        print(message)
         exit()
 
     # Obtain the inference result by specifying streamName and uniqueId.
@@ -53,11 +54,12 @@ def get_result_with_unique_id_sample(unique_id_sp, receive_stream_name):
     # print the infer result
     print("result: {}".format(infer_result_sample.data.decode()))
 
-
+# 调取GetProtobuf接口，获取并打印结果
 def get_proto_buffer_sample(receive_key, receive_stream_name, receive_in_plugin_id):
     key_vec_sample = StringVector()
     key_vec_sample.push_back(receive_key)
 
+    # GetProtobuf接口返回结果是MxProtobufOut结构的list
     infer_result_sample = stream_manager_api.GetProtobuf(receive_stream_name, receive_in_plugin_id, key_vec_sample)
 
     if infer_result_sample.size() == 0:
@@ -68,11 +70,10 @@ def get_proto_buffer_sample(receive_key, receive_stream_name, receive_in_plugin_
         print("GetProtobuf error.errorCode=%d" % (infer_result_sample[0].errorCode))
         exit()
 
-    # 打印推理结果
-    # print the infer result
     print("GetProtobuf errorCode=%d" % (infer_result_sample[0].errorCode))
     print("key: {}".format(str(infer_result_sample[0].messageName)))
 
+    # 用MxpiVisionList来接收MxProtobufOut的messageBuf
     result_sample = MxpiDataType.MxpiVisionList()
     result_sample.ParseFromString(infer_result_sample[0].messageBuf)
 
@@ -180,16 +181,19 @@ if __name__ == '__main__':
         vision_vec = vision_list.visionVec.add()
         vision_vec.visionData.dataStr = data_input.data
 
+        # 构建MxBufferInput对象
         buffer_input = MxBufferInput()
         buffer_input.mxpiFrameInfo = frame_info.SerializeToString()
         buffer_input.mxpiVisionInfo = vision_vec.SerializeToString()
         buffer_input.data = data_input.data
 
+        # 构建MxMetadataInput对象
         metedata_input = MxMetadataInput()
         metedata_input.dataSource = b'appsrc0'
         metedata_input.dataType = b"MxTools.MxpiVisionList"
         metedata_input.serializedMetadata = vision_list.SerializeToString()
 
+        # 构建MetadataInputVector对象
         metedata_vec = MetadataInputVector()
         metedata_vec.push_back(metedata_input)
 
@@ -197,7 +201,7 @@ if __name__ == '__main__':
         if error_code < 0:
             print("Failed to send data to stream.")
             exit()
-
+        # 构建GetResult接口参数
         data_source_vector = StringVector()
         data_source_vector.push_back(b'appsrc0')
 
@@ -210,7 +214,7 @@ if __name__ == '__main__':
         if infer_result.bufferOutput.data is None:
             print("bufferOutput nullptr")
             exit()
-        # print result
+        # 打印结果
         print("result3: {}".format(infer_result.bufferOutput.data.decode()))
 
     elif INTERFACE_TYPE == 4:

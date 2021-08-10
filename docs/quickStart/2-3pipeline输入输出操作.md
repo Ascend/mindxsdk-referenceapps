@@ -1,7 +1,8 @@
-# 2 pipeline输入输出操作
+# 2.3 pipeline输入输出操作
 **本章节中mxManufacture和mxVision可互相替换**
-## 2.1 业务流程对接接口介绍
-### 2.1.1 SendData-GetResult 数据流图
+
+## 2.3.1 业务流程对接接口介绍
+### 2.3.1.1 SendData-GetResult 数据流图
 - 用户使用SendData接口将图片数据发送给appsrc元件，inPluginId指定appsrc的编号，appsrc发送数据给pipline中的其他元件处理，处理结果发送给appsink元件，用户使用GetResult接口获取appsink的数据，其中outPluginId指定appsink编号。
 - 本套接口可以用于没有appsrc或appsink元件的场景（即不需要外部输入数据或调接口获取结果），例如将appsrc改成视频取流元件mxpi_rtspsrc时，不需要通过SendData发送数据，输出结果可以用GetResult获取。样例代码请参考SendData-GetResult接口样例代码。
 
@@ -12,9 +13,9 @@
 **图 1-1** SendData-GetResult 数据流图  
 ![截图.PNG](img/1621941610975.png '1621941610975.png ')
 
-
 SendData接口输入有三种传入参数方式
 以下是Python函数原型与输入参数说明，C++参数类似可参考C++流程管理API参考部分[SendData](https://support.huaweicloud.com/ug-mfac-mindxsdk201/atlasmx_02_0391.html)：
+
 ```
 def SendData(streamName: bytes, inPluginId: int, dataInput: MxDataInput) -> int:
     pass
@@ -48,7 +49,7 @@ dataBuffer|MxBufferInput|待发送的buffer数据。
 
 
 
-### 2.1.2 SendDataWithUniqueId-GetDataWithUniqueId 数据流图
+### 2.3.1.2 SendDataWithUniqueId-GetDataWithUniqueId 数据流图
 - 用户使用SendDataWithUniqueId接口将图片数据发送给appsrc元件，inPluginId（“当前固定为0”）指定appsrc元件的编号，返回整数uniqueId给用户，appsrc发送数据给pipline处理，将处理结果以uniqueId为key保存在outputMap中，用户使用GetDataWithUniqueId接口（**使用发送时获得的uniqueId作为入参**）取出与SendDataWithUniqueId对应的推理结果。样例代码请参考SendDataWithUniqueId-GetResultWithUniqueId样例代码。
 
 <span style="background-color:#92cddc;"><span style="font-size:18px;">**须知**</span></span>
@@ -81,7 +82,7 @@ dataBuffer|请参考MxDataInput。|待发送的数据。
 
 
 
-### 2.1.3 SendProtobuf-GetProtobuf 数据流图
+### 2.3.1.3 SendProtobuf-GetProtobuf 数据流图
 用户使用接口SendProtobuf将protobuf数据和key（用于将protobuf数据挂载至元数据中，使用该数据的元件可以通过这个key获取数据）批量或单个发送给appsrc元件，inPluginId指定appsrc的编号，appsrc发送数据给其他元件处理。元件处理完数据后，以元件名为key将处理结果保存至元数据中，最后通过GetProtobuf接口从元数据中取出想要获取的元件结果，输入一组key，便能获取key对应的protobuf数据。
 本套接口可以用于没有appsrc或appsink元件的场景（即不需要外部输入数据或调接口获取结果），例如将appsrc改成视频取流元件mxpi_rtspsrc时，不需要通过SendProtobuf发送数据，输出结果可以用GetProtobuf获取。样例代码请参考SendProtobuf-GetProtobuf样例代码。
 
@@ -124,8 +125,8 @@ SendDataWithUniqueId-GetDataWithUniqueId|图片|序列化输出结果|是 |否 |
 SendProtobuf-GetProtobuf |protobuf|protobuf|否| 是 |否 |支持单线程有序或多线程输出结果乱序。
 
 
-## 2.2 运行接口样例
-### 2.2.1 Clion运行C++样例代码
+## 2.3.2 运行接口样例
+### 2.3.2.1 Clion运行C++样例代码
 以下步骤是Clion运行pipeline输入输出样例的步骤说明，设置Clion操作相关的问题可以参考开发环境章节。样例运行也可参考README.md。
 #### 步骤 1 Clion开发环境搭建
 参见 IDE开发环境搭建--基于Clion开发调试章节，实现安装clion和远程环境连接。
@@ -186,7 +187,7 @@ Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见�
 | 0 | SendData 接口|(streamName: bytes, inPluginId: int, dataInput: MxDataInput)|  
 | 1 | SendDataWithUniqueId 接口|(streamName: bytes, elementName: bytes, dataInput: MxDataInput)|  
 | 2 | SendProtobuffer 接口|(streamName: bytes, elementName: bytes, metadataVec: MetadataInputVector, databuffer: MxBufferInput)|  
- 
+
 ####  步骤 6 查看输出结果
 结果打印 result:hello 则运行成功  
 ![image.png](img/1623236387023.png 'image.png')
@@ -199,7 +200,7 @@ Program arguments 传入[0,1,2]可以切换调用接口，对应关系可以见�
 
 
 
-### 2.2.2 运行Python样例代码
+### 2.3.2.2 运行Python样例代码
 以下步骤是pyCharm运行pipeline输入输出样例的步骤说明，设置pyCharm操作相关的问题可以参考开发环境章节。样例的命令行运行可参考README.md。
 #### 步骤 1 pyCharm开发环境搭建
 参见 IDE开发环境搭建--基于pyCharm开发调试章节，实现安装pyCharm和远程环境连接。
@@ -237,7 +238,7 @@ Program arguments 传入[1-9]可以切换调用接口，对应关系可以见表
 
 
 
- 
+
 ####  步骤 5 查看输出结果
 结果打印 result:success 则运行成功  
 

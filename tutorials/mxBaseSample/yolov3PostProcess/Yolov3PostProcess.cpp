@@ -85,6 +85,7 @@ APP_ERROR Yolov3PostProcess::DeInit() {
     return APP_ERR_OK;
 }
 
+// 判断Tensor是否合法
 bool Yolov3PostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) const {
     if (tensors.size() != (size_t) yoloType_) {
         LogError << "number of tensors (" << tensors.size() << ") " << "is unequal to yoloType_("
@@ -115,6 +116,7 @@ bool Yolov3PostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) c
     }
 }
 
+// 将处理好的推理结果放入ObjectInfo
 void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
                                               std::vector<std::vector<ObjectInfo>> &objectInfos,
                                               const std::vector<ResizedImageInfo> &resizedImageInfos) {
@@ -122,6 +124,7 @@ void Yolov3PostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &ten
     if (tensors.size() == 0) {
         return;
     }
+
     auto shape = tensors[0].GetShape();
     if (shape.size() == 0) {
         return;
@@ -181,7 +184,7 @@ APP_ERROR Yolov3PostProcess::Process(const std::vector<TensorBase> &tensors,
 
 /*
  * @description: Compare the confidences between 2 classes and get the larger one
- * @描述：比较两个类之间的信任度，得到较大的一个
+ * @描述：比较两个类之间的置信度，得到较大的一个
  */
 void Yolov3PostProcess::CompareProb(int &classID, float &maxProb, float classProb, int classNum) {
     if (classProb > maxProb) {
@@ -197,44 +200,29 @@ void Yolov3PostProcess::CodeDuplicationSetDet(float &x, float &y, float &width, 
     det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
     det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
 }
-/*
- * @description: Select the highest confidence class name for each predicted box
- * @param netout  The feature data which contains box coordinates, objectness value and confidence of each class
- * @param info  Yolo layer info which contains class number, box dim and so on
- * @param detBoxes  ObjectInfo vector where all ObjectInfoes's confidences are greater than threshold
- * @param stride  Stride of output feature data
- * @param layer  Yolo output layer
- */
-/*
- * @description:为每个预测框选择置信度最高的类名
- * @param netout 特征数据，包括盒子坐标、目标值和每个类的置信度
- * @param info Yolo Yolo层信息，包含类号、框尺寸等
- * @param detBoxes ObjectInfo向量，其中所有ObjectInfo的置信度都大于阈值
- * @param stride 输出特征数据的步长
- * @param layer Yolo输出层
- */
+
 void Yolov3PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo info,
                                         std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
-            int bIdx = (info.bboxDim + 1 + info.classNum) * stride * k + j; // begin index
-            int oIdx = bIdx + info.bboxDim * stride; // objectness index
-            // check obj
+            int bIdx = (info.bboxDim + 1 + info.classNum) * stride * k + j;
+            int oIdx = bIdx + info.bboxDim * stride;
+
             float objectness = fastmath::sigmoid(static_cast<float *>(netout.get())[oIdx]);
             if (objectness <= objectnessThresh_) {
                 continue;
             }
             int classID = -1;
             float maxProb = scoreThresh_;
-            float classProb;
-            // Compare the confidence of the 3 anchors, select the largest one
-            // 比较3个anchors的置信度，选择最大的一个
+            float classProb = 0.0;
+
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float *>
                         (netout.get())[bIdx + (info.bboxDim + OFFSETOBJECTNESS + c) * stride]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
-            if (classID < 0) continue;
+            if (classID < 0) {continue};
+
             MxBase::ObjectInfo det;
             int row = j / layer.width;
             int col = j % layer.width;
@@ -265,14 +253,13 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
         for (int k = 0; k < info.anchorDim; ++k) {
             int bIdx = (info.bboxDim + 1 + info.classNum) * stride * k +
                        j * (info.bboxDim + 1 + info.classNum);
-            int oIdx = bIdx + info.bboxDim; // objectness index
-            // check obj
+            int oIdx = bIdx + info.bboxDim;
             float objectness = fastmath::sigmoid(static_cast<float *>(netout.get())[oIdx]);
-            if (objectness <= objectnessThresh_) continue;
+            if (objectness <= objectnessThresh_) {continue};
             int classID = -1;
             float maxProb = scoreThresh_;
-            float classProb;
-            // Compare the confidence of the 3 anchors, select the largest one
+            float classProb = 0.0;
+
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx +
                                                                                  (info.bboxDim + OFFSETOBJECTNESS +
@@ -314,15 +301,24 @@ void Yolov3PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
  * @param stride  Stride of output feature data
  * @param layer  Yolo output layer
  */
-
+/*
+ * @description:为每个预测框选择置信度最高的类名
+ * @param netout 特征数据，包括盒子坐标、目标值和每个类的置信度
+ * @param info Yolo Yolo层信息，包含类号、框尺寸等
+ * @param detBoxes ObjectInfo容器，其中所有ObjectInfo的置信度都大于阈值
+ * @param stride 输出特征数据的步长
+ * @param layer Yolo输出层
+ */
 void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo info,
                                         std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     const int offsetY = 1;
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
+            // begin index
             int bIdx = (info.bboxDim + 1 + info.classNum) * info.anchorDim * j +
                        k * (info.bboxDim + 1 + info.classNum);
-            int oIdx = bIdx + info.bboxDim; // objectness index
+            // objectness index
+            int oIdx = bIdx + info.bboxDim;
             // check obj
             float objectness = fastmath::sigmoid(static_cast<float *>(netout.get())[oIdx]);
             if (objectness <= objectnessThresh_) {
@@ -337,16 +333,19 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
                         (netout.get())[bIdx + (info.bboxDim + OFFSETOBJECTNESS + c)]) * objectness;
                 CompareProb(classID, maxProb, classProb, c);
             }
-            if (classID < 0) continue;
+
+            if (classID < 0) {continue};
             MxBase::ObjectInfo det;
             int row = j / layer.width;
             int col = j % layer.width;
+            // 计算检测对象的中心点
             float x = (col + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx])) / layer.width;
             float y = (row + fastmath::sigmoid(static_cast<float *>(netout.get())[bIdx + offsetY])) / layer.height;
             float width = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETWIDTH]) *
                           layer.anchors[BIASESDIM * k] / info.netWidth;
             float height = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETHEIGHT]) *
                            layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
+            // 根据中心计算对象框坐标
             det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
             det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
             det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
@@ -370,7 +369,11 @@ void Yolov3PostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo in
                 3 outputlayer(eg. 13*13, 26*26, 52*52)
  * @param detBoxes  ObjectInfo vector where all ObjectInfoes's confidences are greater than threshold
  */
-
+/*
+ * @description:根据yolo层结构，将每个特征的锚盒数据封装到detBoxes中
+ * @param featLayerData 包含3个输出特征数据的容器
+ * @param detBoxes ObjectInfo容器，其中所有ObjectInfo的置信度都大于阈值
+ */
 void Yolov3PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLayerData,
                                      std::vector<MxBase::ObjectInfo> &detBoxes,
                                      const std::vector<std::vector<size_t>> &featLayerShapes, const int netWidth,
@@ -384,7 +387,9 @@ void Yolov3PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLaye
     for (int i = 0; i < yoloType_; ++i) {
         int widthIndex_ = modelType_ ? NCHW_WIDTHINDEX : NHWC_WIDTHINDEX;
         int heightIndex_ = modelType_ ? NCHW_HEIGHTINDEX : NHWC_HEIGHTINDEX;
+        // OutputLayer是yolov3每个输出池对应的信息
         OutputLayer layer = {featLayerShapes[i][widthIndex_], featLayerShapes[i][heightIndex_]};
+
         int logOrder = log(featLayerShapes[i][widthIndex_] * SCALE / netWidth) / log(BIASESDIM);
         int startIdx = (yoloType_ - 1 - logOrder) * netInfo.anchorDim * BIASESDIM;
         int endIdx = startIdx + netInfo.anchorDim * BIASESDIM;
@@ -407,6 +412,7 @@ void Yolov3PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLaye
     }
 }
 
+// 将biases字符串解析为int型数组存入biases_中
 APP_ERROR Yolov3PostProcess::GetBiases(std::string &strBiases) {
     if (biasesNum_ <= 0) {
         LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "Failed to get biasesNum (" << biasesNum_ << ").";

@@ -43,7 +43,7 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
         LogError << GetError(ret) << "Send failed.";
         return ret;
     }
-    // get stream output
+    // 获取输出数据
     MxStream::MxstDataOutput *mxstDataOutput = mxStreamManager->GetResult(streamName, outPluginId);
     if (mxstDataOutput == nullptr) {
         LogError << "mxstDataOutput is nullptr.";
@@ -73,7 +73,7 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
         LogError << GetError(ret) << "SendData two failed.";
         return ret;
     }
-    // get stream output
+    // 获取输出数据
     MxStream::MxstDataOutput *mxstDataOutput = mxStreamManager->GetResult(streamName, outPluginId);
     if (mxstDataOutput == nullptr) {
         LogError << "SendDataAndGetResult mxstDataOutput is nullptr.";
@@ -88,15 +88,15 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
 static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager> mxStreamManager,
                                       const std::string &streamName,
                                       const std::string &inElementName) {
+    // Stream接收的数据结构体，存储的图像数据
     MxStream::MxstBufferInput mxstBufferInput;
-
     std::string buffer = "hello";
     mxstBufferInput.dataSize = buffer.size();
     mxstBufferInput.dataPtr = (uint32_t *) &buffer[0];
 
     std::shared_ptr<MxTools::MxpiTextsInfo> mxpiTextsInfo = std::make_unique<MxTools::MxpiTextsInfo>();
     mxpiTextsInfo->add_text("hello");
-
+    // Stream接收的元数据结构体
     std::vector<MxStream::MxstMetadataInput> mxstMetadataInputVec;
     MxStream::MxstMetadataInput mxstMetadataInput;
     mxstMetadataInput.messagePtr = mxpiTextsInfo;
@@ -109,6 +109,7 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
         return ret;
     }
 
+    // 想要获取数据的插件
     std::vector<std::string> dataSourceVec = {"appsrc0"};
     MxStream::MxstBufferAndMetadataOutput mxstBufferAndMetadataOutput =
             mxStreamManager->GetResult(streamName, "appsink0", dataSourceVec);
@@ -120,10 +121,12 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
         LogError << "bufferOutput nullptr.";
         return APP_ERR_COMM_INVALID_POINTER;
     }
+    // 将buffer拷贝到字符串中存储
     std::string outBuffer((char *) mxstBufferAndMetadataOutput.bufferOutput->dataPtr,
                           mxstBufferAndMetadataOutput.bufferOutput->dataSize);
     LogInfo << "results:" << outBuffer;
 
+    // 打印元数据
     for (uint32_t i = 0; i < mxstBufferAndMetadataOutput.metadataVec.size(); i++) {
         auto metaData = mxstBufferAndMetadataOutput.metadataVec[i];
         LogInfo << metaData.dataPtr->DebugString();
@@ -227,6 +230,7 @@ static APP_ERROR sendProtobufferAndGetProtobuffer(std::shared_ptr<MxStream::MxSt
     }
     return APP_ERR_OK;
 }
+
 
 static APP_ERROR DetSendData(std::shared_ptr<MxStream::MxStreamManager> mxStreamManager, int ret) {
     if (ret != APP_ERR_OK) {

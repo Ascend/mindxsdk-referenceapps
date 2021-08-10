@@ -21,7 +21,7 @@
 #include "VideoProcess.h"
 
 namespace {
-    static AVFormatContext *formatContext = nullptr;
+    static AVFormatContext *formatContext = nullptr; // 视频流信息
     const uint32_t VIDEO_WIDTH = {视频宽度};
     const uint32_t VIDEO_HEIGHT = {视频高度};
     const uint32_t MAX_QUEUE_LENGHT = 1000;
@@ -37,6 +37,7 @@ APP_ERROR VideoProcess::StreamInit(const std::string &rtspUrl)
     AVDictionary *options = nullptr;
     av_dict_set(&options, "rtsp_transport", "tcp", 0);
     av_dict_set(&options, "stimeout", "3000000", 0);
+    // ffmpeg打开流媒体-视频流
     APP_ERROR ret = avformat_open_input(&formatContext, rtspUrl.c_str(), nullptr, &options);
     if (options != nullptr) {
         av_dict_free(&options);
@@ -45,12 +46,13 @@ APP_ERROR VideoProcess::StreamInit(const std::string &rtspUrl)
         LogError << "Couldn't open input stream " << rtspUrl.c_str() <<  " ret = " << ret;
         return APP_ERR_STREAM_NOT_EXIST;
     }
-
+    // 获取视频的相关信息
     ret = avformat_find_stream_info(formatContext, nullptr);
     if(ret != APP_ERR_OK){
         LogError << "Couldn't find stream information";
         return APP_ERR_STREAM_NOT_EXIST;
     }
+    // 打印视频信息
     av_dump_format(formatContext, 0, rtspUrl.c_str(), 0);
     return APP_ERR_OK;
 }
@@ -61,6 +63,7 @@ APP_ERROR VideoProcess::StreamDeInit()
     return APP_ERR_OK;
 }
 
+// 每进行一次视频帧解码会调用一次该函数，将解码后的帧信息存入对列中
 APP_ERROR VideoProcess::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, 
                                             void *userData)
 {
@@ -77,6 +80,7 @@ APP_ERROR VideoProcess::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase
         }
         LogInfo << "MxbsFree successfully";
     };
+    // 解码后的视频信息
     auto output = std::shared_ptr<MxBase::MemoryData>(new MxBase::MemoryData(buffer.get(),
                      (size_t)inputDataInfo.dataSize, MxBase::MemoryData::MEMORY_DVPP, inputDataInfo.frameId), deleter);
 
@@ -92,7 +96,9 @@ APP_ERROR VideoProcess::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase
 APP_ERROR VideoProcess::VideoDecodeInit()
 {
     MxBase::VdecConfig vdecConfig;
+    // 将解码函数的输入格式设为H264
     vdecConfig.inputVideoFormat = MxBase::MXBASE_STREAM_FORMAT_H264_MAIN_LEVEL;
+    // 将解码函数的输出格式设为YUV420
     vdecConfig.outputImageFormat = MxBase::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
     vdecConfig.deviceId = DEVICE_ID;
     vdecConfig.channelId = CHANNEL_ID;
@@ -126,6 +132,7 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
                                     const uint32_t &width, void *userData)
 {
     static uint32_t frameId = 0;
+    // 将帧数据从Host侧移到Device侧
     MxBase::MemoryData dvppMemory((size_t)streamData.size,
                                   MxBase::MemoryData::MEMORY_DVPP, DEVICE_ID);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dvppMemory, streamData);
@@ -133,6 +140,7 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
         LogError << "Failed to MxbsMallocAndCopy";
         return ret;
     }
+    // 构建DvppDataInfo结构体以便解码
     MxBase::DvppDataInfo inputDataInfo;
     inputDataInfo.dataSize = dvppMemory.size;
     inputDataInfo.data = (uint8_t *)dvppMemory.ptrData;
@@ -151,6 +159,7 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
     return APP_ERR_OK;
 }
 
+// 获取视频帧
 void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue, 
                             std::shared_ptr<VideoProcess> videoProcess)
 {
@@ -165,6 +174,7 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
     AVPacket pkt;
     while(!stopFlag){
         av_init_packet(&pkt);
+        // 读取视频帧
         APP_ERROR ret = av_read_frame(formatContext, &pkt);
         if(ret != APP_ERR_OK){
             LogError << "Read frame failed, continue";
@@ -176,6 +186,7 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
             continue;
         }
 
+        // 原始帧数据被存储在Host侧
         MxBase::MemoryData streamData((void *)pkt.data, (size_t)pkt.size,
                                       MxBase::MemoryData::MEMORY_HOST_NEW, DEVICE_ID);
         ret = videoProcess->VideoDecode(streamData, VIDEO_HEIGHT, VIDEO_WIDTH, (void*)blockingQueue.get());
@@ -191,14 +202,17 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
 APP_ERROR VideoProcess::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const uint32_t frameId,
                      const std::vector<std::vector<MxBase::ObjectInfo>> objInfos)
 {
+    // 将推理结果从Device侧移到Host侧
     MxBase::MemoryData memoryDst(resultInfo->size,MxBase::MemoryData::MEMORY_HOST_NEW);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, *resultInfo);
     if(ret != APP_ERR_OK){
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
+    // 初始化OpenCV图像信息矩阵
     cv::Mat imgYuv = cv::Mat(VIDEO_HEIGHT* YUV_BYTE_NU / YUV_BYTE_DE, VIDEO_WIDTH, CV_8UC1, memoryDst.ptrData);
     cv::Mat imgBgr = cv::Mat(VIDEO_HEIGHT, VIDEO_WIDTH, CV_8UC3);
+    // 颜色空间转换
     cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 
     std::vector<MxBase::ObjectInfo> info;
@@ -212,6 +226,7 @@ APP_ERROR VideoProcess::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInf
             }
         }
         info.push_back(objInfos[i][index]);
+        // 打印置信度最大推理结果
         LogInfo << "id: " << info[i].classId << "; lable: " << info[i].className
               << "; confidence: " << info[i].confidence
               << "; box: [ (" << info[i].x0 << "," << info[i].y0 << ") "
@@ -224,11 +239,14 @@ APP_ERROR VideoProcess::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInf
         const uint32_t lineType = 8;
         const float fontScale = 1.0;
 
+        // 在图像上绘制文字
         cv::putText(imgBgr, info[i].className, cv::Point(info[i].x0 + xOffset, info[i].y0 + yOffset),
                         cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
+        // 绘制矩形
         cv::rectangle(imgBgr,cv::Rect(info[i].x0, info[i].y0,
                                       info[i].x1 - info[i].x0, info[i].y1 - info[i].y0),
                       green, thickness);
+        // 把Mat类型的图像矩阵保存为图像到指定位置。
         std::string fileName = "./result/result" + std::to_string(frameId+1) + ".jpg";
         cv::imwrite(fileName, imgBgr);
     }
@@ -255,6 +273,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
     }
     while (!stopFlag) {
         std::shared_ptr<void> data = nullptr;
+        // 从队列中去出解码后的帧数据
         APP_ERROR ret = blockingQueue->Pop(data, QUEUE_POP_WAIT_TIME);
         if (ret != APP_ERR_OK) {
             LogError << "Pop failed";
@@ -266,6 +285,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         auto result = std::make_shared<MxBase::MemoryData>();
         result = std::static_pointer_cast<MxBase::MemoryData>(data);
 
+        // 图像缩放
         ret = yolov3Detection->ResizeFrame(result, VIDEO_HEIGHT, VIDEO_WIDTH,resizeFrame);
         if (ret != APP_ERR_OK) {
             LogError << "Resize failed";
@@ -275,6 +295,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         std::vector<MxBase::TensorBase> inputs = {};
         std::vector<MxBase::TensorBase> outputs = {};
         inputs.push_back(resizeFrame);
+        // 推理
         ret = yolov3Detection->Inference(inputs, outputs);
         if (ret != APP_ERR_OK) {
             LogError << "Inference failed, ret=" << ret << ".";
@@ -282,12 +303,14 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         }
 
         std::vector<std::vector<MxBase::ObjectInfo>> objInfos;
+        // 后处理
         ret = yolov3Detection->PostProcess(outputs, VIDEO_HEIGHT, VIDEO_WIDTH, objInfos);
         if (ret != APP_ERR_OK) {
             LogError << "PostProcess failed, ret=" << ret << ".";
             return;
         }
 
+        // 结果可视化
         ret = videoProcess->SaveResult(result, frameId, objInfos);
         if (ret != APP_ERR_OK) {
             LogError << "Save result failed, ret=" << ret << ".";

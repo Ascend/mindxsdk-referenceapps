@@ -26,6 +26,7 @@ namespace{
     const uint32_t VPC_H_ALIGN = 2;
 }
 
+// 加载标签文件
 APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap) {
     std::ifstream infile;
     // open label file
@@ -54,6 +55,7 @@ APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int
     return APP_ERR_OK;
 }
 
+// 设置配置参数
 void Yolov3Detection::SetYolov3PostProcessConfig(const InitParam &initParam,
                                                        std::map<std::string, std::shared_ptr<void>> &config) {
     MxBase::ConfigData configData;
@@ -102,6 +104,7 @@ APP_ERROR Yolov3Detection::Init(const InitParam &initParam) {
 
     std::map<std::string, std::shared_ptr<void>> config;
     SetYolov3PostProcessConfig(initParam, config);
+    //  初始化yolov3后处理对象
     post_ = std::make_shared<Yolov3PostProcess>();
     ret = post_->Init(config);
     if (ret != APP_ERR_OK) {
@@ -125,15 +128,19 @@ APP_ERROR Yolov3Detection::DeInit() {
     return APP_ERR_OK;
 }
 
+// 获取图像数据，将数据存入TensorBase中
 APP_ERROR Yolov3Detection::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
     MxBase::DvppDataInfo output = {};
+    // 图像解码
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
+    // 将数据转为到DEVICE侧，以便后续处理
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    // 对解码后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -147,6 +154,7 @@ APP_ERROR Yolov3Detection::ReadImage(const std::string &imgPath, MxBase::TensorB
 APP_ERROR Yolov3Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
+    // 还原为原始尺寸
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
     input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -159,6 +167,7 @@ APP_ERROR Yolov3Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase:
     resize.height = resizeHeight;
     resize.width = resizeWidth;
     MxBase::DvppDataInfo output = {};
+    // 图像缩放
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
     if (ret != APP_ERR_OK) {
         LogError << "VpcResize failed, ret=" << ret << ".";
@@ -166,6 +175,7 @@ APP_ERROR Yolov3Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase:
     }
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    // 对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -176,23 +186,28 @@ APP_ERROR Yolov3Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase:
     return APP_ERR_OK;
 }
 
+// 模型推理
 APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inputs,
                                            std::vector<MxBase::TensorBase> &outputs) {
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
+        // yolov3模型3个检测特征图尺寸（13 * 13 26 * 26 52 *52）
         for (size_t j = 0; j < modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
             shape.push_back((uint32_t)modelDesc_.outputTensors[i].tensorDims[j]);
         }
+        // 用3个检测特征图尺寸分别构建3个数据为空的tensor
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
         if (ret != APP_ERR_OK) {
             LogError << "TensorBaseMalloc failed, ret=" << ret << ".";
             return ret;
         }
+        // 将tensor存入outputs中
         outputs.push_back(tensor);
     }
     MxBase::DynamicInfo dynamicInfo = {};
+    // 设置类型为静态batch
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
     APP_ERROR ret = model_->ModelInference(inputs, outputs, dynamicInfo);
     if (ret != APP_ERR_OK) {
@@ -202,10 +217,12 @@ APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inpu
     return APP_ERR_OK;
 }
 
+// 后处理
 APP_ERROR Yolov3Detection::PostProcess(const MxBase::TensorBase &tensor, 
                                              const std::vector<MxBase::TensorBase> &outputs,
                                              std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
+    // 通过原始图像tensor构建ResizedImageInfo
     auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
@@ -240,7 +257,7 @@ APP_ERROR Yolov3Detection::WriteResult(MxBase::TensorBase &tensor,
         return ret;
     }
     auto shape = tensor.GetShape();
-    // 用输出原件信息初始化OpenCV图像信息矩阵
+    // 初始化OpenCV图像信息矩阵
     cv::Mat imgYuv = cv::Mat(shape[0], shape[1], CV_8UC1, tensor.GetBuffer());
     cv::Mat imgBgr = cv::Mat(shape[0] * YUV_BYTE_DE / YUV_BYTE_NU, shape[1], CV_8UC3);
     // 颜色空间转换
@@ -258,6 +275,7 @@ APP_ERROR Yolov3Detection::WriteResult(MxBase::TensorBase &tensor,
             }
         }
         resultInfo.push_back(objInfos[i][index]);
+        // 打印置信度最大推理结果
         LogInfo << "id: " << resultInfo[i].classId << "; lable: " << resultInfo[i].className
                 << "; confidence: " << resultInfo[i].confidence
                 << "; box: [ (" << resultInfo[i].x0 << "," << resultInfo[i].y0 << ") "
@@ -284,7 +302,6 @@ APP_ERROR Yolov3Detection::WriteResult(MxBase::TensorBase &tensor,
 }
 
 APP_ERROR Yolov3Detection::Process(const std::string &imgPath) {
-    // process image
     MxBase::TensorBase inTensor;
     APP_ERROR ret = ReadImage(imgPath, inTensor);
     if (ret != APP_ERR_OK) {

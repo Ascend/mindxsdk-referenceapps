@@ -23,6 +23,7 @@ namespace {
     const uint32_t VPC_H_ALIGN = 2;
 }
 
+// 加载标签文件
 APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap)
 {
     std::ifstream infile;
@@ -52,6 +53,7 @@ APP_ERROR Yolov3Detection::LoadLabels(const std::string &labelPath, std::map<int
     return APP_ERR_OK;
 }
 
+// 设置配置参数
 void Yolov3Detection::SetYolov3PostProcessConfig(const InitParam &initParam, std::map<std::string, 
                                                 std::shared_ptr<void>> &config)
 {
@@ -130,6 +132,7 @@ APP_ERROR Yolov3Detection::FrameDeInit()
 APP_ERROR Yolov3Detection::ResizeFrame(const std::shared_ptr<MxBase::MemoryData> frameInfo, const uint32_t &height,
                                        const uint32_t &width, MxBase::TensorBase &tensor)
 {
+    // 视频帧的原始数据
     MxBase::DvppDataInfo input = {};
     input.height = height;
     input.width = width;
@@ -145,13 +148,16 @@ APP_ERROR Yolov3Detection::ResizeFrame(const std::shared_ptr<MxBase::MemoryData>
     resize.width = resizeWidth;
 
     MxBase::DvppDataInfo output = {};
+    // 图像缩放
     APP_ERROR ret = yDvppWrapper->VpcResize(input, output, resize);
     if(ret != APP_ERR_OK){
         LogError << GetError(ret) << "VpcResize failed.";
         return ret;
     }
 
+    // 缩放后的图像信息
     MxBase::MemoryData outMemoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MEMORY_DVPP, deviceId);
+    // 对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(outMemoryData);
@@ -169,9 +175,11 @@ APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inpu
     auto dtypes = model->GetOutputDataType();
     for (size_t i = 0; i < modelDesc.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
+        // yolov3模型3个检测特征图尺寸（13 * 13 26 * 26 52 *52）
         for (size_t j = 0; j < modelDesc.outputTensors[i].tensorDims.size(); ++j) {
             shape.push_back((uint32_t)modelDesc.outputTensors[i].tensorDims[j]);
         }
+        // 用3个检测特征图尺寸分别构建3个数据为空的tensor
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DVPP, deviceId);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
         if (ret != APP_ERR_OK) {
@@ -182,13 +190,16 @@ APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inpu
     }
 
     MxBase::DynamicInfo dynamicInfo = {};
+    // 设置类型为静态batch
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
+    // 记录推理操作的开始时间
     auto startTime = std::chrono::high_resolution_clock::now();
     if(inputs[0].GetBuffer() == nullptr){
         LogError << "input is null";
         return APP_ERR_FAILURE;
     }
     APP_ERROR ret = model->ModelInference(inputs, outputs, dynamicInfo);
+    // 记录推理操作的结束时间
     auto endTime = std::chrono::high_resolution_clock::now();
     double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
     g_inferCost.push_back(costMs);
@@ -202,6 +213,7 @@ APP_ERROR Yolov3Detection::Inference(const std::vector<MxBase::TensorBase> &inpu
 APP_ERROR Yolov3Detection::PostProcess(const std::vector<MxBase::TensorBase> &outputs,const uint32_t &height,
                                        const uint32_t &width, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
+    // 构建ResizedImageInfo
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = width;
     imgInfo.heightOriginal = height;
