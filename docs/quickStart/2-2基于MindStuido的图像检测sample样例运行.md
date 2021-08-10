@@ -14,22 +14,22 @@
 
 启动MindStudio，导入下载的图像检测样例（模型文件已放入）
 
-![image-20210807151651100](.\img\image-20210807151651100.png)
+![image-20210807151651100](img/image-20210807151651100.png)
 
 导入配置按下图选择：
 
-![image-20210807161825690](.\img\image-20210807161825690.png)
+![image-20210807161825690](img/image-20210807161825690.png)
 
 ### 2.2.1.2 配置pipeline
 
 在test.pipeline文件中配置所需的模型路径与模型后处理插件路径。  
-![10.png](.\img\1623231415247.png '10.png')  
+![10.png](img/1623231415247.png '10.png')  
 
-![11.png](.\img\1623231423039.png '11.png')  
+![11.png](img/1623231423039.png '11.png')  
 
 后插件路径根据SDK安装路径决定，一般情况下无需修改。
 运行时如果出现找不到插件的报错，可以通过`find -name libyolov3postprocess.so`搜索找到路径后再更改pipeline中的值。  
-![12.png](.\img\1623231850273.png '12.png')
+![12.png](img/1623231850273.png '12.png')
 
 ### 2.2.1.3 配置环境变量
 
@@ -46,15 +46,15 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 
 **步骤1** 点击Build -> Build Configurations
 
-![image-20210809135333301](.\img\image-20210809135333301.png)
+![image-20210809135333301](img/image-20210809135333301.png)
 
 点击Build，编译成功后生成可执行文件sample
 
-![image-20210809112042341](.\img\image-20210809112042341.png)
+![image-20210809112042341](img/image-20210809112042341.png)
 
 **步骤2** 点击Run ->Edit Configurations，添加可执行文件路径
 
-![image-20210809113131480](.\img\image-20210809113131480.png)
+![image-20210809113131480](img/image-20210809113131480.png)
 
 **步骤3** 点击Run运行项目，得到检测结果
 
@@ -66,11 +66,11 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 
   点击Ascend ->Device Manager，Remote Work Path是项目同步到远程环境的父目录，双击可修改
 
-  ![image-20210809134942739](.\img\image-20210809134942739.png)
+  ![image-20210809134942739](img/image-20210809134942739.png)
 
   映射的远程项目文件由MindStudio自动生成在父目录下
 
-  ![image-20210809140143447](.\img\image-20210809140143447.png)
+  ![image-20210809140143447](img/image-20210809140143447.png)
 
 - MindStudio会在编译C++项目时将所有文件同步到远侧映射路径中，若两端文件不一致，本地文件会覆远程文件，本地不存在而只有服务器存在的文件也会被删除。
 
@@ -82,19 +82,19 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 
 **步骤2** File ->Settings ->Tools ->Deploy，点击Mappings，根据下图操作顺序设置远程映射路径
 
-![image-20210809143920966](.\img\image-20210809143920966.png)
+![image-20210809143920966](img/image-20210809143920966.png)
 
 **步骤3** 右击项目根目录文件夹，点击Deployment ->upload to...选择上传服务器，上传项目文件；点击Deployment ->download to...可将远程文件下载到本地
 
-![image-20210809144421207](.\img\image-20210809144421207.png)
+![image-20210809144421207](img/image-20210809144421207.png)
 
-![image-20210809144444572](.\img\image-20210809144444572.png)
+![image-20210809144444572](img/image-20210809144444572.png)
 
 ​           这一步设置成功后，便可以在IDE中修改代码，修改后重复上传操作，实同步两端项目文件；若只修改了单个文件，也可以右键单击修改文件，重复上述步骤上传或下载单个文件。
 
 **步骤4** 进入远程服务器项目所在目录，两端文件已同步完成
 
-![image-20210809150026824](.\img\image-20210809150026824.png)
+![image-20210809150026824](img/image-20210809150026824.png)
 
 命令行输入运行命令运行项目，结果保存在图片result.jpg中
 
