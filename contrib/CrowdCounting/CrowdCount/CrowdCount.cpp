@@ -191,7 +191,10 @@ APP_ERROR CrowdCountOpencv::PostProcess(const MxBase::TensorBase &tensor,
 APP_ERROR CrowdCountOpencv::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
 		                        const std::vector<MxBase::TensorBase> &postimage) {
     cv::Mat mergeImage;
-    cv::Mat dstimgBgr;    
+    cv::Mat dstimgBgr;
+    double alpha = 1.0;
+    double beta = 0.5;
+    double gamma = 0.0;    
     auto shape0 = outputs[0].GetShape();
     cv::Mat heatMap = cv::Mat(shape0[1], shape0[2], CV_8UC3, outputs[0].GetBuffer());
     auto image = postimage[0];
@@ -203,7 +206,7 @@ APP_ERROR CrowdCountOpencv::WriteResult(const std::vector<MxBase::TensorBase> &o
     auto shape = image.GetShape();
     cv::Mat imageYuv = cv::Mat(shape[0], shape[1], CV_8UC1,  image.GetBuffer());
     cv::cvtColor(imageYuv, dstimgBgr, cv::COLOR_YUV2BGR_NV12);
-    addWeighted(dstimgBgr, 1, heatMap, 0.5, 0, mergeImage);
+    addWeighted(dstimgBgr, alpha, heatMap, beta, gamma, mergeImage);
     cv::imwrite("./result.jpg", mergeImage);
     return APP_ERR_OK;
 }
