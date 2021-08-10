@@ -34,7 +34,7 @@ using namespace MxBase;
 using namespace cv;
 APP_ERROR CrowdCountPostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) {
     LogDebug << "Start to Init CrowdCountPostProcess.";
-    APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
+    APP_ERROR ret = PostProcessBase::Init(postConfig);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
         return ret;
@@ -47,99 +47,54 @@ APP_ERROR CrowdCountPostProcess::Init(const std::map<std::string, std::shared_pt
 
 APP_ERROR CrowdCountPostProcess::DeInit() {
     LogInfo << "Begin to deinitialize CrowdCountPostProcessor.";
-	LogInfo << "End to deinitialize CrowdCountPostProcessor.";
-	return APP_ERR_OK;
-}
-
-void CrowdCountPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
-					         std::vector<MxBase::TensorBase> &outputs,
-					         const std::vector<ResizedImageInfo> &resizedImageInfos) {
-    LogDebug << "CrowdCountPostProcess start to write results.";
-    if (tensors.size() == 0) {
-        return;
-    }
-    auto shape = tensors[0].GetShape();
-    if (shape.size() == 0) {
-        return;
-    }
-    uint32_t batchSize = shape[0];
-    for (uint32_t i = 0; i < batchSize; i++) { 
-	std::vector<std::shared_ptr<void>> featLayerData = {};
-        std::vector<std::vector<size_t>> featLayerShapes = {};
-        for (uint32_t j = 0; j < tensors.size(); j++) {
-            auto dataPtr = (uint8_t *) GetBuffer(tensors[j], i);
-            std::shared_ptr<void> tmpPointer;
-            tmpPointer.reset(dataPtr, uint8Deleter);
-            featLayerData.push_back(tmpPointer);
-            shape = tensors[j].GetShape();
-            std::vector<size_t> featLayerShape = {};
-            for (auto s : shape) {
-                featLayerShape.push_back((size_t) s);
-            }
-            featLayerShapes.push_back(featLayerShape);
-        }
-        GenerateHeatmap(tensors, outputs, resizedImageInfos[i].widthResize,
-                     resizedImageInfos[i].heightResize);
-    }
-    LogDebug << "CrowdCountPostProcess write results successed.";
-}
-
-APP_ERROR CrowdCountPostProcess::Process(const std::vector<TensorBase> &tensors,
-					 std::vector<MxBase::TensorBase> &outputs,
-				         const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                         const std::map<std::string, std::shared_ptr<void>> &paramMap) {
-    LogDebug << "Start to Process CrowdCountPostProcess.";
-    APP_ERROR ret = APP_ERR_OK;
-    if (resizedImageInfos.size() == 0) {
-        ret = APP_ERR_INPUT_NOT_MATCH;
-        LogError << GetError(ret) << "resizedImageInfos is not provided which is necessary for CrowdCountPostProcess.";
-        return ret;
-    }
-    auto inputs = tensors;
-    ret = CheckAndMoveTensors(inputs);
-    if (ret != APP_ERR_OK) {
-        LogError << GetError(ret) << "CheckAndMoveTensors failed.";
-        return ret;
-    }
-    ObjectDetectionOutput(inputs, outputs ,resizedImageInfos);
-    LogDebug << "End to Process CrowdCountPostProcess.";
+    LogInfo << "End to deinitialize CrowdCountPostProcessor.";
     return APP_ERR_OK;
 }
 
-void CrowdCountPostProcess::GenerateHeatmap(const std::vector <TensorBase> &tensors, 
-                                            std::vector<MxBase::TensorBase> &outputs,
-                                            const int netWidth, const int netHeight) {									 
-     NetInfo netInfo;   
-     netInfo.netWidth = netWidth;
-     netInfo.netHeight = netHeight;
-     cv::Mat heatMap;
-     cv::Mat colorMat;
-     float scale = 255.0/255;
-     double sigmaX = 5.0;
-     double sigmaY = 5.0;
-     double alpha = 0;
-     double beta = 255;
-     auto data = tensors[0];
-     auto shape = data.GetShape();
-     cv::Mat modelOutput = cv::Mat(shape[2], shape[3], CV_32FC1, data.GetBuffer());
-     modelOutput.convertTo(heatMap, CV_8UC1, scale);
-     GaussianBlur(heatMap, heatMap, Size(0, 0), sigmaX, sigmaY,BORDER_DEFAULT);
-     normalize(heatMap, heatMap, alpha, beta, NORM_MINMAX, CV_8UC1);
-     applyColorMap(heatMap, colorMat, COLORMAP_JET);
-     heatMap = colorMat;
-     void *ptr = tensors[0].GetBuffer();
-     float sum = std::accumulate((float*)ptr , (float*)ptr + tensors[0].GetSize(), 0.f);
-     sum /= 1000.f;
-     LogInfo << "person count sum:" << sum;
-     heatMap = colorMat;
-     shape = {1, shape[2], shape[3], 3};
-     MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
-     APP_ERROR  ret = MxBase::TensorBase::TensorBaseMalloc(output);
-     MxBase::MemoryData srcMemory(heatMap.data, heatMap.rows * heatMap.cols, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, 0);
-     MxBase::TensorBase heatMapTensor(srcMemory, true, shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8);
-     std::copy((uint8_t*)heatMap.data, (uint8_t*)heatMap.data + heatMapTensor.GetByteSize(), (uint8_t*)output.GetBuffer());
-     outputs.push_back(output);
-     LogDebug << "End to Process CrowdCountPostProcess.";
+APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors, 
+                                            std::vector<MxBase::TensorBase> &outputs) {									 
+    LogDebug << "Start to Process CrowdCountPostProcess.";
+    auto inputs = tensors;
+    APP_ERROR ret = APP_ERR_OK;
+    ret = CheckAndMoveTensors(inputs);
+    if (ret != APP_ERR_OK) {
+       LogError << GetError(ret) << "CheckAndMoveTensors failed.";
+       return ret;
+    }
+    cv::Mat heatMap;
+    cv::Mat colorMat;
+    float scale = 255.0/255;
+    double sigmaX = 5.0;
+    double sigmaY = 5.0;
+    double alpha = 0;
+    double beta = 255;
+    float division_num = 1000.0;
+    auto data = tensors[0];
+    auto shape = data.GetShape();
+    cv::Mat modelOutput = cv::Mat(shape[2], shape[3], CV_32FC1, data.GetBuffer());
+    modelOutput.convertTo(heatMap, CV_8UC1, scale);
+    GaussianBlur(heatMap, heatMap, Size(0, 0), sigmaX, sigmaY,BORDER_DEFAULT);
+    normalize(heatMap, heatMap, alpha, beta, NORM_MINMAX, CV_8UC1);
+    applyColorMap(heatMap, colorMat, COLORMAP_JET);
+    heatMap = colorMat;
+    void *ptr = tensors[0].GetBuffer();
+    float sum = std::accumulate((float*)ptr , (float*)ptr + tensors[0].GetSize(), 0.f);
+    sum /= division_num;
+    int result = round(sum);
+    LogInfo << "person count sum:" << result;
+    heatMap = colorMat;
+    shape = {1, shape[2], shape[3], 3};
+    MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
+    ret = MxBase::TensorBase::TensorBaseMalloc(output);
+    if (ret != APP_ERR_OK) {
+        LogError << GetError(ret) << "TensorBaseMalloc failed.";
+        return ret;
+    }
+    MxBase::MemoryData srcMemory(heatMap.data, heatMap.rows * heatMap.cols, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, 0);
+    MxBase::TensorBase heatMapTensor(srcMemory, true, shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8);
+    std::copy((uint8_t*)heatMap.data, (uint8_t*)heatMap.data + heatMapTensor.GetByteSize(), (uint8_t*)output.GetBuffer());
+    outputs.push_back(output);
+    LogDebug << "End to Process CrowdCountPostProcess.";
 }
 
 

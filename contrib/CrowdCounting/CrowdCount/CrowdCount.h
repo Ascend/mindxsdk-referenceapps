@@ -32,13 +32,12 @@ struct InitParam {
     uint32_t classNum;
     std::string labelPath;
 };
-class CrowdCountOpencv{
+class CrowdCount{
 public:
     APP_ERROR Init(const InitParam &initParam);
     APP_ERROR DeInit();
     APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const MxBase::TensorBase &tensor,const std::vector<MxBase::TensorBase> &outputs, 
-		         std::vector<MxBase::TensorBase> &objInfos);
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &images);
     APP_ERROR Process(const std::string &imgPath);
 protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);

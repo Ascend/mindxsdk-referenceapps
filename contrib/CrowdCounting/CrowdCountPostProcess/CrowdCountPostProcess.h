@@ -16,7 +16,7 @@
 
 #ifndef CrowdCountPicture_POST_PROCESS_H
 #define CrowdCountPicture_POST_PROCESS_H
-#include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
+#include "MxBase/PostProcessBases/PostProcessBase.h"
 #include <opencv2/opencv.hpp>
 
 namespace {
@@ -28,7 +28,7 @@ struct NetInfo{
     int netHeight;
     int classNum;
 };
-class CrowdCountPostProcess : public MxBase::ObjectPostProcessBase {
+class CrowdCountPostProcess : public MxBase::PostProcessBase {
 public:
     CrowdCountPostProcess() = default;
     ~CrowdCountPostProcess() = default;
@@ -36,16 +36,8 @@ public:
     CrowdCountPostProcess &operator=(const CrowdCountPostProcess &other);
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
     APP_ERROR DeInit() override;
-    APP_ERROR Process(const std::vector<MxBase::TensorBase> &tensors,std::vector<MxBase::TensorBase> &outputs,
-                                         const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos= {},
-                                         const std::map<std::string, std::shared_ptr<void>> &paramMap= {});
-protected:
-    void GenerateHeatmap(const std::vector <MxBase::TensorBase> &tensors,
-                          		    std::vector<MxBase::TensorBase> &outputs,
-                                           const int netWidth, const int netHeight);	   
-    void ObjectDetectionOutput(const std::vector<MxBase::TensorBase> &tensors,
-					      std::vector<MxBase::TensorBase> &outputs,
-                                              const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos= {});
+    APP_ERROR Process(const std::vector<MxBase::TensorBase> &tensors,std::vector<MxBase::TensorBase> &outputs);
+
 protected:
     int modelWidth_ = MODEL_WIDTH;
     int modelHeight_ = MODEL_HEIGHT;

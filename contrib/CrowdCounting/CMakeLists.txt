@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
-project(mxBase_sample)
+project(crowd_counting)
 
 include_directories(./CrowdCountPostProcess)
 include_directories(./CrowdCount)
 file(GLOB_RECURSE CROWDCOUNT_POSTPROCESS ${PROJECT_SOURCE_DIR}/CrowdCountPostProcess/*cpp)
 file(GLOB_RECURSE CROWDCOUNT ${PROJECT_SOURCE_DIR}/CrowdCount/*cpp)
-set(TARGET mxBase_sample)
+set(TARGET crowd_counting)
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -g -Wl,-z,relro,-z,now,-z -pie -Wall)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-set(MX_SDK_HOME "${SDK安装路径}")
+set(MX_SDK_HOME "/home/iscas_yu1/work/MindX_SDK/mxVision")
 
 include_directories(
         ${MX_SDK_HOME}/include
@@ -27,8 +27,8 @@ link_directories(
         /usr/local/Ascend/driver/lib64/
 )
 
-add_executable(mxBase_sample main.cpp ${CROWDCOUNT} ${CROWDCOUNT_POSTPROCESS})
-target_link_libraries(mxBase_sample
+add_executable(${TARGET} main.cpp ${CROWDCOUNT} ${CROWDCOUNT_POSTPROCESS})
+target_link_libraries(${TARGET}
         glog
         mxbase
         cpprest

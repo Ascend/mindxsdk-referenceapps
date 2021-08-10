@@ -27,7 +27,7 @@ namespace{
     const uint32_t VPC_H_ALIGN = 2;
 }
 
-void CrowdCountOpencv::SetCrowdCountPostProcessConfig(const InitParam &initParam,
+void CrowdCount::SetCrowdCountPostProcessConfig(const InitParam &initParam,
                                                        std::map<std::string, std::shared_ptr<void>> &config) {
     MxBase::ConfigData configData;
     const std::string checkTensor = initParam.checkTensor ? "true" : "false";
@@ -37,7 +37,7 @@ void CrowdCountOpencv::SetCrowdCountPostProcessConfig(const InitParam &initParam
     config["postProcessConfigContent"] = std::make_shared<std::string>(jsonStr);
 }
 
-APP_ERROR CrowdCountOpencv::Init(const InitParam &initParam) {
+APP_ERROR CrowdCount::Init(const InitParam &initParam) {
     deviceId_ = initParam.deviceId;
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
@@ -72,7 +72,7 @@ APP_ERROR CrowdCountOpencv::Init(const InitParam &initParam) {
     return APP_ERR_OK;
 }
 
-APP_ERROR CrowdCountOpencv::DeInit() {
+APP_ERROR CrowdCount::DeInit() {
     dvppWrapper_->DeInit();
     model_->DeInit();
     post_->DeInit();
@@ -80,7 +80,7 @@ APP_ERROR CrowdCountOpencv::DeInit() {
     return APP_ERR_OK;
 }
 
-APP_ERROR CrowdCountOpencv::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
+APP_ERROR CrowdCount::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
@@ -99,7 +99,7 @@ APP_ERROR CrowdCountOpencv::ReadImage(const std::string &imgPath, MxBase::Tensor
     return APP_ERR_OK;
 }
 
-APP_ERROR CrowdCountOpencv::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor){
+APP_ERROR CrowdCount::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor){
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -132,7 +132,7 @@ APP_ERROR CrowdCountOpencv::Resize(const MxBase::TensorBase &inputTensor, MxBase
 
 }
 
-APP_ERROR CrowdCountOpencv::Inference(const std::vector<MxBase::TensorBase> &inputs,
+APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
                                            std::vector<MxBase::TensorBase> &outputs) {
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
@@ -161,58 +161,44 @@ APP_ERROR CrowdCountOpencv::Inference(const std::vector<MxBase::TensorBase> &inp
     }
     return APP_ERR_OK;
 }
-APP_ERROR CrowdCountOpencv::PostProcess(const MxBase::TensorBase &tensor, 
-		                        const std::vector<MxBase::TensorBase> &outputs,
-					std::vector<MxBase::TensorBase> &objInfos) {
-    auto shape = tensor.GetShape();
-    MxBase::ResizedImageInfo imgInfo;
-    imgInfo.widthOriginal = shape[1];
-    imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
-    imgInfo.widthResize = 1408;
-    imgInfo.heightResize = 800;
-    imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
-    std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
-    imageInfoVec.push_back(imgInfo);
-    // use CrowdCountPostProcess post_;
-    APP_ERROR ret = post_->Process(outputs, objInfos, imageInfoVec);
 
+APP_ERROR CrowdCount::PostProcess(const std::vector<MxBase::TensorBase> &inputs,
+                                 std::vector<MxBase::TensorBase> &images)
+{
+    APP_ERROR ret = post_->Process(inputs, images);
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
-        return ret;
-    }
-    ret = post_->DeInit();
-    if (ret != APP_ERR_OK) {
-        LogError << "CrowdCounPostProcess DeInit failed";
         return ret;
     }
     return APP_ERR_OK;
 }
 
-APP_ERROR CrowdCountOpencv::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
+APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
 		                        const std::vector<MxBase::TensorBase> &postimage) {
     cv::Mat mergeImage;
     cv::Mat dstimgBgr;
     double alpha = 1.0;
     double beta = 0.5;
     double gamma = 0.0;    
-    auto shape0 = outputs[0].GetShape();
-    cv::Mat heatMap = cv::Mat(shape0[1], shape0[2], CV_8UC3, outputs[0].GetBuffer());
+    auto shape = outputs[0].GetShape();
+    cv::Mat heatMap = cv::Mat(shape[1], shape[2], CV_8UC3, outputs[0].GetBuffer());
     auto image = postimage[0];
     APP_ERROR ret  = image.ToHost();
     if (ret != APP_ERR_OK) {
       LogError << GetError(ret) << "ToHost Failed";
       return ret;
     }
-    auto shape = image.GetShape();
+    shape = image.GetShape();
     cv::Mat imageYuv = cv::Mat(shape[0], shape[1], CV_8UC1,  image.GetBuffer());
     cv::cvtColor(imageYuv, dstimgBgr, cv::COLOR_YUV2BGR_NV12);
+    //addWeighted(dstimgBgr, 1, heatMap, 0.5, 0, mergeImage);
     addWeighted(dstimgBgr, alpha, heatMap, beta, gamma, mergeImage);
     cv::imwrite("./result.jpg", mergeImage);
     return APP_ERR_OK;
 }
 
 
-APP_ERROR CrowdCountOpencv::Process(const std::string &imgPath) {
+APP_ERROR CrowdCount::Process(const std::string &imgPath) {
     // read image
     MxBase::TensorBase inTensor;
     APP_ERROR ret = ReadImage(imgPath, inTensor);
@@ -239,7 +225,7 @@ APP_ERROR CrowdCountOpencv::Process(const std::string &imgPath) {
     LogInfo << "Inference";
     //do postprocess
     std::vector<MxBase::TensorBase> heatmap = {};
-    ret = PostProcess(inTensor,outputs, heatmap);
+    ret = PostProcess(outputs, heatmap);
     if (ret != APP_ERR_OK) {
         LogError << "PostProcess failed, ret=" << ret << ".";
         return ret;
