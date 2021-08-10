@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
     InitParam initParam;
     InitCrowdCountParam(initParam);
-    auto crowdcount = std::make_shared<CrowdCountOpencv>();
+    auto crowdcount = std::make_shared<CrowdCount>();
     APP_ERROR ret = crowdcount->Init(initParam);
     if (ret != APP_ERR_OK) {
         LogError << "CrowdCount init failed, ret=" << ret << ".";
