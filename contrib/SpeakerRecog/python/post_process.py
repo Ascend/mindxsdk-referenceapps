@@ -34,7 +34,7 @@ def speaker_recognition(embedding, speaker_name, enroll_embedding_dir, thres=0.7
         print("There is no speaker in the voice print library!")
         print("Register the current speaker...")
         np.save(os.path.join(enroll_embedding_dir, speaker_name + ".npy"), embedding)
-        print(f"{speaker_name} registration complete!")
+        print("{} registration complete!".format(speaker_name))
     else:
         embedding = torch.tensor(embedding.reshape(1, -1))
         score_list = []
@@ -49,8 +49,8 @@ def speaker_recognition(embedding, speaker_name, enroll_embedding_dir, thres=0.7
             print("The speaker is not included in the voice print library")
             print("Register the current speaker...")
             np.save(os.path.join(enroll_embedding_dir, speaker_name + ".npy"), embedding)
-            print(f"{speaker_name} registration complete!")
+            print("{} registration complete!".format(speaker_name))
         else:
             max_index = score_list.index(max_score)
             result = enroll_speakers[max_index].split(".")[0]
-            print(f"The current audio {speaker_name}.wav  is from speaker {result}")
+            print("The current audio {}.wav  is from speaker {}".format(speaker_name, result))

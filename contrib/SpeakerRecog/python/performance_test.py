@@ -99,11 +99,13 @@ if __name__ == "__main__":
             res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
             ##################
             if index < 1:
-                enroll_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll"# register
+                # register
+                enroll_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll"
                 os.makedirs(enroll_embedding_save_dir, exist_ok=True)
                 np.save(os.path.join(enroll_embedding_save_dir, speaker + ".npy"), res)
             else:
-                eval_embedding_save_dir = f"/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval/{speaker}"
+                eval_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval/{}"\
+                    .format(speaker)
                 os.makedirs(eval_embedding_save_dir, exist_ok=True)
                 basename = os.path.basename(wav_path).replace(".wav", ".npz")
                 np.savez(os.path.join(eval_embedding_save_dir, basename),
@@ -111,7 +113,7 @@ if __name__ == "__main__":
                          speaker=speaker)
     print("Embedding extraction of the speaker is complete!")
     end = time.time()
-    print(f"{all_wav_num}条语句的推理时长：{end-start}")
+    print("{} samples' infer time：{}".format(all_wav_num, end-start))
     #####
     utils.get_trials("/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll",
                      "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval",

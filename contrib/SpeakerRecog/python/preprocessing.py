@@ -130,13 +130,13 @@ class BaseExtract(AudioTools):
 
     def _read_wav(self, wav_path, sr):
         '''
-        读取wav文件
+        read wav
         '''
         return librosa.load(wav_path, sr)
 
     def _normalize(self, x):
         '''
-        归一化
+        normalize
         '''
         y = x.astype(np.float32)
         normalization_factor = 1 / (np.max(np.abs(y))+1e-5)

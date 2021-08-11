@@ -20,15 +20,15 @@ def get_all_type_paths(file_dir, _type):
     """Gets the address of a file of the specified type in a folder
     Args:
         file_dir: Folder address
-        _type: file type（str）
+        _type: file type(str)
     Return:
-        file address（list）
+        file address(list)
     """
     _file_paths = []
     for root_dir, sub_dir, files in os.walk(file_dir):
-        for file in files:
-            if file.endswith(_type):
-                _file_paths.append(os.path.join(root_dir, file))
+        for _file in files:
+            if _file.endswith(_type):
+                _file_paths.append(os.path.join(root_dir, _file))
     return _file_paths
 
 
