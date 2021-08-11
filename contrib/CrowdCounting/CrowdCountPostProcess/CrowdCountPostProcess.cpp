@@ -82,6 +82,7 @@ APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors
     int result = round(sum);
     LogInfo << "person count sum:" << result;
     heatMap = colorMat;
+    //original image shape(H,W,C)
     shape = {1, shape[2], shape[3], 3};
     MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     ret = MxBase::TensorBase::TensorBaseMalloc(output);
