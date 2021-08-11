@@ -18,7 +18,8 @@ import utils
 import numpy as np
 from preprocessing import ExtractLogmel
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+
+from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector, MxDataInput
 
 if __name__ == "__main__":
     pipeline_path = "../pipeline/SpeakerRecog.pipeline"
@@ -36,7 +37,6 @@ if __name__ == "__main__":
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    #####################################
     extract_logmel = ExtractLogmel(padded_type="copy")
     wav_dir = "/home/tianyinghui/Data/data_aishell/wav/dev"
     speakers = os.listdir(wav_dir)
@@ -54,7 +54,7 @@ if __name__ == "__main__":
                                                                     scale_flag=False)
 
             tensor = feature[None]
-            ###########################
+
             inPluginId = 0
             tensorPackageList = MxpiDataType.MxpiTensorPackageList()
             tensorPackage = tensorPackageList.tensorPackageVec.add()
@@ -82,7 +82,6 @@ if __name__ == "__main__":
                 print("Failed to send data to stream.")
                 exit()
 
-            ####
             keyVec = StringVector()
             keyVec.push_back(b'mxpi_tensorinfer0')
             inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
@@ -97,7 +96,7 @@ if __name__ == "__main__":
             result = MxpiDataType.MxpiTensorPackageList()
             result.ParseFromString(inferResult[0].messageBuf)
             res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
-            ##################
+
             if index < 1:
                 # register
                 enroll_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll"
@@ -114,7 +113,7 @@ if __name__ == "__main__":
     print("Embedding extraction of the speaker is complete!")
     end = time.time()
     print("{} samples' infer time:{}".format(all_wav_num, end-start))
-    #####
+
     utils.get_trials("/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll",
                      "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval",
                      "/home/tianyinghui/Data/spk_data/embeddings/dev_eval_trails.txt")

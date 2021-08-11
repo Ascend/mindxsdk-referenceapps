@@ -68,9 +68,9 @@ def cal_eer(trails_path):
     for line in lines:
         line = line.strip().split(" ")
         if line[3] == "target":
-            target_scores.append(eval(line[2]))
+            target_scores.append(float(line[2]))
         else:
-            nontarget_scores.append(eval(line[2]))
+            nontarget_scores.append(float(line[2]))
     target_scores = sorted(target_scores)
     nontarget_scores = sorted(nontarget_scores)
     target_size = len(target_scores)

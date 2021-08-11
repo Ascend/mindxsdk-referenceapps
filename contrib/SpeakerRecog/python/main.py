@@ -14,7 +14,7 @@ from preprocessing import ExtractLogmel
 from post_process import speaker_recognition
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector, MxDataInput
 
 if __name__ == '__main__':
     # init stream manager
@@ -35,7 +35,6 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    #
     voice_print_library_path = "../voice_print_library"
     wav_path = "../test_wav/BAC009S0766W0422.wav"
     wav_name = os.path.basename(wav_path).split(".")[0]
@@ -43,9 +42,8 @@ if __name__ == '__main__':
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
                                                             feat_dim=64,
                                                             scale_flag=False)
-    tensor = feature[None]    # feature：(64, 1000)  tensor:(1, 64, 1000)
+    tensor = feature[None]
 
-    #####
     inPluginId = 0
     tensorPackageList = MxpiDataType.MxpiTensorPackageList()
     tensorPackage = tensorPackageList.tensorPackageVec.add()
@@ -74,7 +72,6 @@ if __name__ == '__main__':
         print("Failed to send data to stream.")
         exit()
 
-    ####
     keyVec = StringVector()
     keyVec.push_back(b'mxpi_tensorinfer0')
     inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
@@ -89,11 +86,7 @@ if __name__ == '__main__':
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(inferResult[0].messageBuf)
     res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
-    # print("output tensor is: ", res)
-    # print("shape", res.shape)
 
-    # post_processing, similarity measurement is made with the voice print library to give the recognition result.
-    # If the recognition result does not contain the current speaker, the voice print will be stored in the library
     speaker_recognition(res, wav_name, voice_print_library_path)
 
 

@@ -66,7 +66,7 @@ class AudioTools(object):
             feat_real_len: If filled: the time step without feature filling
                            If truncated: the time step after truncation
         """
-        feature_len = feature.shape[1]     # Time step (frame length)
+        feature_len = feature.shape[1]
         if max_len <= feature_len:
             padded_feat = feature[:, :max_len]
             feat_real_len = max_len
@@ -90,7 +90,6 @@ class AudioTools(object):
         Return:
             padded_feat: The feature after filled or truncated
         """
-        # print(feature)
         feature_len = feature.shape[1]
         if padded_type == "zero":
             padded_feat = np.zeros((feat_dim, max_len))
@@ -98,8 +97,10 @@ class AudioTools(object):
         elif padded_type == "copy":
             padded_feat = np.zeros((feat_dim, max_len))
             n = max_len // feature_len + 1
-            feature = np.tile(feature, (1, n))  # Copy it n times along the time axis
-            padded_feat[:, :] = feature[:, :max_len]  # truncate
+            # Copy it n times along the time axis
+            feature = np.tile(feature, (1, n))
+            # truncate
+            padded_feat[:, :] = feature[:, :max_len]
         else:
             raise TypeError("padded_type must be 'zero' or 'copy', but received {}".format(padded_type))
         return padded_feat
@@ -142,8 +143,8 @@ class BaseExtract(AudioTools):
         normalization_factor = 1 / (np.max(np.abs(y))+1e-5)
         y = y * normalization_factor
         return y
-    
-    def _standardize(self, x, mean_std_path:str=None):
+
+    def _standardize(self, x, mean_std_path=None):
         try:
             data = np.load(mean_std_path)
             mean = data["mean"]
@@ -160,7 +161,7 @@ class BaseExtract(AudioTools):
     @property
     def sr(self):
         return self._sr
-    
+
     @property
     def frame_length(self):
         return self._frame_length
@@ -202,8 +203,9 @@ class ExtractMfcc(BaseExtract):
         mfcc = librosa.feature.mfcc(S=librosa.power_to_db(mel_spectrogram), n_mfcc=13)  # (13, time_steps)
         mfcc_delta = librosa.feature.delta(mfcc)
         mfcc_delta_delta = librosa.feature.delta(mfcc_delta)
-        mfcc_comb = np.concatenate([mfcc, mfcc_delta, mfcc_delta_delta], axis=0)        
+        mfcc_comb = np.concatenate([mfcc, mfcc_delta, mfcc_delta_delta], axis=0)
         return mfcc_comb
+
 
 class ExtractLogmel(BaseExtract):
     @overrides
@@ -215,5 +217,5 @@ class ExtractLogmel(BaseExtract):
                                                          n_fft=(sr * self.frame_length) // 1000,
                                                          fmin=20,
                                                          fmax=sr // 2)
-        log_mel_spectrogram = librosa.power_to_db(mel_spectrogram)  # (feat_dim, time_steps)
+        log_mel_spectrogram = librosa.power_to_db(mel_spectrogram)
         return log_mel_spectrogram
