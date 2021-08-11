@@ -111,6 +111,7 @@ if __name__ == "__main__":
                 # embedding for register
                 enroll_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll"
                 os.makedirs(enroll_embedding_save_dir, exist_ok=True)
+                # save the embedding
                 np.save(os.path.join(enroll_embedding_save_dir, speaker + ".npy"), res)
             else:
                 # embedding for recognition
@@ -118,11 +119,13 @@ if __name__ == "__main__":
                     .format(speaker)
                 os.makedirs(eval_embedding_save_dir, exist_ok=True)
                 basename = os.path.basename(wav_path).replace(".wav", ".npz")
+                # save the embedding
                 np.savez(os.path.join(eval_embedding_save_dir, basename),
                          embedding=res,
                          speaker=speaker)
     print("Embedding extraction of the speaker is complete!")
     end = time.time()
+    # the duration of inference
     print("{} samples' infer time:{}".format(all_wav_num, end-start))
     # get trials files
     utils.get_trials("/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll",
