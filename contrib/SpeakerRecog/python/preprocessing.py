@@ -17,6 +17,7 @@ import librosa
 from sklearn import preprocessing
 from overrides import overrides
 
+
 class AudioTools(object):
     @classmethod
     def vad(cls, wav_data, sample_rate, frame_length):
@@ -74,7 +75,7 @@ class AudioTools(object):
             feat_real_len = feature_len
             padded_feat = cls._pad_feature(feature, feat_dim, max_len, padded_type)
         return padded_feat, feat_real_len
-    
+
     @staticmethod
     def _pad_feature(feature, feat_dim, max_len=1000, padded_type="zero"):
         """
@@ -104,6 +105,7 @@ class AudioTools(object):
         else:
             raise TypeError("padded_type must be 'zero' or 'copy', but received {}".format(padded_type))
         return padded_feat
+
 
 class BaseExtract(AudioTools):
     def __init__(self, frame_length=25, frame_shift=10, max_len=1000,
@@ -140,18 +142,18 @@ class BaseExtract(AudioTools):
         normalize
         '''
         y = x.astype(np.float32)
-        normalization_factor = 1 / (np.max(np.abs(y))+1e-5)
+        normalization_factor = 1 / (np.max(np.abs(y)) + 1e-5)
         y = y * normalization_factor
         return y
 
     def _standardize(self, x, mean_std_path=None):
-        try:
+        if mean_std_path:
             data = np.load(mean_std_path)
             mean = data["mean"]
             std = data["std"]
             x = (x.T - mean) / (std + 1e-6)
             x = x.T
-        except:
+        else:
             x = preprocessing.scale(x, axis=1)
         return x
 
@@ -200,7 +202,7 @@ class ExtractMfcc(BaseExtract):
                                                          n_fft=(sr * self.frame_length) // 1000,
                                                          fmin=20,
                                                          fmax=sr // 2)
-        mfcc = librosa.feature.mfcc(S=librosa.power_to_db(mel_spectrogram), n_mfcc=13)  # (13, time_steps)
+        mfcc = librosa.feature.mfcc(S=librosa.power_to_db(mel_spectrogram), n_mfcc=13)
         mfcc_delta = librosa.feature.delta(mfcc)
         mfcc_delta_delta = librosa.feature.delta(mfcc_delta)
         mfcc_comb = np.concatenate([mfcc, mfcc_delta, mfcc_delta_delta], axis=0)

@@ -49,8 +49,10 @@ def get_trials(enroll_dir, eval_dir, trials_path):
 
                 eval_embedding = torch.tensor(eval_embedding.reshape(1, -1))
                 enroll_embedding = torch.tensor(enroll_embedding.reshape(1, -1))
+                # Cosine similarity
                 score = F.cosine_similarity(eval_embedding, enroll_embedding)
                 score = score.numpy()
+                # save to trials file
                 if str(eval_speaker) == enroll_speaker:
                     text = enroll_speaker + " " + os.path.basename(eval_utter).split(".")[0] \
                            + " %.4f" % score + " target" + "\n"
@@ -64,6 +66,7 @@ def cal_eer(trails_path):
     """calculate eer"""
     target_scores = []
     nontarget_scores = []
+    # read trials file
     lines = open(trails_path, "r", encoding="utf-8").readlines()
     for line in lines:
         line = line.strip().split(" ")
@@ -71,6 +74,7 @@ def cal_eer(trails_path):
             target_scores.append(float(line[2]))
         else:
             nontarget_scores.append(float(line[2]))
+    # sort
     target_scores = sorted(target_scores)
     nontarget_scores = sorted(nontarget_scores)
     target_size = len(target_scores)
