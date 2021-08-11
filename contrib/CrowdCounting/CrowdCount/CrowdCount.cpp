@@ -28,7 +28,7 @@ namespace{
     const uint32_t RESIZE_WIDTH = 1408;
     const uint32_t RESIZE_HEIGHT = 800;
 }
-
+// 设置配置参数
 void CrowdCount::SetCrowdCountPostProcessConfig(const InitParam &initParam,
                                                        std::map<std::string, std::shared_ptr<void>> &config) {
     MxBase::ConfigData configData;
@@ -65,6 +65,7 @@ APP_ERROR CrowdCount::Init(const InitParam &initParam) {
     }
     std::map<std::string, std::shared_ptr<void>> config;
     SetCrowdCountPostProcessConfig(initParam, config);
+    // 初始化CrowdCount后处理对象
     post_ = std::make_shared<CrowdCountPostProcess>();
     ret = post_->Init(config);
     if (ret != APP_ERR_OK) {
@@ -81,7 +82,7 @@ APP_ERROR CrowdCount::DeInit() {
     MxBase::DeviceManager::GetInstance()->DestroyDevices();
     return APP_ERR_OK;
 }
-
+// 调用mxBase::DvppWrappe.DvppJpegDecode()函数完成图像解码，VpcResize()完成缩放
 APP_ERROR CrowdCount::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
@@ -89,8 +90,10 @@ APP_ERROR CrowdCount::ReadImage(const std::string &imgPath, MxBase::TensorBase &
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
+    // 将数据转为到DEVICE侧，以便后续处理
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    // 对解码后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -103,6 +106,7 @@ APP_ERROR CrowdCount::ReadImage(const std::string &imgPath, MxBase::TensorBase &
 
 APP_ERROR CrowdCount::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor){
     auto shape = inputTensor.GetShape();
+    // 还原为原始尺寸
     MxBase::DvppDataInfo input = {};
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
@@ -114,11 +118,13 @@ APP_ERROR CrowdCount::Resize(const MxBase::TensorBase &inputTensor, MxBase::Tens
     resize.height = RESIZE_HEIGHT;
     resize.width = RESIZE_WIDTH;
     MxBase::DvppDataInfo output = {};
+    // 图像缩放
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
     if (ret != APP_ERR_OK) {
         LogError << "VpcResize failed, ret=" << ret << ".";
         return ret;
     }
+    // 对缩放后图像对齐尺寸进行判定
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
@@ -131,15 +137,17 @@ APP_ERROR CrowdCount::Resize(const MxBase::TensorBase &inputTensor, MxBase::Tens
     return APP_ERR_OK;
 
 }
-
+// 模型推理
 APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
                                            std::vector<MxBase::TensorBase> &outputs) {
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
+	// 人群计数模型检测特征图尺寸
         for (size_t j = 0; j < modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
             shape.push_back((uint32_t) modelDesc_.outputTensors[i].tensorDims[j]);
 	}
+	// 用检测特征图尺寸分别为数据构建空的tensor
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
         if (ret != APP_ERR_OK) {
@@ -148,6 +156,7 @@ APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
         }
         outputs.push_back(tensor);
     }
+    // 设置类型为静态batch
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
     auto startTime = std::chrono::high_resolution_clock::now();
@@ -161,10 +170,11 @@ APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
     }
     return APP_ERR_OK;
 }
-
+// 后处理
 APP_ERROR CrowdCount::PostProcess(const std::vector<MxBase::TensorBase> &inputs,
                                  std::vector<MxBase::TensorBase> &images)
 {
+    // 使用CrowdCountPostProcess post_;
     APP_ERROR ret = post_->Process(inputs, images);
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
@@ -172,7 +182,7 @@ APP_ERROR CrowdCount::PostProcess(const std::vector<MxBase::TensorBase> &inputs,
     }
     return APP_ERR_OK;
 }
-
+// 输出人群计数结果
 APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
 		                        const std::vector<MxBase::TensorBase> &postimage) {
     cv::Mat mergeImage;
@@ -195,7 +205,6 @@ APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs
     cv::imwrite("./result.jpg", mergeImage);
     return APP_ERR_OK;
 }
-
 
 APP_ERROR CrowdCount::Process(const std::string &imgPath) {
     // read image
