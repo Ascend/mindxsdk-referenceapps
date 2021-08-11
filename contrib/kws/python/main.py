@@ -96,7 +96,7 @@ if __name__ == '__main__':
                          params["data"]["keyword_pinyin_dict"],
                          params["data"]["pinyin2char"])
 
-    print(f"{wav_path}：{predict_text }")
+    print("{}: {}".format(wav_path, predict_text))
 
 
 

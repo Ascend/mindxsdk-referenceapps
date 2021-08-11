@@ -126,7 +126,7 @@ def infer(model_output, seq_len, ind2pinyin, keyword_pinyin_dict, pinyin2char):
     pred_matrix = torch.from_numpy(np.array(pred_matrix))
     decode_matrix = F.softmax(pred_matrix, dim=-1)
     decode_matrix = decode_matrix.numpy()
-    # ctc解码
+    # ctc decoding
     predict_id = ctc_decode(decode_matrix[:seq_len, :], score=0.1)
     predict_text = convert_index_to_text(ind2pinyin,
                                          keyword_pinyin_dict,

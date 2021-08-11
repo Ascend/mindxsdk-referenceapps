@@ -138,8 +138,8 @@ if __name__ == "__main__":
     ave_frr = (total_count - correct_count) / total_count if total_count > 0 else 1
     scale_factor = 10
     ave_far = (detect_count - correct_count) / (len(keyword_list) * (total_time_duration / 3600) * scale_factor)
-    print("{}条语句的总时长{}".format(len(wav_list), total_time_duration))
-    print("{}条语句的推理时长{}".format(len(wav_list), end-begin))
+    print("{} samples' total time{}".format(len(wav_list), total_time_duration))
+    print("{} samples' infer time{}".format(len(wav_list), end-begin))
     print("FRR: {}".format(ave_frr))
     print("FAR: {}".format(ave_far))
 
