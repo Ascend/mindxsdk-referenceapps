@@ -25,6 +25,8 @@ namespace{
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
+    const uint32_t RESIZE_WIDTH = 1408;
+    const uint32_t RESIZE_HEIGHT = 800;
 }
 
 void CrowdCount::SetCrowdCountPostProcessConfig(const InitParam &initParam,
@@ -108,11 +110,9 @@ APP_ERROR CrowdCount::Resize(const MxBase::TensorBase &inputTensor, MxBase::Tens
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
-    const uint32_t resizeHeight = 800;
-    const uint32_t resizeWidth = 1408;
     MxBase::ResizeConfig resize = {};
-    resize.height = resizeHeight;
-    resize.width = resizeWidth;
+    resize.height = RESIZE_HEIGHT;
+    resize.width = RESIZE_WIDTH;
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
     if (ret != APP_ERR_OK) {
@@ -139,7 +139,7 @@ APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
         std::vector<uint32_t> shape = {};
         for (size_t j = 0; j < modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
             shape.push_back((uint32_t) modelDesc_.outputTensors[i].tensorDims[j]);
-        }
+	}
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
         if (ret != APP_ERR_OK) {
@@ -191,7 +191,6 @@ APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs
     shape = image.GetShape();
     cv::Mat imageYuv = cv::Mat(shape[0], shape[1], CV_8UC1,  image.GetBuffer());
     cv::cvtColor(imageYuv, dstimgBgr, cv::COLOR_YUV2BGR_NV12);
-    //addWeighted(dstimgBgr, 1, heatMap, 0.5, 0, mergeImage);
     addWeighted(dstimgBgr, alpha, heatMap, beta, gamma, mergeImage);
     cv::imwrite("./result.jpg", mergeImage);
     return APP_ERR_OK;
