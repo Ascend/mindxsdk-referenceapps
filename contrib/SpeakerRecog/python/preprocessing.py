@@ -24,8 +24,8 @@ class AudioTools(object):
         The audio is roughly removed from both ends of the mute, single threshold short time average amplitude
         Args:
             wav_data:  audio data
-            sample_rate: sample rate（int）
-            frame_length: （frame length/ms）
+            sample_rate: sample rate(int)
+            frame_length: (frame length/ms)
         Return:
             audio data after thr vad(numpy)
         """
