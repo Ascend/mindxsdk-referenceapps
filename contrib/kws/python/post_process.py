@@ -28,7 +28,8 @@ def ctc_decode(matrix, spike_thres=0.3, score=0.5, continue_frames=10):
     """
     np.set_printoptions(precision=4, threshold=np.inf,
                         suppress=True)
-    matrix = matrix[:, :-1]  # Remove the CTC blank
+    # Remove the CTC blank
+    matrix = matrix[:, :-1]
     # Gets the initial spike when the sum of all probabilities for a frame is greater than a certain threshold
     init_spike_index = []
     for index, line in enumerate(matrix):
@@ -122,7 +123,7 @@ def infer(model_output, seq_len, ind2pinyin, keyword_pinyin_dict, pinyin2char):
         predict_text
     """
     # reshape
-    pred_matrix = model_output.reshape(-1, 14)      # 14 is the total number of categories
+    pred_matrix = model_output.reshape(-1, 14)
     pred_matrix = torch.from_numpy(np.array(pred_matrix))
     decode_matrix = F.softmax(pred_matrix, dim=-1)
     decode_matrix = decode_matrix.numpy()

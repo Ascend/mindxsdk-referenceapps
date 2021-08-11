@@ -13,7 +13,7 @@ from preprocessing import ExtractLogmel
 from post_process import infer
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector, MxDataInput
 
 if __name__ == '__main__':
     # init stream manager
@@ -40,9 +40,8 @@ if __name__ == '__main__':
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
                                                             params["data"]["num_mel_bins"],
                                                             scale_flag=True)
-    tensor = feature[None]    # feature：(80, 1464)  tensor:(1, 80, 1464)
+    tensor = feature[None]
 
-    #####
     inPluginId = 0
     tensorPackageList = MxpiDataType.MxpiTensorPackageList()
     tensorPackage = tensorPackageList.tensorPackageVec.add()
@@ -71,7 +70,6 @@ if __name__ == '__main__':
         print("Failed to send data to stream.")
         exit()
 
-    ####
     keyVec = StringVector()
     keyVec.push_back(b'mxpi_tensorinfer0')
     inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
@@ -88,8 +86,8 @@ if __name__ == '__main__':
     res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
     print("output tensor is: ", res)
 
-    # postprocessing
-    seq_len = feat_real_len // 4      # The actual output length of the original data after the model
+    # The actual output length of the original data after the model
+    seq_len = feat_real_len // 4
     predict_text = infer(res,
                          seq_len,
                          params["data"]["ind2pinyin"],

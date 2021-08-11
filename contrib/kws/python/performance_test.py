@@ -18,7 +18,7 @@ from utils import read_conf, read_info
 from preprocessing import ExtractLogmel
 from post_process import infer
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector, MxDataInput
 
 if __name__ == "__main__":
     params = read_conf("..data/data.yaml")
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     total_time_duration = sum(time_list)
     detect_result = []
 
-    # ####init stream manager
+    # init stream manager
     pipeline_path = "../pipeline/crnn_ctc.pipeline"
     streamName = b'kws'
     streamManagerApi = StreamManagerApi()
@@ -54,7 +54,6 @@ if __name__ == "__main__":
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    ######
 
     print("========infer start=========")
     extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
@@ -91,7 +90,6 @@ if __name__ == "__main__":
             print("Failed to send data to stream.")
             exit()
 
-        ####
         keyVec = StringVector()
         keyVec.push_back(b'mxpi_tensorinfer0')
         inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
@@ -106,8 +104,8 @@ if __name__ == "__main__":
         result = MxpiDataType.MxpiTensorPackageList()
         result.ParseFromString(inferResult[0].messageBuf)
         res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
-        # postprocessing
-        seq_len = feat_real_len // 4  # The actual output length of the original data after the model
+        # The actual output length of the original data after the model
+        seq_len = feat_real_len // 4
         predict_text = infer(res,
                              seq_len,
                              params["data"]["ind2pinyin"],
@@ -116,7 +114,6 @@ if __name__ == "__main__":
         detect_result.append(predict_text)
     end = time.time()
     print("========infer end=========")
-    #
     keyword_list = params["data"]["keyword_list"]
     total_keywords_num = [0 for _ in keyword_list]
     detect_keywords_num = [0 for _ in keyword_list]
