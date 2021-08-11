@@ -72,10 +72,10 @@ def read_info(info_path, max_duration=20., min_duration=1.):
     """
     Args:
         info_path: Save path of the data information file
-        max_duration: （float）
-        min_duration: （float）
+        max_duration: (float)
+        min_duration: (float)
     Return:
-        json列表
+        json
     """
     info = []
     with open(info_path, "r", encoding="utf-8") as f:

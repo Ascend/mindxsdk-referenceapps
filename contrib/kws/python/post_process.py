@@ -42,7 +42,7 @@ def ctc_decode(matrix, spike_thres=0.3, score=0.5, continue_frames=10):
     group_list = []
     final_spike_index = []
     group_list.append(init_spike_index[0])
-    previous_label = np.argmax(matrix[init_spike_index[0], :])  # 第一个spike所对应的label
+    previous_label = np.argmax(matrix[init_spike_index[0], :])
     for i in range(1, len(init_spike_index)):
         if init_spike_index[i] == init_spike_index[i - 1] + 1:
             current_label = np.argmax(matrix[init_spike_index[i], :])
