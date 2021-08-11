@@ -113,7 +113,7 @@ if __name__ == "__main__":
                          speaker=speaker)
     print("Embedding extraction of the speaker is complete!")
     end = time.time()
-    print("{} samples' infer time：{}".format(all_wav_num, end-start))
+    print("{} samples' infer time:{}".format(all_wav_num, end-start))
     #####
     utils.get_trials("/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll",
                      "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval",
