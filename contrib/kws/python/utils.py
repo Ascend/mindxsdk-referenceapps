@@ -28,7 +28,7 @@ def generate_label(keyword_list):
     kws_pinyin_dict = dict()
     kws_label_dict = dict()
     for index, kws in enumerate(keyword_list):
-        kws_pinyin = pypinyin.pinyin(kws, heteronym=True)  # 有调音节
+        kws_pinyin = pypinyin.pinyin(kws, heteronym=True)
         kws_pinyin = [x[0] for x in kws_pinyin]
         kws_label_dict[kws] = kws_pinyin
         all_kws_pinyin.extend(kws_pinyin)
