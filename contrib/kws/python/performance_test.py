@@ -21,7 +21,7 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector, MxDataInput
 
 if __name__ == "__main__":
-    # Read parameter file
+    # read parameter file
     params = read_conf("..data/data.yaml")
     # get the information of the test data
     data_info_dir = os.path.join(params["data"]["data_info_dir"], "test")
@@ -43,6 +43,7 @@ if __name__ == "__main__":
         text_list.append(json_line["text"])
     # the total duration of the test data
     total_time_duration = sum(time_list)
+    # the text of predictions
     detect_result = []
 
     # init stream manager
@@ -63,6 +64,7 @@ if __name__ == "__main__":
         exit()
 
     print("========infer start=========")
+    # infer start
     # extract feature
     extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
     begin = time.time()
@@ -118,6 +120,7 @@ if __name__ == "__main__":
         result.ParseFromString(inferResult[0].messageBuf)
         # convert the inference result to Numpy array
         res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
+        # post_processing
         # The actual output length of the original data after the model
         seq_len = feat_real_len // 4
         # decoding
@@ -129,8 +132,10 @@ if __name__ == "__main__":
                              params["data"]["pinyin2char"])
         detect_result.append(predict_text)
     end = time.time()
+    # infer end
     print("========infer end=========")
-    # Calculate evaluation index
+    # calculate evaluation index
+    # get the list of keywords
     keyword_list = params["data"]["keyword_list"]
     total_keywords_num = [0 for _ in keyword_list]
     detect_keywords_num = [0 for _ in keyword_list]
@@ -157,6 +162,7 @@ if __name__ == "__main__":
     # False alarm rate
     scale_factor = 10
     ave_far = (detect_count - correct_count) / (len(keyword_list) * (total_time_duration / 3600) * scale_factor)
+    # print the result of inference
     print("{} samples' total time{}".format(len(wav_list), total_time_duration))
     print("{} samples' infer time{}".format(len(wav_list), end-begin))
     print("FRR: {}".format(ave_frr))

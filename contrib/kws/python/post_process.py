@@ -76,6 +76,11 @@ def ctc_decode(matrix, spike_thres=0.3, score=0.5, continue_frames=10):
 
 
 def get_output(matrix, score):
+    """
+    :param matrix: matrix after greedy search
+    :param score: threshold
+    :return: sequence of decodeing
+    """
     result_list = []
     for index, line in enumerate(matrix):
         if np.max(line) > score:

@@ -118,6 +118,12 @@ class BaseExtract(AudioTools):
         self._mean_std_path = mean_std_path
 
     def extract_feature(self, wav_path, feat_dim, scale_flag=False):
+        """
+        :param wav_path: audio path
+        :param feat_dim: the dimension of feature
+        :param scale_flag: True or False
+        :return: feature, feature_len
+        """
         try:
             wav, sr = self._read_wav(wav_path, self.sr)
         except:
@@ -132,21 +138,33 @@ class BaseExtract(AudioTools):
         return wav_feature, feat_real_len
 
     def _read_wav(self, wav_path, sr):
-        '''
-        read wav
-        '''
+        """read wav
+        Args:
+            wav_path:audio path
+            sr: sample rate
+        Return:
+            sample_data
+        """
         return librosa.load(wav_path, sr)
 
     def _normalize(self, x):
-        '''
-        normalize
-        '''
+        """normalize
+        Args:
+            x:input
+        """
         y = x.astype(np.float32)
         normalization_factor = 1 / (np.max(np.abs(y)) + 1e-5)
         y = y * normalization_factor
         return y
 
     def _standardize(self, x, mean_std_path=None):
+        """standardize
+        Args:
+            x:input
+            mean_std_path:file of mean and std
+        Return:
+            data after standardized
+        """
         if mean_std_path:
             data = np.load(mean_std_path)
             mean = data["mean"]
@@ -195,6 +213,12 @@ class BaseExtract(AudioTools):
 class ExtractMfcc(BaseExtract):
     @overrides
     def _feature_extract(self, wav, sr, feat_dim):
+        """
+        :param wav: sample data
+        :param sr: sample rate
+        :param feat_dim: the dimension of feature
+        :return:
+        """
         mel_spectrogram = librosa.feature.melspectrogram(wav,
                                                          sr=sr,
                                                          n_mels=feat_dim,
@@ -212,6 +236,12 @@ class ExtractMfcc(BaseExtract):
 class ExtractLogmel(BaseExtract):
     @overrides
     def _feature_extract(self, wav, sr, feat_dim):
+        """
+        :param wav: sample data
+        :param sr: sample rate
+        :param feat_dim: the dimension of feature
+        :return:
+        """
         mel_spectrogram = librosa.feature.melspectrogram(wav,
                                                          sr=sr,
                                                          n_mels=feat_dim,
