@@ -39,7 +39,7 @@ if __name__ == '__main__':
     extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
                                                             params["data"]["num_mel_bins"],
-                                                            scale_flag=True)   # 使用mean_std对特征标准化
+                                                            scale_flag=True)   
     tensor = feature[None]    # feature：(80, 1464)  tensor:(1, 80, 1464)
 
     #####

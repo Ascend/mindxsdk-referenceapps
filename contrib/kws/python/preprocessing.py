@@ -24,8 +24,8 @@ class AudioTools(object):
         The audio is roughly removed from both ends of the mute, single threshold short time average amplitude
         Args:
             wav_data:  audio data
-            sample_rate: sample rate（int）
-            frame_length: （frame length/ms）
+            sample_rate: sample rate(int)
+            frame_length: (frame length/ms)
         Return:
             audio data after thr vad(numpy)
         """
@@ -130,13 +130,13 @@ class BaseExtract(AudioTools):
 
     def _read_wav(self, wav_path, sr):
         '''
-        读取wav文件
+        read wav
         '''
         return librosa.load(wav_path, sr)
 
     def _normalize(self, x):
         '''
-        归一化
+        normalize
         '''
         y = x.astype(np.float32)
         normalization_factor = 1 / (np.max(np.abs(y))+1e-5)
