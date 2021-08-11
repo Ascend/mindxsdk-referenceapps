@@ -126,8 +126,8 @@ class BaseExtract(AudioTools):
         """
         try:
             wav, sr = self._read_wav(wav_path, self.sr)
-        except:
-            raise ValueError("Read file {} filed".format(wav_path))
+        except ValueError("Read file {} filed".format(wav_path)) as e:
+            raise e
         wav = self.vad(wav_data=wav, sample_rate=sr, frame_length=20)
         wav = self._normalize(wav)
         wav_feature = self._feature_extract(wav, sr, feat_dim)
