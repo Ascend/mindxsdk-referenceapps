@@ -71,6 +71,11 @@ def ctc_decode(matrix, spike_thres=0.3, score=0.5, continue_frames=10):
             max_value_index = np.argmax(np.max(matrix[group_list, :], axis=1))
             final_spike_index.append(group_list[max_value_index])
     matrix = matrix[final_spike_index, :]
+    result_list = get_output(matrix, score)
+    return result_list
+
+
+def get_output(matrix, score):
     result_list = []
     for index, line in enumerate(matrix):
         if np.max(line) > score:

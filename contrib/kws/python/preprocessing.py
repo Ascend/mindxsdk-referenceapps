@@ -75,7 +75,7 @@ class AudioTools(object):
             feat_real_len = feature_len
             padded_feat = cls._pad_feature(feature, feat_dim, max_len, padded_type)
         return padded_feat, feat_real_len
-    
+
     @staticmethod
     def _pad_feature(feature, feat_dim, max_len=1000, padded_type="zero"):
         """
@@ -142,18 +142,18 @@ class BaseExtract(AudioTools):
         normalize
         '''
         y = x.astype(np.float32)
-        normalization_factor = 1 / (np.max(np.abs(y))+1e-5)
+        normalization_factor = 1 / (np.max(np.abs(y)) + 1e-5)
         y = y * normalization_factor
         return y
-    
+
     def _standardize(self, x, mean_std_path=None):
-        try:
+        if mean_std_path:
             data = np.load(mean_std_path)
             mean = data["mean"]
             std = data["std"]
             x = (x.T - mean) / (std + 1e-6)
             x = x.T
-        except:
+        else:
             x = preprocessing.scale(x, axis=1)
         return x
 
