@@ -122,7 +122,8 @@ if __name__ == "__main__":
         res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
         # post_processing
         # The actual output length of the original data after the model
-        seq_len = feat_real_len // 4
+        pool_factor = 4
+        seq_len = feat_real_len // pool_factor
         # decoding
         # the output of decoding is text
         predict_text = infer(res,

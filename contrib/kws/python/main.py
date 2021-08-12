@@ -94,7 +94,8 @@ if __name__ == '__main__':
     print("output tensor is: ", res)
     # post_processing
     # The actual output length of the original data after the model
-    seq_len = feat_real_len // 4
+    pool_factor = 4
+    seq_len = feat_real_len // pool_factor
     # decoding
     predict_text = infer(res,
                          seq_len,

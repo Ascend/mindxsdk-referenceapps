@@ -30,9 +30,10 @@ class AudioTools(object):
         Return:
             audio data after thr vad(numpy)
         """
+        one_thousand_ms = 1000
         y = wav_data / np.max(np.abs(wav_data))
         audio_length = len(wav_data)
-        frame_length = frame_length * sample_rate // 1000
+        frame_length = frame_length * sample_rate // one_thousand_ms
         frame_nums = audio_length // frame_length
         frame_energy = []
         for i in range(frame_nums):
@@ -42,12 +43,15 @@ class AudioTools(object):
             frame_energy.append(energy)
         max_energy = max(frame_energy)
         min_energy = min(frame_energy)
-        silence_threshold = min(frame_energy) + (1 / 48) * (max_energy - min_energy)
+        # the minification is empirical
+        minification = 1/48
+        silence_threshold = min(frame_energy) + minification * (max_energy - min_energy)
         judge_bool = frame_energy > silence_threshold
         voice_index = np.where(judge_bool == True)[0]
-        # the subscript of the first frame is greater than the mute threshold, and three frames are reserved to mute
-        voice_start_index = max(0, voice_index[0] - 3)
-        voice_end_index = min(voice_index[-1] + 3, len(frame_energy) - 1)
+        #  3 mute frames are reserved before and after
+        mute_frames_reserved = 3
+        voice_start_index = max(0, voice_index[0] - mute_frames_reserved)
+        voice_end_index = min(voice_index[-1] + mute_frames_reserved, len(frame_energy) - 1)
         return wav_data[voice_start_index * frame_length: (voice_end_index + 1) * frame_length]
 
     @classmethod
@@ -116,6 +120,7 @@ class BaseExtract(AudioTools):
         self._max_len = max_len
         self._padded_type = padded_type
         self._mean_std_path = mean_std_path
+        self.one_thousand_ms = 1000
 
     def extract_feature(self, wav_path, feat_dim, scale_flag=False):
         """
@@ -223,8 +228,8 @@ class ExtractMfcc(BaseExtract):
         mel_spectrogram = librosa.feature.melspectrogram(wav,
                                                          sr=sr,
                                                          n_mels=feat_dim,
-                                                         hop_length=(sr * self.frame_shift) // 1000,
-                                                         n_fft=(sr * self.frame_length) // 1000,
+                                                         hop_length=(sr * self.frame_shift) // self.one_thousand_ms,
+                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms,
                                                          fmin=20,
                                                          fmax=sr // 2)
         mfcc = librosa.feature.mfcc(S=librosa.power_to_db(mel_spectrogram), n_mfcc=13)
@@ -246,8 +251,8 @@ class ExtractLogmel(BaseExtract):
         mel_spectrogram = librosa.feature.melspectrogram(wav,
                                                          sr=sr,
                                                          n_mels=feat_dim,
-                                                         hop_length=(sr * self.frame_shift) // 1000,
-                                                         n_fft=(sr * self.frame_length) // 1000,
+                                                         hop_length=(sr * self.frame_shift) // self.one_thousand_ms,
+                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms,
                                                          fmin=20,
                                                          fmax=sr // 2)
         log_mel_spectrogram = librosa.power_to_db(mel_spectrogram)

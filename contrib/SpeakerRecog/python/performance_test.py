@@ -41,7 +41,7 @@ if __name__ == "__main__":
         exit()
     extract_logmel = ExtractLogmel(padded_type="copy")
     # Path for storing test data
-    wav_dir = "/home/tianyinghui/Data/data_aishell/wav/dev"
+    wav_dir = "../Data/data_aishell/wav/dev"
     speakers = os.listdir(wav_dir)
     speakers.sort()
     all_wav_num = 0
@@ -109,14 +109,13 @@ if __name__ == "__main__":
             # save speakers' embedding
             if index < 1:
                 # embedding for register
-                enroll_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll"
+                enroll_embedding_save_dir = "../Data/spk_data/embeddings/om_dev_speaker_enroll"
                 os.makedirs(enroll_embedding_save_dir, exist_ok=True)
                 # save the embedding
                 np.save(os.path.join(enroll_embedding_save_dir, speaker + ".npy"), res)
             else:
                 # embedding for recognition
-                eval_embedding_save_dir = "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval/{}"\
-                    .format(speaker)
+                eval_embedding_save_dir = "../Data/spk_data/embeddings/om_dev_speaker_eval/{}".format(speaker)
                 os.makedirs(eval_embedding_save_dir, exist_ok=True)
                 basename = os.path.basename(wav_path).replace(".wav", ".npz")
                 # save the embedding
@@ -128,12 +127,12 @@ if __name__ == "__main__":
     # the duration of inference
     print("{} samples' infer time:{}".format(all_wav_num, end-start))
     # get trials files
-    utils.get_trials("/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_enroll",
-                     "/home/tianyinghui/Data/spk_data/embeddings/om_dev_speaker_eval",
-                     "/home/tianyinghui/Data/spk_data/embeddings/dev_eval_trails.txt")
+    utils.get_trials("../Data/spk_data/embeddings/om_dev_speaker_enroll",
+                     "../Data/spk_data/embeddings/om_dev_speaker_eval",
+                     "../Data/spk_data/embeddings/dev_eval_trails.txt")
     print("get trials!")
     # compute eer
-    EER = utils.cal_eer("/home/tianyinghui/Data/spk_data/embeddings/dev_eval_trails.txt")
+    EER = utils.cal_eer("../Data/spk_data/embeddings/dev_eval_trails.txt")
 
 
 
