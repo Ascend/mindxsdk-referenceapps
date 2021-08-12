@@ -72,7 +72,9 @@ APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors
     auto shape = data.GetShape();
     int batch_size = 1;
     int channels = 3;
-    cv::Mat modelOutput = cv::Mat(shape[2], shape[3], CV_32FC1, data.GetBuffer());
+    auto height = shape[2];
+    auto width = shape[3];
+    cv::Mat modelOutput = cv::Mat(height, width, CV_32FC1, data.GetBuffer());
     modelOutput.convertTo(heatMap, CV_8UC1, scale);
     GaussianBlur(heatMap, heatMap, Size(0, 0), sigmaX, sigmaY,BORDER_DEFAULT);
     normalize(heatMap, heatMap, alpha, beta, NORM_MINMAX, CV_8UC1);
@@ -85,7 +87,7 @@ APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors
     LogInfo << "person count sum:" << result;
     heatMap = colorMat;
     // heatMap的shape(H,W,C) 
-    shape = {batch_size, shape[2], shape[3], channels};
+    shape = {batch_size, height, width, channels};
     // cv::Mat转tensor
     MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     // 给tensor申请内存空间
