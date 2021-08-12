@@ -44,7 +44,7 @@ if __name__ == '__main__':
     wav_path = "../data/BAC009S0048W0157.wav"
     # extract feature
     max_frames = 1464
-    extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
+    extract_logmel = ExtractLogmel(max_len=max_frames, mean_std_path='../data/mean_std.npz')
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
                                                             params["data"]["num_mel_bins"],
                                                             scale_flag=True)
