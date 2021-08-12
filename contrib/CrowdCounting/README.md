@@ -68,11 +68,11 @@ cd到CrowdCounting目录下，执行如下编译命令： bash build.sh
 下载人群计数的图像：
 
 ```
-wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/crowdCount/crowd.jpg
+wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/crowdCount/crowd.jpg --no-check-certificate
 ```
 
 准备一张推理图片放入CrowdCounting目录下，执行：
 
 ```
-./mxBase_sample ./crowd.jpg
+./crowd_counting  ./crowd.jpg
 ```
