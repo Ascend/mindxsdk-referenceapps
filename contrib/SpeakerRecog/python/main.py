@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-"""
-Copyright (c) Huawei Technologies Co., Ltd. 2020-2021. All rights reserved.
-Description: Complete Example Implementation of Input Tensor Inference in python.
-Author: MindX SDK
-Create: 2020
-History: NA
-"""
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
 import os
 
 from preprocessing import ExtractLogmel
@@ -41,8 +47,10 @@ if __name__ == '__main__':
     wav_name = os.path.basename(wav_path).split(".")[0]
     extract_logmel = ExtractLogmel(padded_type="copy")
     # extract feature
+    # the dimension of log_mel_spectrogram
+    feature_dim = 64
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
-                                                            feat_dim=64,
+                                                            feat_dim=feature_dim,
                                                             scale_flag=False)
     # (64, 1000) to (1, 64, 1000)
     tensor = feature[None]
@@ -96,17 +104,3 @@ if __name__ == '__main__':
     res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
     # post_processing
     speaker_recognition(res, wav_name, voice_print_library_path)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

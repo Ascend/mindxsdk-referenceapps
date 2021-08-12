@@ -66,11 +66,13 @@ if __name__ == "__main__":
     print("========infer start=========")
     # infer start
     # extract feature
-    extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
+    max_frames = 1464
+    feature_dim = 80
+    extract_logmel = ExtractLogmel(max_len=max_frames, mean_std_path='../data/mean_std.npz')
     begin = time.time()
     for idx, wav_path in enumerate(wav_list):
         feature, feat_real_len = extract_logmel.extract_feature(wav_path,
-                                                                feat_dim=80,
+                                                                feat_dim=feature_dim,
                                                                 scale_flag=True)
         # (80, 1464) to (1, 80, 1464)
         tensor = feature[None]
@@ -128,6 +130,7 @@ if __name__ == "__main__":
         # the output of decoding is text
         predict_text = infer(res,
                              seq_len,
+                             params["data"]["num_classes"],
                              params["data"]["ind2pinyin"],
                              params["data"]["keyword_pinyin_dict"],
                              params["data"]["pinyin2char"])
@@ -162,7 +165,8 @@ if __name__ == "__main__":
     ave_frr = (total_count - correct_count) / total_count if total_count > 0 else 1
     # False alarm rate
     scale_factor = 10
-    ave_far = (detect_count - correct_count) / (len(keyword_list) * (total_time_duration / 3600) * scale_factor)
+    one_hour_ms = 3600
+    ave_far = (detect_count - correct_count) / (len(keyword_list) * (total_time_duration / one_hour_ms) * scale_factor)
     # print the result of inference
     print("{} samples' total time{}".format(len(wav_list), total_time_duration))
     print("{} samples' infer time{}".format(len(wav_list), end-begin))

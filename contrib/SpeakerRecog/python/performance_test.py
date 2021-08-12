@@ -45,6 +45,8 @@ if __name__ == "__main__":
     speakers = os.listdir(wav_dir)
     speakers.sort()
     all_wav_num = 0
+    # the dimension of log_mel_spectrogram
+    feature_dim = 64
     # each speaker choice one wav to register
     start = time.time()
     for idx, speaker in enumerate(speakers):
@@ -55,7 +57,7 @@ if __name__ == "__main__":
         for index, wav_path in enumerate(all_wav_paths):
             # extract feature
             feature, feat_real_len = extract_logmel.extract_feature(wav_path,
-                                                                    feat_dim=64,
+                                                                    feat_dim=feature_dim,
                                                                     scale_flag=False)
             # (64, 1000) to (1, 64, 1000)
             tensor = feature[None]
@@ -133,15 +135,3 @@ if __name__ == "__main__":
     print("get trials!")
     # compute eer
     EER = utils.cal_eer("../Data/spk_data/embeddings/dev_eval_trails.txt")
-
-
-
-
-
-
-
-
-
-
-
-

@@ -65,6 +65,7 @@ def read_conf(yaml_path, return_type="all"):
     params["data"]["pinyin2char"] = values[2]
     params["data"]["keyword_pinyin_dict"] = values[3]
     params["data"]["keyword_label"] = values[4]
+    params["data"]["num_classes"] = len(values[0])+2
     return params if return_type == "all" else params[return_type]
 
 

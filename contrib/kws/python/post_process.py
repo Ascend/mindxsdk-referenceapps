@@ -45,6 +45,7 @@ def ctc_decode(matrix, spike_thres=0.3, score=0.5, continue_frames=10):
     group_list.append(init_spike_index[0])
     previous_label = np.argmax(matrix[init_spike_index[0], :])
     for i in range(1, len(init_spike_index)):
+        # check whether the frame number is contiguous
         if init_spike_index[i] == init_spike_index[i - 1] + 1:
             current_label = np.argmax(matrix[init_spike_index[i], :])
             if current_label != previous_label or len(group_list) >= continue_frames:
@@ -121,11 +122,12 @@ def convert_index_to_text(ind2pinyin, keyword_pinyin_dict, pinyin2char, predict_
     return str_result
 
 
-def infer(model_output, seq_len, ind2pinyin, keyword_pinyin_dict, pinyin2char):
+def infer(model_output, seq_len, output_classes, ind2pinyin, keyword_pinyin_dict, pinyin2char):
     """ inference
     Args:
         model_output:  The output of OM model
         seq_len:  The actual output length of the audio file after the model
+        output_classes: class number of output
         ind2pinyin:  The dictionary of index to pinyin
         keyword_pinyin_dict:  The dictionary of Keywords' pinyin
         pinyin2char:  The dictionary of pinyin to the word
@@ -133,12 +135,12 @@ def infer(model_output, seq_len, ind2pinyin, keyword_pinyin_dict, pinyin2char):
         predict_text
     """
     # reshape
-    pred_matrix = model_output.reshape(-1, 14)
+    pred_matrix = model_output.reshape(-1, output_classes)
     pred_matrix = torch.from_numpy(np.array(pred_matrix))
     decode_matrix = F.softmax(pred_matrix, dim=-1)
     decode_matrix = decode_matrix.numpy()
     # ctc decoding
-    predict_id = ctc_decode(decode_matrix[:seq_len, :], score=0.1)
+    predict_id = ctc_decode(decode_matrix[:seq_len, :], score=0.82)
     predict_text = convert_index_to_text(ind2pinyin,
                                          keyword_pinyin_dict,
                                          pinyin2char,

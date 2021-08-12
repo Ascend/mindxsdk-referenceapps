@@ -81,7 +81,7 @@ def cal_eer(trails_path):
     target_position = 0
     for target_position in range(target_size):
         nontarget_size = len(nontarget_scores)
-        nontarget_n = nontarget_size * target_position * 1.0 / target_size
+        nontarget_n = nontarget_size * target_position / target_size
         nontarget_position = int(nontarget_size - 1 - nontarget_n)
         if nontarget_position < 0:
             nontarget_position = 0
@@ -90,6 +90,6 @@ def cal_eer(trails_path):
     threshold = target_scores[target_position]
     print(trails_path)
     print("threshold is --> ", threshold)
-    eer = target_position * 1.0 / target_size
+    eer = target_position / target_size
     print("eer is --> ", eer)
     return eer

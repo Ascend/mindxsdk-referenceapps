@@ -1,13 +1,18 @@
 #!/usr/bin/env python
 # coding=utf-8
-
-"""
-Copyright (c) Huawei Technologies Co., Ltd. 2020-2021. All rights reserved.
-Description: Complete Example Implementation of Input Tensor Inference in python.
-Author: MindX SDK
-Create: 2020
-History: NA
-"""
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License
 from utils import read_conf
 from preprocessing import ExtractLogmel
 from post_process import infer
@@ -38,6 +43,7 @@ if __name__ == '__main__':
     # test wav
     wav_path = "../data/BAC009S0048W0157.wav"
     # extract feature
+    max_frames = 1464
     extract_logmel = ExtractLogmel(max_len=1464, mean_std_path='../data/mean_std.npz')
     feature, feat_real_len = extract_logmel.extract_feature(wav_path,
                                                             params["data"]["num_mel_bins"],
@@ -99,18 +105,9 @@ if __name__ == '__main__':
     # decoding
     predict_text = infer(res,
                          seq_len,
+                         params["data"]["num_classes"],
                          params["data"]["ind2pinyin"],
                          params["data"]["keyword_pinyin_dict"],
                          params["data"]["pinyin2char"])
     # output the inference result
     print("{}: {}".format(wav_path, predict_text))
-
-
-
-
-
-
-
-
-
-

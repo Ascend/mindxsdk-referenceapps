@@ -62,7 +62,7 @@ class AudioTools(object):
         Args:
             feature: (feat_dim, time_steps)
             feat_dim: dimension of the feature
-            max_len: max frame length
+            max_len: maximum number of frames
             padded_type:
                          "zero": Fill in 0 to complete the task.
                          "copy": Copy the previous content to complete the task. It is applicable to speaker tasks
@@ -88,7 +88,7 @@ class AudioTools(object):
         Args:
             feature: (feat_dim, time_steps)
             feat_dim: dimension of the feature
-            max_len: max frame length
+            max_len: maximum number of frames
             padded_type:
                          "zero": Fill in 0 to complete the task.
                          "copy": Copy the previous content to complete the task. It is applicable to speaker tasks
@@ -114,6 +114,14 @@ class AudioTools(object):
 class BaseExtract(AudioTools):
     def __init__(self, frame_length=25, frame_shift=10, max_len=1000,
                  sr=16000, padded_type="zero", mean_std_path=None):
+        """
+        :param frame_length: take 25ms audio as a frame
+        :param frame_shift: take 10ms as frame shift
+        :param max_len: maximum number of frames
+        :param sr: sampling rate of audio
+        :param padded_type:
+        :param mean_std_path:
+        """
         self._sr = sr
         self._frame_length = frame_length
         self._frame_shift = frame_shift
@@ -229,9 +237,8 @@ class ExtractMfcc(BaseExtract):
                                                          sr=sr,
                                                          n_mels=feat_dim,
                                                          hop_length=(sr * self.frame_shift) // self.one_thousand_ms,
-                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms,
-                                                         fmin=20,
-                                                         fmax=sr // 2)
+                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms)
+        # n_mfcc=13  take the first 13 dimensions as MFCC coefficients
         mfcc = librosa.feature.mfcc(S=librosa.power_to_db(mel_spectrogram), n_mfcc=13)
         mfcc_delta = librosa.feature.delta(mfcc)
         mfcc_delta_delta = librosa.feature.delta(mfcc_delta)
@@ -252,8 +259,6 @@ class ExtractLogmel(BaseExtract):
                                                          sr=sr,
                                                          n_mels=feat_dim,
                                                          hop_length=(sr * self.frame_shift) // self.one_thousand_ms,
-                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms,
-                                                         fmin=20,
-                                                         fmax=sr // 2)
+                                                         n_fft=(sr * self.frame_length) // self.one_thousand_ms)
         log_mel_spectrogram = librosa.power_to_db(mel_spectrogram)
         return log_mel_spectrogram
