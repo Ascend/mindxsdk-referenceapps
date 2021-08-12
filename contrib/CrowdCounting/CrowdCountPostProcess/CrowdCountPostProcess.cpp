@@ -51,7 +51,8 @@ APP_ERROR CrowdCountPostProcess::DeInit() {
 }
 
 APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors, 
-                                         std::vector<MxBase::TensorBase> &outputs, std::vector<int> &results) {									 
+                                         std::vector<MxBase::TensorBase> &outputs, 
+					 std::vector<int> &results) {									 
     LogDebug << "Start to Process CrowdCountPostProcess.";
     auto inputs = tensors;
     APP_ERROR ret = APP_ERR_OK;
