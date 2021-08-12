@@ -51,7 +51,7 @@ APP_ERROR CrowdCountPostProcess::DeInit() {
 }
 
 APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors, 
-                                            std::vector<MxBase::TensorBase> &outputs) {									 
+                                            std::vector<MxBase::TensorBase> &outputs, std::vector<int> &results) {									 
     LogDebug << "Start to Process CrowdCountPostProcess.";
     auto inputs = tensors;
     APP_ERROR ret = APP_ERR_OK;
@@ -84,7 +84,7 @@ APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors
     float sum = std::accumulate((float*)ptr , (float*)ptr + tensors[0].GetSize(), 0.f);
     sum /= division_num;
     int result = round(sum);
-    LogInfo << "person count sum:" << result;
+    results.push_back(result);
     heatMap = colorMat;
     // heatMap的shape(H,W,C) 
     shape = {batch_size, height, width, channels};

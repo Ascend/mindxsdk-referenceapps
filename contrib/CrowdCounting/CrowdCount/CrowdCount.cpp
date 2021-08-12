@@ -172,24 +172,33 @@ APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
 }
 // 后处理
 APP_ERROR CrowdCount::PostProcess(const std::vector<MxBase::TensorBase> &inputs,
-                                 std::vector<MxBase::TensorBase> &images)
+                                 std::vector<MxBase::TensorBase> &images, std::vector<int> &results)
 {
     // 使用CrowdCountPostProcess post_;
-    APP_ERROR ret = post_->Process(inputs, images);
+    APP_ERROR ret = post_->Process(inputs, images, results);
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
         return ret;
     }
     return APP_ERR_OK;
 }
-// 输出人群计数结果
+// 输出人群计数结果图
 APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
-		                        const std::vector<MxBase::TensorBase> &postimage) {
+		                 const std::vector<MxBase::TensorBase> &postimage, const std::vector<int> &results) {
     cv::Mat mergeImage;
     cv::Mat dstimgBgr;
     double alpha = 1.0;
     double beta = 0.5;
     double gamma = 0.0;    
+    cv::Mat imgBgr;
+    imgBgr = cv::imread("crowd.jpg");
+    imageWidth_ = imgBgr.cols;
+    imageHeight_ = imgBgr.rows;
+    int number = results[0];
+    std::string str;
+    str = std::to_string(number);
+    float fontScale_ = 3;
+    uint32_t thickness_ = 8;
     auto shape = outputs[0].GetShape();
     cv::Mat heatMap = cv::Mat(shape[1], shape[2], CV_8UC3, outputs[0].GetBuffer());
     auto image = postimage[0];
@@ -202,6 +211,11 @@ APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs
     cv::Mat imageYuv = cv::Mat(shape[0], shape[1], CV_8UC1,  image.GetBuffer());
     cv::cvtColor(imageYuv, dstimgBgr, cv::COLOR_YUV2BGR_NV12);
     addWeighted(dstimgBgr, alpha, heatMap, beta, gamma, mergeImage);
+    // 将得到的mergeImage图片的大小还原成被测试图片的大小
+    resize(mergeImage, mergeImage, cv::Size(imageWidth_, imageHeight_), 0, 0, cv::INTER_LINEAR);
+    // 将计算得到的result结果写在输出结果的图片上
+    cv::putText(mergeImage, str, cv::Point(30, 120),
+                cv::FONT_HERSHEY_SIMPLEX, fontScale_, cv::Scalar(0,0,255), thickness_);
     cv::imwrite("./result.jpg", mergeImage);
     return APP_ERR_OK;
 }
@@ -233,14 +247,15 @@ APP_ERROR CrowdCount::Process(const std::string &imgPath) {
     LogInfo << "Inference";
     //do postprocess
     std::vector<MxBase::TensorBase> heatmap = {};
-    ret = PostProcess(outputs, heatmap);
+    std::vector<int> results = {};
+    ret = PostProcess(outputs, heatmap, results);
     if (ret != APP_ERR_OK) {
         LogError << "PostProcess failed, ret=" << ret << ".";
         return ret;
     }
     //wirte result
     std::vector<MxBase::TensorBase> postimage = {outTensor};
-    ret = WriteResult(heatmap, postimage);
+    ret = WriteResult(heatmap, postimage, results);
     if (ret != APP_ERR_OK) {
         LogError << "Save result failed, ret=" << ret << ".";
         return ret;

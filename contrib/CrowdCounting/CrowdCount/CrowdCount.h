@@ -37,12 +37,14 @@ public:
     APP_ERROR Init(const InitParam &initParam);
     APP_ERROR DeInit();
     APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &images);
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &images,
+		         std::vector<int> &results);
     APP_ERROR Process(const std::string &imgPath);
 protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
     APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor);
-    APP_ERROR WriteResult(const std::vector<MxBase::TensorBase> &outputs,  const std::vector<MxBase::TensorBase> &postimageMat);			 
+    APP_ERROR WriteResult(const std::vector<MxBase::TensorBase> &outputs,  const std::vector<MxBase::TensorBase> &postimageMat,
+		         const std::vector<int> &results);			 
     void SetCrowdCountPostProcessConfig(const InitParam &initParam,
                                                        std::map<std::string, std::shared_ptr<void>> &config);
 private:
