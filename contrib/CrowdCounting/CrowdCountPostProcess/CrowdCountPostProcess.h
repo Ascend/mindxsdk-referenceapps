@@ -37,7 +37,7 @@ public:
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
     APP_ERROR DeInit() override;
     APP_ERROR Process(const std::vector<MxBase::TensorBase> &tensors,std::vector<MxBase::TensorBase> &outputs,
-		    std::vector<int> &results);
+		      std::vector<int> &results);
 
 protected:
     int modelWidth_ = MODEL_WIDTH;

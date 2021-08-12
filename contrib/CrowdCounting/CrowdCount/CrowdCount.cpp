@@ -146,7 +146,7 @@ APP_ERROR CrowdCount::Inference(const std::vector<MxBase::TensorBase> &inputs,
 	// 人群计数模型检测特征图尺寸
         for (size_t j = 0; j < modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
             shape.push_back((uint32_t) modelDesc_.outputTensors[i].tensorDims[j]);
-	}
+        }
 	// 用检测特征图尺寸分别为数据构建空的tensor
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
         APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
@@ -204,8 +204,8 @@ APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs
     auto image = postimage[0];
     APP_ERROR ret  = image.ToHost();
     if (ret != APP_ERR_OK) {
-      LogError << GetError(ret) << "ToHost Failed";
-      return ret;
+        LogError << GetError(ret) << "ToHost Failed";
+        return ret;
     }
     shape = image.GetShape();
     cv::Mat imageYuv = cv::Mat(shape[0], shape[1], CV_8UC1,  image.GetBuffer());

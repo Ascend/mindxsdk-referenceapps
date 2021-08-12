@@ -51,18 +51,18 @@ APP_ERROR CrowdCountPostProcess::DeInit() {
 }
 
 APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors, 
-                                            std::vector<MxBase::TensorBase> &outputs, std::vector<int> &results) {									 
+                                         std::vector<MxBase::TensorBase> &outputs, std::vector<int> &results) {									 
     LogDebug << "Start to Process CrowdCountPostProcess.";
     auto inputs = tensors;
     APP_ERROR ret = APP_ERR_OK;
     ret = CheckAndMoveTensors(inputs);
     if (ret != APP_ERR_OK) {
-       LogError << GetError(ret) << "CheckAndMoveTensors failed.";
-       return ret;
+        LogError << GetError(ret) << "CheckAndMoveTensors failed.";
+        return ret;
     }
     cv::Mat heatMap;
     cv::Mat colorMat;
-    float scale = 255.0/255;
+    float scale = 255.0 / 255;
     double sigmaX = 5.0;
     double sigmaY = 5.0;
     double alpha = 0;
@@ -89,16 +89,19 @@ APP_ERROR CrowdCountPostProcess::Process(const std::vector <TensorBase> &tensors
     // heatMap的shape(H,W,C) 
     shape = {batch_size, height, width, channels};
     // cv::Mat转tensor
-    MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
+    MxBase::TensorBase output(shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8, 
+		              MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     // 给tensor申请内存空间
     ret = MxBase::TensorBase::TensorBaseMalloc(output);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "TensorBaseMalloc failed.";
         return ret;
     }
-    MxBase::MemoryData srcMemory(heatMap.data, heatMap.rows * heatMap.cols, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, 0);
+    MxBase::MemoryData srcMemory(heatMap.data, heatMap.rows * heatMap.cols, 
+		                 MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, 0);
     MxBase::TensorBase heatMapTensor(srcMemory, true, shape, MxBase::TensorDataType::TENSOR_DTYPE_UINT8);
-    std::copy((uint8_t*)heatMap.data, (uint8_t*)heatMap.data + heatMapTensor.GetByteSize(), (uint8_t*)output.GetBuffer());
+    std::copy((uint8_t*)heatMap.data, (uint8_t*)heatMap.data + heatMapTensor.GetByteSize(), 
+		     (uint8_t*)output.GetBuffer());
     outputs.push_back(output);
     LogDebug << "End to Process CrowdCountPostProcess.";
 }
