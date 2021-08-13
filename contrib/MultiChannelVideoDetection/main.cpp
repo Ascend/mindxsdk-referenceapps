@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
     ///=== modify config ===//
     MxBase::ConfigData configData;
     MxBase::ConfigUtil configUtil;
-    configUtil.LoadConfiguration("/home/cqu_liu1/MindXSDK/mxVision/config/logging.conf", configData, MxBase::ConfigMode::CONFIGFILE);
+    configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
+                                 configData, MxBase::ConfigMode::CONFIGFILE);
     configData.SetFileValue<int>("global_level", 1);
     MxBase::Log::SetLogParameters(configData);
 

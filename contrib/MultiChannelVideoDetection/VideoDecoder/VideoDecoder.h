@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #ifndef MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 #define MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 
@@ -49,7 +48,8 @@ public:
 
 private:
     APP_ERROR InitDvppWrapper(const DecoderInitParam &initParam);
-    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, void *userData);
+    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer,
+                                         MxBase::DvppDataInfo &inputDataInfo, void *userData);
 
 public:
     // running flag

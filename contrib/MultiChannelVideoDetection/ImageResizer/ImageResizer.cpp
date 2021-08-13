@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-
 #include "ImageResizer.h"
-
 #include "MxBase/Log/Log.h"
 
 namespace AscendImageResizer {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #ifndef MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H
 #define MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H
 
@@ -66,7 +65,6 @@ private:
     APP_ERROR CreateYoloDetector(const ReasonerConfig &config);
     APP_ERROR CreatePerformanceMonitor(const ReasonerConfig &config);
 
-
     APP_ERROR DestroyStreamPullerAndVideoDecoder();
     APP_ERROR DestroyImageResizer();
     APP_ERROR DestroyYoloDetector();
@@ -100,6 +98,5 @@ private:
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
 
 };
-
 
 #endif //MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H

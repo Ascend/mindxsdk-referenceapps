@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #ifndef MULTICHANNELVIDEODETECTION_YOLODETECTOR_H
 #define MULTICHANNELVIDEODETECTION_YOLODETECTOR_H
 
@@ -69,7 +68,8 @@ private:
 
 protected:
     static APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
-    static APP_ERROR LoadPostProcessConfig(const YoloInitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
+    static APP_ERROR LoadPostProcessConfig(const YoloInitParam &initParam,
+                                           std::map<std::string, std::shared_ptr<void>> &config);
 
 public:
     // running flag

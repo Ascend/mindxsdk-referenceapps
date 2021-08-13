@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #ifndef MULTICHANNELVIDEODETECTION_UTIL_H
 #define MULTICHANNELVIDEODETECTION_UTIL_H
 
@@ -35,7 +34,8 @@ namespace {
 class Util {
 
 public:
-    static void InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam, const uint32_t deviceId, const uint32_t channelId,
+    static void InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam,
+                                      const uint32_t deviceId, const uint32_t channelId,
                                       const AscendStreamPuller::VideoFrameInfo &videoFrameInfo)
     {
         initParam.deviceId = deviceId;
@@ -46,8 +46,8 @@ public:
         initParam.outputImageFormat = MxBase::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
     }
 
-    static void InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, const uint32_t deviceId, const std::string &labelPath,
-                              const std::string &modelPath)
+    static void InitYoloParam(AscendYoloDetector::YoloInitParam &initParam,const uint32_t deviceId,
+                              const std::string &labelPath, const std::string &modelPath)
     {
         initParam.deviceId = deviceId;
         initParam.labelPath = labelPath;
@@ -65,10 +65,10 @@ public:
         initParam.anchorDim = 3;
     }
 
-    static bool IsExistDataInQueueMap( const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &decodeFrameQueueMap)
+    static bool IsExistDataInQueueMap(const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
     {
         std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
-        for ( iter = decodeFrameQueueMap.begin(); iter != decodeFrameQueueMap.end(); iter++) {
+        for (iter = queueMap.begin();iter != queueMap.end();iter++) {
             if (!iter->second->IsEmpty()) {
                 return true;
             }
@@ -88,7 +88,8 @@ public:
             LogError << "Fail to malloc and copy host memory.";
             return ret;
         }
-        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight * YUV_BYTE_NU / YUV_BYTE_DE), (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
+        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight * YUV_BYTE_NU / YUV_BYTE_DE), (int32_t) videoWidth,
+                                 CV_8UC1, memoryDst.ptrData);
         cv::Mat imgBgr = cv::Mat((int32_t) videoHeight, (int32_t) videoWidth, CV_8UC3);
         cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 
@@ -115,7 +116,8 @@ public:
             const uint32_t lineType = 8;
             const float fontScale = 1.0;
 
-            cv::putText(imgBgr, info[i].className, cv::Point((int) (info[i].x0 + xOffset), (int) (info[i].y0 + yOffset)),
+            cv::putText(imgBgr, info[i].className,
+                        cv::Point((int) (info[i].x0 + xOffset), (int) (info[i].y0 + yOffset)),
                         cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
             cv::rectangle(imgBgr,cv::Rect((int) info[i].x0, (int) info[i].y0,
                                           (int) (info[i].x1 - info[i].x0), (int) (info[i].y1 - info[i].y0)),
@@ -155,6 +157,5 @@ public:
         return APP_ERR_OK;
     }
 };
-
 
 #endif //MULTICHANNELVIDEODETECTION_UTIL_H

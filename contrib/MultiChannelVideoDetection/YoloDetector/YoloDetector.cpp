@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include "YoloDetector.h"
 
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
@@ -88,7 +87,8 @@ APP_ERROR YoloDetector::Process()
     return APP_ERR_OK;
 }
 
-APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
+APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
+                               std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
                                const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
                                const uint32_t &modelWidth, const uint32_t &modelHeight)
 {
@@ -158,7 +158,8 @@ APP_ERROR YoloDetector::InitPostProcess(const YoloInitParam &initParam)
 
 APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const
 {
-    MxBase::MemoryData memoryData((void*) imageInfo.data, imageInfo.dataSize, MxBase::MemoryData::MEMORY_DVPP, deviceId);
+    MxBase::MemoryData memoryData((void*) imageInfo.data, imageInfo.dataSize,
+                                  MxBase::MemoryData::MEMORY_DVPP, deviceId);
     if (imageInfo.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << imageInfo.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -171,7 +172,8 @@ APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &image
     return APP_ERR_OK;
 }
 
-APP_ERROR YoloDetector::Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs)
+APP_ERROR YoloDetector::Inference(const std::vector<MxBase::TensorBase> &inputs,
+                                  std::vector<MxBase::TensorBase> &outputs)
 {
     APP_ERROR ret;
 
@@ -268,7 +270,8 @@ APP_ERROR YoloDetector::LoadLabels(const std::string &labelPath, std::map<int, s
     return APP_ERR_OK;
 }
 
-APP_ERROR YoloDetector::LoadPostProcessConfig(const YoloInitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config)
+APP_ERROR YoloDetector::LoadPostProcessConfig(const YoloInitParam &initParam,
+                                              std::map<std::string, std::shared_ptr<void>> &config)
 {
     LogInfo << "load postprocess config start.";
 

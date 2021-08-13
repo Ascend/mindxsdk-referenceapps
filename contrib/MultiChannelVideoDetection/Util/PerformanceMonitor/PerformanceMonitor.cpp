@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include "PerformanceMonitor.h"
 #include "MxBase/Log/Log.h"
 
@@ -89,7 +88,8 @@ APP_ERROR PerformanceMonitor::Print(int currTime)
 }
 
 /// ========== static Method ========== ///
-void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonitor> &performanceMonitor, int printInterval)
+void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonitor> &performanceMonitor,
+                                         int printInterval)
 {
     int currTime = 0;
     while(true) {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 #include "VideoDecoder.h"
 #include "MxBase/Log/Log.h"
 
@@ -123,7 +122,8 @@ APP_ERROR VideoDecoder::InitDvppWrapper(const DecoderInitParam &initParam)
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase::DvppDataInfo &inputDataInfo, void *userData)
+APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
+                                            MxBase::DvppDataInfo &inputDataInfo, void *userData)
 {
     LogDebug << "decode frame " << inputDataInfo.frameId << " complete.";
 
@@ -141,8 +141,9 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer, MxBase
         }
     };
 
-    auto output = std::shared_ptr<MxBase::MemoryData>(new MxBase::MemoryData(buffer.get(), (size_t) inputDataInfo.dataSize,
-                                                    MxBase::MemoryData::MEMORY_DVPP, inputDataInfo.frameId), deleter);
+    auto output = std::shared_ptr<MxBase::MemoryData>(
+            new MxBase::MemoryData(buffer.get(),(size_t) inputDataInfo.dataSize,
+                                   MxBase::MemoryData::MEMORY_DVPP, inputDataInfo.frameId), deleter);
 
     if (userData == nullptr) {
         LogInfo << "userData is null.";

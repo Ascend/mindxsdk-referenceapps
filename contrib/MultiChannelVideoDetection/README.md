@@ -109,6 +109,12 @@ main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频�
 rtspList.emplace_back("#{rtsp流地址1}");
 rtspList.emplace_back("#{rtsp流地址2}");
 ```
+
+配置config sdk路径
+```c++
+configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf", configData, MxBase::ConfigMode::CONFIGFILE);
+```
+
 配置YoloDetector插件的模型加载路径`modelPath`
 ```c++
 reasonerConfig.yoloModelPath = "${yolov3.om模型路径}"
