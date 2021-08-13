@@ -31,6 +31,7 @@ struct ReasonerConfig {
     uint32_t maxDecodeFrameQueueLength;
     uint32_t popDecodeFrameWaitTime;
     uint32_t intervalPerformanceMonitorPrint;
+    uint32_t intervalMainThreadControlCheck;
     uint32_t yoloModelWidth;
     uint32_t yoloModelHeight;
     std::string yoloModelPath;
@@ -73,7 +74,7 @@ private:
     void ClearData();
 
 public:
-    static bool forceStop;
+    static bool _s_force_stop;
 
 private:
     uint32_t deviceId;
@@ -84,6 +85,7 @@ private:
     uint32_t popDecodeFrameWaitTime;
     uint32_t maxDecodeFrameQueueLength;
     uint32_t intervalPerformanceMonitorPrint;
+    uint32_t intervalMainThreadControlCheck;
     bool writeDetectResultToFile;
 
 private:

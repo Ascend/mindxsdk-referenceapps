@@ -54,6 +54,7 @@ APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
     this->popDecodeFrameWaitTime = initConfig.popDecodeFrameWaitTime;
     this->maxDecodeFrameQueueLength = initConfig.maxDecodeFrameQueueLength;
     this->intervalPerformanceMonitorPrint = initConfig.intervalPerformanceMonitorPrint;
+    this->intervalMainThreadControlCheck = initConfig.intervalMainThreadControlCheck;
     this->writeDetectResultToFile = initConfig.writeDetectResultToFile;
 
     this->stopFlag = false;
@@ -112,7 +113,7 @@ void MultiChannelVideoReasoner::Process()
         }
 
         // force stop case
-        if (MultiChannelVideoReasoner::forceStop) {
+        if (MultiChannelVideoReasoner::_s_force_stop) {
             LogInfo << "Force stop MultiChannelVideoReasoner.";
             stopFlag = true;
         }
@@ -121,7 +122,7 @@ void MultiChannelVideoReasoner::Process()
             LogInfo << "All processor quit, quit performance monitor.";
             performanceMonitor->stopFlag = true;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
+        std::this_thread::sleep_for(std::chrono::milliseconds(intervalMainThreadControlCheck));
     }
 
     // threads join
@@ -221,10 +222,11 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
     }
 }
 
-void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(const uint32_t &modelWidth,
-                                                               const uint32_t &modelHeight,
-                                                               const uint32_t &popDecodeFrameWaitTime,
-                                                               const MultiChannelVideoReasoner* multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
+        const uint32_t &modelWidth,
+        const uint32_t &modelHeight,
+        const uint32_t &popDecodeFrameWaitTime,
+        const MultiChannelVideoReasoner* multiChannelVideoReasoner)
 {
     // set device
     MxBase::DeviceContext device;

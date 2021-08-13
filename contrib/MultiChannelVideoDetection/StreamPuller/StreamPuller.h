@@ -71,8 +71,8 @@ private:
     uint32_t maxReTryOpenStream = 10;
     // video frame property
     VideoFrameInfo frameInfo = {};
-    // class member
-    AVFormatContext *formatContext = nullptr;
+    // ffmpeg class member
+    std::shared_ptr<AVFormatContext> formatContext;
 };
 } // end AscendStreamPuller
 

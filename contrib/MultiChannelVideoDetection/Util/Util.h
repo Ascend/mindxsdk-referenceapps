@@ -86,8 +86,8 @@ public:
             LogError << "Fail to malloc and copy host memory.";
             return ret;
         }
-        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight * AscendYoloDetector::YUV_BYTE_NU / AscendYoloDetector::YUV_BYTE_DE),
-                                 (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
+        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight *AscendYoloDetector::YUV_BYTE_NU /
+                AscendYoloDetector::YUV_BYTE_DE), (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
         cv::Mat imgBgr = cv::Mat((int32_t) videoHeight, (int32_t) videoWidth, CV_8UC3);
         cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 

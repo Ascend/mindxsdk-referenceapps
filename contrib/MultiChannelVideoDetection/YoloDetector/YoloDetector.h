@@ -34,7 +34,6 @@ namespace {
     const uint32_t YOLO_INPUT_TYPE = 0;
     const uint32_t YOLO_ANCHOR_DIM = 3;
 
-
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;

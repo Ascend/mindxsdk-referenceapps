@@ -36,7 +36,6 @@ APP_ERROR StreamPuller::Init(const std::string &rtspUrl, uint32_t maxTryOpenStre
     this->frameInfo.source = rtspUrl;
 
     stopFlag = false;
-    formatContext = nullptr;
 
     APP_ERROR ret = TryToStartStream();
     if (ret != APP_ERR_OK) {
@@ -51,7 +50,8 @@ APP_ERROR StreamPuller::Init(const std::string &rtspUrl, uint32_t maxTryOpenStre
 APP_ERROR StreamPuller::DeInit()
 {
     LogInfo << "StreamPuller deinit start.";
-    avformat_close_input(&formatContext);
+    AVFormatContext* pAvFormatContext = formatContext.get();
+    avformat_close_input(&pAvFormatContext);
 
     stopFlag = true;
     formatContext = nullptr;
@@ -76,7 +76,7 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
             break;
         }
 
-        APP_ERROR ret = av_read_frame(formatContext, &packet);
+        APP_ERROR ret = av_read_frame(formatContext.get(), &packet);
         if (ret != APP_ERR_OK) {
             if (ret == AVERROR_EOF) {
                 LogInfo << "StreamPuller channel StreamPuller is EOF, over!";
@@ -147,7 +147,15 @@ APP_ERROR StreamPuller::StartStream()
 {
     // init network
     avformat_network_init();
-    formatContext = avformat_alloc_context();
+
+    // malloc avformat context
+    AVFormatContext* pAvformatContext = avformat_alloc_context();
+    formatContext = std::shared_ptr<AVFormatContext>(pAvformatContext);
+    if (formatContext == nullptr) {
+        LogError << "formatContext is null.";
+        return APP_ERR_COMM_INVALID_POINTER;
+    }
+
     APP_ERROR ret = CreateFormatContext();
     if (ret != APP_ERR_OK) {
         LogError << "Couldn't create format context" << " ret = " << ret << ".";
@@ -155,7 +163,7 @@ APP_ERROR StreamPuller::StartStream()
     }
 
     // for debug dump
-    av_dump_format(formatContext, 0, streamName.c_str(), 0);
+    av_dump_format(formatContext.get(), 0, streamName.c_str(), 0);
     return APP_ERR_OK;
 }
 
@@ -165,17 +173,18 @@ APP_ERROR StreamPuller::CreateFormatContext()
     AVDictionary *options = nullptr;
     av_dict_set(&options, "rtsp_transport", "tcp", 0);
     av_dict_set(&options, "stimeout", "3000000", 0);
-    APP_ERROR ret = avformat_open_input(&formatContext, streamName.c_str(), nullptr, &options);
+
+    AVFormatContext* pAvformatContext = formatContext.get();
+    APP_ERROR ret = avformat_open_input(&pAvformatContext, streamName.c_str(), nullptr, &options);
     if (options != nullptr) {
         av_dict_free(&options);
     }
-
     if(ret != APP_ERR_OK) {
         LogError << "Couldn't open input stream " << streamName.c_str() <<  " ret = " << ret << ".";
         return APP_ERR_STREAM_NOT_EXIST;
     }
 
-    ret = avformat_find_stream_info(formatContext, nullptr);
+    ret = avformat_find_stream_info(formatContext.get(), nullptr);
     if(ret != APP_ERR_OK) {
         LogError << "Couldn't find stream information" << " ret = " << ret << ".";
         return APP_ERR_STREAM_NOT_EXIST;
@@ -191,6 +200,7 @@ APP_ERROR StreamPuller::GetStreamInfo()
     if (formatContext != nullptr) {
         for (uint32_t i = 0; i < formatContext->nb_streams; i++) {
             AVStream* inStream = formatContext->streams[i];
+            // find video stream index
             if (inStream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
                 frameInfo.videoStream = (int32_t) i;
                 frameInfo.width = inStream->codecpar->width;
@@ -203,6 +213,7 @@ APP_ERROR StreamPuller::GetStreamInfo()
             return APP_ERR_COMM_FAILURE;
         }
 
+        // check video format
         AVCodecID codecId = formatContext->streams[frameInfo.videoStream]->codecpar->codec_id;
         if (codecId == AV_CODEC_ID_H264) {
             frameInfo.format = MxBase::MXBASE_STREAM_FORMAT_H264_MAIN_LEVEL;

@@ -27,11 +27,11 @@ namespace {
     const uint32_t BASE_CHANNEL_ID = 0;
 }
 
-bool MultiChannelVideoReasoner::forceStop = false;
+bool MultiChannelVideoReasoner::_s_force_stop = false;
 static void SigHandler(int signal)
 {
     if (signal == SIGINT) {
-        MultiChannelVideoReasoner::forceStop = true;
+        MultiChannelVideoReasoner::_s_force_stop = true;
         LogInfo << "Force quit MultiChannelVideoReasoner.";
     }
 }
@@ -46,14 +46,18 @@ int main(int argc, char* argv[])
     ///=== modify config ===//
     MxBase::ConfigData configData;
     MxBase::ConfigUtil configUtil;
-    configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
+    APP_ERROR ret = configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
                                  configData, MxBase::ConfigMode::CONFIGFILE);
-    configData.SetFileValue<int>("global_level", 1);
-    MxBase::Log::SetLogParameters(configData);
+    if (ret == APP_ERR_OK) {
+        configData.SetFileValue<int>("global_level", 1);
+        MxBase::Log::SetLogParameters(configData);
+    } else {
+        LogInfo << "load log configuration failed.";
+    }
 
     ///=== resource init ===///
     // init devices
-    APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
+    ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
         LogError << "InitDevices failed";
         return ret;
@@ -86,6 +90,7 @@ int main(int argc, char* argv[])
     reasonerConfig.maxDecodeFrameQueueLength = 400;
     reasonerConfig.popDecodeFrameWaitTime = 10;
     reasonerConfig.intervalPerformanceMonitorPrint = 5;
+    reasonerConfig.intervalMainThreadControlCheck = 2;
     reasonerConfig.writeDetectResultToFile = false;
     reasonerConfig.enablePerformanceMonitorPrint = true;
 
@@ -93,6 +98,7 @@ int main(int argc, char* argv[])
     ret = multiChannelVideoReasoner->Init(reasonerConfig);
     if (ret != APP_ERR_OK) {
         LogError << "Init multi channel video infer failed.";
+        MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
 
