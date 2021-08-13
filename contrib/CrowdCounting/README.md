@@ -39,17 +39,11 @@ npu-smi info
 
 本sample工程名称为 **CrowdCounting**，工程目录如下图所示：
 
-![image-structure](image-structure.png)
-
-
+![image-20210813134729621](image-structure.png)
 
 ### 1.5 技术实现流程图
 
-![image-flowchart](image-flowchart.png)
-
-
-
-
+![image-20210813134626874](image-flowchart.png)
 
 ## 2 环境依赖
 
