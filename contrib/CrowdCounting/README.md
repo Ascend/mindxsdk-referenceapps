@@ -19,7 +19,7 @@ npu-smi info
 
 ### 1.3 软件方案介绍
 
-人群计数流程图如图1所示。输入类型是图片数据（例如jpg格式的图片），通过调用MindX SDK mxBase提供的接口，使用DVPP进行图像解码，解码后获取图像数据，然后经过图像尺寸大小变换，满足模型的输入尺寸要求；将尺寸变换后的图像数据输入人群计数模型进行推理，模型输出经过后处理后，得到人群密度估计图和人计数估计值，输出人计数的估计值。
+人群计数项目实现：输入类型是图片数据（例如jpg格式的图片），通过调用MindX SDK mxBase提供的接口，使用DVPP进行图像解码，解码后获取图像数据，然后经过图像尺寸大小变换，满足模型的输入尺寸要求；将尺寸变换后的图像数据输入人群计数模型进行推理，模型输出经过后处理后，得到人群密度估计图和人计数估计值，输出人计数的估计值。
 
 整个流程需要参考Ascend的参考样例：crowd_count_picture 样例，详见以下链接：https://gitee.com/ascend/samples/tree/master/python/contrib/crowd_count_picture  crowd_count_picture 样例是基于ACL实现的，本任务需要参考crowd_count_picture 样例，基于MindX SDK mxBase的接口实现。MindX SDK mxBase是对ACL接口的封装，提供了极简易用的API， 使能AI应用的开发。
 
@@ -39,11 +39,11 @@ npu-smi info
 
 本sample工程名称为 **CrowdCounting**，工程目录如下图所示：
 
-![image-20210812195613389](C:\Users\tongxiaoyu\AppData\Roaming\Typora\typora-user-images\image-20210812195613389.png)
+![image-20210812195613389](C:\Users\TONGXI~1\DOCUME~1\MobaXterm\slash\RemoteFiles\1050564_3_2\image-20210812195613389.png)
 
 ### 1.5 技术实现流程图
 
-![image-20210812195811897](C:\Users\tongxiaoyu\AppData\Roaming\Typora\typora-user-images\image-20210812195811897.png)
+![image-20210812195811897](C:\Users\TONGXI~1\DOCUME~1\MobaXterm\slash\RemoteFiles\1050564_3_2\image-20210812195811897.png)
 
 
 
@@ -53,11 +53,11 @@ npu-smi info
 
 请列出环境依赖软件和版本。
 
-eg：推荐系统为ubantu 18.04或centos 7.6，环境依赖软件和版本如下表：
+eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本         |
 | -------- | ------------ |
-| 系统软件 | ubantu 18.04 |
+| 系统软件 | ubuntu 18.04 |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -71,13 +71,35 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 ```
 
-## 依赖安装
+## 3 模型转换
+
+**步骤1** 
+
+下载原始模型权重下载：
+
+[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.caffemodel](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.caffemodel)
+
+**步骤2** 
+
+下载原始模型网络：
+
+[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.prototxt](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.prototxt)
+
+**步骤3**
+
+下载对应的cfg文件：
+
+[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/insert_op.cfg](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/insert_op.cfg)
+
+**步骤4**
 
 使用ATC模型转换工具进行模型转换时可以参考如下指令:
 
+```
 atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" --input_format=NCHW --output="count_person.caffe" --soc_version=Ascend310 --insert_op_conf=insert_op.cfg --framework=0 --model="count_person.caffe.prototxt" 
+```
 
-## 编译与运行
+## 4 编译与运行
 **步骤1** 
 
 修改CMakeLists.txt文件 将set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")中的"$ENV{MX_SDK_HOME}"替换为实际的SDK安装路径
@@ -90,7 +112,8 @@ atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" 
 export ASCEND_HOME=/usr/local/Ascend
 export ASCEND_VERSION=nnrt/latest
 export ARCH_PATTERN=.
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/
+opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
 ```
 
 **步骤3** 
@@ -119,14 +142,3 @@ wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/crowdCount/crowd.jp
 
 
 
-## 6 常见问题
-
-### 6.1 求计数问题
-
-**问题描述：**
-
-python中的flatten()函数在该项目中的C++部分如何实现
-
-**解决方案：**
-
-flatten只是把tensor  reshape成（-1，）大小 ，模型输出的tensor是（1,1,800,1408）需使用for循环逐个数据取出来，这个地方取得的是模型输出tensor的size值，不是取出图片中每个像素的值。因此，for循环里面用到的是GetSize()。
