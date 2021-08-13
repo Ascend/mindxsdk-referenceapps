@@ -39,11 +39,11 @@ npu-smi info
 
 本sample工程名称为 **CrowdCounting**，工程目录如下图所示：
 
-![image-20210813134729621](image-structure.png)
+![image-20210813140143654](../../../../../../tongxiaoyu/AppData/Roaming/Typora/typora-user-images/image-20210813140143654.png)
 
 ### 1.5 技术实现流程图
 
-![image-20210813134626874](image-flowchart.png)
+![image-20210813135413531](README/image-20210813135413531.png)
 
 ## 2 环境依赖
 
