@@ -26,6 +26,20 @@
 
 namespace AscendYoloDetector {
 
+namespace {
+    const uint32_t YOLO_CLASS_NUM = 80;
+    const uint32_t YOLO_BIASES_NUM = 18;
+    const uint32_t YOLO_TYPE = 3;
+    const uint32_t YOLO_MODEL_TYPE = 0;
+    const uint32_t YOLO_INPUT_TYPE = 0;
+    const uint32_t YOLO_ANCHOR_DIM = 3;
+
+
+    const uint32_t YUV_BYTE_NU = 3;
+    const uint32_t YUV_BYTE_DE = 2;
+    const uint32_t VPC_H_ALIGN = 2;
+}
+
 struct YoloInitParam {
     uint32_t deviceId;
     std::string labelPath;

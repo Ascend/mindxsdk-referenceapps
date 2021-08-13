@@ -27,10 +27,6 @@
 #include "../StreamPuller/StreamPuller.h"
 #include "../VideoDecoder/VideoDecoder.h"
 
-namespace {
-    const uint32_t YUV_BYTE_NU = 3;
-    const uint32_t YUV_BYTE_DE = 2;
-}
 class Util {
 
 public:
@@ -53,19 +49,20 @@ public:
         initParam.labelPath = labelPath;
         initParam.checkTensor = true;
         initParam.modelPath = modelPath;
-        initParam.classNum = 80;
-        initParam.biasesNum = 18;
+        initParam.classNum = AscendYoloDetector::YOLO_CLASS_NUM;
+        initParam.biasesNum = AscendYoloDetector::YOLO_BIASES_NUM;
         initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
         initParam.objectnessThresh = "0.001";
         initParam.iouThresh = "0.5";
         initParam.scoreThresh = "0.001";
-        initParam.yoloType = 3;
-        initParam.modelType = 0;
-        initParam.inputType = 0;
-        initParam.anchorDim = 3;
+        initParam.yoloType = AscendYoloDetector::YOLO_TYPE;
+        initParam.modelType = AscendYoloDetector::YOLO_MODEL_TYPE;
+        initParam.inputType = AscendYoloDetector::YOLO_INPUT_TYPE;
+        initParam.anchorDim = AscendYoloDetector::YOLO_ANCHOR_DIM;
     }
 
-    static bool IsExistDataInQueueMap(const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+    static bool IsExistDataInQueueMap(const std::map<int,
+                                      std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
     {
         std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
         for (iter = queueMap.begin();iter != queueMap.end();iter++) {
@@ -77,8 +74,9 @@ public:
         return false;
     }
 
-    static APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData>& resultInfo, const uint32_t frameId,
+    static APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData>& resultInfo,
                                 const std::vector<std::vector<MxBase::ObjectInfo>>& objInfos,
+                                const uint32_t frameId,
                                 const uint32_t videoWidth, const uint32_t videoHeight,
                                 const uint32_t totalVideoStream, const uint32_t rtspIndex = 1)
     {
@@ -88,8 +86,8 @@ public:
             LogError << "Fail to malloc and copy host memory.";
             return ret;
         }
-        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight * YUV_BYTE_NU / YUV_BYTE_DE), (int32_t) videoWidth,
-                                 CV_8UC1, memoryDst.ptrData);
+        cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight * AscendYoloDetector::YUV_BYTE_NU / AscendYoloDetector::YUV_BYTE_DE),
+                                 (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
         cv::Mat imgBgr = cv::Mat((int32_t) videoHeight, (int32_t) videoWidth, CV_8UC3);
         cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 

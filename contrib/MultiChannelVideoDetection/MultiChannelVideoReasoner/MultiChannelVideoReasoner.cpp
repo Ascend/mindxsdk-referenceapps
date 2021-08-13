@@ -130,8 +130,8 @@ void MultiChannelVideoReasoner::Process()
     }
 
     auto endTime = std::chrono::high_resolution_clock::now();
-    double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-    LogInfo << "total process time: " << costMs / 1000 << "s.";
+    double costS = std::chrono::duration<double>(endTime - startTime).count();
+    LogInfo << "total process time: " << costS << "s.";
 }
 
 APP_ERROR MultiChannelVideoReasoner::DeInit()
@@ -221,7 +221,8 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
     }
 }
 
-void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(const uint32_t &modelWidth, const uint32_t &modelHeight,
+void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(const uint32_t &modelWidth,
+                                                               const uint32_t &modelHeight,
                                                                const uint32_t &popDecodeFrameWaitTime,
                                                                const MultiChannelVideoReasoner* multiChannelVideoReasoner)
 {
@@ -305,7 +306,8 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(const uint32_t &m
 
             // save detect result
             if (multiChannelVideoReasoner->writeDetectResultToFile) {
-                ret = Util::SaveResult(decodeFrame, resizeFrame.frameId, objInfos,
+                ret = Util::SaveResult(decodeFrame, objInfos,
+                                       resizeFrame.frameId,
                                        videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height,
                                        videoFrameInfos.size(), rtspIndex);
                 if (ret != APP_ERR_OK) {
