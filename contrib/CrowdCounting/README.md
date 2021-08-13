@@ -39,11 +39,11 @@ npu-smi info
 
 本sample工程名称为 **CrowdCounting**，工程目录如下图所示：
 
-![image-20210813140708022](mindxsdk-referenceapps/contrib/CrowdCounting/image-20210813140708022.png)
+![image-20210813152252629](image-20210813152252629.png)
 
 ### 1.5 技术实现流程图
 
-![image-20210813140722953](mindxsdk-referenceapps/contrib/CrowdCounting/image-20210813140722953.png)
+
 
 ## 2 环境依赖
 
