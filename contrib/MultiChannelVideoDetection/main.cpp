@@ -91,6 +91,7 @@ int main(int argc, char* argv[])
     reasonerConfig.popDecodeFrameWaitTime = 10;
     reasonerConfig.intervalPerformanceMonitorPrint = 5;
     reasonerConfig.intervalMainThreadControlCheck = 2;
+    reasonerConfig.printDetectResult = true;
     reasonerConfig.writeDetectResultToFile = false;
     reasonerConfig.enablePerformanceMonitorPrint = true;
 

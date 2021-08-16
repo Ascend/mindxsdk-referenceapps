@@ -31,7 +31,7 @@ add_executable(sample main.cpp
         ImageResizer/ImageResizer.cpp
         YoloDetector/YoloDetector.cpp
         MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp
-        Util/PerformanceMonitor/PerformanceMonitor.cpp)
+        Util/PerformanceMonitor/PerformanceMonitor.cpp Util/Util.cpp)
 target_link_libraries(sample
         avcodec
         avdevice

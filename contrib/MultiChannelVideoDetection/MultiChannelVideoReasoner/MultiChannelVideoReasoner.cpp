@@ -57,6 +57,7 @@ APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
     this->maxDecodeFrameQueueLength = initConfig.maxDecodeFrameQueueLength;
     this->intervalPerformanceMonitorPrint = initConfig.intervalPerformanceMonitorPrint;
     this->intervalMainThreadControlCheck = initConfig.intervalMainThreadControlCheck;
+    this->printDetectResult = initConfig.printDetectResult;
     this->writeDetectResultToFile = initConfig.writeDetectResultToFile;
 
     this->stopFlag = false;
@@ -239,6 +240,11 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
         return;
     }
 
+    // check result dir
+    if (multiChannelVideoReasoner->writeDetectResultToFile) {
+        Util::CheckAndCreateResultDir(multiChannelVideoReasoner->videoFrameInfos.size());
+    }
+
     auto imageResizer = multiChannelVideoReasoner->imageResizer;
     auto yoloDetector = multiChannelVideoReasoner->yoloDetector;
     auto decodeFrameQueueMap = multiChannelVideoReasoner->decodeFrameQueueMap;
@@ -308,12 +314,14 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
             costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
             performanceMonitor->Collect("YoloDetector", costMs);
 
+            // get detect result
+            std::vector<MxBase::ObjectInfo> results = Util::GetDetectionResult(objInfos, rtspIndex, resizeFrame.frameId,
+                                                                               multiChannelVideoReasoner->printDetectResult);
+
             // save detect result
             if (multiChannelVideoReasoner->writeDetectResultToFile) {
-                ret = Util::SaveResult(decodeFrame, objInfos,
-                                       resizeFrame.frameId,
-                                       videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height,
-                                       videoFrameInfos.size(), rtspIndex);
+                ret = Util::SaveResult(decodeFrame, results, videoFrameInfos[rtspIndex],
+                                       resizeFrame.frameId, rtspIndex);
                 if (ret != APP_ERR_OK) {
                     LogError << "Save result failed, ret=" << ret << ".";
                     return;

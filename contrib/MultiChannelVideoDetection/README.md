@@ -127,12 +127,15 @@ reasonerConfig.yoloModelPath = "${yolov3.om模型路径}"
 reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
 ```
 
-其他可配置项`maxDecodeFrameQueueLength` `writeDetectResultToFile` `enablePerformanceMonitorPrint` `intervalPerformanceMonitorPrint`
+其他可配置项`maxDecodeFrameQueueLength` `writeDetectResultToFile` `enablePerformanceMonitorPrint` `intervalPerformanceMonitorPrint` 
+`intervalMainThreadControlCheck` `printDetectResult`
 ```c++
 reasonerConfig.maxDecodeFrameQueueLength = 400; // 多路视频时请适当减小
-reasonerConfig.writeDetectResultToFile = true; // 检测结果是否写文件
-reasonerConfig.enablePerformanceMonitorPrint = true; // 性能可视化开关
+reasonerConfig.writeDetectResultToFile = true; // 检测结果是否写文件, 默认为false
+reasonerConfig.enablePerformanceMonitorPrint = true; // 性能可视化开关，默认为true
 reasonerConfig.intervalPerformanceMonitorPrint = 5; // 性能监控输出间隔(s)
+reasonerConfig.intervalMainThreadControlCheck = 2; // 流程检查间隔
+reasonerConfig.printDetectResult = true; // 输出检测结果，默认为true
 ```
 
 ### 配置环境变量

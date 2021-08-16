@@ -37,6 +37,7 @@ struct ReasonerConfig {
     std::string yoloModelPath;
     std::string yoloLabelPath;
     std::vector<std::string> rtspList;
+    bool printDetectResult = true;
     bool writeDetectResultToFile = false;
     bool enablePerformanceMonitorPrint = true;
 };
@@ -86,6 +87,7 @@ private:
     uint32_t maxDecodeFrameQueueLength;
     uint32_t intervalPerformanceMonitorPrint;
     uint32_t intervalMainThreadControlCheck;
+    bool printDetectResult;
     bool writeDetectResultToFile;
 
 private:
