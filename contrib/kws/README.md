@@ -8,13 +8,13 @@
   **一、 构建声学模型** <br/>
   **二、 对模型输出进行解码，查看是否出现目标关键词** <br/>
 
-  声学模型采t用CRNN-CTC,模型构建参考论文《CRNN-CTC Based Mandarin Keyword Spotting》<br/>
+  声学模型采用CRNN-CTC,模型构建参考论文《CRNN-CTC Based Mandarin Keyword Spotting》<br/>
 
 ## 2 模型转换
 由于原模型是onnx模型，需借助ACT工具将onnx模型转换为om模型。模型转换应先按照[准备动作](https://support.huaweicloud.com/atc-model-convert-cann202infer/atlasatc_16_0005.html)  
 配置好环境和设置环境变量，然后执行以下命令
 ```bash
-act --framework=5 --model={model_path} --input_shape="input:1,80,1464"
+atc --framework=5 --model={model_path} --input_shape="input:1,80,1464"
     --output=am_batch_one  --soc_version=Ascend310
 ```
 
