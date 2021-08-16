@@ -45,7 +45,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ### 1.5 技术实现流程图
 
-<img src="%E5%AE%89%E5%85%A8%E5%B8%BD%E8%AF%86%E5%88%ABReadme.assets/image4.jpg" alt="image4" style="zoom:80%;" />
+<img src="https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image4.jpg" alt="image4" style="zoom:80%;" />
 
 
 
@@ -252,7 +252,7 @@ make -j
 
 mian.py通过调用sdk接口创建多个流完成数据接收、处理以及输出，接口调用流程图如下所示：
 
-![image-20210811205453234](%E5%AE%89%E5%85%A8%E5%B8%BD%E8%AF%86%E5%88%ABReadme.assets/image1.jpg)
+![image-20210811205453234](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image1.jpg)
 
 本项目通过mxpi_rtspsrc拉流输入数据，通过两路GetprotoBuf接口输出数据，一路输出带有帧信息的图片数据，一路输出带有帧信息的目标检测框和检测框跟踪信息。推理运行命令如下：
 
@@ -264,7 +264,7 @@ mian.py通过调用sdk接口创建多个流完成数据接收、处理以及输�
 
 test.264可替换成任意上传至当前目录的264文件，如要修改相应的也要在pipline中修改mxpi_rtspsrc的拉流路径
 
-![image2](%E5%AE%89%E5%85%A8%E5%B8%BD%E8%AF%86%E5%88%ABReadme.assets/image2.jpg)
+![image2](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image2.jpg)
 
 然后切换目录至main.py所在目录下，运行命令：
 
@@ -274,7 +274,7 @@ python3.7.5 main.py
 
 即可得到输出结果，输出结果将原来的两路视频分为两个文件保存，oringe_imgfile用于设置图像输出路径，infer_imgfile用于设置告警图片输出路径。用户可自定义设置任意文件路径。本项目文件放置规范如下：
 
-![image3](%E5%AE%89%E5%85%A8%E5%B8%BD%E8%AF%86%E5%88%ABReadme.assets/image3.jpg)
+![image3](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image3.jpg)
 
 所有数据放置于output中，one 、two为两路视频输出文件。image用于存放模型识别后图片。inference用于存放识别出的未佩戴安全帽目标所在帧，每个目标只输出一次。
 
