@@ -17,12 +17,12 @@
 #ifndef MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H
 #define MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H
 
-#include <thread>
-#include "../StreamPuller/StreamPuller.h"
-#include "../VideoDecoder/VideoDecoder.h"
-#include "../ImageResizer/ImageResizer.h"
-#include "../YoloDetector/YoloDetector.h"
-#include "../Util/PerformanceMonitor/PerformanceMonitor.h"
+#include "StreamPuller/StreamPuller.h"
+#include "VideoDecoder/VideoDecoder.h"
+#include "ImageResizer/ImageResizer.h"
+#include "YoloDetector/YoloDetector.h"
+#include "BlockingQueue/BlockingQueue.h"
+#include "Util/PerformanceMonitor/PerformanceMonitor.h"
 
 struct ReasonerConfig {
     uint32_t deviceId;

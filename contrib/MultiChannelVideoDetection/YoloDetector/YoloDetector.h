@@ -22,8 +22,6 @@
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "ObjectPostProcessors/Yolov3PostProcess.h"
 
-#include "../BlockingQueue/BlockingQueue.h"
-
 namespace AscendYoloDetector {
 
 namespace {

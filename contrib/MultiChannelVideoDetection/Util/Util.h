@@ -17,15 +17,15 @@
 #ifndef MULTICHANNELVIDEODETECTION_UTIL_H
 #define MULTICHANNELVIDEODETECTION_UTIL_H
 
+#include "StreamPuller/StreamPuller.h"
+#include "VideoDecoder/VideoDecoder.h"
+
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/Log/Log.h"
 #include "opencv2/opencv.hpp"
 
 #include <dirent.h>
 #include <cstdlib>
-
-#include "../StreamPuller/StreamPuller.h"
-#include "../VideoDecoder/VideoDecoder.h"
 
 class Util {
 

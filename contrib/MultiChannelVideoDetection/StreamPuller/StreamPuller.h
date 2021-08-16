@@ -21,8 +21,6 @@
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 
-#include "../BlockingQueue/BlockingQueue.h"
-
 extern "C" {
 #include "libavformat/avformat.h"
 }

@@ -17,11 +17,11 @@
 #ifndef MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H
 #define MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H
 
+#include "MxBase/ErrorCode/ErrorCode.h"
 #include <map>
 #include <vector>
 #include <mutex>
 #include <memory>
-#include "MxBase/ErrorCode/ErrorCode.h"
 
 namespace AscendPerformanceMonitor{
 

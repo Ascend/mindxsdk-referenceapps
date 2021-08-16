@@ -10,6 +10,7 @@ set(MX_SDK_HOME {MindXSDK安装路径})
 set(FFMPEG_PATH {ffmpeg实际安装路径})
 
 include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
@@ -25,14 +26,12 @@ link_directories(
 )
 
 add_executable(sample main.cpp
-        Util/Util.h
-        BlockingQueue/BlockingQueue.h
-        StreamPuller/StreamPuller.cpp StreamPuller/StreamPuller.h
-        VideoDecoder/VideoDecoder.cpp VideoDecoder/VideoDecoder.h
-        ImageResizer/ImageResizer.cpp ImageResizer/ImageResizer.h
-        YoloDetector/YoloDetector.cpp YoloDetector/YoloDetector.h
-        MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp MultiChannelVideoReasoner/MultiChannelVideoReasoner.h
-        Util/PerformanceMonitor/PerformanceMonitor.cpp Util/PerformanceMonitor/PerformanceMonitor.h)
+        StreamPuller/StreamPuller.cpp
+        VideoDecoder/VideoDecoder.cpp
+        ImageResizer/ImageResizer.cpp
+        YoloDetector/YoloDetector.cpp
+        MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp
+        Util/PerformanceMonitor/PerformanceMonitor.cpp)
 target_link_libraries(sample
         avcodec
         avdevice

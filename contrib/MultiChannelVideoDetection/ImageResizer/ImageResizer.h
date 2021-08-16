@@ -21,8 +21,6 @@
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 
-#include "../BlockingQueue/BlockingQueue.h"
-
 namespace AscendImageResizer {
 class ImageResizer {
 public:

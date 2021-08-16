@@ -15,6 +15,8 @@
  */
 
 #include "VideoDecoder.h"
+#include "BlockingQueue/BlockingQueue.h"
+
 #include "MxBase/Log/Log.h"
 
 namespace AscendVideoDecoder {

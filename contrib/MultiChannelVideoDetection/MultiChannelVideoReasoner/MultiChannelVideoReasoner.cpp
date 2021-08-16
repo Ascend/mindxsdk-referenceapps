@@ -15,9 +15,11 @@
  */
 
 #include "MultiChannelVideoReasoner.h"
-#include "../Util/Util.h"
+#include "Util/Util.h"
 
 #include "MxBase/DeviceManager/DeviceManager.h"
+
+#include <thread>
 
 APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
 {
