@@ -252,7 +252,7 @@ make -j
 
 mian.py通过调用sdk接口创建多个流完成数据接收、处理以及输出，接口调用流程图如下所示：
 
-![image-20210811205453234](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image1.jpg)
+![image-20210811205453234](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image1.png)
 
 本项目通过mxpi_rtspsrc拉流输入数据，通过两路GetprotoBuf接口输出数据，一路输出带有帧信息的图片数据，一路输出带有帧信息的目标检测框和检测框跟踪信息。推理运行命令如下：
 
