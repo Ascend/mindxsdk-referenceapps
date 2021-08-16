@@ -14,7 +14,7 @@
 import pypinyin
 import yaml
 import json
-
+import os
 def get_all_type_paths(file_dir, _type):
     """Gets the address of a file of the specified type in a folder
     Args:
