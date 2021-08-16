@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 from utils import read_conf
+import utils
 from preprocessing import ExtractLogmel
 from post_process import infer
 import numpy as np
@@ -41,7 +42,8 @@ if __name__ == '__main__':
     # Read parameter file
     params = read_conf("../data/data.yaml")
     # test wav
-    wav_path = "../data/BAC009S0048W0157.wav"
+    wav_path_list = utils.get_all_type_paths("../data", ".wav")
+    wav_path = wav_path_list[0]
     # extract feature
     max_frames = 1464
     extract_logmel = ExtractLogmel(max_len=max_frames, mean_std_path='../data/mean_std.npz')

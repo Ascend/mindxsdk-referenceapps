@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 import os
-
+import utils
 from preprocessing import ExtractLogmel
 from post_process import speaker_recognition
 import numpy as np
@@ -43,7 +43,8 @@ if __name__ == '__main__':
     # voice_print_library
     voice_print_library_path = "../voice_print_library"
     # test wav
-    wav_path = "../test_wav/BAC009S0766W0422.wav"
+    wav_path_list = utils.get_all_type_paths("../test_wav", ".wav")
+    wav_path = wav_path_list[0]
     wav_name = os.path.basename(wav_path).split(".")[0]
     extract_logmel = ExtractLogmel(padded_type="copy")
     # extract feature

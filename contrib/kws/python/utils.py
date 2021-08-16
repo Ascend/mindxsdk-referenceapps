@@ -15,6 +15,21 @@ import pypinyin
 import yaml
 import json
 
+def get_all_type_paths(file_dir, _type):
+    """Gets the address of a file of the specified type in a folder
+    Args:
+        file_dir: Folder address
+        _type: file type(str)
+    Return:
+        file address(list)
+    """
+    _file_paths = []
+    for root_dir, sub_dir, files in os.walk(file_dir):
+        for _file in files:
+            if _file.endswith(_type):
+                _file_paths.append(os.path.join(root_dir, _file))
+    return _file_paths
+
 
 def generate_label(keyword_list):
     """Generate labels for keywords
