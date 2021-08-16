@@ -1,77 +1,18 @@
-# 图像检测样例命令行运行
+# 人体语义分割的C++实现demo
 
 ## 介绍
 
-提供的sample样例，实现对本地图片进行YOLOv3目标检测，生成可视化结果。
+提供C++版本的人体语义分割样例，实现对传入图片进行人体检测检测，生成对应的可视化语义分割结果图。
 
 ### 准备工作
 
-> 模型转换
+> 环境配置
 
-步骤1 在
 
-**步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
 
-**步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"。
+**步骤1** 根据官网指示下载好MindXSDK的开发环境
 
-**步骤3** 模型转换
-
-在pb文件所在目录下执行一下命令
-
-```
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
-# 执行，转换YOLOv3模型
-# Execute, transform YOLOv3 model.
-
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
-# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
-```
-
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
-
-模型转换使用了ATC工具，如需更多信息请参考:
-
- https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
-
-> 配置pipeline
-
-配置mxpi_tensorinfer插件的模型加载路径`modelPath`
-
-```
-"mxpi_tensorinfer0": {
-            "props": {
-                "dataSource": "mxpi_imageresize0",
-                "modelPath": "${yolov3.om模型路径}"
-            },
-            "factory": "mxpi_tensorinfer",
-            "next": "mxpi_objectpostprocessor0"
-        },
-```
-
-配置模型后处理插件mxpi_objectpostprocessor，`postProcessLibPath`的后处理库路径，路径根据SDK安装路径决定，可以通过`find -name libyolov3postprocess.so`搜索路径。
-
-- eg: SDK安装路径/mxVision/lib/modelpostprocessors/libyolov3pos
-
-```
-"mxpi_objectpostprocessor0": {
-            "props": {
-                "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "model/yolov3_tf_bs1_fp16.cfg",
-                "labelPath": "${SDK安装路径}/samples/mxVision/models/yolov3/coco.names",
-                "postProcessLibPath": "${libyolov3postprocess.so路径}"
-            },
-            "factory": "mxpi_objectpostprocessor",
-            "next": "appsink0"
-        },
-```
+**步骤2** 配置好对应的环境变量
 
 ### 配置环境变量
 
@@ -102,6 +43,10 @@ env
 ```
 set(MX_SDK_HOME ${SDK安装路径}/mxVision)
 ```
+### 传入照片
+将选中的照片传入/data文件夹下
+打开根目录下的main.cpp文件，将主程序中    std::string inputPicname="test.jpeg";的名称改为传入的图像名称
+
 
 ### 编译项目文件
 
@@ -133,4 +78,4 @@ bash run.sh
 
 ### 查看结果
 
-执行run.sh完毕后，sample会将目标检测结果保存在工程目录下`result.jpg`中。
+执行run.sh完毕后，sample会将人体语义分割检测结果保存在工程目录下result文件夹中命名为'reuslt_inpuitPicname.jpg'。
