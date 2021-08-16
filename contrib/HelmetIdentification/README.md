@@ -45,7 +45,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ### 1.5 技术实现流程图
 
-<img src="https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image4.jpg" alt="image4" style="zoom:80%;" />
+<img src="https://gitee.com/liu-kai6334/mindxsdk-referenceapps/raw/master/contrib/HelmetIdentification/image/image4.jpg" alt="image4" style="zoom:80%;" />
 
 
 
@@ -264,7 +264,7 @@ mian.py通过调用sdk接口创建多个流完成数据接收、处理以及输�
 
 test.264可替换成任意上传至当前目录的264文件，如要修改相应的也要在pipline中修改mxpi_rtspsrc的拉流路径
 
-![image2](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image2.jpg)
+![image2](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/raw/master/contrib/HelmetIdentification/image/image2.jpg)
 
 然后切换目录至main.py所在目录下，运行命令：
 
