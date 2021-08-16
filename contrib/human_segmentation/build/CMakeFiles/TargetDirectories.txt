@@ -1,0 +1,3 @@
+/home/cqu_liu2/demo/build/CMakeFiles/rebuild_cache.dir
+/home/cqu_liu2/demo/build/CMakeFiles/sample.dir
+/home/cqu_liu2/demo/build/CMakeFiles/edit_cache.dir

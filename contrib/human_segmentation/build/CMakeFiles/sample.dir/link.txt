@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/sample.dir/main.cpp.o  -o ../sample  -L/home/cqu_liu2/MindXSDK/mxVision/lib  -L/home/cqu_liu2/MindXSDK/mxVision/opensource/lib -Wl,-rpath,/home/cqu_liu2/MindXSDK/mxVision/lib:/home/cqu_liu2/MindXSDK/mxVision/opensource/lib -lglog -lmxbase -lmxpidatatype -lplugintoolkit -lstreammanager -lcpprest -lmindxsdk_protobuf -lopencv_world 
