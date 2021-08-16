@@ -274,7 +274,7 @@ python3.7.5 main.py
 
 即可得到输出结果，输出结果将原来的两路视频分为两个文件保存，oringe_imgfile用于设置图像输出路径，infer_imgfile用于设置告警图片输出路径。用户可自定义设置任意文件路径。本项目文件放置规范如下：
 
-![image3](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/blob/master/contrib/HelmetIdentification/image/image3.jpg)
+![image3](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/raw/master/contrib/HelmetIdentification/image/image3.jpg)
 
 所有数据放置于output中，one 、two为两路视频输出文件。image用于存放模型识别后图片。inference用于存放识别出的未佩戴安全帽目标所在帧，每个目标只输出一次。
 
