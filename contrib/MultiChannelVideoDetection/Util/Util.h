@@ -55,8 +55,6 @@ public:
                                 const std::vector<MxBase::ObjectInfo>& results,
                                 const AscendStreamPuller::VideoFrameInfo &videoFrameInfo,
                                 uint32_t frameId, uint32_t rtspIndex = 0);
-
-
 private:
     static void CreateDir(const std::string &path);
 };

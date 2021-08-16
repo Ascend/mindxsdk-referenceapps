@@ -80,11 +80,11 @@ std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
 
         if (printResult) {
             LogInfo << "rtsp " << rtspIndex << " frame " << frameId
-            <<" result:{id: " << info[i].classId
+            << " result:{id: " << info[i].classId
             << "; label: " << info[i].className
             << "; confidence: " << info[i].confidence
             << "; box: [(" << info[i].x0 << "," << info[i].y0 << ")"
-            << "(" << info[i].x1 << "," << info[i].y1 << ")]}";
+            << "(" << info[i].x1 << "," << info[i].y1 << ")]}.";
         }
     }
 
@@ -156,7 +156,6 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
     }
     return APP_ERR_OK;
 }
-
 
 ///===== private method =====///
 void Util::CreateDir(const std::string &path)

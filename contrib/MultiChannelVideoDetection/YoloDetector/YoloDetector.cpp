@@ -249,7 +249,7 @@ APP_ERROR YoloDetector::LoadLabels(const std::string &labelPath, std::map<int, s
     // construct label map
     int count = 0;
     while (std::getline(infile, s)) {
-        if (s.find('#') <= 1) {
+        if (s.length() < 0 || s[0] == '#') {
             continue;
         }
         size_t eraseIndex = s.find_last_not_of("\r\n\t");

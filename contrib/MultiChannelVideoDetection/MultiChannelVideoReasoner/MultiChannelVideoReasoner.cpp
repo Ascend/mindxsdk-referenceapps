@@ -315,8 +315,15 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
             performanceMonitor->Collect("YoloDetector", costMs);
 
             // get detect result
-            std::vector<MxBase::ObjectInfo> results = Util::GetDetectionResult(objInfos, rtspIndex, resizeFrame.frameId,
-                                                                               multiChannelVideoReasoner->printDetectResult);
+            std::vector<MxBase::ObjectInfo> results;
+            results = Util::GetDetectionResult(objInfos, rtspIndex, resizeFrame.frameId,
+                                               multiChannelVideoReasoner->printDetectResult);
+            if (results.empty()) {
+                LogInfo << "rtsp " << rtspIndex
+                << " frame " << resizeFrame.frameId
+                << " no detect result.";
+                continue;
+            }
 
             // save detect result
             if (multiChannelVideoReasoner->writeDetectResultToFile) {
