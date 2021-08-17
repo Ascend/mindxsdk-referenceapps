@@ -19,7 +19,7 @@
 
 #### 转换前提
 
-进行模型转换前，使用MindStudio安装用户，将所转换模型的模型文件、权重文件以及模型转换所需的AIPP配置文件 _（如果需要，若没有也可通过MindStudio的模型转换--“Data Pre-Processing”配置数据预处理功能生成）_ 上传到Ascend-cann-toolkit开发套件包所在的开发环境。
+进行模型转换前，使用MindStudio安装用户，将所转换模型的模型文件、权重文件以及模型转换所需的AIPP配置文件 _（如果需要则上传，若没有也可通过MindStudio的模型转换--“Data Pre-Processing”配置数据预处理功能生成）_ 上传到Ascend-cann-toolkit开发套件包所在的开发环境。
 
 #### 转换步骤
 
