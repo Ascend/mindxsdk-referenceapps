@@ -5,18 +5,16 @@ add_definitions(-Dgoogle=mindxsdk_private)
 set(PLUGIN_NAME "mxpi_selectedframe")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
 
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/include)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/opensource/include)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/opensource/include/gstreamer-1.0)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/opensource/include/glib-2.0)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/opensource/lib/glib-2.0/include)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/include/MxTools/PluginToolkit)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/include/MxTools/PluginToolkit)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/include/MxTools/PluginToolkit)
-include_directories(/home/sd_xiong2/MindX_SDK/mxVision/lib)
+include_directories(${MX_SDK_HOME}/include)
+include_directories(${MX_SDK_HOME}/opensource/include)
+include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
+include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
+include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
+include_directories(${MX_SDK_HOME}/include/MxTools/PluginToolkit)
+include_directories(${MX_SDK_HOME}/lib)
 
-link_directories(/home/sd_xiong2/MindX_SDK/mxVision/lib)
-link_directories(/home/sd_xiong2/MindX_SDK/mxVision/opensource/lib)
+link_directories(${MX_SDK_HOME}/lib)
+link_directories(${MX_SDK_HOME}/opensource/lib)
 
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")
@@ -27,3 +25,5 @@ target_link_libraries(${TARGET_LIBRARY} plugintoolkit mxbase mxpidatatype)
 target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
 
 install(TARGETS ${TARGET_LIBRARY} LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/dist/lib)
+
+# ${MX_SDK_HOME}设置为远程SDK安装路径
