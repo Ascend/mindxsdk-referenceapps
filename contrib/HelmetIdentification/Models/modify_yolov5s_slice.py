@@ -15,12 +15,13 @@ import sys
 import onnx
 
 INT_MAX = sys.maxsize
-
 model_path = sys.argv[1]
 model = onnx.load(model_path)
 
-
 def get_node_by_name(nodes, name: str):
+    """
+    gain node by names
+    """
     for n in nodes:
         if n.name == name:
             return n
