@@ -57,9 +57,11 @@ export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
 
 #### FFmpeg
 
-下载完解压，按以下命令编译即可
+下载完，按以下命令进行解压和编译
 
 ```bash
+tar -xzvf n4.2.1.tar.gz
+cd FFmpeg-n4.2.1
 ./configure --prefix=/usr/local/ffmpeg --enable-shared
 make -j
 make install
@@ -146,9 +148,9 @@ cd $HOME
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
 MX_SDK_HOME=${SDK安装路径}
-FFMPEG_PATH=${FFMPEG安装路径}
+FFMPEG_HOME=${FFMPEG安装路径}
 
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_PATH}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 
 GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 
@@ -170,13 +172,15 @@ env
 
 ```cmake
 set(MX_SDK_HOME {MindXSDK安装路径})
-set(FFMPEG_PATH {ffmpeg实际安装路径})
+set(FFMPEG_HOME {ffmpeg实际安装路径})
 set(X264_HOME {x264实际安装路径}) # 可选
 ```
 
 ### 编译项目文件
 
-新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
+手动编译请参照 ①，脚本编译请参照 ②
+
+> ① 新建build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
 
 ```bash
 mkdir build
@@ -216,9 +220,14 @@ Scanning dependencies of target sample
 # sample就是CMakeLists文件中指定生成的可执行文件。
 ```
 
+> ② 运行项目根目录下的`build.sh`
+```bash
+chmod +x build.sh
+bash build.sh
+```
 ### 执行脚本
 
-执行run.sh脚本前请先确认可执行文件sample已生成。
+执行`run.sh`脚本前请先确认可执行文件`sample`已生成。
 
 ```
 chmod +x run.sh
@@ -227,4 +236,4 @@ bash run.sh
 
 ### 查看结果
 
-执行run.sh完毕后，如果配置了检测结果写文件，sample会将目标检测结果保存在工程目录下`result`中。
+执行`run.sh`完毕后，如果配置了检测结果写文件，sample会将目标检测结果保存在工程目录下`result`中。

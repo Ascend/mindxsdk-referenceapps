@@ -162,7 +162,10 @@ void Util::CreateDir(const std::string &path)
 {
     LogInfo << path << " not exist. create it!";
     std::string command = "mkdir -p " + path;
-    system(command.c_str());
+    int code = system(command.c_str());
+    if (code == -1 || code == 127) {
+        LogError << "create " << path << " failed, code = " << code << ".";
+    } else {
+        LogInfo << "create " << path << " successfully.";
+    }
 }
- 
-

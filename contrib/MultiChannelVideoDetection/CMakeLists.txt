@@ -7,7 +7,7 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(MX_SDK_HOME {MindXSDK安装路径})
-set(FFMPEG_PATH {ffmpeg实际安装路径})
+set(FFMPEG_HOME {ffmpeg实际安装路径})
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -15,14 +15,14 @@ include_directories(
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
         ${MX_SDK_HOME}/include/MxBase/postprocess/include
-        ${FFMPEG_PATH}/include
+        ${FFMPEG_HOME}/include
 )
 
 link_directories(
         ${MX_SDK_HOME}/lib
         ${MX_SDK_HOME}/opensource/lib
         ${MX_SDK_HOME}/lib/modelpostprocessors
-        ${FFMPEG_PATH}/lib
+        ${FFMPEG_HOME}/lib
 )
 
 add_executable(sample main.cpp

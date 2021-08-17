@@ -148,9 +148,13 @@ APP_ERROR StreamPuller::StartStream()
     // init network
     avformat_network_init();
 
+    // specify an empty deleter to avoid double free
+    auto deleter = [] (AVFormatContext* avFormatContext) {
+
+    };
     // malloc avformat context
     AVFormatContext* pAvformatContext = avformat_alloc_context();
-    formatContext = std::shared_ptr<AVFormatContext>(pAvformatContext);
+    formatContext = std::shared_ptr<AVFormatContext>(pAvformatContext, deleter);
     if (formatContext == nullptr) {
         LogError << "formatContext is null.";
         return APP_ERR_COMM_INVALID_POINTER;
