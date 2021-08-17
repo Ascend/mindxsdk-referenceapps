@@ -15,7 +15,9 @@
 import os
 import shutil
 import cv2
-
+"""
+func:Filter out the pictures in the test set
+"""
 with open("ImageSets/Main/test.txt", "r") as f:
     data = f.readlines()
     text_data = []
