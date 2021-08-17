@@ -19,6 +19,10 @@ import time
 import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
+"""
+func：Call the sdk interface to create a stream, and perform the helmet recognition inference process to obtain the recognition result
+"""
+
 # init stream manager
 streamManagerApi = StreamManagerApi()
 ret = streamManagerApi.InitManager()
