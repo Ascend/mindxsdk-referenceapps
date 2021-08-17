@@ -43,7 +43,7 @@ APP_ERROR MxpiSelectedFrame::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     MxpiMetadataManager mxpiMetadataManager(*inputMxpiBuffer);
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        LogWarn << "Input data is invalid, element(" << pluginName_ <<") plugin will not be executed rightly.";
+        LogWarn<<"Input data is invalid, element("<<pluginName_<<") plugin will not be executed rightly.";
         SendData(0,*inputMxpiBuffer);
         return APP_ERR_COMM_FAILURE;
     }
