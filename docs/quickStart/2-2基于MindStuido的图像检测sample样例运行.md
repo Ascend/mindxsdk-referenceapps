@@ -19,7 +19,7 @@
 
 #### 转换前提
 
-进行模型转换前，使用MindStudio安装用户，将所转换模型的模型文件、权重文件以及模型转换所需的AIPP配置文件*（如果需要，若没有也可通过MindStudio的模型转换--“Data Pre-Processing”配置数据预处理功能生成）*上传到Ascend-cann-toolkit开发套件包所在的开发环境。
+进行模型转换前，使用MindStudio安装用户，将所转换模型的模型文件、权重文件以及模型转换所需的AIPP配置文件 _（如果需要，若没有也可通过MindStudio的模型转换--“Data Pre-Processing”配置数据预处理功能生成）_ 上传到Ascend-cann-toolkit开发套件包所在的开发环境。
 
 #### 转换步骤
 
@@ -35,7 +35,7 @@
 
 **步骤2** 点Output Nodes->Select，指定输出节点
 
-​           在搜索栏输入conv_lbbox/BiasAdd、conv_mbbox/BiasAdd、conv_sbbox/BiasAdd，找到指定节点，右击选择“Select”，该层变成蓝色，单击“OK”后，在**“Output Nodes”**参数下面会看到标记层的算子
+​           在搜索栏输入conv_lbbox/BiasAdd、conv_mbbox/BiasAdd、conv_sbbox/BiasAdd，找到指定节点，右击选择“Select”，该层变成蓝色，单击“OK”后，在“Output Nodes”参数下面会看到标记层的算子
 
 ![image-20210817155551060](img/image-20210817155551060.png)
 
