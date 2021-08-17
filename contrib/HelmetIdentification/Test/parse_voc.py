@@ -16,7 +16,7 @@ import os
 import argparse
 import xml.etree.ElementTree as ET
 
-CLASSES = ('person','hat')
+CLASSES = ('person', 'hat')
 
 def main(arg):
     """
