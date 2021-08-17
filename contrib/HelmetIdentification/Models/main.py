@@ -16,7 +16,7 @@ import numpy as np
 import random
 import os
 import time
-from StreamManagerApi import *
+import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
 # init stream manager
@@ -95,7 +95,7 @@ while True:
     print(img0_shape)
     bboxes = []
     color = [random.randint(0, 255) for _ in range(3)]
-    tl = (round(0.0002* (img0.shape[0] + img0.shape[1])) + 0.35)
+    tl = (round(0.0002 * (img0.shape[0] + img0.shape[1])) + 0.35)
     tf = max(tl - 1, 1)
     bbox = []
     for bbox in imgLi1:
