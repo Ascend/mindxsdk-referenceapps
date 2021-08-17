@@ -7,23 +7,7 @@
 
 ## 2. 代码目录结构与说明
 
-├── mindx_sdk_plugin # Openpose 后处理插件目录
-│   ├── CMakeLists.txt
-│   ├── MxpiOpenposePlugin.cpp
-│   └── MxpiOpenposePlugin.h
-├── proto # 后处理插件实现中自定义结构文件 
-│   ├── CMakeLists.txt
-│   └── mxpiOpenposeProto.proto
-├── python
-│   ├── test.jpg # 测试图片原图
-│   ├── test_single_result.jpg # 测试图片结果
-│   ├── main.py # 整体流程调用脚本
-│   ├── models
-│   │   └── model_conversion.sh # 模型转换脚本 
-│   └── pipeline
-│       └── OpenposePlugin.pipeline # 流程编排文件
-└── README.MD
-
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0817/142915_30101c38_9366520.png "屏幕截图.png")
 
 
 
