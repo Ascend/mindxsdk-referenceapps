@@ -59,10 +59,10 @@ T21 = 0
 T20 = 0
 
 while True:
-    if (j > 300):
-        print('done')
-        break
-    j += 1
+    # if (j > 300):
+    #     print('done')
+    #     break
+    # j += 1
     t0 = time.time()
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
     if inferResult0[0].errorCode != 0:
