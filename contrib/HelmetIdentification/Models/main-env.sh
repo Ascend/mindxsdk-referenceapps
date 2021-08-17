@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export MX_SDK_HOME=/home/sd_xiong2/MindX_SDK/mxVision
+export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:/usr/local/python3.7.5/bin:/usr/local/lib/python3.7/dist-packages:${PYTHONPATH}
@@ -12,3 +12,4 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 export ASCEND_OPP_PATH=${install_path}/opp
 export GST_DEBUG=3
 echo "successfully!!"
+# ${MX_SDK_HOME}为远程SDK安装路径
