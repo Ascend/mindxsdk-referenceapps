@@ -26,7 +26,7 @@
 #define INPUT_MODEL_WIDTH 512
 #define OUTPUT_MODEL_WIDTH 512
 // Read the information in the file
-static APP_ERROR  ReadFile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
+static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
 {
     char c[PATH_MAX + 1] = {0x00};
     size_t count = filePath.copy(c, PATH_MAX +1);
@@ -72,7 +72,7 @@ static APP_ERROR  ReadFile(const std::string& filePath, MxStream::MxstDataInput&
 }
 
 // Read the pipeline information
-static std::string ReadPipelineConfig(const std::string &pipelineConfigPath)
+static std::string readpipelineconfig(const std::string &pipelineConfigPath)
 {
     // Open the file in binary mode
     std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
@@ -97,7 +97,7 @@ static std::string ReadPipelineConfig(const std::string &pipelineConfigPath)
 }
 
 //Gets the amount of tension
-void getTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
+void gettensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
@@ -122,7 +122,7 @@ void getTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vect
     }
 }
 
-void SemanticSegOutput(const std::vector<MxBase::TensorBase>& tensors,
+void semanticsegoutput(const std::vector<MxBase::TensorBase>& tensors,
                        const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,
                        std::vector<MxBase::SemanticSegInfo> &semanticSegInfos)
 {
@@ -160,7 +160,7 @@ APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
 {
     int dumpImage_ = 1;
     auto inputs = tensors;
-    SemanticSegOutput(inputs, resizedImageInfos, semanticSegInfos);
+    semanticsegoutput(inputs, resizedImageInfos, semanticSegInfos);
     if (dumpImage_) {
         for (uint32_t i = 0; i < semanticSegInfos.size(); i++) {
             std::ostringstream outputPath;
@@ -173,7 +173,7 @@ APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
 
 //Mask chart zoom
 void zoom(std::string filename,int height,int width){
-    cv::Mat src=cv::imread("./"+filename,cv::IMREAD_UNCHANGED);
+    cv::Mat src = cv::imread("./"+filename,cv::IMREAD_UNCHANGED);
     cv::Mat dst;
     resize(src, dst, cv::Size(width, height));//缩放图像
     cv::imwrite(filename,dst);
@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
 
     // Read the test.pipeline file information
     std::string pipelineConfigPath = "./test.pipeline";
-    std::string pipelineConfig = ReadPipelineConfig(pipelineConfigPath);
+    std::string pipelineConfig = readpipelineconfig(pipelineConfigPath);
     if(pipelineConfig == ""){
         return APP_ERR_COMM_INIT_FAIL;
     }
@@ -219,7 +219,7 @@ int main(int argc, char* argv[])
 
     // Read the information of the picture into dataBuffer
     MxStream::MxstDataInput dataBuffer;
-    ret = ReadFile(inputPicPath, dataBuffer);
+    ret = readfile(inputPicPath, dataBuffer);
     if(ret != APP_ERR_OK){
         LogError << "Fail to read image file, ret = " << ret << ".";
         return ret;
@@ -241,15 +241,15 @@ int main(int argc, char* argv[])
     auto objectList = std::static_pointer_cast<MxTools::MxpiTensorPackageList>(output[0].messagePtr);
     // mxpi_imagedecoder0 the image decoding plug-in output information
     auto mxpiVision = std::static_pointer_cast<MxTools::MxpiVisionList>(output[1].messagePtr);
-    auto tensorPackageList = google::protobuf::DynamicCastToGenerated<MxTools
-            ::MxpiTensorPackageList>(output[0].messagePtr.get());
+    auto tensorPackageList = google::protobuf::DynamicCastToGenerated<MxTools::MxpiTensorPackageList>
+            (output[0].messagePtr.get());
     int Pre_Height = mxpiVision.get()->visionvec(0).visioninfo().height();
     int Pre_Width = mxpiVision.get()->visionvec(0).visioninfo().width();
     MxTools::MxpiTensorPackage tensorPackage = tensorPackageList->tensorpackagevec(0);
     MxTools::MxpiTensor tensor = tensorPackage.tensorvec(0);
     std::vector<MxBase::TensorBase> tensors;
 
-    getTensors(*tensorPackageList,tensors);
+    gettensors(*tensorPackageList,tensors);
     std::vector<MxBase::ResizedImageInfo> ResizedImageInfos;
     std::vector<MxBase::SemanticSegInfo> semanticSegInfos;
     MxBase::ResizedImageInfo resizedImageInfo;//输入图片数据信息
