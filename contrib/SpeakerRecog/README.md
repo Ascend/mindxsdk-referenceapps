@@ -54,6 +54,7 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 | MindX SDK | 2.0.2    |
 | librosa   | 0.8.1    |
 | torch     | 1.9.0    |
+| overrides | 6.1.0    |
 请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
 
 
@@ -63,13 +64,16 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 2. run.sh脚本中LD_LIBRARY_PATH设置了ACL动态库链接路径为/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64，如果实际环境中路径不一致，需要替换为实际的目录。
 3. 如果环境变量中没有MX_SDK_HOME变量，则需要在run.sh脚本中设置MX_SDK_HOME变量为你实际的MX_SDK安装目录。
 4. 若要执行样例：
+如果环境中存在多个版本python，将run.sh中python main.py修改为python3 main.py
 ```bash
 bash run.sh
 ```
-
+如果出现 XXX registration complete! 说明注册成功<br/>
+如果出现The current audio XXX.wav  is from speaker XXX 说明识别成功<br/>
 5. 若要进行性能测试：<br/>
 修改performance_test.py中数据集路径以及embedding存放路径<br/>
-将run.sh中python main.py修改为python performance_test.py
+将run.sh中python main.py修改为python performance_test.py<br/>
+如果环境中存在多个版本python，将run.sh中python main.py修改为python3 performance_test.py
 ```bash
 bash run.sh
 ```
