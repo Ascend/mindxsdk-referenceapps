@@ -59,8 +59,7 @@ static APP_ERROR  ReadFile(const std::string& filePath, MxStream::MxstDataInput&
             fclose(fp);
             return APP_ERR_COMM_FAILURE;
         }
-
-        uint32_t readRet = fread(dataBuffer.dataPtr, 1, fileSize, fp);//The number of objects that were successfully read
+        uint32_t readRet = fread(dataBuffer.dataPtr, 1, fileSize, fp);
         if(readRet <= 0){
             fclose(fp);
             return APP_ERR_COMM_READ_FAIL;
@@ -98,7 +97,7 @@ static std::string ReadPipelineConfig(const std::string &pipelineConfigPath)
 }
 
 //Gets the amount of tension
-void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
+void getTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
@@ -123,22 +122,24 @@ void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vect
     }
 }
 
-
-void SemanticSegOutput(const std::vector<MxBase::TensorBase>& tensors,const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,std::vector<MxBase::SemanticSegInfo> &semanticSegInfos)
+void SemanticSegOutput(const std::vector<MxBase::TensorBase>& tensors,
+                       const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,
+                       std::vector<MxBase::SemanticSegInfo> &semanticSegInfos)
 {
     auto tensor = tensors[0];
     auto shape = tensor.GetShape();//4
     uint32_t batchSize = shape[0];//1
-    int classNum_=1;//float32
+    int classNum_ = 1;//float32
     // NCHW type is not supported yet.NHWC
     for (uint32_t i = 0; i < batchSize; i++) {
         uint32_t inputModelHeight = resizedImageInfos[i].heightResize;
         uint32_t inputModelWidth = resizedImageInfos[i].widthResize;
-        uint32_t outputModelWidth = OUTPUT_MODEL_WIDTH;//tensors[i].GetShape()[modelType_ ? VECTOR_FOURTH_INDEX : VECTOR_THIRD_INDEX];//512
+        uint32_t outputModelWidth = OUTPUT_MODEL_WIDTH;
         MxBase::SemanticSegInfo semanticSegInfo;
-        auto tensorPtr = (float*)tensor.GetBuffer() + i * tensor.GetByteSize() / batchSize;//The first address of the picture data
+        //The first address of the picture data
+        auto tensorPtr = (float*)tensor.GetBuffer() + i * tensor.GetByteSize() / batchSize;
         std::vector<std::vector<int>> results(inputModelHeight, std::vector<int>(inputModelWidth));
-        int count=0;
+        int count = 0;
         for (uint32_t y = 0; y < inputModelHeight; y++) {
             for (uint32_t x = 0; x < inputModelWidth; x++) {
                 float* begin = tensorPtr +  y * outputModelWidth * classNum_ + x * classNum_;
@@ -152,9 +153,12 @@ void SemanticSegOutput(const std::vector<MxBase::TensorBase>& tensors,const std:
 }
 
 //Mask diagram generation
-APP_ERROR Draw(const std::vector<MxBase::TensorBase>& tensors,std::vector<MxBase::SemanticSegInfo>& semanticSegInfos,const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,std::string inputPicname)
+APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
+               std::vector<MxBase::SemanticSegInfo>& semanticSegInfos,
+               const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,
+               std::string & inputPicname)
 {
-    int dumpImage_=1;
+    int dumpImage_ = 1;
     auto inputs = tensors;
     SemanticSegOutput(inputs, resizedImageInfos, semanticSegInfos);
     if (dumpImage_) {
@@ -176,20 +180,21 @@ void zoom(std::string filename,int height,int width){
 }
 
 //Picture fusion
-void  image_fusion(std::string filename,std::string maskname,std::string inputPicname){
+void  image_fusion(std::string filename,std::string maskname,std::string &inputPicname){
     cv::Mat img1 = cv::imread(filename);
-    cv::Mat img2=cv::imread(maskname);
+    cv::Mat img2 = cv::imread(maskname);
     cv::Mat dst;
+    //1 and 0.5 are the transparency of array
+    //0 means offset added to weighted sum
     cv::addWeighted(img1,1,img2,0.5,0,dst);
     cv::imwrite("./result/result_"+inputPicname,dst);
 }
 
-
 int main(int argc, char* argv[])
 {
     //Enter the image name, path
-    std::string inputPicname="test.jpeg";
-    std::string inputPicPath="./data/"+inputPicname;
+    std::string inputPicname = "test.jpeg";
+    std::string inputPicPath = "./data/"+inputPicname;
 
     // Read the test.pipeline file information
     std::string pipelineConfigPath = "./test.pipeline";
@@ -236,23 +241,23 @@ int main(int argc, char* argv[])
     auto objectList = std::static_pointer_cast<MxTools::MxpiTensorPackageList>(output[0].messagePtr);
     // mxpi_imagedecoder0 the image decoding plug-in output information
     auto mxpiVision = std::static_pointer_cast<MxTools::MxpiVisionList>(output[1].messagePtr);
-
-
-    auto tensorPackageList = google::protobuf::DynamicCastToGenerated<MxTools::MxpiTensorPackageList>(output[0].messagePtr.get());
-
+    auto tensorPackageList = google::protobuf::DynamicCastToGenerated<MxTools
+            ::MxpiTensorPackageList>(output[0].messagePtr.get());
+    int Pre_Height = mxpiVision.get()->visionvec(0).visioninfo().height();
+    int Pre_Width = mxpiVision.get()->visionvec(0).visioninfo().width();
     MxTools::MxpiTensorPackage tensorPackage = tensorPackageList->tensorpackagevec(0);
     MxTools::MxpiTensor tensor = tensorPackage.tensorvec(0);
     std::vector<MxBase::TensorBase> tensors;
 
-    GetTensors(*tensorPackageList,tensors);
+    getTensors(*tensorPackageList,tensors);
     std::vector<MxBase::ResizedImageInfo> ResizedImageInfos;
     std::vector<MxBase::SemanticSegInfo> semanticSegInfos;
     MxBase::ResizedImageInfo resizedImageInfo;//输入图片数据信息
-    resizedImageInfo.heightResize=INPUT_MODEL_HEIGHT;
-    resizedImageInfo.widthResize=INPUT_MODEL_WIDTH;
+    resizedImageInfo.heightResize = INPUT_MODEL_HEIGHT;
+    resizedImageInfo.widthResize = INPUT_MODEL_WIDTH;
     ResizedImageInfos.push_back(resizedImageInfo);
-    Draw(tensors,semanticSegInfos,ResizedImageInfos,inputPicname);
-    zoom("./data/mask_"+inputPicname+".jpg",mxpiVision.get()->visionvec(0).visioninfo().height(),mxpiVision.get()->visionvec(0).visioninfo().width());
+    draw(tensors,semanticSegInfos,ResizedImageInfos,inputPicname);
+    zoom("./data/mask_"+inputPicname+".jpg",Pre_Height,Pre_Width);
     image_fusion(inputPicPath,"./data/mask_"+inputPicname+".jpg",inputPicname);
 
     mxStreamManager->DestroyAllStreams();
