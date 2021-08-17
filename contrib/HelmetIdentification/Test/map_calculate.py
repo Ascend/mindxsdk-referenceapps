@@ -141,17 +141,17 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
     return lamr, mr, fppi
 
 def error(msg):
-"""
- throw error and exit
-"""
+    """
+    throw error and exit
+    """
     print(msg)
     sys.exit(0)
 
 
 def is_float_between_0_and_1(value):
-"""
- check if the number is a float between 0.0 and 1.0
-"""
+    """
+    check if the number is a float between 0.0 and 1.0
+    """
     try:
         val = float(value)
         if val > 0.0 and val < 1.0:
@@ -211,9 +211,9 @@ def voc_ap(rec, prec):
     return ap, mrec, mpre
 
 def file_lines_to_list(path):
-"""
- Convert the lines of a file to a list
-"""
+    """
+    Convert the lines of a file to a list
+    """
     # open txt file lines to a list
     with open(path) as f:
         content = f.readlines()
@@ -223,9 +223,9 @@ def file_lines_to_list(path):
 
 
 def draw_text_in_image(img, text, pos, color, line_width):
-"""
- Draws text in image
-"""
+    """
+    Draws text in image
+    """
     font = cv2.FONT_HERSHEY_PLAIN
     fontScale = 1
     lineType = 1
@@ -241,9 +241,9 @@ def draw_text_in_image(img, text, pos, color, line_width):
 
 
 def adjust_axes(r, t, fig, axes):
-"""
- Plot - adjust axes
-"""
+    """
+    Plot - adjust axes
+    """
     # get text width for re-scaling
     bb = t.get_window_extent(renderer=r)
     text_width_inches = bb.width / fig.dpi
@@ -257,9 +257,9 @@ def adjust_axes(r, t, fig, axes):
 
 def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, output_path, to_show,
                    plot_color, true_p_bar):
-"""
- Draw plot using Matplotlib
-"""                
+    """
+    Draw plot using Matplotlib
+    """                
     # sort the dictionary by decreasing value, into a list of tuples
     sorted_dic_by_value = sorted(dictionary.items(), key=operator.itemgetter(1))
     # unpacking the list of tuples into two lists
