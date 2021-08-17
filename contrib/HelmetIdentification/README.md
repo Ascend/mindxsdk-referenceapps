@@ -413,7 +413,7 @@ python3.7.5 map_calculate.py --label_path  ./ground-truth  --npu_txt_path ./dete
 | live555  | 1.09                      | 实现视频转rstp进行推流         |
 | ffmpeg   | 2021-08-08-git-ac0408522a | 实现mp4格式视频转为264格式视频 |
 
-注：1.[live555使用教程]([docs/参考资料/Live555离线视频转RTSP说明文档.md · Ascend/mindxsdk-referenceapps - 码云 - 开源中国 (gitee.com)](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md))
+注：1.[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md)
 
 ​        2.[ffmpeg使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md)
 
