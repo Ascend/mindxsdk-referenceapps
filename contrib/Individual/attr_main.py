@@ -32,7 +32,6 @@ if __name__ == '__main__':
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-    #   exit()
 
     file_handle = open('img_result.txt','w')
     file_handle2 = open('test_full.txt','r')
@@ -59,21 +58,18 @@ if __name__ == '__main__':
         # save the confidence
         img_list = []
         # print the infer result
-        # print("******************************************************************")
         print(inferResult.data.decode())
-        # print("******************************************************************")
         dict_all = inferResult.data.decode()
-
-        # print("******************************************************************")
+        
         begin = 0
         end = len(dict_all)
         index = 0
         for i in range(40):
-          # find confidence in dict 
-          loc = dict_all.find('confidence', begin + index, end)
-          # next confidence
-          index = loc + 12
-          img_list.append(int(dict_all[loc+12]))
+            # find confidence in dict 
+            loc = dict_all.find('confidence', begin + index, end)
+            # next confidence
+            index = loc + 12
+            img_list.append(int(dict_all[loc+12]))
         file_handle.write(img_path+' ')
         file_handle.write(str(img_list).replace("[","").replace("]","").replace(","," "))
         file_handle.write('\n')
