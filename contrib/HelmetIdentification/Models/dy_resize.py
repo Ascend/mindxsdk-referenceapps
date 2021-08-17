@@ -19,6 +19,9 @@ model_path = sys.argv[1]
 model = onnx.load(model_path)
 
 def RemoveNode(graph, node_list):
+    """
+    Remove Node
+    """
     max_idx = len(graph.node)
     rm_cnt = 0
     for i in range(len(graph.node)):
@@ -30,7 +33,11 @@ def RemoveNode(graph, node_list):
                 max_idx -= 1
                 rm_cnt += 1
 
+
 def ReplaceScales(ori_list, scales_name):
+    """
+    Replace Scales
+    """
     n_list = []
     for i, x in enumerate(ori_list):
         if i < 2:
