@@ -29,13 +29,15 @@
 |           |---- PerformanceMonitor
 |                   |---- PerformanceMonitor.cpp    // 性能监控.cpp
 |                   |---- PerformanceMonitor.h      // 性能监控.h
-|           |---- Util.h                            // 工具类
+|           |---- Util.cpp                          // 工具类.cpp
+|           |---- Util.h                            // 工具类.h
 |-------- VideoDecoder
 |           |---- VideoDecoder.cpp                  // 视频解码.cpp
 |           |---- VideoDecoder.h                    // 视频解码.h
 |-------- YoloDetector
 |           |---- YoloDetector.cpp                  // Yolo检测.cpp
 |           |---- YoloDetector.h                    // Yolo检测.h
+|-------- build.sh                                  // 样例编译脚本
 |-------- CMakeLists.txt                            // CMake配置
 |-------- main.cpp                                  // 多路视频推理测试样例
 |-------- README.md                                 // ReadMe
