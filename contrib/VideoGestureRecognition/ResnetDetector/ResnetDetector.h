@@ -21,7 +21,6 @@
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "ClassPostProcessors/Resnet50PostProcess.h"
-
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendResnetDetector {

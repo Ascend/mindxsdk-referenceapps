@@ -20,7 +20,6 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 #include <MxBase/DvppWrapper/DvppWrapper.h>
-
 #include "../BlockingQueue/BlockingQueue.h"
 
 extern "C" {
@@ -44,7 +43,7 @@ class StreamPuller {
 public:
     StreamPuller() = default;
     ~StreamPuller() = default;
-    APP_ERROR Init(const std::string &rtspUrl, uint32_t maxTryOpenStreamTimes, uint32_t deviceId);
+    APP_ERROR Init(const std::string &rtspUrl, uint32_t deviceId);
     APP_ERROR DeInit();
     APP_ERROR Process();
     MxBase::MemoryData GetNextFrame();
@@ -68,11 +67,11 @@ private:
     // device id
     uint32_t deviceId;
     // max retry times
-    uint32_t maxReTryOpenStream = 10;
+    uint32_t maxReTryOpenStream = 1;
     // video frame property
     VideoFrameInfo frameInfo = {};
-    // class member
-    AVFormatContext *formatContext = nullptr;
+    // ffmpeg class member
+    std::shared_ptr<AVFormatContext> formatContext;
 };
 } // end AscendStreamPuller
 

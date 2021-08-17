@@ -28,14 +28,13 @@ struct ReasonerConfig {
     uint32_t deviceId;
     uint32_t baseVideoChannelId;
     std::vector<std::string> rtspList;
-    uint32_t maxTryOpenVideoStream;
     std::string resnetModelPath;
     std::string resnetLabelPath;
     uint32_t resnetModelWidth;
     uint32_t resnetModelHeight;
     uint32_t maxDecodeFrameQueueLength;
     uint32_t popDecodeFrameWaitTime;
-    uint32_t SamplingInterval;
+    uint32_t samplingInterval;
     uint32_t maxSamplingInterval;
 };
 

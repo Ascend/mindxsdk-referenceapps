@@ -20,7 +20,6 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
-
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendVideoDecoder {

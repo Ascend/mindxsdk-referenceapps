@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MULTICHANNELVIDEODETECTION_IMAGERESIZER_H
-#define MULTICHANNELVIDEODETECTION_IMAGERESIZER_H
+#ifndef VIDEOGESTUREREASONER_IMAGERESIZER_H
+#define VIDEOGESTUREREASONER_IMAGERESIZER_H
 
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
-
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendImageResizer {

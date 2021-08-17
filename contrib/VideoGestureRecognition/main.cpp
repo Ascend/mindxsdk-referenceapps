@@ -17,7 +17,6 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
-
 #include "VideoGestureReasoner/VideoGestureReasoner.h"
 
 namespace {
@@ -25,6 +24,18 @@ namespace {
     const uint32_t DEVICE_ID = 0;
     // channel id
     const uint32_t BASE_CHANNEL_ID = 0;
+    // model input width
+    const uint32_t MODEL_WIDTH = 256;
+    // model input height
+    const uint32_t MODEL_HEIGHT = 224;
+    // sampling interval
+    const uint32_t SAMPLING_INTERVAL = 24;
+    // maximum sampling interval
+    const uint32_t MAX_SAMPLING_INTERVAL = 100;
+    // decoding waiting time
+    const uint32_t DECODE_FRAME_WAIT_TIME = 10;
+    // maximum decoding queue length
+    const uint32_t DECODE_FRAME_QUEUE_LENGTH = 100;
 }
 
 bool VideoGestureReasoner::forceStop = false;
@@ -53,7 +64,6 @@ int main(int argc, char* argv[])
         }
     }
     if (rtspList.empty()) {
-//        rtspList.emplace_back("rtsp://192.168.88.109:31951/test4.264");
         rtspList.emplace_back("./gesture_test3.264");
     }
 
@@ -84,15 +94,14 @@ int main(int argc, char* argv[])
     reasonerConfig.deviceId = DEVICE_ID;
     reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
     reasonerConfig.rtspList = rtspList;
-    reasonerConfig.maxTryOpenVideoStream = 10;
     reasonerConfig.resnetModelPath = "./model/resnet18.om";
     reasonerConfig.resnetLabelPath = "./model/resnet18.names";
-    reasonerConfig.resnetModelWidth = 256;//416;
-    reasonerConfig.resnetModelHeight = 224;//416;
-    reasonerConfig.maxDecodeFrameQueueLength = 100;
-    reasonerConfig.popDecodeFrameWaitTime = 10;
-    reasonerConfig.SamplingInterval = 24;
-    reasonerConfig.maxSamplingInterval = 100;
+    reasonerConfig.resnetModelWidth = MODEL_WIDTH;
+    reasonerConfig.resnetModelHeight = MODEL_HEIGHT;
+    reasonerConfig.maxDecodeFrameQueueLength = DECODE_FRAME_QUEUE_LENGTH;
+    reasonerConfig.popDecodeFrameWaitTime = DECODE_FRAME_WAIT_TIME;
+    reasonerConfig.samplingInterval = SAMPLING_INTERVAL;
+    reasonerConfig.maxSamplingInterval = MAX_SAMPLING_INTERVAL;
 
     // init
     ret = videoGestureReasoner->Init(reasonerConfig);

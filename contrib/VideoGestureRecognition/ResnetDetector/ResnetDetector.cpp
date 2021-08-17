@@ -15,7 +15,6 @@
  */
 
 #include "ResnetDetector.h"
-
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
 
 namespace AscendResnetDetector {
@@ -173,11 +172,8 @@ APP_ERROR ResnetDetector::TransformImageToTensor(const MxBase::DvppDataInfo &ima
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
-//    LogInfo << imageInfo.heightStride << "     " << imageInfo.widthStride;
-//    std::vector<uint32_t> shape = {imageInfo.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, imageInfo.widthStride};
     std::vector<uint32_t> shape = {imageInfo.heightStride * YUV_BYTE_DE, imageInfo.widthStride * YUV_BYTE_DE};
 
-//    std::vector<uint32_t> shape = {imageInfo.heightStride, imageInfo.widthStride};
     tensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
 
     return APP_ERR_OK;
@@ -237,8 +233,8 @@ APP_ERROR ResnetDetector::PostProcess(const std::vector<MxBase::TensorBase> &mod
     MxBase::ResizedImageInfo imageInfo = {};
     imageInfo.widthOriginal = width;
     imageInfo.heightOriginal = height;
-    imageInfo.widthResize = 256; //416;
-    imageInfo.heightResize = 224; //416;
+    imageInfo.widthResize = 256;
+    imageInfo.heightResize = 224;
     imageInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imageInfo);
@@ -270,7 +266,7 @@ APP_ERROR ResnetDetector::LoadLabels(const std::string &labelPath, std::map<int,
     // construct label map
     int count = 0;
     while (std::getline(infile, s)) {
-        if (s.compare( 0, 0,"#") == 0 || s.compare( 1, 1,"#") == 0) {
+        if (s.compare(0, 0,"#") == 0 || s.compare( 1, 1,"#") == 0) {
             continue;
         }
         size_t eraseIndex = s.find_last_not_of("\r\n\t");

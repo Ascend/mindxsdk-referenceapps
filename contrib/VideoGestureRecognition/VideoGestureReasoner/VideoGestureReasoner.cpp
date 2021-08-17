@@ -20,7 +20,6 @@
 
 #include "VideoGestureReasoner.h"
 #include "../Util/Util.h"
-
 #include "MxBase/DeviceManager/DeviceManager.h"
 
 APP_ERROR VideoGestureReasoner::Init(const ReasonerConfig &initConfig)
@@ -308,7 +307,7 @@ APP_ERROR VideoGestureReasoner::CreateStreamPullerAndVideoDecoder(const Reasoner
     auto streamPuller = std::make_shared<AscendStreamPuller::StreamPuller>();
     auto videoDecoder = std::make_shared<AscendVideoDecoder::VideoDecoder>();
 
-    ret = streamPuller->Init(rtspList[0], config.maxTryOpenVideoStream, config.deviceId);
+    ret = streamPuller->Init(rtspList[0], config.deviceId);
     if (ret != APP_ERR_OK) {
         LogError << "Init " << " StreamPuller failed, stream name: " << rtspList[0];
         return ret;
@@ -333,7 +332,7 @@ APP_ERROR VideoGestureReasoner::CreateStreamPullerAndVideoDecoder(const Reasoner
 APP_ERROR VideoGestureReasoner::CreateFrameSkippingSampling(const ReasonerConfig &config) {
     APP_ERROR ret;
     frameSkippingSampling = std::make_shared<AscendFrameSkippingSampling::FrameSkippingSampling>();
-    ret = frameSkippingSampling->Init(config.maxSamplingInterval, config.SamplingInterval, config.deviceId);
+    ret = frameSkippingSampling->Init(config.maxSamplingInterval, config.samplingInterval, config.deviceId);
     if (ret != APP_ERR_OK) {
         LogError << "Init SamplingInterval failed";
         return ret;

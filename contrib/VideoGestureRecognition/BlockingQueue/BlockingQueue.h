@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
-#define MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
+#ifndef VIDEOGESTUREREASONER_BLOCKINGQUEUE_H
+#define VIDEOGESTUREREASONER_BLOCKINGQUEUE_H
 
 #include <condition_variable>
 #include <list>
 #include <mutex>
 #include <stdint.h>
-
 #include "MxBase/ErrorCode/ErrorCode.h"
 
 template <typename T> class BlockingQueue {
 public:
     BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stopped_(false) {}
-    ~BlockingQueue() {}
+    ~BlockingQueue() = default;
 
     APP_ERROR Pop(T& item)
     {
@@ -141,7 +140,7 @@ public:
         }
     }
 
-    // if the queue is stopped ,need call this function to release the unprocessed items
+// if the queue is stopped ,need call this function to release the unprocessed items
     std::list<T> GetRemainItems()
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -205,5 +204,6 @@ private:
 
 private:
     static const int DEFAULT_MAX_QUEUE_SIZE = 256;
+
 };
 #endif //MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
