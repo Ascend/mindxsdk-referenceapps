@@ -10,6 +10,7 @@ set(MX_SDK_HOME /home/cqu_liu9/MindXSDK/mxVision)
 set(FFMPEG_PATH /home/cqu_liu9/ascend_ddk/x86)
 
 include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
@@ -25,14 +26,14 @@ link_directories(
 )
 
 add_executable(sample main.cpp
-        Util/Util.h
-        BlockingQueue/BlockingQueue.h
-        StreamPuller/StreamPuller.cpp StreamPuller/StreamPuller.h
-        VideoDecoder/VideoDecoder.cpp VideoDecoder/VideoDecoder.h
-        ImageResizer/ImageResizer.cpp ImageResizer/ImageResizer.h
-        ResnetDetector/ResnetDetector.cpp ResnetDetector/ResnetDetector.h
-        MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp MultiChannelVideoReasoner/MultiChannelVideoReasoner.h
-        FrameSkippingSampling/FrameSkippingSampling.cpp FrameSkippingSampling/FrameSkippingSampling.h)
+        Util/Util.cpp
+        StreamPuller/StreamPuller.cpp
+        VideoDecoder/VideoDecoder.cpp
+        ImageResizer/ImageResizer.cpp
+        ResnetDetector/ResnetDetector.cpp
+        VideoGestureReasoner/VideoGestureReasoner.cpp
+        FrameSkippingSampling/FrameSkippingSampling.cpp
+        VideoGestureReasoner/VideoGestureReasoner.cpp)
 target_link_libraries(sample
         avcodec
         avdevice
@@ -47,6 +48,5 @@ target_link_libraries(sample
         cpprest
         opencv_world
         pthread m
-        yolov3postprocess
         resnet50postprocess
         )
