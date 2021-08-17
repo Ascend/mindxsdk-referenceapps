@@ -49,7 +49,7 @@ public:
                                        std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &decodeFrameQueueMap);
 
     static APP_ERROR SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const uint32_t frameId,
-                                const std::vector<std::vector<MxBase::ClassInfo>> objInfos,
+                                const std::vector<std::vector<MxBase::ClassInfo>>& objInfos,
                                 const uint32_t videoWidth, const uint32_t videoHeight,
                                 const int rtspIndex = 1);
 

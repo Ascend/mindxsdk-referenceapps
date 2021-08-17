@@ -266,7 +266,7 @@ APP_ERROR ResnetDetector::LoadLabels(const std::string &labelPath, std::map<int,
     // construct label map
     int count = 0;
     while (std::getline(infile, s)) {
-        if (s.compare(0, 0,"#") == 0 || s.compare( 1, 1,"#") == 0) {
+        if (s.compare(0, 0,"#") == 0 || s.compare(1, 1,"#") == 0) {
             continue;
         }
         size_t eraseIndex = s.find_last_not_of("\r\n\t");

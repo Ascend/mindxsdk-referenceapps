@@ -60,7 +60,7 @@ bool Util::IsExistDataInQueueMap(const std::map<int,
 }
 
 APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const uint32_t frameId,
-                            const std::vector<std::vector<MxBase::ClassInfo>> objInfos,
+                            const std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
                             const uint32_t videoWidth, const uint32_t videoHeight,
                             const int rtspIndex)
 {
