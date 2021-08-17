@@ -6,11 +6,60 @@
 
 参考[MindStuido开发环境搭建](./1-3MindStuido开发环境搭建.md)章节搭建好项目运行环境。
 
-参考[图像检测sample样例](./2-1图像检测sample样例.md)章节转换模型，并将转换好的模型与需要检测的图片放入**本地**的图像检测样例项目文件对应路径中。
-
 参考[Cmake介绍](./Cmake介绍.md)修改CMakeLists.txt文件。
 
-### 2.2.1.1 导入项目文件
+### 2.2.1.1 模型转换
+
+#### 模型转换入口
+
+可以通过如下两种方式进入模型转换界面。
+
+- 在菜单栏选择“Ascend > Model Converter”。
+- 在菜单栏选择“View > Appearance > Toolbar”，菜单栏下方会出现一行工具栏，选择![img](img/zh-cn_image_0000001180516897.png)。
+
+#### 转换前提
+
+进行模型转换前，使用MindStudio安装用户，将所转换模型的模型文件、权重文件以及模型转换所需的AIPP配置文件*（如果需要，若没有也可通过MindStudio的模型转换--“Data Pre-Processing”配置数据预处理功能生成）*上传到Ascend-cann-toolkit开发套件包所在的开发环境。
+
+#### 转换步骤
+
+> 本文档的模型转换步骤以图像检测项目所需的模型为例进行操作，MindStudio模型转换工具的详细使用和参数说明请参考[MindStudio用户手册--模型转换](https://support.huaweicloud.com/usermanual-mindstudio302/atlasms_02_0059.html)
+
+**步骤1** 打开模型转换页面，在“Model Information”页签中上传模型文件，加载成功后，会自动填充下列参数信息，Model Name是生成的om模型文件名称,用户可以根据需要自行修改名称
+
+​           修改input/input_data参数值为"1,416,416,3"
+
+![image-20210817155743052](img/image-20210817155743052.png)
+
+
+
+**步骤2** 点Output Nodes->Select，指定输出节点
+
+​           在搜索栏输入conv_lbbox/BiasAdd、conv_mbbox/BiasAdd、conv_sbbox/BiasAdd，找到指定节点，右击选择“Select”，该层变成蓝色，单击“OK”后，在**“Output Nodes”**参数下面会看到标记层的算子
+
+![image-20210817155551060](img/image-20210817155551060.png)
+
+![image-20210817160921286](img/image-20210817160921286.png)
+
+**步骤3** 单击“Next”，进入“Data Pre-Processing”配置数据预处理页。因为我们已提供了模型转化所需的AIPP配置文件，所以并不需要进行这一步的配置，可直接关掉Data Preprocessing，再次单击“Next”
+
+![image-20210817161340889](img/image-20210817161340889.png)
+
+**步骤4** 进入“Advanced Options Preview”高级选项配置页，在Additional Arguments添加转换参数
+
+```
+--insert_op_conf=${配置文件上传路径}/aipp_yolov3_416_416.aippconfig
+```
+
+​           Command Preview展示了模型转换使用的atc参数预览
+
+![image-20210817162301001](img/image-20210817162301001.png)
+
+**步骤5** 单击Finish开始模型转换，在MindStudio界面下方，“Output”窗口会显示模型转换过程中的日志信息，如果提示**“Model converted successfully”**，则表示模型转换成功。“Output”窗口会显示模型转换所用的命令、所设置的环境变量、模型转换的结果、模型输出路径以及模型转换日志路径等信息。
+
+![image-20210817164058460](img/image-20210817164058460.png)
+
+### 2.2.1.2 导入项目文件
 
 启动MindStudio，导入下载的图像检测样例（模型文件已放入）
 
@@ -20,7 +69,7 @@
 
 ![image-20210807161825690](img/image-20210807161825690.png)
 
-### 2.2.1.2 配置pipeline
+### 2.2.1.3 配置pipeline
 
 在test.pipeline文件中配置所需的模型路径与模型后处理插件路径。  
 ![10.png](img/1623231415247.png '10.png')  
@@ -31,7 +80,7 @@
 运行时如果出现找不到插件的报错，可以通过`find -name libyolov3postprocess.so`搜索找到路径后再更改pipeline中的值。  
 ![12.png](img/1623231850273.png '12.png')
 
-### 2.2.1.3 配置环境变量
+### 2.2.1.4 配置环境变量
 
 在远程环境中使用*env*指令查看所需环境变量值，请仔细检查自己的环境变量与所给的环境变量是否有差别，若缺少路径，执行*vi .bashrc*命令，在.bashrc文件中添加缺少的环境变量。保存退出后，执行*source ~/.bashrc*命令使环境变量生效。
 
