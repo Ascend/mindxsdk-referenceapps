@@ -1,18 +1,15 @@
-"""
-Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+# http://www.apache.org/licenses/LICENSE-2.0
 
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import sys
 import onnx
@@ -55,6 +52,7 @@ slice9 slice19 slice29 slice39
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_24"))
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_34"))
 
+# 根据原模型设置slice4 slice24后的Transpose， slice9， slice19， slice29， slice39的输出尺寸
 prob_info1 = onnx.helper.make_tensor_value_info('to_slice9', onnx.TensorProto.FLOAT, [1, 3, 640, 320])
 prob_info3 = onnx.helper.make_tensor_value_info('to_slice19', onnx.TensorProto.FLOAT, [1, 3, 640, 320])
 prob_info5 = onnx.helper.make_tensor_value_info('from_slice9', onnx.TensorProto.FLOAT, [1, 3, 320, 320])
