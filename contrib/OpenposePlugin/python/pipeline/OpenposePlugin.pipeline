@@ -1,0 +1,50 @@
+{
+    "classification+detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_imagedecoder0": {
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "modelPath": "./models/pose_deploy_368.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_openposeplugin0"
+        },
+        "mxpi_openposeplugin0": {
+            "props": {
+                "dataSource":"mxpi_tensorinfer0",
+                "descriptionMessage": "Openpose Modelinfo"
+            },
+            "factory": "mxpi_openposeplugin",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_openposeplugin0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
