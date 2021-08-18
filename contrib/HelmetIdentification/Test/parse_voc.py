@@ -70,17 +70,17 @@ def err_msg(msg):
     print('-' * 55)
     exit()
 
-def check_args(args):
+def check_args(param):
     """
-    check args
+    check input args
     """
-    if not os.path.exists(args.img_path):
-        err_msg(args.img_path)
-    if not os.path.exists(args.ann_path):
-        err_msg(args.ann_path)
-    if not os.path.exists(args.gtp):
-        os.makedirs(args.gtp)
-    return args
+    if not os.path.exists(param.img_path):
+        err_msg(param.img_path)
+    if not os.path.exists(param.ann_path):
+        err_msg(param.ann_path)
+    if not os.path.exists(param.gtp):
+        os.makedirs(param.gtp)
+    return param
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parse the VOC2028 dataset label')
