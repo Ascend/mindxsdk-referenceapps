@@ -55,6 +55,7 @@ def cal_attr():
     result = np.zeros(attr_num)
     cur_index = 0
     for v in same_count:
+        # percentage calculation
         print(v * 1.0 / valid_sum * 100)
         result[cur_index] = v * 1.0 / valid_sum * 100
         cur_index += 1
