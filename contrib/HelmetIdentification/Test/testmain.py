@@ -1,17 +1,17 @@
 """
-Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """
 
 import json
@@ -19,7 +19,8 @@ import os
 import cv2
 import numpy as np
 import random
-from StreamManagerApi import *
+import StreamManagerApi
+import MxpiDataType_pb2 as MxpiDataType
 
 if __name__ == '__main__':
     # init stream manager
@@ -97,10 +98,10 @@ if __name__ == '__main__':
         exit()
 
     path = "./TestImages/"
-    for file in os.listdir(path):
-        img_path = os.path.join(path,file)
+    for item in os.listdir(path):
+        img_path = os.path.join(path,item)
         print("file_path:",img_path)
-        img_name = file.split(".")[0]
+        img_name = item.split(".")[0]
         img_txt = "./detection-test-result/" + img_name + ".txt"
         if os.path.exists(img_txt):
             os.remove(img_txt)
@@ -118,14 +119,14 @@ if __name__ == '__main__':
 
         if ret < 0:
             print("Failed to send data to stream.")
-            exit()
+           
 
         # Obtain the inference result by specifying streamName and uniqueId.
         infer_result = streamManagerApi.GetResult(streamName, 0)
         if infer_result.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (
                 infer_result.errorCode, infer_result.data.decode()))
-            exit()
+            
 
         # print the infer result
         # print(infer_result.data.decode())
@@ -162,9 +163,9 @@ if __name__ == '__main__':
             print(L1)
 
             with open(img_txt,"a+") as f:
-                    content = '{} {} {} {} {} {}'.format(L1[5], L1[4], L1[0], L1[2], L1[1], L1[3])
-                    f.write(content)
-                    f.write('\n')
+                content = '{} {} {} {} {} {}'.format(L1[5], L1[4], L1[0], L1[2], L1[1], L1[3])
+                f.write(content)
+                f.write('\n')
 
     # destroy streams
     streamManagerApi.DestroyAllStreams()
