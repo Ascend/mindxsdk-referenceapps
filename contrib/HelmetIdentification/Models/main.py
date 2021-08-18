@@ -56,7 +56,8 @@ while True:
     t0 = time.time()
     # Get data through GetProtobuf interface
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
-    if inferResult0[0].errorCode != 0:  # print errorCode
+    # output errorCode
+    if inferResult0[0].errorCode != 0:
         if inferResult0[0].errorCode == 1001:
             print('Object detection result of model infer is null!!!')
         continue
@@ -127,7 +128,9 @@ while True:
             # Draw rectangle
             cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
                         lineType=cv2.LINE_AA)
-            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)  # rectangle color [255,255,255]
+            # rectangle color [255,255,255]
+            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
+
             # Save pictures in two ways
             if FrameList0.channelId == 0:
                 oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
@@ -143,7 +146,7 @@ while True:
                         os.remove(infer_imgfile)
                     cv2.imwrite(infer_imgfile, img0)
             else:
-                # channelId=1
+                # when channelId equal 1
                 oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
                     FrameList0.frameId) + '.jpg'
                 infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
@@ -188,6 +191,7 @@ while True:
                 os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img)
         else:
+            # when channelId equal 1
             oringe_imgfile = './output/two/image/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
             if os.path.exists(oringe_imgfile):
