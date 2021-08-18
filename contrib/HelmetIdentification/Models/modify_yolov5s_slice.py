@@ -18,7 +18,7 @@ INT_MAX = sys.maxsize
 model_path = sys.argv[1]
 model = onnx.load(model_path)
 
-def get_node_by_name(nodes, name: str):
+def get_node_by_name(nodes, name):
     """
     gain node by names
     """
