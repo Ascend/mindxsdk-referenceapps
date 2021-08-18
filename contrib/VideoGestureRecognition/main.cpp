@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         }
     }
     if (rtspList.empty()) {
-        rtspList.emplace_back("./gesture_test3.264");
+        rtspList.emplace_back("#{rtsp流地址}");
     }
 
     ///=== resource init ===///
@@ -94,8 +94,8 @@ int main(int argc, char* argv[])
     reasonerConfig.deviceId = DEVICE_ID;
     reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
     reasonerConfig.rtspList = rtspList;
-    reasonerConfig.resnetModelPath = "./model/resnet18.om";
-    reasonerConfig.resnetLabelPath = "./model/resnet18.names";
+    reasonerConfig.resnetModelPath = "${resnet18.om模型路径}";
+    reasonerConfig.resnetLabelPath = "${resnet18 coco.names路径}";
     reasonerConfig.resnetModelWidth = MODEL_WIDTH;
     reasonerConfig.resnetModelHeight = MODEL_HEIGHT;
     reasonerConfig.maxDecodeFrameQueueLength = DECODE_FRAME_QUEUE_LENGTH;

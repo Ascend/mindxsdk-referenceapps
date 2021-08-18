@@ -6,8 +6,8 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-set(MX_SDK_HOME /home/cqu_liu9/MindXSDK/mxVision)
-set(FFMPEG_PATH /home/cqu_liu9/ascend_ddk/x86)
+set(MX_SDK_HOME 实际安装路径)
+set(FFMPEG_PATH 实际安装路径)
 
 include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}
