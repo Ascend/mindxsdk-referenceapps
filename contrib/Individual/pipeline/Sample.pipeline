@@ -19,7 +19,7 @@
             "face_attribute": {
                "props":{
                    "dataSource":"mxpi_imageresize0",
-                   "modelPath":"../python/models/simple.om"
+                   "modelPath":"./models/simple.om"
                 },
                "factory": "mxpi_tensorinfer",
                "next": "mxpi_classpostprocessor1"
@@ -29,7 +29,7 @@
                 "dataSource": "face_attribute",
                 "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
                 "labelPath": "./models/attr.names",
-                "postProcessLibPath": "/home/nku_wang6/mxVision/lib/modelpostprocessors/libsamplepostprocess.so"
+                "postProcessLibPath": "./models/libsamplepostprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
