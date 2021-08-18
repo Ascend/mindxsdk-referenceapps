@@ -26,7 +26,7 @@ streamManagerApi = StreamManagerApi()
 ret = streamManagerApi.InitManager()
 if ret != 0:
     print("Failed to init Stream manager, ret=%s" % str(ret))
-    
+
 # create streams by pipeline config file
 #load  pipline
 with open("HelmetDetection.pipline", 'rb') as f:
@@ -34,7 +34,7 @@ with open("HelmetDetection.pipline", 'rb') as f:
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
-    
+
 
 # Obtain the inference result by specifying streamName and keyVec
 # The data that needs to be obtained is searched by the plug-in name
@@ -126,9 +126,11 @@ while True:
             L1.append(int(bboxes['y1']))
             L1 = np.array(L1, dtype=np.int32)
             # Draw rectangle
+            # rectangle tittle color [255,255,255]
             cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
-                        lineType=cv2.LINE_AA)  # rectangle tittle color [255,255,255]
-            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2) # rectangle color [255,255,255]
+                        lineType=cv2.LINE_AA)
+            # rectangle color [255,255,255]            
+            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
             # Save pictures in two ways
             if FrameList0.channelId == 0:
                 oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
