@@ -1,3 +1,4 @@
+"""
 # Copyright 2021 Huawei Technologies Co., Ltd
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+"""
 import glob
 import json
 import os
@@ -129,6 +130,7 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
 
     return Lamr, Mr, Fppi
 
+
 def error(msg):
     """
     throw error and exit
@@ -149,6 +151,7 @@ def is_float_between_0_and_1(value):
             return False
     except ValueError:
         return False
+
 
 def voc_ap(Rec, Prec):
     """
@@ -192,6 +195,7 @@ def voc_ap(Rec, Prec):
     for k in j_list:
         Ap += ((Mrec[k] - Mrec[k - 1]) * mpre[k])
     return Ap, Mrec, mpre
+
 
 def file_lines_to_list(path):
     """
@@ -237,6 +241,7 @@ def adjust_axes(r, t, fig0, axes0):
     # get axis limit
     x_lim = axes0.get_xlim()
     axes0.set_xlim([x_lim[0], x_lim[1] * propotion])
+
 
 def draw_plot_func(dictionary0, n_classes0, window_title0, plot_title0, x_label0, output_path0, to_show0,
                    plot_color0, true_p_bar0):
