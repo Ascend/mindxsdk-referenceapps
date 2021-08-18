@@ -39,6 +39,7 @@ if __name__ == '__main__':
         # Construct the input of the stream
         dataInput = MxDataInput()
         line = file_handle2.readline()
+        # the length of the path is 34
         img_path = line[0:34]
         with open(img_path, 'rb') as f:
             dataInput.data = f.read()
@@ -60,16 +61,20 @@ if __name__ == '__main__':
         # print the infer result
         print(inferResult.data.decode())
         dict_all = inferResult.data.decode()
-        
+        # start of the string
         begin = 0
         end = len(dict_all)
         index = 0
-        for i in range(40):
+        # the num of the attribute
+        attr_num = 40
+        # the distence of the 'confidence' and the num is 12
+        next_confidence = 12
+        for i in range(attr_num):
             # find confidence in dict 
             loc = dict_all.find('confidence', begin + index, end)
             # next confidence
-            index = loc + 12
-            img_list.append(int(dict_all[loc + 12]))
+            index = loc + next_confidence
+            img_list.append(int(dict_all[loc + next_confidence]))
         file_handle.write(img_path + ' ')
         file_handle.write(str(img_list).replace("[", "").replace("]", "").replace(",", " "))
         file_handle.write('\n')
