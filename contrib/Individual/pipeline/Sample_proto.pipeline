@@ -24,7 +24,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/yolov4.cfg",
                 "labelPath": "./models/coco.names",
-                "postProcessLibPath": "/home/nku_wang6/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "./models/libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_objectdistributor0"
@@ -89,7 +89,7 @@
               "props":{
                    "dataSource":"mxpi_imageresize1",
                    "modelPath":"./models/face_quality_0605_b1.om",
-                   "postProcessLibPath":"/home/nku_wang6/mxVision/lib/libfacelandmarkpostprocessor.so"
+                   "postProcessLibPath":"./models/libfacelandmarkpostprocessor.so"
                },
                "factory": "mxpi_modelinfer",
                "next": "mxpi_facealignment0:1"
@@ -119,7 +119,7 @@
                 "dataSource": "face_attribute",
                 "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
                 "labelPath": "./models/attr.names",
-                "postProcessLibPath": "/home/nku_wang6/mxVision/lib/modelpostprocessors/libsamplepostprocess.so"
+                "postProcessLibPath": "./models/libsamplepostprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
