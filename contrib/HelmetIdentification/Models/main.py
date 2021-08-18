@@ -28,7 +28,7 @@ if ret != 0:
     print("Failed to init Stream manager, ret=%s" % str(ret))
     
 # create streams by pipeline config file
-
+#load  pipline
 with open("HelmetDetection.pipline", 'rb') as f:
     pipelineStr = f.read()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
@@ -37,6 +37,7 @@ if ret != 0:
     
 
 # Obtain the inference result by specifying streamName and keyVec
+# The data that needs to be obtained is searched by the plug-in name
 streamName = b'Detection'
 keyVec0 = StreamManagerApi.StringVector()
 keyVec0.push_back(b"ReservedFrameInfo")
@@ -44,7 +45,7 @@ keyVec0.push_back(b"mxpi_modelinfer0")
 keyVec0.push_back(b"mxpi_motsimplesort0")
 keyVec0.push_back(b"mxpi_videodecoder0")
 keyVec0.push_back(b"mxpi_videodecoder1")
-
+# Output data required by the second output
 keyVec1 = StreamManagerApi.StringVector()
 keyVec1.push_back(b"ReservedFrameInfo")
 keyVec1.push_back(b"mxpi_videodecoder0")
@@ -53,24 +54,27 @@ i = 0
 
 while True:
     t0 = time.time()
+    # Get data through GetProtobuf interface
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
+    # print errorCode
     if inferResult0[0].errorCode != 0:
         if inferResult0[0].errorCode == 1001:
             print('Object detection result of model infer is null!!!')
         continue
 
     # add inferennce data into DATA structure
+    # Frame information structure
     FrameList0 = MxpiDataType.MxpiFrameInfo()
     FrameList0.ParseFromString(inferResult0[0].messageBuf)
-    
+    # Target object structure
     ObjectList = MxpiDataType.MxpiObjectList()
     ObjectList.ParseFromString(inferResult0[1].messageBuf)
     ObjectListData = ObjectList.objectVec
-
+    # track structure
     trackLetList = MxpiDataType.MxpiTrackLetList()
     trackLetList.ParseFromString(inferResult0[2].messageBuf)
     trackLetData = trackLetList.trackLetVec
-    
+    # image structure
     visionList0 = MxpiDataType.MxpiVisionList()
     visionList0.ParseFromString(inferResult0[3].messageBuf)
     visionData0 = visionList0.visionVec[0].visionData.dataStr
@@ -80,6 +84,7 @@ while True:
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     img_yuv = np.frombuffer(visionData0, dtype=np.uint8)
+    # reshape
     img_yuv = img_yuv.reshape(visionInfo0.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo0.widthAligned)
     img0 = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
     t1 = time.time()
@@ -92,10 +97,13 @@ while True:
                  trackLetData[k].trackId, trackLetData[k].age]
         imgLi1.append(imgLi)
 
+    # img1_shape is the size after padding
+    # img0_shape is the original image size
     img1_shape = [640, 640]
     img0_shape = [visionInfo0.heightAligned, visionInfo0.widthAligned]
     print(img0_shape)
     bboxes = []
+    # The color and title of the rectangle
     color = [random.randint(0, 255) for _ in range(3)]
     tl = (round(0.0002 * (img0.shape[0] + img0.shape[1])) + 0.35)
     tf = max(tl - 1, 1)
@@ -117,11 +125,11 @@ while True:
             L1.append(int(bboxes['y0']))
             L1.append(int(bboxes['y1']))
             L1 = np.array(L1, dtype=np.int32)
-
+            # Draw rectangle
             cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
                         lineType=cv2.LINE_AA)  # rectangle tittle color [255,255,255]
             cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2) # rectangle color [255,255,255]
-
+            # Save pictures in two ways
             if FrameList0.channelId == 0:
                 oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
                     FrameList0.frameId) + '.jpg'
@@ -130,11 +138,13 @@ while True:
                 if os.path.exists(oringe_imgfile):
                     os.remove(oringe_imgfile)
                 cv2.imwrite(oringe_imgfile, img0)
+                # If age is 1, then output this picture to inference
                 if bboxes['trackid'] is not None and bboxes['age'] == 1:
                     if os.path.exists(infer_imgfile):
                         os.remove(infer_imgfile)
                     cv2.imwrite(infer_imgfile, img0)
             else:
+                # channelId=1
                 oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
                     FrameList0.frameId) + '.jpg'
                 infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
@@ -155,9 +165,10 @@ while True:
             break
 
         # output inference data:frame info and img info
+        # Frame information structure
         FrameList1 = MxpiDataType.MxpiFrameInfo()
         FrameList1.ParseFromString(inferResult1[0].messageBuf)
-        
+        # image structure
         visionList1 = MxpiDataType.MxpiVisionList()
         visionList1.ParseFromString(inferResult1[1].messageBuf)
         visionData1 = visionList1.visionVec[0].visionData.dataStr
@@ -167,9 +178,10 @@ while True:
         YUV_BYTES_NU = 3
         YUV_BYTES_DE = 2
         img_yuv = np.frombuffer(visionData1, dtype=np.uint8)
+        # reshape
         img_yuv = img_yuv.reshape(visionInfo1.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo1.widthAligned)
         img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
-
+        # Save pictures in two ways
         if FrameList1.channelId == 0:
             oringe_imgfile = './output/one/image/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
@@ -177,6 +189,7 @@ while True:
                 os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img)
         else:
+            # channelId=1
             oringe_imgfile = './output/two/image/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
             if os.path.exists(oringe_imgfile):
