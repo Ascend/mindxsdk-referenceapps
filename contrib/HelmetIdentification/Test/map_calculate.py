@@ -205,7 +205,7 @@ def file_lines_to_list(path):
     return content
 
 
-def draw_text_in_image(img, text, pos, color, line_width):
+def draw_text_in_image(img, text0, pos, color, line_width):
     """
     Draws text in image
     """
@@ -213,42 +213,42 @@ def draw_text_in_image(img, text, pos, color, line_width):
     fontScale = 1
     lineType = 1
     bottomLeftCornerOfText = pos
-    cv2.putText(img, text,
+    cv2.putText(img, text0,
                 bottomLeftCornerOfText,
                 font,
                 fontScale,
                 color,
                 lineType)
-    text_width, _ = cv2.getTextSize(text, font, fontScale, lineType)[0]
+    text_width, _ = cv2.getTextSize(text0, font, fontScale, lineType)[0]
     return img, (line_width + text_width)
 
 
-def adjust_axes(r, t, fig, axes):
+def adjust_axes(r, t, fig0, axes0):
     """
     Plot - adjust axes
     """
     # get text width for re-scaling
     bb = t.get_window_extent(renderer=r)
-    text_width_inches = bb.width / fig.dpi
+    text_width_inches = bb.width / fig0.dpi
     # get axis width in inches
-    current_fig_width = fig.get_figwidth()
+    current_fig_width = fig0.get_figwidth()
     new_fig_width = current_fig_width + text_width_inches
     propotion = new_fig_width / current_fig_width
     # get axis limit
-    x_lim = axes.get_xlim()
-    axes.set_xlim([x_lim[0], x_lim[1] * propotion])
+    x_lim = axes0.get_xlim()
+    axes0.set_xlim([x_lim[0], x_lim[1] * propotion])
 
-def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, output_path, to_show,
-                   plot_color, true_p_bar):
+def draw_plot_func(dictionary0, n_classes0, window_title0, plot_title0, x_label0, output_path0, to_show0,
+                   plot_color0, true_p_bar0):
     """
     Draw plot using Matplotlib
     """                
     # sort the dictionary by decreasing value, into a list of tuples
-    sorted_dic_by_value = sorted(dictionary.items(), key=operator.itemgetter(1))
+    sorted_dic_by_value = sorted(dictionary0.items(), key=operator.itemgetter(1))
     # unpacking the list of tuples into two lists
     sorted_keys, sorted_values = zip(*sorted_dic_by_value)
     #
-    if true_p_bar != "":
+    if true_p_bar0 != "":
         #  Special case to draw in:
         #     - green -> TP: True Positives
         #     (object detected and matches ground-truth)
@@ -260,10 +260,10 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
         fp_sorted = []
         tp_sorted = []
         for key in sorted_keys:
-            fp_sorted.append(dictionary[key] - true_p_bar[key])
-            tp_sorted.append(true_p_bar[key])
-        plt.barh(range(n_classes), fp_sorted, align='center', color='crimson', label='False Positive')
-        plt.barh(range(n_classes), tp_sorted, align='center', color='forestgreen', label='True Positive',
+            fp_sorted.append(dictionary0[key] - true_p_bar0[key])
+            tp_sorted.append(true_p_bar0[key])
+        plt.barh(range(n_classes0), fp_sorted, align='center', color='crimson', label='False Positive')
+        plt.barh(range(n_classes0), tp_sorted, align='center', color='forestgreen', label='True Positive',
                  left=fp_sorted)
         # add legend
         plt.legend(loc='lower right')
@@ -282,7 +282,7 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
             if i == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, fig, plt.gca())
     else:
-        plt.barh(range(n_classes), sorted_values, color=plot_color)
+        plt.barh(range(n_classes0), sorted_values, color=plot_color0)
         #  Write number on side of bar
         fig = plt.gcf()  # gcf - get current figure
         r = fig.canvas.get_renderer()
@@ -290,16 +290,16 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
             str_val = " " + str(val)  # add a space before
             if val < 1.0:
                 str_val = " {0:.2f}".format(val)
-            t = plt.text(val, i, str_val, color=plot_color, va='center', fontweight='bold')
+            t = plt.text(val, i, str_val, color=plot_color0, va='center', fontweight='bold')
             # re-set axes to show number inside the figure
             if i == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, fig, plt.gca())
     # set window title
-    fig.canvas.set_window_title(window_title)
+    fig.canvas.set_window_title(window_title0)
     # write classes in y axis
-    plt.yticks(range(n_classes), sorted_keys, fontsize=12)  # Re-scale height accordingly
+    plt.yticks(range(n_classes0), sorted_keys, fontsize=12)  # Re-scale height accordingly
     # comput the matrix height in points and inches
-    height_pt = n_classes * (12 * 1.4)  # 1.4 (some spacing)
+    height_pt = n_classes0 * (12 * 1.4)  # 1.4 (some spacing)
     height_in = height_pt / fig.dpi
     figure_height = height_in / (1 - top_margin - bottom_margin)
     # set new height, init_height = fig.get_figheight
@@ -307,15 +307,15 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
         fig.set_figheight(figure_height)
 
     # set plot title
-    plt.title(plot_title, fontsize=14)
+    plt.title(plot_title0, fontsize=14)
     # set axis titles
-    plt.xlabel(x_label, fontsize='large')
+    plt.xlabel(x_label0, fontsize='large')
     # adjust size of window
     fig.tight_layout()
     # save the plot
-    fig.savefig(output_path)
+    fig.savefig(output_path0)
     # show image
-    if to_show:
+    if to_show0:
         plt.show()
     # close the plot
     plt.close()
