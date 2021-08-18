@@ -33,8 +33,8 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
 
-    file_handle = open('img_result.txt','w')
-    file_handle2 = open('test_full.txt','r')
+    file_handle = open('img_result.txt', 'w')
+    file_handle2 = open('test_full.txt', 'r')
     while 1:
         # Construct the input of the stream
         dataInput = MxDataInput()
@@ -69,9 +69,9 @@ if __name__ == '__main__':
             loc = dict_all.find('confidence', begin + index, end)
             # next confidence
             index = loc + 12
-            img_list.append(int(dict_all[loc+12]))
-        file_handle.write(img_path+' ')
-        file_handle.write(str(img_list).replace("[","").replace("]","").replace(","," "))
+            img_list.append(int(dict_all[loc + 12]))
+        file_handle.write(img_path + ' ')
+        file_handle.write(str(img_list).replace("[", "").replace("]", "").replace(",", " "))
         file_handle.write('\n')
     # destroy streams
     file_handle.close()
