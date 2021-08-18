@@ -69,15 +69,19 @@ std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
     // get max confidence as detection result
     for (uint32_t i = 0; i < objInfos.size(); i++) {
         float maxConfidence = 0;
-        uint32_t index;
+        int32_t index = -1;
         for (uint32_t j = 0; j < objInfos[i].size(); j++) {
             if (objInfos[i][j].confidence > maxConfidence) {
                 maxConfidence = objInfos[i][j].confidence;
                 index = j;
             }
         }
-        info.push_back(objInfos[i][index]);
 
+        if (index == -1) {
+            continue;
+        }
+
+        info.push_back(objInfos[i][index]);
         if (printResult) {
             LogInfo << "rtsp " << rtspIndex << " frame " << frameId
             << " result:{id: " << info[i].classId
