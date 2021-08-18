@@ -28,39 +28,17 @@ def get_node_by_name(nodes, name):
     return -1
 
 
-"""
-before:
-           input
-         /      \
-slice4 slice14 slice24 slice34
-   |      |       |       |
-slice9 slice19 slice29 slice39
-     \    \    /     /
-           concat
-after:
-           input
-         /      \
-    slice4       slice24
-      |             |
-      t             t
-   /    \         /     \
-slice9 slice19 slice29 slice39
-  |       |      |        |
-  t       t      t        t
-      \    \    /    /
-           concat
-"""
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_24"))
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_34"))
 
-# 根据原模型设置slice4 slice24后的Transpose， slice9， slice19， slice29， slice39的输出尺寸
+# Set the output size of Transpose after slice4 and slice24,slice9, slice19, slice29, slice39 according to the original model
 prob_info1 = onnx.helper.make_tensor_value_info('to_slice9', onnx.TensorProto.FLOAT, [1, 3, 640, 320])
 prob_info3 = onnx.helper.make_tensor_value_info('to_slice19', onnx.TensorProto.FLOAT, [1, 3, 640, 320])
 prob_info5 = onnx.helper.make_tensor_value_info('from_slice9', onnx.TensorProto.FLOAT, [1, 3, 320, 320])
 prob_info6 = onnx.helper.make_tensor_value_info('from_slice19', onnx.TensorProto.FLOAT, [1, 3, 320, 320])
 prob_info7 = onnx.helper.make_tensor_value_info('from_slice29', onnx.TensorProto.FLOAT, [1, 3, 320, 320])
 prob_info8 = onnx.helper.make_tensor_value_info('from_slice39', onnx.TensorProto.FLOAT, [1, 3, 320, 320])
-# slice4 slice24后的Transpose
+# Transpose after slice4 and slice24
 node1 = onnx.helper.make_node(
     'Transpose',
     inputs=['171'],
@@ -73,7 +51,7 @@ node3 = onnx.helper.make_node(
     outputs=['to_slice19'],
     perm=[0, 1, 3, 2]
 )
-# slice9 slice19 slice29 slice39后的Transpose
+# Transpose after slice9 ,slice19, slice29, slice39
 node5 = onnx.helper.make_node(
     'Transpose',
     inputs=['from_slice9'],
@@ -105,7 +83,7 @@ model.graph.node.append(node6)
 model.graph.node.append(node7)
 model.graph.node.append(node8)
 
-# slice9 slice19 换轴
+# slice9 slice19 Change shaft
 model.graph.initializer.append(onnx.helper.make_tensor('starts_9', onnx.TensorProto.INT64, [1], [0]))
 model.graph.initializer.append(onnx.helper.make_tensor('ends_9', onnx.TensorProto.INT64, [1], [INT_MAX]))
 model.graph.initializer.append(onnx.helper.make_tensor('axes_9', onnx.TensorProto.INT64, [1], [2]))
@@ -127,7 +105,7 @@ newnode2 = onnx.helper.make_node(
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_19"))
 model.graph.node.insert(19, newnode2)
 
-# slice29 slice39 换轴
+# slice29 slice39 Change shaft
 model.graph.initializer.append(onnx.helper.make_tensor('starts_29', onnx.TensorProto.INT64, [1], [1]))
 model.graph.initializer.append(onnx.helper.make_tensor('ends_29', onnx.TensorProto.INT64, [1], [INT_MAX]))
 model.graph.initializer.append(onnx.helper.make_tensor('axes_29', onnx.TensorProto.INT64, [1], [2]))
@@ -149,5 +127,4 @@ newnode4 = onnx.helper.make_node(
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_39"))
 model.graph.node.insert(39, newnode4)
 
-# onnx.checker.check_model(model)
 onnx.save(model, sys.argv[1].split('.')[0] + "_t.onnx")
