@@ -38,14 +38,14 @@ if ret != 0:
 
 # Obtain the inference result by specifying streamName and keyVec
 streamName = b'Detection'
-keyVec0 = StringVector()
+keyVec0 = StreamManagerApi.StringVector()
 keyVec0.push_back(b"ReservedFrameInfo")
 keyVec0.push_back(b"mxpi_modelinfer0")
 keyVec0.push_back(b"mxpi_motsimplesort0")
 keyVec0.push_back(b"mxpi_videodecoder0")
 keyVec0.push_back(b"mxpi_videodecoder1")
 
-keyVec1 = StringVector()
+keyVec1 = StreamManagerApi.StringVector()
 keyVec1.push_back(b"ReservedFrameInfo")
 keyVec1.push_back(b"mxpi_videodecoder0")
 keyVec1.push_back(b"mxpi_videodecoder1")
