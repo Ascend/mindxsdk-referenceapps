@@ -18,7 +18,7 @@ import onnx
 model_path = sys.argv[1]
 model = onnx.load(model_path)
 
-def RemoveNode(graph, nodelist):
+def remove_node(graph, nodelist):
     """
     Remove Node
     """
@@ -34,7 +34,7 @@ def RemoveNode(graph, nodelist):
                 rm_cnt += 1
 
 
-def ReplaceScales(ori_list, scales_name):
+def replace_scales(ori_list, scales_name):
     """
     Replace Scales
     """
@@ -56,7 +56,7 @@ for k in range(len(model.graph.node)):
         newnode = onnx.helper.make_node(
             'Resize',
             name=n.name,
-            inputs=ReplaceScales(n.input, 'scales{}'.format(k)),
+            inputs=replace_scales(n.input, 'scales{}'.format(k)),
             outputs=n.output,
             coordinate_transformation_mode='asymmetric',
             cubic_coeff_a=-0.75,
@@ -68,6 +68,6 @@ for k in range(len(model.graph.node)):
         print("replace {} index {}".format(n.name, k))
 
 node_list = ['Constant_330', 'Constant_375']
-RemoveNode(model.graph, node_list)
+remove_node(model.graph, node_list)
 onnx.checker.check_model(model)
 onnx.save(model, sys.argv[1].split('.')[0] + "_dbs.onnx")
