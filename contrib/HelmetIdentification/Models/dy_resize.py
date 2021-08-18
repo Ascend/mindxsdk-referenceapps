@@ -18,7 +18,7 @@ import onnx
 model_path = sys.argv[1]
 model = onnx.load(model_path)
 
-def RemoveNode(graph, node_list):
+def RemoveNode(graph, nodelist):
     """
     Remove Node
     """
@@ -26,10 +26,10 @@ def RemoveNode(graph, node_list):
     rm_cnt = 0
     for i in range(len(graph.node)):
         if i < max_idx:
-            n = graph.node[i - rm_cnt]
-            if n.name in node_list:
-                print("remove {} total {}".format(n.name, len(graph.node)))
-                graph.node.remove(n)
+            gn = graph.node[i - rm_cnt]
+            if gn.name in nodelist:
+                print("remove {} total {}".format(gn.name, len(graph.node)))
+                graph.node.remove(gn)
                 max_idx -= 1
                 rm_cnt += 1
 
@@ -39,37 +39,35 @@ def ReplaceScales(ori_list, scales_name):
     Replace Scales
     """
     n_list = []
-    for i, x in enumerate(ori_list):
-        if i < 2:
+    for j, x in enumerate(ori_list):
+        if j < 2:
             n_list.append(x)
-        if i == 3:
+        if j == 3:
             n_list.append(scales_name)
     return n_list
 
-# 替换Resize节点
-for i in range(len(model.graph.node)):
-    n = model.graph.node[i]
+# Replace Resize node
+for k in range(len(model.graph.node)):
+    n = model.graph.node[k]
     if n.op_type == "Resize":
-        # print("Resize", i, n.input, n.output)
         model.graph.initializer.append(
-            onnx.helper.make_tensor('scales{}'.format(i), onnx.TensorProto.FLOAT, [4], [1, 1, 2, 2])
+            onnx.helper.make_tensor('scales{}'.format(k), onnx.TensorProto.FLOAT, [4], [1, 1, 2, 2])
         )
         newnode = onnx.helper.make_node(
             'Resize',
             name=n.name,
-            inputs=ReplaceScales(n.input, 'scales{}'.format(i)),
+            inputs=ReplaceScales(n.input, 'scales{}'.format(k)),
             outputs=n.output,
             coordinate_transformation_mode='asymmetric',
             cubic_coeff_a=-0.75,
             mode='nearest',
             nearest_mode='floor'
         )
-        model.graph.node.remove(model.graph.node[i])
-        model.graph.node.insert(i, newnode)
-        print("replace {} index {}".format(n.name, i))
+        model.graph.node.remove(model.graph.node[k])
+        model.graph.node.insert(k, newnode)
+        print("replace {} index {}".format(n.name, k))
 
 node_list = ['Constant_330', 'Constant_375']
 RemoveNode(model.graph, node_list)
-
 onnx.checker.check_model(model)
 onnx.save(model, sys.argv[1].split('.')[0] + "_dbs.onnx")
