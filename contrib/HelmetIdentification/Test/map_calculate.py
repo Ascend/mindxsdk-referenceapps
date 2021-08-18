@@ -98,7 +98,7 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
         between 10e-2 and 10e0, in log-space.
     output:
         Lamr | log-average miss rate
-        mr | miss rate
+        Mr | miss rate
         Fppi | false positives per image
 
     references:
@@ -112,22 +112,22 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
         Fppi = 0
         return Lamr, Mr, Fppi
 
-    fppi = fp_cumsum / float(num_images)
-    mr = (1 - precision)
+    Fppi = fp_cumsum / float(num_images)
+    Mr = (1 - precision)
 
-    fppi_tmp = np.insert(fppi, 0, -1.0)
-    mr_tmp = np.insert(mr, 0, 1.0)
+    fppi_tmp = np.insert(Fppi, 0, -1.0)
+    mr_tmp = np.insert(Mr, 0, 1.0)
 
     # Use 9 evenly spaced reference points in log-space
     ref = np.logspace(-2.0, 0.0, num=9)
-    for i, ref_i in enumerate(ref):
+    for i0, ref_i in enumerate(ref):
         j = np.where(fppi_tmp <= ref_i)[-1][-1]
-        ref[i] = mr_tmp[j]
+        ref[i0] = mr_tmp[j]
 
     # log(0) is undefined, so we use the np.maximum(1e-10, ref)
-    lamr = math.exp(np.mean(np.log(np.maximum(1e-10, ref))))
+    Lamr = math.exp(np.mean(np.log(np.maximum(1e-10, ref))))
 
-    return lamr, mr, fppi
+    return Lamr, Mr, Fppi
 
 def error(msg):
     """
@@ -177,10 +177,10 @@ def voc_ap(Rec, Prec):
     #     matlab: for i=numel(mpre)-1:-1:1
     #                 mpre(i)=max(mpre(i),mpre(i+1));
 
-    for i in range(len(mpre) - 2, -1, -1):
-        mpre[i] = max(mpre[i], mpre[i + 1])
+    for cnt in range(len(mpre) - 2, -1, -1):
+        mpre[cnt] = max(mpre[cnt], mpre[cnt + 1])
     #  This part creates a list of indexes where the recall changes
-    #     matlab: i=find(Mrec(2:end)~=Mrec(1:end-1))+1;
+    #     matlab: cnt=find(Mrec(2:end)~=Mrec(1:end-1))+1;
     j_list = []
     for j in range(1, len(Mrec)):
         if Mrec[j] != Mrec[j - 1]:
@@ -270,50 +270,50 @@ def draw_plot_func(dictionary0, n_classes0, window_title0, plot_title0, x_label0
         #  Write number on side of bar
         Fig = plt.gcf()  # gcf - get current figure
         r = Fig.canvas.get_renderer()
-        for i, val0 in enumerate(sorted_values):
-            fp_val = fp_sorted[i]
-            tp_val = tp_sorted[i]
+        for i0, val0 in enumerate(sorted_values):
+            fp_val = fp_sorted[i0]
+            tp_val = tp_sorted[i0]
             fp_str_val = " " + str(fp_val)
             tp_str_val = fp_str_val + " " + str(tp_val)
             # trick to paint multicolor with offset:
             # first paint everything and then repaint the first number
-            t = plt.text(val0, i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
-            plt.text(val0, i, fp_str_val, color='crimson', va='center', fontweight='bold')
-            if i == (len(sorted_values) - 1):  # largest bar
+            t = plt.text(val0, i0, tp_str_val, color='forestgreen', va='center', fontweight='bold')
+            plt.text(val0, i0, fp_str_val, color='crimson', va='center', fontweight='bold')
+            if i0 == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, Fig, plt.gca())
     else:
         plt.barh(range(n_classes0), sorted_values, color=plot_color0)
         #  Write number on side of bar
-        fig = plt.gcf()  # gcf - get current figure
-        r = fig.canvas.get_renderer()
-        for i, val1 in enumerate(sorted_values):
+        Fig = plt.gcf()  # gcf - get current figure
+        r = Fig.canvas.get_renderer()
+        for i0, val1 in enumerate(sorted_values):
             str_val = " " + str(val1)  # add a space before
             if val1 < 1.0:
                 str_val = " {0:.2f}".format(val1)
-            t = plt.text(val1, i, str_val, color=plot_color0, va='center', fontweight='bold')
+            t = plt.text(val1, i0, str_val, color=plot_color0, va='center', fontweight='bold')
             # re-set axes to show number inside the figure
-            if i == (len(sorted_values) - 1):  # largest bar
-                adjust_axes(r, t, fig, plt.gca())
+            if i0 == (len(sorted_values) - 1):  # largest bar
+                adjust_axes(r, t, Fig, plt.gca())
     # set window title
-    fig.canvas.set_window_title(window_title0)
+    Fig.canvas.set_window_title(window_title0)
     # write classes in y axis
     plt.yticks(range(n_classes0), sorted_keys, fontsize=12)  # Re-scale height accordingly
     # comput the matrix height in points and inches
     height_pt = n_classes0 * (12 * 1.4)  # 1.4 (some spacing)
-    height_in = height_pt / fig.dpi
+    height_in = height_pt / Fig.dpi
     figure_height = height_in / (1 - top_margin - bottom_margin)
-    # set new height, init_height = fig.get_figheight
-    if figure_height > fig.get_figheight():
-        fig.set_figheight(figure_height)
+    # set new height, init_height = Fig.get_figheight
+    if figure_height > Fig.get_figheight():
+        Fig.set_figheight(figure_height)
 
     # set plot title
     plt.title(plot_title0, fontsize=14)
     # set axis titles
     plt.xlabel(x_label0, fontsize='large')
     # adjust size of window
-    fig.tight_layout()
+    Fig.tight_layout()
     # save the plot
-    fig.savefig(output_path0)
+    Fig.savefig(output_path0)
     # show image
     if to_show0:
         plt.show()
