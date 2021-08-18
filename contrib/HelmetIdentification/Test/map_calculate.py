@@ -97,9 +97,9 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
         Calculated by averaging miss rates at 9 evenly spaced FPPI points
         between 10e-2 and 10e0, in log-space.
     output:
-        lamr | log-average miss rate
+        Lamr | log-average miss rate
         mr | miss rate
-        fppi | false positives per image
+        Fppi | false positives per image
 
     references:
      "Pedestrian Detection: An Evaluation of the State of the Art."
@@ -107,10 +107,10 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
 
     # if there were no detections of that class
     if precision.size == 0:
-        lamr = 0
-        mr = 1
-        fppi = 0
-        return lamr, mr, fppi
+        Lamr = 0
+        Mr = 1
+        Fppi = 0
+        return Lamr, Mr, Fppi
 
     fppi = fp_cumsum / float(num_images)
     mr = (1 - precision)
@@ -142,15 +142,15 @@ def is_float_between_0_and_1(value):
     check if the number is a float between 0.0 and 1.0
     """
     try:
-        val = float(value)
-        if val > 0.0 and val < 1.0:
+        Val = float(value)
+        if Val > 0.0 and Val < 1.0:
             return True
         else:
             return False
     except ValueError:
         return False
 
-def voc_ap(rec, prec):
+def voc_ap(Rec, Prec):
     """
     Calculate the AP given the recall and precision array
     1) We compute a version of the measured
@@ -158,20 +158,20 @@ def voc_ap(rec, prec):
     2) We compute the AP as the area
     under this curve by numerical integration.
     --- Official matlab code VOC2012---
-    mrec=[0 ; rec ; 1];
+    Mrec=[0 ; rec ; 1];
     mpre=[0 ; prec ; 0];
     for i=numel(mpre)-1:-1:1
             mpre(i)=max(mpre(i),mpre(i+1));
     end
-    i=find(mrec(2:end)~=mrec(1:end-1))+1;
-    ap=sum((mrec(i)-mrec(i-1)).*mpre(i));
+    i=find(Mrec(2:end)~=Mrec(1:end-1))+1;
+    Ap=sum((Mrec(i)-Mrec(i-1)).*mpre(i));
     """
-    rec.insert(0, 0.0)  # insert 0.0 at begining of list
-    rec.append(1.0)  # insert 1.0 at end of list
-    mrec = rec[:]
-    prec.insert(0, 0.0)  # insert 0.0 at begining of list
-    prec.append(0.0)  # insert 0.0 at end of list
-    mpre = prec[:]
+    Rec.insert(0, 0.0)  # insert 0.0 at begining of list
+    Rec.append(1.0)  # insert 1.0 at end of list
+    Mrec = Rec[:]
+    Prec.insert(0, 0.0)  # insert 0.0 at begining of list
+    Prec.append(0.0)  # insert 0.0 at end of list
+    mpre = Prec[:]
     #  This part makes the precision monotonically decreasing
     #     (goes from the end to the beginning)
     #     matlab: for i=numel(mpre)-1:-1:1
@@ -180,47 +180,47 @@ def voc_ap(rec, prec):
     for i in range(len(mpre) - 2, -1, -1):
         mpre[i] = max(mpre[i], mpre[i + 1])
     #  This part creates a list of indexes where the recall changes
-    #     matlab: i=find(mrec(2:end)~=mrec(1:end-1))+1;
-    i_list = []
-    for i in range(1, len(mrec)):
-        if mrec[i] != mrec[i - 1]:
-            i_list.append(i)  # if it was matlab would be i + 1
+    #     matlab: i=find(Mrec(2:end)~=Mrec(1:end-1))+1;
+    j_list = []
+    for j in range(1, len(Mrec)):
+        if Mrec[j] != Mrec[j - 1]:
+            j_list.append(j)  # if it was matlab would be j + 1
     #  The Average Precision (AP) is the area under the curve
     #     (numerical integration)
-    #     matlab: ap=sum((mrec(i)-mrec(i-1)).*mpre(i));
-    ap = 0.0
-    for i in i_list:
-        ap += ((mrec[i] - mrec[i - 1]) * mpre[i])
-    return ap, mrec, mpre
+    #     matlab: Ap=sum((Mrec(j)-Mrec(j-1)).*mpre(j));
+    Ap = 0.0
+    for k in j_list:
+        Ap += ((Mrec[k] - Mrec[k - 1]) * mpre[k])
+    return Ap, Mrec, mpre
 
 def file_lines_to_list(path):
     """
     Convert the lines of a file to a list
     """
     # open txt file lines to a list
-    with open(path) as f:
-        content = f.readlines()
+    with open(path) as F:
+        content = F.readlines()
     # remove whitespace characters like `\n` at the end of each line
-    content = [x.strip() for x in content]
+    content = [con.strip() for con in content]
     return content
 
 
-def draw_text_in_image(img, text0, pos, color, line_width):
+def draw_text_in_image(Img, text0, pos, Color, Line_width):
     """
     Draws text in image
     """
-    font = cv2.FONT_HERSHEY_PLAIN
+    Font = cv2.FONT_HERSHEY_PLAIN
     fontScale = 1
     lineType = 1
     bottomLeftCornerOfText = pos
-    cv2.putText(img, text0,
+    cv2.putText(Img, text0,
                 bottomLeftCornerOfText,
-                font,
+                Font,
                 fontScale,
-                color,
+                Color,
                 lineType)
-    text_width, _ = cv2.getTextSize(text0, font, fontScale, lineType)[0]
-    return img, (line_width + text_width)
+    text_width, _ = cv2.getTextSize(text0, Font, fontScale, lineType)[0]
+    return Img, (Line_width + text_width)
 
 
 def adjust_axes(r, t, fig0, axes0):
@@ -228,8 +228,8 @@ def adjust_axes(r, t, fig0, axes0):
     Plot - adjust axes
     """
     # get text width for re-scaling
-    bb = t.get_window_extent(renderer=r)
-    text_width_inches = bb.width / fig0.dpi
+    Bb = t.get_window_extent(renderer=r)
+    text_width_inches = Bb.width / fig0.dpi
     # get axis width in inches
     current_fig_width = fig0.get_figwidth()
     new_fig_width = current_fig_width + text_width_inches
@@ -268,29 +268,29 @@ def draw_plot_func(dictionary0, n_classes0, window_title0, plot_title0, x_label0
         # add legend
         plt.legend(loc='lower right')
         #  Write number on side of bar
-        fig = plt.gcf()  # gcf - get current figure
-        r = fig.canvas.get_renderer()
-        for i, val in enumerate(sorted_values):
+        Fig = plt.gcf()  # gcf - get current figure
+        r = Fig.canvas.get_renderer()
+        for i, val0 in enumerate(sorted_values):
             fp_val = fp_sorted[i]
             tp_val = tp_sorted[i]
             fp_str_val = " " + str(fp_val)
             tp_str_val = fp_str_val + " " + str(tp_val)
             # trick to paint multicolor with offset:
             # first paint everything and then repaint the first number
-            t = plt.text(val, i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
-            plt.text(val, i, fp_str_val, color='crimson', va='center', fontweight='bold')
+            t = plt.text(val0, i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
+            plt.text(val0, i, fp_str_val, color='crimson', va='center', fontweight='bold')
             if i == (len(sorted_values) - 1):  # largest bar
-                adjust_axes(r, t, fig, plt.gca())
+                adjust_axes(r, t, Fig, plt.gca())
     else:
         plt.barh(range(n_classes0), sorted_values, color=plot_color0)
         #  Write number on side of bar
         fig = plt.gcf()  # gcf - get current figure
         r = fig.canvas.get_renderer()
-        for i, val in enumerate(sorted_values):
-            str_val = " " + str(val)  # add a space before
-            if val < 1.0:
-                str_val = " {0:.2f}".format(val)
-            t = plt.text(val, i, str_val, color=plot_color0, va='center', fontweight='bold')
+        for i, val1 in enumerate(sorted_values):
+            str_val = " " + str(val1)  # add a space before
+            if val1 < 1.0:
+                str_val = " {0:.2f}".format(val1)
+            t = plt.text(val1, i, str_val, color=plot_color0, va='center', fontweight='bold')
             # re-set axes to show number inside the figure
             if i == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, fig, plt.gca())
