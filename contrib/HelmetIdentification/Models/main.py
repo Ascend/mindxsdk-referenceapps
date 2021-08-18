@@ -126,11 +126,9 @@ while True:
             L1.append(int(bboxes['y1']))
             L1 = np.array(L1, dtype=np.int32)
             # Draw rectangle
-            # rectangle tittle color [255,255,255]
             cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
                         lineType=cv2.LINE_AA)
-            # rectangle color [255,255,255]            
-            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
+            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)  # rectangle color [255,255,255]
             # Save pictures in two ways
             if FrameList0.channelId == 0:
                 oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
@@ -191,7 +189,6 @@ while True:
                 os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img)
         else:
-            # channelId=1
             oringe_imgfile = './output/two/image/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
             if os.path.exists(oringe_imgfile):
