@@ -56,8 +56,7 @@ while True:
     t0 = time.time()
     # Get data through GetProtobuf interface
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
-    # print errorCode
-    if inferResult0[0].errorCode != 0:
+    if inferResult0[0].errorCode != 0:  # print errorCode
         if inferResult0[0].errorCode == 1001:
             print('Object detection result of model infer is null!!!')
         continue
