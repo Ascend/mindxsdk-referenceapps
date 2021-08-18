@@ -105,7 +105,7 @@ if __name__ == '__main__':
         img_txt = "./detection-test-result/" + img_name + ".txt"
         if os.path.exists(img_txt):
             os.remove(img_txt)
-        dataInput = MxDataInput()
+        dataInput = StreamManagerApi.MxDataInput()
         if os.path.exists(img_path) != 1:
             print("The test image does not exist.")
 
