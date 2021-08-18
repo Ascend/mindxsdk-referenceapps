@@ -21,10 +21,6 @@ import time
 import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
-"""
-func：Call the sdk interface to create a stream, and perform the helmet recognition inference process to obtain the recognition result
-"""
-
 # init stream manager
 streamManagerApi = StreamManagerApi()
 ret = streamManagerApi.InitManager()
@@ -40,7 +36,7 @@ if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
     
 
-# Obtain the inference result by specifying streamName and keyVec.
+# Obtain the inference result by specifying streamName and keyVec
 streamName = b'Detection'
 keyVec0 = StringVector()
 keyVec0.push_back(b"ReservedFrameInfo")
@@ -80,7 +76,7 @@ while True:
     visionData0 = visionList0.visionVec[0].visionData.dataStr
     visionInfo0 = visionList0.visionVec[0].visionInfo
 
-    # cv2：YUV2BGR
+    # cv2:YUV2BGR
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     img_yuv = np.frombuffer(visionData0, dtype=np.uint8)
@@ -158,7 +154,7 @@ while True:
             print("GetProtobuf error. errorCode0=%d" % (inferResult1[0].errorCode))
             break
 
-        # output inference data ：frame info and img info
+        # output inference data:frame info and img info
         FrameList1 = MxpiDataType.MxpiFrameInfo()
         FrameList1.ParseFromString(inferResult1[0].messageBuf)
         
@@ -167,7 +163,7 @@ while True:
         visionData1 = visionList1.visionVec[0].visionData.dataStr
         visionInfo1 = visionList1.visionVec[0].visionInfo
 
-        # cv2：YUV2BGR
+        # cv2:YUV2BGR
         YUV_BYTES_NU = 3
         YUV_BYTES_DE = 2
         img_yuv = np.frombuffer(visionData1, dtype=np.uint8)
