@@ -4,6 +4,7 @@ project(MultiChannelVideoDetection)
 add_compile_options(-fPIC -fstack-protector-all -g -Wl,-z,relro,-z,now,-z -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
+set(OUTPUT_NAME "multiChannelVideoReasoner")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(MX_SDK_HOME {MindXSDK安装路径})
@@ -25,14 +26,14 @@ link_directories(
         ${FFMPEG_HOME}/lib
 )
 
-add_executable(sample main.cpp
+add_executable(${OUTPUT_NAME} main.cpp
         StreamPuller/StreamPuller.cpp
         VideoDecoder/VideoDecoder.cpp
         ImageResizer/ImageResizer.cpp
         YoloDetector/YoloDetector.cpp
         MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp
         Util/PerformanceMonitor/PerformanceMonitor.cpp Util/Util.cpp)
-target_link_libraries(sample
+target_link_libraries(${OUTPUT_NAME}
         avcodec
         avdevice
         avfilter

@@ -209,16 +209,17 @@ cmake ..
 -- Generating done
 
 make
-Scanning dependencies of target sample
-[ 12%] Building CXX object CMakeFiles/sample.dir/main.cpp.o
-[ 25%] Building CXX object CMakeFiles/sample.dir/StreamPuller/StreamPuller.cpp.o
-[ 37%] Building CXX object CMakeFiles/sample.dir/VideoDecoder/VideoDecoder.cpp.o
-[ 50%] Building CXX object CMakeFiles/sample.dir/ImageResizer/ImageResizer.cpp.o
-[ 62%] Building CXX object CMakeFiles/sample.dir/YoloDetector/YoloDetector.cpp.o
-[ 75%] Building CXX object CMakeFiles/sample.dir/MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp.o
-[ 87%] Building CXX object CMakeFiles/sample.dir/Util/PerformanceMonitor/PerformanceMonitor.cpp.o
-[100%] Linking CXX executable ../sample
-[100%] Built target sample
+Scanning dependencies of target multiChannelVideoReasoner
+[ 44%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/main.cpp.o
+[ 44%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/VideoDecoder/VideoDecoder.cpp.o
+[ 44%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/ImageResizer/ImageResizer.cpp.o
+[ 44%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/YoloDetector/YoloDetector.cpp.o
+[ 55%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/StreamPuller/StreamPuller.cpp.o
+[ 66%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/Util/PerformanceMonitor/PerformanceMonitor.cpp.o
+[ 77%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/Util/Util.cpp.o
+[ 88%] Building CXX object CMakeFiles/multiChannelVideoReasoner.dir/MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp.o
+[100%] Linking CXX executable ../multiChannelVideoReasoner
+[100%] Built target multiChannelVideoReasoner
 # sample就是CMakeLists文件中指定生成的可执行文件。
 ```
 
@@ -229,7 +230,7 @@ bash build.sh
 ```
 ### 执行脚本
 
-执行`run.sh`脚本前请先确认可执行文件`sample`已生成。
+执行`run.sh`脚本前请先确认可执行文件`multiChannelVideoReasoner`已生成。
 
 ```
 chmod +x run.sh

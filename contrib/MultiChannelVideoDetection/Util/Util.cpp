@@ -168,23 +168,34 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
     auto videoHeight = videoFrameInfo.height;
     auto videoWidth = videoFrameInfo.width;
 
+    // origin decode yuv image of video frame
     cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight *AscendYoloDetector::YUV_BYTE_NU /
             AscendYoloDetector::YUV_BYTE_DE), (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
+    // save result rgb image
     cv::Mat imgBgr = cv::Mat((int32_t) videoHeight, (int32_t) videoWidth, CV_8UC3);
+
+    // converse color space from imgYuv to imgBgr
     cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
 
     for (const auto & result : results) {
+        // set text and rectangle color as green
         const cv::Scalar green = cv::Scalar(0, 255, 0);
+        // set text thickness as 4
         const uint32_t thickness = 4;
+        // set text-draw x-offset as 10
         const uint32_t xOffset = 10;
+        // set text-draw y-offset as 10
         const uint32_t yOffset = 10;
+        // set text line type as 8-connected type
         const uint32_t lineType = 8;
+        // set text font scale as 1.0 (relative to font base size)
         const float fontScale = 1.0;
 
-        // draw detect result on video pic
+        // draw detect result on result pic
         cv::putText(imgBgr, result.className,
                     cv::Point((int) (result.x0 + xOffset), (int) (result.y0 + yOffset)),
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
+        // draw edge of detect result object on result pic
         cv::rectangle(imgBgr,
                       cv::Rect((int) result.x0, (int) result.y0,
                                (int) (result.x1 - result.x0), (int) (result.y1 - result.y0)),
