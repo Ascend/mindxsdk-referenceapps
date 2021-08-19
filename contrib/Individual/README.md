@@ -1,27 +1,188 @@
 # Individual attribute recognition
 
-## 介绍
+## 1 介绍
+本开发样例完成个体属性识别功能，供用户参考。本系统基于mxVision SDK进行开发，以昇腾Atlas310卡为主要的硬件平台，开发端到端准确识别多种人脸属性信息，包括年龄、性别、颜值、情绪、脸型、胡须、发色、是否闭眼、是否配戴眼镜、人脸质量信息及类型等。
 
-行业SDK流程编排，该项目主要实现了从Sample.pipeline中读取pipeline创建推理stream，然后读取一张图片送到stream进行推理，获取推理结构后把结果打印出来，最后销毁stream。
-为了评测，可以从Sample_proto.pipline中读取pipeline创建推理stream，然后读入评测文档，根据评测文档中的数据集路径读入图片，最后将推理结果输出到一个txt文档中，通过对比脚本
-可以得到评测的结果。
+### 1.1 支持的产品
 
-## 配置
+本项目以昇腾Atlas310卡为主要的硬件平台。待补充........
+（可列出项目所用的硬件平台、支持的硬件平台、访问方式等）
 
-确保pipeline所需要的yolov4和resnet50模型文件在'../models'中存在，run.sh脚本中LD_LIBRARY_PATH设置了ACL动态库链接路径为/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64，
-如果实际环境中路径不一致，需要替换为实际的目录。
-本项目涵盖人脸识别，人脸关键点提取，人脸对齐，人脸属性识别模型整体的代码。
-main.py以及Sample.pipeline是本项目的核心内容，完成人脸识别，人脸关键点提取，人脸对齐以及人脸属性识别整体的流程。在main.py中修改输入图像的路径即可得到相应的推理结果。
-项目目录下提供了三组可供测试使用的test1,test2,test3。如有需要，可以修改Sample.pipeline完成更丰富的功能。
-项目评测部分主要由在数据集CelebA上完成。该部分由attr_main.py、cal_accuracy.py、Sample_proto.pipeline和groudtruth组成。将数据集文件按照text_full中的路径存放到相应位置，运行脚本文件，可以得到
-一个txt输出，再通过运行cal_accuracy.py完成模型输出与标准值的对比，可以查看到评测结果。
+### 1.2 支持的版本
+
+支持的SDK版本为20.2.0。
+
+版本号查询方法，在Atlas产品环境下，运行命令：npu-smi info进行查看。
 
 
-## 运行
+### 1.3 软件方案介绍
 
-```python3.7/bash
-运行项目：bash ./run.sh 或者 python3.7 main.py
-运行评测：python3.7 attr_main.py
+本系统设计了不同的功能模块。主要流程为：图片传入流中，利用Yolov4的检测模型检测人脸，将检测出人脸的图像放缩至特定尺寸，再利用提取关键点的模型进行关键点提取，获取人脸关键点后进行对齐，将对齐结果输入到人脸属性识别模型中，最后以序列化方式输出识别结果。各模块功能描述如表1.1所示：
+
+表1.1 系统方案中各模块功能：
+
+| 序号 | 子系统 | 功能描述     |
+| 1    | 图像输入    | 调用MindX SDK的appsrc插件对数据进行拉流 |
+| 2    | 人脸检测    | 利用yolov4的检测模型，检测出图片中人脸 |
+| 3    | 图像放缩    | 调用MindX SDK的mxpi_imageresize |
+| 4    | 关键点提取    | 通过人脸关键点提取模型，获取人脸图片中的人脸关键点数据。 |
+| 5    | 人脸对齐    | 通过人脸关键点实现人脸对齐 |
+| 6    | 人脸属性识别    | 通过人脸属性识别模型对人脸对齐后的图片提取人脸属性，选取的模型为caffe框架下的FaceAttribute-FAN，需要使用转换工具转化。 |
+| 7    | 结果输出    | 将人脸属性识别的结果序列化输出。 |
+
+
+
+### 1.4 代码目录结构与说明
+
+本工程名称为Individual，工程目录如下图所示：
+.
+├── data
+│   ├── roi
+│   │   ├── Climbup
+│   │   └── ...
+│   └── video
+│   │   ├── Alone
+│   │   └── ...
+├── models
+│   ├── ECONet
+│   │   └── ...
+│   └── yolov3
+│   │   └── ...
+├── pipeline
+│   ├── plugin_all.pipeline
+│   ├── plugin_alone.pipeline
+│   ├── plugin_climb.pipeline
+│   ├── plugin_outofbed.pipeline
+│   ├── plugin_overspeed.pipeline
+│   ├── plugin_overstay.pipeline
+│   └── plugin_violentaction.pipeline
+├── plugins
+│   ├── MxpiStackFrame // 堆帧插件
+│   │   ├── CMakeLists.txt
+│   │   ├── MxpiStackFrame.cpp
+│   │   ├── MxpiStackFrame.h
+│   │   ├── BlockingMap.cpp
+│   │   ├── BlockingMap.h
+│   │   └── build.sh
+│   ├── PluginAlone // 单人独处插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginAlone.cpp
+│   │   ├── PluginAlone.h
+│   │   └── build.sh
+│   ├── PluginClimb // 攀高检测插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginClimb.cpp
+│   │   ├── PluginClimb.h
+│   │   └── build.sh
+│   ├── PluginOutOfBed // 离床检测插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginOutOfBed.cpp
+│   │   ├── PluginOutOfBed.h
+│   │   └── build.sh
+│   ├── PluginOverSpeed // 快速移动插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginOverSpeed.cpp
+│   │   ├── PluginOverSpeed.h
+│   │   └── build.sh
+│   ├── PluginOverStay // 逗留超时插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginOverStay.cpp
+│   │   ├── PluginOverStay.h
+│   │   └── build.sh
+│   ├── PluginCounter // 计时插件
+│   │   ├── CMakeLists.txt
+│   │   ├── PluginCounter.cpp
+│   │   ├── PluginCounter.h
+│   │   └── build.sh
+│   ├── PluginViolentAction // 剧烈运动插件
+│   │   ├── CMakeLists.txt
+│   │   ├── Plugin_ViolentAction.cpp
+│   │   ├── Plugin_ViolentAction.h
+│   │   └── build.sh
+├── main.py
+├── README.md
+└── run.sh
+
+
+### 1.5 技术实现流程图
+
+![个体属性识别流程图](https://images.gitee.com/uploads/images/2021/0819/151524_0f54a517_9366121.png "屏幕截图.png")
+
+
+
+
+
+## 2 环境依赖
+
+推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+
+| 软件名称 | 版本   |
+| cmake    | 3.5.+ |
+| mxVision | 2.0.2  |
+| Python   |  3.7.5 |
+
+atc相关的工具 待补充.........
+| ATC   |  |
+
+
+在编译运行项目前，需要设置环境变量：
+
+步骤1：安装mxVision SDK。
+步骤2：配置mxVision SDK环境变量、lib库环境变量以及python环境变量。
+exprot MX_SDK_HOME=${安装路径}/mxVision
+export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
+export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
+- 环境变量介绍
+MX_SDK_HOME为SDK安装路径
+LD_LIBRARY_PATH为lib库路径
+PYTHONPATH为python环境路径
+
+
+## 编译与运行
+（描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
+**步骤1** （修改相应文件）
+下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
+**步骤2** （设置环境变量）
+在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件放到项目路径中，与pipeline内路径对应。
+**步骤3** （执行编译的步骤）
+将数据集放到项目内，可以从中取出一张图像，命名为test.jpg，并放到与main.py同路径下。
+**步骤4** （运行及输出结果）
+运行推理代码：
+python3.7 main.py
+输出结果：可以直接得到这张测试图像的推理结果
+
+运行评测代码：
+python3.7 attr_main.py
 python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
-```
-如果使用过程中遇到问题，请联系华为技术支持。
+输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
+
+
+
+
+
+## 5 软件依赖说明
+
+如果涉及第三方软件依赖，请详细列出。
+
+| 依赖软件 | 版本  | 说明                     |
+| -------- | ----- | ------------------------ |
+| XXX      | x.x.x | 用到的组件，实现的功能等 |
+|          |       |                          |
+
+
+
+## 6 常见问题
+
+请按照问题重要程度，详细列出可能要到的问题，和解决方法。
+
+### 6.1 XXX问题
+
+**问题描述：**
+
+截图或报错信息
+
+**解决方案：**
+
+详细描述解决方法。
+
+
