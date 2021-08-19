@@ -64,7 +64,7 @@ if __name__ == '__main__':
         # the distence of the 'confidence' and the num is 12
         next_confidence = 12
         for i in range(attr_num):
-            # find confidence in dict 
+            # find confidence in dict
             loc = dict_all.find('confidence', begin + index, end)
             # next confidence
             index = loc + next_confidence
