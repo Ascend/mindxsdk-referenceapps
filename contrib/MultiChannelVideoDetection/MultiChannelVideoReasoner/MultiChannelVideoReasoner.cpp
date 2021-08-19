@@ -21,6 +21,11 @@
 
 #include <thread>
 
+/**
+ * Init MultiChannelVideoReasoner by {@link ReasonerConfig}
+ * @param initConfig const reference to initial config
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
 {
     LogDebug << "Init MultiChannelVideoReasoner start.";
@@ -50,6 +55,7 @@ APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
         return ret;
     }
 
+    // init class member variable
     this->deviceId = initConfig.deviceId;
     this->yoloModelWidth = initConfig.yoloModelWidth;
     this->yoloModelHeight = initConfig.yoloModelHeight;
@@ -64,10 +70,14 @@ APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
     return APP_ERR_OK;
 }
 
+/**
+ * The work flow of MultiChannelVideoReasoner
+ */
 void MultiChannelVideoReasoner::Process()
 {
     auto startTime = std::chrono::high_resolution_clock::now();
 
+    // start threads (video pull and decode | image resize and yolo detect | performance monitoring)
     std::vector<std::thread> videoProcessThreads;
     for (uint32_t i = 0; i < streamPullers.size(); i++) {
         auto decodeFrameQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(maxDecodeFrameQueueLength);
@@ -88,8 +98,9 @@ void MultiChannelVideoReasoner::Process()
     videoProcessThreads.push_back(std::move(monitorPerformance));
 
     while (!stopFlag) {
-        bool allVideoDataPulledAndDecoded = true;
 
+        // judge whether the video of all channels is pulled and decoded finish
+        bool allVideoDataPulledAndDecoded = true;
         for (uint32_t i = 0; i < streamPullers.size(); i++) {
             if (streamPullers[i]->stopFlag) {
                 if (!videoDecoders[i]->stopFlag) {
@@ -102,6 +113,7 @@ void MultiChannelVideoReasoner::Process()
             }
         }
 
+        // judge whether the all data in decode frame queue is processed
         bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
 
         if (allVideoDataPulledAndDecoded && allVideoDataProcessed) {
@@ -138,6 +150,10 @@ void MultiChannelVideoReasoner::Process()
     LogInfo << "total process time: " << costS << "s.";
 }
 
+/**
+ * De-init MultiChannelVideoReasoner
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::DeInit()
 {
     APP_ERROR ret;
@@ -173,6 +189,17 @@ APP_ERROR MultiChannelVideoReasoner::DeInit()
 }
 
 /// ========== static Method ========== ///
+
+/**
+ * Get the decoded video frame
+ * >> first step: pull video stream data by specific rtsp address
+ * >> second step: decode video frame from pulled video frame data
+ * @param streamPuller const reference to the pointer to StreamPuller
+ * @param videoDecoder const reference to the pointer to VideoDecoder
+ * @param index const reference to curr rtsp index
+ * @param decodeFrameQueue const reference to the pointer to decode frame queue
+ * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
+ */
 void MultiChannelVideoReasoner::GetDecodeVideoFrame(
         const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
         const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
@@ -225,6 +252,13 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
     }
 }
 
+/**
+ * Get the detect result of all channels
+ * @param modelWidth const reference to the input width of YoloDetector
+ * @param modelHeight const reference to the input height of YoloDetector
+ * @param popDecodeFrameWaitTime const reference to wait time when decode frame queue is empty
+ * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
+ */
 void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
         const uint32_t &modelWidth,
         const uint32_t &modelHeight,
@@ -264,6 +298,7 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
             break;
         }
 
+        // check whether exist data in all decode frame queues
         if (!Util::IsExistDataInQueueMap(decodeFrameQueueMap)) {
             continue;
         }
@@ -339,6 +374,12 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
 }
 
 /// ========== private Method ========== ///
+
+/**
+ * Create StreamPullers and VideoDecoders by {@link ReasonerConfig}
+ * @param config const reference to the config
+ * @return status code of whether creations is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::CreateStreamPullerAndVideoDecoder(const ReasonerConfig &config)
 {
     auto rtspList = config.rtspList;
@@ -374,6 +415,11 @@ APP_ERROR MultiChannelVideoReasoner::CreateStreamPullerAndVideoDecoder(const Rea
     return APP_ERR_OK;
 }
 
+/**
+ * Create ImageResizer by {@link ReasonerConfig}
+ * @param config const reference to the config
+ * @return status code of whether creation is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::CreateImageResizer(const ReasonerConfig &config)
 {
     imageResizer = std::make_shared<AscendImageResizer::ImageResizer>();
@@ -386,6 +432,11 @@ APP_ERROR MultiChannelVideoReasoner::CreateImageResizer(const ReasonerConfig &co
     return APP_ERR_OK;
 }
 
+/**
+ * Create YoloDetector by {@link ReasonerConfig}
+ * @param config const reference to the config
+ * @return status code of whether creation is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::CreateYoloDetector(const ReasonerConfig &config)
 {
     yoloDetector = std::make_shared<AscendYoloDetector::YoloDetector>();
@@ -400,6 +451,11 @@ APP_ERROR MultiChannelVideoReasoner::CreateYoloDetector(const ReasonerConfig &co
     return APP_ERR_OK;
 }
 
+/**
+ * Create PerformanceMonitor by {@link ReasonerConfig}
+ * @param config const reference to the config
+ * @return status code of whether creation is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::CreatePerformanceMonitor(const ReasonerConfig &config)
 {
     uint32_t size = config.rtspList.size();
@@ -422,6 +478,10 @@ APP_ERROR MultiChannelVideoReasoner::CreatePerformanceMonitor(const ReasonerConf
     return APP_ERR_OK;
 }
 
+/**
+ * Destroy StreamPullers and VideoDecoders
+ * @return status code of whether destroy is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::DestroyStreamPullerAndVideoDecoder()
 {
     APP_ERROR ret;
@@ -445,6 +505,10 @@ APP_ERROR MultiChannelVideoReasoner::DestroyStreamPullerAndVideoDecoder()
     return APP_ERR_OK;
 }
 
+/**
+ * Destroy ImageResizer
+ * @return status code of whether destroy is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::DestroyImageResizer()
 {
     APP_ERROR ret = imageResizer->DeInit();
@@ -455,6 +519,10 @@ APP_ERROR MultiChannelVideoReasoner::DestroyImageResizer()
     return APP_ERR_OK;
 }
 
+/**
+ * Destroy YoloDetector
+ * @return status code of whether destroy is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::DestroyYoloDetector()
 {
     APP_ERROR ret = yoloDetector->DeInit();
@@ -465,6 +533,10 @@ APP_ERROR MultiChannelVideoReasoner::DestroyYoloDetector()
     return APP_ERR_OK;
 }
 
+/**
+ * Destroy PerformanceMonitor
+ * @return status code of whether destroy is successful
+ */
 APP_ERROR MultiChannelVideoReasoner::DestroyPerformanceMonitor()
 {
     APP_ERROR ret = performanceMonitor->DeInit();
@@ -475,6 +547,9 @@ APP_ERROR MultiChannelVideoReasoner::DestroyPerformanceMonitor()
     return APP_ERR_OK;
 }
 
+/**
+ * Clear decode frame queue map, video frame infos, StreamPuller and VideoDecoder vector
+ */
 void MultiChannelVideoReasoner::ClearData() {
     // stop and clear queue
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;

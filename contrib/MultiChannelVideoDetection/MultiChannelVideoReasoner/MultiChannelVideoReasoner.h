@@ -27,18 +27,31 @@
 struct ReasonerConfig {
     uint32_t deviceId;
     uint32_t baseVideoChannelId;
+    // max times of retrying to open video Stream
     uint32_t maxTryOpenVideoStream;
+    // max length of queue which cache decode video frame
     uint32_t maxDecodeFrameQueueLength;
+    // wait time when decode frame queue is empty
     uint32_t popDecodeFrameWaitTime;
+    // interval of printing performance message
     uint32_t intervalPerformanceMonitorPrint;
+    // interval of main thread check work flow
     uint32_t intervalMainThreadControlCheck;
+    // the input width of YoloDetector
     uint32_t yoloModelWidth;
+    // the input height of YoloDetector
     uint32_t yoloModelHeight;
+    // the path of yolo model
     std::string yoloModelPath;
+    // the path of yolo model label
     std::string yoloLabelPath;
+    // the rtsp video stream list which need to process
     std::vector<std::string> rtspList;
+    // whether print yolo detect result, default: true
     bool printDetectResult = true;
+    // whether write detect result to file, default: false
     bool writeDetectResultToFile = false;
+    // whether print performance message, default: true
     bool enablePerformanceMonitorPrint = true;
 };
 
@@ -99,6 +112,7 @@ private:
     std::shared_ptr<AscendYoloDetector::YoloDetector> yoloDetector;
     std::shared_ptr<AscendPerformanceMonitor::PerformanceMonitor> performanceMonitor;
 
+    // map which save the pointers to decode frame queue
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
 
 };

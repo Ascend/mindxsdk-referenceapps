@@ -16,6 +16,13 @@
 
 #include "Util.h"
 
+/**
+ * Init {@link VideoDecoder} initial param
+ * @param initParam reference to {@link DecoderInitParam}
+ * @param deviceId device id
+ * @param channelId channel id
+ * @param videoFrameInfo const reference to {@link VideoFrameInfo}
+ */
 void Util::InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam,
                                  uint32_t deviceId, uint32_t channelId,
                                  const AscendStreamPuller::VideoFrameInfo &videoFrameInfo)
@@ -28,6 +35,13 @@ void Util::InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam
     initParam.outputImageFormat = MxBase::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
 }
 
+/**
+ * Init {@link YoloDetector} initial param
+ * @param initParam reference to {@link YoloInitParam}
+ * @param deviceId device id
+ * @param labelPath const reference to yolo label path
+ * @param modelPath const reference to yolo model path
+ */
 void Util::InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, uint32_t deviceId,
                          const std::string &labelPath, const std::string &modelPath)
 {
@@ -47,6 +61,11 @@ void Util::InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, uint32_t 
     initParam.anchorDim = AscendYoloDetector::YOLO_ANCHOR_DIM;
 }
 
+/**
+ * Judge whether exist data in all queues
+ * @param queueMap const reference to queue map
+ * @return whether exist data in all queues
+ */
 bool Util::IsExistDataInQueueMap(const std::map<int,
                                  std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
 {
@@ -60,6 +79,16 @@ bool Util::IsExistDataInQueueMap(const std::map<int,
     return false;
 }
 
+/**
+ * Get yolo detect result from objInfos
+ * >> strategy: choose max confidence as final detect result
+ *
+ * @param objInfos const reference to the list of objectInfo list
+ * @param rtspIndex curr rtsp stream index (used to print detect message)
+ * @param frameId curr video frame id (used to print detect message)
+ * @param printResult whether print detect result
+ * @return yolo detect results
+ */
 std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
         const std::vector<std::vector<MxBase::ObjectInfo>>& objInfos,
         uint32_t rtspIndex, uint32_t frameId, bool printResult)
@@ -73,7 +102,7 @@ std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
         for (uint32_t j = 0; j < objInfos[i].size(); j++) {
             if (objInfos[i][j].confidence > maxConfidence) {
                 maxConfidence = objInfos[i][j].confidence;
-                index = j;
+                index = (int32_t) j;
             }
         }
 
@@ -95,6 +124,10 @@ std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
     return info;
 }
 
+/**
+ * Check whether exist result dir, if not, create it!
+ * @param totalVideoStreamNum number of total video streams
+ */
 void Util::CheckAndCreateResultDir(uint32_t totalVideoStreamNum)
 {
     std::string resultDir = "./result";
@@ -110,6 +143,15 @@ void Util::CheckAndCreateResultDir(uint32_t totalVideoStreamNum)
     }
 }
 
+/**
+ * Save each channel video detect result to different dir
+ * @param videoFrame const reference to the memory data of curr video frame
+ * @param results const reference to the detect results (used to draw result on pic)
+ * @param videoFrameInfo const reference to curr channel video frame info
+ * @param frameId curr video frame id (used as save file name)
+ * @param rtspIndex curr video stream index (used to choose save dir)
+ * @return status code of whether saving result is successful
+ */
 APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame,
                            const std::vector<MxBase::ObjectInfo>& results,
                            const AscendStreamPuller::VideoFrameInfo &videoFrameInfo,
@@ -139,6 +181,7 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
         const uint32_t lineType = 8;
         const float fontScale = 1.0;
 
+        // draw detect result on video pic
         cv::putText(imgBgr, result.className,
                     cv::Point((int) (result.x0 + xOffset), (int) (result.y0 + yOffset)),
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
@@ -162,6 +205,11 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
 }
 
 ///===== private method =====///
+
+/**
+ * Create dir
+ * @param path const reference to dir path
+ */
 void Util::CreateDir(const std::string &path)
 {
     LogInfo << path << " not exist. create it!";

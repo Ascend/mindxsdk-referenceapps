@@ -19,6 +19,11 @@
 
 namespace AscendImageResizer {
 
+/**
+ * Init ImageResizer
+ * @param deviceId device id which main program use
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR ImageResizer::Init(uint32_t deviceId)
 {
     LogInfo << "ImageResizer init start.";
@@ -37,6 +42,10 @@ APP_ERROR ImageResizer::Init(uint32_t deviceId)
     return  APP_ERR_OK;
 }
 
+/**
+ * De-init ImageResizer
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR ImageResizer::DeInit()
 {
     LogInfo << "ImageResizer deinit start.";
@@ -53,6 +62,14 @@ APP_ERROR ImageResizer::DeInit()
     return APP_ERR_OK;
 }
 
+/**
+ * Resize image with specific width and height
+ * @param inputImageInfo reference to input image
+ * @param resizeWidth width need to resize
+ * @param resizeHeight height need to resize
+ * @param outputImageInfo reference to output image
+ * @return status code of whether resize image is successful
+ */
 APP_ERROR ImageResizer::Resize(MxBase::DvppDataInfo &inputImageInfo,
                                const uint32_t &resizeWidth, const uint32_t &resizeHeight,
                                MxBase::DvppDataInfo &outputImageInfo)
@@ -64,10 +81,12 @@ APP_ERROR ImageResizer::Resize(MxBase::DvppDataInfo &inputImageInfo,
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
+    // construct resize config
     MxBase::ResizeConfig resizeConfig = {};
     resizeConfig.width = resizeWidth;
     resizeConfig.height = resizeHeight;
 
+    // call DvppWrapper function to complete the image resize
     APP_ERROR ret = vDvppWrapper->VpcResize(inputImageInfo, outputImageInfo, resizeConfig);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "VpcResize failed.";
@@ -77,6 +96,16 @@ APP_ERROR ImageResizer::Resize(MxBase::DvppDataInfo &inputImageInfo,
     return APP_ERR_OK;
 }
 
+/**
+ * Resize memory of image with specific width and height
+ * @param imageInfo the memory data of input image
+ * @param originWidth width of input image
+ * @param originHeight height of input image
+ * @param resizeWidth width need to resize
+ * @param resizeHeight height need to resize
+ * @param outputImageInfo reference to output image
+ * @return status code of whether resize image is successful
+ */
 APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
                                          const uint32_t &originWidth, const uint32_t &originHeight,
                                          const uint32_t &resizeWidth, const uint32_t &resizeHeight,
@@ -88,6 +117,7 @@ APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
+    // construct image by memory data
     MxBase::DvppDataInfo input = {};
     input.width = originWidth;
     input.height = originHeight;

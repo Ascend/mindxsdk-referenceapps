@@ -31,15 +31,15 @@ public:
     ~PerformanceMonitor() = default;
     APP_ERROR Init(const std::vector<std::string>& objects, bool enablePrint);
     APP_ERROR DeInit();
-    APP_ERROR Process();
 
     APP_ERROR Collect(const std::string& objectName, double timeCost);
-    APP_ERROR Print(int currTime);
+    void Print(int currTime);
 
 public:
     static void PrintStatistics(const std::shared_ptr<PerformanceMonitor> &performanceMonitor, int printInterval);
 
 public:
+    // running flag
     bool stopFlag;
 
 private:
@@ -49,6 +49,7 @@ private:
 
     std::string currObject;
 
+    // whether print performance message
     bool enablePrint;
 };
 } // end AscendPerformanceMonitor

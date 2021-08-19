@@ -28,6 +28,11 @@ public:
     BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stopped_(false) {}
     ~BlockingQueue() {}
 
+    /**
+     * Pop a item from queue
+     * @param item reference to item which will be popped
+     * @return status code of whether the pop is successful
+     */
     APP_ERROR Pop(T& item)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -52,6 +57,12 @@ public:
         return APP_ERR_OK;
     }
 
+    /**
+     * Pop a item from queue and wait for a while when queue is empty
+     * @param item reference to item which will be popped
+     * @param timeOutMs wait time
+     * @return status code of whether the pop is successful
+     */
     APP_ERROR Pop(T& item, uint32_t timeOutMs)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -77,6 +88,12 @@ public:
         return APP_ERR_OK;
     }
 
+    /**
+     * Push a item into queue tail and wait for a while when queue is full
+     * @param item  const reference to item which will be pushed
+     * @param isWait wait time
+     * @return status code of whether the push is successful
+     */
     APP_ERROR Push(const T& item, bool isWait = false)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -99,6 +116,12 @@ public:
         return APP_ERR_OK;
     }
 
+    /**
+     * Push a item into queue head and wait for a while when queue is full
+     * @param item const reference to item which will be pushed
+     * @param isWait wait time
+     * @return status code of whether the push is successful
+     */
     APP_ERROR Push_Front(const T &item, bool isWait = false)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -122,6 +145,9 @@ public:
         return APP_ERR_OK;
     }
 
+    /**
+     * Stop the blocking queue
+     */
     void Stop()
     {
         {
@@ -133,6 +159,9 @@ public:
         empty_cond_.notify_all();
     }
 
+    /**
+     * Restart the blocking queue, you need to use this with Stop()
+     */
     void Restart()
     {
         {
@@ -141,7 +170,10 @@ public:
         }
     }
 
-    // if the queue is stopped ,need call this function to release the unprocessed items
+    /**
+     * If the queue is stopped, need call this function to release the unprocessed items
+     * @return remain items in queue
+     */
     std::list<T> GetRemainItems()
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -153,6 +185,11 @@ public:
         return queue_;
     }
 
+    /**
+     * Get the last item in queue
+     * @param item reference to item
+     * @return status code of whether the get is successful
+     */
     APP_ERROR GetBackItem(T &item)
     {
         if (is_stopped_) {
@@ -167,27 +204,46 @@ public:
         return APP_ERR_OK;
     }
 
-    APP_ERROR IsEmpty()
+    /**
+     * Whether the queue is empty
+     * @return code of whether the queue is empty
+     */
+    bool IsEmpty()
     {
         return queue_.empty();
     }
 
-    APP_ERROR IsFull()
+    /**
+     * Whether the queue is full
+     * @return code of whether the queue is full
+     */
+    bool IsFull()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         return queue_.size() >= max_size_;
     }
 
+    /**
+     * Get the current length of queue
+     * @return the current length of queue
+     */
     int GetSize()
     {
         return queue_.size();
     }
 
+    /**
+     * Get the lock variable
+     * @return pointer to the lock variable
+     */
     std::mutex* GetLock()
     {
         return &mutex_;
     }
 
+    /**
+     * Clear all data in the queue
+     */
     void Clear()
     {
         std::unique_lock<std::mutex> lock(mutex_);

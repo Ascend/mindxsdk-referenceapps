@@ -20,6 +20,11 @@
 
 namespace AscendYoloDetector {
 
+/**
+ * Init YoloDetector
+ * @param initParam const reference to initial param
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR YoloDetector::Init(const YoloInitParam &initParam)
 {
     LogInfo << "YoloDetector init start.";
@@ -57,6 +62,10 @@ APP_ERROR YoloDetector::Init(const YoloInitParam &initParam)
     return APP_ERR_OK;
 }
 
+/**
+ * De-init YoloDetector
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR YoloDetector::DeInit()
 {
     LogInfo << "YoloDetector deinit start.";
@@ -77,11 +86,16 @@ APP_ERROR YoloDetector::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR YoloDetector::Process()
-{
-    return APP_ERR_OK;
-}
-
+/**
+ * Detect the input image and post process detect result of yolo model
+ * @param imageInfo const reference to the input image
+ * @param objInfos  reference to the output detect results
+ * @param imageOriginWidth const reference to the origin width of the input image
+ * @param imageOriginHeight const reference to the origin height of the input image
+ * @param modelWidth const reference to the input width of yolo model
+ * @param modelHeight const reference to the input height of yolo model
+ * @return status code of whether detection is successful
+ */
 APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
                                std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
                                const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
@@ -118,6 +132,11 @@ APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
 
 /// ========== private Method ========== ///
 
+/**
+ * Init ModelInferenceProcessor
+ * @param initParam const reference to initial param
+ * @return status code of whether model initialization is successful
+ */
 APP_ERROR YoloDetector::InitModel(const YoloInitParam &initParam)
 {
     LogInfo << "YoloDetector init model start.";
@@ -134,6 +153,11 @@ APP_ERROR YoloDetector::InitModel(const YoloInitParam &initParam)
     return APP_ERR_OK;
 }
 
+/**
+ * Init Yolov3PostProcess
+ * @param initParam const reference to initial param
+ * @return status code of whether post process initialization is successful
+ */
 APP_ERROR YoloDetector::InitPostProcess(const YoloInitParam &initParam)
 {
     LogInfo << "YoloDetector init postprocess start.";
@@ -151,6 +175,12 @@ APP_ERROR YoloDetector::InitPostProcess(const YoloInitParam &initParam)
     return APP_ERR_OK;
 }
 
+/**
+ * Transform input image to tensor data
+ * @param imageInfo const reference to the input image
+ * @param tensor reference to output tensor data
+ * @return status code of whether transform is successful
+ */
 APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const
 {
     MxBase::MemoryData memoryData((void*) imageInfo.data, imageInfo.dataSize,
@@ -167,6 +197,12 @@ APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &image
     return APP_ERR_OK;
 }
 
+/**
+ * Yolo model infer
+ * @param inputs const reference to the tensor data of input image
+ * @param outputs reference to the tensor data of detection result
+ * @return status code of whether the yolo infer is successful
+ */
 APP_ERROR YoloDetector::Inference(const std::vector<MxBase::TensorBase> &inputs,
                                   std::vector<MxBase::TensorBase> &outputs)
 {
@@ -208,6 +244,16 @@ APP_ERROR YoloDetector::Inference(const std::vector<MxBase::TensorBase> &inputs,
     return APP_ERR_OK;
 }
 
+/**
+ * Post process yolo infer result
+ * @param modelOutputs const reference to the tensor data of yolo infer
+ * @param originWidth const reference to the origin width of input image
+ * @param originHeight const reference to the origin height of input image
+ * @param modelWidth const reference to the input width of yolo model
+ * @param modelHeight const reference to the input height of yolo model
+ * @param objInfos reference to the output detect results
+ * @return status code of whether post process is successful
+ */
 APP_ERROR YoloDetector::PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
                                     const uint32_t &originWidth, const uint32_t &originHeight,
                                     const uint32_t &modelWidth, const uint32_t &modelHeight,
@@ -231,6 +277,12 @@ APP_ERROR YoloDetector::PostProcess(const std::vector<MxBase::TensorBase> &model
     return APP_ERR_OK;
 }
 
+/**
+ * Load yolo model labels
+ * @param labelPath const reference to the yolo model label path
+ * @param labelMap reference to the label map
+ * @return status code of whether load labels is successful
+ */
 APP_ERROR YoloDetector::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap)
 {
     LogInfo << "load model labels start.";
@@ -265,6 +317,12 @@ APP_ERROR YoloDetector::LoadLabels(const std::string &labelPath, std::map<int, s
     return APP_ERR_OK;
 }
 
+/**
+ * Construct PostProcess config
+ * @param initParam const reference to initial param
+ * @param config reference to output postprocess config
+ * @return status code of whether postprocess config construction is successful
+ */
 APP_ERROR YoloDetector::LoadPostProcessConfig(const YoloInitParam &initParam,
                                               std::map<std::string, std::shared_ptr<void>> &config)
 {

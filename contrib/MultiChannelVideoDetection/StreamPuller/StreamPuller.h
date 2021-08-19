@@ -44,7 +44,6 @@ public:
     ~StreamPuller() = default;
     APP_ERROR Init(const std::string &rtspUrl, uint32_t maxTryOpenStreamTimes, uint32_t deviceId);
     APP_ERROR DeInit();
-    APP_ERROR Process();
     MxBase::MemoryData GetNextFrame();
 
     VideoFrameInfo GetFrameInfo();
@@ -54,7 +53,6 @@ private:
     APP_ERROR StartStream();
     APP_ERROR CreateFormatContext();
     APP_ERROR GetStreamInfo();
-    void PullStreamDataLoop();
 
 public:
     // running flag

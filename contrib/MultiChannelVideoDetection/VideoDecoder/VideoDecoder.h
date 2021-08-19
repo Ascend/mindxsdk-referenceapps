@@ -26,9 +26,13 @@ namespace AscendVideoDecoder {
 struct DecoderInitParam {
     uint32_t deviceId;
     uint32_t channelId;
+    // the width of video frame which need to decode
     uint32_t inputVideoWidth;
+    // the height of video frame which need to decode
     uint32_t inputVideoHeight;
+    // the format of video which need to decode
     MxBase::MxbaseStreamFormat inputVideoFormat;
+    // the format of output image
     MxBase::MxbasePixelFormat outputImageFormat;
 };
 
@@ -39,7 +43,6 @@ public:
 
     APP_ERROR Init(const DecoderInitParam &initParam);
     APP_ERROR DeInit();
-    APP_ERROR Process();
     APP_ERROR Decode(MxBase::MemoryData &streamData, void *userData);
 
     uint32_t GetTotalDecodeFrameNum() const;

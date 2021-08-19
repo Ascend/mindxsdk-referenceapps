@@ -26,6 +26,13 @@ namespace {
     const uint32_t MAX_THRESHOLD = 4096;
 }
 
+/**
+ * Init StreamPuller
+ * @param rtspUrl const reference to rtsp stream video address
+ * @param maxTryOpenStreamTimes max times of retrying to open video Stream
+ * @param deviceId device id
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR StreamPuller::Init(const std::string &rtspUrl, uint32_t maxTryOpenStreamTimes, uint32_t deviceId)
 {
     LogInfo << "StreamPuller init start.";
@@ -47,6 +54,10 @@ APP_ERROR StreamPuller::Init(const std::string &rtspUrl, uint32_t maxTryOpenStre
     return APP_ERR_OK;
 }
 
+/**
+ * De-init StreamPuller
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR StreamPuller::DeInit()
 {
     LogInfo << "StreamPuller deinit start.";
@@ -59,12 +70,10 @@ APP_ERROR StreamPuller::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR StreamPuller::Process()
-{
-    PullStreamDataLoop();
-    return APP_ERR_OK;
-}
-
+/**
+ * Get the next frame data of video stream
+ * @return the memory data of next frame
+ */
 MxBase::MemoryData StreamPuller::GetNextFrame()
 {
     AVPacket packet;
@@ -116,12 +125,23 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
     return {nullptr, 0, MxBase::MemoryData::MEMORY_HOST_NEW, deviceId};
 }
 
+/**
+ * Get video stream frame info
+ * @return {@link VideoFrameInfo}
+ */
 VideoFrameInfo StreamPuller::GetFrameInfo()
 {
     return frameInfo;
 }
 
 /// ========== Private Method ========== ///
+/**
+ * Try to start the video stream
+ * >> first step: alloc context
+ * >> second step: get video stream frame info
+ * >> and check video format and size
+ * @return status code of whether start stream is successful
+ */
 APP_ERROR StreamPuller::TryToStartStream()
 {
     uint32_t failureNum = 0;
@@ -143,6 +163,10 @@ APP_ERROR StreamPuller::TryToStartStream()
     return APP_ERR_COMM_INIT_FAIL;
 }
 
+/**
+ * Start video stream: alloc context and print debug message
+ * @return status code of whether start stream is successful
+ */
 APP_ERROR StreamPuller::StartStream()
 {
     // init network
@@ -171,6 +195,10 @@ APP_ERROR StreamPuller::StartStream()
     return APP_ERR_OK;
 }
 
+/**
+ * Open video input and find video stream info by context
+ * @return status code of whether open video input and find stream info are successful
+ */
 APP_ERROR StreamPuller::CreateFormatContext()
 {
     // create message for stream pull
@@ -197,6 +225,10 @@ APP_ERROR StreamPuller::CreateFormatContext()
     return APP_ERR_OK;
 }
 
+/**
+ * Get video stream index, frame format and check frame size
+ * @return status code of whether find and check video frame format and size are successful
+ */
 APP_ERROR StreamPuller::GetStreamInfo()
 {
     frameInfo.videoStream = -1;
@@ -239,22 +271,4 @@ APP_ERROR StreamPuller::GetStreamInfo()
     return APP_ERR_OK;
 }
 
-void StreamPuller::PullStreamDataLoop()
-{
-    while (true) {
-        if (stopFlag || formatContext == nullptr) {
-            LogDebug << "StreamPuller stopped or deinit, pull video stream exit.";
-            break;
-        }
-        MxBase::MemoryData videoFrame = GetNextFrame();
-
-        if (videoFrame.size == 0 || videoFrame.ptrData == nullptr) {
-            LogDebug << "empty video frame, not need! continue!";
-            continue;
-        }
-
-        // todo send stream data to Device
-
-    }
-}
 } // end AscendStreamPuller

@@ -61,8 +61,6 @@ public:
 
     APP_ERROR Init(const YoloInitParam & initParam);
     APP_ERROR DeInit();
-    APP_ERROR Process();
-
     APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
                      const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
                      const uint32_t &modelWidth, const uint32_t &modelHeight);
@@ -91,7 +89,9 @@ private:
     std::shared_ptr<MxBase::ModelInferenceProcessor> model;
     // infer result post process
     std::shared_ptr<MxBase::Yolov3PostProcess> postProcess;
+    // yolo model desc which contain input and output message
     MxBase::ModelDesc modelDesc = {};
+    // yolo label map
     std::map<int, std::string> labelMap = {};
 
     // device id

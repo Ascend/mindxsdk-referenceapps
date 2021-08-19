@@ -17,8 +17,16 @@
 #include "PerformanceMonitor.h"
 #include "MxBase/Log/Log.h"
 
+#include <thread>
+
 namespace AscendPerformanceMonitor {
 
+/**
+ * Init PerformanceMonitor
+ * @param objects const reference to targets which need to record
+ * @param enablePrint whether print performance message
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR PerformanceMonitor::Init(const std::vector<std::string>& objects, bool enablePrint)
 {
     LogInfo << "PerformanceMonitor init start.";
@@ -32,6 +40,10 @@ APP_ERROR PerformanceMonitor::Init(const std::vector<std::string>& objects, bool
     return APP_ERR_OK;
 }
 
+/**
+ * De-init PerformanceMonitor
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR PerformanceMonitor::DeInit()
 {
     LogInfo << "PerformanceMonitor deinit start.";
@@ -42,11 +54,12 @@ APP_ERROR PerformanceMonitor::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR PerformanceMonitor::Process()
-{
-    return APP_ERR_OK;
-}
-
+/**
+ * Collect target execute time
+ * @param objectName const reference to target
+ * @param timeCost curr time execute time
+ * @return status code of whether collection si successful
+ */
 APP_ERROR PerformanceMonitor::Collect(const std::string& objectName, double timeCost)
 {
     std::unique_lock<std::mutex> lock(mutex_);
@@ -62,10 +75,14 @@ APP_ERROR PerformanceMonitor::Collect(const std::string& objectName, double time
     return APP_ERR_OK;
 }
 
-APP_ERROR PerformanceMonitor::Print(int currTime)
+/**
+ * Print x time performance statistics
+ * @param currTime curr time index
+ */
+void PerformanceMonitor::Print(int currTime)
 {
     if (!enablePrint) {
-        return APP_ERR_OK;
+        return;
     }
 
     std::unique_lock<std::mutex> lock(mutex_);
@@ -83,11 +100,15 @@ APP_ERROR PerformanceMonitor::Print(int currTime)
         LogInfo << iter->first << " total process: " << total << " average timecost: " << average << "ms.";
         data[iter->first].clear();
     }
-
-    return APP_ERR_OK;
 }
 
 /// ========== static Method ========== ///
+
+/**
+ * Print performance statistics
+ * @param performanceMonitor const reference to the pointer to PerformanceMonitor
+ * @param printInterval print interval
+ */
 void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonitor> &performanceMonitor,
                                          int printInterval)
 {
@@ -98,7 +119,7 @@ void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonito
             break;
         }
 
-        sleep(printInterval);
+        std::this_thread::sleep_for(std::chrono::seconds (printInterval));
         performanceMonitor->Print(++currTime);
     }
 }

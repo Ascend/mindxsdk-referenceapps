@@ -20,9 +20,12 @@
 #include "MxBase/Log/Log.h"
 
 namespace AscendVideoDecoder {
-namespace {
-}
 
+/**
+ * Init VideoDecoder
+ * @param initParam const reference to initial param
+ * @return status code of whether initialization is successful
+ */
 APP_ERROR VideoDecoder::Init(const DecoderInitParam &initParam)
 {
     LogInfo << "VideoDecoder init start.";
@@ -43,6 +46,10 @@ APP_ERROR VideoDecoder::Init(const DecoderInitParam &initParam)
     return APP_ERR_OK;
 }
 
+/**
+ * De-init VideoDecoder
+ * @return status code of whether de-initialization is successful
+ */
 APP_ERROR VideoDecoder::DeInit()
 {
     LogInfo << "VideoDecoder deinit start.";
@@ -58,11 +65,12 @@ APP_ERROR VideoDecoder::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoDecoder::Process()
-{
-    return APP_ERR_OK;
-}
-
+/**
+ * Decode video frame memory data to specific format image
+ * @param streamData reference to curr video frame memory data
+ * @param userData pointer to user data (ex: decode frame queue)
+ * @return status code of whether decode is successful
+ */
 APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData, void *userData)
 {
     MxBase::MemoryData dvppMemory((size_t)streamData.size, MxBase::MemoryData::MEMORY_DVPP, this->deviceId);
@@ -79,6 +87,7 @@ APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData, void *userData)
     inputDataInfo.channelId = this->channelId;
     inputDataInfo.frameId = frameId;
 
+    // call DvppWrapper function to complete video frame data decode
     ret = vDvppWrapper->DvppVdec(inputDataInfo, userData);
     if (ret != APP_ERR_OK) {
         LogError << "DvppVdec Failed on frame " << frameId;
@@ -91,6 +100,10 @@ APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData, void *userData)
     return APP_ERR_OK;
 }
 
+/**
+ * Get number of total decoded video frame
+ * @return number of total decoded video frame
+ */
 uint32_t VideoDecoder::GetTotalDecodeFrameNum() const
 {
     return frameId;
@@ -98,6 +111,11 @@ uint32_t VideoDecoder::GetTotalDecodeFrameNum() const
 
 /// ========== private Method ========== ///
 
+/**
+ * Init DvppWrapper
+ * @param initParam const reference to initial param {@link DecoderInitParam}
+ * @return status code of whether DvppWrapper initialization is successful
+ */
 APP_ERROR VideoDecoder::InitDvppWrapper(const DecoderInitParam &initParam)
 {
     // init decode config
@@ -124,6 +142,14 @@ APP_ERROR VideoDecoder::InitDvppWrapper(const DecoderInitParam &initParam)
     return APP_ERR_OK;
 }
 
+/**
+ * >> static method
+ * Callback of DvppWrapper decode video frame
+ * @param buffer
+ * @param inputDataInfo reference to the user input video frame data
+ * @param userData pointer of user data
+ * @return status code of whether callback is normal
+ */
 APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
                                             MxBase::DvppDataInfo &inputDataInfo, void *userData)
 {
