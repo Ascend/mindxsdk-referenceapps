@@ -4,6 +4,66 @@
 
 手势识别是指对视频中出现的手势进行分类,实现对本地（H264或H265）进行手势识别并分类，生成可视化结果。
 
+### 目录结构
+```
+.
+|-------- BlockingQueue
+|           |---- BlockingQueue.h                   // 阻塞队列 (视频帧缓存容器)
+|-------- ImageResizer
+|           |---- ImageResizer.cpp                  // 图片缩放.cpp
+|           |---- ImageResizer.h                    // 图片缩放.h
+|-------- model
+|           |---- resnet18.cfg                      // Resnet18 模型转换配置文件
+|           |---- resnet18.names                    // Resnet18 标签文件
+|-------- VideoGestureReasoner
+|           |---- VideoGestureReasoner.cpp          // 视频手势推理业务逻辑封装.cpp
+|           |---- VideoGestureReasoner.h            // 视频手势推理业务逻辑封装.h
+|-------- result                                    // 推理结果存放处（图片的形式）
+|-------- StreamPuller
+|           |---- StreamPuller.cpp                  // 视频拉流.cpp
+|           |---- StreamPuller.h                    // 视频拉流.h
+|-------- Util
+|           |---- Util.cpp                          // 工具类.cpp
+|           |---- Util.h                            // 工具类.h
+|-------- VideoDecoder
+|           |---- VideoDecoder.cpp                  // 视频解码.cpp
+|           |---- VideoDecoder.h                    // 视频解码.h
+|-------- ResnetDetector
+|           |---- ResnetDetector.cpp                  // Resnet识别.cpp
+|           |---- ResnetDetector.h                    // Resnet识别.h
+|-------- build.sh                                  // 样例编译脚本
+|-------- CMakeLists.txt                            // CMake配置
+|-------- main.cpp                                  // 视频手势识别测试样例
+|-------- README.md                                 // ReadMe
+|-------- run.sh                                    // 样例运行脚本
+
+```
+
+### 依赖
+| 依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
+| ------------- | ------ | ------------------------------------------------------------ | -------------------------------------------- |
+| ffmpeg        | 4.2.1  | [Link](https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz) | 视频转码解码组件                             |
+
+**注意：**
+
+第三方库默认全部安装到/usr/local/下面，全部安装完成后，请设置环境变量
+```bash
+export PATH=/usr/local/ffmpeg/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
+```
+
+#### FFmpeg
+
+下载完，按以下命令进行解压和编译
+
+```bash
+tar -xzvf n4.2.1.tar.gz
+cd FFmpeg-n4.2.1
+./configure --prefix=/usr/local/ffmpeg --enable-shared
+make -j
+make install
+```
+
 ### 准备工作
 
 > 模型转换
@@ -44,15 +104,17 @@ atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel -
 
 main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频流格式为H264或H265)
 
-Live555拉流教程
-c++ rtspList.emplace_back("#{本地或rtsp流地址}"); 
-配置ResnetDetector插件的模型加载路径modelPath
-c++ reasonerConfig.resnetModelPath = "${Resnet18.om模型路径}"
+[Live555拉流教程](../../docs/参考资料/Live555离线视频转RTSP说明文档.md)
+```c++ rtspList.emplace_back("#{本地或rtsp流地址}"); ```
+
+[配置ResnetDetector插件的模型加载路径modelPath]
+```c++ reasonerConfig.resnetModelPath = "${Resnet18.om模型路径}"```
 
 配置ResnetDetector插件的模型加载路径labelPath
-c++ reasonerConfig.resnetLabelPath = "${resnet18.names路径}";
-其他可配置项maxDecodeFrameQueueLength popDecodeFrameWaitTime SamplingInterval maxSamplingInterval 
-c++ reasonerConfig.maxDecodeFrameQueueLength = 100; reasonerConfig.popDecodeFrameWaitTime = 10; reasonerConfig.SamplingInterval = 24; reasonerConfig.maxSamplingInterval = 100;
+```c++ reasonerConfig.resnetLabelPath = "${resnet18.names路径}";```
+
+其他可配置项DECODE_FRAME_QUEUE_LENGTH DECODE_FRAME_WAIT_TIME SAMPLING_INTERVAL MAX_SAMPLING_INTERVAL
+```c++ DECODE_FRAME_QUEUE_LENGTH = 100; DECODE_FRAME_WAIT_TIME = 10; SAMPLING_INTERVAL = 24; MAX_SAMPLING_INTERVAL = 100;```
 
 
 ### 配置环境变量
@@ -62,8 +124,9 @@ c++ reasonerConfig.maxDecodeFrameQueueLength = 100; reasonerConfig.popDecodeFram
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
 MX_SDK_HOME=${SDK安装路径}
+FFMPEG_HOME=${FFMPEG安装路径}
 
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 
 GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 
@@ -89,7 +152,9 @@ set(FFMPEG_PATH {ffmpeg实际安装路径})
 
 ### 编译项目文件
 
-新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
+手动编译请参照 ①，脚本编译请参照 ②
+
+>  ① 新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
 
 ```
 mkdir build
@@ -131,9 +196,14 @@ Scanning dependencies of target sample
 # sample就是CMakeLists文件中指定生成的可执行文件。
 ```
 
+>  ② 运行项目根目录下的`build.sh`
+```bash
+chmod +x build.sh
+bash build.sh
+```
 ### 执行脚本
 
-执行run.sh脚本前请先确认可执行文件sample已生成。
+执行`run.sh`脚本前请先确认可执行文件`sample`已生成。
 
 ```
 chmod +x run.sh
@@ -142,4 +212,4 @@ bash run.sh
 
 ### 查看结果
 
-执行run.sh完毕后，如果配置了检测结果写文件，sample会将手势识别结果保存在工程目录下result中。
+执行`run.sh`完毕后，如果配置了检测结果写文件，sample会将目标检测结果保存在工程目录下`result`中。
