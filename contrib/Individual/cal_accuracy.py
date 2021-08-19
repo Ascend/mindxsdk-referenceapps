@@ -1,3 +1,5 @@
+# utf-8
+#
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,9 +39,7 @@ def cal_attr():
     gt_f = open(gt_attr_file, 'r')
     gt_line = gt_f.readline().strip().split()
     pred_f = open(pred_file, 'r')
-    #pred_f = open(pred_file, 'r')
     pred_line = pred_f.readline().strip().split()
-  
     same_count = np.zeros(attr_num, dtype=np.int32)
     valid_sum = 0
     while pred_line:
@@ -59,6 +59,7 @@ def cal_attr():
         print(v * 1.0 / valid_sum * 100)
         result[cur_index] = v * 1.0 / valid_sum * 100
         cur_index += 1
+        # calculate the mean result
     print('mean result', np.mean(result))
     return result
 
