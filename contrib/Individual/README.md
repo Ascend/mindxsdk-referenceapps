@@ -33,73 +33,7 @@
 ### 1.4 代码目录结构与说明
 
 本工程名称为Individual，工程目录如下图所示：
-.
-├── data
-│   ├── roi
-│   │   ├── Climbup
-│   │   └── ...
-│   └── video
-│   │   ├── Alone
-│   │   └── ...
-├── models
-│   ├── ECONet
-│   │   └── ...
-│   └── yolov3
-│   │   └── ...
-├── pipeline
-│   ├── plugin_all.pipeline
-│   ├── plugin_alone.pipeline
-│   ├── plugin_climb.pipeline
-│   ├── plugin_outofbed.pipeline
-│   ├── plugin_overspeed.pipeline
-│   ├── plugin_overstay.pipeline
-│   └── plugin_violentaction.pipeline
-├── plugins
-│   ├── MxpiStackFrame // 堆帧插件
-│   │   ├── CMakeLists.txt
-│   │   ├── MxpiStackFrame.cpp
-│   │   ├── MxpiStackFrame.h
-│   │   ├── BlockingMap.cpp
-│   │   ├── BlockingMap.h
-│   │   └── build.sh
-│   ├── PluginAlone // 单人独处插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginAlone.cpp
-│   │   ├── PluginAlone.h
-│   │   └── build.sh
-│   ├── PluginClimb // 攀高检测插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginClimb.cpp
-│   │   ├── PluginClimb.h
-│   │   └── build.sh
-│   ├── PluginOutOfBed // 离床检测插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOutOfBed.cpp
-│   │   ├── PluginOutOfBed.h
-│   │   └── build.sh
-│   ├── PluginOverSpeed // 快速移动插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOverSpeed.cpp
-│   │   ├── PluginOverSpeed.h
-│   │   └── build.sh
-│   ├── PluginOverStay // 逗留超时插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOverStay.cpp
-│   │   ├── PluginOverStay.h
-│   │   └── build.sh
-│   ├── PluginCounter // 计时插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginCounter.cpp
-│   │   ├── PluginCounter.h
-│   │   └── build.sh
-│   ├── PluginViolentAction // 剧烈运动插件
-│   │   ├── CMakeLists.txt
-│   │   ├── Plugin_ViolentAction.cpp
-│   │   ├── Plugin_ViolentAction.h
-│   │   └── build.sh
-├── main.py
-├── README.md
-└── run.sh
+
 
 
 ### 1.5 技术实现流程图
