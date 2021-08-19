@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
-
+#
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
