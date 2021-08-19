@@ -18,7 +18,7 @@
 import numpy as np
 import argparse
 
-
+# define the arguments
 def get_arguments():
     parser = argparse.ArgumentParser(description="Attribute Network")
     parser.add_argument("--gt-file", type=str,
@@ -36,11 +36,13 @@ def cal_attr():
     print(args)
     gt_attr_file = args.gt_file
     pred_file = args.pred_file
+    # the number of the attribute is 40
     attr_num = 40
     gt_f = open(gt_attr_file, 'r')
     gt_line = gt_f.readline().strip().split()
     pred_f = open(pred_file, 'r')
     pred_line = pred_f.readline().strip().split()
+    # count the same prediction
     same_count = np.zeros(attr_num, dtype=np.int32)
     valid_sum = 0
     while pred_line:
