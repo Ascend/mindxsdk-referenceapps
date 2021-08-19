@@ -26,7 +26,7 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
 
     # create streams by pipeline config file
-    with open("./pipeline/Sample_proto.pipeline", 'rb') as f:
+    with open("./pipeline/DectetionAndAttr.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
