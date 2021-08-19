@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# import StreamManagerApi.py
 from StreamManagerApi import *
 import os
 if __name__ == '__main__':
@@ -24,15 +23,12 @@ if __name__ == '__main__':
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-    #   exit()
-
     # create streams by pipeline config file
     with open("./pipeline/Sample.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-
     file_handle = open('img_result.txt', 'w')
     file_handle2 = open('test_full.txt', 'r')
     while 1:
@@ -43,14 +39,12 @@ if __name__ == '__main__':
         img_path = line[0:34]
         with open(img_path, 'rb') as f:
             dataInput.data = f.read()
-     
         # Inputs data to a specified stream based on streamName.
         streamName = b'classification+detection'
         inPluginId = 0
         uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
         if uniqueId < 0:
             print("Failed to send data to stream.")
-
         # Obtain the inference result by specifying streamName and uniqueId.
         inferResult = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
         if inferResult.errorCode != 0:
