@@ -35,71 +35,24 @@
 
 ```
 .
-├── data
-│   ├── roi
-│   │   ├── Climbup
-│   │   └── ...
-│   └── video
-│   │   ├── Alone
-│   │   └── ...
 ├── models
-│   ├── ECONet
-│   │   └── ...
-│   └── yolov3
-│   │   └── ...
+│   ├── attr.names
+│   ├── coco.names
+│   ├── face_quality_0605_b1.om
+│   ├── insert_op.cfg
+│   ├── insert_op1.cfg
+│   ├── libfacelandmarkpostprocessor.so
+│   ├── libsamplepostprocess.so
+│   ├── libyolov3postprocess.so
+│   ├── resnet50_aipp_tf.cfg
+│   ├── resnet50_aipp_tf1.cfg
+│   └── yolov4.cfg  
 ├── pipeline
-│   ├── plugin_all.pipeline
-│   ├── plugin_alone.pipeline
-│   ├── plugin_climb.pipeline
-│   ├── plugin_outofbed.pipeline
-│   ├── plugin_overspeed.pipeline
-│   ├── plugin_overstay.pipeline
-│   └── plugin_violentaction.pipeline
-├── plugins
-│   ├── MxpiStackFrame // 堆帧插件
-│   │   ├── CMakeLists.txt
-│   │   ├── MxpiStackFrame.cpp
-│   │   ├── MxpiStackFrame.h
-│   │   ├── BlockingMap.cpp
-│   │   ├── BlockingMap.h
-│   │   └── build.sh
-│   ├── PluginAlone // 单人独处插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginAlone.cpp
-│   │   ├── PluginAlone.h
-│   │   └── build.sh
-│   ├── PluginClimb // 攀高检测插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginClimb.cpp
-│   │   ├── PluginClimb.h
-│   │   └── build.sh
-│   ├── PluginOutOfBed // 离床检测插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOutOfBed.cpp
-│   │   ├── PluginOutOfBed.h
-│   │   └── build.sh
-│   ├── PluginOverSpeed // 快速移动插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOverSpeed.cpp
-│   │   ├── PluginOverSpeed.h
-│   │   └── build.sh
-│   ├── PluginOverStay // 逗留超时插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginOverStay.cpp
-│   │   ├── PluginOverStay.h
-│   │   └── build.sh
-│   ├── PluginCounter // 计时插件
-│   │   ├── CMakeLists.txt
-│   │   ├── PluginCounter.cpp
-│   │   ├── PluginCounter.h
-│   │   └── build.sh
-│   ├── PluginViolentAction // 剧烈运动插件
-│   │   ├── CMakeLists.txt
-│   │   ├── Plugin_ViolentAction.cpp
-│   │   ├── Plugin_ViolentAction.h
-│   │   └── build.sh
+│   ├── Attr_part.pipeline
+│   └── DectetionAndAttr.pipeline
 ├── main.py
 ├── README.md
+├── attr_main.py
 └── run.sh
 ```
 
