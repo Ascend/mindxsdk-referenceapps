@@ -95,7 +95,7 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 - PYTHONPATH为python环境路径
 
 
-## 编译与运行
+## 3 编译与运行
 （描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
 **步骤1**
@@ -124,7 +124,7 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 
 
-## 3 常见问题
+## 4 常见问题
 
 ### 3.1 模型路径配置
 
@@ -145,7 +145,7 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 ```
 
 
-## 4 模型转换
+## 5 模型转换
 本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
 
 yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
