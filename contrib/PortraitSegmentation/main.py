@@ -99,6 +99,8 @@ if __name__ == '__main__':
     # change output tensors into numpy array based on the model's output shape.
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(inferResult[0].messageBuf)
+
+    # converting the byte data into little-endian 32 bit float array ('<f4')
     res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
     mask = np.clip((res * COLOR_DEPTH), 0, COLOR_DEPTH)
     mask = mask.reshape(MODEL_OUTPUT_WIDTH, MODEL_OUTPUT_HEIGHT, MODEL_OUTPUT_DIMENSION)
