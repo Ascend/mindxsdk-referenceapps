@@ -124,9 +124,9 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 
 
-## 5 常见问题
+## 3 常见问题
 
-### 5.1 模型路径配置
+### 3.1 模型路径配置
 
 **问题描述：检测过程中用到的模型以及模型后处理插件需要配置路径属性。
 
@@ -145,7 +145,7 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 ```
 
 
-## 6 模型转换
+## 4 模型转换
 本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
 
 yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
