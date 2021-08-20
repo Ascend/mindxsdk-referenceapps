@@ -17,7 +17,7 @@
 #ifndef CrowdCountPicture_POST_PROCESS_H
 #define CrowdCountPicture_POST_PROCESS_H
 #include "MxBase/PostProcessBases/PostProcessBase.h"
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 
 namespace {
 const int MODEL_WIDTH = 1408;
