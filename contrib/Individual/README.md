@@ -5,8 +5,7 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。待补充........
-（可列出项目所用的硬件平台、支持的硬件平台、访问方式等）
+本项目以昇腾Atlas310卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
@@ -139,9 +138,9 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 ```
 
 - 环境变量介绍
-MX_SDK_HOME为SDK安装路径
-LD_LIBRARY_PATH为lib库路径
-PYTHONPATH为python环境路径
+- MX_SDK_HOME为SDK安装路径
+- LD_LIBRARY_PATH为lib库路径
+- PYTHONPATH为python环境路径
 
 
 ## 编译与运行
@@ -173,32 +172,40 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 
 
+## 5 常见问题
+
+### 5.1 模型路径配置
+
+**问题描述：检测过程中用到的模型以及模型后处理插件需要配置路径属性。
+
+后处理插件配置范例：
+```
+ "mxpi_classpostprocessor1": {
+               "props": {
+                "dataSource": "face_attribute",
+                "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
+                "labelPath": "./models/attr.names",
+                "postProcessLibPath": "./models/libsamplepostprocess.so"
+            },
+            "factory": "mxpi_classpostprocessor",
+            "next": "mxpi_dataserialize0"
+        }
+```
 
 
-
-## 5 软件依赖说明
-
-如果涉及第三方软件依赖，请详细列出。
-
-| 依赖软件 | 版本  | 说明                     |
-| -------- | ----- | ------------------------ |
-| XXX      | x.x.x | 用到的组件，实现的功能等 |
-|          |       |                          |
-
-
-
-## 6 常见问题
-
-请按照问题重要程度，详细列出可能要到的问题，和解决方法。
-
-### 6.1 XXX问题
-
-**问题描述：**
-
-截图或报错信息
-
-**解决方案：**
-
-详细描述解决方法。
-
+## 6 模型转换
+本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
+yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+face_quality_0605_b1.om模型已提供在项目目录models下；
+resnet50模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
+```
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+```
+转化项目模型。
+使用命令
+```
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+```
+转化评测所需模型。
+注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也在resnet50模型下载链接中。
 
