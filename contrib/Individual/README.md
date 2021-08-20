@@ -195,17 +195,23 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 
 ## 6 模型转换
 本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
+
 yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+
 face_quality_0605_b1.om模型已提供在项目目录models下；
+
 resnet50模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
+
 ```
 atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
 ```
 转化项目模型。
+
 使用命令
 ```
 atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
 ```
 转化评测所需模型。
+
 注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也在resnet50模型下载链接中。
 
