@@ -7,14 +7,12 @@
 ## 2 目录结构
 本工程名称为PortraitSegmentation，工程目录如下图所示：
 ```
-|-------- data                                // 存放测试背景及人像图片
 |-------- models
 |           |---- portrait.pb                 // 人像分割pb模型
 |           |---- insert_op.cfg               // 模型转换配置文件
 |           |---- portrait.om                 // 人像分割om模型
 |-------- pipline
 |           |---- segment.pipeline            // 人像分割模型流水线配置文件
-|-------- result                              // 存放测试结果
 |-------- main.py                             
 |-------- README.md   
 ```
@@ -81,7 +79,7 @@ vi .bashrc
 
 export MX_SDK_HOME=${SDK安装路径}/mxVision
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64` 
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 
 export PYTHONPATH=${MX_SDK_HOME}/python
 
@@ -110,7 +108,8 @@ env
         },
 ```
 4. 获取测试需要的测试图片  
-进入工程文件的data目录下，下载对应jpg格式的测试图片，并分别命名为background.jpg以及portrait.jpg。
+
+在工程目录下新建data文件夹，进入data文件夹下载对应jpg格式的人像和背景测试图片，并分别命名为background.jpg以及portrait.jpg。
 
 5. 运行可执行文件
 ```
