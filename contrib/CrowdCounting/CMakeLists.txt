@@ -23,8 +23,6 @@ link_directories(
         ${MX_SDK_HOME}/opensource/lib
         ${MX_SDK_HOME}/lib/modelpostprocessors
         ${MX_SDK_HOME}/include/MxBase/postprocess/include
-        /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
-        /usr/local/Ascend/driver/lib64/
 )
 
 add_executable(${TARGET} main.cpp ${CROWDCOUNT} ${CROWDCOUNT_POSTPROCESS})
