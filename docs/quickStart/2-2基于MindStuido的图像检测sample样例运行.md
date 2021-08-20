@@ -10,6 +10,9 @@
 
 ### 2.2.1.1 模型转换
 
+在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
+下载后将模型上传至远程服务器。
+
 #### 模型转换入口
 
 可以通过如下两种方式进入模型转换界面。
