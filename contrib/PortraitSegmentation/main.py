@@ -27,9 +27,6 @@ import cv2
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-BACKGROUND_IMAGE_PATH = 'data/background.jpg'
-PORTRAIT_IMAGE_PATH = 'data/portrait.jpg'
-
 STREAM_NAME = b'segmentation'
 IN_PLUGIN_ID = 0
 
