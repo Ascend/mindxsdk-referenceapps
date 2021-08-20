@@ -1,4 +1,3 @@
-"""
 # Copyright 2021 Huawei Technologies Co., Ltd
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +10,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
+
 import sys
 import onnx
 
@@ -36,7 +35,10 @@ def remove_node(graph, nodelist):
 
 def replace_scales(ori_list, scales_name):
     """
-    Replace Scales
+    Replace Scales name:
+    Leave the first two items of the input attribute of Resize unchanged, 
+    and the third item--scales name is modified
+    param：ori_list is the value of Resize.input
     """
     n_list = []
     for j, x in enumerate(ori_list):
