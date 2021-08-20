@@ -213,5 +213,5 @@ atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format
 ```
 转化评测所需模型。
 
-注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也在resnet50模型下载链接中。
+注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也同时附在resnet50模型下载链接中。
 
