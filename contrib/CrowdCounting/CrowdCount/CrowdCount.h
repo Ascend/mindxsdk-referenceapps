@@ -16,7 +16,6 @@
 
 #ifndef MXBASE_CROUNDCOUNT_H
 #define MXBASE_CROUNDCOUNT_H
-#include "opencv2/opencv.hpp"
 #include "CrowdCountPostProcess.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
