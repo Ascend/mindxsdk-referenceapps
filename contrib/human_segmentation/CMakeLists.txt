@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(C++_sample)
+project(C++_human_segmentation)
 
 add_compile_options(-fPIC -fstack-protector-all -g -Wl,-z,relro,-z,now,-z -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
@@ -18,8 +18,8 @@ link_directories(
         ${MX_SDK_HOME}/opensource/lib
 )
 
-add_executable(sample main.cpp)
-target_link_libraries(sample
+add_executable(human_segmentation main.cpp)
+target_link_libraries(human_segmentation
         glog
         mxbase
         mxpidatatype
