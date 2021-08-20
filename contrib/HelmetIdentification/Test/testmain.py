@@ -1,4 +1,3 @@
-"""
 # Copyright 2021 Huawei Technologies Co., Ltd
 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
 
 import json
 import os
@@ -132,14 +130,10 @@ if __name__ == '__main__':
         # print(infer_result.data.decode())
 
         results = json.loads(infer_result.data.decode())
-        img1_shape=[640,640]
         img = cv2.imread(img_path)
         img_shape=img.shape
         print(img_shape)
         bboxes = []
-        color = [random.randint(0, 255) for _ in range(3)]
-        tl=round(0.002 * (img.shape[0] + img.shape[1]) / 2) + 1
-        tf= max(tl - 1, 1)
         key = "MxpiObject"
         if key not in results.keys():
             continue
