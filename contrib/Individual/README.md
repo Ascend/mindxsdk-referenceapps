@@ -74,9 +74,8 @@
 | cmake    | 3.5.+ |
 | mxVision | 2.0.2 |
 | python   | 3.7.5 |
-| ATC      |       |
 
-atc相关的工具 待补充.........
+模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html
 
 
 在编译运行项目前，需要设置环境变量：
@@ -99,16 +98,16 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 ## 编译与运行
 （描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
-**步骤1** （修改相应文件）
+**步骤1**
 下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
 
-**步骤2** （设置环境变量）
+**步骤2**
 在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件放到项目路径中，与pipeline内路径对应。
 
-**步骤3** （执行编译的步骤）
+**步骤3** 
 将数据集放到项目内，可以从中取出一张图像，命名为test.jpg，并放到与main.py同路径下。
 
-**步骤4** （运行及输出结果）
+**步骤4**
 运行推理代码：
 
 ```
