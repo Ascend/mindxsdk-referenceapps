@@ -36,9 +36,9 @@ def remove_node(graph, nodelist):
 def replace_scales(ori_list, scales_name):
     """
     Replace Scales name:
-    Leave the first two items of the input attribute of Resize unchanged, 
+    Leave the first two items of the input attribute of Resize unchanged
     and the third item--scales name is modified
-    param：ori_list is the value of Resize.input
+    param:ori_list is the value of Resize.input
     """
     n_list = []
     for j, x in enumerate(ori_list):
