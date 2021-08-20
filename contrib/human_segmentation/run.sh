@@ -51,11 +51,11 @@ echo "export env success."
 echo "prepare to execute main program."
 
 # check file
-if [ ! -f "${cur_path}/sample" ]; then
-  echo "sample not exist, please build first."
+if [ ! -f "${cur_path}/human_segmentation" ]; then
+  echo "shuman_segmentationample not exist, please build first."
 else
   # execute
-  ./sample
+  ./human_segmentation
 fi
 
 exit 0
