@@ -111,13 +111,17 @@ env
 
 在工程目录下新建data文件夹，进入data文件夹下载对应jpg格式的人像和背景测试图片，并分别命名为background.jpg以及portrait.jpg。
 
-5. 运行可执行文件
+5. 在工程主目录下执行如下命令，新建result文件，用于存放推理结果
+```
+mkdir result
 ```
 
+6. 运行可执行文件
+```
 切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3.7 main.py 背景图片路径 人像图片路径]
 
 例：python3.7 main.py data/background.jpg data/portrait.jpg
 ```
 
-6. 查看结果  
+7. 查看结果  
 执行`main.py`文件后，可在工程目录`result`中查看背景替换结果。
