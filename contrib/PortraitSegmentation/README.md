@@ -111,7 +111,7 @@ env
 
 在工程目录下新建data文件夹，进入data文件夹下载对应jpg格式的人像和背景测试图片，并分别命名为background.jpg以及portrait.jpg。
 
-5. 在工程主目录下执行如下命令，新建result文件，用于存放推理结果
+5. 在工程主目录下执行如下命令，新建result文件夹，用于存放推理结果
 ```
 mkdir result
 ```
