@@ -10,7 +10,7 @@ add_compile_options(-std=c++11 -fPIC -fstack-protector-all -g -Wl,-z,relro,-z,no
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
+set(MX_SDK_HOME  安装路径)
 
 include_directories(
         ${MX_SDK_HOME}/include
