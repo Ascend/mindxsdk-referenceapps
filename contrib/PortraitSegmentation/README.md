@@ -111,11 +111,6 @@ env
 ```
 4. 获取测试需要的测试图片  
 进入工程文件的data目录下，下载对应jpg格式的测试图片，并分别命名为background.jpg以及portrait.jpg。
-```
-wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/Portrait/background.jpg
-wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/Portrait/ori.jpg
-
-```
 
 5. 运行可执行文件
 ```
