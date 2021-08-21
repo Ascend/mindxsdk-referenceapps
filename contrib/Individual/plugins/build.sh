@@ -18,7 +18,7 @@ set -e
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 function build_plugin() {
-    build_path=$current_folder/build
+    build_path=$current_folder/plugins/build
     if [ -d "$build_path" ]; then
         rm -rf "$build_path"
     else
