@@ -4,7 +4,7 @@ project(C++_human_segmentation)
 add_compile_options(-fPIC -fstack-protector-all -g -Wl,-z,relro,-z,now,-z -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-set(MX_SDK_HOME /{安装位置}/MindXSDK/mxVision)
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 include_directories(
