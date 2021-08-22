@@ -38,12 +38,8 @@
 ├── models
 │   ├── attr.names
 │   ├── coco.names
-│   ├── face_quality_0605_b1.om
 │   ├── insert_op.cfg
 │   ├── insert_op1.cfg
-│   ├── libfacelandmarkpostprocessor.so
-│   ├── libsamplepostprocess.so
-│   ├── libyolov3postprocess.so
 │   ├── resnet50_aipp_tf.cfg
 │   ├── resnet50_aipp_tf1.cfg
 │   └── yolov4.cfg  
@@ -87,6 +83,8 @@
 exprot MX_SDK_HOME=${安装路径}/mxVision
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
 export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
+export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
+export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
 ```
 
 - 环境变量介绍
@@ -102,7 +100,7 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
 
 **步骤2**
-在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件放到项目路径中，与pipeline内路径对应。
+在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与实际一致。
 
 **步骤3** 
 将数据集放到项目内，可以从中取出一张图像，命名为test.jpg，并放到与main.py同路径下。
@@ -150,9 +148,9 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 
 yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
 
-face_quality_0605_b1.om模型已提供在项目目录models下；
+face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
 
-resnet50模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
+resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
 
 ```
 atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
