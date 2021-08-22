@@ -10,7 +10,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 include_directories(
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include
-        ${MX_SDK_HOME}/opensource/include/opencv4
+        ${MX_SDK_HOME}/opensource/include/opencv4/opencv2
 )
 
 link_directories(
