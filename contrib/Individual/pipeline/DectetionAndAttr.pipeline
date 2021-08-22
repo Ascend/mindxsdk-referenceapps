@@ -24,7 +24,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/yolov4.cfg",
                 "labelPath": "./models/coco.names",
-                "postProcessLibPath": "./models/libyolov3postprocess.so"
+                "postProcessLibPath": "${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_objectdistributor0"
@@ -89,7 +89,7 @@
               "props":{
                    "dataSource":"mxpi_imageresize1",
                    "modelPath":"./models/face_quality_0605_b1.om",
-                   "postProcessLibPath":"./models/libfacelandmarkpostprocessor.so"
+                   "postProcessLibPath":"${SDK安装路径}/lib/modelpostprocessors/libfacelandmarkpostprocessor.so"
                },
                "factory": "mxpi_modelinfer",
                "next": "mxpi_facealignment0:1"
