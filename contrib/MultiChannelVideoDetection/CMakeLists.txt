@@ -7,7 +7,7 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 set(OUTPUT_NAME "multiChannelVideoReasoner")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-set(MX_SDK_HOME {MindXSDK安装路径})
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 set(FFMPEG_HOME {ffmpeg实际安装路径})
 
 include_directories(
