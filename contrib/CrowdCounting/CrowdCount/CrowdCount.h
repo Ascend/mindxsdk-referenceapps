@@ -16,7 +16,8 @@
 
 #ifndef MXBASE_CROUNDCOUNT_H
 #define MXBASE_CROUNDCOUNT_H
-#include "CrowdCountPostProcess.h"
+#include <opencv2/opencv.hpp>
+#include <CrowdCountPostProcess.h>
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
@@ -41,7 +42,8 @@ protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
     APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor);
     APP_ERROR WriteResult(const std::vector<MxBase::TensorBase> &outputs,  
-                          const std::vector<MxBase::TensorBase> &postimageMat, const std::vector<int> &results);			 
+                          const std::vector<MxBase::TensorBase> &postimageMat, const std::vector<int> &results,
+			  const std::string &imgPath);			 
     void SetCrowdCountPostProcessConfig(const InitParam &initParam,
                                         std::map<std::string, std::shared_ptr<void>> &config);
 private:
