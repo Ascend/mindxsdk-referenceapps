@@ -19,7 +19,11 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 SAMPLE_FOLDER=(
 	ActionRecognition/
+<<<<<<< HEAD
     VideoGestureRecognition/
+=======
+	CrowdCounting/
+>>>>>>> upstream/master
 )
 
 
