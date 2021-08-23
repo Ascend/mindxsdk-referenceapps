@@ -60,8 +60,8 @@ function build() {
 }
 
 build
-if [ ! -f "${cur_path}/sample" ]; then
-  echo "sample not generated, build failed."
+if [ ! -f "${cur_path}/videoGestureRecognition" ]; then
+  echo "videoGestureRecognition not generated, build failed."
 else
   echo "build successfully."
 fi

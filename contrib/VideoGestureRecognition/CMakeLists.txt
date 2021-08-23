@@ -5,6 +5,7 @@ add_compile_options(-fPIC -fstack-protector-all -g -Wl,-z,relro,-z,now,-z -pie -
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
+set(OUTPUT_NAME "videoGestureRecognition")
 
 set(MX_SDK_HOME 实际安装路径)
 set(FFMPEG_PATH 实际安装路径)
@@ -25,7 +26,7 @@ link_directories(
         ${FFMPEG_PATH}/lib
 )
 
-add_executable(sample main.cpp
+add_executable(${OUTPUT_NAME} main.cpp
         Util/Util.cpp
         StreamPuller/StreamPuller.cpp
         VideoDecoder/VideoDecoder.cpp
@@ -34,7 +35,7 @@ add_executable(sample main.cpp
         VideoGestureReasoner/VideoGestureReasoner.cpp
         FrameSkippingSampling/FrameSkippingSampling.cpp
         VideoGestureReasoner/VideoGestureReasoner.cpp)
-target_link_libraries(sample
+target_link_libraries(${OUTPUT_NAME}
         avcodec
         avdevice
         avfilter

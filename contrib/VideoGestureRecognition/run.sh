@@ -34,9 +34,9 @@ function check_env() {
     # check FFmpeg env
     if [ ! "${FFMPEG_PATH}" ]; then
       env_ready=false
-      echo "please set FFMPEG_HOME path into env."
+      echo "please set FFMPEG_PATH path into env."
     else
-      echo "FFMPEG_HOME set as ${FFMPEG_PATH}, ready."
+      echo "FFMPEG_PATH set as ${FFMPEG_PATH}, ready."
     fi
 }
 
@@ -59,11 +59,11 @@ echo "export env success."
 echo "prepare to execute main program."
 
 # check file
-if [ ! -f "${cur_path}/sample" ]; then
-  echo "sample not exist, please build first."
+if [ ! -f "${cur_path}/videoGestureRecognition" ]; then
+  echo "videoGestureRecognition not exist, please build first."
 else
   # execute
-  ./sample
+  ./videoGestureRecognition
 fi
 
 exit 0

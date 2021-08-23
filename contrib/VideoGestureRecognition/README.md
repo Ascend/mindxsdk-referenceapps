@@ -73,7 +73,7 @@ make install
 
 步骤1 在
 
-**步骤1** 在ModelZoo上下载Resnet18模型。[下载地址](https://gitee.com/ascend/samples/tree/master/python/contrib/gesture_recognition_picture#https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/gesture_recognition/ATC_gesture_recognition_Caffe_AE)
+**步骤1** 在ModelZoo上下载Resnet18模型权重和网络。[下载地址](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/gesture_recognition/ATC_gesture_recognition_Caffe_AE)
 
 **步骤2** 将获取到的Resnet18模型pb文件存放至："样例项目所在目录/model/"，同时下载cfg文件：[下载方式]（wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/gesture_recognition/insert_op.cfg）
 
