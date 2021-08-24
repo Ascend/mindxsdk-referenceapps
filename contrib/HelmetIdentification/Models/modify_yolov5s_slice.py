@@ -13,10 +13,12 @@
 
 import sys
 import onnx
-
-INT_MAX = sys.maxsize  # Get the largest int value
-model_path = sys.argv[1]  # Read model save path
-model = onnx.load(model_path)  # Load the model
+# Get the largest int value
+INT_MAX = sys.maxsize
+# Read model save path
+model_path = sys.argv[1]
+# Load the model
+model = onnx.load(model_path)
 
 def get_node_by_name(nodes, name):
     """
@@ -28,7 +30,8 @@ def get_node_by_name(nodes, name):
     return -1
 
 
-model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_24"))  # remove node of Slice_24
+# remove node of Slice_24
+model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_24"))
 model.graph.node.remove(get_node_by_name(model.graph.node, "Slice_34"))
 
 # Set the output size of Transpose after slice4 and slice24,slice9, slice19, slice29, slice39
