@@ -30,13 +30,15 @@ if ret != 0:
 with open("HelmetDetection.pipline", 'rb') as f:
     pipelineStr = f.read()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+# Print error message
 if ret != 0:
-    print("Failed to create Stream, ret=%s" % str(ret)) # Print error message
+    print("Failed to create Stream, ret=%s" % str(ret))
 
 
 # Obtain the inference result by specifying streamName and keyVec
 # The data that needs to be obtained is searched by the plug-in name
-streamName = b'Detection'  # Stream name
+# Stream name
+streamName = b'Detection'
 keyVec0 = StreamManagerApi.StringVector()
 keyVec0.push_back(b"ReservedFrameInfo")
 keyVec0.push_back(b"mxpi_modelinfer0")
@@ -56,8 +58,9 @@ while True:
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
     # output errorCode
     if inferResult0[0].errorCode != 0:
+        # Print error message
         if inferResult0[0].errorCode == 1001:
-            print('Object detection result of model infer is null!!!')  # Print error message
+            print('Object detection result of model infer is null!!!')
         continue
 
     # add inferennce data into DATA structure
@@ -67,16 +70,19 @@ while True:
     # Target object structure
     ObjectList = MxpiDataType.MxpiObjectList()
     ObjectList.ParseFromString(inferResult0[1].messageBuf)
-    ObjectListData = ObjectList.objectVec  # Get target box information
+    # Get target box information
+    ObjectListData = ObjectList.objectVec
     # track structure
     trackLetList = MxpiDataType.MxpiTrackLetList()
     trackLetList.ParseFromString(inferResult0[2].messageBuf)
-    trackLetData = trackLetList.trackLetVec  # Obtain tracking information
+    # Obtain tracking information
+    trackLetData = trackLetList.trackLetVec
     # image structure
     visionList0 = MxpiDataType.MxpiVisionList()
     visionList0.ParseFromString(inferResult0[3].messageBuf)
     visionData0 = visionList0.visionVec[0].visionData.dataStr
-    visionInfo0 = visionList0.visionVec[0].visionInfo  # Get picture information
+    # Get picture information
+    visionInfo0 = visionList0.visionVec[0].visionInfo
 
     # cv2:YUV2BGR
     YUV_BYTES_NU = 3
@@ -84,7 +90,8 @@ while True:
     img_yuv = np.frombuffer(visionData0, dtype=np.uint8)
     # reshape
     img_yuv = img_yuv.reshape(visionInfo0.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo0.widthAligned)
-    img0 = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)  # Color gamut conversion
+    # Color gamut conversion
+    img0 = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
     t1 = time.time()
     # put inference into dict,
     imgLi1 = []
@@ -169,12 +176,14 @@ while True:
         # output inference data:frame info and img info
         # Frame information structure
         FrameList1 = MxpiDataType.MxpiFrameInfo()
-        FrameList1.ParseFromString(inferResult1[0].messageBuf)  # Get channel id and frame id
+        # Get channel id and frame id
+        FrameList1.ParseFromString(inferResult1[0].messageBuf)
         # image structure
         visionList1 = MxpiDataType.MxpiVisionList()
         visionList1.ParseFromString(inferResult1[1].messageBuf)
         visionData1 = visionList1.visionVec[0].visionData.dataStr
-        visionInfo1 = visionList1.visionVec[0].visionInfo  # Get picture information
+        # Get picture information
+        visionInfo1 = visionList1.visionVec[0].visionInfo
 
         # cv2:YUV2BGR
         YUV_BYTES_NU = 3
@@ -182,7 +191,8 @@ while True:
         img_yuv = np.frombuffer(visionData1, dtype=np.uint8)
         # reshape
         img_yuv = img_yuv.reshape(visionInfo1.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo1.widthAligned)
-        img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)  # # Color gamut conversion
+        # Color gamut conversion
+        img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
         # Save pictures in two ways
         if FrameList1.channelId == 0:
             oringe_imgfile = './output/one/image/image' + str(FrameList1.channelId) + '-' + str(
