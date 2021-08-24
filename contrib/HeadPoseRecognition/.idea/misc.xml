@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.huawei.mind.studio.ssh.deploy.persistent.DeploySettingsState">
+    <option name="deployModels">
+      <list>
+        <DeployModel>
+          <option name="name" value="Remote Host (bc832fdd-b9cc-4591-87df-b793cb9f4372)" />
+          <option name="relationToolChainsUuid" value="bc832fdd-b9cc-4591-87df-b793cb9f4372" />
+          <option name="uuid" value="cfcc88eb-3698-4d5b-9bbc-0572509c0383" />
+          <option name="deployConnectionModel" value="{&quot;deployConnectionType&quot;:&quot;SFTP&quot;,&quot;sshConnectionModel&quot;:{&quot;uuid&quot;:&quot;d7e1fee9-c806-48e5-ac85-731d71540f3a&quot;}}" />
+          <option name="deployMappingModels" value="[{&quot;deploymentPath&quot;:&quot;/home/zhongzhi20/MindStudio-WorkSpace/HeadPoseRecognition&quot;,&quot;localPath&quot;:&quot;E:\\ascendProject\\HeadPoseRecognition&quot;}]" />
+        </DeployModel>
+      </list>
+    </option>
+  </component>
+</project>
