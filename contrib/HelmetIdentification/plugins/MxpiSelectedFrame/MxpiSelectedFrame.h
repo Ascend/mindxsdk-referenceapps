@@ -17,11 +17,11 @@
 #ifndef MXPLUGINS_MXPISKIPFRAME_H
 #define MXPLUGINS_MXPISKIPFRAME_H
 
-#include "./MindX_SDK/mxVision/include/MxBase/ErrorCode/ErrorCode.h"
-#include "./MindX_SDK/mxVision/include/MxTools/PluginToolkit/base/MxPluginGenerator.h"
-#include "./MindX_SDK/mxVision/include/MxTools/PluginToolkit/buffer/MxpiBufferManager.h"
-#include "./MindX_SDK/mxVision/include/MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
-#include "./MindX_SDK/mxVision/include/MxTools/Proto/MxpiDataType.pb.h"
+#include "MxBase/ErrorCode/ErrorCode.h"
+#include "MxTools/PluginToolkit/base/MxPluginGenerator.h"
+#include "MxTools/PluginToolkit/buffer/MxpiBufferManager.h"
+#include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
+#include "MxTools/Proto/MxpiDataType.pb.h"
 
 /**
  * This plugin is used for skip frame.
