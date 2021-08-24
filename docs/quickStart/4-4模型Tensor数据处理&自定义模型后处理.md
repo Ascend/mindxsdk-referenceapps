@@ -7,7 +7,7 @@
 本样例中后处理指使用模型输出的原始metadata，自行开发插件来进行后处理。  
 当类型为4-2中相关的内置类型时，效率不如后处理so库方式
 ****
-
+[样例链接](https://gitee.com/zhangdwe/mindxsdk-referenceapps/tree/master/tutorials/samplePluginPostProc)
 ## medadata结构说明
 该结构为模型推理插件mxpi_tensorinfer输出的原始数据，按以下层级封装。
 
