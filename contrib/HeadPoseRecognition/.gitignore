@@ -1,0 +1,5 @@
+.idea
+*.project
+config
+AllPluginsInfo.json
+*.jpg
