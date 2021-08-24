@@ -1,31 +1,31 @@
 /*
-* Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-#include "MxpiSamplePlugin.h"
+#include "MxpiHeadPoseEstimationPostProcess.h"
 #include "MxBase/Log/Log.h"
 using namespace MxPlugins;
 using namespace MxTools;
 using namespace std;
 namespace {
-    const string SAMPLE_KEY = "MxpiObjectList";
+    const string SAMPLE_KEY = "MxpiTensorPackageList";
 }
 
-APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
+APP_ERROR MxpiHeadPoseEstimationPostProcess::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
-    LogInfo << "MxpiSamplePlugin::Init start.";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::Init start.";
     APP_ERROR ret = APP_ERR_OK;
     // Get the property values by key
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
@@ -36,13 +36,13 @@ APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& c
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiSamplePlugin::DeInit()
+APP_ERROR MxpiHeadPoseEstimationPostProcess::DeInit()
 {
-    LogInfo << "MxpiSamplePlugin::DeInit end.";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::DeInit end.";
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiSamplePlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
+APP_ERROR MxpiHeadPoseEstimationPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
     const MxpiErrorInfo mxpiErrorInfo)
 {
     APP_ERROR ret = APP_ERR_OK;
@@ -57,7 +57,7 @@ APP_ERROR MxpiSamplePlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::stri
     return ret;
 }
 
-APP_ERROR MxpiSamplePlugin::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
+APP_ERROR MxpiHeadPoseEstimationPostProcess::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
     MxpiClassList& dstMxpiClassList)
 {
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
@@ -76,20 +76,20 @@ APP_ERROR MxpiSamplePlugin::GenerateSampleOutput(const MxpiObjectList srcMxpiObj
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
+APP_ERROR MxpiHeadPoseEstimationPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
 {
-    LogInfo << "MxpiSamplePlugin::Process start";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
     MxpiErrorInfo mxpiErrorInfo;
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiSamplePlugin process is not implemented";
+        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiHeadPoseEstimationPostProcess process is not implemented";
         mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        LogError << "MxpiSamplePlugin process is not implemented";
+        LogError << "MxpiHeadPoseEstimationPostProcess process is not implemented";
         return APP_ERR_COMM_FAILURE;
     }
     // Get the data from buffer
@@ -117,7 +117,7 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     shared_ptr<MxpiClassList> dstMxpiClassListSptr = make_shared<MxpiClassList>();
     APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *dstMxpiClassListSptr);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret, pluginName_) << "MxpiSamplePlugin gets inference information failed.";
+        LogError << GetError(ret, pluginName_) << "MxpiHeadPoseEstimationPostProcess gets inference information failed.";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
@@ -126,7 +126,7 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiClassListSptr));
     if (ret != APP_ERR_OK) {
-        ErrorInfo_ << GetError(ret, pluginName_) << "MxpiSamplePlugin add metadata failed.";
+        ErrorInfo_ << GetError(ret, pluginName_) << "MxpiHeadPoseEstimationPostProcess add metadata failed.";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
@@ -134,11 +134,11 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
-    LogInfo << "MxpiSamplePlugin::Process end";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::Process end";
     return APP_ERR_OK;
 }
 
-std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
+std::vector<std::shared_ptr<void>> MxpiHeadPoseEstimationPostProcess::DefineProperties()
 {
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
@@ -146,11 +146,12 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{STRING,
-        "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
+        "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiHeadPoseEstimationPostProcess",
+    "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
     return properties;
 }
 
 // Register the Sample plugin through macro
-MX_PLUGIN_GENERATE(MxpiSamplePlugin)
+MX_PLUGIN_GENERATE(MxpiHeadPoseEstimationPostProcess)
