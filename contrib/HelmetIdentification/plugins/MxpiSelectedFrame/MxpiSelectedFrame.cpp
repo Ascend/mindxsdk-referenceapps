@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "./ExampleProject/HelmetIdentification/plugins/MxpiSelectedFrame/MxpiSelectedFrame.h"
-#include "./MindX_SDK/mxVision/include/MxBase/Log/Log.h"
+#include "MxpiSelectedFrame.h"
+#include "MxBase/Log/Log.h"
 using namespace MxBase;
 using namespace MxTools;
 using namespace MxPlugins;
@@ -79,7 +79,7 @@ std::vector<std::shared_ptr<void>> MxpiSelectedFrame::DefineProperties()
 MxpiPortInfo MxpiSelectedFrame::DefineInputPorts()
 {
     MxpiPortInfo inputPortInfo;
-    std::vector<std::vector<std::string>> value = {{"image/yuv"}};
+    std::vector<std::vector<std::string>> value = {{"ANY"}};
     GenerateStaticInputPortsInfo(value, inputPortInfo);
     return inputPortInfo;
 }
@@ -87,7 +87,7 @@ MxpiPortInfo MxpiSelectedFrame::DefineInputPorts()
 MxpiPortInfo MxpiSelectedFrame::DefineOutputPorts()
 {
     MxpiPortInfo outputPortInfo;
-    std::vector<std::vector<std::string>> value = {{"image/yuv"}};
+    std::vector<std::vector<std::string>> value = {{"ANY"}};
     GenerateStaticOutputPortsInfo(value, outputPortInfo);
     return outputPortInfo;
 }
