@@ -55,7 +55,19 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 | torch     | 1.9.0    |
 | overrides | 6.1.0    |
 请确认环境已安装pip后，使用pip install * 安装以上依赖<br/>
-如果环境中有多个版本的python,请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
+如果环境中有多个版本的python,请确认环境已安装pip3后，使用pip3 install * 安装以上依赖<br/>
+请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库
+```bash
+apt-get install libpython3.7
+```
+librosa安装若无法编译相关依赖，可参考下述指令在root用户下安装对应的库<br/>
+```bash
+apt-get install llvm-10 -y
+LLVM_CONFIG=/usr/lib/llvm-10/bin/llvm-config pip install librosa
+apt-get install libsndfile1 -y
+apt-get install libasound2-dev libsndfile-dev
+apt-get install liblzma-dev
+```
 
 
 ## 5 运行
