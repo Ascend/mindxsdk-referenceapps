@@ -4,6 +4,7 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
 set(PLUGIN_NAME "mxpi_selectedframe")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
 include_directories(${MX_SDK_HOME}/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
