@@ -80,9 +80,13 @@ bash run.sh
 
 5. 若要进行性能测试：<br/>
 需准备测试数据信息文档<br/>
+测试信息文档至少包含：音频路径，音频时长，音频转录文本。json格式<br/>
+例：{"wav_path":"./xx/xx/xxx.wav", "duration":5.292, "text":"上海也加入同比正增长的城市队列"}<br/>
 修改data.yaml中data_info_dir为你的测试信息文档真实存放路径<br/>
+根据你的实际情况修改performance_test.py中26-41行代码<br/>
 将run.sh中python main.py修改为python performance_test.py<br/>
 如果环境中存在多个版本python，将run.sh中python main.py修改为python3 performance_test.py
+
 ```bash
 bash run.sh
 ```

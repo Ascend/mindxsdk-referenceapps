@@ -83,7 +83,7 @@ bash run.sh
 如果出现 XXX registration complete! 说明注册成功<br/>
 如果出现The current audio XXX.wav  is from speaker XXX 说明识别成功<br/>
 5. 若要进行性能测试：<br/>
-修改performance_test.py中数据集路径以及embedding存放路径<br/>
+修改performance_test.py中44行wav_dir为你的数据集测试集路径，数据集使用Aishell-1<br/>
 将run.sh中python main.py修改为python performance_test.py<br/>
 如果环境中存在多个版本python，将run.sh中python main.py修改为python3 performance_test.py
 ```bash

@@ -34,12 +34,10 @@ if __name__ == "__main__":
     # obtain data information from files
     wav_list = list()
     time_list = list()
-    label_list = list()
     text_list = list()
     for _, json_line in enumerate(info_jsons):
         wav_list.append(json_line["wav_path"])
         time_list.append(json_line["duration"])
-        label_list.append(json_line["label"])
         text_list.append(json_line["text"])
     # the total duration of the test data
     total_time_duration = sum(time_list)
