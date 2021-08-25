@@ -119,7 +119,7 @@
                 "dataSource": "face_attribute",
                 "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
                 "labelPath": "./models/attr.names",
-                "postProcessLibPath": "./models/libsamplepostprocess.so"
+                "postProcessLibPath": "./models/libAttrPostProcess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
