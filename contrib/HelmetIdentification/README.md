@@ -38,7 +38,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   ├──select.py # 测试集筛选脚本  
   ├──parse_voc.py # 测试数据集解析脚本  
   ├──testmain.py # 测试主程序  
-  ├──map_calculate.py # 精度计算程序   
+  ├──map_calculate.py # 精度计算程序
+├── build.sh    
 ```
 
 
