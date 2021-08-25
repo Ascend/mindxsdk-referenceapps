@@ -119,7 +119,7 @@ void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonito
             break;
         }
 
-        std::this_thread::sleep_for(std::chrono::seconds (printInterval));
+        std::this_thread::sleep_for(std::chrono::seconds(printInterval));
         performanceMonitor->Print(++currTime);
     }
 }

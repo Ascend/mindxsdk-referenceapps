@@ -52,10 +52,6 @@ private:
     static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer,
                                          MxBase::DvppDataInfo &inputDataInfo, void *userData);
 
-public:
-    // running flag
-    bool stopFlag;
-
 private:
     // channel id
     uint32_t channelId = 0;

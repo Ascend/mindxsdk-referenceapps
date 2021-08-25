@@ -102,40 +102,40 @@ void MultiChannelVideoReasoner::Process()
         // judge whether the video of all channels is pulled and decoded finish
         bool allVideoDataPulledAndDecoded = true;
         for (uint32_t i = 0; i < streamPullers.size(); i++) {
-            if (streamPullers[i]->stopFlag) {
-                if (!videoDecoders[i]->stopFlag) {
-                    LogDebug << "all video frame decoded and no fresh data, quit video decoder "
-                                + std::to_string(i) + ".";
-                    videoDecoders[i]->stopFlag = true;
-                }
-            } else {
+            if (!streamPullers[i]->stopFlag) {
                 allVideoDataPulledAndDecoded = false;
+                break;
             }
         }
 
         // judge whether the all data in decode frame queue is processed
         bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
 
+        // all channels video data pull, decode, resize and detect finish
+        // quit MultiChannelVideoReasoner
+        // quit PerformanceMonitor
         if (allVideoDataPulledAndDecoded && allVideoDataProcessed) {
-            LogDebug << "all decoded frame detected and no fresh data, quit image resizer and yolo detector";
-            imageResizer->stopFlag = true;
-            yoloDetector->stopFlag = true;
-        }
-
-        if (allVideoDataPulledAndDecoded && imageResizer->stopFlag && yoloDetector->stopFlag) {
-            LogDebug << "Both of stream puller, video decoder, image resizer and yolo detector quit, main quit";
+            LogInfo << "All channels' video data pull, decode, resize and detect complete, quit MultiChannelVideoReasoner.";
             stopFlag = true;
+
+            performanceMonitor->stopFlag = true;
+            LogInfo << "All processor exit, Stop PerformanceMonitor.";
         }
 
         // force stop case
         if (MultiChannelVideoReasoner::_s_force_stop) {
             LogInfo << "Force stop MultiChannelVideoReasoner.";
             stopFlag = true;
-        }
-
-        if (stopFlag) {
-            LogInfo << "All processor quit, quit performance monitor.";
+            // force stop StreamPullers
+            for (uint32_t i = 0; i < streamPullers.size(); i++) {
+                if (!streamPullers[i]->stopFlag) {
+                    streamPullers[i]->stopFlag = true;
+                    LogInfo << "Force stop StreamPuller " << i + 1;
+                }
+            }
+            // force stop PerformanceMonitor
             performanceMonitor->stopFlag = true;
+            LogInfo << "Force stop PerformanceMonitor.";
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(intervalMainThreadControlCheck));
     }
@@ -219,16 +219,15 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
     auto performanceMonitor = multiChannelVideoReasoner->performanceMonitor;
     while (true) {
         if (multiChannelVideoReasoner->stopFlag) {
-            LogDebug << "stop video stream pull and video frame decode";
+            LogInfo << "quit video stream pull and decode, index: " << index;
             streamPuller->stopFlag = true;
-            videoDecoder->stopFlag = true;
-            break;
+            return;
         }
 
         if (streamPuller->stopFlag) {
-            LogDebug << "no video frame to pull and all pulled video frame decoded. quit!";
+            LogInfo << "no video frame to pull and all pulled video frame decoded. quit!";
             LogInfo << "Total decode video frame num: " << videoDecoder->GetTotalDecodeFrameNum();
-            break;
+            return;
         }
 
         // video stream pull
@@ -287,15 +286,8 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
 
     while(true) {
         if (multiChannelVideoReasoner->stopFlag) {
-            LogDebug << "stop image resize and yolo detect";
-            imageResizer->stopFlag = true;
-            yoloDetector->stopFlag = true;
-            break;
-        }
-
-        if (imageResizer->stopFlag && yoloDetector->stopFlag) {
-            LogDebug << "no image need to resize and all image detected. quit!";
-            break;
+            LogInfo << "quit video frame resize and detect.";
+            return;
         }
 
         // check whether exist data in all decode frame queues
@@ -366,7 +358,7 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
                                        resizeFrame.frameId, rtspIndex);
                 if (ret != APP_ERR_OK) {
                     LogError << "Save result failed, ret=" << ret << ".";
-                    return;
+                    continue;
                 }
             }
         }

@@ -37,7 +37,6 @@ APP_ERROR ImageResizer::Init(uint32_t deviceId)
         return ret;
     }
 
-    stopFlag = false;
     LogInfo << "ImageResizer init successful.";
     return  APP_ERR_OK;
 }
@@ -55,8 +54,6 @@ APP_ERROR ImageResizer::DeInit()
         LogError << "DvppWrapper deinit failed.";
         return ret;
     }
-
-    stopFlag = true;
 
     LogInfo << "ImageResizer deinit successful.";
     return APP_ERR_OK;

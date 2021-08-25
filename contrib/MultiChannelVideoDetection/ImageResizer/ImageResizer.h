@@ -37,10 +37,6 @@ public:
                      const uint32_t &resizeWidth, const uint32_t &resizeHeight,
                      MxBase::DvppDataInfo &outputImageInfo);
 
-public:
-    // running flag
-    bool stopFlag;
-
 private:
     // image processor
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;

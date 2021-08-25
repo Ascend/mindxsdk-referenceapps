@@ -81,7 +81,7 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
     av_init_packet(&packet);
     while (true) {
         if (stopFlag || formatContext == nullptr) {
-            LogDebug << "StreamPuller stopped or deinit, pull video stream exit.";
+            LogInfo << "StreamPuller stopped or deinit, pull video stream exit.";
             break;
         }
 

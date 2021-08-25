@@ -41,7 +41,6 @@ APP_ERROR VideoDecoder::Init(const DecoderInitParam &initParam)
         return ret;
     }
 
-    stopFlag = false;
     LogInfo << "VideoDecoder init successful.";
     return APP_ERR_OK;
 }
@@ -60,7 +59,6 @@ APP_ERROR VideoDecoder::DeInit()
         return ret;
     }
 
-    stopFlag = true;
     LogInfo << "VideoDecoder deinit successful.";
     return APP_ERR_OK;
 }

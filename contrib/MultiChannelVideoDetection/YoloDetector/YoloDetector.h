@@ -80,10 +80,6 @@ protected:
     static APP_ERROR LoadPostProcessConfig(const YoloInitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config);
 
-public:
-    // running flag
-    bool stopFlag;
-
 private:
     // model
     std::shared_ptr<MxBase::ModelInferenceProcessor> model;
