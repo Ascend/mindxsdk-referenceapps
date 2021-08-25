@@ -34,6 +34,10 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   ├──dy_resize.py  # resize算子修改
 ├── plugins  
   ├──MxpiSelectedFrame # 跳帧插件
+    ├──MxpiSelectedFrame.cpp
+    ├──CMakeLists.txt
+    ├──MxpiSelectedFrame.h
+    ├──build.sh
 ├── Test  
   ├──select.py # 测试集筛选脚本  
   ├──parse_voc.py # 测试数据集解析脚本  
