@@ -94,8 +94,8 @@ int main(int argc, char* argv[])
     reasonerConfig.deviceId = DEVICE_ID;
     reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
     reasonerConfig.rtspList = rtspList;
-    reasonerConfig.resnetModelPath = "${resnet18.om模型路径}";
-    reasonerConfig.resnetLabelPath = "${resnet18 coco.names路径}";
+    reasonerConfig.resnetModelPath = "${gesture_yuv.om模型路径}";
+    reasonerConfig.resnetLabelPath = "${resnet18.names路径}";
     reasonerConfig.resnetModelWidth = MODEL_WIDTH;
     reasonerConfig.resnetModelHeight = MODEL_HEIGHT;
     reasonerConfig.maxDecodeFrameQueueLength = DECODE_FRAME_QUEUE_LENGTH;

@@ -127,9 +127,9 @@ main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频�
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
 MX_SDK_HOME=${SDK安装路径}
-FFMPEG_HOME=${FFMPEG安装路径}
+FFMPEG_PATH=${FFMPEG安装路径}
 
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_PATH}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 
 GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 
