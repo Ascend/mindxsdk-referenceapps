@@ -46,12 +46,18 @@
 ├── pipeline
 │   ├── Attr_part.pipeline
 │   └── DectetionAndAttr.pipeline
+├── plugins
+│   ├── AttrPostProcess.cpp
+│   ├── CMakeLists.txt
+│   ├── build.sh
+│   └── AttrPostProcess.h
+├── build.sh
 ├── main.py
 ├── README.md
 ├── attr_main.py
 └── run.sh
 ```
-
+AttrPostProcess
 
 
 ### 1.5 技术实现流程图
@@ -125,7 +131,7 @@ atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format
 下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
 
 **步骤2**
-在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与实际一致。
+在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与实际一致。后处理插件需要人工转化，运行项目下的build.sh生成so文件，将so文件放到相应的路径下。
 
 **步骤3** 
 将数据集放到项目内，可以从中取出一张图像，命名为test.jpg，并放到与main.py同路径下。
@@ -160,7 +166,7 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
                 "dataSource": "face_attribute",
                 "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
                 "labelPath": "./models/attr.names",
-                "postProcessLibPath": "./models/libsamplepostprocess.so"
+                "postProcessLibPath": "./models/AttrPostProcess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
