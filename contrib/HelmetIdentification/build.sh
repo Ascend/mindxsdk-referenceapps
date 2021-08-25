@@ -31,7 +31,6 @@ for sample in "${SAMPLE_FOLDER[@]}";do
     }
 done
 
-
 if [ ${err_flag} -eq 1 ]; then
 	exit 1
 fi
