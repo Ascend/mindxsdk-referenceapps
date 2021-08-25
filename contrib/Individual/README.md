@@ -93,7 +93,32 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 - PYTHONPATH为python环境路径
 
 
-## 3 编译与运行
+
+
+
+## 3 模型转换
+本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
+
+yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+
+face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+
+resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
+
+```
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+```
+转化项目模型。
+
+使用命令
+```
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+```
+转化评测所需模型。
+
+注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也同时附在resnet50模型下载链接中。
+
+## 4 编译与运行
 （描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
 **步骤1**
@@ -122,9 +147,9 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 
 
-## 4 常见问题
+## 5 常见问题
 
-### 3.1 模型路径配置
+### 5.1 模型路径配置
 
 **问题描述：检测过程中用到的模型以及模型后处理插件需要配置路径属性。
 
@@ -141,27 +166,4 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
             "next": "mxpi_dataserialize0"
         }
 ```
-
-
-## 5 模型转换
-本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
-
-yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
-
-face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
-
-resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
-
-```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
-```
-转化项目模型。
-
-使用命令
-```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
-```
-转化评测所需模型。
-
-注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也同时附在resnet50模型下载链接中。
 
