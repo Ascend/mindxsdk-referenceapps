@@ -49,13 +49,13 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 
 |软件名称    | 版本     |
 |-----------|----------|
-| python    | 3.7.10   |
-| numpy     | 1.19.5   |
+| python    | 3.7.5   |
 | MindX SDK | 2.0.2    |
 | librosa   | 0.8.1    |
 | torch     | 1.9.0    |
 | overrides | 6.1.0    |
-请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
+请确认环境已安装pip后，使用pip install * 安装以上依赖<br/>
+如果环境中有多个版本的python,请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
 
 
 ## 5 运行
