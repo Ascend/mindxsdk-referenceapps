@@ -109,7 +109,7 @@
             "face_attribute": {
                "props":{
                    "dataSource":"mxpi_facealignment0",
-                   "modelPath":"./models/bgrbgrsimple.om"
+                   "modelPath":"./models/Attribute.om"
                 },
                "factory": "mxpi_tensorinfer",
                "next": "mxpi_classpostprocessor1"
