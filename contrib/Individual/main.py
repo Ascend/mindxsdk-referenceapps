@@ -36,7 +36,7 @@ if __name__ == '__main__':
     dataInput = MxDataInput()
 
     # example
-    with open("./test7.jpg", 'rb') as f:
+    with open("./test.jpg", 'rb') as f:
         dataInput.data = f.read()
 
     # Inputs data to a specified stream based on streamName.
