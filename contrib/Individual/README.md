@@ -112,13 +112,13 @@ face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszng
 resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
 
 ```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="deploy_single.prototxt" --output_type=FP32
 ```
 转化项目模型。
 
 使用命令
 ```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute_test" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute_test" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="deploy_single.prototxt" --output_type=FP32
 ```
 转化评测所需模型。
 
