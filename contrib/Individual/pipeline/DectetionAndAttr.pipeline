@@ -89,7 +89,7 @@
               "props":{
                    "dataSource":"mxpi_imageresize1",
                    "modelPath":"./models/face_quality_0605_b1.om",
-                   "postProcessLibPath":"${SDK安装路径}/lib/modelpostprocessors/libfacelandmarkpostprocessor.so"
+                   "postProcessLibPath":"${SDK安装路径}/lib/libfacelandmarkpostprocessor.so"
                },
                "factory": "mxpi_modelinfer",
                "next": "mxpi_facealignment0:1"
