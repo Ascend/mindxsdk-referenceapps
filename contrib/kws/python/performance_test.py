@@ -22,7 +22,7 @@ from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, S
 
 if __name__ == "__main__":
     # read parameter file
-    params = read_conf("..data/data.yaml")
+    params = read_conf("../data/data.yaml")
     # get the information of the test data
     data_info_dir = os.path.join(params["data"]["data_info_dir"], "test")
     # test data containing keywords
