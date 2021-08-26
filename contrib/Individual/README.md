@@ -36,13 +36,13 @@
 ```
 .
 ├── models
-│   ├── attr.names
-│   ├── coco.names
-│   ├── insert_op.cfg
-│   ├── insert_op1.cfg
-│   ├── resnet50_aipp_tf.cfg
-│   ├── resnet50_aipp_tf1.cfg
-│   └── yolov4.cfg  
+│   ├── attr.names // label文件
+│   ├── coco.names // label文件
+│   ├── insert_op.cfg // 模型转换aipp配置文件
+│   ├── insert_op1.cfg // 模型转换aipp配置文件
+│   ├── resnet50_aipp_tf.cfg  // 模型后处理配置文件
+│   ├── resnet50_aipp_tf1.cfg // 模型后处理配置文件
+│   └── yolov4.cfg  // 模型后处理配置文件
 ├── pipeline
 │   ├── Attr_part.pipeline
 │   └── DectetionAndAttr.pipeline
@@ -105,33 +105,32 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 ## 3 模型转换
 本项目中用到的模型有：yolov4，face_quality_0605_b1.om，resnet50
 
-yolov4模型转换及下载参考华为昇腾社区https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample/python。转化完的模型已经提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+yolov4模型提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
 
 face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
 
 resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
 
 ```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute" --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=0 --model="single.prototxt" --output_type=FP32
 ```
 转化项目模型。
 
 使用命令
 ```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="simple" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute_test" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="single.prototxt" --output_type=FP32
 ```
 转化评测所需模型。
 
 注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也同时附在resnet50模型下载链接中。
 
 ## 4 编译与运行
-（描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
 **步骤1**
-下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
+下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。项目运行数据集为Img下img_celeba.7z，运行评测代码所需数据集为Img下img_align_celeba
 
 **步骤2**
-在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与实际一致。后处理插件需要人工转化，运行项目下的build.sh生成so文件，将so文件放到相应的路径下。
+在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与实际一致。后处理插件需要人工转化，运行项目下的build.sh生成so文件，so文件生成在plugins下的build目录下。将so文件放到相应的路径下后，文件配置工作完成。
 
 **步骤3** 
 将数据集放到项目内，可以从中取出一张图像，命名为test.jpg，并放到与main.py同路径下。
@@ -166,7 +165,7 @@ python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
                 "dataSource": "face_attribute",
                 "postProcessConfigPath": "./models/resnet50_aipp_tf.cfg",
                 "labelPath": "./models/attr.names",
-                "postProcessLibPath": "./models/AttrPostProcess.so"
+                "postProcessLibPath": "./models/libAttrPostProcess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
