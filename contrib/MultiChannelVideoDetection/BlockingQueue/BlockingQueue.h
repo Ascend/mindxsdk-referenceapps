@@ -205,6 +205,14 @@ public:
     }
 
     /**
+     * Whether the queue is stopped
+     * @return state of whether the queue is stopped
+     */
+    bool IsStop() {
+        return is_stopped_;
+    }
+
+    /**
      * Whether the queue is empty
      * @return code of whether the queue is empty
      */

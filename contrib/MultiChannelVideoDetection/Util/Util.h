@@ -45,6 +45,9 @@ public:
     static bool IsExistDataInQueueMap(const std::map<int,
                                       std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
 
+    static void StopAndClearQueueMap(const std::map<int,
+                                      std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
+
     static std::vector<MxBase::ObjectInfo> GetDetectionResult(
             const std::vector<std::vector<MxBase::ObjectInfo>>& objInfos,
             uint32_t rtspIndex, uint32_t frameId, bool printResult = true);

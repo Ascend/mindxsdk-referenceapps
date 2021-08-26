@@ -80,6 +80,23 @@ bool Util::IsExistDataInQueueMap(const std::map<int,
 }
 
 /**
+ * Stop and clear queue map
+ * @param queueMap const reference to queue map
+ */
+void Util::StopAndClearQueueMap(const std::map<int,
+                                 std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+{
+    std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
+    for (iter = queueMap.begin();iter != queueMap.end();iter++) {
+        if (!iter->second->IsStop()) {
+            iter->second->Stop();
+            iter->second->Clear();
+            LogInfo << "stop " << iter->first << " queue.";
+        }
+    }
+}
+
+/**
  * Get yolo detect result from objInfos
  * >> strategy: choose max confidence as final detect result
  *

@@ -101,8 +101,8 @@ void MultiChannelVideoReasoner::Process()
 
         // judge whether the video of all channels is pulled and decoded finish
         bool allVideoDataPulledAndDecoded = true;
-        for (uint32_t i = 0; i < streamPullers.size(); i++) {
-            if (!streamPullers[i]->stopFlag) {
+        for (auto & streamPuller : streamPullers) {
+            if (!streamPuller->stopFlag) {
                 allVideoDataPulledAndDecoded = false;
                 break;
             }
@@ -136,6 +136,9 @@ void MultiChannelVideoReasoner::Process()
             // force stop PerformanceMonitor
             performanceMonitor->stopFlag = true;
             LogInfo << "Force stop PerformanceMonitor.";
+
+            // force stop and clear decode frame queues
+            Util::StopAndClearQueueMap(decodeFrameQueueMap);
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(intervalMainThreadControlCheck));
     }
@@ -544,11 +547,7 @@ APP_ERROR MultiChannelVideoReasoner::DestroyPerformanceMonitor()
  */
 void MultiChannelVideoReasoner::ClearData() {
     // stop and clear queue
-    std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
-    for (iter = decodeFrameQueueMap.begin();iter != decodeFrameQueueMap.end();iter++) {
-        iter->second->Stop();
-        iter->second->Clear();
-    }
+    Util::StopAndClearQueueMap(decodeFrameQueueMap);
     decodeFrameQueueMap.clear();
 
     videoFrameInfos.clear();
