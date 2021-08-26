@@ -19,7 +19,7 @@
             "face_attribute": {
                "props":{
                    "dataSource":"mxpi_imageresize0",
-                   "modelPath":"./models/simple.om"
+                   "modelPath":"./models/Attribute_test.om"
                 },
                "factory": "mxpi_tensorinfer",
                "next": "mxpi_classpostprocessor1"
