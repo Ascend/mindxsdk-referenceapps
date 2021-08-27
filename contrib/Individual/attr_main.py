@@ -35,6 +35,10 @@ if __name__ == '__main__':
         # Construct the input of the stream
         dataInput = MxDataInput()
         line = file_handle2.readline()
+        # if line is the end of the file
+        if not line:
+            print("end of the file!")
+            break
         # the length of the path is 34
         img_path = line[0:34]
         with open(img_path, 'rb') as f:
