@@ -111,9 +111,7 @@ APP_ERROR RcfDetection::ReadImage(const std::string &imgPath, MxBase::TensorBase
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
-
-    LogInfo<< "ReadImage output.heightStride:"<< output.heightStride << " output.widthStride:"<< output.widthStride;
-    LogInfo<< " ReadImage output.height" << output.height << " output.width"<< output.width; 
+ 
     dvppHeightStride = output.heightStride;
     dvppWidthStride = output.widthStride;    
 
