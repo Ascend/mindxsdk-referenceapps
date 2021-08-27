@@ -101,7 +101,7 @@ export GST_DEBUG=3
 
 
 ##### 1.2 pt文件转换为onnx文件
-1. 可直接获取已经转换好的YOLOv5_s.onnx文件，链接如1.1所示。模型已经已完成优化，可直接转换为om模型。
+1. 可直接获取已经转换好的YOLOv5_s.onnx文件，链接如1.1所示。此模型已经完成优化，不再使用dy_resize.py、modify_yolov5s_slice.py进行优化。可直接转换为om模型。
 
 2. 若尝试pt文件转换为onnx文件，可获取[原项目](https://github.com/PeterH0323/Smart_Construction)代码，下载至本地。安装环境依赖**requirements.txt**在原项目中已给出（原项目使用pytorch 1.5.1框架），pt文件转换为onnx文件所需第三方库**ONNX**如1.1中方式安装。
 
@@ -111,21 +111,21 @@ export GST_DEBUG=3
 python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 640 --batch 1
 ```
 
-其中onnx算子版本为opset_version=11。转换完成后权重文件helmet_head_person_s.onnx改名为yolov5_s.onnx上传至服务器源码根目录中。
+其中onnx算子版本为opset_version=11。转换完成后权重文件helmet_head_person_s.onnx改名为YOLOv5_s.onnx上传至服务器任意目录下。
 
 
 
 ##### 1.3 onnx文件转换为om文件
 
-  转换完成后onnx脚本上传至服务器源码根目录后先进行优化。
+  转换完成后onnx脚本上传至服务器任意目录后先进行优化。
 
-  利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
+  1. 利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
 
 ```shell
 python3.7 modify_yolov5s_slice.py yolov5_s.onnx
 ```
 
-最后利用modify_yolov5s_slice.py脚本修改模型slice算子，运行如下命令：
+2. 然后利用modify_yolov5s_slice.py脚本修改模型slice算子，运行如下命令：
 
 ```bash
 python3.7 modify_yolov5s_slice.py yolov5_s.onnx
@@ -133,7 +133,7 @@ python3.7 modify_yolov5s_slice.py yolov5_s.onnx
 
 可以得到修改好后的yolov5_s.onnx模型
 
-运行atc-env脚本将onnx转为om模型，运行命令如下：
+3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下：
 
 ```shell
 sh atc-env.sh
@@ -144,7 +144,7 @@ sh atc-env.sh
 脚本中包含atc命令:
 
 ```shell
---model=${Home}/Models/yolov5_s.onnx --framework=5 --output=${Home}/Models/yolov5_s  --insert_op_conf=./aipp_YOLOv5.config --input_format=NCHW --log=info --soc_version=Ascend310 --input_shape="images:1,3,640,640"
+--model=${Home}/YOLOv5_s.onnx --framework=5 --output=${Home}/YOLOv5_s  --insert_op_conf=./aipp_YOLOv5.config --input_format=NCHW --log=info --soc_version=Ascend310 --input_shape="images:1,3,640,640"
 ```
 
 其参数如下表所示
@@ -196,8 +196,8 @@ aipp_op{
     var_reci_chn_2: 0.003921568627451}
 ```
 
-注：[aipp配置文件教程链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)
-
+注：1. [aipp配置文件教程链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)
+   2.atc-env.sh脚本内 ${Home} 为onnx文件所在路径。
 
 
 #### 步骤2 模型推理 
@@ -222,6 +222,7 @@ ANCHOR_DIM=3
 MODEL_TYPE=1
 RESIZE_FLAG=0
 ```
+注：以上四个参数为相应文件所在路径。
 
 2.pipline中mxpi_selectedframe插件完成视频跳帧。对于输入帧率为24fps输入视频进行每三帧抽一帧进行识别。实现8fps的帧率。
 
@@ -236,7 +237,7 @@ cmake ..
 make -j
 ```
 
-编译成功后将产生**libmxpi_selectedframe.so**文件复制至SDK的插件库中
+编译成功后将产生**libmxpi_selectedframe.so**文件，文件生成位置在build目录下。将其复制至SDK的插件库中
 
  注：[插件编译生成教程](https://support.huaweicloud.com/mindxsdk201/index.html)在《用户手册》深入开发章节
 
