@@ -136,10 +136,10 @@
         "mxpi_modelinfer0":{
             "props":{
                 "dataSource":"mxpi_imageresize0",
-                "modelPath":"./HelmetIdentification/Models/YOLOv5_s.om",
-                "postProcessConfigPath":"./HelmetIdentification/Models/Helmet_yolov5.cfg",
-                "labelPath":"./HelmetIdentification/Models/imgclass.names",
-                "postProcessLibPath":"./MindX_SDK/mxVision/lib/libMpYOLOv5PostProcessor.so"
+                "modelPath":"./YOLOv5_s.om",
+                "postProcessConfigPath":"./Helmet_yolov5.cfg",
+                "labelPath":"./imgclass.names",
+                "postProcessLibPath":"./libMpYOLOv5PostProcessor.so"
             },
             "factory":"mxpi_modelinfer",
             "next":"queue1"
