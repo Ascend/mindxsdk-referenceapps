@@ -11,5 +11,5 @@ export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-pl
 export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
 export ASCEND_OPP_PATH=${install_path}/opp
 export GST_DEBUG=3
-echo "successfully!!"
+
 # ${MX_SDK_HOME}为远程SDK安装路径
