@@ -96,14 +96,16 @@ export GST_DEBUG=3
 | pytorch                 | 1.5.1 | [pytorch官网](https://pytorch.org/get-started/previous-versions/) |
 | ONNX                    | 1.7.0 | pip install onnx==1.7.0                                      |
 | helmet_head_person_s.pt | v2.0  | [原项目链接](https://github.com/PeterH0323/Smart_Construction)(选择项目中yolov5s权重文件，权重文件保存在README所述网盘中) |
+| YOLOv5_s.onnx           | YOLOv5_s | [链接](https://pan.baidu.com/s/15qjahlaO9TTd6orzGrm0Sw) 提取码：b123 |
 
 
 
 ##### 1.2 pt文件转换为onnx文件
+1. 可直接获取已经转换好的YOLOv5_s.onnx文件，链接如1.1所示。模型已经已完成优化，可直接转换为om模型。
 
-1. 获取[原项目](https://github.com/PeterH0323/Smart_Construction)代码，下载至本地。安装环境依赖**requirements.txt**在原项目中已给出（原项目使用pytorch 1.5.1框架），pt文件转换为onnx文件所需第三方库**ONNX**如1.1中方式安装。
+2. 若尝试pt文件转换为onnx文件，可获取[原项目](https://github.com/PeterH0323/Smart_Construction)代码，下载至本地。安装环境依赖**requirements.txt**在原项目中已给出（原项目使用pytorch 1.5.1框架），pt文件转换为onnx文件所需第三方库**ONNX**如1.1中方式安装。
 
-2. 通过上述1.1中链接获取模型文件helmet_head_person_s.pt，下载到本地后保存至原项目weights文件中。使用原项目中的export.py将pt文件转换为onnx格式文件。运行：
+3. 通过上述1.1中链接获取模型文件helmet_head_person_s.pt，下载到本地后保存至原项目weights文件中。使用原项目中的export.py将pt文件转换为onnx格式文件。运行：
 
 ```shell
 python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 640 --batch 1
