@@ -16,11 +16,41 @@
 
 #include "MxpiHeadPoseEstimationPostProcess.h"
 #include "MxBase/Log/Log.h"
+#include "MxBase/Tensor/TensorBase/TensorBase.h"
+using namespace MxBase;
 using namespace MxPlugins;
 using namespace MxTools;
 using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiTensorPackageList";
+    const string SAMPLE_CLASS_NAME = "The shape of tensor[0] in metadata is ";
+}
+
+// decode MxpiTensorPackageList
+void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
+                std::vector<MxBase::TensorBase> &tensors) {
+    for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
+        for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
+            MxBase::MemoryData memoryData = {};
+            memoryData.deviceId = tensorPackageList.tensorpackagevec(i).tensorvec(j).deviceid();
+            memoryData.type = (MxBase::MemoryData::MemoryType)tensorPackageList.
+                    tensorpackagevec(i).tensorvec(j).memtype();
+            memoryData.size = (uint32_t) tensorPackageList.
+                    tensorpackagevec(i).tensorvec(j).tensordatasize();
+            memoryData.ptrData = (void *) tensorPackageList.
+                    tensorpackagevec(i).tensorvec(j).tensordataptr();
+            std::vector<uint32_t> outputShape = {};
+            for (int k = 0; k < tensorPackageList.
+            tensorpackagevec(i).tensorvec(j).tensorshape_size(); ++k) {
+                outputShape.push_back((uint32_t) tensorPackageList.
+                tensorpackagevec(i).tensorvec(j).tensorshape(k));
+            }
+            MxBase::TensorBase tmpTensor(memoryData, true, outputShape,
+                                         (MxBase::TensorDataType)tensorPackageList.
+                                         tensorpackagevec(i).tensorvec(j).tensordatatype());
+            tensors.push_back(tmpTensor);
+        }
+    }
 }
 
 APP_ERROR MxpiHeadPoseEstimationPostProcess::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
@@ -30,15 +60,14 @@ APP_ERROR MxpiHeadPoseEstimationPostProcess::Init(std::map<std::string, std::sha
     // Get the property values by key
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
-    std::shared_ptr<string> descriptionMessageProSptr =
-        std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
-    descriptionMessage_ = *descriptionMessageProSptr.get();
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::Init complete.";
     return APP_ERR_OK;
 }
 
 APP_ERROR MxpiHeadPoseEstimationPostProcess::DeInit()
 {
-    LogInfo << "MxpiHeadPoseEstimationPostProcess::DeInit end.";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::DeInit start.";
+    LogInfo << "MxpiHeadPoseEstimationPostProcess::DeInit complete.";
     return APP_ERR_OK;
 }
 
@@ -57,22 +86,24 @@ APP_ERROR MxpiHeadPoseEstimationPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer
     return ret;
 }
 
-APP_ERROR MxpiHeadPoseEstimationPostProcess::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
+APP_ERROR MxpiHeadPoseEstimationPostProcess::GenerateClassList(const MxpiObjectList srcMxpiTensorPackage,
     MxpiClassList& dstMxpiClassList)
 {
-    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
-        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
-        for (int j = 0; j < srcMxpiObject.classvec_size(); j++) {
-            MxpiClass srcMxpiClass = srcMxpiObject.classvec(j);
-            MxpiClass* dstMxpiClass = dstMxpiClassList.add_classvec();
-            MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiClass->add_headervec();
-            dstMxpiMetaHeaderList->set_datasource(parentName_);
-            dstMxpiMetaHeaderList->set_memberid(j);
-            dstMxpiClass->set_classid(srcMxpiClass.classid());
-            dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-            dstMxpiClass->set_classname(srcMxpiClass.classname() + "," + descriptionMessage_);
-        }
-    }
+    // Get Tensor
+    std::vector<MxBase::TensorBase> tensors = {};
+    GetTensors(srcMxpiTensorPackage, tensors);
+    LogWarn << "source Tensor number:" << tensors.size() << endl;
+    LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
+
+    ///ADD YOUR PostProcess
+
+    // Generate sample ClassList
+    MxpiClass* dstMxpiClass = dstMxpiClassList.add_classvec();
+    MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiClass->add_headervec();
+    dstMxpiMetaHeaderList->set_datasource(parentName_);
+    dstMxpiMetaHeaderList->set_memberid(0);
+    dstMxpiClass->set_classid(SAMPLE_CLASS_ID);
+    dstMxpiClass->set_confidence(SAMPLE_CONF);
     return APP_ERR_OK;
 }
 
@@ -144,12 +175,8 @@ std::vector<std::shared_ptr<void>> MxpiHeadPoseEstimationPostProcess::DefineProp
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
     auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "dataSource", "name", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{STRING,
-        "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiHeadPoseEstimationPostProcess",
-    "NULL", "NULL"});
+        STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorinfer0", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
-    properties.push_back(descriptionMessageProSptr);
     return properties;
 }
 
