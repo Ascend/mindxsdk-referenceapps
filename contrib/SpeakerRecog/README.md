@@ -41,7 +41,8 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 |           |---- run.sh                       //样例运行脚本
 |           |---- utils.py                     //性能测试所需函数
 |-------- test_wav                             //用于测试的语音样本
-|-------- voice_print_library                  //声纹库
+|-------- voice_print_library                  //声纹库（声纹库中声纹存储个数上限为100，如需更改，修改
+                                                         post_process.py中32行max_num_enroll_speakers的值）
 |-------- README.md
 ```
 
@@ -56,6 +57,7 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 | overrides | 6.1.0    |
 请确认环境已安装pip后，使用pip install * 安装以上依赖<br/>
 如果环境中有多个版本的python,请确认环境已安装pip3后，使用pip3 install * 安装以上依赖<br/>
+
 请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库
 ```bash
 apt-get install libpython3.7
@@ -83,7 +85,8 @@ bash run.sh
 如果出现 XXX registration complete! 说明注册成功<br/>
 如果出现The current audio XXX.wav  is from speaker XXX 说明识别成功<br/>
 5. 若要进行性能测试：<br/>
-修改performance_test.py中44行wav_dir为你的数据集测试集路径，数据集使用Aishell-1<br/>
+性能测试使用Aishell-1数据集，修改performance_test.py中44行wav_dir为你的数据集测试集路径<br/>
+如果使用其他数据集，请根据实际情况修改performance_test.py<br/>
 将run.sh中python main.py修改为python performance_test.py<br/>
 如果环境中存在多个版本python，将run.sh中python main.py修改为python3 performance_test.py
 ```bash

@@ -43,7 +43,12 @@ if __name__ == '__main__':
     # voice_print_library
     voice_print_library_path = "../voice_print_library"
     # test wav
-    wav_path_list = utils.get_all_type_paths("../test_wav", ".wav")
+    test_wav_dir = "../test_wav"
+    wav_path_list = utils.get_all_type_paths(test_wav_dir, ".wav")
+    if len(wav_path_list) == 0:
+        print('There is no wav audio in {}!'.format(test_wav_dir))
+        print('Please change the audio in wav format!')
+        exit()
     wav_path = wav_path_list[0]
     wav_name = os.path.basename(wav_path).split(".")[0]
     extract_logmel = ExtractLogmel(padded_type="copy")

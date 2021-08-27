@@ -42,7 +42,12 @@ if __name__ == '__main__':
     # Read parameter file
     params = read_conf("../data/data.yaml")
     # test wav
-    wav_path_list = utils.get_all_type_paths("../data", ".wav")
+    test_wav_dir = "../data"
+    wav_path_list = utils.get_all_type_paths(test_wav_dir, ".wav")
+    if len(wav_path_list) == 0:
+        print('There is no wav audio in {}!'.format(test_wav_dir))
+        print('Please change the audio in wav format!')
+        exit()
     wav_path = wav_path_list[0]
     # extract feature
     max_frames = 1464

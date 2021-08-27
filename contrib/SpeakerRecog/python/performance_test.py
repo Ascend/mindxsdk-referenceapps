@@ -50,8 +50,12 @@ if __name__ == "__main__":
     # each speaker choice one wav to register
     start = time.time()
     for idx, speaker in enumerate(speakers):
-        # get wav path
+        # get audio path
         all_wav_paths = utils.get_all_type_paths(os.path.join(wav_dir, speaker), ".wav")
+        if len(all_wav_paths) == 0:
+            print('There is no wav audio in {}!'.format(os.path.join(wav_dir, speaker)))
+            print('Please change the audio in wav format!')
+            exit()
         all_wav_paths.sort()
         all_wav_num += len(all_wav_paths)
         for index, wav_path in enumerate(all_wav_paths):

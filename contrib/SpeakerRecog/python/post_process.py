@@ -29,6 +29,7 @@ def speaker_recognition(embedding, speaker_name, enroll_embedding_dir, thres=0.7
         result:
     """
     enroll_speakers = os.listdir(enroll_embedding_dir)
+    max_num_enroll_speakers = 100
     if len(enroll_speakers) == 0:
         # If the current voice print library is empty, register the current speaker
         print("There is no speaker in the voice print library!")
@@ -48,8 +49,12 @@ def speaker_recognition(embedding, speaker_name, enroll_embedding_dir, thres=0.7
         if max_score < thres:
             print("The speaker is not included in the voice print library")
             print("Register the current speaker...")
-            np.save(os.path.join(enroll_embedding_dir, speaker_name + ".npy"), embedding)
-            print("{} registration complete!".format(speaker_name))
+            if len(enroll_speakers) <= max_num_enroll_speakers:
+                np.save(os.path.join(enroll_embedding_dir, speaker_name + ".npy"), embedding)
+                print("{} registration complete!".format(speaker_name))
+            else:
+                print("Description The number of speakers in the voice print database reached the upper limit!")
+                print("The speaker failed to register!")
         else:
             max_index = score_list.index(max_score)
             result = enroll_speakers[max_index].split(".")[0]
