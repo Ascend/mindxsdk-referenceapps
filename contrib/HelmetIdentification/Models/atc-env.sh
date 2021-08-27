@@ -6,7 +6,7 @@ export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_comp
 export PYTHONPATH=${install_path}/arm64-linux/atc/python/site-packages:${install_path}/arm64-linux/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/arm64-linux/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/arm64-linux/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
-export Home="${path}"
+export Home=${path}
 # Home is set to the path where the onnx file is located
 
 # Execute, transform YOLOv5 model.
