@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "opencv2/opencv.hpp"
 #include "RcfDetection.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
@@ -20,6 +21,7 @@
 #include "../rcfPostProcess/RcfPostProcess.h"
 #include <unistd.h>
 #include <sys/stat.h>
+
 
 namespace{
     const uint32_t YUV_BYTE_NU = 3;
@@ -109,7 +111,12 @@ APP_ERROR RcfDetection::ReadImage(const std::string &imgPath, MxBase::TensorBase
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
-    
+
+    LogInfo<< "ReadImage output.heightStride:"<< output.heightStride << " output.widthStride:"<< output.widthStride;
+    LogInfo<< " ReadImage output.height" << output.height << " output.width"<< output.width; 
+    dvppHeightStride = output.heightStride;
+    dvppWidthStride = output.widthStride;    
+
     std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU/YUV_BYTE_DE , output.widthStride};
     tensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
@@ -168,9 +175,14 @@ APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
     }
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     APP_ERROR ret = model_->ModelInference(inputs, outputs, dynamicInfo);
-
+    
+    auto endTime = std::chrono::high_resolution_clock::now();
+    double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+    //g_inferCost.push_back(costMs);
+    LogInfo<< "costMs:"<< costMs;
     if (ret != APP_ERR_OK) {
         LogError << "ModelInference failed, ret=" << ret << ".";
         return ret;
@@ -220,11 +232,15 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::s
     uint32_t imageHeight = imgBgr.rows;    
     cv::Mat modelOutput = cv::Mat(h, w, CV_32FC1, inferTensor.GetBuffer());
     cv::Mat grayMat;
-    resize(modelOutput, modelOutput, cv::Size(imageWidth, imageHeight), 0, 0, cv::INTER_LINEAR);
-    modelOutput.convertTo(grayMat, CV_8UC1, alpha1);
-    
-    cv::imwrite("./result.jpg", grayMat);
-    return APP_ERR_OK;
+    cv::Mat resizedMat;
+    int crop = 5;
+    cv::Rect myROI(0, 0, imageWidth-crop, imageHeight );	
+    resize(modelOutput, resizedMat, cv::Size(dvppWidthStride, dvppHeightStride), 0, 0, cv::INTER_LINEAR);
+    resizedMat.convertTo(grayMat, CV_8UC1, alpha1);
+    cv::Mat croppedImage = grayMat(myROI);
+    resize(croppedImage, croppedImage,  cv::Size(imageWidth, imageHeight), 0, 0, cv::INTER_LINEAR);
+    cv::imwrite("./result.jpg", croppedImage);
+    return APP_ERR_OK; 
 }
 
 APP_ERROR RcfDetection::Process(const std::string &imgPath) {
@@ -269,3 +285,4 @@ APP_ERROR RcfDetection::Process(const std::string &imgPath) {
     }
     return APP_ERR_OK;
 }
+

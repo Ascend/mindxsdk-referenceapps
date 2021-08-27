@@ -54,6 +54,8 @@ private:
     std::shared_ptr<RcfPostProcess> post_;
     MxBase::ModelDesc modelDesc_ = {};
     uint32_t deviceId_ = 0;
+    int dvppHeightStride;
+    int dvppWidthStride;
 
 };
 #endif
