@@ -132,14 +132,17 @@ reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
 ```
 
 其他可配置项`maxDecodeFrameQueueLength` `writeDetectResultToFile` `enablePerformanceMonitorPrint` `intervalPerformanceMonitorPrint` 
-`intervalMainThreadControlCheck` `printDetectResult`
+`intervalMainThreadControlCheck` `printDetectResult` `enableIndependentThreadForEachDetectStep`
+> 开启 `enableIndependentThreadForEachDetectStep` 时请减小 `maxDecodeFrameQueueLength` 的值，建议最大值 `200`  
+> 同时开启 `writeDetectResultToFile`时请进一步减小 `maxDecodeFrameQueueLength` 的值，建议最大值 `100`
 ```c++
 reasonerConfig.maxDecodeFrameQueueLength = 400; // 多路视频时请适当减小
 reasonerConfig.writeDetectResultToFile = true; // 检测结果是否写文件, 默认为false
 reasonerConfig.enablePerformanceMonitorPrint = true; // 性能可视化开关，默认为true
 reasonerConfig.intervalPerformanceMonitorPrint = 5; // 性能监控输出间隔(s)
-reasonerConfig.intervalMainThreadControlCheck = 2; // 流程检查间隔
+reasonerConfig.intervalMainThreadControlCheck = 2; // 流程检查间隔(ms)
 reasonerConfig.printDetectResult = true; // 输出检测结果，默认为true
+reasonerConfig.enableIndependentThreadForEachDetectStep = true; // 为每个检测步骤启用独立线程，默认为true
 ```
 
 ### 配置环境变量

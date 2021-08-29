@@ -19,8 +19,6 @@
 
 #include "MxBase/DeviceManager/DeviceManager.h"
 
-#include <thread>
-
 /**
  * Init MultiChannelVideoReasoner by {@link ReasonerConfig}
  * @param initConfig const reference to initial config
@@ -65,6 +63,7 @@ APP_ERROR MultiChannelVideoReasoner::Init(const ReasonerConfig &initConfig)
     this->intervalMainThreadControlCheck = initConfig.intervalMainThreadControlCheck;
     this->printDetectResult = initConfig.printDetectResult;
     this->writeDetectResultToFile = initConfig.writeDetectResultToFile;
+    this->enableIndependentThreadForEachDetectStep = initConfig.enableIndependentThreadForEachDetectStep;
 
     this->stopFlag = false;
     return APP_ERR_OK;
@@ -77,28 +76,12 @@ void MultiChannelVideoReasoner::Process()
 {
     auto startTime = std::chrono::high_resolution_clock::now();
 
-    // start threads (video pull and decode | image resize and yolo detect | performance monitoring)
+    // start work threads
     std::vector<std::thread> videoProcessThreads;
-    for (uint32_t i = 0; i < streamPullers.size(); i++) {
-        auto decodeFrameQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(maxDecodeFrameQueueLength);
-        std::thread getDecodeVideoFrame(GetDecodeVideoFrame,
-                                        streamPullers[i], videoDecoders[i], i, decodeFrameQueue, this);
+    StartWorkThreads(videoProcessThreads);
 
-        // save
-        videoProcessThreads.push_back(std::move(getDecodeVideoFrame));
-        decodeFrameQueueMap.insert(std::pair<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>
-                                                (i, decodeFrameQueue));
-    }
-
-    std::thread getMultiChannelDetectionResult(GetMultiChannelDetectionResult,
-                                               yoloModelWidth, yoloModelHeight, popDecodeFrameWaitTime, this);
-    videoProcessThreads.push_back(std::move(getMultiChannelDetectionResult));
-    std::thread monitorPerformance(performanceMonitor->PrintStatistics,
-                                   performanceMonitor, intervalPerformanceMonitorPrint);
-    videoProcessThreads.push_back(std::move(monitorPerformance));
-
+    // work flow control
     while (!stopFlag) {
-
         // judge whether the video of all channels is pulled and decoded finish
         bool allVideoDataPulledAndDecoded = true;
         for (auto & streamPuller : streamPullers) {
@@ -110,13 +93,30 @@ void MultiChannelVideoReasoner::Process()
 
         // judge whether the all data in decode frame queue is processed
         bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
+        if (enableIndependentThreadForEachDetectStep) {
+            if (!yoloInferenceResultQueue->IsEmpty() ||
+                !yoloPostProcessResultQueue->IsEmpty()) {
+                allVideoDataProcessed = false;
+            }
+        }
 
-        // all channels video data pull, decode, resize and detect finish
+        // judge whether the all detect result all write complete
+        bool allDetectResultWrote = true;
+        if (writeDetectResultToFile && enableIndependentThreadForEachDetectStep) {
+            if (!yoloInferenceResultQueue->IsEmpty() ||
+                !yoloPostProcessResultQueue->IsEmpty()) {
+                allDetectResultWrote = false;
+            }
+        }
+
+        // all channels video data pull, decode, resize, detect and save(opt) finish
         // quit MultiChannelVideoReasoner
         // quit PerformanceMonitor
-        if (allVideoDataPulledAndDecoded && allVideoDataProcessed) {
-            LogInfo << "All channels' video data pull, decode, resize and detect complete, quit MultiChannelVideoReasoner.";
+        if (allVideoDataPulledAndDecoded && allVideoDataProcessed && allDetectResultWrote) {
             stopFlag = true;
+            std::string msg = writeDetectResultToFile ? " and write complete, " : " complete, ";
+            LogInfo << "All channels' video data pull, decode, resize, detect" << msg
+                    << "quit MultiChannelVideoReasoner.";
 
             performanceMonitor->stopFlag = true;
             LogInfo << "All processor exit, Stop PerformanceMonitor.";
@@ -139,6 +139,13 @@ void MultiChannelVideoReasoner::Process()
 
             // force stop and clear decode frame queues
             Util::StopAndClearQueueMap(decodeFrameQueueMap);
+            // force stop and clear yoloInferenceResultQueue and yoloPostProcessResultQueue
+            if (enableIndependentThreadForEachDetectStep) {
+                yoloInferenceResultQueue->Stop();
+                yoloInferenceResultQueue->Clear();
+                yoloPostProcessResultQueue->Stop();
+                yoloPostProcessResultQueue->Clear();
+            }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(intervalMainThreadControlCheck));
     }
@@ -195,8 +202,9 @@ APP_ERROR MultiChannelVideoReasoner::DeInit()
 
 /**
  * Get the decoded video frame
- * >> first step: pull video stream data by specific rtsp address
- * >> second step: decode video frame from pulled video frame data
+ * > first step: pull video stream data by specific rtsp address
+ * > second step: decode video frame from pulled video frame data
+ *
  * @param streamPuller const reference to the pointer to StreamPuller
  * @param videoDecoder const reference to the pointer to VideoDecoder
  * @param index const reference to curr rtsp index
@@ -215,7 +223,7 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
     device.devId = (int32_t) multiChannelVideoReasoner->deviceId;
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
     if (ret != APP_ERR_OK) {
-        LogError << "SetDevice failed";
+        LogError << "GetDecodeVideoFrame setDevice failed.";
         return;
     }
 
@@ -238,7 +246,7 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
         auto videoFrameData = streamPuller->GetNextFrame();
         auto endTime = std::chrono::high_resolution_clock::now();
         double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-        performanceMonitor->Collect("StreamPuller " + std::to_string(index + 1), costMs);
+        performanceMonitor->Collect(StreamPullerTag + " " + std::to_string(index + 1), costMs);
 
         if (videoFrameData.size == 0) {
             LogDebug << "empty video frame, not need decode, continue!";
@@ -250,21 +258,289 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
         videoDecoder->Decode(videoFrameData, decodeFrameQueue.get());
         endTime = std::chrono::high_resolution_clock::now();
         costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-        performanceMonitor->Collect("VideoDecoder " + std::to_string(index + 1), costMs);
+        performanceMonitor->Collect(VideoDecoderTag + " " + std::to_string(index + 1), costMs);
+    }
+}
+
+/**
+ * Get the yolo inference result of all channels (insert result into yoloInferenceResultQueue)
+ * > first step: get front data from decode frame queue
+ * > second step: resize video frame to match model input size
+ * > third step: input into the yolo model for inference
+ * > fourth step: put yolo inference result into yoloInferenceResult queue
+ *
+ * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
+ */
+void MultiChannelVideoReasoner::GetYoloInferenceResult(
+        const MultiChannelVideoReasoner *multiChannelVideoReasoner)
+{
+    // set device
+    MxBase::DeviceContext device;
+    device.devId = (int32_t) multiChannelVideoReasoner->deviceId;
+    APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
+    if (ret != APP_ERR_OK) {
+        LogError << "GetYoloInferenceResult setDevice failed.";
+        return;
+    }
+
+    // config
+    auto yoloModelWidth = multiChannelVideoReasoner->yoloModelWidth;
+    auto yoloModelHeight = multiChannelVideoReasoner->yoloModelHeight;
+    auto popDecodeFrameWaitTime = multiChannelVideoReasoner->popDecodeFrameWaitTime;
+    auto writeDetectResultToFile = multiChannelVideoReasoner->writeDetectResultToFile;
+
+    // data set
+    auto videoFrameInfos = multiChannelVideoReasoner->videoFrameInfos;
+    auto decodeFrameQueueMap = multiChannelVideoReasoner->decodeFrameQueueMap;
+    auto yoloInferenceResultQueue = multiChannelVideoReasoner->yoloInferenceResultQueue;
+
+    // processor
+    auto imageResizer = multiChannelVideoReasoner->imageResizer;
+    auto yoloDetector = multiChannelVideoReasoner->yoloDetector;
+    auto performanceMonitor = multiChannelVideoReasoner->performanceMonitor;
+
+    while(true) {
+        if (multiChannelVideoReasoner->stopFlag) {
+            LogInfo << "quit video frame resize and yolo inference.";
+            return;
+        }
+
+        std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
+        for (iter = decodeFrameQueueMap.begin();iter != decodeFrameQueueMap.end();iter++) {
+            auto rtspIndex = iter->first;
+            auto decodeFrameQueue = iter->second;
+            if (decodeFrameQueue->IsEmpty()) {
+                continue;
+            }
+
+            // get decode frame data
+            std::shared_ptr<void> data = nullptr;
+            ret = decodeFrameQueue->Pop(data, popDecodeFrameWaitTime);
+            if (ret != APP_ERR_OK) {
+                LogError << rtspIndex << " DecodeFrameQueueMap pop failed.";
+                continue;
+            }
+            auto decodeFrame = std::make_shared<MxBase::MemoryData>();
+            decodeFrame = std::static_pointer_cast<MxBase::MemoryData>(data);
+
+            // resize frame
+            MxBase::DvppDataInfo resizeFrame = {};
+            auto startTime = std::chrono::high_resolution_clock::now();
+            ret = imageResizer->ResizeFromMemory(*decodeFrame,
+                                                 videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height,
+                                                 yoloModelWidth, yoloModelHeight, resizeFrame);
+            if (ret != APP_ERR_OK) {
+                LogError << "rtsp " << rtspIndex <<  " frame " << resizeFrame.frameId <<
+                " resize image failed, ret = " << ret << " " << GetError(ret);
+                continue;
+            }
+            auto endTime = std::chrono::high_resolution_clock::now();
+            double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+            performanceMonitor->Collect(ImageResizerTag, costMs);
+
+            // yolo infer
+            std::vector<MxBase::TensorBase> yoloOutputs = {};
+            startTime = std::chrono::high_resolution_clock::now();
+            ret = yoloDetector->Inference(resizeFrame, yoloOutputs);
+            if (ret != APP_ERR_OK) {
+                LogError << "rtsp " << rtspIndex <<  " frame " << resizeFrame.frameId <<
+                " yolo infer image failed, ret = " << ret << " " << GetError(ret) << ".";
+                continue;
+            }
+            endTime = std::chrono::high_resolution_clock::now();
+            costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+            performanceMonitor->Collect(YoloDetectorInferTag, costMs);
+
+            // put yolo inference result into queue
+            YoloResultWrapper yoloInferenceResultWrapper = {};
+            yoloInferenceResultWrapper.rtspIndex = rtspIndex;
+            yoloInferenceResultWrapper.frameId = resizeFrame.frameId;
+            yoloInferenceResultWrapper.yoloOutputs = yoloOutputs;
+
+            // only need to save result, assign it
+            if (writeDetectResultToFile) {
+                yoloInferenceResultWrapper.videoFrame = decodeFrame;
+            }
+            yoloInferenceResultQueue->Push(yoloInferenceResultWrapper, true);
+        }
+    }
+}
+
+/**
+ * Get the yolo post process result (insert result into yoloPostProcessQueue)
+ * > first step: get front data from decode frame yolo inference queue
+ * > second step: input into the yolo model for post process
+ * > third step: yolo post process result into yoloPostProcessResult queue
+ *
+ * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
+ */
+void MultiChannelVideoReasoner::GetYoloPostProcessResult(
+        const MultiChannelVideoReasoner *multiChannelVideoReasoner)
+{
+    // set device
+    MxBase::DeviceContext device;
+    device.devId = (int32_t) multiChannelVideoReasoner->deviceId;
+    APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
+    if (ret != APP_ERR_OK) {
+        LogError << "GetYoloPostProcessResult setDevice failed.";
+        return;
+    }
+
+    // config
+    auto yoloModelWidth = multiChannelVideoReasoner->yoloModelWidth;
+    auto yoloModelHeight = multiChannelVideoReasoner->yoloModelHeight;
+    auto popDecodeFrameWaitTime = multiChannelVideoReasoner->popDecodeFrameWaitTime;
+
+    // data set
+    auto videoFrameInfos = multiChannelVideoReasoner->videoFrameInfos;
+    auto yoloInferenceResultQueue = multiChannelVideoReasoner->yoloInferenceResultQueue;
+    auto yoloPostProcessResultQueue = multiChannelVideoReasoner->yoloPostProcessResultQueue;
+
+    // processor
+    auto yoloDetector = multiChannelVideoReasoner->yoloDetector;
+    auto performanceMonitor = multiChannelVideoReasoner->performanceMonitor;
+
+    while(true) {
+        if (multiChannelVideoReasoner->stopFlag) {
+            LogInfo << "quit yolo post process.";
+            return;
+        }
+
+        if (yoloInferenceResultQueue->IsEmpty()) {
+            continue;
+        }
+
+        // get yolo inference result from queue
+        YoloResultWrapper result;
+        ret = yoloInferenceResultQueue->Pop(result, popDecodeFrameWaitTime);
+        if (ret != APP_ERR_OK) {
+            LogError << "YoloInferenceResultQueue pop failed.";
+            continue;
+        }
+
+        // yolo post process
+        std::vector<std::vector<MxBase::ObjectInfo>> objInfos;
+        auto startTime = std::chrono::high_resolution_clock::now();
+        ret = yoloDetector->PostProcess(result.yoloOutputs,
+                                        videoFrameInfos[result.rtspIndex].width,
+                                        videoFrameInfos[result.rtspIndex].height,
+                                        yoloModelWidth, yoloModelHeight, objInfos);
+        if (ret != APP_ERR_OK) {
+            LogError << "rtsp " << result.rtspIndex <<  " frame " << result.frameId <<
+            " yolo post process failed, ret = " << ret << " " << GetError(ret) << ".";
+            continue;
+        }
+        auto endTime = std::chrono::high_resolution_clock::now();
+        auto costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+        performanceMonitor->Collect(YoloDetectorPostProcessTag, costMs);
+
+        // put post process result into queue
+        result.yoloObjInfos = objInfos;
+        yoloPostProcessResultQueue->Push(result, true);
+    }
+}
+
+/**
+ * Get and save(opt) the final detect result of video frame
+ * > first step: get front data from decode frame yolo post process queue
+ * > second step: get the final detect result from post process result
+ * > third step(opt): save the detect result to file (frameId.jpg)
+ *
+ * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
+ */
+void MultiChannelVideoReasoner::GetAndSaveDetectResult(
+        const MultiChannelVideoReasoner *multiChannelVideoReasoner)
+{
+    // set device
+    MxBase::DeviceContext device;
+    device.devId = (int32_t) multiChannelVideoReasoner->deviceId;
+    APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
+    if (ret != APP_ERR_OK) {
+        LogError << "GetAndSaveDetectResult setDevice failed.";
+        return;
+    }
+
+    // config
+    auto printDetectResult = multiChannelVideoReasoner->printDetectResult;
+    auto writeDetectResultToFile = multiChannelVideoReasoner->writeDetectResultToFile;
+    auto popDecodeFrameWaitTime = multiChannelVideoReasoner->popDecodeFrameWaitTime;
+
+    // data set
+    auto videoFrameInfos = multiChannelVideoReasoner->videoFrameInfos;
+    auto yoloPostProcessResultQueue = multiChannelVideoReasoner->yoloPostProcessResultQueue;
+
+    // processor
+    auto performanceMonitor = multiChannelVideoReasoner->performanceMonitor;
+
+    // check result dir
+    if (writeDetectResultToFile) {
+        Util::CheckAndCreateResultDir(multiChannelVideoReasoner->videoFrameInfos.size());
+    }
+
+    while(true) {
+        if (multiChannelVideoReasoner->stopFlag) {
+            LogInfo << "quit get and save detect result.";
+            return;
+        }
+
+        if (yoloPostProcessResultQueue->IsEmpty()) {
+            continue;
+        }
+
+        // get yolo post process result from queue
+        YoloResultWrapper result;
+        ret = yoloPostProcessResultQueue->Pop(result, popDecodeFrameWaitTime);
+        if (ret != APP_ERR_OK) {
+            LogError << "YoloPostProcessResultQueue pop failed.";
+            continue;
+        }
+
+        // get detect result
+        std::vector<MxBase::ObjectInfo> results;
+        auto startTime = std::chrono::high_resolution_clock::now();
+        results = Util::GetDetectionResult(result.yoloObjInfos, result.rtspIndex,
+                                           result.frameId, printDetectResult);
+        auto endTime = std::chrono::high_resolution_clock::now();
+        auto costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+        performanceMonitor->Collect(GetDetectResultTag, costMs);
+        if (results.empty()) {
+            LogInfo << "rtsp " << result.rtspIndex
+            << " frame " << result.frameId
+            << " no detect result.";
+            continue;
+        }
+
+        // save detect result
+        if (writeDetectResultToFile) {
+            startTime = std::chrono::high_resolution_clock::now();
+            ret = Util::SaveResult(result.videoFrame, results,
+                                   videoFrameInfos[result.rtspIndex],
+                                   result.frameId, result.rtspIndex);
+            if (ret != APP_ERR_OK) {
+                LogError << "Save result failed, ret=" << ret << ".";
+                continue;
+            }
+            endTime = std::chrono::high_resolution_clock::now();
+            costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+            performanceMonitor->Collect(SaveDetectResultTag, costMs);
+        }
     }
 }
 
 /**
  * Get the detect result of all channels
+ * > first step: get front data from decode frame queue
+ * > second step: resize video frame to match model input size
+ * > third step: input into the yolo model for inference and post process
+ * > fourth step: get the final detect result from post process result
+ * > fifth step(opt): save the detect result to file (frameId.jpg)
+ *
  * @param modelWidth const reference to the input width of YoloDetector
  * @param modelHeight const reference to the input height of YoloDetector
  * @param popDecodeFrameWaitTime const reference to wait time when decode frame queue is empty
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
 void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
-        const uint32_t &modelWidth,
-        const uint32_t &modelHeight,
-        const uint32_t &popDecodeFrameWaitTime,
         const MultiChannelVideoReasoner* multiChannelVideoReasoner)
 {
     // set device
@@ -281,10 +557,18 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
         Util::CheckAndCreateResultDir(multiChannelVideoReasoner->videoFrameInfos.size());
     }
 
+    // config
+    auto yoloModelWidth = multiChannelVideoReasoner->yoloModelWidth;
+    auto yoloModelHeight = multiChannelVideoReasoner->yoloModelHeight;
+    auto popDecodeFrameWaitTime = multiChannelVideoReasoner->popDecodeFrameWaitTime;
+
+    // data set
+    auto videoFrameInfos = multiChannelVideoReasoner->videoFrameInfos;
+    auto decodeFrameQueueMap = multiChannelVideoReasoner->decodeFrameQueueMap;
+
+    // processor
     auto imageResizer = multiChannelVideoReasoner->imageResizer;
     auto yoloDetector = multiChannelVideoReasoner->yoloDetector;
-    auto decodeFrameQueueMap = multiChannelVideoReasoner->decodeFrameQueueMap;
-    auto videoFrameInfos = multiChannelVideoReasoner->videoFrameInfos;
     auto performanceMonitor = multiChannelVideoReasoner->performanceMonitor;
 
     while(true) {
@@ -321,33 +605,38 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
             auto startTime = std::chrono::high_resolution_clock::now();
             ret = imageResizer->ResizeFromMemory(*decodeFrame,
                                                  videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height,
-                                                 modelWidth, modelHeight, resizeFrame);
+                                                 yoloModelWidth, yoloModelHeight, resizeFrame);
             if (ret != APP_ERR_OK) {
                 LogError << "Resize image failed, ret = " << ret << " " << GetError(ret);
                 continue;
             }
             auto endTime = std::chrono::high_resolution_clock::now();
             double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-            performanceMonitor->Collect("ImageResizer", costMs);
+            performanceMonitor->Collect(ImageResizerTag, costMs);
 
             // yolo detect
             std::vector<std::vector<MxBase::ObjectInfo>> objInfos;
             startTime = std::chrono::high_resolution_clock::now();
             ret = yoloDetector->Detect(resizeFrame, objInfos,
                                        videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height,
-                                       modelWidth, modelHeight);
+                                       yoloModelWidth, yoloModelHeight);
             if (ret != APP_ERR_OK) {
                 LogError << "Yolo detect image failed, ret = " << ret << " " << GetError(ret) << ".";
                 continue;
             }
             endTime = std::chrono::high_resolution_clock::now();
             costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-            performanceMonitor->Collect("YoloDetector", costMs);
+            performanceMonitor->Collect(YoloDetectorTag, costMs);
 
             // get detect result
             std::vector<MxBase::ObjectInfo> results;
+            startTime = std::chrono::high_resolution_clock::now();
             results = Util::GetDetectionResult(objInfos, rtspIndex, resizeFrame.frameId,
                                                multiChannelVideoReasoner->printDetectResult);
+            endTime = std::chrono::high_resolution_clock::now();
+            costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+            performanceMonitor->Collect(GetDetectResultTag, costMs);
+
             if (results.empty()) {
                 LogInfo << "rtsp " << rtspIndex
                 << " frame " << resizeFrame.frameId
@@ -357,12 +646,16 @@ void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
 
             // save detect result
             if (multiChannelVideoReasoner->writeDetectResultToFile) {
+                startTime = std::chrono::high_resolution_clock::now();
                 ret = Util::SaveResult(decodeFrame, results, videoFrameInfos[rtspIndex],
                                        resizeFrame.frameId, rtspIndex);
                 if (ret != APP_ERR_OK) {
                     LogError << "Save result failed, ret=" << ret << ".";
                     continue;
                 }
+                endTime = std::chrono::high_resolution_clock::now();
+                costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+                performanceMonitor->Collect(SaveDetectResultTag, costMs);
             }
         }
     }
@@ -453,15 +746,33 @@ APP_ERROR MultiChannelVideoReasoner::CreateYoloDetector(const ReasonerConfig &co
  */
 APP_ERROR MultiChannelVideoReasoner::CreatePerformanceMonitor(const ReasonerConfig &config)
 {
-    uint32_t size = config.rtspList.size();
-
     std::vector<std::string> objects;
+
+    // add StreamPuller and VideoDecoder performance tag
+    uint32_t size = config.rtspList.size();
     for (uint32_t i = 0; i < size; i++) {
-        objects.push_back("StreamPuller " + std::to_string(i + 1));
-        objects.push_back("VideoDecoder " + std::to_string(i + 1));
+        objects.push_back(StreamPullerTag + " " + std::to_string(i + 1));
+        objects.push_back(VideoDecoderTag + " " + std::to_string(i + 1));
     }
-    objects.emplace_back("ImageResizer");
-    objects.emplace_back("YoloDetector");
+
+    // add ImageResizer performance tag
+    objects.emplace_back(ImageResizerTag);
+
+    // add YoloDetector performance tag
+    if (config.enableIndependentThreadForEachDetectStep) {
+        objects.emplace_back(YoloDetectorInferTag);
+        objects.emplace_back(YoloDetectorPostProcessTag);
+    } else {
+        objects.emplace_back(YoloDetectorTag);
+    }
+
+    // add get detect result performance tag
+    objects.emplace_back(GetDetectResultTag);
+
+    // add save detect result performance tag
+    if (config.writeDetectResultToFile) {
+        objects.emplace_back(SaveDetectResultTag);
+    }
 
     performanceMonitor = std::make_shared<AscendPerformanceMonitor::PerformanceMonitor>();
     APP_ERROR ret = performanceMonitor->Init(objects, config.enablePerformanceMonitorPrint);
@@ -546,12 +857,80 @@ APP_ERROR MultiChannelVideoReasoner::DestroyPerformanceMonitor()
  * Clear decode frame queue map, video frame infos, StreamPuller and VideoDecoder vector
  */
 void MultiChannelVideoReasoner::ClearData() {
+    LogInfo << "ClearData start.";
+
     // stop and clear queue
     Util::StopAndClearQueueMap(decodeFrameQueueMap);
     decodeFrameQueueMap.clear();
+    if (enableIndependentThreadForEachDetectStep) {
+        yoloInferenceResultQueue->Stop();
+        yoloInferenceResultQueue->Clear();
+        yoloPostProcessResultQueue->Stop();
+        yoloPostProcessResultQueue->Clear();
+    }
 
     videoFrameInfos.clear();
     videoDecoders.clear();
     streamPullers.clear();
+
+    LogInfo << "ClearData successful.";
 }
 
+/**
+ * Start work threads of multi-channel video reasoner and put them into set
+ * > Thread Type-1: video stream pull and decode
+ * > Thread Type-2: image resize and yolo infer
+ * > Thread Type-3: yolo post process
+ * > Thread Type-4: get and save final detect result
+ * > Thread Type-5: yolo detect (integration steps 2-4)
+ * > Thread Type-5: performance monitor
+ *
+ * @param workThreads reference to work threads set
+ */
+void MultiChannelVideoReasoner::StartWorkThreads(std::vector<std::thread> &workThreads)
+{
+    LogInfo << "Start work threads...";
+
+    // start video pull and decode threads
+    for (uint32_t i = 0; i < streamPullers.size(); i++) {
+        auto decodeFrameQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(maxDecodeFrameQueueLength);
+        std::thread getDecodeVideoFrame(GetDecodeVideoFrame,
+                                        streamPullers[i], videoDecoders[i], i, decodeFrameQueue, this);
+        LogInfo << "video stream pull and decode thread " << i + 1 << " start.";
+
+        // save
+        workThreads.push_back(std::move(getDecodeVideoFrame));
+        decodeFrameQueueMap.insert(std::pair<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>
+                                               (i, decodeFrameQueue));
+    }
+
+    if (!enableIndependentThreadForEachDetectStep) {
+        // start yolo detect and get, save detect result thread
+        std::thread getMultiChannelDetectionResult(GetMultiChannelDetectionResult, this);
+        workThreads.push_back(std::move(getMultiChannelDetectionResult));
+        LogInfo << "yolo detect thread start.";
+    } else {
+        // start yolo infer thread
+        yoloInferenceResultQueue = std::make_shared<BlockingQueue<YoloResultWrapper>>(maxDecodeFrameQueueLength * 2);
+        std::thread getYoloInferenceResult(GetYoloInferenceResult, this);
+        workThreads.push_back(std::move(getYoloInferenceResult));
+        LogInfo << "yolo infer thread start.";
+
+        // start yolo post process thread
+        yoloPostProcessResultQueue = std::make_shared<BlockingQueue<YoloResultWrapper>>(maxDecodeFrameQueueLength * 2);
+        std::thread getYoloPostProcessResult(GetYoloPostProcessResult, this);
+        workThreads.push_back(std::move(getYoloPostProcessResult));
+        LogInfo << "yolo post process thread start.";
+
+        // start get and save detect result thread
+        std::thread getAndSaveDetectResult(GetAndSaveDetectResult, this);
+        workThreads.push_back(std::move(getAndSaveDetectResult));
+        LogInfo << "get and save detect result thread start.";
+    }
+
+    // start performance monitor thread
+    std::thread monitorPerformance(performanceMonitor->PrintStatistics,
+                                   performanceMonitor, intervalPerformanceMonitorPrint);
+    workThreads.push_back(std::move(monitorPerformance));
+    LogInfo << "performance monitor thread start.";
+}

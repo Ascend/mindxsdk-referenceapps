@@ -24,6 +24,20 @@
 #include "BlockingQueue/BlockingQueue.h"
 #include "Util/PerformanceMonitor/PerformanceMonitor.h"
 
+#include <thread>
+
+namespace {
+    // performance monitor tag
+    std::string StreamPullerTag = "StreamPuller";
+    std::string VideoDecoderTag = "VideoDecoder";
+    std::string ImageResizerTag = "ImageResizer";
+    std::string YoloDetectorTag = "YoloDetector";
+    std::string YoloDetectorInferTag = YoloDetectorTag + " Infer";
+    std::string YoloDetectorPostProcessTag = YoloDetectorTag + " PostProcess";
+    std::string GetDetectResultTag = "GetDetectResult";
+    std::string SaveDetectResultTag = "SaveDetectResult";
+}
+
 struct ReasonerConfig {
     uint32_t deviceId;
     uint32_t baseVideoChannelId;
@@ -53,6 +67,16 @@ struct ReasonerConfig {
     bool writeDetectResultToFile = false;
     // whether print performance message, default: true
     bool enablePerformanceMonitorPrint = true;
+    // whether enable independent thread for each detect step, default: true
+    bool enableIndependentThreadForEachDetectStep = true;
+};
+
+struct YoloResultWrapper {
+    uint32_t rtspIndex;
+    uint32_t frameId;
+    std::shared_ptr<MxBase::MemoryData> videoFrame;
+    std::vector<MxBase::TensorBase> yoloOutputs;
+    std::vector<std::vector<MxBase::ObjectInfo>> yoloObjInfos;
 };
 
 class MultiChannelVideoReasoner {
@@ -70,9 +94,14 @@ private:
                                     const int &index,
                                     const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
                                     const MultiChannelVideoReasoner* multiChannelVideoReasoner);
-    static void GetMultiChannelDetectionResult(const uint32_t &modelWidth, const uint32_t &modelHeight,
-                                               const uint32_t &popDecodeFrameWaitTime,
-                                               const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+
+    static void GetYoloInferenceResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+
+    static void GetYoloPostProcessResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+
+    static void GetAndSaveDetectResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+
+    static void GetMultiChannelDetectionResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
 
 private:
     APP_ERROR CreateStreamPullerAndVideoDecoder(const ReasonerConfig &config);
@@ -86,6 +115,8 @@ private:
     APP_ERROR DestroyPerformanceMonitor();
 
     void ClearData();
+
+    void StartWorkThreads(std::vector<std::thread>& workThreads);
 
 public:
     static bool _s_force_stop;
@@ -102,6 +133,7 @@ private:
     uint32_t intervalMainThreadControlCheck;
     bool printDetectResult;
     bool writeDetectResultToFile;
+    bool enableIndependentThreadForEachDetectStep;
 
 private:
     std::vector<AscendStreamPuller::VideoFrameInfo> videoFrameInfos;
@@ -112,6 +144,10 @@ private:
     std::shared_ptr<AscendYoloDetector::YoloDetector> yoloDetector;
     std::shared_ptr<AscendPerformanceMonitor::PerformanceMonitor> performanceMonitor;
 
+    // queue which save the yolo inference result
+    std::shared_ptr<BlockingQueue<YoloResultWrapper>> yoloInferenceResultQueue;
+    // queue which save the yolo post process result
+    std::shared_ptr<BlockingQueue<YoloResultWrapper>> yoloPostProcessResultQueue;
     // map which save the pointers to decode frame queue
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
 

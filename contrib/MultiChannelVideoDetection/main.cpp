@@ -87,13 +87,14 @@ int main(int argc, char* argv[])
     reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
     reasonerConfig.yoloModelWidth = 416;
     reasonerConfig.yoloModelHeight = 416;
-    reasonerConfig.maxDecodeFrameQueueLength = 400;
+    reasonerConfig.maxDecodeFrameQueueLength = 200;
     reasonerConfig.popDecodeFrameWaitTime = 10;
-    reasonerConfig.intervalPerformanceMonitorPrint = 5;
+    reasonerConfig.intervalPerformanceMonitorPrint = 1;
     reasonerConfig.intervalMainThreadControlCheck = 2;
     reasonerConfig.printDetectResult = true;
     reasonerConfig.writeDetectResultToFile = false;
     reasonerConfig.enablePerformanceMonitorPrint = true;
+    reasonerConfig.enableIndependentThreadForEachDetectStep = true;
 
     // init
     ret = multiChannelVideoReasoner->Init(reasonerConfig);
@@ -110,6 +111,7 @@ int main(int argc, char* argv[])
     ret = multiChannelVideoReasoner->DeInit();
     if (ret != APP_ERR_OK) {
         LogError << "Deinit multi channel video infer failed.";
+        MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
 

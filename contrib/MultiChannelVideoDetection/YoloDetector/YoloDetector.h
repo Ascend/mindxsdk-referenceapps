@@ -64,16 +64,17 @@ public:
     APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
                      const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
                      const uint32_t &modelWidth, const uint32_t &modelHeight);
+    APP_ERROR Inference(const MxBase::DvppDataInfo &imageInfo, std::vector<MxBase::TensorBase> &outputs);
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
+                          const uint32_t &originWidth, const uint32_t &originHeight,
+                          const uint32_t &modelWidth, const uint32_t &modelHeight,
+                          std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
 
 private:
     APP_ERROR InitModel(const YoloInitParam &initParam);
     APP_ERROR InitPostProcess(const YoloInitParam &initParam);
     APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
-    APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
-                          const uint32_t &originWidth, const uint32_t &originHeight,
-                          const uint32_t &modelWidth, const uint32_t &modelHeight,
-                          std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
+    APP_ERROR InternalInference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
 
 protected:
     static APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);

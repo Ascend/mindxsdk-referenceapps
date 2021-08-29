@@ -97,7 +97,7 @@ void PerformanceMonitor::Print(int currTime)
             totalTimeCost += timeCostPair.second;
         }
         auto average = total == 0 ? 0 : totalTimeCost / (double) total;
-        LogInfo << iter->first << " total process: " << total << " average timecost: " << average << "ms.";
+        LogInfo << iter->first << " total process frames: " << total << " average timecost: " << average << "ms.";
         data[iter->first].clear();
     }
 }
