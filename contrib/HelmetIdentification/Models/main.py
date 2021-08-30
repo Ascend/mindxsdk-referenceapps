@@ -36,7 +36,7 @@ if ret != 0:
 
 
 # Obtain the inference result by specifying streamName and keyVec
-# The data that needs to be obtained is searched by the plug-in name
+# The data that needs to be obtained is searched by the plugin name
 # Stream name
 streamName = b'Detection'
 keyVec0 = StreamManagerApi.StringVector()
@@ -51,9 +51,7 @@ keyVec1.push_back(b"ReservedFrameInfo")
 keyVec1.push_back(b"mxpi_videodecoder0")
 keyVec1.push_back(b"mxpi_videodecoder1")
 i = 0
-
 while True:
-    t0 = time.time()
     # Get data through GetProtobuf interface
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
     # output errorCode
@@ -139,28 +137,19 @@ while True:
                     lineType=cv2.LINE_AA)
         # rectangle color [255,255,255]
         cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
-
-        # Save pictures in two ways
-        if FrameList0.channelId == 0:
-            oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
-                FrameList0.frameId) + '.jpg'
-            # Inference result save path
-            infer_imgfile = './output/one/inference/image' + str(FrameList0.channelId) + '-' + str(
-                FrameList0.frameId) + '.jpg'
-            # Warning result save path
-            cv2.imwrite(oringe_imgfile, img0)
-            # If age is 1, then output this picture to inference
-            if bboxes['trackid'] is not None and bboxes['age'] == 1:
-                cv2.imwrite(infer_imgfile, img0)
-        else:
-            # when channelId equal 1
-            oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
-                FrameList0.frameId) + '.jpg'
-            infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
-                FrameList0.frameId) + '.jpg'
-            cv2.imwrite(oringe_imgfile, img0)
-            if bboxes['trackid'] is not None and bboxes['age'] == 1:
-                cv2.imwrite(infer_imgfile, img0)
+        if bboxes['trackid'] is not None and bboxes['age'] == 1:
+            print("Warning:Not wearing a helmet,FrameId:{},InferenceId:{}".format(FrameList0.frameId,bboxes['trackid']))
+    # Save pictures in two ways
+    if FrameList0.channelId == 0:
+        oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
+            FrameList0.frameId) + '.jpg'
+        # Warning result save path
+        cv2.imwrite(oringe_imgfile, img0)
+    else:
+        # when channelId equal 1
+        oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
+            FrameList0.frameId) + '.jpg'
+        cv2.imwrite(oringe_imgfile, img0)
 
     # output 6 frame info per inference
     for i in range(6):
