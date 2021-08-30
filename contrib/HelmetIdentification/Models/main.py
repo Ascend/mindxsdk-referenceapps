@@ -136,6 +136,8 @@ while True:
                         lineType=cv2.LINE_AA)
             # rectangle color [255,255,255]
             cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
+            if bboxes['trackid'] is not None and bboxes['age'] == 1:
+                cv2.imwrite(infer_imgfile, img0)
 
     # Save pictures in two ways
     if FrameList0.channelId == 0:
