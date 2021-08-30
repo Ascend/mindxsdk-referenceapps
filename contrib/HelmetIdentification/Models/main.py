@@ -20,7 +20,7 @@ import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
 # init stream manager
-streamManagerApi = StreamManagerApi()
+streamManagerApi = StreamManagerApi.StreamManagerApi()
 ret = streamManagerApi.InitManager()
 if ret != 0:
     print("Failed to init Stream manager, ret=%s" % str(ret))
