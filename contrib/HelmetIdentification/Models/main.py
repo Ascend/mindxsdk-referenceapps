@@ -34,7 +34,6 @@ ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
 
-
 # Obtain the inference result by specifying streamName and keyVec
 # The data that needs to be obtained is searched by the plugin name
 # Stream name
@@ -139,6 +138,7 @@ while True:
         cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
         if bboxes['trackid'] is not None and bboxes['age'] == 1:
             print("Warning:Not wearing a helmet,FrameId:{},InferenceId:{}".format(FrameList0.frameId,bboxes['trackid']))
+
     # Save pictures in two ways
     if FrameList0.channelId == 0:
         oringe_imgfile = './output/one/image' + str(FrameList0.channelId) + '-' + str(
@@ -192,5 +192,6 @@ while True:
             if os.path.exists(oringe_imgfile):
                 os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img)
+
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
