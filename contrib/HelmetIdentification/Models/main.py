@@ -141,13 +141,13 @@ while True:
             print("Warning:Not wearing a helmet,FrameId:{},InferenceId:{}".format(FrameList0.frameId,bboxes['trackid']))
     # Save pictures in two ways
     if FrameList0.channelId == 0:
-        oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
+        oringe_imgfile = './output/one/image' + str(FrameList0.channelId) + '-' + str(
             FrameList0.frameId) + '.jpg'
         # Warning result save path
         cv2.imwrite(oringe_imgfile, img0)
     else:
         # when channelId equal 1
-        oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
+        oringe_imgfile = './output/two/image' + str(FrameList0.channelId) + '-' + str(
             FrameList0.frameId) + '.jpg'
         cv2.imwrite(oringe_imgfile, img0)
 
@@ -180,14 +180,14 @@ while True:
         img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
         # Save pictures in two ways
         if FrameList1.channelId == 0:
-            oringe_imgfile = './output/one/image/image' + str(FrameList1.channelId) + '-' + str(
+            oringe_imgfile = './output/one/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
             if os.path.exists(oringe_imgfile):
                 os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img)
         else:
             # when channelId equal 1
-            oringe_imgfile = './output/two/image/image' + str(FrameList1.channelId) + '-' + str(
+            oringe_imgfile = './output/two/image' + str(FrameList1.channelId) + '-' + str(
                 FrameList1.frameId) + '.jpg'
             if os.path.exists(oringe_imgfile):
                 os.remove(oringe_imgfile)
