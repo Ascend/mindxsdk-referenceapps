@@ -120,3 +120,4 @@ if __name__ == '__main__':
     result = np.uint8(background * maskExpansion + portrait * (1 - maskExpansion))
     # save the new image in current catalog
     cv2.imwrite('result/result.jpg', result)
+    
