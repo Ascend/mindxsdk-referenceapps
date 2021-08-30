@@ -116,6 +116,7 @@ while True:
     for bbox0 in imgLi1:
         if bbox0[5] == 'head':
             imgLi2.append(bbox0)
+    imgLi2 = []
     for bbox1 in imgLi2:
     # Determine whether it is helmet
         bboxes = {'x0': int(bbox1[0]),
