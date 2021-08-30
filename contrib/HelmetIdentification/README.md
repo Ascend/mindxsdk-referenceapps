@@ -122,16 +122,16 @@ python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 6
   1. 利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
 
 ```shell
-python3.7 modify_yolov5s_slice.py yolov5_s.onnx
+python3.7 modify_yolov5s_slice.py YOLOv5_s.onnx
 ```
 
 2. 然后利用modify_yolov5s_slice.py脚本修改模型slice算子，运行如下命令：
 
 ```bash
-python3.7 modify_yolov5s_slice.py yolov5_s.onnx
+python3.7 modify_yolov5s_slice.py YOLOv5_s.onnx
 ```
 
-可以得到修改好后的yolov5_s.onnx模型
+可以得到修改好后的YOLOv5_s.onnx模型
 
 3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下：
 
@@ -197,7 +197,7 @@ aipp_op{
 ```
 
 注：1. [aipp配置文件教程链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)
-   2.atc-env.sh脚本内 ${Home} 为onnx文件所在路径。
+   2.atc-env.sh脚本内 Home 为onnx文件所在路径。
 
 
 #### 步骤2 模型推理 
@@ -289,11 +289,11 @@ test.264可替换成任意上传至当前目录的[264格式文件](https://gite
 python3.7.5 main.py
 ```
 
-即可得到输出结果，输出结果将原来的两路视频分为两个文件保存，oringe_imgfile用于设置图像输出路径，infer_imgfile用于设置告警图片输出路径。用户可自定义设置任意文件路径。本项目文件放置规范如下：
+即可得到输出结果，输出结果将原来的两路视频分为两个文件保存，oringe_imgfile用于设置图像输出路径,用户需手动建立输出文件，文件路径可自定义设置。本项目文件放置规范如下：
 
 ![image3](https://gitee.com/liu-kai6334/mindxsdk-referenceapps/raw/master/contrib/HelmetIdentification/image/image3.jpg)
 
-所有数据放置于output中，one 、two为两路视频输出文件。image用于存放模型识别后图片。inference用于存放识别出的未佩戴安全帽目标所在帧，每个目标只输出一次。
+所有数据放置于output中，one 、two为两路视频输出文件。
 
 #### 步骤3 测试性能与精度
 
