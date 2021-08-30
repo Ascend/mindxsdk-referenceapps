@@ -45,8 +45,8 @@ if __name__ == '__main__':
     streamManager = StreamManagerApi()
     ret = streamManager.InitManager()
     if ret != 0:
-        print("Failed to init Stream manager, ret=%s" % str(ret))
-        sys.exit()
+        errrorMsg = "Failed to init Stream manager, ret=%s" % str(ret)
+        raise AssertionError(errrorMsg)
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
@@ -55,20 +55,20 @@ if __name__ == '__main__':
 
     ret = streamManager.CreateMultipleStreams(pipelineStr)
     if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
-        sys.exit()
+        errorMsg ="Failed to create Stream, ret=%s" % str(ret)
+        raise AssertionError(errorMsg)
 
     # prepare the input of the stream #begin
 
     # check the background img
     dataInput = MxDataInput()
     if os.path.exists(sys.argv[1]) != 1:
-        print("The background image does not exist.")
-
+        errorMsg = 'The background image does not exist.'
+        raise AssertionError(errorMsg)
     # check the portrait img
     if os.path.exists(sys.argv[2]) != 1:
-        print("The portrait image does not exist.")
-
+        errorMsg = 'The portrait image does not exist.'
+        raise AssertionError(errorMsg)
     with open(sys.argv[2], 'rb') as f:
         dataInput.data = f.read()
     # prepare the input of the stream #end
@@ -77,8 +77,8 @@ if __name__ == '__main__':
     uniqueId = streamManager.SendData(STREAM_NAME, IN_PLUGIN_ID, dataInput)
 
     if uniqueId < 0:
-        print("Failed to send data to stream.")
-        sys.exit()
+        errorMsg = 'Failed to send data to stream.'
+        raise AssertionError(errorMsg)
 
     # construct the resulted returned by the stream
     keys = [b"mxpi_tensorinfer0"]
@@ -89,9 +89,13 @@ if __name__ == '__main__':
     inferResult = streamManager.GetProtobuf(STREAM_NAME, 0, keyVec)
 
     # check whether the inferred results is valid or not
+    if len(inferResult) == 0:
+        errorMsg = 'unable to get effective infer results, please check the stream log for details'
+        raise IndexError(errorMsg)
     if inferResult[0].errorCode != 0:
-        print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (inferResult[0].errorCode, inferResult[0].messageName))
-        sys.exit()
+        errorMsg = "GetProtobuf error. errorCode=%d, errorMsg=%s" % (
+        inferResult[0].errorCode, inferResult[0].messageName)
+        raise AssertionError(errorMsg)
 
     # change output tensors into numpy array based on the model's output shape.
     result = MxpiDataType.MxpiTensorPackageList()
