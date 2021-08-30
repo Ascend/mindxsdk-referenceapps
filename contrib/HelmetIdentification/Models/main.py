@@ -112,62 +112,62 @@ while True:
     color = [random.randint(0, 255) for _ in range(3)]
     tl = (round(0.0002 * (img0.shape[0] + img0.shape[1])) + 0.35)
     tf = max(tl - 1, 1)
-    bbox = []
-    for bbox in imgLi1:
-        if bbox[5] == 'head':
-        # Determine whether it is helmet
-            bboxes = {'x0': int(bbox[0]),
-                      'x1': int(bbox[1]),
-                      'y0': int(bbox[2]),
-                      'y1': int(bbox[3]),
-                      'confidence': round(bbox[4], 4),
-                      'trackid': int(bbox[6]),
-                      'age': int(bbox[7])
-                      }
-            print(bboxes)
-            L1 = []
-            L1.append(int(bboxes['x0']))
-            L1.append(int(bboxes['x1']))
-            L1.append(int(bboxes['y0']))
-            L1.append(int(bboxes['y1']))
-            L1 = np.array(L1, dtype=np.int32)
-            # Draw rectangle
-            cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
-                        lineType=cv2.LINE_AA)
-            # rectangle color [255,255,255]
-            cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
-            if bboxes['trackid'] is not None and bboxes['age'] == 1:
-                cv2.imwrite(infer_imgfile, img0)
+    # Add the inference results of head to imgLi2
+    for bbox0 in imgLi1:
+        if bbox0[5] == 'head':
+            imgLi2.append(bbox0)
+    for bbox1 in imgLi2:
+    # Determine whether it is helmet
+        bboxes = {'x0': int(bbox1[0]),
+                    'x1': int(bbox1[1]),
+                    'y0': int(bbox1[2]),
+                    'y1': int(bbox1[3]),
+                    'confidence': round(bbox1[4], 4),
+                    'trackid': int(bbox1[6]),
+                    'age': int(bbox1[7])
+                    }
+        print(bboxes)
+        L1 = []
+        L1.append(int(bboxes['x0']))
+        L1.append(int(bboxes['x1']))
+        L1.append(int(bboxes['y0']))
+        L1.append(int(bboxes['y1']))
+        L1 = np.array(L1, dtype=np.int32)
+        # Draw rectangle
+        cv2.putText(img0, str(bboxes['confidence']), (L1[0], L1[2]), 0, tl, [225, 255, 255], thickness=tf,
+                    lineType=cv2.LINE_AA)
+        # rectangle color [255,255,255]
+        cv2.rectangle(img0, (L1[0], L1[2]), (L1[1], L1[3]), (0, 0, 255), 2)
 
-    # Save pictures in two ways
-    if FrameList0.channelId == 0:
-        oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
-            FrameList0.frameId) + '.jpg'
-        # Inference result save path
-        infer_imgfile = './output/one/inference/image' + str(FrameList0.channelId) + '-' + str(
-            FrameList0.frameId) + '.jpg'
-        # Warning result save path
-        if os.path.exists(oringe_imgfile):
-            os.remove(oringe_imgfile)
-        cv2.imwrite(oringe_imgfile, img0)
-        # If age is 1, then output this picture to inference
-        if bboxes['trackid'] is not None and bboxes['age'] == 1:
-            if os.path.exists(infer_imgfile):
-                os.remove(infer_imgfile)
-            cv2.imwrite(infer_imgfile, img0)
-    else:
-        # when channelId equal 1
-        oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
-            FrameList0.frameId) + '.jpg'
-        infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
-            FrameList0.frameId) + '.jpg'
-        if os.path.exists(oringe_imgfile):
-            os.remove(oringe_imgfile)
-        cv2.imwrite(oringe_imgfile, img0)
-        if bboxes['trackid'] is not None and bboxes['age'] == 1:
-            if os.path.exists(infer_imgfile):
-                os.remove(infer_imgfile)
-            cv2.imwrite(infer_imgfile, img0)
+        # Save pictures in two ways
+        if FrameList0.channelId == 0:
+            oringe_imgfile = './output/one/image/image' + str(FrameList0.channelId) + '-' + str(
+                FrameList0.frameId) + '.jpg'
+            # Inference result save path
+            infer_imgfile = './output/one/inference/image' + str(FrameList0.channelId) + '-' + str(
+                FrameList0.frameId) + '.jpg'
+            # Warning result save path
+            if os.path.exists(oringe_imgfile):
+                os.remove(oringe_imgfile)
+            cv2.imwrite(oringe_imgfile, img0)
+            # If age is 1, then output this picture to inference
+            if bboxes['trackid'] is not None and bboxes['age'] == 1:
+                if os.path.exists(infer_imgfile):
+                    os.remove(infer_imgfile)
+                cv2.imwrite(infer_imgfile, img0)
+        else:
+            # when channelId equal 1
+            oringe_imgfile = './output/two/image/image' + str(FrameList0.channelId) + '-' + str(
+                FrameList0.frameId) + '.jpg'
+            infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
+                FrameList0.frameId) + '.jpg'
+            if os.path.exists(oringe_imgfile):
+                os.remove(oringe_imgfile)
+            cv2.imwrite(oringe_imgfile, img0)
+            if bboxes['trackid'] is not None and bboxes['age'] == 1:
+                if os.path.exists(infer_imgfile):
+                    os.remove(infer_imgfile)
+                cv2.imwrite(infer_imgfile, img0)
 
     # output 6 frame info per inference
     for i in range(6):
