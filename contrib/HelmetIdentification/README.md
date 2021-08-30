@@ -222,7 +222,7 @@ ANCHOR_DIM=3
 MODEL_TYPE=1
 RESIZE_FLAG=0
 ```
-注：以上四个参数为相应文件所在路径。
+注：pipline中以上四个参数要修改为相应文件所在绝对路径。
 
 2.pipline中mxpi_selectedframe插件完成视频跳帧。对于输入帧率为24fps输入视频进行每三帧抽一帧进行识别。实现8fps的帧率。
 
@@ -237,7 +237,7 @@ cmake ..
 make -j
 ```
 
-编译成功后将产生**libmxpi_selectedframe.so**文件，文件生成位置在build目录下。将其复制至SDK的插件库中
+编译成功后将产生**libmxpi_selectedframe.so**文件，文件生成位置在build目录下。将其复制至SDK的插件库中(./MindX_SDK/mxVision/lib/plugins)
 
  注：[插件编译生成教程](https://support.huaweicloud.com/mindxsdk201/index.html)在《用户手册》深入开发章节
 
