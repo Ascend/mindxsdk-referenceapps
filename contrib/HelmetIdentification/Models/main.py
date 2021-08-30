@@ -95,6 +95,7 @@ while True:
     t1 = time.time()
     # put inference into dict,
     imgLi1 = []
+    imgLi2 = []
     for k in range(len(ObjectList.objectVec)):
         imgLi = [round(ObjectListData[k].x0, 4), round(ObjectListData[k].x1, 4), round(ObjectListData[k].y0, 4),
                  round(ObjectListData[k].y1, 4),
@@ -116,7 +117,6 @@ while True:
     for bbox0 in imgLi1:
         if bbox0[5] == 'head':
             imgLi2.append(bbox0)
-    imgLi2 = []
     for bbox1 in imgLi2:
     # Determine whether it is helmet
         bboxes = {'x0': int(bbox1[0]),
