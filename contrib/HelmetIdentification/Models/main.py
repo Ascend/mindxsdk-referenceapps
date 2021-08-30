@@ -147,13 +147,9 @@ while True:
             infer_imgfile = './output/one/inference/image' + str(FrameList0.channelId) + '-' + str(
                 FrameList0.frameId) + '.jpg'
             # Warning result save path
-            if os.path.exists(oringe_imgfile):
-                os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img0)
             # If age is 1, then output this picture to inference
             if bboxes['trackid'] is not None and bboxes['age'] == 1:
-                if os.path.exists(infer_imgfile):
-                    os.remove(infer_imgfile)
                 cv2.imwrite(infer_imgfile, img0)
         else:
             # when channelId equal 1
@@ -161,12 +157,8 @@ while True:
                 FrameList0.frameId) + '.jpg'
             infer_imgfile = './output/two/inference/image' + str(FrameList0.channelId) + '-' + str(
                 FrameList0.frameId) + '.jpg'
-            if os.path.exists(oringe_imgfile):
-                os.remove(oringe_imgfile)
             cv2.imwrite(oringe_imgfile, img0)
             if bboxes['trackid'] is not None and bboxes['age'] == 1:
-                if os.path.exists(infer_imgfile):
-                    os.remove(infer_imgfile)
                 cv2.imwrite(infer_imgfile, img0)
 
     # output 6 frame info per inference
