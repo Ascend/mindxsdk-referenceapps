@@ -49,7 +49,7 @@ def speaker_recognition(embedding, speaker_name, enroll_embedding_dir, thres=0.7
         if max_score < thres:
             print("The speaker is not included in the voice print library")
             print("Register the current speaker...")
-            if len(enroll_speakers) <= max_num_enroll_speakers:
+            if len(enroll_speakers) < max_num_enroll_speakers:
                 np.save(os.path.join(enroll_embedding_dir, speaker_name + ".npy"), embedding)
                 print("{} registration complete!".format(speaker_name))
             else:
