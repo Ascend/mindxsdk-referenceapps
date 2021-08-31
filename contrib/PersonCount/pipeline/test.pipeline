@@ -27,10 +27,6 @@ pipeline = {
                 "props": {
                     "dataSource":"mxpi_imageresize0",
                     "modelPath": "model/count_person_8.caffe.om",
-                    #"dynamicStrategy":"Lower"
-                    #"postProcessConfigPath": "models/insert_op.cfg",
-                    #"labelPath": "/home/nku_wang3/MindX_SDK/mxVision/samples/mxVision/models/yolov3/coco.names", #need to rewrite
-                    #"postProcessLibPath": "/home/nku_wang3/MindX_SDK/mxVision-2.0.2/lib/libMpYOLOv3PostProcessor.so"  #need to rewrite
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "mxpi_objectpostprocessor0"
@@ -42,7 +38,6 @@ pipeline = {
                         "postProcessConfigPath": "config/insert_op.cfg",
                         "labelPath": "config/person.names",
                         "postProcessLibPath": "Plugin1/build/libcountpersonpostprocess.so",
-                        #"className":"Count_PersonPostProcessor",
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "appsink0"
