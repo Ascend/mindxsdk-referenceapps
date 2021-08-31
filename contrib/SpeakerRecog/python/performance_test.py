@@ -51,10 +51,13 @@ if __name__ == "__main__":
     start = time.time()
     for idx, speaker in enumerate(speakers):
         # get audio path
+        # the audio should be in wav format
         all_wav_paths = utils.get_all_type_paths(os.path.join(wav_dir, speaker), ".wav")
+        # If wav format audio is not available, an exception alert will appear
         if len(all_wav_paths) == 0:
             print('There is no wav audio in {}!'.format(os.path.join(wav_dir, speaker)))
             print('Please change the audio in wav format!')
+            # If wav format audio is not available, the program will exit.
             exit()
         all_wav_paths.sort()
         all_wav_num += len(all_wav_paths)
