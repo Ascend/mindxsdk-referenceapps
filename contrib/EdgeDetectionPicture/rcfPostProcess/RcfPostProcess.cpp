@@ -42,8 +42,8 @@ APP_ERROR RcfPostProcess::DeInit() {
 }
 
 
-static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBase &output, const uint32_t &width, const uint32_t &height)
-{   
+static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBase &output, 
+		              const uint32_t &width, const uint32_t &height) {   
     auto inputShape = input.GetShape();
     uint32_t h = inputShape[2];
     uint32_t w = inputShape[3];
@@ -51,7 +51,8 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
     cv::Mat outputMat;
     cv::resize(inputMat, outputMat, cv::Size(width, height));
     std::vector<uint32_t> outputShape = {1, 1, height, width};
-    MxBase::TensorBase tensor(outputShape, MxBase::TensorDataType::TENSOR_DTYPE_FLOAT32, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
+    MxBase::TensorBase tensor(outputShape, MxBase::TensorDataType::TENSOR_DTYPE_FLOAT32, 
+		              MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "TensorBaseMalloc failed.";
@@ -62,8 +63,8 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs)
-{ 
+APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
+	       	std::vector<MxBase::TensorBase> &outputs) { 
     auto tensors = inputs;
     APP_ERROR ret = CheckAndMoveTensors(tensors);
     if (ret != APP_ERR_OK) {
@@ -83,7 +84,8 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
         resizeTensors.push_back(output);
     }
     std::vector<uint32_t> outputShape = {1, 1, resizeHeight, resizeWidth};
-    MxBase::TensorBase output(outputShape, MxBase::TensorDataType::TENSOR_DTYPE_FLOAT32, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
+    MxBase::TensorBase output(outputShape, MxBase::TensorDataType::TENSOR_DTYPE_FLOAT32, 
+		              MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     ret = MxBase::TensorBase::TensorBaseMalloc(output);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "TensorBaseMalloc failed.";
@@ -106,7 +108,8 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
     auto ptr5 = (float*)resizeTensors[fifthtLayerIndex].GetBuffer();
     auto dst = (float*)output.GetBuffer();
     for (uint32_t i = 0; i < output.GetSize(); i++) {
-        float value = weight1 * ptr1[i] + weight2 * ptr2[i] + weight3 * ptr3[i] + weight4 * ptr4[i] + weight5 * ptr5[i] + weight6;
+        float value = weight1 * ptr1[i] + weight2 * ptr2[i] + weight3 * ptr3[i] +
+	             weight4 * ptr4[i] + weight5 * ptr5[i] + weight6;
         dst[i] = fastmath::sigmoid(value) * scale;
     }
     outputs.push_back(output);
