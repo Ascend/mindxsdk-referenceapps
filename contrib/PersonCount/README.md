@@ -78,36 +78,32 @@
 
 在编译运行项目前，需要设置环境变量：
 MX_SDK_HOME="~/mxManufacture"  
-GST_PLUGIN_PATH=\\${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:\\${MX_SDK_HOME}/lib/plugins  
-GST_PLUGIN_SCANNER=\\${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner  
 LD_LIBRARY_PATH=\\${MX_SDK_HOME}/lib:\\${MX_SDK_HOME}/opensource/lib:\\${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit:\\${LD_LIBRARY_PATH}  
 PYTHONPATH=\\${MX_SDK_HOME}/python:\\${PYTHONPATH}  
 
-INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest/  
-PATH=/usr/local/python3.7.5/bin:\\${INSTALL_PATH}/atc/bin/:\\${INSTALL_PATH}/atc/ccec_compiler/bin:\\$PATH    
-LD_LIBRARY_PATH=\\${INSTALL_PATH}/atc/lib64:\\${LD_LIBRARY_PATH}  
-ASCEND_OPP_PATH=\\${INSTALL_PATH}/opp:\\${LD_LIBRARY_PATH}   
+install_path=/usr/local/Ascend/ascend-toolkit/latest
+PATH=/usr/local/python3.7.5/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
+PYTHONPATH=\\${install_path}/atc/python/site-packages:\\${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:\\${install_path}/atc/python/site-packages/schedule_search.egg  
+LD_LIBRARY_PATH=\\${install_path}/atc/lib64:\\$LD_LIBRARY_PATH  
+ASCEND_OPP_PATH=\\${install_path}/opp   
 
 - 环境变量介绍  
 MX_SDK_HOME指明MindX SDK mxManufacture的根安装路径，用于包含MindX SDK提供的所有库和头文件。  
-GST_PLUGIN_PATH，GST_PLUGIN_SCANNER，LD_LIBRARY_PATH提供了MindX SDK已开发的插件信息。  
-INSTALL_PATH指明ascend-toolkit的安装路径。  
+LD_LIBRARY_PATH提供了MindX SDK已开发的插件和相关的库信息。  
+install_path指明ascend-toolkit的安装路径。  
 PATH变量中添加了python的执行路径和atc转换工具的执行路径。  
 LD_LIBRARY_PATH添加了ascend-toolkit和MindX SDK提供的库目录路径。  
-ASCEND_OPP_PATH指明atc转换工具需要的库目录。  
+ASCEND_OPP_PATH指明atc转换工具需要的目录。  
 
 具体执行命令  
 export MX_SDK_HOME="~/mxManufacture"  
-export GST_PLUGIN_PATH=\\${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:\\${MX_SDK_HOME}/lib/plugins  
-export GST_PLUGIN_SCANNER=\\${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner  
 export LD_LIBRARY_PATH=\\${MX_SDK_HOME}/lib:\\${MX_SDK_HOME}/opensource/lib:\\${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit:\\${LD_LIBRARY_PATH}  
 
-export PYTHONPATH=\\${MX_SDK_HOME}/python:\\${PYTHONPATH}  
-export INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest/  
-export PATH=/usr/local/python3.7.5/bin:\\${INSTALL_PATH}/atc/bin/:\\${INSTALL_PATH}/atc/ccec_compiler/bin:\\$PATH  
-
-export LD_LIBRARY_PATH=\\${INSTALL_PATH}/atc/lib64:\\${LD_LIBRARY_PATH}  
-export ASCEND_OPP_PATH=\\${INSTALL_PATH}/opp:\\${LD_LIBRARY_PATH}  
+export install_path=/usr/local/Ascend/ascend-toolkit/latest  
+export PATH=/usr/local/python3.7.5/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
+export PYTHONPATH=\\${install_path}/atc/python/site-packages:\\${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:\\${install_path}/atc/python/site-packages/schedule_search.egg  
+export LD_LIBRARY_PATH=\\${install_path}/atc/lib64:\\$LD_LIBRARY_PATH  
+export ASCEND_OPP_PATH=\\${install_path}/opp    
 
 
 ## 依赖安装
