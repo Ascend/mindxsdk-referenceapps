@@ -55,7 +55,7 @@ bash build.sh
 生成边缘检测图像 result.jpg
 
 ## 精度测试
-下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500)
+下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500), 使用test数据进行测试
 
 (1) 下载开源代码
 
