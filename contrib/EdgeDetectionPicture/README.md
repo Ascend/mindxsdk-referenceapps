@@ -53,3 +53,30 @@ bash build.sh
 ./mxBase_sample ./**.jpg
 ```
 生成边缘检测图像 result.jpg
+
+## 精度测试
+下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500)
+(1) 下载开源代码
+
+``` shell
+git clone https://github.com/Walstruzz/edge_eval_python.git
+cd edge_eval_python
+```
+(2) 编译cxx
+
+``` shell
+cd cxx/src
+source build.sh
+```
+(3) 将检测后的边缘图像保存在文件中
+
+(4) 修改检测代码
+
+vim mian.py
+注释第17行代码 nms_process(model_name_list, result_dir, save_dir, key, file_format)
+
+(5) 测试精度
+
+``` shell
+python main.py --alg "HED" --model_name_list "hed" --result_dir examples/hed_result \
+--save_dir examples/hed_eval_result --gt_dir examples/bsds500_gt --key result \ --workers -1
