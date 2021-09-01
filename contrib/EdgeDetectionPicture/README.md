@@ -50,7 +50,7 @@ bash build.sh
 **步骤4** 进行图像边缘检测
 请自行准备jpg格式的测试图像进行边缘检测 
 ```
-./mxBase_sample ./**.jpg
+./edge_detection_picture ./**.jpg
 ```
 生成边缘检测图像 result.jpg
 
