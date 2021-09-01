@@ -222,8 +222,7 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::s
     return APP_ERR_OK; 
 }
 
-APP_ERROR RcfDetection::Process(const std::string &imgPath) {
-    
+APP_ERROR RcfDetection::Process(const std::string &imgPath) { 
     MxBase::TensorBase inTensor;
     APP_ERROR ret = ReadImage(imgPath, inTensor);
     if (ret != APP_ERR_OK) {
