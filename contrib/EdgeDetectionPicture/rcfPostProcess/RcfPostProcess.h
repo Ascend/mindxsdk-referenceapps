@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ **/
 
 #ifndef RCF_POST_PROCESS_H
 #define RCF_POST_PROCESS_H
@@ -23,7 +23,6 @@ namespace {
 const int DEFAULT_OUTSIZE_NUM = 5;
 const int DEFAULT_RCF_TYPE = 5;
 }
-
 
 class RcfPostProcess : public MxBase::ObjectPostProcessBase {
 public:
@@ -41,10 +40,9 @@ public:
     APP_ERROR Process(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
 
 protected:
-    int outSizeNum_ = DEFAULT_OUTSIZE_NUM; // Rcf anchors, generate from train data, coco dataset
+    int outSizeNum_ = DEFAULT_OUTSIZE_NUM; 
     int rcfType_ = DEFAULT_RCF_TYPE;
     int modelType_ = 0;
     int inputType_ = 0;
-//    std::vector<int> outsize_ = {};
 };
 #endif
