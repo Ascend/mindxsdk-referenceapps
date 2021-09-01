@@ -218,6 +218,7 @@ public:
      */
     bool IsEmpty()
     {
+        std::unique_lock<std::mutex> lock(mutex_);
         return queue_.empty();
     }
 
@@ -237,6 +238,7 @@ public:
      */
     int GetSize()
     {
+        std::unique_lock<std::mutex> lock(mutex_);
         return queue_.size();
     }
 
