@@ -43,8 +43,7 @@ APP_ERROR RcfPostProcess::DeInit() {
 
 
 static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBase &output, const uint32_t &width, const uint32_t &height)
-{
-    
+{   
     auto inputShape = input.GetShape();
     uint32_t h = inputShape[2];
     uint32_t w = inputShape[3];
@@ -64,15 +63,13 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
 }
 
 APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs)
-{
-    
+{ 
     auto tensors = inputs;
     APP_ERROR ret = CheckAndMoveTensors(tensors);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "CheckAndMoveTensors failed.";
         return ret;
     }
-
     const uint32_t resizeWidth = 512;
     const uint32_t resizeHeight = 512;
     std::vector<MxBase::TensorBase> resizeTensors = {};
@@ -85,7 +82,6 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
         }
         resizeTensors.push_back(output);
     }
-
     std::vector<uint32_t> outputShape = {1, 1, resizeHeight, resizeWidth};
     MxBase::TensorBase output(outputShape, MxBase::TensorDataType::TENSOR_DTYPE_FLOAT32, MxBase::MemoryData::MemoryType::MEMORY_HOST_NEW, -1);
     ret = MxBase::TensorBase::TensorBaseMalloc(output);
@@ -93,12 +89,10 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
         LogError << GetError(ret) << "TensorBaseMalloc failed.";
         return ret;
     }
-
     if (resizeTensors.size() != 5) {
         LogError << "resizeTensors.size():" << resizeTensors.size();
         return APP_ERR_COMM_FAILURE;
     }
-
     const uint32_t firstLayerIndex = 0;
     const uint32_t secondLayerIndex = 1;
     const uint32_t thirdLayerIndex = 2;
@@ -110,16 +104,11 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
     auto ptr3 = (float*)resizeTensors[thirdLayerIndex].GetBuffer();
     auto ptr4 = (float*)resizeTensors[fouthLayerIndex].GetBuffer();
     auto ptr5 = (float*)resizeTensors[fifthtLayerIndex].GetBuffer();
-
     auto dst = (float*)output.GetBuffer();
-
     for (uint32_t i = 0; i < output.GetSize(); i++) {
         float value = weight1 * ptr1[i] + weight2 * ptr2[i] + weight3 * ptr3[i] + weight4 * ptr4[i] + weight5 * ptr5[i] + weight6;
         dst[i] = fastmath::sigmoid(value) * scale;
     }
-
     outputs.push_back(output);
-    
-
     return APP_ERR_OK;
 }

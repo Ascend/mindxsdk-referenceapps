@@ -116,8 +116,7 @@ APP_ERROR RcfDetection::ReadImage(const std::string &imgPath,
 }
 
 APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor, 
-		uint32_t resizeHeight, uint32_t resizeWidth) {
-    
+		               uint32_t resizeHeight, uint32_t resizeWidth) {    
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -148,7 +147,7 @@ APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::Te
 }
 
 APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
-                                           std::vector<MxBase::TensorBase> &outputs) {
+                                  std::vector<MxBase::TensorBase> &outputs) {
     std::vector<MxBase::TensorBase> output={};
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
@@ -179,8 +178,8 @@ APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
 }
 
 APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
-		const std::vector<MxBase::TensorBase> &outputs,
-		std::vector<MxBase::TensorBase> &postProcessOutput) {    
+	                           const std::vector<MxBase::TensorBase> &outputs,
+		                   std::vector<MxBase::TensorBase> &postProcessOutput) {    
     auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
@@ -203,8 +202,7 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::string &imgPath) {
-    
+APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::string &imgPath) {    
     auto shape = inferTensor.GetShape();
     uint32_t height = shape[2];
     uint32_t width = shape[3];
@@ -262,4 +260,3 @@ APP_ERROR RcfDetection::Process(const std::string &imgPath) {
     }
     return APP_ERR_OK;
 }
-
