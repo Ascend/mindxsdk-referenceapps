@@ -56,6 +56,5 @@ private:
     uint32_t deviceId_ = 0;
     int dvppHeightStride;
     int dvppWidthStride;
-
 };
 #endif
