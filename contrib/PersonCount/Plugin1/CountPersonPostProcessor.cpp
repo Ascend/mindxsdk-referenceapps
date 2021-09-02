@@ -17,7 +17,7 @@
 #include<fstream>
 #include "MxBase/Log/Log.h"
 #include "MxBase/Maths/FastMath.h"
-#include "personcountpostprocess.h"
+#include "CountPersonPostProcessor.h"
 namespace MxBase {
 APP_ERROR CountPersonPostProcessor::Init(const std::map<std::string, std::shared_ptr<void>> & postConfig)
 {
@@ -40,7 +40,7 @@ bool CountPersonPostProcessor::IsValidTensors(const std::vector<TensorBase> & te
 {
     return true;
 }
-APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase> & tensors, 
+APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase> & tensors,
                                             std::vector< std::vector<ObjectInfo> > & objectInfos,
                                             const std::vector<ResizedImageInfo> & resizedImageInfos,
                                             const std::map< std::string, std::shared_ptr<void> > & configParamMap)
