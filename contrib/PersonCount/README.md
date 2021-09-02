@@ -43,7 +43,9 @@
 │  build.sh  //用于生成后处理共享库的编译命令使用sh build.sh完成编译  
 │  main.py   //对待检测图片进行人群计数的主体程序，包含读入图片数据、模型推理、写热度图等功能特性  
 │  run.sh    //人群计数的运行脚本，运行main.py文件  
-│    
+├─accuracy and performance //存放精度与性能测试的代码   
+│  └─test.py  //精度与性能测试的代码   
+│
 ├─config     //配置文件夹  
 │  |--insert_op.cfg //生成om模型的config文件  
 │  └─person.names  //label文件  
@@ -54,7 +56,11 @@
 │        
 ├─model //转换后的om模型  
 │  └─count_person_8.caffe.om  
-│        
+│  
+├─model transformation script
+│  |--insert_op.cfg  //模型转换需要的配置文件
+│  └─ model_conversion.sh //模型转换脚本
+│ 
 ├─pipeline //本项目使用的前端是python开发，用到的pipeline配置嵌入到main.py，所以该文件夹为空  
 ├─Plugin1  //编译后处理插件所需的源文件，生成的共享库文件存放于build文件夹  
 │  |--CMakeLists.txt  
@@ -125,9 +131,9 @@ ascend-toolkit:
 
 **步骤2** （设置环境变量）按照第二章节设置环境变量所需的具体执行指令执行即可。
 
-**步骤3** （执行编译的步骤）首先通过运行build.sh脚本文件生成后处理使用的共享库如sh build.sh。然后使用模型转换命令将caffe模型转化为om模型待使用，具体命令为atc --input_shape="blob1:8,3,800,1408" --weight="model/count_person.caffe.caffemodel" --input_format=NCHW --output="model/count_person_8.caffe" --soc_version=Ascend310 --insert_op_conf=model/insert_op.cfg --framework=0 --model="model/count_person.caffe.prototxt".
+**步骤3** （执行编译的步骤）首先通过运行build.sh脚本文件生成后处理使用的共享库如sh build.sh。然后使用模型转换命令将caffe模型转化为om模型待使用，具体命令为atc --input_shape="blob1:8,3,800,1408" --weight="model/count_person.caffe.caffemodel" --input_format=NCHW --output="model/count_person_8.caffe" --soc_version=Ascend310 --insert_op_conf=model/insert_op.cfg --framework=0 --model="model/count_person.caffe.prototxt"。此外，我们已经在文件夹model transformation script提供了模型转换脚本将脚本文件复制到主目录即可运行.
 
-**步骤4** （运行及输出结果）直接运行run.sh即可，生成的热度图保存在当前目录的heat_map文件夹下，并且每张热度图的命名以原图片名称为前缀以heatmap为后缀。
+**步骤4** （运行及输出结果）直接运行run.sh即可，生成的热度图保存在当前目录的heat_map文件夹下，并且每张热度图的命名以原图片名称为前缀以heatmap为后缀。此外，我们还在文件夹accuracy and performance code提供了精度与性能测试代码，将test.py和test.sh拷贝到主目录中然后执行sh test.sh即可运行精度与性能测试代码。
 
 
 
