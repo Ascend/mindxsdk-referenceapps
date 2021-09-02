@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cv2
 import signal
+import cv2
 import numpy as np
 import StreamManagerApi
 import utils
@@ -74,9 +74,9 @@ while True:
         continue
 
     # Take the inference result from the corresponding data structure
-    img0, imgLi1, img0_shape, frameId, channelId = utils.get_inference_data(inferResult0)
+    DictStructure = utils.get_inference_data(inferResult0)
     # the visualization of the inference result, save the output in the specified folder
-    utils.Visualization(img0, imgLi1, img0_shape, frameId, channelId)
+    utils.Visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
