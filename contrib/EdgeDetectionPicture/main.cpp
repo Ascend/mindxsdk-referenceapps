@@ -25,7 +25,7 @@ namespace {
 }
 
 static void InitRcfParam(InitParam &initParam) {
-	  initParam.deviceId = 0;
+    initParam.deviceId = 0;
     initParam.checkTensor = true;
     initParam.modelPath = "./model/rcf.om";
     initParam.outSizeNum = OUTSIZE_NU;
