@@ -25,24 +25,26 @@ namespace {
     const float weight3 =  0.22262956;
     const float weight4 =  0.22857015;
     const float weight5 =  0.2479302;
-    const float weight6 =  0.00299916;
-    
+    const float weight6 =  0.00299916;    
     auto uint8Deleter = [](uint8_t *p) {};
 }
 using namespace MxBase;
 
-APP_ERROR RcfPostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) {
+APP_ERROR RcfPostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)
+{
     LogDebug << "Start to Init RcfPostProcess.";
     LogDebug << "End to Init RcfPostProcess.";
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfPostProcess::DeInit() {
+APP_ERROR RcfPostProcess::DeInit()
+{
     return APP_ERR_OK;
 }
 
 static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBase &output,
-                              const uint32_t &width, const uint32_t &height) {
+                              const uint32_t &width, const uint32_t &height)
+{
     auto inputShape = input.GetShape();
     uint32_t h = inputShape[2];
     uint32_t w = inputShape[3];
@@ -63,7 +65,8 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
 }
 
 APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
-                                  std::vector<MxBase::TensorBase> &outputs) {
+                                  std::vector<MxBase::TensorBase> &outputs)
+{
     auto tensors = inputs;
     APP_ERROR ret = CheckAndMoveTensors(tensors);
     if (ret != APP_ERR_OK) {
