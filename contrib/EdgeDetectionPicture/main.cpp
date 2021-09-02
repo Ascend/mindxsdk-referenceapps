@@ -24,7 +24,7 @@ namespace {
     const uint32_t RCF_TYPE = 5;
 }
 
-static void InitRcfParam(InitParam &initParam) 
+static void InitRcfParam(InitParam &initParam)
 {
     initParam.deviceId = 0;
     initParam.checkTensor = true;
@@ -37,7 +37,7 @@ static void InitRcfParam(InitParam &initParam)
     initParam.outSize = "512,256,128,64,63";
 }
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     if (argc <= 1) {
         LogWarn << "Please input image path, such as './test.jpg'.";
