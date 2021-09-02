@@ -6,7 +6,7 @@
        "mxpi_rtspsrc0":{
             "factory":"mxpi_rtspsrc",
             "props":{
-                "rtspUrl":"rtsp://192.168.88.107:8554/test640544_38s.264",
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:8554/xxx.264",
                 "channelId":"0"
             },
             "next":"queuerstp0"
@@ -14,7 +14,7 @@
         "mxpi_rtspsrc1":{
             "factory":"mxpi_rtspsrc",
             "props":{
-                "rtspUrl":"rtsp://192.168.88.107:8554/test640544_38s.264",
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:8554/xxx.264",
                 "channelId":"1"
             },
             "next":"queuerstp1"
@@ -108,10 +108,10 @@
         "mxpi_modelinfer0":{
             "props":{
                 "dataSource":"mxpi_imageresize0",
-                "modelPath":"/home/zhongzhi1/HelmetIdentification/Models/YOLOv5_s1.om",
-                "postProcessConfigPath":"/home/zhongzhi1/HelmetIdentification/Models/Helmet_yolov5.cfg",
-                "labelPath":"/home/zhongzhi1/HelmetIdentification/Models/imgclass.names",
-                "postProcessLibPath":"/home/zhongzhi1/MindX_SDK/mxVision/lib/libMpYOLOv5PostProcessor.so"
+                "modelPath":"./YOLOv5_s1.om",
+                "postProcessConfigPath":"./Helmet_yolov5.cfg",
+                "labelPath":"./imgclass.names",
+                "postProcessLibPath":"./libMpYOLOv5PostProcessor.so"
             },
             "factory":"mxpi_modelinfer",
             "next":"queue1"
