@@ -112,7 +112,7 @@ APP_ERROR RcfDetection::ReadImage(const std::string &imgPath,
     }
     dvppHeightStride = output.heightStride;
     dvppWidthStride = output.widthStride;
-    std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU/YUV_BYTE_DE, output.widthStride};
+    std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
     tensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
@@ -144,7 +144,7 @@ APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::Te
         return APP_ERR_COMM_INVALID_PARAM;
     }
     shape = {1, channel, output.heightStride, output.widthStride};
-    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
+    outputTensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
 
@@ -206,7 +206,7 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::string &imgPath)
+APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath)
 {
     auto shape = inferTensor.GetShape();
     uint32_t height = shape[2];
@@ -218,7 +218,7 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::s
     cv::Mat grayMat;
     cv::Mat resizedMat;
     int crop = 5;
-    cv::Rect myROI(0, 0, imageWidth-crop, imageHeight );
+    cv::Rect myROI(0, 0, imageWidth-crop, imageHeight);
     resize(modelOutput, resizedMat, cv::Size(dvppWidthStride, dvppHeightStride), 0, 0, cv::INTER_LINEAR);
     resizedMat.convertTo(grayMat, CV_8UC1, alpha1);
     cv::Mat croppedImage = grayMat(myROI);
