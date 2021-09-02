@@ -15,7 +15,6 @@ import cv2
 import signal
 import numpy as np
 import StreamManagerApi
-import MxpiDataType_pb2 as MxpiDataType
 import utils
 
 
