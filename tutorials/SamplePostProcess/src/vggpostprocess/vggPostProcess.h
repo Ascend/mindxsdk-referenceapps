@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2020-2021. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@
 #define VGG_POST_PROCESS_H
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 
-namespace {
+namespace
+{
 const int DEFAULT_OBJECT_NUM_TENSOR = 0;
 const int DEFAULT_OBJECT_INFO_TENSOR = 1;
 }
 
-namespace MxBase {
-    class VggPostProcess{
-
+namespace MxBase 
+{
+    class VggPostProcess
+    {
     public:
         VggPostProcess() = default;
 
@@ -53,7 +55,6 @@ namespace MxBase {
     private:
         uint32_t objectNumTensor_ = DEFAULT_OBJECT_NUM_TENSOR;
         uint32_t objectInfoTensor_ = DEFAULT_OBJECT_INFO_TENSOR;
-
     };
     extern "C" {
     std::shared_ptr<MxBase::VggPostProcess> GetObjectInstance();
