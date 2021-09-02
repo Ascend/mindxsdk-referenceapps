@@ -71,15 +71,13 @@ make install
 
 > 模型转换
 
-步骤1 在
-
 **步骤1** 在ModelZoo上下载Resnet18模型权重和网络。[下载地址](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/gesture_recognition/ATC_gesture_recognition_Caffe_AE)
 
-**步骤2** 将获取到的Resnet18模型pb文件存放至："样例项目所在目录/model/"，同时下载cfg文件：[下载方式]（wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/gesture_recognition/insert_op.cfg）
+**步骤2** 将获取到的Resnet18模型权重和网络文件存放至："样例项目所在目录/model/"，同时下载cfg文件：[下载方式]（wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/gesture_recognition/insert_op.cfg）
 
 **步骤3** 模型转换
 
-在pb文件所在目录下执行一下命令
+在模型权重和网络文件所在目录下执行以下命令
 
 ```
 # 设置环境变量（请确认install_path路径是否正确）
@@ -126,6 +124,7 @@ main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频�
 
 ```
 # 执行如下命令，打开.bashrc文件
+cd $HOME
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
 MX_SDK_HOME=${SDK安装路径}
@@ -152,6 +151,7 @@ env
 ```
 set(MX_SDK_HOME ${SDK安装路径}/mxVision)
 set(FFMPEG_PATH {ffmpeg实际安装路径})
+
 ```
 
 
@@ -167,24 +167,6 @@ mkdir build
 cd build
 
 cmake ..
-
--- The C compiler identification is GNU 7.5.0
--- The CXX compiler identification is GNU 7.5.0
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc -- works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Check for working CXX compiler: /usr/bin/c++
--- Check for working CXX compiler: /usr/bin/c++ -- works
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Detecting CXX compile features
--- Detecting CXX compile features - done
--- Configuring done
--- Generating done
-
 
 make
 
@@ -217,4 +199,4 @@ bash run.sh
 
 ### 查看结果
 
-执行`run.sh`完毕后，如果配置了检测结果写文件，sample会将目标检测结果保存在工程目录下`result`中。
+执行`run.sh`完毕后，如果配置了检测结果写文件，sample会将手势识别结果，以jpg格式的图片保存在工程目录下`result`中。
