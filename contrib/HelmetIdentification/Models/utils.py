@@ -1,10 +1,9 @@
-import cv2
-import os
-import numpy as np
 import signal
+import cv2
+import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 
-def Visualization(img,infer,shape,frameId,channelId):
+def Visualization(img, infer, shape, frameId, channelId):
     """
     :param img: Inference image
     :param infer: Inference result
@@ -61,6 +60,11 @@ def Visualization(img,infer,shape,frameId,channelId):
 
 
 def get_inference_data(inference):
+    """
+    :param inference:output of sdk stream inference
+    :return:img0, imgLi1, img0_shape, FrameList0.frameId, FrameList0.channelId
+    """
+
     # add inferennce data into DATA structure
     # Frame information structure
     FrameList0 = MxpiDataType.MxpiFrameInfo()
@@ -101,4 +105,6 @@ def get_inference_data(inference):
 
     # img0_shape is the original image size
     img0_shape = [visionInfo0.heightAligned, visionInfo0.widthAligned]
-    return img0, imgLi1, img0_shape, FrameList0.frameId, FrameList0.channelId
+    # Output the results uniformly through the dictionary
+    DictStructure = [img0, imgLi1, img0_shape, FrameList0.frameId, FrameList0.channelId]
+    return DictStructure
