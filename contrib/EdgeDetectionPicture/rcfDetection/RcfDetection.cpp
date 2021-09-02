@@ -92,15 +92,15 @@ APP_ERROR RcfDetection::DeInit() {
 }
 
 APP_ERROR RcfDetection::ReadImage(const std::string &imgPath,
-	                                MxBase::TensorBase &tensor) {
+                                  MxBase::TensorBase &tensor) {
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
-                                 MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                  MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -113,7 +113,7 @@ APP_ERROR RcfDetection::ReadImage(const std::string &imgPath,
     return APP_ERR_OK;
 }
 APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,
-	                       uint32_t resizeHeight, uint32_t resizeWidth) {
+                               uint32_t resizeHeight, uint32_t resizeWidth) {
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -132,7 +132,7 @@ APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::Te
         return ret;
     }
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
-		                              MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+                                  MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
@@ -175,8 +175,8 @@ APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
 }
 
 APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
-		                                const std::vector<MxBase::TensorBase> &outputs,
-						                        std::vector<MxBase::TensorBase> &postProcessOutput) {
+                                    const std::vector<MxBase::TensorBase> &outputs,
+                                    std::vector<MxBase::TensorBase> &postProcessOutput) {
     auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
