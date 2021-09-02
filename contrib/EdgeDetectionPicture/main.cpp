@@ -25,7 +25,7 @@ namespace {
 }
 
 static void InitRcfParam(InitParam &initParam) {
-    initParam.deviceId = 0;
+	  initParam.deviceId = 0;
     initParam.checkTensor = true;
     initParam.modelPath = "./model/rcf.om";
     initParam.outSizeNum = OUTSIZE_NU;
@@ -37,7 +37,7 @@ static void InitRcfParam(InitParam &initParam) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc <= 1) {
+	  if (argc <= 1) {
         LogWarn << "Please input image path, such as './test.jpg'.";
         return APP_ERR_OK;
     }
