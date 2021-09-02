@@ -62,12 +62,12 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase> & tens
     ObjectInfo tempobject;
     std::vector<ObjectInfo> mid_objectinfo;
     for (uint32_t b = 0; b < batchSize; b++) {
-        graphTensorPtr += b*ImageH*ImageW;
+        graphTensorPtr += b*imageH*imageW;
         float sum = 0;
         float max = *((float*)graphTensorPtr);
         float min = *((float*)graphTensorPtr);
         uint32_t i = 0;
-        for (i = 0; i < ImageH * ImageW; i++) {
+        for (i = 0; i < imageH * imageW; i++) {
             float value = *(graphTensorPtr + i);
             sum += value;
             if (value > max) {
@@ -77,13 +77,13 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase> & tens
                 min = value;
             }
         }
-        for (i = 0; i < ImageH * ImageW; i++) {
+        for (i = 0; i < imageH * imageW; i++) {
             float value = *(graphTensorPtr + i);
-            uint8_t ivalue = int(ImageScaleFactor * (value - min) / (max - min));
+            uint8_t ivalue = int(imageScaleFactor * (value - min) / (max - min));
             temp.push_back(ivalue);
         }
         tempobject.mask.push_back(temp);
-        tempobject.classId = sum / PersonNumberScaleFactor;
+        tempobject.classId = sum / personNumberScaleFactor;
         mid_objectinfo.push_back(tempobject);
     }
     objectInfos.push_back(mid_objectinfo);

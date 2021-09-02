@@ -36,10 +36,10 @@ public:
                               const std::map<std::string, std::shared_ptr<void>> & configParamMap = {}) override;
 
 private:
-    uint32_t ImageH = 800; /* the height  of outpu feature map */
-    uint32_t ImageW = 1408; /* the width  of outpu feature map */
-    uint32_t ImageScaleFactor = 255;
-    uint32_t PersonNumberScaleFactor = 1000;
+    uint32_t imageH = 800; /* the height  of outpu feature map */
+    uint32_t imageW = 1408; /* the width  of outpu feature map */
+    uint32_t imageScaleFactor = 255;
+    uint32_t personNumberScaleFactor = 1000;
 };
 
 extern "C" {
