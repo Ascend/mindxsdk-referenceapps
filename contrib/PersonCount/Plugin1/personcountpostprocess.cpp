@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "personcountpostprocess.h"
-#include "MxBase/Log/Log.h"
-#include "MxBase/Maths/FastMath.h"
 #include<iostream>
 #include<fstream>
-
+#include "MxBase/Log/Log.h"
+#include "MxBase/Maths/FastMath.h"
+#include "personcountpostprocess.h"
 namespace MxBase {
-
 APP_ERROR CountPersonPostProcessor::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)
 {
     LogDebug << "Start to Init SamplePostProcess.";
@@ -43,11 +40,10 @@ bool CountPersonPostProcessor::IsValidTensors(const std::vector<TensorBase> &ten
 {
     return true;
 }
-
 APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tensors, 
-                              std::vector<std::vector<ObjectInfo>>& objectInfos,
-                              const std::vector<ResizedImageInfo>& resizedImageInfos,
-                              const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                            std::vector< std::vector<ObjectInfo>>& objectInfos,
+                                            const std::vector<ResizedImageInfo>& resizedImageInfos,
+                                            const std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     LogDebug << "Start to Process CountPersonPostProcessor.";
     APP_ERROR ret = APP_ERR_OK;
@@ -57,7 +53,6 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tenso
         LogError << "CheckAndMoveTensors failed. ret=" << ret;
         return ret;
     }
-    
     const uint32_t graphTensorIndex = 0;
     auto graphTensor = inputs[graphTensorIndex];
     auto shape = graphTensor.GetShape();
@@ -66,33 +61,26 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tenso
     std::vector<uint8_t> temp;
     ObjectInfo tempobject;
     std::vector<ObjectInfo> mid_objectinfo;
-    uint32_t image_scale_factor = 255;
-    uint32_t person_numper_scale_factor = 1000;
     for (uint32_t b = 0; b < batchSize; b++) {
         graphTensorPtr += b*image_H*image_W;
         float sum = 0;
         float max = *((float*)graphTensorPtr);
         float min = *((float*)graphTensorPtr);
         uint32_t i = 0;
-        uint32_t j = 0;
-        for(i = 0; i < image_H; i++){
-            for (j = 0; j < image_W; j++) {
-                float value = *(graphTensorPtr + i*image_W + j);
-                sum += value;
-                if(value > max){
-                    max = value;
-                }
-                if(value < min){
-                    min = value;
-                }  
-            }  
-        }
-        for(i = 0; i < image_H; i++){
-            for (j = 0; j < image_W; j++) {
-                float value = *(graphTensorPtr + i * image_W + j);
-                uint8_t ivalue = int(image_scale_factor * (value - min) / (max - min));
-                temp.push_back(ivalue);
+        for (i = 0; i < image_H * image_W; i++) {
+            float value = *(graphTensorPtr + i);
+            sum += value;
+            if (value > max) {
+                max = value;
             }
+            if (value < min) {
+                min = value;
+            }
+        }
+        for (i = 0; i < image_H * image_W; i++) {
+            float value = *(graphTensorPtr + i);
+            uint8_t ivalue = int(image_scale_factor * (value - min) / (max - min));
+            temp.push_back(ivalue);
         }
         tempobject.mask.push_back(temp);
         tempobject.classId = sum / person_numper_scale_factor;
