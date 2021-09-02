@@ -73,6 +73,7 @@ int main() {
 
     InitParam initParam;
     InitYolov3Param(initParam, videoProcess->DEVICE_ID);
+    // 初始化模型推理所需的配置信息
     yolov3->FrameInit(initParam);
     MxBase::DeviceContext device;
     device.devId = videoProcess->DEVICE_ID;
@@ -81,11 +82,14 @@ int main() {
         LogError << "SetDevice failed";
         return ret;
     }
+    // 视频流处理
     ret = videoProcess->StreamInit(streamName);
     if (ret != APP_ERR_OK) {
         LogError << "StreamInit failed";
         return ret;
     }
+
+    // 解码模块功能初始化
     ret = videoProcess->VideoDecodeInit();
     if (ret != APP_ERR_OK) {
         LogError << "VideoDecodeInit failed";

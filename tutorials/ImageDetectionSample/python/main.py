@@ -27,13 +27,13 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
-    # init stream manager
+    # 新建一个流管理StreamManager对象并初始化
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    # create streams by pipeline config file
+    # 构建pipeline
     pipeline = {
         "detection": {
             "stream_config": {
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    # Construct the input of the stream
+    # 构建流的输入对象--检测目标
     dataInput = MxDataInput()
     if os.path.exists('test.jpg') != 1:
         print("The test image does not exist.")
@@ -103,10 +103,9 @@ if __name__ == '__main__':
     with open("test.jpg", 'rb') as f:
         dataInput.data = f.read()
 
-    # Inputs data to a specified stream based on streamName.
     streamName = b'detection'
     inPluginId = 0
-
+    # 根据流名将检测目标传入流中
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 
     if uniqueId < 0:
@@ -118,6 +117,7 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
+    # 从流中取出对应插件的输出数据
     infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
 
     if infer_result.size() == 0:
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
     img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
 
-    # print the infer result
+    # 打印出推理结果
     results = objectList.objectVec[0]
 
     bboxes = []

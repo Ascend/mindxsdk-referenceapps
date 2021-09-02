@@ -136,7 +136,7 @@ class SpeechFeaturizer(object):
 
         # Truncate data that exceeds the maximum length
         if feat.shape[0] > max_length:
-            feat = feat[0:max_length+1]
+            feat = feat[0:max_length]
         else:
             # Use 0 for padding to max_length at axis 0.
             feat = np.pad(
