@@ -25,21 +25,21 @@ public:
 
     ~CountPersonPostProcessor() = default;
 
-    CountPersonPostProcessor(const CountPersonPostProcessor &other) = default;
+    CountPersonPostProcessor(const CountPersonPostProcessor & other) = default;
 
-    APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
+    APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> & postConfig) override;
 
     APP_ERROR DeInit() override;
-    bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
-    APP_ERROR Process(const std::vector<TensorBase>& tensors, std::vector<std::vector<ObjectInfo>>& objectInfos,
-                              const std::vector<ResizedImageInfo>& resizedImageInfos = {},
-                              const std::map<std::string, std::shared_ptr<void>> &configParamMap = {}) override;
+    bool IsValidTensors(const std::vector<TensorBase> & tensors) const;
+    APP_ERROR Process(const std::vector<TensorBase> & tensors, std::vector<std::vector<ObjectInfo>> & objectInfos,
+                              const std::vector<ResizedImageInfo> & resizedImageInfos = {},
+                              const std::map<std::string, std::shared_ptr<void>> & configParamMap = {}) override;
 
 private:
-    uint32_t image_H = 800; /*the height  of outpu feature map*/
-    uint32_t image_W = 1408; /*the width  of outpu feature map*/
-    uint32_t image_scale_factor = 255;
-    uint32_t person_numper_scale_factor = 1000;
+    uint32_t ImageH = 800; /* the height  of outpu feature map */
+    uint32_t ImageW = 1408; /* the width  of outpu feature map */
+    uint32_t ImageScaleFactor = 255;
+    uint32_t PersonNumberScaleFactor = 1000;
 };
 
 extern "C" {

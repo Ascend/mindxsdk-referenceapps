@@ -19,7 +19,7 @@
 #include "MxBase/Maths/FastMath.h"
 #include "personcountpostprocess.h"
 namespace MxBase {
-APP_ERROR CountPersonPostProcessor::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)
+APP_ERROR CountPersonPostProcessor::Init(const std::map<std::string, std::shared_ptr<void>> & postConfig)
 {
     LogDebug << "Start to Init SamplePostProcess.";
     APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
@@ -36,14 +36,14 @@ APP_ERROR CountPersonPostProcessor::DeInit()
     return APP_ERR_OK;
 }
 
-bool CountPersonPostProcessor::IsValidTensors(const std::vector<TensorBase> &tensors) const
+bool CountPersonPostProcessor::IsValidTensors(const std::vector<TensorBase> & tensors) const
 {
     return true;
 }
-APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tensors, 
-                                            std::vector< std::vector<ObjectInfo>>& objectInfos,
-                                            const std::vector<ResizedImageInfo>& resizedImageInfos,
-                                            const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase> & tensors, 
+                                            std::vector< std::vector<ObjectInfo> > & objectInfos,
+                                            const std::vector<ResizedImageInfo> & resizedImageInfos,
+                                            const std::map< std::string, std::shared_ptr<void> > & configParamMap)
 {
     LogDebug << "Start to Process CountPersonPostProcessor.";
     APP_ERROR ret = APP_ERR_OK;
@@ -62,12 +62,12 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tenso
     ObjectInfo tempobject;
     std::vector<ObjectInfo> mid_objectinfo;
     for (uint32_t b = 0; b < batchSize; b++) {
-        graphTensorPtr += b*image_H*image_W;
+        graphTensorPtr += b*ImageH*ImageW;
         float sum = 0;
         float max = *((float*)graphTensorPtr);
         float min = *((float*)graphTensorPtr);
         uint32_t i = 0;
-        for (i = 0; i < image_H * image_W; i++) {
+        for (i = 0; i < ImageH * ImageW; i++) {
             float value = *(graphTensorPtr + i);
             sum += value;
             if (value > max) {
@@ -77,13 +77,13 @@ APP_ERROR CountPersonPostProcessor::Process(const std::vector<TensorBase>& tenso
                 min = value;
             }
         }
-        for (i = 0; i < image_H * image_W; i++) {
+        for (i = 0; i < ImageH * ImageW; i++) {
             float value = *(graphTensorPtr + i);
-            uint8_t ivalue = int(image_scale_factor * (value - min) / (max - min));
+            uint8_t ivalue = int(ImageScaleFactor * (value - min) / (max - min));
             temp.push_back(ivalue);
         }
         tempobject.mask.push_back(temp);
-        tempobject.classId = sum / person_numper_scale_factor;
+        tempobject.classId = sum / PersonNumberScaleFactor;
         mid_objectinfo.push_back(tempobject);
     }
     objectInfos.push_back(mid_objectinfo);

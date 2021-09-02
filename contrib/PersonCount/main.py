@@ -30,10 +30,10 @@ import MxpiDataType_pb2 as MxpiDataType
 
 if __name__ == '__main__':
     # create streams
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
-    if ret != 0:
-        print("Failed to init Stream manager, ret=%s" % str(ret))
+    STREAM = StreamManagerApi()
+    RET = STREAM.InitManager()
+    if RET != 0:
+        print("Failed to init Stream manager, RET=%s" % str(RET))
         exit()
     #pipeline config include several types of plugins.
     #input plugin
@@ -95,20 +95,20 @@ if __name__ == '__main__':
     }
     #transfer pipeline string into json format
     PIPELINESTR = json.dumps(PIPELINE).encode()
-    ret = streamManagerApi.CreateMultipleStreams(PIPELINESTR)
-    if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
+    RET = STREAM.CreateMultipleStreams(PIPELINESTR)
+    if RET != 0:
+        print("Failed to create Stream, RET=%s" % str(RET))
         exit()
     # Construct the input of the stream
-    data_input = MxDataInput()
+    DATA_INPUT = MxDataInput()
     #dataset path needs to fixde as specific path
     DATASET_PATH = '../tools/python_count/ShanghaiTech/part_B_images/'
     NAME_LIST = os.listdir(DATASET_PATH)
-    person_num_list = []
-    gt_list = []
+    PERSON_NUM_LIST = []
+    GT_LIST = []
     #start time
-    time_start = time.time()
-    uniqueids = []
+    TIME_START = time.time()
+    UNIQUEIDS = []
     STREAMNAME = b'detection'
     #the shape of output image and output heat map
     IMAGE_H = 800
@@ -120,26 +120,26 @@ if __name__ == '__main__':
         with open(DATASET_PATH + 'IMG_' + str(i) + '.jpg', 'rb') as f:
             data = f.read()
         inPluginId = i
-        data_input.data = data
+        DATA_INPUT.data = data
         # Inputs data to a specified stream based on streamname.
         # continuous datasend is used to support batch mechanism
-        uniqueId = streamManagerApi.SendData(STREAMNAME, 0, data_input)
+        uniqueId = STREAM.SendData(STREAMNAME, 0, DATA_INPUT)
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
-        uniqueids.append(uniqueId)
-    key = b"mxpi_objectpostprocessor0"
-    keyVec = StringVector()
-    keyVec.push_back(key)
+        UNIQUEIDS.append(uniqueId)
+    KEY = b"mxpi_objectpostprocessor0"
+    KEYVEC = StringVector()
+    KEYVEC.push_back(KEY)
     for i in range(1, len(NAME_LIST)+1):
         # Obtain the inference result by specifying streamname and uniqueId.
-        infer_result = streamManagerApi.GetProtobuf(STREAMNAME, 0, keyVec)
+        infer_result = STREAM.GetProtobuf(STREAMNAME, 0, KEYVEC)
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result[0].messageBuf)
         results = objectList.objectVec[0]
         #the persor num is stored in classId attribution.
         person_num = results.classVec[0].classId
-        person_num_list.append(person_num)
+        PERSON_NUM_LIST.append(person_num)
         #output heatmap is stored in mask attribution.
         data = results.imageMask.dataStr
         data = np.frombuffer(data, dtype=np.uint8)
@@ -157,19 +157,19 @@ if __name__ == '__main__':
         gt_path = "../tools/python_count/ShanghaiTech/part_B_test/GT_IMG_" + str(i) + ".mat"
         data1 = sio.loadmat(gt_path)
         gt_num = int(data1['image_info'][0][0][0][0][1][0][0])
-        gt_list.append(gt_num)
+        GT_LIST.append(gt_num)
     #end time
-    time_end = time.time()
+    TIME_END = time.time()
     print("total image number:", len(NAME_LIST))
-    print('time cost', time_end - time_start, 's')
+    print('time cost', TIME_END - TIME_START, 's')
     MAE = 0
     MSE = 0
     #computing mse of prediction value and ground truth
     for i in range(len(NAME_LIST)):
-        MAE += abs(person_num_list[i] - gt_list[i])
-        MSE += (person_num_list[i] - gt_list[i]) ** 2
+        MAE += abs(PERSON_NUM_LIST[i] - GT_LIST[i])
+        MSE += (PERSON_NUM_LIST[i] - GT_LIST[i]) ** 2
     MAE /= len(NAME_LIST)
     MSE = (MSE / len(NAME_LIST)) ** 0.5
     print("MAE:", MAE, "\tMSE:", MSE)
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    STREAM.DestroyAllStreams()
