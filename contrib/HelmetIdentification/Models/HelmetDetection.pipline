@@ -41,21 +41,7 @@
                 "outputImageFormat":"YUV420SP_NV12",
                 "vdecChannelId":"0"
             },
-            "next":"tee0"
-        },
-        "tee0":{
-            "factory":"tee",
-            "next":[
-                "queue00",
-                "queue01"
-            ]
-        },
-        "queue00":{
-            "props":{
-                "max-size-buffers":"500"
-            },
-            "factory":"queue",
-            "next":"mxpi_parallel2serial1:0"
+            "next":"queue01"
         },
         "queue01":{
             "props":{
@@ -72,21 +58,7 @@
                 "outputImageFormat":"YUV420SP_NV12",
                 "vdecChannelId":"1"
             },
-            "next":"tee1"
-        },
-        "tee1":{
-            "factory":"tee",
-            "next":[
-                "queue10",
-                "queue11"
-            ]
-        },
-        "queue10":{
-            "props":{
-                "max-size-buffers":"500"
-            },
-            "factory":"queue",
-            "next":"mxpi_parallel2serial1:1"
+            "next":"queue11"
         },
         "queue11":{
             "props":{
@@ -136,10 +108,10 @@
         "mxpi_modelinfer0":{
             "props":{
                 "dataSource":"mxpi_imageresize0",
-                "modelPath":"./YOLOv5_s.om",
-                "postProcessConfigPath":"./Helmet_yolov5.cfg",
-                "labelPath":"./imgclass.names",
-                "postProcessLibPath":"./libMpYOLOv5PostProcessor.so"
+                "modelPath":"./.../YOLOv5_s.om",
+                "postProcessConfigPath":"./.../Helmet_yolov5.cfg",
+                "labelPath":"./.../imgclass.names",
+                "postProcessLibPath":"./.../libMpYOLOv5PostProcessor.so"
             },
             "factory":"mxpi_modelinfer",
             "next":"queue1"
@@ -166,19 +138,6 @@
             "next": "appsink0"
         },
         "appsink0": {
-            "props": {
-                "blocksize": "4096000"
-            },
-            "factory": "appsink"
-        },
-        "mxpi_parallel2serial1":{
-            "factory":"mxpi_parallel2serial",
-            "props":{
-                "dataSource":"mxpi_videodecoder0,mxpi_videodecoder1"
-            },
-            "next":"appsink1"
-        },
-        "appsink1": {
             "props": {
                 "blocksize": "4096000"
             },
