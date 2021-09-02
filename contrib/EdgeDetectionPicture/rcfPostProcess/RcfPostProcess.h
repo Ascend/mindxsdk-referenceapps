@@ -19,18 +19,12 @@
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 #include "opencv2/opencv.hpp"
 
-namespace {
-const int DEFAULT_OUTSIZE_NUM = 5;
-const int DEFAULT_RCF_TYPE = 5;
-}
 
 class RcfPostProcess : public MxBase::ObjectPostProcessBase {
 public:
     RcfPostProcess() = default;
 
-    ~RcfPostProcess() = default;
-
-    RcfPostProcess(const RcfPostProcess &other) = default;
+    ~RcfPostProcess() = default;    
 
     RcfPostProcess &operator=(const RcfPostProcess &other);
 
@@ -40,9 +34,9 @@ public:
     APP_ERROR Process(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
 
 protected:
-    int outSizeNum_ = DEFAULT_OUTSIZE_NUM; 
-    int rcfType_ = DEFAULT_RCF_TYPE;
-    int modelType_ = 0;
-    int inputType_ = 0;
+    int outSizeNum = 5; 
+    int rcfType = 5;
+    int modelType = 0;
+    int inputType = 0;
 };
 #endif
