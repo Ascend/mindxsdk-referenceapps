@@ -32,8 +32,7 @@ void RcfDetection::SetRcfPostProcessConfig(const InitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config)
 {
     MxBase::ConfigData configData;
-    const std::string checkTensor = initParam.checkTensor ? "true" : "false";
-    
+    const std::string checkTensor = initParam.checkTensor ? "true" : "false";    
     configData.SetJsonValue("OUTSIZE_NUM", std::to_string(initParam.outSizeNum));
     configData.SetJsonValue("OUTSIZE", initParam.outSize);
     configData.SetJsonValue("RCF_TYPE", std::to_string(initParam.rcfType));
@@ -218,7 +217,7 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::
     cv::Mat grayMat;
     cv::Mat resizedMat;
     int crop = 5;
-    cv::Rect myROI(0, 0, imageWidth-crop, imageHeight);
+    cv::Rect myROI(0, 0, imageWidth - crop, imageHeight);
     resize(modelOutput, resizedMat, cv::Size(dvppWidthStride, dvppHeightStride), 0, 0, cv::INTER_LINEAR);
     resizedMat.convertTo(grayMat, CV_8UC1, alpha1);
     cv::Mat croppedImage = grayMat(myROI);

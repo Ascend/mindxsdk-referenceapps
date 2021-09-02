@@ -45,7 +45,7 @@ public:
 protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
     APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,
-		                 uint32_t resizeHeight,uint32_t resizeWidth);
+		                 uint32_t resizeHeight, uint32_t resizeWidth);
     APP_ERROR WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath);
     void SetRcfPostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 
