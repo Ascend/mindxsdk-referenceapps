@@ -1,6 +1,7 @@
 # 安全帽识别
 
 ## 1 介绍
+
 安全帽作为工作中一样重要的安全防护用品，主要保护头部，防高空物体坠落，防物体打击、碰撞。通过识别每个人是否戴上安全帽，可以对没戴安全帽的人做出告警。本项目支持2路视频实时分析，其主要流程为:分两路接收外部调用接口的输入视频路径，将视频输入。通过视频解码将264格式视频解码为YUV格式图片。通过跳帧实现每路8fps输出。模型推理使用YOLOv5进行安全帽识别，识别结果经过后处理完成NMS得到识别框。对重复检测出的没戴安全帽的对象进行去重。最后将识别结果输出为两路，并对没佩戴安全帽的情况告警。
 
 ### 1.1 支持的产品
@@ -32,6 +33,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   ├──main.py         # 推理运行程序
   ├──modify_yolov5s_slice.py  #slice算子修改脚本
   ├──dy_resize.py  # resize算子修改
+  ├──utils.py  # 数据处理及可视化脚本
 ├── plugins  
   ├──MxpiSelectedFrame # 跳帧插件
 ├── Test  
@@ -85,22 +87,24 @@ export GST_DEBUG=3
 
 
 ## 3.推理
+
 #### 步骤1 模型转换
 
 ##### 1.1模型与软件依赖
 
  所用模型与软件依赖如下表所示。
 
-| 软件名称                | 版本  | 获取方式                                                     |
-| ----------------------- | ----- | ------------------------------------------------------------ |
-| pytorch                 | 1.5.1 | [pytorch官网](https://pytorch.org/get-started/previous-versions/) |
-| ONNX                    | 1.7.0 | pip install onnx==1.7.0                                      |
-| helmet_head_person_s.pt | v2.0  | [原项目链接](https://github.com/PeterH0323/Smart_Construction)(选择项目中yolov5s权重文件，权重文件保存在README所述网盘中) |
+| 软件名称                | 版本     | 获取方式                                                     |
+| ----------------------- | -------- | ------------------------------------------------------------ |
+| pytorch                 | 1.5.1    | [pytorch官网](https://pytorch.org/get-started/previous-versions/) |
+| ONNX                    | 1.7.0    | pip install onnx==1.7.0                                      |
+| helmet_head_person_s.pt | v2.0     | [原项目链接](https://github.com/PeterH0323/Smart_Construction)(选择项目中yolov5s权重文件，权重文件保存在README所述网盘中) |
 | YOLOv5_s.onnx           | YOLOv5_s | [链接](https://pan.baidu.com/s/15qjahlaO9TTd6orzGrm0Sw) 提取码：b123 |
 
 
 
 ##### 1.2 pt文件转换为onnx文件
+
 1. 可直接获取已经转换好的YOLOv5_s.onnx文件，链接如1.1所示。此模型已经完成优化，不再使用dy_resize.py、modify_yolov5s_slice.py进行优化。可直接转换为om模型。
 
 2. 若尝试pt文件转换为onnx文件，可获取[原项目](https://github.com/PeterH0323/Smart_Construction)代码，下载至本地。安装环境依赖**requirements.txt**在原项目中已给出（原项目使用pytorch 1.5.1框架），pt文件转换为onnx文件所需第三方库**ONNX**如1.1中方式安装。
@@ -119,7 +123,7 @@ python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 6
 
   转换完成后onnx脚本上传至服务器任意目录后先进行优化。
 
-  1. 利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
+    1. 利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
 
 ```shell
 python3.7 modify_yolov5s_slice.py YOLOv5_s.onnx
@@ -159,42 +163,7 @@ sh atc-env.sh
 | --input_shape    | 模型输入数据的 shape。                                       |
 | --out_nodes      | 指定输出节点,如果不指定输出节点（算子名称），则模型的输出默认为最后一层的算子信息，如果 指定，则以指定的为准 |
 
-其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件在输入图像进入模型前进行预处理。该配置文件保存在源码Models目录下,其内容如下：
-
-```python
-aipp_op{
-    aipp_mode:static
-    input_format : YUV420SP_U8
-    src_image_size_w : 640
-    src_image_size_h : 640
-    crop: false
-    load_start_pos_h : 0
-    load_start_pos_w : 0
-    crop_size_w : 640
-    crop_size_h: 640
-    csc_switch : true
-    rbuv_swap_switch : false
-    # 色域转换
-    matrix_r0c0: 256
-    matrix_r0c1: 0
-    matrix_r0c2: 359
-    matrix_r1c0: 256
-    matrix_r1c1: -88
-    matrix_r1c2: -183
-    matrix_r2c0: 256
-    matrix_r2c1: 454
-    matrix_r2c2: 0
-    input_bias_0: 0
-    input_bias_1: 128
-    input_bias_2: 128
-    # 均值归一化
-    min_chn_0 : 0
-    min_chn_1 : 0
-    min_chn_2 : 0
-    var_reci_chn_0: 0.003921568627451
-    var_reci_chn_1: 0.003921568627451
-    var_reci_chn_2: 0.003921568627451}
-```
+其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件aipp_YOLOv5.config在输入图像进入模型前进行预处理。该配置文件保存在源码Models目录下。
 
 注：1. [aipp配置文件教程链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)
    2.atc-env.sh脚本内 Home 为onnx文件所在路径。
@@ -222,6 +191,7 @@ ANCHOR_DIM=3
 MODEL_TYPE=1
 RESIZE_FLAG=0
 ```
+
 注：pipline中以上四个参数要修改为相应文件所在绝对路径。
 
 2.pipline中mxpi_selectedframe插件完成视频跳帧。对于输入帧率为24fps输入视频进行每三帧抽一帧进行识别。实现8fps的帧率。
@@ -313,7 +283,7 @@ chmod +x benchmark.aarch64
 | -------------------------- | ------------------------------------------------------------ |
 | -model_type                | 模型的类型，当前支持如下几种：● vision：图像处理        ● nmt：翻译        ● widedeep：搜索         ● yolocaffe：Yolo目标检测          ● nlp：自然语言处理          ● bert：语义理解 |
 | -batch_size                | 执行一次模型推理所处理的数据量                               |
-| -device_id                 | 运行的Device编号，请根据实际使用的Device修 改。缺省值为0。   |
+| -device_id                 | 运行的Device编号，请根据实际使用的Device修改。缺省值为0。    |
 | -om_path                   | 经过ATC转换后的模型OM文件所在的路径                          |
 | -input_imgFiles_path       | 模型对应的图片文件夹所在的路径。                             |
 | -input_height/-input_width | 输入图片尺寸                                                 |
