@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 #include "RcfDetection.h"
-#include "opencv2/opencv.hpp"
 #include "MxBase/DeviceManager/DeviceManager.h"
 #include "MxBase/Log/Log.h"
 #include "../rcfPostProcess/RcfPostProcess.h"
 #include <unistd.h>
 #include <sys/stat.h>
+#include "opencv2/opencv.hpp"
 
-namespace{
+namespace {
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
@@ -32,7 +32,7 @@ void RcfDetection::SetRcfPostProcessConfig(const InitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config)
 {
     MxBase::ConfigData configData;
-    const std::string checkTensor = initParam.checkTensor ? "true" : "false";    
+    const std::string checkTensor = initParam.checkTensor ? "true" : "false";
     configData.SetJsonValue("OUTSIZE_NUM", std::to_string(initParam.outSizeNum));
     configData.SetJsonValue("OUTSIZE", initParam.outSize);
     configData.SetJsonValue("RCF_TYPE", std::to_string(initParam.rcfType));
