@@ -41,7 +41,7 @@ if __name__ == '__main__':
     #tensorinfer plugin
     #postprocess plugin
     #output plugin
-    pipeline = {
+    PIPELINE = {
         "detection": {
             "stream_config": {
                 "deviceId": "0"
@@ -94,36 +94,36 @@ if __name__ == '__main__':
         }
     }
     #transfer pipeline string into json format
-    pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    PIPELINESTR = json.dumps(PIPELINE).encode()
+    ret = streamManagerApi.CreateMultipleStreams(PIPELINESTR)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     # Construct the input of the stream
     data_input = MxDataInput()
     #dataset path needs to fixde as specific path
-    dataset_Path = '../tools/python_count/ShanghaiTech/part_B_images/'
-    name_list = os.listdir(dataset_Path)
+    DATASET_PATH = '../tools/python_count/ShanghaiTech/part_B_images/'
+    NAME_LIST = os.listdir(DATASET_PATH)
     person_num_list = []
     gt_list = []
     #start time
     time_start = time.time()
     uniqueids = []
-    streamname = b'detection'
+    STREAMNAME = b'detection'
     #the shape of output image and output heat map
-    image_H = 800
-    image_W = 1408
+    IMAGE_H = 800
+    IMAGE_W = 1408
     #the pixel position of the person number text embedded in the heat map
-    position = 300
+    POSITION = 300
     #infer all the picture in target Dataset_Path directory
-    for i in range(1, len(name_list) + 1):
-        with open(dataset_Path + 'IMG_' + str(i) + '.jpg', 'rb') as f:
+    for i in range(1, len(NAME_LIST) + 1):
+        with open(DATASET_PATH + 'IMG_' + str(i) + '.jpg', 'rb') as f:
             data = f.read()
         inPluginId = i
         data_input.data = data
         # Inputs data to a specified stream based on streamname.
         # continuous datasend is used to support batch mechanism
-        uniqueId = streamManagerApi.SendData(streamname, 0, data_input)
+        uniqueId = streamManagerApi.SendData(STREAMNAME, 0, data_input)
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
@@ -131,9 +131,9 @@ if __name__ == '__main__':
     key = b"mxpi_objectpostprocessor0"
     keyVec = StringVector()
     keyVec.push_back(key)
-    for i in range(1, len(name_list)+1):
+    for i in range(1, len(NAME_LIST)+1):
         # Obtain the inference result by specifying streamname and uniqueId.
-        infer_result = streamManagerApi.GetProtobuf(streamname, 0, keyVec)
+        infer_result = streamManagerApi.GetProtobuf(STREAMNAME, 0, keyVec)
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result[0].messageBuf)
         results = objectList.objectVec[0]
@@ -144,12 +144,12 @@ if __name__ == '__main__':
         data = results.imageMask.dataStr
         data = np.frombuffer(data, dtype=np.uint8)
         #the data is reshape as origin image size
-        data = data.reshape((image_H, image_W))
+        data = data.reshape((IMAGE_H, IMAGE_W))
         image = cv2.applyColorMap(data, cv2.COLORMAP_JET)
         #person num txt is embedded into heatmap.
         text = "Count: " + str(person_num)
         RGB = (0, 0, 255)
-        cv2.putText(image, text, (position, position), cv2.FONT_HERSHEY_SIMPLEX, 4, RGB, 4)
+        cv2.putText(image, text, (POSITION, POSITION), cv2.FONT_HERSHEY_SIMPLEX, 4, RGB, 4)
         cv2.imwrite("./heat_map/" + str(i) + "_heatmap.jpg", image)
         #load ground truth information
         #gt_num represents the person number of ground truth.
@@ -160,16 +160,16 @@ if __name__ == '__main__':
         gt_list.append(gt_num)
     #end time
     time_end = time.time()
-    print("total image number:", len(name_list))
+    print("total image number:", len(NAME_LIST))
     print('time cost', time_end - time_start, 's')
     MAE = 0
     MSE = 0
     #computing mse of prediction value and ground truth
-    for i in range(len(name_list)):
+    for i in range(len(NAME_LIST)):
         MAE += abs(person_num_list[i] - gt_list[i])
         MSE += (person_num_list[i] - gt_list[i]) ** 2
-    MAE /= len(name_list)
-    MSE = (MSE / len(name_list)) ** 0.5
+    MAE /= len(NAME_LIST)
+    MSE = (MSE / len(NAME_LIST)) ** 0.5
     print("MAE:", MAE, "\tMSE:", MSE)
     # destroy streams
     streamManagerApi.DestroyAllStreams()
