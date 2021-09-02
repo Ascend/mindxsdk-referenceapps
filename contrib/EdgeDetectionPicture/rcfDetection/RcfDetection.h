@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MXBASE_YOLOV3DETECTIONOPENCV_H
-#define MXBASE_YOLOV3DETECTIONOPENCV_H
+#ifndef MXBASE_RCFDETECTION_H
+#define MXBASE_RCFDETECTION_H
 
 #include <opencv2/opencv.hpp>
 #include <RcfPostProcess.h>
@@ -44,7 +44,8 @@ public:
     APP_ERROR Process(const std::string &imgPath);
 protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
-    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,uint32_t resizeHeight,uint32_t resizeWidth);
+    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,
+		                 uint32_t resizeHeight,uint32_t resizeWidth);
     APP_ERROR WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath);
     void SetRcfPostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 
