@@ -28,9 +28,9 @@ namespace {
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
-    static const uint32_t MaxFrameCount = 300;
-    static uint32_t callTime = MaxFrameCount;
-    static FILE *fp = fopen("./test.h264", "wb");
+    static const uint32_t MAX_FRAME_COUNT = 300;
+    static uint32_t callTime = MAX_FRAME_COUNT;
+    static FILE *g_fp = fopen("./test.h264", "wb");
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
@@ -103,7 +103,6 @@ namespace {
         }
         LogInfo << "DvppCommon object deInit successfully";
         return;
-
     }	
 
     std::string ReadFileContent(const std::string& filePath)
@@ -125,8 +124,8 @@ namespace {
 
     APP_ERROR TestVpcResizeNormal()
     {
-    	int resizeWidth = 240;
-	    int resizeHeight = 100;
+        int resizeWidth = 240;
+        int resizeHeight = 100;
         std::string filepath = "./test5.jpg";
         DvppDataInfo input, output;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
@@ -143,7 +142,7 @@ namespace {
             return ret;
         }
         input.destory(input.data);
-	    //save pic
+	    // save pic
         DvppDataInfo dataInfo;
         const uint32_t level = 100;
         ret = g_dvppCommon->DvppJpegEncode(output, dataInfo, level);
@@ -153,12 +152,15 @@ namespace {
         MemoryData data(dataInfo.dataSize, MemoryData::MEMORY_HOST);
         MemoryData src(static_cast<void*>(dataInfo.data), dataInfo.dataSize, MemoryData::MEMORY_DVPP);
         ret = MemoryHelper::MxbsMallocAndCopy(data, src);
-        if(ret != APP_ERR_OK) {
-            LogError << "Failed to copy data to host" ;
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to copy data to host";
             return ret;
         }
         FILE* fp = fopen("./write_result.jpg", "w");
-        fwrite(data.ptrData,1, data.size, fp);
+        if (fp == nullptr) {
+            LogError << "open file fail";
+        }
+        fwrite(data.ptrData, 1, data.size, fp);
         fclose(fp);
         output.destory(output.data);
         dataInfo.destory(dataInfo.data);
@@ -171,24 +173,24 @@ namespace {
         std::string filepath = "./test5.jpg";
         DvppDataInfo output;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, output);
-        if(ret != APP_ERR_OK) {
+        if (ret != APP_ERR_OK) {
             LogError << "Failed to decode file: " << filepath;
             return ret;
         }
         MemoryData des(output.dataSize, MemoryData::MEMORY_HOST);
         MemoryData src(static_cast<void*>(output.data), output.dataSize, MemoryData::MEMORY_DVPP);
         ret = MemoryHelper::MxbsMallocAndCopy(des, src);
-        if(ret != APP_ERR_OK) {
-            LogError << "Failed to copy data to host" ;
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to copy data to host";
             return ret;
         }
-        std::string result(static_cast<char *>(des.ptrData), des.size);
+        std::string result(static_cast<std::string>(des.ptrData), des.size);
         std::string content = ReadFileContent("./decode.jpg");
         if (result == content) {
-            LogInfo << "Decode success" ;
+            LogInfo << "Decode success";
         }
         else {
-            LogInfo << "Decode incorrect" ;
+            LogInfo << "Decode incorrect";
         }
         output.destory(output.data);
         des.free(des.ptrData);
@@ -201,18 +203,18 @@ namespace {
         DvppDataInfo input;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
-            LogError << "Failed to decode file: " << filepath ;
+            LogError << "Failed to decode file: " << filepath;
             return ret;
         }
         DvppDataInfo output;
         CropRoiConfig config{22, 226, 230, 30};
         ret = g_dvppCommon->VpcCrop(input, output, config);
         if (ret != APP_ERR_OK) {
-            LogError << "Failed to crop file: " << filepath ;
+            LogError << "Failed to crop file: " << filepath;
             return ret;
         }
         input.destory(input.data);
-        //save pic
+        // save pic
         DvppDataInfo encodeInfo;
         const uint32_t level = 100;
         ret = g_dvppCommon->DvppJpegEncode(output, encodeInfo, level);
@@ -222,8 +224,8 @@ namespace {
         MemoryData data(encodeInfo.dataSize, MemoryData::MEMORY_HOST);
         MemoryData src(static_cast<void*>(encodeInfo.data), encodeInfo.dataSize, MemoryData::MEMORY_DVPP);
         ret = MemoryHelper::MxbsMallocAndCopy(data, src);
-        if(ret != APP_ERR_OK) {
-            LogError << "Failed to copy data to host" ;
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to copy data to host";
             return ret;
         }
         FILE* fp = fopen("./write_result_crop.jpg", "w");
@@ -251,7 +253,7 @@ namespace {
             return ret;
         }
 
-        dvppImageDecodeWrapper = make_shared<DvppWrapper>();//dis
+        dvppImageDecodeWrapper = make_shared<DvppWrapper>();
         if (dvppImageDecodeWrapper == nullptr) {
             LogError << "Failed to create dvppImageDecodeWrapper object";
             return APP_ERR_COMM_INIT_FAIL;
@@ -279,28 +281,27 @@ namespace {
         }
         using HandleFunction = std::function<void(std::shared_ptr<unsigned char>, unsigned int)>;
         HandleFunction func = [&endCond] (std::shared_ptr<uint8_t> data, uint32_t streamSize) {
-
             if (data.get() == nullptr) {
                 LogError << "data is invaild";
             }
             else if (streamSize == 0) {
                 LogError << "data size is equal to 0";
             }
-            else{
+            else {
                 MemoryData des(streamSize, MemoryData::MEMORY_HOST);
                 MemoryData src(static_cast<void*>(data.get()), streamSize, MemoryData::MEMORY_DVPP);
                 APP_ERROR ret = MemoryHelper::MxbsMallocAndCopy(des, src);
                 if (ret != APP_ERR_OK) {
                     LogError << "MxbsMallocAndCopy error";
                 }
-                fwrite(des.ptrData,1, des.size, fp);
+                fwrite(des.ptrData, 1, des.size, g_fp);
 
                 des.free(des.ptrData);
             }
             callTime = callTime - 1;
             LogInfo << "call time : " << callTime;
         };
-        for (uint32_t i = 0; i < MaxFrameCount; i++) {
+        for (uint32_t i = 0; i < MAX_FRAME_COUNT; i++) {
             ret = g_dvppCommon->DvppVenc(imageDataInfo, &func);
             if (ret != APP_ERR_OK) {
                 LogError << "DvppVenc error";
@@ -309,7 +310,7 @@ namespace {
         }
 
         imageDataInfo.destory(imageDataInfo.data);
-        while(callTime) {
+        while (callTime) {
             ;
         }
 
@@ -354,7 +355,6 @@ namespace {
         LogInfo << "DvppVencNormal successfully";
         return ret;
     }
-
 }
 
 int main()
@@ -364,7 +364,7 @@ int main()
     TestDvppJpegDecodeNormal();
     TestVpcCropNormal();
     TestDvppVencNormal();
-    fclose(fp);
-
+    fclose(g_fp);
+    g_fp = nullptr;
     return 0;
 }
