@@ -28,9 +28,9 @@ namespace {
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
-    static const uint32_t MAX_FRAME_COUNT = 300;
-    static uint32_t callTime = MAX_FRAME_COUNT;
-    static FILE *g_fp = fopen("./test.h264", "wb");
+    const uint32_t MAX_FRAME_COUNT = 300;
+    uint32_t g_callTime = MAX_FRAME_COUNT;
+    FILE *g_fp = fopen("./test.h264", "wb");
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
@@ -103,7 +103,7 @@ namespace {
         }
         LogInfo << "DvppCommon object deInit successfully";
         return;
-    }	
+    }
 
     std::string ReadFileContent(const std::string& filePath)
     {
@@ -142,7 +142,7 @@ namespace {
             return ret;
         }
         input.destory(input.data);
-	    // save pic
+        // save pic
         DvppDataInfo dataInfo;
         const uint32_t level = 100;
         ret = g_dvppCommon->DvppJpegEncode(output, dataInfo, level);
@@ -188,8 +188,7 @@ namespace {
         std::string content = ReadFileContent("./decode.jpg");
         if (result == content) {
             LogInfo << "Decode success";
-        }
-        else {
+        } else {
             LogInfo << "Decode incorrect";
         }
         output.destory(output.data);
@@ -229,7 +228,7 @@ namespace {
             return ret;
         }
         FILE* fp = fopen("./write_result_crop.jpg", "w");
-        fwrite(data.ptrData,1, data.size, fp);
+        fwrite(data.ptrData, 1, data.size, fp);
         fclose(fp);
         output.destory(output.data);
         encodeInfo.destory(encodeInfo.data);
@@ -283,11 +282,9 @@ namespace {
         HandleFunction func = [&endCond] (std::shared_ptr<uint8_t> data, uint32_t streamSize) {
             if (data.get() == nullptr) {
                 LogError << "data is invaild";
-            }
-            else if (streamSize == 0) {
+            } else if (streamSize == 0) {
                 LogError << "data size is equal to 0";
-            }
-            else {
+            } else {
                 MemoryData des(streamSize, MemoryData::MEMORY_HOST);
                 MemoryData src(static_cast<void*>(data.get()), streamSize, MemoryData::MEMORY_DVPP);
                 APP_ERROR ret = MemoryHelper::MxbsMallocAndCopy(des, src);
@@ -298,8 +295,8 @@ namespace {
 
                 des.free(des.ptrData);
             }
-            callTime = callTime - 1;
-            LogInfo << "call time : " << callTime;
+            g_callTime = g_callTime - 1;
+            LogInfo << "call time : " << g_callTime;
         };
         for (uint32_t i = 0; i < MAX_FRAME_COUNT; i++) {
             ret = g_dvppCommon->DvppVenc(imageDataInfo, &func);
@@ -310,7 +307,7 @@ namespace {
         }
 
         imageDataInfo.destory(imageDataInfo.data);
-        while (callTime) {
+        while (g_callTime <= 0) {
             ;
         }
 
