@@ -58,7 +58,6 @@
 ├── attr_main.py
 └── run.sh
 ```
-AttrPostProcess
 
 
 ### 1.5 技术实现流程图
@@ -87,7 +86,7 @@ AttrPostProcess
 步骤2：配置mxVision SDK环境变量、lib库环境变量以及python环境变量。
 
 ```
-exprot MX_SDK_HOME=${安装路径}/mxVision
+export MX_SDK_HOME=${安装路径}/mxVision
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
 export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
