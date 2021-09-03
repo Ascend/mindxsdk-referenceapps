@@ -40,6 +40,7 @@
 │   ├── coco.names // label文件
 │   ├── insert_op.cfg // 模型转换aipp配置文件
 │   ├── insert_op1.cfg // 模型转换aipp配置文件
+│   ├── insert_op3.cfg // 模型转换aipp配置文件
 │   ├── resnet50_aipp_tf.cfg  // 模型后处理配置文件
 │   ├── resnet50_aipp_tf1.cfg // 模型后处理配置文件
 │   └── yolov4.cfg  // 模型后处理配置文件
@@ -118,7 +119,7 @@ atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format
 
 使用命令
 ```
-atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute_test" --soc_version=Ascend310 --insert_op_conf=./insert_op1.cfg --framework=0 --model="deploy_single.prototxt" --output_type=FP32
+atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format=NCHW --output="Attribute_test" --soc_version=Ascend310 --insert_op_conf=./insert_op3.cfg --framework=0 --model="deploy_single.prototxt" --output_type=FP32
 ```
 转化评测所需模型。
 
