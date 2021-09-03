@@ -46,10 +46,10 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
                               const uint32_t &width, const uint32_t &height)
 {
     auto inputShape = input.GetShape();
-    int dim_2 = 2;
-    int dim_3 = 3;
-    uint32_t h = inputShape[dim_2];
-    uint32_t w = inputShape[dim_3];
+    int dim2 = 2;
+    int dim3 = 3;
+    uint32_t h = inputShape[dim2];
+    uint32_t w = inputShape[dim3];
     cv::Mat inputMat = cv::Mat(h, w, CV_32FC1, input.GetBuffer());
     cv::Mat outputMat;
     cv::resize(inputMat, outputMat, cv::Size(width, height));

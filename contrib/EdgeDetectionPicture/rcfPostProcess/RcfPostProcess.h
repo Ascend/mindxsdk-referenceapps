@@ -23,7 +23,7 @@
 class RcfPostProcess : public MxBase::ObjectPostProcessBase {
 public:
     RcfPostProcess() = default;
-    ~RcfPostProcess() = default;    
+    ~RcfPostProcess() = default;
     RcfPostProcess &operator=(const RcfPostProcess &other);
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
     APP_ERROR DeInit() override;
