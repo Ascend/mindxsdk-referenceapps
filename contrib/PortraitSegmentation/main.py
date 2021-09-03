@@ -36,6 +36,9 @@ MODEL_OUTPUT_WIDTH = 224
 MODEL_OUTPUT_HEIGHT = 224
 MODEL_OUTPUT_DIMENSION = 2
 
+DEFAULT_THRESHOLD = 1
+EXPECTED_PARAMETERS = 4
+
 REPEAT_AXIS = 3
 REPEAT_TIMES = 2
 
@@ -106,6 +109,12 @@ if __name__ == '__main__':
     mask = np.clip((res * COLOR_DEPTH), 0, COLOR_DEPTH)
     mask = mask.reshape(MODEL_OUTPUT_WIDTH, MODEL_OUTPUT_HEIGHT, MODEL_OUTPUT_DIMENSION)
     mask = mask[:, :, 0]
+
+    # a threshold t to determine how precise the segmentation strategy will be, a lower of value of t will only
+    # remains pixels that are more likely to be a portrait. The default setting of t is 1, which remains all the pixels
+    # that are classified as the portrait by the PortraitNet model.
+    threshold = float(sys.argv[3] if len(sys.argv) == EXPECTED_PARAMETERS else DEFAULT_THRESHOLD)
+    mask[mask >= (threshold * COLOR_DEPTH)] = 255
 
     # read the background and portrait image
     background = cv2.imread(sys.argv[1])
