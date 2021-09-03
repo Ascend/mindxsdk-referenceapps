@@ -26,7 +26,7 @@ namespace {
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
     const uint32_t channel = 3;
-    const double alpha1 = 255.0 / 255;
+    const double ALPHA = 255.0 / 255;
 }
 void RcfDetection::SetRcfPostProcessConfig(const InitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config)
@@ -187,8 +187,10 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
     imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE;
-    imgInfo.widthResize = 512;
-    imgInfo.heightResize = 512;
+    uint32_t widthResize = 512;
+    uint32_t heightResize = 512;
+    imgInfo.widthResize = widthResize;
+    imgInfo.heightResize = heightResize;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imgInfo);
@@ -208,10 +210,10 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
 APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath)
 {
     auto shape = inferTensor.GetShape();
-    int dim_2 = 2;
-    int dim_3 = 3;
-    uint32_t height = shape[dim_2];
-    uint32_t width = shape[dim_3];
+    int dim2 = 2;
+    int dim3 = 3;
+    uint32_t height = shape[dim2];
+    uint32_t width = shape[dim3];
     cv::Mat imgBgr = cv::imread(imgPath);
     uint32_t imageWidth = imgBgr.cols;
     uint32_t imageHeight = imgBgr.rows;
@@ -221,7 +223,7 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::
     int crop = 5;
     cv::Rect myROI(0, 0, imageWidth - crop, imageHeight);
     resize(modelOutput, resizedMat, cv::Size(dvppWidthStride, dvppHeightStride), 0, 0, cv::INTER_LINEAR);
-    resizedMat.convertTo(grayMat, CV_8UC1, alpha1);
+    resizedMat.convertTo(grayMat, CV_8UC1, ALPHA);
     cv::Mat croppedImage = grayMat(myROI);
     resize(croppedImage, croppedImage,  cv::Size(imageWidth, imageHeight), 0, 0, cv::INTER_LINEAR);
     cv::imwrite("./result.jpg", croppedImage);
