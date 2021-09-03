@@ -145,7 +145,7 @@ python3.7 main.py
 
 运行评测代码：
 
-下载数据集中的img_align_celeba，解压后修改名称为CelebA，结合test_full.txt，运行attr_main.py，会生成img_result.txt。其中，test_full.txt是原模型的运行结果，用以作为评测的基准。img_result.txt是运行评测代码的结果。最后，运行cal_accuracy.py，得到评测结果。
+将解压后的img_align_celeba数据集放置在CelebA目录下，与attr_main.py同级，结合test_full.txt，运行attr_main.py，会生成img_result.txt。其中，test_full.txt是原模型的运行结果，用以作为评测的基准。img_result.txt是运行评测代码的结果。最后，运行cal_accuracy.py，得到评测结果。
 ```
 python3.7 attr_main.py
 python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
