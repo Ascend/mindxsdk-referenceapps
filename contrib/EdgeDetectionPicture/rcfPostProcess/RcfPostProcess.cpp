@@ -46,8 +46,10 @@ static APP_ERROR ResizeTensor(const MxBase::TensorBase &input, MxBase::TensorBas
                               const uint32_t &width, const uint32_t &height)
 {
     auto inputShape = input.GetShape();
-    uint32_t h = inputShape[2];
-    uint32_t w = inputShape[3];
+    int dim_2 = 2;
+    int dim_3 = 3;
+    uint32_t h = inputShape[dim_2];
+    uint32_t w = inputShape[dim_3];
     cv::Mat inputMat = cv::Mat(h, w, CV_32FC1, input.GetBuffer());
     cv::Mat outputMat;
     cv::resize(inputMat, outputMat, cv::Size(width, height));
@@ -93,7 +95,8 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
         LogError << GetError(ret) << "TensorBaseMalloc failed.";
         return ret;
     }
-    if (resizeTensors.size() != 5) {
+    const uint32_t output_size = 5;
+    if (resizeTensors.size() != output_size) {
         LogError << "resizeTensors.size():" << resizeTensors.size();
         return APP_ERR_COMM_FAILURE;
     }

@@ -26,7 +26,7 @@ namespace {
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
     const uint32_t channel = 3;
-    const double alpha1 = 255.0/255;
+    const double alpha1 = 255.0 / 255;
 }
 void RcfDetection::SetRcfPostProcessConfig(const InitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config)
@@ -208,8 +208,10 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
 APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath)
 {
     auto shape = inferTensor.GetShape();
-    uint32_t height = shape[2];
-    uint32_t width = shape[3];
+    int dim_2 = 2;
+    int dim_3 = 3;
+    uint32_t height = shape[dim_2];
+    uint32_t width = shape[dim_3];
     cv::Mat imgBgr = cv::imread(imgPath);
     uint32_t imageWidth = imgBgr.cols;
     uint32_t imageHeight = imgBgr.rows;
