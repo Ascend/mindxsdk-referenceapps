@@ -156,7 +156,7 @@ namespace {
             LogError << "Failed to copy data to host";
             return ret;
         }
-        FILE* fp = fopen("./write_result.jpg", "w");
+        FILE *fp = fopen("./write_result.jpg", "w");
         if (fp == nullptr) {
             LogError << "open file fail";
         }
@@ -227,7 +227,7 @@ namespace {
             LogError << "Failed to copy data to host";
             return ret;
         }
-        FILE* fp = fopen("./write_result_crop.jpg", "w");
+        FILE *fp = fopen("./write_result_crop.jpg", "w");
         fwrite(data.ptrData, 1, data.size, fp);
         fclose(fp);
         output.destory(output.data);
@@ -307,9 +307,7 @@ namespace {
         }
 
         imageDataInfo.destory(imageDataInfo.data);
-        while (g_callTime <= 0) {
-            ;
-        }
+        while (g_callTime <= 0) {;}
 
         return APP_ERR_OK;
     }
