@@ -24,6 +24,7 @@ using namespace std;
 
 namespace {
     using namespace MxBase;
+
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
@@ -34,28 +35,23 @@ namespace {
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
+    DeviceContext deviceContext_ = {};
 
-    class DeviceGuard {
-    public:
-        DeviceGuard()
-        {
-            InitDevice();
-            InitResource();
-        }
-        ~DeviceGuard()
-        {
-            DeInitResource();
-            DeInitDevice();
-        }
-    private:
-        void DeInitResource() const;
-        void DeInitDevice() const;
-        APP_ERROR InitDevice();
-        APP_ERROR InitResource() const;
-        DeviceContext deviceContext_ = {};
-    };
+    std::string ReadFileContent(const std::string& filePath);
+    APP_ERROR DeInitResource();
+    APP_ERROR DeInitDevice();
+    APP_ERROR InitDevice();
+    APP_ERROR InitResource()
+    APP_ERROR TestVpcResizeNormal();
+    APP_ERROR TestDvppJpegDecodeNormal();
+    APP_ERROR TestVpcCropNormal();
+    APP_ERROR DvppEncodeInit();
+    APP_ERROR DvppEncodeProcess(std::string file);
+    APP_ERROR DvppEncodeDeInit();
+    APP_ERROR TestDvppVencNormal();
+    APP_ERROR RunTest();
 
-    APP_ERROR DeviceGuard::InitDevice()
+    APP_ERROR InitDevice()
     {
         APP_ERROR result = APP_ERR_OK;
         result = DeviceManager::GetInstance()->InitDevices();
@@ -69,13 +65,15 @@ namespace {
         }
         return result;
     }
-    void DeviceGuard::DeInitDevice() const
+    APP_ERROR DeInitDevice()
     {
         APP_ERROR result = DeviceManager::GetInstance()->DestroyDevices();
         if (result != APP_ERR_OK) {
         }
+        return result;
     }
-    APP_ERROR DeviceGuard::InitResource() const
+
+    APP_ERROR InitResource()
     {
         APP_ERROR ret = APP_ERR_OK;
         g_dvppCommon = std::make_shared<DvppWrapper>();
@@ -93,16 +91,16 @@ namespace {
         return APP_ERR_OK;
     }
 
-    void DeviceGuard::DeInitResource() const
+    APP_ERROR DeInitResource()
     {
         APP_ERROR ret = APP_ERR_OK;
         ret = g_dvppCommon->DeInit();
         if (ret != APP_ERR_OK) {
             LogError << GetError(ret) << "Failed to deInit g_dvppCommon object.";
-            return;
+            return ret;
         }
         LogInfo << "DvppCommon object deInit successfully";
-        return;
+        return ret;
     }
 
     std::string ReadFileContent(const std::string& filePath)
@@ -184,7 +182,7 @@ namespace {
             LogError << "Failed to copy data to host";
             return ret;
         }
-        std::string result(static_cast<std::string>(des.ptrData), des.size);
+        std::string result(static_cast<char *>(des.ptrData), des.size);
         std::string content = ReadFileContent("./decode.jpg");
         if (result == content) {
             LogInfo << "Decode success";
@@ -350,16 +348,62 @@ namespace {
         LogInfo << "DvppVencNormal successfully";
         return ret;
     }
+
+    APP_ERROR RunTest()
+    {
+        APP_ERROR ret = InitDevice();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to InitDevice";
+            return ret;
+        }
+        ret = InitResource();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to InitResource";
+            return ret;
+        }
+
+        ret = TestVpcResizeNormal();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to TestVpcResizeNormal";
+            return ret;
+        }
+        ret = TestDvppJpegDecodeNormal();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to TestDvppJpegDecodeNormal";
+            return ret;
+        }
+        ret = TestVpcCropNormal();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to TestVpcCropNormal";
+            return ret;
+        }
+        ret = TestDvppVencNormal();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to TestDvppVencNormal";
+            return ret;
+        }
+
+        ret = DeInitResource();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to DeInitResource";
+            return ret;
+        }
+        ret = DeInitDevice();
+        if (ret != APP_ERR_OK) {
+            LogError << "Failed to DeInitDevice";
+            return ret;
+        }
+
+        fclose(g_fp);
+        g_fp = nullptr;
+
+        LogInfo << "Run DvppWrapperSample successfully";
+        return ret;
+    }
 }
 
 int main()
 {
-    DeviceGuard deviceGuard;
-    TestVpcResizeNormal();
-    TestDvppJpegDecodeNormal();
-    TestVpcCropNormal();
-    TestDvppVencNormal();
-    fclose(g_fp);
-    g_fp = nullptr;
+    RunTest();
     return 0;
 }
