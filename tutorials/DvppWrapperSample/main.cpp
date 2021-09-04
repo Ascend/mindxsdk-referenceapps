@@ -21,7 +21,7 @@
 using namespace std;
 
 namespace {
-    typedef char* char_str;
+    typedef char * char_str;
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
