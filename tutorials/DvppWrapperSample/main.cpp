@@ -21,10 +21,6 @@
 using namespace std;
 
 namespace {
-    #define NUMBER_OF_VALID_PARAMETERS 2
-    #define ONE_QUARTER 1 / 4
-    #define THREE_QUARTER 3 / 4
-
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
@@ -32,6 +28,9 @@ namespace {
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
     const uint32_t MAX_FRAME_COUNT = 100;
+    const uint32_t NUMBER_OF_VALID_PARAMETERS = 2;
+    const float ONE_QUARTER = 0.25;
+    const float THREE_QUARTER = 0.75;
     uint32_t g_callTime = MAX_FRAME_COUNT;
     FILE *g_fp = nullptr;
     string g_inputFilePath;
@@ -160,7 +159,11 @@ namespace {
             return ret;
         }
         DvppDataInfo output;
-        CropRoiConfig config{input.width * ONE_QUARTER, input.width * THREE_QUARTER, input.height * THREE_QUARTER, input.height * ONE_QUARTER};
+        uint32_t x0 = (uint32_t)input.width * ONE_QUARTER;
+        uint32_t x1 = (uint32_t)input.width * THREE_QUARTER;
+        uint32_t y1 = (uint32_t)input.height * THREE_QUARTER;
+        uint32_t y0 = (uint32_t)input.height * ONE_QUARTER;
+        CropRoiConfig config{x0, x1, y1, y0};
         ret = g_dvppCommon->VpcCrop(input, output, config);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to crop file: " << filepath;
