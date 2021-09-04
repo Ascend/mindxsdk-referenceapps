@@ -21,7 +21,7 @@
 using namespace std;
 
 namespace {
-    typedef char_str char*
+    typedef char* char_str;
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
@@ -30,7 +30,7 @@ namespace {
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
     const uint32_t MAX_FRAME_COUNT = 300;
     uint32_t g_callTime = MAX_FRAME_COUNT;
-    FILE *g_fp = fopen("./test.h264", "wb");
+    FILE *g_fp = nullptr;
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
@@ -40,7 +40,7 @@ namespace {
     APP_ERROR DeInitResource();
     APP_ERROR DeInitDevice();
     APP_ERROR InitDevice();
-    APP_ERROR InitResource()
+    APP_ERROR InitResource();
     APP_ERROR TestVpcResizeNormal();
     APP_ERROR TestDvppJpegDecodeNormal();
     APP_ERROR TestVpcCropNormal();
@@ -268,6 +268,11 @@ namespace {
         std::mutex mutex = {};
         std::condition_variable endCond = {};
         std::unique_lock<std::mutex> lock(mutex);
+        g_fp = fopen("./test.h264", "wb");
+        if (g_fp == nullptr) {
+            LogError << "fopen fail";
+            return APP_ERR_COMM_INIT_FAIL;
+        }
 
         DvppDataInfo imageDataInfo = {};
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(file, imageDataInfo);
