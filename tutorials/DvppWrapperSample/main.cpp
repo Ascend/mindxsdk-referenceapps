@@ -21,6 +21,10 @@
 using namespace std;
 
 namespace {
+    #define NUMBER_OF_VALID_PARAMETERS 2
+    #define ONE_QUARTER 1 / 4
+    #define THREE_QUARTER 3 / 4
+
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
@@ -30,7 +34,7 @@ namespace {
     const uint32_t MAX_FRAME_COUNT = 100;
     uint32_t g_callTime = MAX_FRAME_COUNT;
     FILE *g_fp = nullptr;
-    string inputFilePath;
+    string g_inputFilePath;
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
@@ -104,7 +108,7 @@ namespace {
     {
         int resizeWidth = ENCODE_IMAGE_WIDTH;
         int resizeHeight = ENCODE_IMAGE_HEIGHT;
-        std::string filepath = inputFilePath;
+        std::string filepath = g_inputFilePath;
         DvppDataInfo input, output;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
@@ -148,7 +152,7 @@ namespace {
 
     APP_ERROR TestVpcCropNormal()
     {
-        std::string filepath = inputFilePath;
+        std::string filepath = g_inputFilePath;
         DvppDataInfo input;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
@@ -156,7 +160,7 @@ namespace {
             return ret;
         }
         DvppDataInfo output;
-        CropRoiConfig config{input.width * 1 / 4, input.width * 3 / 4, input.height * 3/ 4, input.height * 1 / 4};
+        CropRoiConfig config{input.width * ONE_QUARTER, input.width * THREE_QUARTER, input.height * THREE_QUARTER, input.height * ONE_QUARTER};
         ret = g_dvppCommon->VpcCrop(input, output, config);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to crop file: " << filepath;
@@ -353,13 +357,13 @@ namespace {
     }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    if (argc != 2) {
+    if (argc != NUMBER_OF_VALID_PARAMETERS) {
         LogError << "Wrong input, please check the input parameter!";
         return 1;
     }
-    inputFilePath = argv[1];
+    g_inputFilePath = argv[1];
     RunTest();
     return 0;
 }
