@@ -15,7 +15,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "../")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,relro,-z,now,-z,noexecstack -pie")
 
-set(MX_SDK_HOME /home/kongchibin/MindXSDK/mxVision)
+set(MX_SDK_HOME ${SDK安装路径})
 
 # Header path
 include_directories(

@@ -21,28 +21,26 @@
 using namespace std;
 
 namespace {
-#define CHAR_PTR char*
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
-    const uint32_t MAX_FRAME_COUNT = 300;
+    const uint32_t MAX_FRAME_COUNT = 100;
     uint32_t g_callTime = MAX_FRAME_COUNT;
     FILE *g_fp = nullptr;
+    string inputFilePath;
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
     std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
     DeviceContext deviceContext_ = {};
 
-    std::string ReadFileContent(const std::string& filePath);
     APP_ERROR DeInitResource();
     APP_ERROR DeInitDevice();
     APP_ERROR InitDevice();
     APP_ERROR InitResource();
     APP_ERROR TestVpcResizeNormal();
-    APP_ERROR TestDvppJpegDecodeNormal();
     APP_ERROR TestVpcCropNormal();
     APP_ERROR DvppEncodeInit();
     APP_ERROR DvppEncodeProcess(std::string file);
@@ -102,28 +100,11 @@ namespace {
         return ret;
     }
 
-    std::string ReadFileContent(const std::string& filePath)
-    {
-        std::ifstream file(filePath, std::ios::binary);
-        if (!file) {
-            LogError << "Invalid file. filePath(" << filePath << ")";
-            return "";
-        }
-        file.seekg(0, std::ifstream::end);
-        uint32_t fileSize = file.tellg();
-        file.seekg(0);
-        std::vector<char> buffer;
-        buffer.resize(fileSize);
-        file.read(buffer.data(), fileSize);
-        file.close();
-        return std::string(buffer.data(), fileSize);
-    }
-
     APP_ERROR TestVpcResizeNormal()
     {
-        int resizeWidth = 240;
-        int resizeHeight = 100;
-        std::string filepath = "./test5.jpg";
+        int resizeWidth = ENCODE_IMAGE_WIDTH;
+        int resizeHeight = ENCODE_IMAGE_HEIGHT;
+        std::string filepath = inputFilePath;
         DvppDataInfo input, output;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
@@ -153,7 +134,7 @@ namespace {
             LogError << "Failed to copy data to host";
             return ret;
         }
-        FILE *fp = fopen("./write_result.jpg", "w");
+        FILE *fp = fopen("./resize_result.jpg", "w");
         if (fp == nullptr) {
             LogError << "open file fail";
         }
@@ -165,37 +146,9 @@ namespace {
         return ret;
     }
 
-    APP_ERROR TestDvppJpegDecodeNormal()
-    {
-        std::string filepath = "./test5.jpg";
-        DvppDataInfo output;
-        APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, output);
-        if (ret != APP_ERR_OK) {
-            LogError << "Failed to decode file: " << filepath;
-            return ret;
-        }
-        MemoryData des(output.dataSize, MemoryData::MEMORY_HOST);
-        MemoryData src(static_cast<void*>(output.data), output.dataSize, MemoryData::MEMORY_DVPP);
-        ret = MemoryHelper::MxbsMallocAndCopy(des, src);
-        if (ret != APP_ERR_OK) {
-            LogError << "Failed to copy data to host";
-            return ret;
-        }
-        std::string result(static_cast<CHAR_PTR>(des.ptrData), des.size);
-        std::string content = ReadFileContent("./decode.jpg");
-        if (result == content) {
-            LogInfo << "Decode success";
-        } else {
-            LogInfo << "Decode incorrect";
-        }
-        output.destory(output.data);
-        des.free(des.ptrData);
-        return ret;
-    }
-
     APP_ERROR TestVpcCropNormal()
     {
-        std::string filepath = "./test5.jpg";
+        std::string filepath = inputFilePath;
         DvppDataInfo input;
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
@@ -203,7 +156,7 @@ namespace {
             return ret;
         }
         DvppDataInfo output;
-        CropRoiConfig config{22, 226, 230, 30};
+        CropRoiConfig config{input.width * 1 / 4, input.width * 3 / 4, input.height * 3/ 4, input.height * 1 / 4};
         ret = g_dvppCommon->VpcCrop(input, output, config);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to crop file: " << filepath;
@@ -310,7 +263,6 @@ namespace {
 
         imageDataInfo.destory(imageDataInfo.data);
         while (g_callTime <= 0) {;}
-
         return APP_ERR_OK;
     }
 
@@ -339,7 +291,7 @@ namespace {
             LogError << "Failed to DvppEncodeInit";
             return ret;
         }
-        ret = DvppEncodeProcess("./test_venc.jpg");
+        ret = DvppEncodeProcess("resize_result.jpg");
         if (ret != APP_ERR_OK) {
             LogError << "Failed to DvppEncodeProcess";
             return ret;
@@ -369,11 +321,6 @@ namespace {
         ret = TestVpcResizeNormal();
         if (ret != APP_ERR_OK) {
             LogError << "Failed to TestVpcResizeNormal";
-            return ret;
-        }
-        ret = TestDvppJpegDecodeNormal();
-        if (ret != APP_ERR_OK) {
-            LogError << "Failed to TestDvppJpegDecodeNormal";
             return ret;
         }
         ret = TestVpcCropNormal();
@@ -406,8 +353,13 @@ namespace {
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc != 2) {
+        LogError << "Wrong input, please check the input parameter!";
+        return 1;
+    }
+    inputFilePath = argv[1];
     RunTest();
     return 0;
 }

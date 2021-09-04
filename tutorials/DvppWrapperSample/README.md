@@ -4,6 +4,9 @@
 ## 介绍
 提供DvppWrapper接口样例，对图片实现编码，解码，缩放，抠图，以及把样例图片编码为264视频文件。
 
+## 准备
+打开百度图片https://image.baidu.com/，输入任何关键字，然后搜索，右击任意图片，点击另存为。把图片保存在DvppWrapperSample目录下。
+
 ## 编译与运行
 **步骤1** 修改CMakeLists.txt文件 将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
 
@@ -27,6 +30,6 @@ make
 
 **步骤4** cd到DvppWrapperSample目录下，可看到可执行文件DvppWrapperSample， 实行命令：
 ```
-./DvppWrapperSample
+./DvppWrapperSample ./保存的图片
 ```
 最后会生成缩放、抠图后保存的图片，以及编码保存的视频。
