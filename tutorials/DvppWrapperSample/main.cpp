@@ -21,6 +21,7 @@
 using namespace std;
 
 namespace {
+#define CHAR_PTR char*
     using namespace MxBase;
 
     const uint32_t ENCODE_TEST_DEVICE_ID = 1;
@@ -180,7 +181,7 @@ namespace {
             LogError << "Failed to copy data to host";
             return ret;
         }
-        std::string result(static_cast<char*>(des.ptrData), des.size);
+        std::string result(static_cast<CHAR_PTR>(des.ptrData), des.size);
         std::string content = ReadFileContent("./decode.jpg");
         if (result == content) {
             LogInfo << "Decode success";
