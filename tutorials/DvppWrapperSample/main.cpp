@@ -1,11 +1,9 @@
-/**
-* @file Main.cpp
-*
-* Copyright (c) Huawei Technologies Co., Ltd. 2020. All rights reserved.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+/*
+* Copyright (c) Huawei Technologies Co., Ltd. 2020-2021. All rights reserved.
+* Description: Interface sample of DvppWrapper
+* Author: MindX SDK
+* Create: 2021
+* History: NA
 */
 
 #include <iostream>
