@@ -24,6 +24,9 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 
 namespace AscendPerformanceMonitor {
+// config
+const uint32_t DEFAULT_PRINT_INTERVAL = 1;
+
 class PerformanceMonitor {
 public:
     PerformanceMonitor() = default;

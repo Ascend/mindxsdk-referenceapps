@@ -26,6 +26,17 @@
 
 #include <thread>
 
+// config
+const uint32_t DEFAULT_CONTROL_CHECK_INTERVAL = 2;
+const uint32_t DEFAULT_POP_WAIT_TIME = 10;
+
+// when enable independentThread and writeDetectResult, please use this
+const uint32_t DECODE_QUEUE_LENGTH_100 = 100;
+// when enable independentThread, please use this
+const uint32_t DECODE_QUEUE_LENGTH_200 = 200;
+// when disable independentThread, please use this
+const uint32_t DECODE_QUEUE_LENGTH_400 = 400;
+
 struct ReasonerConfig {
     uint32_t deviceId;
     uint32_t baseVideoChannelId;
@@ -92,7 +103,8 @@ private:
 
     static void GetAndSaveDetectResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
-    static void GetMultiChannelDetectionResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
+    static void GetMultiChannelDetectionResult
+            (const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
     static APP_ERROR SetDevice(uint32_t deviceId);
 
@@ -110,6 +122,8 @@ private:
     void ClearData();
 
     void StartWorkThreads(std::vector<std::thread>& workThreads);
+    void TryQuitReasoner();
+    void ForceStopReasoner();
 
 private:
     uint32_t deviceId;

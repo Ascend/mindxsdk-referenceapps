@@ -31,6 +31,9 @@ namespace {
     const std::string SaveDetectResultTag = "SaveDetectResult"; /* NOLINT */
 }
 
+// init static variable
+bool MultiChannelVideoReasoner::_s_force_stop = false;
+
 /**
  * Init MultiChannelVideoReasoner by {@link ReasonerConfig}
  * @param initConfig const reference to initial config
@@ -94,63 +97,13 @@ void MultiChannelVideoReasoner::Process()
 
     // work flow control
     while (!stopFlag) {
-        // judge whether the video of all channels is pulled and decoded finish
-        bool allVideoDataPulledAndDecoded = true;
-        for (auto & streamPuller : streamPullers) {
-            if (!streamPuller->stopFlag) {
-                allVideoDataPulledAndDecoded = false;
-                break;
-            }
-        }
 
-        // judge whether the all data in decode frame queue is processed
-        bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
-        if (enableIndependentThreadForEachDetectStep) {
-            if (!yoloInferenceResultQueue->IsEmpty() ||
-                !yoloPostProcessResultQueue->IsEmpty()) {
-                allVideoDataProcessed = false;
-            }
-        }
-
-        // judge whether the all detect result all write complete
-        bool allDetectResultWrote = true;
-        if (writeDetectResultToFile && enableIndependentThreadForEachDetectStep) {
-            if (!yoloInferenceResultQueue->IsEmpty() ||
-                !yoloPostProcessResultQueue->IsEmpty()) {
-                allDetectResultWrote = false;
-            }
-        }
-
-        // all channels video data pull, decode, resize, detect and save(opt) finish
-        // quit MultiChannelVideoReasoner
-        // quit PerformanceMonitor
-        if (allVideoDataPulledAndDecoded && allVideoDataProcessed && allDetectResultWrote) {
-            stopFlag = true;
-            std::string msg = writeDetectResultToFile ? " and write complete, " : " complete, ";
-            LogInfo << "All channels' video data pull, decode, resize, detect" << msg
-                    << "quit MultiChannelVideoReasoner.";
-
-            performanceMonitor->stopFlag = true;
-            LogInfo << "All processor exit, Stop PerformanceMonitor.";
-        }
+        // check work flow and try to exit
+        TryQuitReasoner();
 
         // force stop case
         if (MultiChannelVideoReasoner::_s_force_stop) {
-            LogInfo << "Force stop MultiChannelVideoReasoner.";
-            stopFlag = true;
-            // force stop PerformanceMonitor
-            performanceMonitor->stopFlag = true;
-            LogInfo << "Force stop PerformanceMonitor.";
-
-            // force stop and clear decode frame queues
-            Util::StopAndClearQueueMap(decodeFrameQueueMap);
-            // force stop and clear yoloInferenceResultQueue and yoloPostProcessResultQueue
-            if (enableIndependentThreadForEachDetectStep) {
-                yoloInferenceResultQueue->Stop();
-                yoloInferenceResultQueue->Clear();
-                yoloPostProcessResultQueue->Stop();
-                yoloPostProcessResultQueue->Clear();
-            }
+            ForceStopReasoner();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(intervalMainThreadControlCheck));
     }
@@ -216,12 +169,12 @@ APP_ERROR MultiChannelVideoReasoner::DeInit()
  * @param decodeFrameQueue const reference to the pointer to decode frame queue
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
-void MultiChannelVideoReasoner::GetDecodeVideoFrame(
-        const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
-        const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
-        const int &index,
-        const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
-        const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetDecodeVideoFrame
+        (const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
+         const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
+         const int &index,
+         const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
+         const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
 {
     // set device
     APP_ERROR ret = SetDevice(multiChannelVideoReasoner->deviceId);
@@ -274,8 +227,8 @@ void MultiChannelVideoReasoner::GetDecodeVideoFrame(
  *
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
-void MultiChannelVideoReasoner::GetYoloInferenceResult(
-        const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetYoloInferenceResult
+        (const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
 {
     // set device
     APP_ERROR ret = SetDevice(multiChannelVideoReasoner->deviceId);
@@ -375,8 +328,8 @@ void MultiChannelVideoReasoner::GetYoloInferenceResult(
  *
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
-void MultiChannelVideoReasoner::GetYoloPostProcessResult(
-        const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetYoloPostProcessResult
+        (const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
 {
     // set device
     APP_ERROR ret = SetDevice(multiChannelVideoReasoner->deviceId);
@@ -447,8 +400,8 @@ void MultiChannelVideoReasoner::GetYoloPostProcessResult(
  *
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
-void MultiChannelVideoReasoner::GetAndSaveDetectResult(
-        const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetAndSaveDetectResult
+        (const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
 {
     // set device
     APP_ERROR ret = SetDevice(multiChannelVideoReasoner->deviceId);
@@ -536,8 +489,8 @@ void MultiChannelVideoReasoner::GetAndSaveDetectResult(
  * @param popDecodeFrameWaitTime const reference to wait time when decode frame queue is empty
  * @param multiChannelVideoReasoner const pointer to MultiChannelVideoReasoner
  */
-void MultiChannelVideoReasoner::GetMultiChannelDetectionResult(
-        const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
+void MultiChannelVideoReasoner::GetMultiChannelDetectionResult
+        (const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner)
 {
     // set device
     APP_ERROR ret = SetDevice(multiChannelVideoReasoner->deviceId);
@@ -957,4 +910,72 @@ void MultiChannelVideoReasoner::StartWorkThreads(std::vector<std::thread> &workT
                                    performanceMonitor, intervalPerformanceMonitorPrint);
     workThreads.push_back(std::move(monitorPerformance));
     LogInfo << "performance monitor thread start.";
+}
+
+/**
+ * check video process work flow and try to exit
+ */
+void MultiChannelVideoReasoner::TryQuitReasoner()
+{
+    // judge whether the video of all channels is pulled and decoded finish
+    bool allVideoDataPulledAndDecoded = true;
+    for (auto & streamPuller : streamPullers) {
+        if (!streamPuller->stopFlag) {
+            allVideoDataPulledAndDecoded = false;
+            break;
+        }
+    }
+
+    // judge whether the all data in decode frame queue is processed
+    bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
+    if (enableIndependentThreadForEachDetectStep) {
+        if (!yoloInferenceResultQueue->IsEmpty() ||
+            !yoloPostProcessResultQueue->IsEmpty()) {
+            allVideoDataProcessed = false;
+        }
+    }
+
+    // judge whether the all detect result all write complete
+    bool allDetectResultWrote = true;
+    if (writeDetectResultToFile && enableIndependentThreadForEachDetectStep) {
+        if (!yoloInferenceResultQueue->IsEmpty() ||
+            !yoloPostProcessResultQueue->IsEmpty()) {
+            allDetectResultWrote = false;
+        }
+    }
+
+    // all channels video data pull, decode, resize, detect and save(opt) finish
+    // quit MultiChannelVideoReasoner
+    // quit PerformanceMonitor
+    if (allVideoDataPulledAndDecoded && allVideoDataProcessed && allDetectResultWrote) {
+        stopFlag = true;
+        std::string msg = writeDetectResultToFile ? " and write complete, " : " complete, ";
+        LogInfo << "All channels' video data pull, decode, resize, detect" << msg
+        << "quit MultiChannelVideoReasoner.";
+
+        performanceMonitor->stopFlag = true;
+        LogInfo << "All processor exit, Stop PerformanceMonitor.";
+    }
+}
+
+/**
+ * Force stop reasoner and its components
+ */
+void MultiChannelVideoReasoner::ForceStopReasoner()
+{
+    LogInfo << "Force stop MultiChannelVideoReasoner.";
+    stopFlag = true;
+    // force stop PerformanceMonitor
+    performanceMonitor->stopFlag = true;
+    LogInfo << "Force stop PerformanceMonitor.";
+
+    // force stop and clear decode frame queues
+    Util::StopAndClearQueueMap(decodeFrameQueueMap);
+    // force stop and clear yoloInferenceResultQueue and yoloPostProcessResultQueue
+    if (enableIndependentThreadForEachDetectStep) {
+        yoloInferenceResultQueue->Stop();
+        yoloInferenceResultQueue->Clear();
+        yoloPostProcessResultQueue->Stop();
+        yoloPostProcessResultQueue->Clear();
+    }
 }

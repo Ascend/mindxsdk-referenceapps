@@ -25,6 +25,9 @@ extern "C" {
 }
 
 namespace AscendStreamPuller {
+// config
+const uint32_t DEFAULT_RETRY_OPEN_VIDEO_TIMES = 10;
+
 struct VideoFrameInfo {
     uint32_t width;
     uint32_t height;

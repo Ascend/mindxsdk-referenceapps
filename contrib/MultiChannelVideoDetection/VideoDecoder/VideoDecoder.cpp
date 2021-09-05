@@ -167,7 +167,7 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
     };
 
     auto output = std::shared_ptr<MxBase::MemoryData>(
-            new MxBase::MemoryData(buffer.get(),(size_t)inputDataInfo.dataSize,
+            new MxBase::MemoryData(buffer.get(), (size_t)inputDataInfo.dataSize,
                                    MxBase::MemoryData::MEMORY_DVPP, inputDataInfo.frameId), deleter);
 
     if (userData == nullptr) {

@@ -22,7 +22,11 @@
 #include "ObjectPostProcessors/Yolov3PostProcess.h"
 
 namespace AscendYoloDetector {
+
 // yolo config
+const uint32_t YOLO_MODEL_INPUT_WIDTH = 416;
+const uint32_t YOLO_MODEL_INPUT_HEIGHT = 416;
+
 const uint32_t YOLO_CLASS_NUM = 80;
 const uint32_t YOLO_BIASES_NUM = 18;
 const uint32_t YOLO_TYPE = 3;

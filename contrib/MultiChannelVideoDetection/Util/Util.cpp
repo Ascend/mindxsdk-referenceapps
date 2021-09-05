@@ -66,8 +66,8 @@ void Util::InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, uint32_t 
  * @param queueMap const reference to queue map
  * @return whether exist data in all queues
  */
-bool Util::IsExistDataInQueueMap(
-        const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+bool Util::IsExistDataInQueueMap
+        (const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
 {
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
     for (iter = queueMap.begin(); iter != queueMap.end(); iter++) {
@@ -83,8 +83,8 @@ bool Util::IsExistDataInQueueMap(
  * Stop and clear queue map
  * @param queueMap const reference to queue map
  */
-void Util::StopAndClearQueueMap(
-        const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+void Util::StopAndClearQueueMap
+        (const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
 {
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
     for (iter = queueMap.begin(); iter != queueMap.end(); iter++) {
@@ -106,9 +106,9 @@ void Util::StopAndClearQueueMap(
  * @param printResult whether print detect result
  * @return yolo detect results
  */
-std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
-        const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
-        uint32_t rtspIndex, uint32_t frameId, bool printResult)
+std::vector<MxBase::ObjectInfo> Util::GetDetectionResult
+        (const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
+         uint32_t rtspIndex, uint32_t frameId, bool printResult)
 {
     std::vector<MxBase::ObjectInfo> info;
 
@@ -186,9 +186,8 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData> &videoFrame
     auto videoWidth = videoFrameInfo.width;
 
     // origin decode yuv image of video frame
-    cv::Mat imgYuv = cv::Mat((int32_t)(videoHeight * AscendYoloDetector::YUV_BYTE_NU /
-                                        AscendYoloDetector::YUV_BYTE_DE), (int32_t)videoWidth, CV_8UC1,
-                             memoryDst.ptrData);
+    int32_t yuvHeight = (int32_t)(videoHeight * AscendYoloDetector::YUV_BYTE_NU / AscendYoloDetector::YUV_BYTE_DE);
+    cv::Mat imgYuv = cv::Mat(yuvHeight, (int32_t)videoWidth, CV_8UC1, memoryDst.ptrData);
     // save result rgb image
     cv::Mat imgBgr = cv::Mat((int32_t)videoHeight, (int32_t)videoWidth, CV_8UC3);
 
@@ -215,9 +214,9 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData> &videoFrame
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
         // draw edge of detect result object on result pic
         cv::rectangle(imgBgr,
-                      cv::Rect((int)result.x0, (int)result.y0,
-                               (int)(result.x1 - result.x0), (int)(result.y1 - result.y0)),
-                               green, thickness);
+                      cv::Rect((int) result.x0, (int) result.y0,
+                               (int) (result.x1 - result.x0), (int) (result.y1 - result.y0)),
+                      green, thickness);
 
         // write result as (frameId + 1).jpg
         std::string resultDir = "./result/rtsp" + std::to_string(rtspIndex);

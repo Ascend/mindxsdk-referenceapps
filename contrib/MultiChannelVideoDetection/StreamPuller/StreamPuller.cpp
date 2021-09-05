@@ -252,11 +252,9 @@ APP_ERROR StreamPuller::GetStreamInfo()
         AVCodecID codecId = formatContext->streams[frameInfo.videoStream]->codecpar->codec_id;
         if (codecId == AV_CODEC_ID_H264) {
             frameInfo.format = MxBase::MXBASE_STREAM_FORMAT_H264_MAIN_LEVEL;
-        }
-        else if (codecId == AV_CODEC_ID_H265) {
+        } else if (codecId == AV_CODEC_ID_H265) {
             frameInfo.format = MxBase::MXBASE_STREAM_FORMAT_H265_MAIN_LEVEL;
-        }
-        else {
+        } else {
             LogError << "\033[0;31mError unsupported format \033[0m" << codecId << ".";
             return APP_ERR_COMM_FAILURE;
         }

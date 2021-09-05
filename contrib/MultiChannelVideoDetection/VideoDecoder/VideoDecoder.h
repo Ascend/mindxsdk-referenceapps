@@ -17,7 +17,6 @@
 #ifndef MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 #define MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 
-#include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 

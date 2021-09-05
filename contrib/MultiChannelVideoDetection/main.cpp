@@ -27,8 +27,6 @@ namespace {
     const uint32_t BASE_CHANNEL_ID = 0;
 }
 
-bool MultiChannelVideoReasoner::_s_force_stop = false;
-
 static void SigHandler(int signal)
 {
     if (signal == SIGINT) {
@@ -37,21 +35,19 @@ static void SigHandler(int signal)
     }
 }
 
-int main(int argc, char *argv[])
+void LoadVideoSource(int argc, char *argv[], std::vector<std::string> &rtspList)
 {
-    // rtsp video string
-    std::vector<std::string> rtspList = {};
     if (argc <= 1) {
         LogWarn
-            << "Please enter at least one video stream address, such as './multiChannelVideoReasoner xxx/xxx/xx.264'.";
+        << "Please enter at least one video stream address, such as './multiChannelVideoReasoner xxx/xxx/xx.264'.";
         LogWarn << "Not config rtsp video stream address, use code setting.";
 
         // rtsp video stream code setting
         rtspList.emplace_back("#{rtsp流地址1}");
         rtspList.emplace_back("#{rtsp流地址2}");
-
+        
         for (uint32_t i = 0; i < rtspList.size(); i++) {
-            LogInfo << "rtsp video stream " << i + 1 << " " << rtspList.at(i);
+            LogInfo << "rtsp video stream " << (i + 1) << " " << rtspList.at(i);
         }
     } else {
         for (int i = 1; i < argc; i++) {
@@ -59,12 +55,39 @@ int main(int argc, char *argv[])
             rtspList.emplace_back(argv[i]);
         }
     }
+}
+
+void LoadReasonerConfig(const std::vector<std::string> &rtspList, ReasonerConfig &reasonerConfig)
+{
+    reasonerConfig.deviceId = DEVICE_ID;
+    reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
+    reasonerConfig.rtspList = rtspList;
+    reasonerConfig.maxTryOpenVideoStream = AscendStreamPuller::DEFAULT_RETRY_OPEN_VIDEO_TIMES;
+    reasonerConfig.yoloModelPath = "${yolov3.om模型路径}";
+    reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
+    reasonerConfig.yoloModelWidth = AscendYoloDetector::YOLO_MODEL_INPUT_WIDTH;
+    reasonerConfig.yoloModelHeight = AscendYoloDetector::YOLO_MODEL_INPUT_HEIGHT;
+    reasonerConfig.maxDecodeFrameQueueLength = DECODE_QUEUE_LENGTH_200;
+    reasonerConfig.popDecodeFrameWaitTime = DEFAULT_POP_WAIT_TIME;
+    reasonerConfig.intervalPerformanceMonitorPrint = AscendPerformanceMonitor::DEFAULT_PRINT_INTERVAL;
+    reasonerConfig.intervalMainThreadControlCheck = DEFAULT_CONTROL_CHECK_INTERVAL;
+    reasonerConfig.printDetectResult = false;
+    reasonerConfig.writeDetectResultToFile = false;
+    reasonerConfig.enablePerformanceMonitorPrint = true;
+    reasonerConfig.enableIndependentThreadForEachDetectStep = true;
+}
+
+int main(int argc, char *argv[])
+{
+    // init rtsp video string
+    std::vector<std::string> rtspList = {};
+    LoadVideoSource(argc, argv, rtspList);
 
     /// === modify config === ///
     MxBase::ConfigData configData;
     MxBase::ConfigUtil configUtil;
     APP_ERROR ret = configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
-                                 configData, MxBase::ConfigMode::CONFIGFILE);
+                                                 configData, MxBase::ConfigMode::CONFIGFILE);
     if (ret == APP_ERR_OK) {
         configData.SetFileValue<int>("global_level", 1);
         MxBase::Log::SetLogParameters(configData);
@@ -95,23 +118,10 @@ int main(int argc, char *argv[])
     }
 
     auto multiChannelVideoReasoner = std::make_shared<MultiChannelVideoReasoner>();
+
+    // config reasoner
     ReasonerConfig reasonerConfig;
-    reasonerConfig.deviceId = DEVICE_ID;
-    reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
-    reasonerConfig.rtspList = rtspList;
-    reasonerConfig.maxTryOpenVideoStream = 10;
-    reasonerConfig.yoloModelPath = "${yolov3.om模型路径}";
-    reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
-    reasonerConfig.yoloModelWidth = 416;
-    reasonerConfig.yoloModelHeight = 416;
-    reasonerConfig.maxDecodeFrameQueueLength = 200;
-    reasonerConfig.popDecodeFrameWaitTime = 10;
-    reasonerConfig.intervalPerformanceMonitorPrint = 1;
-    reasonerConfig.intervalMainThreadControlCheck = 2;
-    reasonerConfig.printDetectResult = true;
-    reasonerConfig.writeDetectResultToFile = false;
-    reasonerConfig.enablePerformanceMonitorPrint = true;
-    reasonerConfig.enableIndependentThreadForEachDetectStep = true;
+    LoadReasonerConfig(rtspList, reasonerConfig);
 
     // init
     ret = multiChannelVideoReasoner->Init(reasonerConfig);
@@ -141,11 +151,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
-
-
-
-
-
