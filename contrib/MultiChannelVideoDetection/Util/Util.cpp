@@ -66,11 +66,11 @@ void Util::InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, uint32_t 
  * @param queueMap const reference to queue map
  * @return whether exist data in all queues
  */
-bool Util::IsExistDataInQueueMap(const std::map<int,
-                                 std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+bool Util::IsExistDataInQueueMap(
+        const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
 {
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
-    for (iter = queueMap.begin();iter != queueMap.end();iter++) {
+    for (iter = queueMap.begin(); iter != queueMap.end(); iter++) {
         if (!iter->second->IsEmpty()) {
             return true;
         }
@@ -83,11 +83,11 @@ bool Util::IsExistDataInQueueMap(const std::map<int,
  * Stop and clear queue map
  * @param queueMap const reference to queue map
  */
-void Util::StopAndClearQueueMap(const std::map<int,
-                                 std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
+void Util::StopAndClearQueueMap(
+        const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap)
 {
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
-    for (iter = queueMap.begin();iter != queueMap.end();iter++) {
+    for (iter = queueMap.begin(); iter != queueMap.end(); iter++) {
         if (!iter->second->IsStop()) {
             iter->second->Stop();
             iter->second->Clear();
@@ -107,7 +107,7 @@ void Util::StopAndClearQueueMap(const std::map<int,
  * @return yolo detect results
  */
 std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
-        const std::vector<std::vector<MxBase::ObjectInfo>>& objInfos,
+        const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
         uint32_t rtspIndex, uint32_t frameId, bool printResult)
 {
     std::vector<MxBase::ObjectInfo> info;
@@ -119,7 +119,7 @@ std::vector<MxBase::ObjectInfo> Util::GetDetectionResult(
         for (uint32_t j = 0; j < objInfos[i].size(); j++) {
             if (objInfos[i][j].confidence > maxConfidence) {
                 maxConfidence = objInfos[i][j].confidence;
-                index = (int32_t) j;
+                index = (int32_t)j;
             }
         }
 
@@ -169,14 +169,14 @@ void Util::CheckAndCreateResultDir(uint32_t totalVideoStreamNum)
  * @param rtspIndex curr video stream index (used to choose save dir)
  * @return status code of whether saving result is successful
  */
-APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame,
-                           const std::vector<MxBase::ObjectInfo>& results,
+APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData> &videoFrame,
+                           const std::vector<MxBase::ObjectInfo> &results,
                            const AscendStreamPuller::VideoFrameInfo &videoFrameInfo,
                            uint32_t frameId, uint32_t rtspIndex)
 {
     MxBase::MemoryData memoryDst(videoFrame->size, MxBase::MemoryData::MEMORY_HOST_NEW);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, *videoFrame);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
@@ -186,10 +186,11 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
     auto videoWidth = videoFrameInfo.width;
 
     // origin decode yuv image of video frame
-    cv::Mat imgYuv = cv::Mat((int32_t) (videoHeight *AscendYoloDetector::YUV_BYTE_NU /
-            AscendYoloDetector::YUV_BYTE_DE), (int32_t) videoWidth, CV_8UC1, memoryDst.ptrData);
+    cv::Mat imgYuv = cv::Mat((int32_t)(videoHeight * AscendYoloDetector::YUV_BYTE_NU /
+                                        AscendYoloDetector::YUV_BYTE_DE), (int32_t)videoWidth, CV_8UC1,
+                             memoryDst.ptrData);
     // save result rgb image
-    cv::Mat imgBgr = cv::Mat((int32_t) videoHeight, (int32_t) videoWidth, CV_8UC3);
+    cv::Mat imgBgr = cv::Mat((int32_t)videoHeight, (int32_t)videoWidth, CV_8UC3);
 
     // converse color space from imgYuv to imgBgr
     cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
@@ -210,13 +211,13 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
 
         // draw detect result on result pic
         cv::putText(imgBgr, result.className,
-                    cv::Point((int) (result.x0 + xOffset), (int) (result.y0 + yOffset)),
+                    cv::Point((int)(result.x0 + xOffset), (int)(result.y0 + yOffset)),
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
         // draw edge of detect result object on result pic
         cv::rectangle(imgBgr,
-                      cv::Rect((int) result.x0, (int) result.y0,
-                               (int) (result.x1 - result.x0), (int) (result.y1 - result.y0)),
-                      green, thickness);
+                      cv::Rect((int)result.x0, (int)result.y0,
+                               (int)(result.x1 - result.x0), (int)(result.y1 - result.y0)),
+                               green, thickness);
 
         // write result as (frameId + 1).jpg
         std::string resultDir = "./result/rtsp" + std::to_string(rtspIndex);
@@ -225,14 +226,14 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame
     }
 
     ret = MxBase::MemoryHelper::MxbsFree(memoryDst);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to MxbsFree memory.";
         return ret;
     }
     return APP_ERR_OK;
 }
 
-///===== private method =====///
+/// ===== private method ===== ///
 
 /**
  * Create dir
@@ -242,10 +243,14 @@ void Util::CreateDir(const std::string &path)
 {
     LogInfo << path << " not exist. create it!";
     std::string command = "mkdir -p " + path;
-    int code = system(command.c_str());
-    if (code == -1 || code == 127) {
-        LogError << "create " << path << " failed, code = " << code << ".";
-    } else {
+
+    const int32_t commonFailedCode = -1;
+    const int32_t normalTerminationCode = 0;
+
+    int32_t code = system(command.c_str());
+    if (code != commonFailedCode && WIFEXITED(code) && WEXITSTATUS(code) == normalTerminationCode) {
         LogInfo << "create " << path << " successfully.";
+    } else {
+        LogError << "create " << path << " failed, code = " << WEXITSTATUS(code) << ".";
     }
 }

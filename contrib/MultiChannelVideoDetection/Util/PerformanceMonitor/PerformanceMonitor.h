@@ -17,22 +17,21 @@
 #ifndef MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H
 #define MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H
 
-#include "MxBase/ErrorCode/ErrorCode.h"
 #include <map>
 #include <vector>
 #include <mutex>
 #include <memory>
+#include "MxBase/ErrorCode/ErrorCode.h"
 
-namespace AscendPerformanceMonitor{
-
+namespace AscendPerformanceMonitor {
 class PerformanceMonitor {
 public:
     PerformanceMonitor() = default;
     ~PerformanceMonitor() = default;
-    APP_ERROR Init(const std::vector<std::string>& objects, bool enablePrint);
+    APP_ERROR Init(const std::vector<std::string> &objects, bool enablePrint);
     APP_ERROR DeInit();
 
-    APP_ERROR Collect(const std::string& objectName, double timeCost);
+    APP_ERROR Collect(const std::string &objectName, double timeCost);
     void Print(int currTime);
 
 public:
@@ -45,7 +44,7 @@ public:
 private:
     std::map<std::string, std::vector<std::pair<int, double>>> data;
 
-    std::mutex mutex_;
+    std::mutex mutex;
 
     std::string currObject;
 
@@ -53,5 +52,4 @@ private:
     bool enablePrint;
 };
 } // end AscendPerformanceMonitor
-
-#endif //MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H
+#endif // MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H

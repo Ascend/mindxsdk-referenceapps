@@ -20,14 +20,13 @@
 #include <thread>
 
 namespace AscendPerformanceMonitor {
-
 /**
  * Init PerformanceMonitor
  * @param objects const reference to targets which need to record
  * @param enablePrint whether print performance message
  * @return status code of whether initialization is successful
  */
-APP_ERROR PerformanceMonitor::Init(const std::vector<std::string>& objects, bool enablePrint)
+APP_ERROR PerformanceMonitor::Init(const std::vector<std::string> &objects, bool enablePrint)
 {
     LogInfo << "PerformanceMonitor init start.";
     for (const std::string& object : objects) {
@@ -47,7 +46,7 @@ APP_ERROR PerformanceMonitor::Init(const std::vector<std::string>& objects, bool
 APP_ERROR PerformanceMonitor::DeInit()
 {
     LogInfo << "PerformanceMonitor deinit start.";
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex);
     data.clear();
 
     LogInfo << "PerformanceMonitor deinit success.";
@@ -60,13 +59,13 @@ APP_ERROR PerformanceMonitor::DeInit()
  * @param timeCost curr time execute time
  * @return status code of whether collection si successful
  */
-APP_ERROR PerformanceMonitor::Collect(const std::string& objectName, double timeCost)
+APP_ERROR PerformanceMonitor::Collect(const std::string &objectName, double timeCost)
 {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex);
 
     currObject = objectName;
     auto objectInfo = data.find(currObject);
-    if(objectInfo == data.end()) {
+    if (objectInfo == data.end()) {
         LogError << "do not find " << currObject << " Collect.";
         return APP_ERR_COMM_FAILURE;
     }
@@ -85,7 +84,7 @@ void PerformanceMonitor::Print(int currTime)
         return;
     }
 
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex);
 
     LogInfo << currTime << " time performance statistics info: ";
     std::_Rb_tree_const_iterator<std::pair<const std::string, std::vector<std::pair<int, double>>>> iter;
@@ -96,7 +95,7 @@ void PerformanceMonitor::Print(int currTime)
         for (auto timeCostPair : timeCostList) {
             totalTimeCost += timeCostPair.second;
         }
-        auto average = total == 0 ? 0 : totalTimeCost / (double) total;
+        auto average = total == 0 ? 0 : totalTimeCost / (double)total;
         LogInfo << iter->first << " total process frames: " << total << " average timecost: " << average << "ms.";
         data[iter->first].clear();
     }
@@ -113,7 +112,7 @@ void PerformanceMonitor::PrintStatistics(const std::shared_ptr<PerformanceMonito
                                          int printInterval)
 {
     int currTime = 0;
-    while(true) {
+    while (true) {
         if (performanceMonitor->stopFlag) {
             LogInfo << "quit performance monitor.";
             break;

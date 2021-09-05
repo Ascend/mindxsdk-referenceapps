@@ -17,25 +17,23 @@
 #ifndef MULTICHANNELVIDEODETECTION_YOLODETECTOR_H
 #define MULTICHANNELVIDEODETECTION_YOLODETECTOR_H
 
-#include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "ObjectPostProcessors/Yolov3PostProcess.h"
 
 namespace AscendYoloDetector {
+// yolo config
+const uint32_t YOLO_CLASS_NUM = 80;
+const uint32_t YOLO_BIASES_NUM = 18;
+const uint32_t YOLO_TYPE = 3;
+const uint32_t YOLO_MODEL_TYPE = 0;
+const uint32_t YOLO_INPUT_TYPE = 0;
+const uint32_t YOLO_ANCHOR_DIM = 3;
 
-namespace {
-    const uint32_t YOLO_CLASS_NUM = 80;
-    const uint32_t YOLO_BIASES_NUM = 18;
-    const uint32_t YOLO_TYPE = 3;
-    const uint32_t YOLO_MODEL_TYPE = 0;
-    const uint32_t YOLO_INPUT_TYPE = 0;
-    const uint32_t YOLO_ANCHOR_DIM = 3;
-
-    const uint32_t YUV_BYTE_NU = 3;
-    const uint32_t YUV_BYTE_DE = 2;
-    const uint32_t VPC_H_ALIGN = 2;
-}
+// yuv parameter
+const uint32_t YUV_BYTE_NU = 3;
+const uint32_t YUV_BYTE_DE = 2;
+const uint32_t VPC_H_ALIGN = 2;
 
 struct YoloInitParam {
     uint32_t deviceId;
@@ -59,9 +57,10 @@ public:
     YoloDetector() = default;
     ~YoloDetector() = default;
 
-    APP_ERROR Init(const YoloInitParam & initParam);
+    APP_ERROR Init(const YoloInitParam &initParam);
     APP_ERROR DeInit();
-    APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
+    APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo,
+                     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
                      const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
                      const uint32_t &modelWidth, const uint32_t &modelHeight);
     APP_ERROR Inference(const MxBase::DvppDataInfo &imageInfo, std::vector<MxBase::TensorBase> &outputs);
@@ -70,16 +69,17 @@ public:
                           const uint32_t &modelWidth, const uint32_t &modelHeight,
                           std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
 
-private:
-    APP_ERROR InitModel(const YoloInitParam &initParam);
-    APP_ERROR InitPostProcess(const YoloInitParam &initParam);
-    APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
-    APP_ERROR InternalInference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-
 protected:
     static APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
     static APP_ERROR LoadPostProcessConfig(const YoloInitParam &initParam,
                                            std::map<std::string, std::shared_ptr<void>> &config);
+
+private:
+    APP_ERROR InitModel(const YoloInitParam &initParam);
+    APP_ERROR InitPostProcess(const YoloInitParam &initParam);
+    APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
+    APP_ERROR InternalInference(const std::vector<MxBase::TensorBase> &inputs,
+                                std::vector<MxBase::TensorBase> &outputs);
 
 private:
     // model
@@ -95,4 +95,4 @@ private:
     uint32_t deviceId;
 };
 } // end AscendYoloDetector
-#endif //MULTICHANNELVIDEODETECTION_YOLODETECTOR_H
+#endif // MULTICHANNELVIDEODETECTION_YOLODETECTOR_H

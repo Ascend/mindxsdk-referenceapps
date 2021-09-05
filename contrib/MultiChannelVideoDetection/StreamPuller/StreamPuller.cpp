@@ -61,7 +61,7 @@ APP_ERROR StreamPuller::Init(const std::string &rtspUrl, uint32_t maxTryOpenStre
 APP_ERROR StreamPuller::DeInit()
 {
     LogInfo << "StreamPuller deinit start.";
-    AVFormatContext* pAvFormatContext = formatContext.get();
+    AVFormatContext *pAvFormatContext = formatContext.get();
     avformat_close_input(&pAvFormatContext);
 
     stopFlag = true;
@@ -109,11 +109,11 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
         }
 
         // deep copy packet data
-        auto packetData = new uint8_t[(size_t) packet.size + 1];
-        memcpy(packetData, packet.data, (size_t) packet.size);
+        auto packetData = new uint8_t[(size_t)packet.size + 1];
+        memcpy(packetData, packet.data, (size_t)packet.size);
 
         // put video frame into queue
-        MxBase::MemoryData streamData((void *) packetData, (size_t) packet.size,
+        MxBase::MemoryData streamData((void *)packetData, (size_t)packet.size,
                                       MxBase::MemoryData::MEMORY_HOST_NEW, deviceId);
 
         av_packet_unref(&packet);
@@ -129,7 +129,7 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
  * Get video stream frame info
  * @return {@link VideoFrameInfo}
  */
-VideoFrameInfo StreamPuller::GetFrameInfo()
+VideoFrameInfo StreamPuller::GetFrameInfo() const
 {
     return frameInfo;
 }
@@ -173,11 +173,10 @@ APP_ERROR StreamPuller::StartStream()
     avformat_network_init();
 
     // specify an empty deleter to avoid double free
-    auto deleter = [] (AVFormatContext* avFormatContext) {
-
+    auto deleter = [] (AVFormatContext *avFormatContext) {
     };
     // malloc avformat context
-    AVFormatContext* pAvformatContext = avformat_alloc_context();
+    AVFormatContext *pAvformatContext = avformat_alloc_context();
     formatContext = std::shared_ptr<AVFormatContext>(pAvformatContext, deleter);
     if (formatContext == nullptr) {
         LogError << "formatContext is null.";
@@ -206,18 +205,18 @@ APP_ERROR StreamPuller::CreateFormatContext()
     av_dict_set(&options, "rtsp_transport", "tcp", 0);
     av_dict_set(&options, "stimeout", "3000000", 0);
 
-    AVFormatContext* pAvformatContext = formatContext.get();
+    AVFormatContext *pAvformatContext = formatContext.get();
     APP_ERROR ret = avformat_open_input(&pAvformatContext, streamName.c_str(), nullptr, &options);
     if (options != nullptr) {
         av_dict_free(&options);
     }
-    if(ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Couldn't open input stream " << streamName.c_str() <<  " ret = " << ret << ".";
         return APP_ERR_STREAM_NOT_EXIST;
     }
 
     ret = avformat_find_stream_info(formatContext.get(), nullptr);
-    if(ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Couldn't find stream information" << " ret = " << ret << ".";
         return APP_ERR_STREAM_NOT_EXIST;
     }
@@ -235,10 +234,10 @@ APP_ERROR StreamPuller::GetStreamInfo()
 
     if (formatContext != nullptr) {
         for (uint32_t i = 0; i < formatContext->nb_streams; i++) {
-            AVStream* inStream = formatContext->streams[i];
+            AVStream *inStream = formatContext->streams[i];
             // find video stream index
             if (inStream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-                frameInfo.videoStream = (int32_t) i;
+                frameInfo.videoStream = (int32_t)i;
                 frameInfo.width = inStream->codecpar->width;
                 frameInfo.height = inStream->codecpar->height;
                 break;
@@ -253,9 +252,11 @@ APP_ERROR StreamPuller::GetStreamInfo()
         AVCodecID codecId = formatContext->streams[frameInfo.videoStream]->codecpar->codec_id;
         if (codecId == AV_CODEC_ID_H264) {
             frameInfo.format = MxBase::MXBASE_STREAM_FORMAT_H264_MAIN_LEVEL;
-        } else if (codecId == AV_CODEC_ID_H265){
+        }
+        else if (codecId == AV_CODEC_ID_H265) {
             frameInfo.format = MxBase::MXBASE_STREAM_FORMAT_H265_MAIN_LEVEL;
-        } else {
+        }
+        else {
             LogError << "\033[0;31mError unsupported format \033[0m" << codecId << ".";
             return APP_ERR_COMM_FAILURE;
         }
@@ -270,5 +271,4 @@ APP_ERROR StreamPuller::GetStreamInfo()
 
     return APP_ERR_OK;
 }
-
 } // end AscendStreamPuller

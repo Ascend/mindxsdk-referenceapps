@@ -28,6 +28,7 @@ namespace {
 }
 
 bool MultiChannelVideoReasoner::_s_force_stop = false;
+
 static void SigHandler(int signal)
 {
     if (signal == SIGINT) {
@@ -36,14 +37,30 @@ static void SigHandler(int signal)
     }
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     // rtsp video string
     std::vector<std::string> rtspList = {};
-    rtspList.emplace_back("#{rtsp流地址1}");
-    rtspList.emplace_back("#{rtsp流地址2}");
+    if (argc <= 1) {
+        LogWarn
+            << "Please enter at least one video stream address, such as './multiChannelVideoReasoner xxx/xxx/xx.264'.";
+        LogWarn << "Not config rtsp video stream address, use code setting.";
 
-    ///=== modify config ===//
+        // rtsp video stream code setting
+        rtspList.emplace_back("#{rtsp流地址1}");
+        rtspList.emplace_back("#{rtsp流地址2}");
+
+        for (uint32_t i = 0; i < rtspList.size(); i++) {
+            LogInfo << "rtsp video stream " << i + 1 << " " << rtspList.at(i);
+        }
+    } else {
+        for (int i = 1; i < argc; i++) {
+            LogInfo << "rtsp video stream " << i << " " << argv[i];
+            rtspList.emplace_back(argv[i]);
+        }
+    }
+
+    /// === modify config === ///
     MxBase::ConfigData configData;
     MxBase::ConfigUtil configUtil;
     APP_ERROR ret = configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
@@ -55,7 +72,7 @@ int main(int argc, char* argv[])
         LogInfo << "load log configuration failed.";
     }
 
-    ///=== resource init ===///
+    /// === resource init === ///
     // init devices
     ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {

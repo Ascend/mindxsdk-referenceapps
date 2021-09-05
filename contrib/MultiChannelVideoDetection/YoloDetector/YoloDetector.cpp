@@ -19,7 +19,6 @@
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
 
 namespace AscendYoloDetector {
-
 /**
  * Init YoloDetector
  * @param initParam const reference to initial param
@@ -252,7 +251,7 @@ APP_ERROR YoloDetector::InitPostProcess(const YoloInitParam &initParam)
  */
 APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const
 {
-    MxBase::MemoryData memoryData((void*) imageInfo.data, imageInfo.dataSize,
+    MxBase::MemoryData memoryData((void*)imageInfo.data, imageInfo.dataSize,
                                   MxBase::MemoryData::MEMORY_DVPP, deviceId);
     if (imageInfo.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << imageInfo.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
@@ -273,7 +272,7 @@ APP_ERROR YoloDetector::TransformImageToTensor(const MxBase::DvppDataInfo &image
  * @return status code of whether the yolo infer is successful
  */
 APP_ERROR YoloDetector::InternalInference(const std::vector<MxBase::TensorBase> &inputs,
-                                  std::vector<MxBase::TensorBase> &outputs)
+                                          std::vector<MxBase::TensorBase> &outputs)
 {
     APP_ERROR ret;
 
@@ -287,10 +286,10 @@ APP_ERROR YoloDetector::InternalInference(const std::vector<MxBase::TensorBase> 
     for (size_t i = 0; i < modelDesc.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
         for (long tensorDim : modelDesc.outputTensors[i].tensorDims) {
-            shape.push_back((uint32_t) tensorDim);
+            shape.push_back((uint32_t)tensorDim);
         }
 
-        MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DVPP, (int32_t) deviceId);
+        MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DVPP, (int32_t)deviceId);
         ret = MxBase::TensorBase::TensorBaseMalloc(tensor);
         if (ret != APP_ERR_OK) {
             LogError << "TensorBaseMalloc failed, ret = " << ret << ".";
@@ -386,5 +385,4 @@ APP_ERROR YoloDetector::LoadPostProcessConfig(const YoloInitParam &initParam,
     LogInfo << "load postprocess config successfully.";
     return APP_ERR_OK;
 }
-
 } // end AscendYoloDetector

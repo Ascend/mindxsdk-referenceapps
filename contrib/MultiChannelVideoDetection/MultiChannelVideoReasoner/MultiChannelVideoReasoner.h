@@ -26,18 +26,6 @@
 
 #include <thread>
 
-namespace {
-    // performance monitor tag
-    std::string StreamPullerTag = "StreamPuller";
-    std::string VideoDecoderTag = "VideoDecoder";
-    std::string ImageResizerTag = "ImageResizer";
-    std::string YoloDetectorTag = "YoloDetector";
-    std::string YoloDetectorInferTag = YoloDetectorTag + " Infer";
-    std::string YoloDetectorPostProcessTag = YoloDetectorTag + " PostProcess";
-    std::string GetDetectResultTag = "GetDetectResult";
-    std::string SaveDetectResultTag = "SaveDetectResult";
-}
-
 struct ReasonerConfig {
     uint32_t deviceId;
     uint32_t baseVideoChannelId;
@@ -88,20 +76,25 @@ public:
     APP_ERROR DeInit();
     void Process();
 
+public:
+    static bool _s_force_stop;
+
 private:
     static void GetDecodeVideoFrame(const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
                                     const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
                                     const int &index,
                                     const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
-                                    const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+                                    const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
-    static void GetYoloInferenceResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+    static void GetYoloInferenceResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
-    static void GetYoloPostProcessResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+    static void GetYoloPostProcessResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
-    static void GetAndSaveDetectResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+    static void GetAndSaveDetectResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
 
-    static void GetMultiChannelDetectionResult(const MultiChannelVideoReasoner* multiChannelVideoReasoner);
+    static void GetMultiChannelDetectionResult(const std::shared_ptr<MultiChannelVideoReasoner> &multiChannelVideoReasoner);
+
+    static APP_ERROR SetDevice(uint32_t deviceId);
 
 private:
     APP_ERROR CreateStreamPullerAndVideoDecoder(const ReasonerConfig &config);
@@ -117,9 +110,6 @@ private:
     void ClearData();
 
     void StartWorkThreads(std::vector<std::thread>& workThreads);
-
-public:
-    static bool _s_force_stop;
 
 private:
     uint32_t deviceId;
@@ -150,7 +140,5 @@ private:
     std::shared_ptr<BlockingQueue<YoloResultWrapper>> yoloPostProcessResultQueue;
     // map which save the pointers to decode frame queue
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
-
 };
-
-#endif //MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H
+#endif // MULTICHANNELVIDEODETECTION_MULTICHANNELVIDEOREASONER_H

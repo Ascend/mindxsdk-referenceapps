@@ -20,7 +20,6 @@
 #include "MxBase/Log/Log.h"
 
 namespace AscendVideoDecoder {
-
 /**
  * Init VideoDecoder
  * @param initParam const reference to initial param
@@ -153,7 +152,7 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
 {
     LogDebug << "decode frame " << inputDataInfo.frameId << " complete.";
 
-    auto deleter = [] (MxBase::MemoryData* memoryData) {
+    auto deleter = [] (MxBase::MemoryData *memoryData) {
         if (memoryData == nullptr) {
             LogError << "MxbsFree failed.";
             return;
@@ -168,7 +167,7 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
     };
 
     auto output = std::shared_ptr<MxBase::MemoryData>(
-            new MxBase::MemoryData(buffer.get(),(size_t) inputDataInfo.dataSize,
+            new MxBase::MemoryData(buffer.get(),(size_t)inputDataInfo.dataSize,
                                    MxBase::MemoryData::MEMORY_DVPP, inputDataInfo.frameId), deleter);
 
     if (userData == nullptr) {
@@ -177,9 +176,8 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
     }
 
     // put decoded frame into decoded frame queue
-    auto* decodeFrameQueue = (BlockingQueue<std::shared_ptr<void>>*) userData;
+    auto *decodeFrameQueue = (BlockingQueue<std::shared_ptr<void>>*)userData;
     decodeFrameQueue->Push(output, true);
     return APP_ERR_OK;
 }
-
 } // end AscendVideoDecoder

@@ -18,7 +18,6 @@
 #include "MxBase/Log/Log.h"
 
 namespace AscendImageResizer {
-
 /**
  * Init ImageResizer
  * @param deviceId device id which main program use
@@ -121,10 +120,9 @@ APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
     input.widthStride = originWidth;
     input.heightStride = originHeight;
     input.dataSize = imageInfo.size;
-    input.data = (uint8_t*) imageInfo.ptrData;
+    input.data = (uint8_t*)imageInfo.ptrData;
     input.frameId = imageInfo.deviceId;
 
     return Resize(input, resizeWidth, resizeHeight, outputImageInfo);
 }
-
 } // end AscendImageResizer

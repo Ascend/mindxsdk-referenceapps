@@ -30,10 +30,6 @@
 #include <cstdlib>
 
 class Util {
-private:
-    Util() = default;
-    ~Util() = default;
-
 public:
     static void InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam,
                                       uint32_t deviceId, uint32_t channelId,
@@ -42,24 +38,28 @@ public:
     static void InitYoloParam(AscendYoloDetector::YoloInitParam &initParam, uint32_t deviceId,
                               const std::string &labelPath, const std::string &modelPath);
 
-    static bool IsExistDataInQueueMap(const std::map<int,
-                                      std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
+    static bool IsExistDataInQueueMap(
+            const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
 
-    static void StopAndClearQueueMap(const std::map<int,
-                                      std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
+    static void StopAndClearQueueMap(
+            const std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> &queueMap);
 
     static std::vector<MxBase::ObjectInfo> GetDetectionResult(
-            const std::vector<std::vector<MxBase::ObjectInfo>>& objInfos,
+            const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
             uint32_t rtspIndex, uint32_t frameId, bool printResult = true);
 
     static void CheckAndCreateResultDir(uint32_t totalVideoStreamNum);
 
-    static APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData>& videoFrame,
-                                const std::vector<MxBase::ObjectInfo>& results,
+    static APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData> &videoFrame,
+                                const std::vector<MxBase::ObjectInfo> &results,
                                 const AscendStreamPuller::VideoFrameInfo &videoFrameInfo,
                                 uint32_t frameId, uint32_t rtspIndex = 0);
+
 private:
     static void CreateDir(const std::string &path);
-};
 
-#endif //MULTICHANNELVIDEODETECTION_UTIL_H
+private:
+    Util() = default;
+    ~Util() = default;
+};
+#endif // MULTICHANNELVIDEODETECTION_UTIL_H

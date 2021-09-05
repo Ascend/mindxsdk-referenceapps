@@ -17,7 +17,6 @@
 #ifndef MULTICHANNELVIDEODETECTION_STREAMPULLER_H
 #define MULTICHANNELVIDEODETECTION_STREAMPULLER_H
 
-#include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 
@@ -26,7 +25,6 @@ extern "C" {
 }
 
 namespace AscendStreamPuller {
-
 struct VideoFrameInfo {
     uint32_t width;
     uint32_t height;
@@ -46,17 +44,17 @@ public:
     APP_ERROR DeInit();
     MxBase::MemoryData GetNextFrame();
 
-    VideoFrameInfo GetFrameInfo();
+    VideoFrameInfo GetFrameInfo() const;
+
+public:
+    // running flag
+    bool stopFlag;
 
 private:
     APP_ERROR TryToStartStream();
     APP_ERROR StartStream();
     APP_ERROR CreateFormatContext();
     APP_ERROR GetStreamInfo();
-
-public:
-    // running flag
-    bool stopFlag;
 
 private:
     // rtsp stream source
@@ -71,5 +69,4 @@ private:
     std::shared_ptr<AVFormatContext> formatContext;
 };
 } // end AscendStreamPuller
-
-#endif //MULTICHANNELVIDEODETECTION_STREAMPULLER_H
+#endif // MULTICHANNELVIDEODETECTION_STREAMPULLER_H

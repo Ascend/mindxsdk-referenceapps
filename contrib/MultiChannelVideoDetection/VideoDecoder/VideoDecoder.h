@@ -22,7 +22,6 @@
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 
 namespace AscendVideoDecoder {
-
 struct DecoderInitParam {
     uint32_t deviceId;
     uint32_t channelId;
@@ -69,5 +68,4 @@ private:
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
 };
 } // end AscendVideoDecoder
-
-#endif //MULTICHANNELVIDEODETECTION_VIDEODECODER_H
+#endif // MULTICHANNELVIDEODETECTION_VIDEODECODER_H

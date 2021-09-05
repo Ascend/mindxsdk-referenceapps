@@ -44,7 +44,5 @@ private:
     // device id
     uint32_t deviceId;
 };
-
 } // end AscendImageResizer
-
-#endif //MULTICHANNELVIDEODETECTION_IMAGERESIZER_H
+#endif // MULTICHANNELVIDEODETECTION_IMAGERESIZER_H

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #ifndef MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
 #define MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
 
@@ -208,7 +209,8 @@ public:
      * Whether the queue is stopped
      * @return state of whether the queue is stopped
      */
-    bool IsStop() {
+    bool IsStop()
+    {
         return is_stopped_;
     }
 
@@ -246,7 +248,7 @@ public:
      * Get the lock variable
      * @return pointer to the lock variable
      */
-    std::mutex* GetLock()
+    std::mutex *GetLock()
     {
         return &mutex_;
     }
@@ -272,4 +274,4 @@ private:
 private:
     static const int DEFAULT_MAX_QUEUE_SIZE = 256;
 };
-#endif //MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
+#endif // MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
