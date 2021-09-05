@@ -14,20 +14,33 @@
  * limitations under the License.
  */
 
-#ifndef SDKMEMORY_MXPISAMPLEPLUGIN_H
-#define SDKMEMORY_MXPISAMPLEPLUGIN_H
+#ifndef SDKMEMORY_MXPIHEADPOSEPLUGIN_H
+#define SDKMEMORY_MXPIHEADPOSEPLUGIN_H
 #include "MxTools/PluginToolkit/base/MxPluginGenerator.h"
 #include "MxTools/PluginToolkit/base/MxPluginBase.h"
 #include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/ErrorCode/ErrorCode.h"
+#include "mxpiHeadPoseProto.pb.h"
 
 /**
 * @api
-* @brief Definition of MxpiHeadPoseEstimationPostProcess class.
+* @brief Definition of MxpiHeadPosePlugin class.
 */
+
+namespace {
+    struct HeadPose {
+        int yaw_x;
+        int yaw_y;
+        int pitch_x;
+        int pitch_y;
+        int roll_x;
+        int roll_y;
+        // float confidence;
+    }
+}
 namespace MxPlugins {
-    class MxpiHeadPoseEstimationPostProcess : public MxTools::MxPluginBase {
+    class MxpiHeadPosePlugin : public MxTools::MxPluginBase {
         public:
             /**
              * @api
@@ -62,8 +75,8 @@ namespace MxPlugins {
              * @param buffer
              * @return APP_ERROR
              */
-            APP_ERROR GenerateHeadPoseOutput(const MxTools::MxpiObjectList srcMxpiObjectList,
-                MxTools::MxpiClassList& dstMxpiClassList);
+            APP_ERROR GenerateClassList(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+                mxpiheadposeproto::MxpiHeadPoseInfo& dstMxpiHeadPoseInfo);
         private:
             APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
             const MxTools::MxpiErrorInfo mxpiErrorInfo);
@@ -72,4 +85,4 @@ namespace MxPlugins {
             std::ostringstream ErrorInfo_;
     };
 }
-#endif // SDKMEMORY_MXPISAMPLEPLUGIN_H
+#endif // SDKMEMORY_MXPIHEADPOSEPLUGIN_H

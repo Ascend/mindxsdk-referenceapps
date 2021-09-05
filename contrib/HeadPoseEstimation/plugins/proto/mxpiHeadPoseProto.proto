@@ -1,0 +1,18 @@
+syntax = "proto3";
+package mxpiheadposeproto;
+message MxpiMetaHeader
+{
+string parentName = 1;
+int32 memberId = 2;
+string dataSource = 3;
+}
+
+message MxpiHeadPoseInfo
+{
+    int yaw_x = 1;
+    int yaw_y = 2;
+    int pitch_x = 3;
+    int pitch_y = 4;
+    int roll_x = 5;
+    int roll_y = 6;
+}
