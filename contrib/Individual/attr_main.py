@@ -34,7 +34,7 @@ if __name__ == '__main__':
     file_handle2 = open('test_full.txt', 'r')
     while 1:
         # Construct the input of the stream
-        dataInput = MxDataInput()
+        data_input = MxDataInput()
         line = file_handle2.readline()
         # if line is the end of the file
         if not line:
@@ -43,23 +43,23 @@ if __name__ == '__main__':
         # the length of the path is 34
         img_path = line[0:34]
         with open(img_path, 'rb') as f:
-            dataInput.data = f.read()
+            data_input.data = f.read()
         # Inputs data to a specified stream based on streamName.
-        streamName = b'classification+detection'
-        inPluginId = 0
-        uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
-        if uniqueId < 0:
+        stream_name = b'classification+detection'
+        inplugin_id = 0
+        unique_id = streamManagerApi.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
+        if unique_id < 0:
             print("Failed to send data to stream.")
         # Obtain the inference result by specifying streamName and uniqueId.
-        inferResult = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
-        if inferResult.errorCode != 0:
+        infer_result = streamManagerApi.GetResultWithUniqueId(stream_name, unique_id, 3000)
+        if infer_result.errorCode != 0:
             print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
-              inferResult.errorCode, inferResult.data.decode()))
+              infer_result.errorCode, infer_result.data.decode()))
         # save the confidence
         img_list = []
         # print the infer result
-        print(inferResult.data.decode())
-        dict_all = inferResult.data.decode()
+        print(infer_result.data.decode())
+        dict_all = infer_result.data.decode()
         # start of the string
         begin = 0
         end = len(dict_all)
