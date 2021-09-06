@@ -35,48 +35,48 @@ signal.signal(signal.SIGINT, my_handler)
 
 # The following belongs to the SDK Process
 # init stream manager
-StreamManagerApi = StreamManagerApi.StreamManagerApi()
-ret = StreamManagerApi.InitManager()
-if ret != 0:
-    print("Failed to init Stream manager, ret=%s" % str(ret))
+STREAMMANAGERAPI = StreamManagerApi.StreamManagerApi()
+RET = STREAMMANAGERAPI.InitManager()
+if RET != 0:
+    print("Failed to init Stream manager, ret=%s" % str(RET))
 
 # create streams by pipeline config file
 #load  pipline
 with open("HelmetDetection.pipline", 'rb') as f:
-    pipelineStr = f.read()
-ret = StreamManagerApi.CreateMultipleStreams(pipelineStr)
+    PIPELINESTR = f.read()
+RET = STREAMMANAGERAPI.CreateMultipleStreams(PIPELINESTR)
 # Print error message
-if ret != 0:
-    print("Failed to create Stream, ret=%s" % str(ret))
+if RET != 0:
+    print("Failed to create Stream, ret=%s" % str(RET))
 
 # Obtain the inference result by specifying streamName and keyVec
 # The data that needs to be obtained is searched by the plug-in name
 # Stream name
-streamName = b'Detection'
-keyVec0 = StreamManagerApi.StringVector()
-keyVec0.push_back(b"ReservedFrameInfo")
-keyVec0.push_back(b"mxpi_modelinfer0")
-keyVec0.push_back(b"mxpi_motsimplesort0")
-keyVec0.push_back(b"mxpi_videodecoder0")
-keyVec0.push_back(b"mxpi_videodecoder1")
+STREAMNAME = b'Detection'
+KEYVEC0 = STREAMMANAGERAPI.StringVector()
+KEYVEC0.push_back(b"ReservedFrameInfo")
+KEYVEC0.push_back(b"mxpi_modelinfer0")
+KEYVEC0.push_back(b"mxpi_motsimplesort0")
+KEYVEC0.push_back(b"mxpi_videodecoder0")
+KEYVEC0.push_back(b"mxpi_videodecoder1")
 
 while True:
     # exit flag
     if STOP_STREAM:
         break
     # Get data through GetProtobuf interface
-    inferResult0 = StreamManagerApi.GetProtobuf(streamName, 0, keyVec0)
+    INFERRESULT0 = STREAMMANAGERAPI.GetProtobuf(STREAMNAME, 0, KEYVEC0)
     # output errorCode
-    if inferResult0[0].errorCode != 0:
+    if INFERRESULT0[0].errorCode != 0:
         # Print error message
-        if inferResult0[0].errorCode == 1001:
+        if INFERRESULT0[0].errorCode == 1001:
             print('Object detection result of model infer is null!!!')
         continue
 
     # Take the inference result from the corresponding data structure
-    DictStructure = utils.get_inference_data(inferResult0)
+    DICTSTRUCTURE = utils.get_inference_data(INFERRESULT0)
     # the visualization of the inference result, save the output in the specified folder
-    utils.Visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
+    utils.Visualization(DICTSTRUCTURE[0], DICTSTRUCTURE[1], DICTSTRUCTURE[2], DICTSTRUCTURE[3], DICTSTRUCTURE[4])
 
 # Destroy All Streams
-StreamManagerApi.DestroyAllStreams()
+STREAMMANAGERAPI.DestroyAllStreams()
