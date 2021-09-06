@@ -14,22 +14,22 @@
 
 import json
 import os
+import random
 import cv2
 import numpy as np
-import random
 import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
-    if ret != 0:
-        print("Failed to init Stream manager, ret=%s" % str(ret))
+    STREAMMANAGERAPI = StreamManagerApi()
+    RET = STREAMMANAGERAPI.InitManager()
+    if RET != 0:
+        print("Failed to init Stream manager, ret=%s" % str(RET))
         exit()
 
-    # create streams by pipeline config file
-    pipeline = {
+    # create streams by PIPELINE config file
+    PIPELINE = {
             "detection": {
                 "stream_config": {
                     "deviceId": "1"
@@ -89,21 +89,21 @@ if __name__ == '__main__':
             }
     }
 
-    pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
-    if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
+    PIPELINESTR = json.dumps(PIPELINE).encode()
+    RET = STREAMMANAGERAPI.CreateMultipleStreams(PIPELINESTR)
+    if RET != 0:
+        print("Failed to create Stream, ret=%s" % str(RET))
         exit()
 
-    path = "./TestImages/"
-    for item in os.listdir(path):
-        img_path = os.path.join(path,item)
+    PATH = "./TestImages/"
+    for item in os.listdir(PATH):
+        img_path = os.path.join(PATH,item)
         print("file_path:",img_path)
         img_name = item.split(".")[0]
         img_txt = "./detection-test-result/" + img_name + ".txt"
         if os.path.exists(img_txt):
             os.remove(img_txt)
-        dataInput = StreamManagerApi.MxDataInput()
+        dataInput = STREAMMANAGERAPI.MxDataInput()
         if os.path.exists(img_path) != 1:
             print("The test image does not exist.")
 
@@ -113,25 +113,22 @@ if __name__ == '__main__':
 
         # Inputs data to a specified stream based on streamName.
         streamName = b'detection'
-        ret = streamManagerApi.SendData(streamName, 0, dataInput)
+        RET = STREAMMANAGERAPI.SendData(streamName, 0, dataInput)
 
-        if ret < 0:
+        if RET < 0:
             print("Failed to send data to stream.")
-           
 
         # Obtain the inference result by specifying streamName and uniqueId.
-        infer_result = streamManagerApi.GetResult(streamName, 0)
+        infer_result = STREAMMANAGERAPI.GetResult(streamName, 0)
         if infer_result.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (
                 infer_result.errorCode, infer_result.data.decode()))
-            
 
         # print the infer result
-        # print(infer_result.data.decode())
 
         results = json.loads(infer_result.data.decode())
         img = cv2.imread(img_path)
-        img_shape=img.shape
+        img_shape = img.shape
         print(img_shape)
         bboxes = []
         key = "MxpiObject"
@@ -151,7 +148,6 @@ if __name__ == '__main__':
             L1.append(int(bboxes['x1']))
             L1.append(int(bboxes['y0']))
             L1.append(int(bboxes['y1']))
-            # L1=np.array(L1,dtype=np.int32)
             L1.append(bboxes['confidence'])
             L1.append(bboxes['text'])
             print(L1)
@@ -162,4 +158,4 @@ if __name__ == '__main__':
                 f.write('\n')
 
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    STREAMMANAGERAPI.DestroyAllStreams()
