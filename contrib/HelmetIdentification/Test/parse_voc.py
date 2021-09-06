@@ -40,7 +40,7 @@ def main(arg):
         info.write('{} {} {} {}'.format(idx, os.path.join(arg.img_path, jpg_name), width, height))
         info.write('\n')
 
-        with open('{}/{}'.format(arg.gtp, key_name + '.txt'), 'w') as f:
+        with open('{}/{}'.format(arg.gtp, key_name + '.txt'), 'w') as file_name:
             for obj in root.iter('object'):
                 difficult = int(obj.find('difficult').text)
                 cls_name = obj.find('name').text.strip().lower()
@@ -56,8 +56,8 @@ def main(arg):
                     comment = '{} {} {} {} {} {}'.format(cls_name, xmin, ymin, xmax, ymax, 'difficult')
                 else:
                     comment = '{} {} {} {} {}'.format(cls_name, xmin, ymin, xmax, ymax)
-                f.write(comment)
-                f.write('\n')
+                file_name.write(comment)
+                file_name.write('\n')
  
 
 def err_msg(msg):
@@ -84,10 +84,10 @@ def check_args(param):
     return param
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Parse the VOC2028 dataset label')
-    parser.add_argument("--img_path", default="TestImages", help='The image path')
-    parser.add_argument("--ann_path", default="Annotations", help='Origin xml path')
-    parser.add_argument("--gtp", default="ground-truth/", help='The ground true file path')
-    args = parser.parse_args()
-    args = check_args(args)
-    main(args)
+    PARSER = argparse.ArgumentParser(description='Parse the VOC2028 dataset label')
+    PARSER.add_argument("--img_path", default="TestImages", help='The image path')
+    PARSER.add_argument("--ann_path", default="Annotations", help='Origin xml path')
+    PARSER.add_argument("--gtp", default="ground-truth/", help='The ground true file path')
+    ARGS = PARSER.parse_args()
+    ARGS = check_args(ARGS)
+    main(ARGS)
