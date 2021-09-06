@@ -25,7 +25,7 @@ namespace {
     const float W_T3 =  0.22262956;
     const float W_T4 =  0.22857015;
     const float W_T5 =  0.2479302;
-    const float W_T6 =  0.00299916;    
+    const float W_T6 =  0.00299916;
     auto g_uint8Deleter = [](uint8_t *p) {};
 }
 using namespace MxBase;
