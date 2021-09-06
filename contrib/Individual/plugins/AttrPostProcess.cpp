@@ -63,8 +63,8 @@ namespace MxBase {
     }
 
     APP_ERROR AttrPostProcess::Process(const std::vector<TensorBase>& tensors,
-                                         std::vector<std::vector<ClassInfo>> &classInfos,
-                                         const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                       std::vector<std::vector<ClassInfo>> &classInfos,
+                                       const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
         LogDebug << "Start to Process AttrPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
@@ -104,19 +104,20 @@ namespace MxBase {
             std::sort(idx.begin(), idx.end(), cmp);
 
             std::vector<ClassInfo> topkClassInfos = {};
+            attr_confidence = 0.5
             for (uint32_t j = 0; j < topk; j++) {
-                 ClassInfo clsInfo = {};
-                 if(softmax[j]>0.5){
-                     clsInfo.classId = j;
-                     clsInfo.confidence = 1;
-                     clsInfo.className = configData_.GetClassName(j);
-                 }
-                 else{
-                     clsInfo.classId = j;
-                     clsInfo.confidence = 0;
-                     clsInfo.className = configData_.GetClassName(j);     
-                 }
-                 topkClassInfos.push_back(clsInfo);
+                ClassInfo clsInfo = {};
+                if(softmax[j]>attr_confidence){
+                    clsInfo.classId = j;
+                    clsInfo.confidence = 1;
+                    clsInfo.className = configData_.GetClassName(j);
+                }
+                else{
+                    clsInfo.classId = j;
+                    clsInfo.confidence = 0;
+                    clsInfo.className = configData_.GetClassName(j);     
+                }
+                topkClassInfos.push_back(clsInfo);
             }
             classInfos.push_back(topkClassInfos);
         }
