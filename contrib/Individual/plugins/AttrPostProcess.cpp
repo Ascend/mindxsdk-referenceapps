@@ -106,22 +106,15 @@ namespace MxBase {
             std::vector<ClassInfo> topkClassInfos = {};
             for (uint32_t j = 0; j < topk; j++) {
                  ClassInfo clsInfo = {};
-                 if(softmax[j]>0.5)
-                 {
-                  
-                   clsInfo.classId = j;
-                  // clsInfo.confidence = softmax[j];
-                   clsInfo.confidence = 1;
-                   clsInfo.className = configData_.GetClassName(j);
-                    
+                 if(softmax[j]>0.5){
+                     clsInfo.classId = j;
+                     clsInfo.confidence = 1;
+                     clsInfo.className = configData_.GetClassName(j);
                  }
-                 else
-                 {
-                    clsInfo.classId = j;
-                    // clsInfo.confidence = softmax[j];
-                    clsInfo.confidence = 0;
-                    clsInfo.className = configData_.GetClassName(j);
-                      
+                 else{
+                     clsInfo.classId = j;
+                     clsInfo.confidence = 0;
+                     clsInfo.className = configData_.GetClassName(j);     
                  }
                  topkClassInfos.push_back(clsInfo);
             }
