@@ -14,7 +14,7 @@
 import sys
 import onnx
 
-model_path = sys.argv[1]
+MODEL_PATH = sys.argv[1]
 model = onnx.load(model_path)
 
 def remove_node(graph, nodelist):
