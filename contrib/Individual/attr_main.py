@@ -79,4 +79,4 @@ if __name__ == '__main__':
         file_handle.write('\n')
     # destroy streams
     file_handle.close()
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()
