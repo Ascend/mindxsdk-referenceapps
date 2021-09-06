@@ -18,8 +18,8 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-	OpenposePlugin/proto
-	OpenposePlugin/mindx_sdk_plugin
+	/proto/
+	/plugins/
 )
 
 
