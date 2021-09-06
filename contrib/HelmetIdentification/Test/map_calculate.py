@@ -344,7 +344,7 @@ if SHOW_ANIMATION:
 #      Load each of the ground-truth files
 #      into a temporary ".json" file.
 #      Create a list of all the class names present
-#      in the ground-truth (gt_classes).
+#      in the ground-truth (GT_CLASSES).
 # get a list with the ground-truth files
 ground_truth_files_list = glob.glob(GT_PATH + '/*.txt')
 if len(ground_truth_files_list) == 0:
@@ -352,9 +352,9 @@ if len(ground_truth_files_list) == 0:
 ground_truth_files_list.sort()
 # dictionary with counter per class
 gt_counter_per_class = {}
-counter_images_per_class = {}
+COUNTER_IMAGES_PER_CLASS = {}
 
-gt_files = []
+GT_FILES = []
 for txt_file in ground_truth_files_list:
     file_id = txt_file.split(".txt", 1)[0]
 
@@ -362,8 +362,6 @@ for txt_file in ground_truth_files_list:
     # check if there is a correspondent detection-results file
     temp_path = os.path.join(DR_PATH, (file_id + ".txt"))
     if not os.path.exists(temp_path):
-        # error_msg = "Error. File not found: {}\n".format(temp_path)
-        # error(error_msg)
         continue
     lines_list = file_lines_to_list(txt_file)
     # create ground-truth dictionary
@@ -406,25 +404,25 @@ for txt_file in ground_truth_files_list:
                 gt_counter_per_class[class_name] = 1
 
             if class_name not in already_seen_classes:
-                if class_name in counter_images_per_class:
-                    counter_images_per_class[class_name] += 1
+                if class_name in COUNTER_IMAGES_PER_CLASS:
+                    COUNTER_IMAGES_PER_CLASS[class_name] += 1
                 else:
                     # if class didn't exist yet
-                    counter_images_per_class[class_name] = 1
+                    COUNTER_IMAGES_PER_CLASS[class_name] = 1
                 already_seen_classes.append(class_name)
 
     # dump bounding_boxes into a ".json" file
     new_temp_file = TEMP_FILES_PATH + "/" + file_id + "_ground_truth.json"
-    gt_files.append(new_temp_file)
+    GT_FILES.append(new_temp_file)
     with open(new_temp_file, 'w') as outfile:
         json.dump(bounding_boxes, outfile)
 
 
-gt_classes = list(gt_counter_per_class.keys())
+GT_CLASSES = list(gt_counter_per_class.keys())
 print(gt_counter_per_class)
 # let's sort the classes alphabetically
-gt_classes = sorted(gt_classes)
-n_classes = len(gt_classes)
+GT_CLASSES = sorted(GT_CLASSES)
+N_CLASSES = len(GT_CLASSES)
 
 # """
 #  Check format of the flag --set-class-iou (if used)
@@ -442,7 +440,7 @@ if SPECIFIC_IOU_FLAGGED:
     if len(specific_iou_classes) != len(iou_list):
         error('Error, missing arguments. Flag usage:' + error_msg)
     for tmp_class in specific_iou_classes:
-        if tmp_class not in gt_classes:
+        if tmp_class not in GT_CLASSES:
             error('Error, unknown class \"' + tmp_class +
                   '\". Flag usage:' + error_msg)
     for num in iou_list:
@@ -459,7 +457,7 @@ dr_files_list = glob.glob(DR_PATH + '/*.txt')
 # print(dr_files_list)
 dr_files_list.sort()
 
-for class_index, class_name in enumerate(gt_classes):
+for class_index, class_name in enumerate(GT_CLASSES):
     bounding_boxes = []
     for txt_file in dr_files_list:
         # the first time it checks
@@ -504,7 +502,7 @@ lamr_dictionary = {}
 with open(output_files_path + "/output.txt", 'w') as output_file:
     output_file.write("# AP and precision/recall per class\n")
     count_true_positives = {}
-    for class_index, class_name in enumerate(gt_classes):
+    for class_index, class_name in enumerate(GT_CLASSES):
         count_true_positives[class_name] = 0
         # """
         #  Load detection-results of that class
@@ -620,7 +618,7 @@ with open(output_files_path + "/output.txt", 'w') as output_file:
                 img, line_width = draw_text_in_image(
                     img, text, (margin, v_pos), white, 0)
                 text = "Class [" + str(class_index) + "/" + \
-                       str(n_classes) + "]: " + class_name + " "
+                       str(N_CLASSES) + "]: " + class_name + " "
                 img, line_width = draw_text_in_image(
                     img, text,
                     (margin + line_width, v_pos),
@@ -717,7 +715,7 @@ with open(output_files_path + "/output.txt", 'w') as output_file:
             print(text)
         ap_dictionary[class_name] = ap
 
-        n_images = counter_images_per_class[class_name]
+        n_images = COUNTER_IMAGES_PER_CLASS[class_name]
         lamr, mr, fppi = log_average_miss_rate(
             np.array(rec), np.array(fp), n_images)
         lamr_dictionary[class_name] = lamr
@@ -756,7 +754,7 @@ with open(output_files_path + "/output.txt", 'w') as output_file:
         cv2.destroyAllWindows()
 
     output_file.write("\n# mAP of all classes\n")
-    mAP = sum_AP / n_classes
+    mAP = sum_AP / N_CLASSES
     text = "mAP = {0:.2f}%".format(mAP * 100)
     output_file.write(text + "\n")
     print(text)
@@ -766,7 +764,7 @@ with open(output_files_path + "/output.txt", 'w') as output_file:
 # """
 if SHOW_ANIMATION:
     pink = (203, 192, 255)
-    for tmp_file in gt_files:
+    for tmp_file in GT_FILES:
         ground_truth_data = json.load(open(tmp_file))
         # get name of corresponding image
         start = TEMP_FILES_PATH + '/'
@@ -821,14 +819,14 @@ if DRAW_PLOT:
     WINDOW_TITLE = "ground-truth-info"
     PLOT_TITLE = "ground-truth\n"
     PLOT_TITLE += "(" + str(len(ground_truth_files_list)) + \
-                  " files and " + str(n_classes) + " classes)"
+                  " files and " + str(N_CLASSES) + " classes)"
     X_LABEL = "Number of objects per class"
     OUTPUT_PATH = output_files_path + "/ground-truth-info.png"
     TO_SHOW = False
     PLOT_COLOR = 'forestgreen'
     draw_plot_func(
         gt_counter_per_class,
-        n_classes,
+        N_CLASSES,
         WINDOW_TITLE,
         PLOT_TITLE,
         X_LABEL,
@@ -854,7 +852,7 @@ with open(output_files_path + "/output.txt", 'a') as output_file:
 # then there are no true positives in that class
 # """
 for class_name in dr_classes:
-    if class_name not in gt_classes:
+    if class_name not in GT_CLASSES:
         count_true_positives[class_name] = 0
 print("count_true_p:", count_true_positives)
 # """
@@ -912,7 +910,7 @@ if DRAW_PLOT:
     PLOT_COLOR = 'royalblue'
     draw_plot_func(
         lamr_dictionary,
-        n_classes,
+        N_CLASSES,
         WINDOW_TITLE,
         PLOT_TITLE,
         X_LABEL,
@@ -934,7 +932,7 @@ if DRAW_PLOT:
     PLOT_COLOR = 'royalblue'
     draw_plot_func(
         ap_dictionary,
-        n_classes,
+        N_CLASSES,
         WINDOW_TITLE,
         PLOT_TITLE,
         X_LABEL,
