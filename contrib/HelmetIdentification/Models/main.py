@@ -76,7 +76,7 @@ while True:
     # Take the inference result from the corresponding data structure
     DICTSTRUCTURE = utils.get_inference_data(INFERRESULT0)
     # the visualization of the inference result, save the output in the specified folder
-    utils.Visualization(DICTSTRUCTURE[0], DICTSTRUCTURE[1], DICTSTRUCTURE[2], DICTSTRUCTURE[3], DICTSTRUCTURE[4])
+    utils.visualization(DICTSTRUCTURE[0], DICTSTRUCTURE[1], DICTSTRUCTURE[2], DICTSTRUCTURE[3], DICTSTRUCTURE[4])
 
 # Destroy All Streams
 STREAMMANAGERAPI.DestroyAllStreams()
