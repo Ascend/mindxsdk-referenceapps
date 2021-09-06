@@ -46,32 +46,32 @@ if __name__ == '__main__':
 
     # initialize the stream manager
     streamManager = StreamManagerApi()
-    ret = streamManager.InitManager()
-    if ret != 0:
-        errrorMsg = "Failed to init Stream manager, ret=%s" % str(ret)
-        raise AssertionError(errrorMsg)
+    streamState = streamManager.InitManager()
+    if streamState != 0:
+        errrorMessage = "Failed to init Stream manager, streamState=%s" % str(streamState)
+        raise AssertionError(errrorMessage)
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
         pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
-    pipelineStr = pipeline
+    pipelineString = pipeline
 
-    ret = streamManager.CreateMultipleStreams(pipelineStr)
-    if ret != 0:
-        errorMsg ="Failed to create Stream, ret=%s" % str(ret)
-        raise AssertionError(errorMsg)
+    streamState = streamManager.CreateMultipleStreams(pipelineStr)
+    if streamState != 0:
+        errorMessage ="Failed to create Stream, streamState=%s" % str(streamState)
+        raise AssertionError(errorMessage)
 
     # prepare the input of the stream #begin
 
     # check the background img
     dataInput = MxDataInput()
     if os.path.exists(sys.argv[1]) != 1:
-        errorMsg = 'The background image does not exist.'
-        raise AssertionError(errorMsg)
+        errorMessage = 'The background image does not exist.'
+        raise AssertionError(errorMessage)
     # check the portrait img
     if os.path.exists(sys.argv[2]) != 1:
-        errorMsg = 'The portrait image does not exist.'
-        raise AssertionError(errorMsg)
+        errorMessage = 'The portrait image does not exist.'
+        raise AssertionError(errorMessage)
     with open(sys.argv[2], 'rb') as f:
         dataInput.data = f.read()
     # prepare the input of the stream #end
@@ -80,10 +80,10 @@ if __name__ == '__main__':
     uniqueId = streamManager.SendData(STREAM_NAME, IN_PLUGIN_ID, dataInput)
 
     if uniqueId < 0:
-        errorMsg = 'Failed to send data to stream.'
-        raise AssertionError(errorMsg)
+        errorMessage = 'Failed to send data to stream.'
+        raise AssertionError(errorMessage)
 
-    # construct the resulted returned by the stream
+    # construct the resulted streamStateurned by the stream
     keys = [b"mxpi_tensorinfer0"]
     keyVec = StringVector()
     for key in keys:
@@ -93,20 +93,20 @@ if __name__ == '__main__':
 
     # check whether the inferred results is valid or not
     if len(inferResult) == 0:
-        errorMsg = 'unable to get effective infer results, please check the stream log for details'
-        raise IndexError(errorMsg)
+        errorMessage = 'unable to get effective infer results, please check the stream log for details'
+        raise IndexError(errorMessage)
     if inferResult[0].errorCode != 0:
-        errorMsg = "GetProtobuf error. errorCode=%d, errorMsg=%s" % (
+        errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (
         inferResult[0].errorCode, inferResult[0].messageName)
-        raise AssertionError(errorMsg)
+        raise AssertionError(errorMessage)
 
     # change output tensors into numpy array based on the model's output shape.
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(inferResult[0].messageBuf)
 
     # converting the byte data into little-endian 32 bit float array ('<f4')
-    res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
-    mask = np.clip((res * COLOR_DEPTH), 0, COLOR_DEPTH)
+    outputTensor = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
+    mask = np.clip((outputTensor * COLOR_DEPTH), 0, COLOR_DEPTH)
     mask = mask.reshape(MODEL_OUTPUT_WIDTH, MODEL_OUTPUT_HEIGHT, MODEL_OUTPUT_DIMENSION)
     mask = mask[:, :, 0]
 
