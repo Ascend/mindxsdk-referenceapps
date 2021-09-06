@@ -25,7 +25,7 @@
 
 struct InitParam {
     uint32_t deviceId = 0;
-    bool checkTensor = True;
+    bool checkTensor = true;
     std::string modelPath = "";
     uint32_t outSizeNum = 0;
     std::string outSize = "";
