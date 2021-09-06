@@ -131,7 +131,7 @@ namespace {
         // save pic
         DvppDataInfo dataInfo;
         const uint32_t level = 100;
-        //把结果进行编码，并拷贝到host侧
+        // 把结果进行编码，并拷贝到host侧
         ret = g_dvppCommon->DvppJpegEncode(output, dataInfo, level);
         if (ret != APP_ERR_OK) {
             return ret;

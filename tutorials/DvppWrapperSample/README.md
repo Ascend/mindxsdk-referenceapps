@@ -32,4 +32,4 @@ make
 ```
 ./DvppWrapperSample ./保存的图片
 ```
-最后会生成缩放、抠图后保存的图片，以及编码保存的视频。
+最后会生成缩放resize_result.jpg、抠图后保存的图片write_result_crop.jpg，以及编码保存的视频test.h264。
