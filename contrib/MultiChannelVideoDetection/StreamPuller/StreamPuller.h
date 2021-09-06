@@ -25,7 +25,7 @@ extern "C" {
 }
 
 namespace AscendStreamPuller {
-// config
+// StreamPuller config
 const uint32_t DEFAULT_RETRY_OPEN_VIDEO_TIMES = 10;
 
 struct VideoFrameInfo {
@@ -51,7 +51,7 @@ public:
 
 public:
     // running flag
-    bool stopFlag;
+    bool stopFlag = false;
 
 private:
     APP_ERROR TryToStartStream();

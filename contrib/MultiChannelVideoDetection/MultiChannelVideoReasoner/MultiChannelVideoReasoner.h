@@ -26,7 +26,7 @@
 
 #include <thread>
 
-// config
+// multiChannelVideoReasoner config
 const uint32_t DEFAULT_CONTROL_CHECK_INTERVAL = 2;
 const uint32_t DEFAULT_POP_WAIT_TIME = 10;
 
@@ -38,22 +38,22 @@ const uint32_t DECODE_QUEUE_LENGTH_200 = 200;
 const uint32_t DECODE_QUEUE_LENGTH_400 = 400;
 
 struct ReasonerConfig {
-    uint32_t deviceId;
-    uint32_t baseVideoChannelId;
+    uint32_t deviceId = 0;
+    uint32_t baseVideoChannelId = 0;
     // max times of retrying to open video Stream
-    uint32_t maxTryOpenVideoStream;
+    uint32_t maxTryOpenVideoStream = 10;
     // max length of queue which cache decode video frame
-    uint32_t maxDecodeFrameQueueLength;
+    uint32_t maxDecodeFrameQueueLength = 100;
     // wait time when decode frame queue is empty
-    uint32_t popDecodeFrameWaitTime;
+    uint32_t popDecodeFrameWaitTime = 10;
     // interval of printing performance message
-    uint32_t intervalPerformanceMonitorPrint;
+    uint32_t intervalPerformanceMonitorPrint = 1;
     // interval of main thread check work flow
-    uint32_t intervalMainThreadControlCheck;
+    uint32_t intervalMainThreadControlCheck = 2;
     // the input width of YoloDetector
-    uint32_t yoloModelWidth;
+    uint32_t yoloModelWidth = 0;
     // the input height of YoloDetector
-    uint32_t yoloModelHeight;
+    uint32_t yoloModelHeight = 0;
     // the path of yolo model
     std::string yoloModelPath;
     // the path of yolo model label
@@ -71,8 +71,8 @@ struct ReasonerConfig {
 };
 
 struct YoloResultWrapper {
-    uint32_t rtspIndex;
-    uint32_t frameId;
+    uint32_t rtspIndex = 0;
+    uint32_t frameId = 0;
     std::shared_ptr<MxBase::MemoryData> videoFrame;
     std::vector<MxBase::TensorBase> yoloOutputs;
     std::vector<std::vector<MxBase::ObjectInfo>> yoloObjInfos;
@@ -125,19 +125,32 @@ private:
     void TryQuitReasoner();
     void ForceStopReasoner();
 
-private:
-    uint32_t deviceId;
-    bool stopFlag;
+    APP_ERROR ResizeImage(const std::shared_ptr<MxBase::MemoryData> &decodeFrame,
+                          MxBase::DvppDataInfo &resizeFrame, uint32_t rtspIndex);
 
-    uint32_t yoloModelWidth;
-    uint32_t yoloModelHeight;
-    uint32_t popDecodeFrameWaitTime;
-    uint32_t maxDecodeFrameQueueLength;
-    uint32_t intervalPerformanceMonitorPrint;
-    uint32_t intervalMainThreadControlCheck;
-    bool printDetectResult;
-    bool writeDetectResultToFile;
-    bool enableIndependentThreadForEachDetectStep;
+    APP_ERROR YoloInference(const MxBase::DvppDataInfo &resizeFrame, std::vector<MxBase::TensorBase> &yoloOutputs);
+
+    APP_ERROR YoloPostProcess(YoloResultWrapper &result);
+
+    APP_ERROR YoloDetect(const MxBase::DvppDataInfo &resizeFrame, YoloResultWrapper &result);
+
+    std::vector<MxBase::ObjectInfo> GetDetectResult(const YoloResultWrapper &result);
+
+    APP_ERROR SaveDetectResult(const YoloResultWrapper &result, const std::vector<MxBase::ObjectInfo> &results);
+
+private:
+    uint32_t deviceId = 0;
+    bool stopFlag = false;
+
+    uint32_t yoloModelWidth = 0;
+    uint32_t yoloModelHeight = 0;
+    uint32_t popDecodeFrameWaitTime = 10;
+    uint32_t maxDecodeFrameQueueLength = 100;
+    uint32_t intervalPerformanceMonitorPrint = 1;
+    uint32_t intervalMainThreadControlCheck = 2;
+    bool printDetectResult = true;
+    bool writeDetectResultToFile = false;
+    bool enableIndependentThreadForEachDetectStep = true;
 
 private:
     std::vector<AscendStreamPuller::VideoFrameInfo> videoFrameInfos;

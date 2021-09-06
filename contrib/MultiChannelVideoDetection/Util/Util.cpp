@@ -214,8 +214,8 @@ APP_ERROR Util::SaveResult(const std::shared_ptr<MxBase::MemoryData> &videoFrame
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
         // draw edge of detect result object on result pic
         cv::rectangle(imgBgr,
-                      cv::Rect((int) result.x0, (int) result.y0,
-                               (int) (result.x1 - result.x0), (int) (result.y1 - result.y0)),
+                      cv::Rect((int)result.x0, (int)result.y0,
+                               (int)(result.x1 - result.x0), (int)(result.y1 - result.y0)),
                       green, thickness);
 
         // write result as (frameId + 1).jpg

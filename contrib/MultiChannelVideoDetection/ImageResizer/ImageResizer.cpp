@@ -103,8 +103,7 @@ APP_ERROR ImageResizer::Resize(MxBase::DvppDataInfo &inputImageInfo,
  * @return status code of whether resize image is successful
  */
 APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
-                                         const uint32_t &originWidth, const uint32_t &originHeight,
-                                         const uint32_t &resizeWidth, const uint32_t &resizeHeight,
+                                         const ResizeConfig &resizeConfig,
                                          MxBase::DvppDataInfo &outputImageInfo)
 {
     // check image
@@ -115,14 +114,14 @@ APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
 
     // construct image by memory data
     MxBase::DvppDataInfo input = {};
-    input.width = originWidth;
-    input.height = originHeight;
-    input.widthStride = originWidth;
-    input.heightStride = originHeight;
+    input.width = resizeConfig.originWidth;
+    input.height = resizeConfig.originHeight;
+    input.widthStride = resizeConfig.originWidth;
+    input.heightStride = resizeConfig.originHeight;
     input.dataSize = imageInfo.size;
     input.data = (uint8_t*)imageInfo.ptrData;
     input.frameId = imageInfo.deviceId;
 
-    return Resize(input, resizeWidth, resizeHeight, outputImageInfo);
+    return Resize(input, resizeConfig.resizeWidth, resizeConfig.resizeHeight, outputImageInfo);
 }
 } // end AscendImageResizer

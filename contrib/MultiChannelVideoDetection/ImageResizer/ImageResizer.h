@@ -21,6 +21,13 @@
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 
 namespace AscendImageResizer {
+struct ResizeConfig {
+    uint32_t originWidth = 0;
+    uint32_t originHeight = 0;
+    uint32_t resizeWidth = 0;
+    uint32_t resizeHeight = 0;
+};
+
 class ImageResizer {
 public:
     ImageResizer() = default;
@@ -32,9 +39,8 @@ public:
                      const uint32_t &resizeWidth, const uint32_t &resizeHeight,
                      MxBase::DvppDataInfo &outputImageInfo);
     APP_ERROR ResizeFromMemory(MxBase::MemoryData &imageInfo,
-                     const uint32_t &originWidth, const uint32_t &originHeight,
-                     const uint32_t &resizeWidth, const uint32_t &resizeHeight,
-                     MxBase::DvppDataInfo &outputImageInfo);
+                               const ResizeConfig &resizeConfig,
+                               MxBase::DvppDataInfo &outputImageInfo);
 
 private:
     // image processor

@@ -92,17 +92,13 @@ APP_ERROR YoloDetector::DeInit()
  * > third step: yolo model infer result post process
  *
  * @param imageInfo const reference to the input image
+ * @param postProcessConfig const reference to the post process config
  * @param objInfos  reference to the output detect results
- * @param imageOriginWidth const reference to the origin width of the input image
- * @param imageOriginHeight const reference to the origin height of the input image
- * @param modelWidth const reference to the input width of yolo model
- * @param modelHeight const reference to the input height of yolo model
  * @return status code of whether detection is successful
  */
 APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
-                               std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
-                               const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
-                               const uint32_t &modelWidth, const uint32_t &modelHeight)
+                               const PostProcessConfig &postProcessConfig,
+                               std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     // transform image data to tensor
     MxBase::TensorBase tensor;
@@ -124,7 +120,7 @@ APP_ERROR YoloDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
     }
 
     // model post process
-    ret = PostProcess(outputs, imageOriginWidth, imageOriginHeight, modelWidth, modelHeight, objInfos);
+    ret = PostProcess(outputs, postProcessConfig, objInfos);
     if (ret != APP_ERR_OK) {
         LogError << "Model post process failed, ret = " << ret << ".";
         return ret;
@@ -168,23 +164,19 @@ APP_ERROR YoloDetector::Inference(const MxBase::DvppDataInfo &imageInfo, std::ve
 /**
  * Post process yolo infer result
  * @param modelOutputs const reference to the tensor data of yolo infer
- * @param originWidth const reference to the origin width of input image
- * @param originHeight const reference to the origin height of input image
- * @param modelWidth const reference to the input width of yolo model
- * @param modelHeight const reference to the input height of yolo model
+ * @param postProcessConfig const reference to the post process config
  * @param objInfos reference to the output detect results
  * @return status code of whether post process is successful
  */
 APP_ERROR YoloDetector::PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
-                                    const uint32_t &originWidth, const uint32_t &originHeight,
-                                    const uint32_t &modelWidth, const uint32_t &modelHeight,
+                                    const PostProcessConfig &postProcessConfig,
                                     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     MxBase::ResizedImageInfo imageInfo = {};
-    imageInfo.widthOriginal = originWidth;
-    imageInfo.heightOriginal = originHeight;
-    imageInfo.widthResize = modelWidth;
-    imageInfo.heightResize = modelHeight;
+    imageInfo.widthOriginal = postProcessConfig.originWidth;
+    imageInfo.heightOriginal = postProcessConfig.originHeight;
+    imageInfo.widthResize = postProcessConfig.modelWidth;
+    imageInfo.heightResize = postProcessConfig.modelHeight;
     imageInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imageInfo);

@@ -68,7 +68,8 @@ APP_ERROR VideoDecoder::DeInit()
  * @param userData pointer to user data (ex: decode frame queue)
  * @return status code of whether decode is successful
  */
-APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData, void *userData)
+APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData,
+                               const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue)
 {
     MxBase::MemoryData dvppMemory((size_t)streamData.size, MxBase::MemoryData::MEMORY_DVPP, this->deviceId);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dvppMemory, streamData);
@@ -85,7 +86,7 @@ APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData, void *userData)
     inputDataInfo.frameId = frameId;
 
     // call DvppWrapper function to complete video frame data decode
-    ret = vDvppWrapper->DvppVdec(inputDataInfo, userData);
+    ret = vDvppWrapper->DvppVdec(inputDataInfo, decodeFrameQueue.get());
     if (ret != APP_ERR_OK) {
         LogError << "DvppVdec Failed on frame " << frameId;
         MxBase::MemoryHelper::MxbsFree(dvppMemory);

@@ -35,7 +35,7 @@ static void SigHandler(int signal)
     }
 }
 
-void LoadVideoSource(int argc, char *argv[], std::vector<std::string> &rtspList)
+static void LoadVideoSource(int argc, const std::vector<std::string> &argv, std::vector<std::string> &rtspList)
 {
     if (argc <= 1) {
         LogWarn
@@ -43,9 +43,9 @@ void LoadVideoSource(int argc, char *argv[], std::vector<std::string> &rtspList)
         LogWarn << "Not config rtsp video stream address, use code setting.";
 
         // rtsp video stream code setting
-        rtspList.emplace_back("#{rtsp流地址1}");
-        rtspList.emplace_back("#{rtsp流地址2}");
-        
+        rtspList.emplace_back("${rtsp流地址1}");
+        rtspList.emplace_back("${rtsp流地址2}");
+
         for (uint32_t i = 0; i < rtspList.size(); i++) {
             LogInfo << "rtsp video stream " << (i + 1) << " " << rtspList.at(i);
         }
@@ -57,7 +57,7 @@ void LoadVideoSource(int argc, char *argv[], std::vector<std::string> &rtspList)
     }
 }
 
-void LoadReasonerConfig(const std::vector<std::string> &rtspList, ReasonerConfig &reasonerConfig)
+static void LoadReasonerConfig(const std::vector<std::string> &rtspList, ReasonerConfig &reasonerConfig)
 {
     reasonerConfig.deviceId = DEVICE_ID;
     reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
@@ -81,13 +81,19 @@ int main(int argc, char *argv[])
 {
     // init rtsp video string
     std::vector<std::string> rtspList = {};
-    LoadVideoSource(argc, argv, rtspList);
+
+    // transform argv to string vector
+    std::vector<std::string> arguments = {};
+    for (int i = 0; i < argc; i++) {
+        arguments.emplace_back(argv[i]);
+    }
+    LoadVideoSource(argc, arguments, rtspList);
 
     /// === modify config === ///
     MxBase::ConfigData configData;
     MxBase::ConfigUtil configUtil;
-    APP_ERROR ret = configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf",
-                                                 configData, MxBase::ConfigMode::CONFIGFILE);
+    APP_ERROR ret = configUtil.LoadConfiguration("${MindXSDK安装路径}/config/logging.conf", configData,
+                                                 MxBase::ConfigMode::CONFIGFILE);
     if (ret == APP_ERR_OK) {
         configData.SetFileValue<int>("global_level", 1);
         MxBase::Log::SetLogParameters(configData);

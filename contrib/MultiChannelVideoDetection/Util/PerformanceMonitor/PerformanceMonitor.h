@@ -24,7 +24,7 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 
 namespace AscendPerformanceMonitor {
-// config
+// PerformanceMonitor config
 const uint32_t DEFAULT_PRINT_INTERVAL = 1;
 
 class PerformanceMonitor {
@@ -42,7 +42,7 @@ public:
 
 public:
     // running flag
-    bool stopFlag;
+    bool stopFlag = false;
 
 private:
     std::map<std::string, std::vector<std::pair<int, double>>> data;
@@ -52,7 +52,7 @@ private:
     std::string currObject;
 
     // whether print performance message
-    bool enablePrint;
+    bool enablePrint = true;
 };
 } // end AscendPerformanceMonitor
 #endif // MULTICHANNELVIDEODETECTION_PERFORMANCEMONITOR_H

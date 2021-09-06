@@ -22,7 +22,6 @@
 #include "ObjectPostProcessors/Yolov3PostProcess.h"
 
 namespace AscendYoloDetector {
-
 // yolo config
 const uint32_t YOLO_MODEL_INPUT_WIDTH = 416;
 const uint32_t YOLO_MODEL_INPUT_HEIGHT = 416;
@@ -40,20 +39,27 @@ const uint32_t YUV_BYTE_DE = 2;
 const uint32_t VPC_H_ALIGN = 2;
 
 struct YoloInitParam {
-    uint32_t deviceId;
+    uint32_t deviceId = 0;
     std::string labelPath;
-    bool checkTensor;
+    bool checkTensor = true;
     std::string modelPath;
-    uint32_t classNum;
-    uint32_t biasesNum;
+    uint32_t classNum = YOLO_CLASS_NUM;
+    uint32_t biasesNum = YOLO_BIASES_NUM;
     std::string biases;
     std::string objectnessThresh;
     std::string iouThresh;
     std::string scoreThresh;
-    uint32_t yoloType;
-    uint32_t modelType;
-    uint32_t inputType;
-    uint32_t anchorDim;
+    uint32_t yoloType = YOLO_TYPE;
+    uint32_t modelType = YOLO_MODEL_TYPE;
+    uint32_t inputType = YOLO_INPUT_TYPE;
+    uint32_t anchorDim = YOLO_ANCHOR_DIM;
+};
+
+struct PostProcessConfig {
+    uint32_t originWidth = 0;
+    uint32_t originHeight = 0;
+    uint32_t modelWidth = 0;
+    uint32_t modelHeight = 0;
 };
 
 class YoloDetector {
@@ -64,13 +70,11 @@ public:
     APP_ERROR Init(const YoloInitParam &initParam);
     APP_ERROR DeInit();
     APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo,
-                     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
-                     const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight,
-                     const uint32_t &modelWidth, const uint32_t &modelHeight);
+                     const PostProcessConfig &postProcessConfig,
+                     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
     APP_ERROR Inference(const MxBase::DvppDataInfo &imageInfo, std::vector<MxBase::TensorBase> &outputs);
     APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
-                          const uint32_t &originWidth, const uint32_t &originHeight,
-                          const uint32_t &modelWidth, const uint32_t &modelHeight,
+                          const PostProcessConfig &postProcessConfig,
                           std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
 
 protected:

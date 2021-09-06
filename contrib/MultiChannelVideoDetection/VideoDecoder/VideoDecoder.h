@@ -17,6 +17,7 @@
 #ifndef MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 #define MULTICHANNELVIDEODETECTION_VIDEODECODER_H
 
+#include "BlockingQueue/BlockingQueue.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 
@@ -41,7 +42,8 @@ public:
 
     APP_ERROR Init(const DecoderInitParam &initParam);
     APP_ERROR DeInit();
-    APP_ERROR Decode(MxBase::MemoryData &streamData, void *userData);
+    APP_ERROR Decode(MxBase::MemoryData &streamData,
+                     const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue);
 
     uint32_t GetTotalDecodeFrameNum() const;
 
