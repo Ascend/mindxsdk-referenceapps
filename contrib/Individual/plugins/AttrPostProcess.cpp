@@ -107,15 +107,14 @@ namespace MxBase {
             attr_confidence = 0.5
             for (uint32_t j = 0; j < topk; j++) {
                 ClassInfo clsInfo = {};
-                if(softmax[j]>attr_confidence){
+                if(softmax[j] > attr_confidence){
                     clsInfo.classId = j;
                     clsInfo.confidence = 1;
                     clsInfo.className = configData_.GetClassName(j);
-                }
-                else{
+                }else {
                     clsInfo.classId = j;
                     clsInfo.confidence = 0;
-                    clsInfo.className = configData_.GetClassName(j);     
+                    clsInfo.className = configData_.GetClassName(j);
                 }
                 topkClassInfos.push_back(clsInfo);
             }
