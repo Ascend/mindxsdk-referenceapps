@@ -24,14 +24,14 @@
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
 
 struct InitParam {
-    uint32_t deviceId;
-    bool checkTensor;
-    std::string modelPath;
-    uint32_t outSizeNum;
-    std::string outSize;
-    uint32_t rcfType;
-    uint32_t modelType;
-    uint32_t inputType;
+    uint32_t deviceId = 0;
+    bool checkTensor = True;
+    std::string modelPath = "";
+    uint32_t outSizeNum = 0;
+    std::string outSize = "";
+    uint32_t rcfType = 0;
+    uint32_t modelType = 0;
+    uint32_t inputType = 0;
 };
 
 class RcfDetection {
@@ -55,7 +55,7 @@ private:
     std::shared_ptr<RcfPostProcess> post_;
     MxBase::ModelDesc modelDesc_ = {};
     uint32_t deviceId_ = 0;
-    int dvppHeightStride;
-    int dvppWidthStride;
+    int dvppHeightStride = 0;
+    int dvppWidthStride = 0;
 };
 #endif
