@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 
-def visualization(img, infer, shape, frameId, channelId):
+def cv_visualization(img, infer, shape, frameId, channelId):
     """
     :param img: Inference image
     :param infer: Inference result
