@@ -48,17 +48,17 @@ if __name__ == '__main__':
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
     if stream_state != 0:
-        errror_message = "Failed to init Stream manager, streamState=%s" % str(stream_state)
-        raise AssertionError(errror_message)
+        error_message = "Failed to init Stream manager, streamState=%s" % str(stream_state)
+        raise AssertionError(error_message)
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
         pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
     pipeline_string = pipeline
 
-    stream_state = streamManager.CreateMultipleStreams(pipeline_string)
+    stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
-        error_message = "Failed to create Stream, streamState=%s" % str(stream_state)
+        error_message ="Failed to create Stream, streamState=%s" % str(stream_state)
         raise AssertionError(error_message)
 
     # prepare the input of the stream #begin
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     # prepare the input of the stream #end
 
     # send the prepared data to the stream
-    unique_id = streamManager.SendData(STREAM_NAME, IN_PLUGIN_ID, data_input)
+    unique_id = stream_manager.SendData(STREAM_NAME, IN_PLUGIN_ID, data_input)
 
     if unique_id < 0:
         error_message = 'Failed to send data to stream.'
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     for name in plugin_names:
         name_vector.push_back(name)
     # get inference result
-    infer_result = streamManager.GetProtobuf(STREAM_NAME, 0, name_vector)
+    infer_result = stream_manager.GetProtobuf(STREAM_NAME, 0, name_vector)
 
     # check whether the inferred results is valid or not
     if len(infer_result) == 0:
