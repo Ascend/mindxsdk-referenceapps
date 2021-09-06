@@ -22,21 +22,21 @@ def my_handler(signum, frame):
     """
     :param signum: signum are used to identify the signal
     :param frame: When the signal occurs, get the status of the process stack
-    func:Change flag of stop_stream
+    func:Change flag of STOP_STREAM
     """
-    global stop_stream
-    stop_stream = True
+    global STOP_STREAM
+    STOP_STREAM = True
 
 
 # exit flag
-stop_stream = False
+STOP_STREAM = False
 # When about to exit, get the exit signal
 signal.signal(signal.SIGINT, my_handler)
 
 # The following belongs to the SDK Process
 # init stream manager
-streamManagerApi = StreamManagerApi.StreamManagerApi()
-ret = streamManagerApi.InitManager()
+StreamManagerApi = StreamManagerApi.StreamManagerApi()
+ret = StreamManagerApi.InitManager()
 if ret != 0:
     print("Failed to init Stream manager, ret=%s" % str(ret))
 
@@ -44,7 +44,7 @@ if ret != 0:
 #load  pipline
 with open("HelmetDetection.pipline", 'rb') as f:
     pipelineStr = f.read()
-ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+ret = StreamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
 if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
@@ -62,10 +62,10 @@ keyVec0.push_back(b"mxpi_videodecoder1")
 
 while True:
     # exit flag
-    if stop_stream:
+    if STOP_STREAM:
         break
     # Get data through GetProtobuf interface
-    inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
+    inferResult0 = StreamManagerApi.GetProtobuf(streamName, 0, keyVec0)
     # output errorCode
     if inferResult0[0].errorCode != 0:
         # Print error message
@@ -79,4 +79,4 @@ while True:
     utils.Visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
 
 # Destroy All Streams
-streamManagerApi.DestroyAllStreams()
+StreamManagerApi.DestroyAllStreams()
