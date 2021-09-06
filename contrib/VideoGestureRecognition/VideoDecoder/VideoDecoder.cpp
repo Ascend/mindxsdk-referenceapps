@@ -63,8 +63,7 @@ APP_ERROR VideoDecoder::Process()
 
 APP_ERROR VideoDecoder::Decode(MxBase::MemoryData &streamData,
                                const uint32_t &width,
-                               const uint32_t &height,
-                               void *userData)
+                               const uint32_t &height, void *userData)
 {
     MxBase::MemoryData dvppMemory((size_t)streamData.size, MxBase::MemoryData::MEMORY_DVPP, this->channelId);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dvppMemory, streamData);
@@ -120,12 +119,11 @@ APP_ERROR VideoDecoder::InitDvppWrapper(const DecoderInitParam &initParam)
 }
 
 APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
-                                            MxBase::DvppDataInfo &inputDataInfo,
-                                            void *userData)
+                                            MxBase::DvppDataInfo &inputDataInfo, void *userData)
 {
     LogDebug << "decode frame " << inputDataInfo.frameId << " complete";
 
-    auto deleter = [] (MxBase::MemoryData* memoryData) {
+    auto deleter = [] (MxBase::MemoryData *memoryData) {
         if (memoryData == nullptr) {
             LogError << "MxbsFree failed";
             return;
@@ -140,7 +138,7 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
     };
 
     auto output = std::shared_ptr<MxBase::MemoryData>(
-            new MxBase::MemoryData(buffer.get(), (size_t) inputDataInfo.dataSize,
+            new MxBase::MemoryData(buffer.get(), (size_t)inputDataInfo.dataSize,
                                    MxBase::MemoryData::MEMORY_DVPP,
                                    inputDataInfo.frameId), deleter);
 
@@ -150,9 +148,8 @@ APP_ERROR VideoDecoder::VideoDecodeCallback(std::shared_ptr<void> buffer,
     }
 
     // put decoded frame into decoded frame queue
-    auto* decodeFrameQueue = (BlockingQueue<std::shared_ptr<void>>*) userData;
+    auto *decodeFrameQueue = (BlockingQueue<std::shared_ptr<void>>*)userData;
     decodeFrameQueue->Push(output);
     return APP_ERR_OK;
 }
-
 } // end AscendVideoDecoder

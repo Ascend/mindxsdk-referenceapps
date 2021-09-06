@@ -38,7 +38,6 @@ namespace {
     const uint32_t DECODE_FRAME_QUEUE_LENGTH = 100;
 }
 
-bool VideoGestureReasoner::forceStop = false;
 static void SigHandler(int signal)
 {
     if (signal == SIGINT) {
@@ -46,8 +45,49 @@ static void SigHandler(int signal)
         LogInfo << "Force quit VideoGestureReasoner.";
     }
 }
+static APP_ERROR process(std::vector<std::string> rtspList)
+{
+    auto videoGestureReasoner = std::make_shared<VideoGestureReasoner>();
+    ReasonerConfig reasonerConfig;
+    reasonerConfig.deviceId = DEVICE_ID;
+    reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
+    reasonerConfig.rtspList = rtspList;
+    reasonerConfig.resnetModelPath = "${gesture_yuv.om模型路径}";
+    reasonerConfig.resnetLabelPath = "${resnet18.names路径}";
+    reasonerConfig.resnetModelWidth = MODEL_WIDTH;
+    reasonerConfig.resnetModelHeight = MODEL_HEIGHT;
+    reasonerConfig.maxDecodeFrameQueueLength = DECODE_FRAME_QUEUE_LENGTH;
+    reasonerConfig.popDecodeFrameWaitTime = DECODE_FRAME_WAIT_TIME;
+    reasonerConfig.samplingInterval = SAMPLING_INTERVAL;
+    reasonerConfig.maxSamplingInterval = MAX_SAMPLING_INTERVAL;
 
-int main(int argc, char* argv[])
+    // init
+    APP_ERROR ret = videoGestureReasoner->Init(reasonerConfig);
+    if (ret != APP_ERR_OK) {
+        LogError << "Init multi channel video infer failed.";
+        return ret;
+    }
+
+    // run
+    videoGestureReasoner->Process();
+
+    // destroy reasoner
+    ret = videoGestureReasoner->DeInit();
+    if (ret != APP_ERR_OK) {
+        LogError << "Deinit multi channel video infer failed.";
+        return ret;
+    }
+
+    // destroy devices
+    ret = MxBase::DeviceManager::GetInstance()->DestroyDevices();
+    if (ret != APP_ERR_OK) {
+        LogError << "DestroyDevices failed";
+        return ret;
+    }
+    return APP_ERR_OK;
+}
+
+int main(int argc, char *argv[])
 {
     // rtsp video string
     std::vector<std::string> rtspList = {};
@@ -89,51 +129,11 @@ int main(int argc, char* argv[])
         return APP_ERR_COMM_FAILURE;
     }
 
-    auto videoGestureReasoner = std::make_shared<VideoGestureReasoner>();
-    ReasonerConfig reasonerConfig;
-    reasonerConfig.deviceId = DEVICE_ID;
-    reasonerConfig.baseVideoChannelId = BASE_CHANNEL_ID;
-    reasonerConfig.rtspList = rtspList;
-    reasonerConfig.resnetModelPath = "${gesture_yuv.om模型路径}";
-    reasonerConfig.resnetLabelPath = "${resnet18.names路径}";
-    reasonerConfig.resnetModelWidth = MODEL_WIDTH;
-    reasonerConfig.resnetModelHeight = MODEL_HEIGHT;
-    reasonerConfig.maxDecodeFrameQueueLength = DECODE_FRAME_QUEUE_LENGTH;
-    reasonerConfig.popDecodeFrameWaitTime = DECODE_FRAME_WAIT_TIME;
-    reasonerConfig.samplingInterval = SAMPLING_INTERVAL;
-    reasonerConfig.maxSamplingInterval = MAX_SAMPLING_INTERVAL;
-
-    // init
-    ret = videoGestureReasoner->Init(reasonerConfig);
+    // inference start
+    ret = process(rtspList);
     if (ret != APP_ERR_OK) {
-        LogError << "Init multi channel video infer failed.";
+        LogError << "inference start failed";
         return ret;
     }
-
-    // run
-    videoGestureReasoner->Process();
-
-    // destroy reasoner
-    ret = videoGestureReasoner->DeInit();
-    if (ret != APP_ERR_OK) {
-        LogError << "Deinit multi channel video infer failed.";
-        return ret;
-    }
-
-    // destroy devices
-    ret = MxBase::DeviceManager::GetInstance()->DestroyDevices();
-    if (ret != APP_ERR_OK) {
-        LogError << "DestroyDevices failed";
-        return ret;
-    }
-
     return 0;
 }
-
-
-
-
-
-
-
-

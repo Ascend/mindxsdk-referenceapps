@@ -24,7 +24,6 @@
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendResnetDetector {
-
 struct ResnetInitParam {
     uint32_t deviceId;
     std::string labelPath;
@@ -54,19 +53,19 @@ public:
     APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
                      const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight);
 
-private:
-    APP_ERROR InitModel(const ResnetInitParam &initParam);
-    APP_ERROR InitPostProcess(const ResnetInitParam &initParam);
-    APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
-    APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,const uint32_t &width,
-                          const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos);
-
 protected:
     static APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
     static APP_ERROR LoadPostProcessConfig(const ResnetInitParam &initParam,
                                            std::map<std::string,
                                            std::shared_ptr<void>> &config);
+
+private:
+    APP_ERROR InitModel(const ResnetInitParam &initParam);
+    APP_ERROR InitPostProcess(const ResnetInitParam &initParam);
+    APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
+    APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs, const uint32_t &width,
+                          const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos);
 
 public:
     // running flag
@@ -82,6 +81,10 @@ private:
 
     // device id
     uint32_t deviceId;
+    // network width
+    uint32_t const netWidth = 256;
+    // network height
+    uint32_t const netHeight = 224;
 };
 } // end AscendResnetDetector
-#endif //MULTICHANNELVIDEODETECTION_ResnetDETECTOR_H
+#endif // MULTICHANNELVIDEODETECTION_ResnetDETECTOR_H

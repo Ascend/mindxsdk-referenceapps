@@ -23,6 +23,12 @@
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendImageResizer {
+    struct ImageResizerParma{
+        uint32_t originWidth;
+        uint32_t originHeight;
+        uint32_t resizeWidth;
+        uint32_t resizeHeight;
+    };
 class ImageResizer {
 public:
     ImageResizer() = default;
@@ -33,9 +39,7 @@ public:
     APP_ERROR Resize(MxBase::DvppDataInfo &inputImageInfo,
                      const uint32_t &resizeWidth, const uint32_t &resizeHeight,
                      MxBase::DvppDataInfo &outputImageInfo);
-    APP_ERROR ResizeFromMemory(MxBase::MemoryData &imageInfo,
-                     const uint32_t &originWidth, const uint32_t &originHeight,
-                     const uint32_t &resizeWidth, const uint32_t &resizeHeight,
+    APP_ERROR ResizeFromMemory(MxBase::MemoryData &imageInfo, const ImageResizerParma &imageInitParma,
                      MxBase::DvppDataInfo &outputImageInfo);
 
 public:
@@ -49,7 +53,5 @@ private:
     // device id
     uint32_t deviceId;
 };
-
 } // end AscendImageResizer
-
-#endif //MULTICHANNELVIDEODETECTION_IMAGERESIZER_H
+#endif // MULTICHANNELVIDEODETECTION_IMAGERESIZER_H

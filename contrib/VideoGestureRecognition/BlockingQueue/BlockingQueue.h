@@ -19,12 +19,12 @@
 #include <condition_variable>
 #include <list>
 #include <mutex>
-#include <stdint.h>
+#include <cstdint>
 #include "MxBase/ErrorCode/ErrorCode.h"
 
 template <typename T> class BlockingQueue {
 public:
-    BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stopped_(false) {}
+    explicit BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stopped_(false) {}
     ~BlockingQueue() = default;
 
     APP_ERROR Pop(T& item)
@@ -177,17 +177,17 @@ public:
         return queue_.size() >= max_size_;
     }
 
-    int GetSize()
+    const int GetSize()
     {
         return queue_.size();
     }
 
-    std::mutex* GetLock()
+    std::mutex *GetLock()
     {
         return &mutex_;
     }
 
-    void Clear()
+    const void Clear()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         queue_.clear();
@@ -204,6 +204,5 @@ private:
 
 private:
     static const int DEFAULT_MAX_QUEUE_SIZE = 256;
-
 };
-#endif //MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H
+#endif // MULTICHANNELVIDEODETECTION_BLOCKINGQUEUE_H

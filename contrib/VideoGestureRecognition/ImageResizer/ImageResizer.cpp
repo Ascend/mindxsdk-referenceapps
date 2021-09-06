@@ -18,7 +18,6 @@
 #include "MxBase/Log/Log.h"
 
 namespace AscendImageResizer {
-
 APP_ERROR ImageResizer::Init(uint32_t deviceId)
 {
     LogDebug << "ImageResizer init start.";
@@ -77,9 +76,7 @@ APP_ERROR ImageResizer::Resize(MxBase::DvppDataInfo &inputImageInfo,
     return APP_ERR_OK;
 }
 
-APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
-                                         const uint32_t &originWidth, const uint32_t &originHeight,
-                                         const uint32_t &resizeWidth, const uint32_t &resizeHeight,
+APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo, const ImageResizerParma &imageInitParma,
                                          MxBase::DvppDataInfo &outputImageInfo)
 {
     // check image
@@ -89,15 +86,14 @@ APP_ERROR ImageResizer::ResizeFromMemory(MxBase::MemoryData &imageInfo,
     }
 
     MxBase::DvppDataInfo input = {};
-    input.width = originWidth;
-    input.height = originHeight;
-    input.widthStride = originWidth;
-    input.heightStride = originHeight;
+    input.width = imageInitParma.originWidth;
+    input.height = imageInitParma.originHeight;
+    input.widthStride = imageInitParma.originWidth;
+    input.heightStride = imageInitParma.originHeight;
     input.dataSize = imageInfo.size;
-    input.data = (uint8_t*) imageInfo.ptrData;
+    input.data = (uint8_t*)imageInfo.ptrData;
     input.frameId = imageInfo.deviceId;
 
-    return Resize(input, resizeWidth, resizeHeight, outputImageInfo);
+    return Resize(input, imageInitParma.resizeWidth, imageInitParma.resizeHeight, outputImageInfo);
 }
-
 } // end AscendImageResizer

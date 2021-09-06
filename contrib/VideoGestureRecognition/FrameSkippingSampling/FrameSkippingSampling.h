@@ -20,7 +20,6 @@
 #include "MxBase/ErrorCode/ErrorCode.h"
 
 namespace AscendFrameSkippingSampling {
-
     class FrameSkippingSampling {
     public:
         FrameSkippingSampling() = default;
@@ -45,5 +44,5 @@ namespace AscendFrameSkippingSampling {
         // max Sampling interval
         uint32_t maxSamplingInterval;
     };
-}// end AscendFrameSkippingSampling
-#endif //MULTICHANNELVIDEODETECTION_FRAMESKIPPINGSAMPLING_H
+} // end AscendFrameSkippingSampling
+#endif // MULTICHANNELVIDEODETECTION_FRAMESKIPPINGSAMPLING_H

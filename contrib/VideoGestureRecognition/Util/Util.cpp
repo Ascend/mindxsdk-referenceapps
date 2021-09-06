@@ -16,8 +16,8 @@
 #include "Util.h"
 
 void Util::InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam,
-                                  const uint32_t deviceId, const uint32_t channelId,
-                                  const AscendStreamPuller::VideoFrameInfo &videoFrameInfo)
+                                 const uint32_t deviceId, const uint32_t channelId,
+                                 const AscendStreamPuller::VideoFrameInfo &videoFrameInfo)
 {
     initParam.deviceId = deviceId;
     initParam.channelId = channelId;
@@ -28,23 +28,23 @@ void Util::InitVideoDecoderParam(AscendVideoDecoder::DecoderInitParam &initParam
 }
 
 void Util::InitResnetParam(AscendResnetDetector::ResnetInitParam &initParam,
-                            const uint32_t deviceId, const std::string &labelPath,
-                            const std::string &modelPath)
+                           const uint32_t deviceId, const std::string &labelPath,
+                           const std::string &modelPath)
 {
     initParam.deviceId = deviceId;
     initParam.labelPath = labelPath;
     initParam.checkTensor = true;
     initParam.modelPath = modelPath;
-    initParam.classNum = 21;
-    initParam.biasesNum = 18;
+    initParam.classNum = classLabelNum;
+    initParam.biasesNum = biasesLabelNum;
     initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
     initParam.objectnessThresh = "0.001";
     initParam.iouThresh = "0.5";
     initParam.scoreThresh = "0.001";
-    initParam.resnetType = 3;
+    initParam.resnetType = resnetType;
     initParam.modelType = 0;
     initParam.inputType = 0;
-    initParam.anchorDim = 3;
+    initParam.anchorDim = anchorDim;
 }
 
 bool Util::IsExistDataInQueueMap(const std::map<int,
@@ -60,13 +60,14 @@ bool Util::IsExistDataInQueueMap(const std::map<int,
 }
 
 APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const uint32_t frameId,
-                            const std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
-                            const uint32_t videoWidth, const uint32_t videoHeight,
-                            const int rtspIndex)
+                           const std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
+                           const uint32_t videoWidth, const uint32_t videoHeight,
+                           const int rtspIndex)
 {
-    MxBase::MemoryData memoryDst(resultInfo->size,MxBase::MemoryData::MEMORY_HOST_NEW);
+    MxBase::MemoryData memoryDst(resultInfo->size, MxBase::MemoryData::MEMORY_HOST_NEW);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, *resultInfo);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK)
+    {
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
@@ -92,11 +93,11 @@ APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const
         const uint32_t lineType = 8;
         const float fontScale = 2.0;
 
-        cv::putText(imgBgr, info[i].className, cv::Point(100, videoWidth / 2),
+        cv::putText(imgBgr, info[i].className, cv::Point(videoHeight / 2, videoWidth / 2),
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
 
         // write result
-        std::string resultDir = "./result";
+        std::string resultDir = "./result8";
         if (opendir(resultDir.c_str()) == NULL) {
             LogDebug << "result dir not exist. create it!";
             std::string command = "mkdir -p " + resultDir;
@@ -114,7 +115,7 @@ APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const
     }
 
     ret = MxBase::MemoryHelper::MxbsFree(memoryDst);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to MxbsFree memory.";
         return ret;
     }

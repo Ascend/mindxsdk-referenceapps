@@ -105,7 +105,6 @@ APP_ERROR ResnetDetector::Detect(const MxBase::DvppDataInfo &imageInfo,
 
     LogInfo << "input tensor" << tensor.GetDesc();
 
-
     // model infer
     ret = Inference(inputs, outputs);
     if (ret != APP_ERR_OK) {
@@ -132,7 +131,6 @@ APP_ERROR ResnetDetector::InitModel(const ResnetInitParam &initParam)
     LogInfo << "model path: " << initParam.modelPath;
 
     APP_ERROR ret = model->Init(initParam.modelPath, modelDesc);
-
     if (ret != APP_ERR_OK) {
         LogError << "ModelInferenceProcessor init failed, ret=" << ret << ".";
         return ret;
@@ -162,7 +160,7 @@ APP_ERROR ResnetDetector::InitPostProcess(const ResnetInitParam &initParam)
 APP_ERROR ResnetDetector::TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo,
                                                  MxBase::TensorBase &tensor) const
 {
-    MxBase::MemoryData memoryData((void*) imageInfo.data,
+    MxBase::MemoryData memoryData((void*)imageInfo.data,
                                   imageInfo.dataSize,
                                   MxBase::MemoryData::MEMORY_DVPP,
                                   deviceId);
@@ -194,7 +192,7 @@ APP_ERROR ResnetDetector::Inference(const std::vector<MxBase::TensorBase> &input
     for (size_t i = 0; i < modelDesc.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
         for (size_t j = 0; j < modelDesc.outputTensors[i].tensorDims.size(); ++j) {
-            shape.push_back((uint32_t) modelDesc.outputTensors[i].tensorDims[j]);
+            shape.push_back((uint32_t)modelDesc.outputTensors[i].tensorDims[j]);
         }
 
         MxBase::TensorBase tensor(shape, dtypes[i], MxBase::MemoryData::MemoryType::MEMORY_DVPP, deviceId);
@@ -228,13 +226,13 @@ APP_ERROR ResnetDetector::Inference(const std::vector<MxBase::TensorBase> &input
 }
 
 APP_ERROR ResnetDetector::PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs, const uint32_t &width,
-                                    const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos)
+                                      const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos)
 {
     MxBase::ResizedImageInfo imageInfo = {};
     imageInfo.widthOriginal = width;
     imageInfo.heightOriginal = height;
-    imageInfo.widthResize = 256;
-    imageInfo.heightResize = 224;
+    imageInfo.widthResize = netWidth;
+    imageInfo.heightResize = netHeight;
     imageInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imageInfo);
@@ -266,7 +264,7 @@ APP_ERROR ResnetDetector::LoadLabels(const std::string &labelPath, std::map<int,
     // construct label map
     int count = 0;
     while (std::getline(infile, s)) {
-        if (s.compare(0, 0,"#") == 0 || s.compare(1, 1,"#") == 0) {
+        if (s.compare(0, 0, "#") == 0 || s.compare(1, 1, "#") == 0) {
             continue;
         }
         size_t eraseIndex = s.find_last_not_of("\r\n\t");
@@ -309,5 +307,4 @@ APP_ERROR ResnetDetector::LoadPostProcessConfig(const ResnetInitParam &initParam
     LogInfo << "load postprocess config successfully.";
     return APP_ERR_OK;
 }
-
 } // end AscendResnetDetector

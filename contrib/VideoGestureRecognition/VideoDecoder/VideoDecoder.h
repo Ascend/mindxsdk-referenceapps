@@ -23,7 +23,6 @@
 #include "../BlockingQueue/BlockingQueue.h"
 
 namespace AscendVideoDecoder {
-
 struct DecoderInitParam {
     uint32_t deviceId;
     uint32_t channelId;
@@ -41,13 +40,14 @@ public:
     APP_ERROR Init(const DecoderInitParam &initParam);
     APP_ERROR DeInit();
     APP_ERROR Process();
-    APP_ERROR Decode(MxBase::MemoryData &streamData, const uint32_t &width, const uint32_t &height, void *userData);
+    APP_ERROR Decode(MxBase::MemoryData &streamData,
+                     const uint32_t &width,
+                     const uint32_t &height, void *userData);
 
 private:
     APP_ERROR InitDvppWrapper(const DecoderInitParam &initParam);
     static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer,
-                                         MxBase::DvppDataInfo &inputDataInfo,
-                                         void *userData);
+                                         MxBase::DvppDataInfo &inputDataInfo, void *userData);
 
 public:
     // running flag
@@ -71,4 +71,4 @@ private:
 };
 } // end AscendVideoDecoder
 
-#endif //MULTICHANNELVIDEODETECTION_VIDEODECODER_H
+#endif // MULTICHANNELVIDEODETECTION_VIDEODECODER_H

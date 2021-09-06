@@ -17,9 +17,9 @@
 #ifndef MULTICHANNELVIDEODETECTION_STREAMPULLER_H
 #define MULTICHANNELVIDEODETECTION_STREAMPULLER_H
 
-#include "MxBase/ErrorCode/ErrorCode.h"
-#include "MxBase/MemoryHelper/MemoryHelper.h"
 #include <MxBase/DvppWrapper/DvppWrapper.h>
+#include "MxBase/MemoryHelper/MemoryHelper.h"
+#include "MxBase/ErrorCode/ErrorCode.h"
 #include "../BlockingQueue/BlockingQueue.h"
 
 extern "C" {
@@ -27,7 +27,6 @@ extern "C" {
 }
 
 namespace AscendStreamPuller {
-
 struct VideoFrameInfo {
     uint32_t width;
     uint32_t height;
@@ -48,14 +47,14 @@ public:
     APP_ERROR Process();
     MxBase::MemoryData GetNextFrame();
 
-    VideoFrameInfo GetFrameInfo();
+    const VideoFrameInfo GetFrameInfo();
 
 private:
     APP_ERROR TryToStartStream();
     APP_ERROR StartStream();
     APP_ERROR CreateFormatContext();
     APP_ERROR GetStreamInfo();
-    void PullStreamDataLoop();
+    const void PullStreamDataLoop();
 
 public:
     // running flag
@@ -75,4 +74,4 @@ private:
 };
 } // end AscendStreamPuller
 
-#endif //MULTICHANNELVIDEODETECTION_STREAMPULLER_H
+#endif // MULTICHANNELVIDEODETECTION_STREAMPULLER_H

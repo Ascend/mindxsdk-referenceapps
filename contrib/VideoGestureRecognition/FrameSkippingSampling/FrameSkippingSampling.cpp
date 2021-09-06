@@ -20,8 +20,10 @@
 namespace AscendFrameSkippingSampling {
     uint32_t FrameSkippingSampling::samplingCounter = 0;
 
-    APP_ERROR FrameSkippingSampling::Init(uint32_t maxSamplingInterval, uint32_t samplingInterval,
-                                                             uint32_t deviceId) {
+    APP_ERROR FrameSkippingSampling::Init(uint32_t maxSamplingInterval,
+                                          uint32_t samplingInterval,
+                                          uint32_t deviceId)
+    {
         LogDebug << "FrameSkippingSampling" << ": FrameSkippingSampling init start.";
 
         stopFlag = false;
@@ -33,7 +35,8 @@ namespace AscendFrameSkippingSampling {
         return APP_ERR_OK;
     }
 
-    APP_ERROR FrameSkippingSampling::DeInit() {
+    APP_ERROR FrameSkippingSampling::DeInit()
+    {
         LogDebug << "FrameSkippingSampling" << ": FrameSkippingSampling deinit start.";
 
         stopFlag = true;
@@ -43,7 +46,8 @@ namespace AscendFrameSkippingSampling {
         return APP_ERR_OK;
     }
 
-    APP_ERROR FrameSkippingSampling::Process() {
+    APP_ERROR FrameSkippingSampling::Process()
+    {
         stopFlag = false;
         if (samplingInterval > maxSamplingInterval) {
             LogError << "sample interval exceeding the upper limit";

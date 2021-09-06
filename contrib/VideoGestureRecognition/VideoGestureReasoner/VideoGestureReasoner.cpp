@@ -1,7 +1,3 @@
-//
-// Created by 615 on 2021/8/16.
-//
-
 /*
  * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
  *
@@ -21,6 +17,9 @@
 #include "VideoGestureReasoner.h"
 #include "../Util/Util.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
+
+// init static variable
+bool VideoGestureReasoner::forceStop = false;
 
 APP_ERROR VideoGestureReasoner::Init(const ReasonerConfig &initConfig)
 {
@@ -95,7 +94,6 @@ void VideoGestureReasoner::Process()
         }
 
         bool allVideoDataProcessed = !Util::IsExistDataInQueueMap(decodeFrameQueueMap);
-
         if (allVideoDataPulledAndDecoded && allVideoDataProcessed) {
             LogDebug << "all decoded frame detected and no fresh data, quit image resizer and resnet detector";
             imageResizer->stopFlag = true;
@@ -112,7 +110,7 @@ void VideoGestureReasoner::Process()
             LogInfo << "Force stop VideoGestureReasoner.";
             stopFlag = true;
         }
-        std::this_thread::sleep_for(std::chrono::microseconds(1000));
+        std::this_thread::sleep_for(std::chrono::microseconds(delayTime));
     }
 
     // threads join
@@ -156,11 +154,10 @@ APP_ERROR VideoGestureReasoner::DeInit()
 }
 
 /// ========== static Method ========== ///
-void VideoGestureReasoner::GetDecodeVideoFrame(
-        const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
-        const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
-        const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
-        const VideoGestureReasoner* videoGestureReasoner)
+void VideoGestureReasoner::GetDecodeVideoFrame(const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
+                                               const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
+                                               const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
+                                               const VideoGestureReasoner *videoGestureReasoner)
 {
     // set device
     MxBase::DeviceContext device;
@@ -186,7 +183,6 @@ void VideoGestureReasoner::GetDecodeVideoFrame(
 
         // video stream pull
         auto videoFrameData = streamPuller->GetNextFrame();
-
         if (videoFrameData.size == 0) {
             LogDebug << "empty video frame, not need decode, continue!";
             continue;
@@ -201,7 +197,7 @@ void VideoGestureReasoner::GetDecodeVideoFrame(
 void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                                               const uint32_t &modelHeight,
                                               const uint32_t &popDecodeFrameWaitTime,
-                                              const VideoGestureReasoner* videoGestureReasoner)
+                                              const VideoGestureReasoner *videoGestureReasoner)
 {
     // set device
     MxBase::DeviceContext device;
@@ -217,7 +213,7 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
     auto decodeFrameQueueMap = videoGestureReasoner->decodeFrameQueueMap;
     auto videoFrameInfos = videoGestureReasoner->videoFrameInfos;
     auto frameSkippingSampling = videoGestureReasoner->frameSkippingSampling;
-    while(true) {
+    while (true) {
         if (videoGestureReasoner->stopFlag) {
             LogDebug << "stop image resize and resnet detect";
             imageResizer->stopFlag = true;
@@ -235,18 +231,22 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
         }
 
         std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
-        for (iter = decodeFrameQueueMap.begin();iter != decodeFrameQueueMap.end();iter++) {
+        for (iter = decodeFrameQueueMap.begin(); iter != decodeFrameQueueMap.end(); iter++) {
             auto rtspIndex = iter->first;
             auto decodeFrameQueue = iter->second;
             if (decodeFrameQueue->IsEmpty()) {
                 continue;
             }
 
+            auto startTime = std::chrono::high_resolution_clock::now();
             ret = frameSkippingSampling->Process();
             if (ret != APP_ERR_OK) {
                 LogError << "FrameSkippingSampling failed";
                 continue;
             }
+            auto endTime = std::chrono::high_resolution_clock::now();
+            double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+            LogInfo << "frameSkippingSampling time: " << costMs;
 
             // get decode frame data
             std::shared_ptr<void> data = nullptr;
@@ -258,22 +258,30 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
             auto decodeFrame = std::make_shared<MxBase::MemoryData>();
             decodeFrame = std::static_pointer_cast<MxBase::MemoryData>(data);
 
-            if(frameSkippingSampling->stopFlag) {
+            if (frameSkippingSampling->stopFlag) {
+                APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
                 LogError << "resize frame and iter :";
                 // resize frame
                 MxBase::DvppDataInfo resizeFrame = {};
-                ret = imageResizer->ResizeFromMemory(*decodeFrame,
-                                                     videoFrameInfos[rtspIndex].width,
-                                                     videoFrameInfos[rtspIndex].height,
-                                                     modelWidth, modelHeight, resizeFrame);
+                auto startTime = std::chrono::high_resolution_clock::now();
+                AscendImageResizer::ImageResizerParma imageInitParma;
+                imageInitParma.originHeight = videoFrameInfos[rtspIndex].height;
+                imageInitParma.originWidth = videoFrameInfos[rtspIndex].width;
+                imageInitParma.resizeHeight = modelHeight;
+                imageInitParma.resizeWidth = modelWidth;
 
+                ret = imageResizer->ResizeFromMemory(*decodeFrame, imageInitParma, resizeFrame);
                 if (ret != APP_ERR_OK) {
                     LogError << "Resize image failed, ret = " << ret << " " << GetError(ret);
                     continue;
                 }
+                auto endTime = std::chrono::high_resolution_clock::now();
+                double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+                LogInfo << "resize frame time: " << costMs;
 
                 // resnet detect
                 std::vector<std::vector<MxBase::ClassInfo>> objInfos;
+                startTime = std::chrono::high_resolution_clock::now();
                 ret = resnetDetector->Detect(resizeFrame, objInfos,
                                              videoFrameInfos[rtspIndex].width,
                                              videoFrameInfos[rtspIndex].height);
@@ -281,15 +289,17 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                     LogError << "Resnet detect image failed, ret = " << ret << " " << GetError(ret) << ".";
                     continue;
                 }
+                endTime = std::chrono::high_resolution_clock::now();
+                costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
+                LogInfo << "resnet detect time: " << costMs;
 
                 // save detect result
                 ret = Util::SaveResult(decodeFrame, resizeFrame.frameId, objInfos,
                                        videoFrameInfos[rtspIndex].width, videoFrameInfos[rtspIndex].height, rtspIndex);
-            }
-
-            if (ret != APP_ERR_OK) {
-                LogError << "Save result failed, ret=" << ret << ".";
-                return;
+                if (ret != APP_ERR_OK) {
+                    LogError << "Save result failed, ret=" << ret << ".";
+                    return;
+                }
             }
         }
     }
@@ -329,7 +339,8 @@ APP_ERROR VideoGestureReasoner::CreateStreamPullerAndVideoDecoder(const Reasoner
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoGestureReasoner::CreateFrameSkippingSampling(const ReasonerConfig &config) {
+APP_ERROR VideoGestureReasoner::CreateFrameSkippingSampling(const ReasonerConfig &config)
+{
     APP_ERROR ret;
     frameSkippingSampling = std::make_shared<AscendFrameSkippingSampling::FrameSkippingSampling>();
     ret = frameSkippingSampling->Init(config.maxSamplingInterval, config.samplingInterval, config.deviceId);
@@ -386,7 +397,8 @@ APP_ERROR VideoGestureReasoner::DestroyStreamPullerAndVideoDecoder()
     return APP_ERR_OK;
 }
 
-APP_ERROR VideoGestureReasoner::DestroyFrameSkippingSampling() {
+APP_ERROR VideoGestureReasoner::DestroyFrameSkippingSampling()
+{
     APP_ERROR ret = frameSkippingSampling->DeInit();
     if (ret != APP_ERR_OK) {
         LogError << "FrameSkippingSampling DeInit failed.";
@@ -415,7 +427,8 @@ APP_ERROR VideoGestureReasoner::DestroyResnetDetector()
     return APP_ERR_OK;
 }
 
-void VideoGestureReasoner::ClearData() {
+const void VideoGestureReasoner::ClearData()
+{
     // stop and clear queue
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;
     for (iter = decodeFrameQueueMap.begin(); iter != decodeFrameQueueMap.end(); iter++) {

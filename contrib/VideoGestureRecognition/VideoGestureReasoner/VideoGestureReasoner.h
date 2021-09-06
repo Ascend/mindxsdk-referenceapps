@@ -51,10 +51,11 @@ private:
     static void GetDecodeVideoFrame(const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
                                     const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
                                     const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
-                                    const VideoGestureReasoner* videoGestureReasoner);
-    static void GetDetectionResult(const uint32_t &modelWidth, const uint32_t &modelHeight,
-                                               const uint32_t &popDecodeFrameWaitTime,
-                                               const VideoGestureReasoner* videoGestureReasoner);
+                                    const VideoGestureReasoner *videoGestureReasoner);
+    static void GetDetectionResult(const uint32_t &modelWidth,
+                                   const uint32_t &modelHeight,
+                                   const uint32_t &popDecodeFrameWaitTime,
+                                   const VideoGestureReasoner *videoGestureReasoner);
 
 private:
     APP_ERROR CreateStreamPullerAndVideoDecoder(const ReasonerConfig &config);
@@ -67,7 +68,7 @@ private:
     APP_ERROR DestroyImageResizer();
     APP_ERROR DestroyResnetDetector();
 
-    void ClearData();
+    const void ClearData();
 
 public:
     static bool forceStop;
@@ -75,6 +76,7 @@ public:
 private:
     uint32_t deviceId;
     bool stopFlag;
+    const uint32_t delayTime = 1000;
 
     uint32_t resnetModelWidth;
     uint32_t resnetModelHeight;
@@ -93,4 +95,4 @@ private:
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
 };
 
-#endif //MULTICHANNELVIDEODETECTION_VIDEOGESTUREREASONER_H
+#endif // MULTICHANNELVIDEODETECTION_VIDEOGESTUREREASONER_H
