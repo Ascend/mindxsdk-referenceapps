@@ -46,67 +46,67 @@ if __name__ == '__main__':
 
     # initialize the stream manager
     streamManager = StreamManagerApi()
-    streamState = streamManager.InitManager()
-    if streamState != 0:
-        errrorMessage = "Failed to init Stream manager, streamState=%s" % str(streamState)
+    stream_state = streamManager.InitManager()
+    if stream_state != 0:
+        errrorMessage = "Failed to init Stream manager, streamState=%s" % str(stream_state)
         raise AssertionError(errrorMessage)
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
         pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
-    pipelineString = pipeline
+    pipeline_string = pipeline
 
-    streamState = streamManager.CreateMultipleStreams(pipelineStr)
-    if streamState != 0:
-        errorMessage ="Failed to create Stream, streamState=%s" % str(streamState)
-        raise AssertionError(errorMessage)
+    stream_state = streamManager.CreateMultipleStreams(pipeline_string)
+    if stream_state != 0:
+        error_message ="Failed to create Stream, streamState=%s" % str(stream_state)
+        raise AssertionError(error_message)
 
     # prepare the input of the stream #begin
 
     # check the background img
-    dataInput = MxDataInput()
+    data_input = MxDataInput()
     if os.path.exists(sys.argv[1]) != 1:
-        errorMessage = 'The background image does not exist.'
-        raise AssertionError(errorMessage)
+        error_message = 'The background image does not exist.'
+        raise AssertionError(error_message)
     # check the portrait img
     if os.path.exists(sys.argv[2]) != 1:
         errorMessage = 'The portrait image does not exist.'
         raise AssertionError(errorMessage)
     with open(sys.argv[2], 'rb') as f:
-        dataInput.data = f.read()
+        data_input.data = f.read()
     # prepare the input of the stream #end
 
     # send the prepared data to the stream
-    uniqueId = streamManager.SendData(STREAM_NAME, IN_PLUGIN_ID, dataInput)
+    unique_id = streamManager.SendData(STREAM_NAME, IN_PLUGIN_ID, data_input)
 
-    if uniqueId < 0:
-        errorMessage = 'Failed to send data to stream.'
-        raise AssertionError(errorMessage)
+    if unique_id < 0:
+        error_message = 'Failed to send data to stream.'
+        raise AssertionError(error_message)
 
     # construct the resulted streamStateurned by the stream
-    keys = [b"mxpi_tensorinfer0"]
-    keyVec = StringVector()
-    for key in keys:
-        keyVec.push_back(key)
+    plugin_names = [b"mxpi_tensorinfer0"]
+    name_vector = StringVector()
+    for name in plugin_names:
+        name_vector.push_back(name)
     # get inference result
-    inferResult = streamManager.GetProtobuf(STREAM_NAME, 0, keyVec)
+    infer_result = streamManager.GetProtobuf(STREAM_NAME, 0, name_vector)
 
     # check whether the inferred results is valid or not
-    if len(inferResult) == 0:
-        errorMessage = 'unable to get effective infer results, please check the stream log for details'
-        raise IndexError(errorMessage)
-    if inferResult[0].errorCode != 0:
-        errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (
-        inferResult[0].errorCode, inferResult[0].messageName)
-        raise AssertionError(errorMessage)
+    if len(infer_result) == 0:
+        error_message = 'unable to get effective infer results, please check the stream log for details'
+        raise IndexError(error_message)
+    if infer_result[0].errorCode != 0:
+        error_message = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (
+        infer_result[0].errorCode, infer_result[0].messageName)
+        raise AssertionError(error_message)
 
     # change output tensors into numpy array based on the model's output shape.
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(inferResult[0].messageBuf)
+    tensor_package = MxpiDataType.MxpiTensorPackageList()
+    tensor_package.ParseFromString(infer_result[0].messageBuf)
 
     # converting the byte data into little-endian 32 bit float array ('<f4')
-    outputTensor = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
-    mask = np.clip((outputTensor * COLOR_DEPTH), 0, COLOR_DEPTH)
+    output_tensor = np.frombuffer(tensor_package.tensorPackageVec[0].tensorVec[0].dataStr, dtype='<f4')
+    mask = np.clip((output_tensor * COLOR_DEPTH), 0, COLOR_DEPTH)
     mask = mask.reshape(MODEL_OUTPUT_WIDTH, MODEL_OUTPUT_HEIGHT, MODEL_OUTPUT_DIMENSION)
     mask = mask[:, :, 0]
 
@@ -124,8 +124,8 @@ if __name__ == '__main__':
     background = cv2.resize(background, (width, height))
     # replace the background in portrait image with the new background
     mask = mask / COLOR_DEPTH
-    maskResize = cv2.resize(mask, (width, height))
-    maskExpansion = np.repeat(maskResize[..., np.newaxis], REPEAT_AXIS, REPEAT_TIMES)
-    result = np.uint8(background * maskExpansion + portrait * (1 - maskExpansion))
+    mask_resize = cv2.resize(mask, (width, height))
+    mask_expansion = np.repeat(mask_resize[..., np.newaxis], REPEAT_AXIS, REPEAT_TIMES)
+    result = np.uint8(background * mask_expansion + portrait * (1 - mask_expansion))
     # save the new image in current catalog
-    cv2.imwrite('result/result.jpg', result)
+    cv2.imwrite('result/result1.jpg', result)
