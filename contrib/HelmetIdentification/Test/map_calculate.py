@@ -120,9 +120,9 @@ def log_average_miss_rate(precision, fp_cumsum, num_images):
 
     # Use 9 evenly spaced reference points in log-space
     ref = np.logspace(-2.0, 0.0, num=9)
-    for i0, ref_i in enumerate(ref):
+    for index_i, ref_i in enumerate(ref):
         j = np.where(fppi_tmp <= ref_i)[-1][-1]
-        ref[i0] = mr_tmp[j]
+        ref[index_i] = mr_tmp[j]
 
     # log(0) is undefined, so we use the np.maximum(1e-10, ref)
     lam_rate = math.exp(np.mean(np.log(np.maximum(1e-10, ref))))
@@ -143,8 +143,8 @@ def is_float_between_0_and_1(value):
     check if the number is a float between 0.0 and 1.0
     """
     try:
-        Val = float(value)
-        if Val > 0.0 and Val < 1.0:
+        val_float = float(value)
+        if val_float > 0.0 and val_float < 1.0:
             return True
         else:
             return False
@@ -152,7 +152,7 @@ def is_float_between_0_and_1(value):
         return False
 
 
-def voc_ap(Rec, Prec):
+def voc_ap(rec_val, prec_val):
     """
     Calculate the AP given the recall and precision array
     1) We compute a version of the measured
@@ -160,20 +160,20 @@ def voc_ap(Rec, Prec):
     2) We compute the AP as the area
     under this curve by numerical integration.
     --- Official matlab code VOC2012---
-    Mrec=[0 ; rec ; 1];
-    mpre=[0 ; prec ; 0];
+    mrec_val=[0 ; rec_val ; 1];
+    mpre=[0 ; prec_val ; 0];
     for i=numel(mpre)-1:-1:1
             mpre(i)=max(mpre(i),mpre(i+1));
     end
-    i=find(Mrec(2:end)~=Mrec(1:end-1))+1;
-    Ap=sum((Mrec(i)-Mrec(i-1)).*mpre(i));
+    i=find(mrec_val(2:end)~=mrec_val(1:end-1))+1;
+    Ap=sum((mrec_val(i)-mrec_val(i-1)).*mpre(i));
     """
-    Rec.insert(0, 0.0)  # insert 0.0 at begining of list
-    Rec.append(1.0)  # insert 1.0 at end of list
-    Mrec = Rec[:]
-    Prec.insert(0, 0.0)  # insert 0.0 at begining of list
-    Prec.append(0.0)  # insert 0.0 at end of list
-    mpre = Prec[:]
+    rec_val.insert(0, 0.0)  # insert 0.0 at begining of list
+    rec_val.append(1.0)  # insert 1.0 at end of list
+    mrec_val = rec_val[:]
+    prec_val.insert(0, 0.0)  # insert 0.0 at begining of list
+    prec_val.append(0.0)  # insert 0.0 at end of list
+    mpre = prec_val[:]
     #  This part makes the precision monotonically decreasing
     #     (goes from the end to the beginning)
     #     matlab: for i=numel(mpre)-1:-1:1
@@ -182,18 +182,17 @@ def voc_ap(Rec, Prec):
     for cnt in range(len(mpre) - 2, -1, -1):
         mpre[cnt] = max(mpre[cnt], mpre[cnt + 1])
     #  This part creates a list of indexes where the recall changes
-    #     matlab: cnt=find(Mrec(2:end)~=Mrec(1:end-1))+1;
+    #     matlab: cnt=find(mrec_val(2:end)~=mrec_val(1:end-1))+1;
     j_list = []
-    for j in range(1, len(Mrec)):
-        if Mrec[j] != Mrec[j - 1]:
+    for j in range(1, len(mrec_val)):
+        if mrec_val[j] != mrec_val[j - 1]:
             j_list.append(j)  # if it was matlab would be j + 1
     #  The Average Precision (AP) is the area under the curve
     #     (numerical integration)
-    #     matlab: Ap=sum((Mrec(j)-Mrec(j-1)).*mpre(j));
-    Ap = 0.0
+    ave_precision = 0.0
     for k in j_list:
-        Ap += ((Mrec[k] - Mrec[k - 1]) * mpre[k])
-    return Ap, Mrec, mpre
+        ave_precision += ((mrec_val[k] - mrec_val[k - 1]) * mpre[k])
+    return ave_precision, mrec_val, mpre
 
 
 def file_lines_to_list(path):
@@ -274,29 +273,29 @@ def draw_plot_func(dictionary0, n_classes0, window_title0, plot_title0, x_label0
         #  Write number on side of bar
         Fig = plt.gcf()  # gcf - get current figure
         r = Fig.canvas.get_renderer()
-        for i0, val0 in enumerate(sorted_values):
-            fp_val = fp_sorted[i0]
-            tp_val = tp_sorted[i0]
+        for index_i, val0 in enumerate(sorted_values):
+            fp_val = fp_sorted[index_i]
+            tp_val = tp_sorted[index_i]
             fp_str_val = " " + str(fp_val)
             tp_str_val = fp_str_val + " " + str(tp_val)
             # trick to paint multicolor with offset:
             # first paint everything and then repaint the first number
-            t = plt.text(val0, i0, tp_str_val, color='forestgreen', va='center', fontweight='bold')
-            plt.text(val0, i0, fp_str_val, color='crimson', va='center', fontweight='bold')
-            if i0 == (len(sorted_values) - 1):  # largest bar
+            t = plt.text(val0, index_i, tp_str_val, color='forestgreen', va='center', fontweight='bold')
+            plt.text(val0, index_i, fp_str_val, color='crimson', va='center', fontweight='bold')
+            if index_i == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, Fig, plt.gca())
     else:
         plt.barh(range(n_classes0), sorted_values, color=plot_color0)
         #  Write number on side of bar
         Fig = plt.gcf()  # gcf - get current figure
         r = Fig.canvas.get_renderer()
-        for i0, val1 in enumerate(sorted_values):
+        for index_i, val1 in enumerate(sorted_values):
             str_val = " " + str(val1)  # add a space before
             if val1 < 1.0:
                 str_val = " {0:.2f}".format(val1)
-            t = plt.text(val1, i0, str_val, color=plot_color0, va='center', fontweight='bold')
+            t = plt.text(val1, index_i, str_val, color=plot_color0, va='center', fontweight='bold')
             # re-set axes to show number inside the figure
-            if i0 == (len(sorted_values) - 1):  # largest bar
+            if index_i == (len(sorted_values) - 1):  # largest bar
                 adjust_axes(r, t, Fig, plt.gca())
     # set window title
     Fig.canvas.set_window_title(window_title0)
