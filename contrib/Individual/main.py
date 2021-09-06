@@ -20,40 +20,40 @@ from StreamManagerApi import StreamManagerApi,MxDataInput
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = StreamManagerApi()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
 
     # create streams by pipeline config file
     with open("./pipeline/DectetionAndAttr.pipeline", 'rb') as f:
-        pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+        pipeline_str = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
 
     # Construct the input of the stream
-    dataInput = MxDataInput()
+    data_input = MxDataInput()
 
     # example
     with open("./test.jpg", 'rb') as f:
-        dataInput.data = f.read()
+        data_input.data = f.read()
 
     # Inputs data to a specified stream based on streamName.
-    streamName = b'classification+detection'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
-    if uniqueId < 0:
+    stream_name = b'classification+detection'
+    inplugin_id = 0
+    unique_id = streamManagerApi.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
+    if unique_id < 0:
         print("Failed to send data to stream.")
 
     # Obtain the inference result by specifying streamName and uniqueId.
-    inferResult = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
-    if inferResult.errorCode != 0:
+    infer_result = stream_manager_api.GetResultWithUniqueId(stream_name, unique_id, 3000)
+    if infer_result.errorCode != 0:
         print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
-            inferResult.errorCode, inferResult.data.decode()))
+            infer_result.errorCode, infer_result.data.decode()))
 
     # print the infer result
-    print(inferResult.data.decode())
+    print(infer_result.data.decode())
 
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()
