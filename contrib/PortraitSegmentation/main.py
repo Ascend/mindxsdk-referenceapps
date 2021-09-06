@@ -45,11 +45,11 @@ REPEAT_TIMES = 2
 if __name__ == '__main__':
 
     # initialize the stream manager
-    streamManager = StreamManagerApi()
-    stream_state = streamManager.InitManager()
+    stream_manager = StreamManagerApi()
+    stream_state = stream_manager.InitManager()
     if stream_state != 0:
-        errrorMessage = "Failed to init Stream manager, streamState=%s" % str(stream_state)
-        raise AssertionError(errrorMessage)
+        errror_message = "Failed to init Stream manager, streamState=%s" % str(stream_state)
+        raise AssertionError(errror_message)
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     stream_state = streamManager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
-        error_message ="Failed to create Stream, streamState=%s" % str(stream_state)
+        error_message = "Failed to create Stream, streamState=%s" % str(stream_state)
         raise AssertionError(error_message)
 
     # prepare the input of the stream #begin
@@ -70,8 +70,8 @@ if __name__ == '__main__':
         raise AssertionError(error_message)
     # check the portrait img
     if os.path.exists(sys.argv[2]) != 1:
-        errorMessage = 'The portrait image does not exist.'
-        raise AssertionError(errorMessage)
+        error_message = 'The portrait image does not exist.'
+        raise AssertionError(error_message)
     with open(sys.argv[2], 'rb') as f:
         data_input.data = f.read()
     # prepare the input of the stream #end
