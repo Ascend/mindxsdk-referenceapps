@@ -62,23 +62,23 @@ def cv_visualization(img, infer, shape, frame_id, channel_id):
 def get_inference_data(inference):
     """
     :param inference:output of sdk stream inference
-    :return:img0, img_list1, img0_shape, Frame_List0.frameId, Frame_List0.channelId
+    :return:img0, img_list1, img0_shape, frame_list0.frameId, frame_list0.channelId
     """
 
     # add inferennce data into DATA structure
     # Frame information structure
-    Frame_List0 = MxpiDataType.MxpiFrameInfo()
-    Frame_List0.ParseFromString(inference[0].messageBuf)
+    frame_list0 = MxpiDataType.MxpiFrameInfo()
+    frame_list0.ParseFromString(inference[0].messageBuf)
     # Target object structure
     object_list = MxpiDataType.MxpiObjectList()
     object_list.ParseFromString(inference[1].messageBuf)
     # Get target box information
     objectlist_data = object_list.objectVec
     # track structure
-    trackLet_list = MxpiDataType.MxpiTrackLetList()
-    trackLet_list.ParseFromString(inference[2].messageBuf)
+    tracklet_list = MxpiDataType.MxpiTrackLetList()
+    tracklet_list.ParseFromString(inference[2].messageBuf)
     # Obtain tracking information
-    trackLet_data = trackLet_list.trackLetVec
+    tracklet_data = tracklet_list.trackLetVec
     # image structure
     vision_list0 = MxpiDataType.MxpiVisionList()
     vision_list0.ParseFromString(inference[3].messageBuf)
@@ -100,11 +100,11 @@ def get_inference_data(inference):
         img_list = [round(objectlist_data[k].x0, 4), round(objectlist_data[k].x1, 4), round(objectlist_data[k].y0, 4),
                  round(objectlist_data[k].y1, 4),
                  round(objectlist_data[k].classVec[0].confidence, 4), objectlist_data[k].classVec[0].className,
-                 trackLet_data[k].trackId, trackLet_data[k].age]
+                 tracklet_data[k].trackId, tracklet_data[k].age]
         img_list1.append(img_list)
 
     # img0_shape is the original image size
     img0_shape = [vision_info0.heightAligned, vision_info0.widthAligned]
     # Output the results uniformly through the dictionary
-    dict_structure = [img0, img_list1, img0_shape, Frame_List0.frameId, Frame_List0.channelId]
+    dict_structure = [img0, img_list1, img0_shape, frame_list0.frameId, frame_list0.channelId]
     return dict_structure
