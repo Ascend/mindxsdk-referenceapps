@@ -41,9 +41,9 @@ def replace_scales(ori_list, scales_name):
     param:ori_list is the value of Resize.input
     """
     n_list = []
-    for ori_index, x in enumerate(ori_list):
+    for ori_index, ori_onde in enumerate(ori_list):
         if ori_index < 2:
-            n_list.append(x)
+            n_list.append(ori_onde)
         if ori_index == 3:
             n_list.append(scales_name)
     return n_list
