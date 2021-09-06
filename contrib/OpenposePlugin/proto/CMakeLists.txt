@@ -8,7 +8,8 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 
-set(MX_SDK_HOME /home/nku_wang1/MindX_SDK/mxVision)
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
+
 if (EXISTS ${MX_SDK_HOME})
     set(PROTOBUF_FOUND TRUE)
     set(PROTOBUF_PROTOC_EXECUTABLE ${MX_SDK_HOME}/opensource/bin/protoc)

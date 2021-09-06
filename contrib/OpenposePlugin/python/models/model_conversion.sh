@@ -15,8 +15,8 @@
 # limitations under the License.
 
 
-# 该脚本用来将pb模型文件转换成.om模型文件
-# This is used to convert pb model file to .om model file.
+# 该脚本用来将 pth 模型文件转换成.om模型文件
+# This is used to convert pth model file to .om model file.
 
 
 # 设置环境变量（请确认install_path路径是否正确）
@@ -29,8 +29,14 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
 
-# 执行，转换YOLOv3模型
-# Execute, transform YOLOv3 model.
+if [ ! -f "simplified-560-human-pose-estimation.onnx" ]
+then
+	# 将 pytorch .pth 权重文件转化成 .onnx 格式文件
+	# Convert pytorch model to onnx format.
+	python3.7 convert_to_onnx.py --checkpoint-path checkpoint_iter_370000.pth --output-name simplified-560-human-pose-estimation.onnx
+fi
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
-# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+# 执行，转换 Openpose 模型
+# Execute, transform Openpose model.
+
+atc --model=./simplified-560-human-pose-estimation.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg

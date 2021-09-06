@@ -8,41 +8,48 @@
             "next": "mxpi_imageresize0"
         },
         "mxpi_imageresize0": {
+            "props": {
+                "resizeType": "Resizer_KeepAspectRatio_Fit",
+                "resizeHeight": "560",
+                "resizeWidth": "560",
+                "interpolation": "2"
+            },
             "factory": "mxpi_imageresize",
             "next": "mxpi_tensorinfer0"
         },
         "mxpi_tensorinfer0": {
             "props": {
-                "modelPath": "./models/pose_deploy_368.om"
+                "modelPath": "./models/openpose_pytorch_560.om"
             },
             "factory": "mxpi_tensorinfer",
-            "next": "mxpi_openposeplugin0"
+            "next": "mxpi_openposepostprocess0"
         },
-        "mxpi_openposeplugin0": {
+        "mxpi_openposepostprocess0": {
             "props": {
                 "dataSource":"mxpi_tensorinfer0",
-                "descriptionMessage": "Openpose Modelinfo"
+                "inputHeight": "560",
+                "inputWidth": "560"
             },
-            "factory": "mxpi_openposeplugin",
+            "factory": "mxpi_openposepostprocess",
             "next": "mxpi_dataserialize0"
         },
         "mxpi_dataserialize0": {
             "props": {
-                "outputDataKeys": "mxpi_openposeplugin0"
+                "outputDataKeys": "mxpi_openposepostprocess0"
             },
             "factory": "mxpi_dataserialize",
             "next": "appsink0"
         },
         "appsrc0": {
             "props": {
-                "blocksize": "409600"
+                "blocksize": "405600"
             },
             "factory": "appsrc",
             "next": "mxpi_imagedecoder0"
         },
         "appsink0": {
             "props": {
-                "blocksize": "4096000"
+                "blocksize": "4056000"
             },
             "factory": "appsink"
         }
