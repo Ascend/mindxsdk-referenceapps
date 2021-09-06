@@ -16,18 +16,18 @@ import shutil
 import cv2
 
 with open("ImageSets/Main/test.txt", "r") as f:
-    data = f.readlines()
-    text_data = []
-    for line in data:
+    DATA = f.readlines()
+    TEXT_DATA = []
+    for line in DATA:
         line_new = line.strip('\n')  # Remove the newline character of each element in the list
-        text_data.append(line_new)
-    print(text_data)
+        TEXT_DATA.append(line_new)
+    print(TEXT_DATA)
 
-path = 'JPEGImages'
-save_path = 'TestImages'
+PATH = 'JPEGImages'
+SAVE_PATH = 'TestImages'
 
-for item in os.listdir(path):
+for item in os.listdir(PATH):
     file_name = item.split('.')[0]
-    if file_name in text_data:
-        img = cv2.imread(path + '/' + item)
-        cv2.imwrite(save_path + '/' + file_name + ".jpg", img)
+    if file_name in TEXT_DATA:
+        img = cv2.imread(PATH + '/' + item)
+        cv2.imwrite(SAVE_PATH + '/' + file_name + ".jpg", img)
