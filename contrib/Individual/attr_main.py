@@ -15,18 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from StreamManagerApi import StreamManagerApi,MxDataInput
 import os
+from StreamManagerApi import StreamManagerApi,MxDataInput
+
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = StreamManagerApi()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
     # create streams by pipeline config file
     with open("./pipeline/Attr_part.pipeline", 'rb') as f:
-        pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+        pipeline_str = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
     file_handle = open('img_result.txt', 'w')
