@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 
-def Visualization(img, infer, shape, frameId, channelId):
+def visualization(img, infer, shape, frameId, channelId):
     """
     :param img: Inference image
     :param infer: Inference result
@@ -86,7 +86,7 @@ def get_inference_data(inference):
     # Get picture information
     visionInfo0 = visionList0.visionVec[0].visionInfo
 
-    # cv2:YUV2BGR
+    # cv2 func YUV to BGR
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     img_yuv = np.frombuffer(visionData0, dtype=np.uint8)
