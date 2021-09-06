@@ -20,12 +20,12 @@
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
 
 namespace {
-    const float WEIGHT1 =  0.2009036;
-    const float WEIGHT2 =  0.2101715;
-    const float WEIGHT3 =  0.22262956;
-    const float WEIGHT4 =  0.22857015;
-    const float WEIGHT5 =  0.2479302;
-    const float WEIGHT6 =  0.00299916;    
+    const float W_T1 =  0.2009036;
+    const float W_T2 =  0.2101715;
+    const float W_T3 =  0.22262956;
+    const float W_T4 =  0.22857015;
+    const float W_T5 =  0.2479302;
+    const float W_T6 =  0.00299916;    
     auto g_uint8Deleter = [](uint8_t *p) {};
 }
 using namespace MxBase;
@@ -113,8 +113,8 @@ APP_ERROR RcfPostProcess::Process(const std::vector<MxBase::TensorBase> &inputs,
     auto ptr5 = (float*)resizeTensors[fifthtLayerIndex].GetBuffer();
     auto dst = (float*)output.GetBuffer();
     for (uint32_t i = 0; i < output.GetSize(); i++) {
-        float value = WEIGHT1 * ptr1[i] + WEIGHT2 * ptr2[i] + WEIGHT3 * ptr3[i] +
-                WEIGHT4 * ptr4[i] + WEIGHT5 * ptr5[i] + WEIGHT6;
+        float value = W_T1 * ptr1[i] + W_T2 * ptr2[i] + W_T3 * ptr3[i] +
+                W_T4 * ptr4[i] + W_T5 * ptr5[i] + W_T6;
         dst[i] = fastmath::sigmoid(value) * scale;
     }
     outputs.push_back(output);
