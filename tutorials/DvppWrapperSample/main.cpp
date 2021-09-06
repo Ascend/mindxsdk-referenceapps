@@ -29,6 +29,7 @@ namespace {
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
     const uint32_t MAX_FRAME_COUNT = 100;
     const uint32_t NUMBER_OF_VALID_PARAMETERS = 2;
+    const uint32_t ONE_MILLISECOND = 1000;
     const float ONE_QUARTER = 0.25;
     const float THREE_QUARTER = 0.75;
     uint32_t g_callTime = MAX_FRAME_COUNT;
@@ -36,7 +37,6 @@ namespace {
     string g_inputFilePath;
 
     std::shared_ptr<DvppWrapper> g_dvppCommon;
-    std::shared_ptr<DvppWrapper> dvppImageDecodeWrapper;
     DeviceContext deviceContext_ = {};
 
     APP_ERROR DeInitResource();
@@ -105,27 +105,33 @@ namespace {
 
     APP_ERROR TestVpcResizeNormal()
     {
+        // resize为venc编码的标准尺寸
         int resizeWidth = ENCODE_IMAGE_WIDTH;
         int resizeHeight = ENCODE_IMAGE_HEIGHT;
         std::string filepath = g_inputFilePath;
         DvppDataInfo input, output;
+        // resize前先进行解码操作
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to decode file : " << filepath;
             return ret;
         }
+        // 设置resize配置ResizeConfig
         ResizeConfig config;
         config.width = resizeWidth;
         config.height = resizeHeight;
+        // 调用VpcResize接口进行resize操作
         ret = g_dvppCommon->VpcResize(input, output, config);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to resize file : " << filepath;
             return ret;
         }
+        // 释放解码时的数据
         input.destory(input.data);
         // save pic
         DvppDataInfo dataInfo;
         const uint32_t level = 100;
+        //把结果进行编码，并拷贝到host侧
         ret = g_dvppCommon->DvppJpegEncode(output, dataInfo, level);
         if (ret != APP_ERR_OK) {
             return ret;
@@ -141,8 +147,10 @@ namespace {
         if (fp == nullptr) {
             LogError << "open file fail";
         }
+        // 保存结果
         fwrite(data.ptrData, 1, data.size, fp);
         fclose(fp);
+        // 退出前要把编码解码，以及device到host拷贝的数据消除
         output.destory(output.data);
         dataInfo.destory(dataInfo.data);
         data.free(data.ptrData);
@@ -153,11 +161,13 @@ namespace {
     {
         std::string filepath = g_inputFilePath;
         DvppDataInfo input;
+        // 抠图前先进行解码操作
         APP_ERROR ret = g_dvppCommon->DvppJpegDecode(filepath, input);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to decode file: " << filepath;
             return ret;
         }
+        // 设置抠图的区域，根据给定的图设置抠图的左上点(x0, y0)与右下点(x1, y1)
         DvppDataInfo output;
         uint32_t x0 = (uint32_t)input.width * ONE_QUARTER;
         uint32_t x1 = (uint32_t)input.width * THREE_QUARTER;
@@ -169,8 +179,9 @@ namespace {
             LogError << "Failed to crop file: " << filepath;
             return ret;
         }
+        // 释放解码时的数据
         input.destory(input.data);
-        // save pic
+        // 保存图片与释放资源
         DvppDataInfo encodeInfo;
         const uint32_t level = 100;
         ret = g_dvppCommon->DvppJpegEncode(output, encodeInfo, level);
@@ -195,8 +206,10 @@ namespace {
 
     APP_ERROR DvppEncodeInit()
     {
+        // 设置编码的配置
         VencConfig vencConfig = {};
         vencConfig.deviceId = ENCODE_TEST_DEVICE_ID;
+        // 设置编码宽高为1920X1080
         vencConfig.height = ENCODE_IMAGE_HEIGHT;
         vencConfig.width = ENCODE_IMAGE_WIDTH;
         vencConfig.keyFrameInterval = ENCODE_FRAME_INTERVAL;
@@ -209,16 +222,6 @@ namespace {
             return ret;
         }
 
-        dvppImageDecodeWrapper = make_shared<DvppWrapper>();
-        if (dvppImageDecodeWrapper == nullptr) {
-            LogError << "Failed to create dvppImageDecodeWrapper object";
-            return APP_ERR_COMM_INIT_FAIL;
-        }
-        ret = dvppImageDecodeWrapper->Init();
-        if (ret != APP_ERR_OK) {
-            LogError << "Failed to create dvppImageDecodeWrapper object";
-            return ret;
-        }
         LogInfo << "DvppCommon object initialized successfully";
         return APP_ERR_OK;
     }
@@ -240,6 +243,7 @@ namespace {
             LogError << "DvppJpegDecode error";
             return ret;
         }
+        // 定义编码完成时的回调函数
         using HandleFunction = std::function<void(std::shared_ptr<unsigned char>, unsigned int)>;
         HandleFunction func = [&endCond] (std::shared_ptr<uint8_t> data, uint32_t streamSize) {
             if (data.get() == nullptr) {
@@ -247,6 +251,7 @@ namespace {
             } else if (streamSize == 0) {
                 LogError << "data size is equal to 0";
             } else {
+                // 把当前帧编码完成时的数据从device侧拷贝到host侧，并写在文件里
                 MemoryData des(streamSize, MemoryData::MEMORY_HOST);
                 MemoryData src(static_cast<void*>(data.get()), streamSize, MemoryData::MEMORY_DVPP);
                 APP_ERROR ret = MemoryHelper::MxbsMallocAndCopy(des, src);
@@ -254,14 +259,16 @@ namespace {
                     LogError << "MxbsMallocAndCopy error";
                 }
                 fwrite(des.ptrData, 1, des.size, g_fp);
-
+                // 释放当前帧拷贝时的数据
                 des.free(des.ptrData);
             }
             g_callTime = g_callTime - 1;
             LogInfo << "call time : " << g_callTime;
         };
         for (uint32_t i = 0; i < MAX_FRAME_COUNT; i++) {
+            // 开始编码，并设置编码完成时的回调函数
             ret = g_dvppCommon->DvppVenc(imageDataInfo, &func);
+            usleep(ONE_MILLISECOND);
             if (ret != APP_ERR_OK) {
                 LogError << "DvppVenc error";
                 return ret;
@@ -269,7 +276,8 @@ namespace {
         }
 
         imageDataInfo.destory(imageDataInfo.data);
-        while (g_callTime <= 0) {;}
+        // 等待所有的回调结束
+        while (g_callTime > 0) {;}
         return APP_ERR_OK;
     }
 
@@ -278,14 +286,10 @@ namespace {
         if (g_dvppCommon.get() == nullptr) {
             return APP_ERR_COMM_FAILURE;
         }
+        // Venc去初始化
         APP_ERROR ret = g_dvppCommon->DeInitVenc();
         if (ret != APP_ERR_OK) {
             LogError << "Failed to initialize dvpp encode wrapper Deinit error";
-            return ret;
-        }
-        ret = dvppImageDecodeWrapper->DeInit();
-        if (ret != APP_ERR_OK) {
-            LogError << "Failed to initialize dvppImageDecodeWrapper Deinit error";
             return ret;
         }
         return APP_ERR_OK;
