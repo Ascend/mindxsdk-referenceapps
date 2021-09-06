@@ -17,7 +17,6 @@
 #include "AttrPostProcess.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/Maths/FastMath.h"
-#define ATTR_CONFIDENCE 0.5
 namespace MxBase {
     AttrPostProcess& AttrPostProcess::operator=(const AttrPostProcess &other)
     {
@@ -105,6 +104,7 @@ namespace MxBase {
             std::sort(idx.begin(), idx.end(), cmp);
 
             std::vector<ClassInfo> topkClassInfos = {};
+            double ATTR_CONFIDENCE = 0.5;
             for (uint32_t j = 0; j < topk; j++) {
                 ClassInfo clsInfo = {};
                 if (softmax[j] > ATTR_CONFIDENCE) {
