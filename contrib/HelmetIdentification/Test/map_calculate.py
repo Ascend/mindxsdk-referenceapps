@@ -230,7 +230,7 @@ def adjust_axes(r_val, t_val, fig0, axes0):
     Plot - adjust axes
     """
     # get text width for re-scaling
-    window_extent = t_val.get_window_extent(renderer=r.val)
+    window_extent = t_val.get_window_extent(renderer=r_val.val)
     text_width_inches = window_extent.width / fig0.dpi
     # get axis width in inches
     current_fig_width = fig0.get_figwidth()
