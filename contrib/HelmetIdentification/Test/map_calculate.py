@@ -207,22 +207,22 @@ def file_lines_to_list(path):
     return content
 
 
-def draw_text_in_image(draw_img, text0, pos, draw_color, line_width):
+def draw_text_in_image(draw_img, text0, pos, draw_color, linewidth):
     """
     Draws text in image
     """
     cv_font = cv2.FONT_HERSHEY_PLAIN
     font_scale = 1
     line_type = 1
-    bottomLeftCornerOfText = pos
+    bottom_left_corner_of_text = pos
     cv2.putText(draw_img, text0,
-                bottomLeftCornerOfText,
+                bottom_left_corner_of_text,
                 cv_font,
                 font_scale,
                 draw_color,
                 line_type)
     text_width, _ = cv2.getTextSize(text0, cv_font, font_scale, line_type)[0]
-    return draw_img, (line_width + text_width)
+    return draw_img, (linewidth + text_width)
 
 
 def adjust_axes(r_val, t_val, fig0, axes0):
