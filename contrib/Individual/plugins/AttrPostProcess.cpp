@@ -24,7 +24,7 @@ namespace MxBase {
             return *this;
         }
         ClassPostProcessBase::operator=(other);
-        softmax_ = other.softmax_;
+        softMax = other.softMax;
         classNum_ = other.classNum_;
         topK_ = other.topK_;
         return *this;
@@ -38,7 +38,7 @@ namespace MxBase {
             LogError << GetError(ret) << "Fail to superInit in ClassPostProcessBase.";
             return ret;
         }
-        configData_.GetFileValue("SOFTMAX", softmax_);
+        configData_.GetFileValue("SOFTMAX", softMax);
         configData_.GetFileValue("CLASS_NUM", classNum_);
         configData_.GetFileValue("TOP_K", topK_);
         LogDebug << "End to Init AttrPostProcess.";
@@ -93,7 +93,7 @@ namespace MxBase {
                 float value = *((float*)softmaxTensorPtr + i * classNum_ + j);
                 softmax.push_back(value);
             }
-            if (softmax_) {
+            if (softMax) {
                 fastmath::softmax(softmax);
             }
 
