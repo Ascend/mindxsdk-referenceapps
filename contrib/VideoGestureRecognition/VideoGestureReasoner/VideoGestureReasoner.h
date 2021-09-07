@@ -25,17 +25,17 @@
 #include "../ResnetDetector/ResnetDetector.h"
 
 struct ReasonerConfig {
-    uint32_t deviceId;
-    uint32_t baseVideoChannelId;
+    uint32_t deviceId = 0;
+    uint32_t baseVideoChannelId = 0;
     std::vector<std::string> rtspList;
     std::string resnetModelPath;
     std::string resnetLabelPath;
-    uint32_t resnetModelWidth;
-    uint32_t resnetModelHeight;
-    uint32_t maxDecodeFrameQueueLength;
-    uint32_t popDecodeFrameWaitTime;
-    uint32_t samplingInterval;
-    uint32_t maxSamplingInterval;
+    uint32_t resnetModelWidth = 0;
+    uint32_t resnetModelHeight = 0;
+    uint32_t maxDecodeFrameQueueLength = 0;
+    uint32_t popDecodeFrameWaitTime = 0;
+    uint32_t samplingInterval = 0;
+    uint32_t maxSamplingInterval = 0;
 };
 
 class VideoGestureReasoner {
@@ -46,6 +46,9 @@ public:
     APP_ERROR Init(const ReasonerConfig &initConfig);
     APP_ERROR DeInit();
     void Process();
+
+public:
+    static bool g_forceStop;
 
 private:
     static void GetDecodeVideoFrame(const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
@@ -68,20 +71,17 @@ private:
     APP_ERROR DestroyImageResizer();
     APP_ERROR DestroyResnetDetector();
 
-    const void ClearData();
-
-public:
-    static bool forceStop;
+    void ClearData();
 
 private:
-    uint32_t deviceId;
-    bool stopFlag;
+    uint32_t deviceId = 0;
+    bool stopFlag = true;
     const uint32_t delayTime = 1000;
 
-    uint32_t resnetModelWidth;
-    uint32_t resnetModelHeight;
-    uint32_t popDecodeFrameWaitTime;
-    uint32_t maxDecodeFrameQueueLength;
+    uint32_t resnetModelWidth = 0;
+    uint32_t resnetModelHeight = 0;
+    uint32_t popDecodeFrameWaitTime = 0;
+    uint32_t maxDecodeFrameQueueLength = 0;
 
 private:
     std::vector<AscendStreamPuller::VideoFrameInfo> videoFrameInfos;
@@ -95,4 +95,4 @@ private:
     std::map<int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> decodeFrameQueueMap;
 };
 
-#endif // MULTICHANNELVIDEODETECTION_VIDEOGESTUREREASONER_H
+#endif // VIDEOGESTUREREASONER_VIDEOGESTUREREASONER_H

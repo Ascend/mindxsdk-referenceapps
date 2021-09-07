@@ -24,10 +24,10 @@
 
 namespace AscendImageResizer {
     struct ImageResizerParma{
-        uint32_t originWidth;
-        uint32_t originHeight;
-        uint32_t resizeWidth;
-        uint32_t resizeHeight;
+        uint32_t originWidth = 0;
+        uint32_t originHeight = 0;
+        uint32_t resizeWidth = 0;
+        uint32_t resizeHeight = 0;
     };
 class ImageResizer {
 public:
@@ -44,14 +44,14 @@ public:
 
 public:
     // running flag
-    bool stopFlag;
+    bool stopFlag = false;
 
 private:
     // image processor
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
 
     // device id
-    uint32_t deviceId;
+    uint32_t deviceId = 0;
 };
 } // end AscendImageResizer
 #endif // MULTICHANNELVIDEODETECTION_IMAGERESIZER_H

@@ -50,16 +50,17 @@ public:
 
 private:
     // class num
-    static const uint32_t classLabelNum = 21;
+    static const uint32_t CLASS_LABEL_NUM = 21;
     // biases num
-    static const uint32_t biasesLabelNum = 18;
+    static const uint32_t BIASES_LABEL_NUM = 18;
     // resnet type
-    static const uint32_t resnetType = 3;
+    static const uint32_t RESNET_TYPE = 3;
     // anchor dim
-    static const uint32_t anchorDim = 3;
+    static const uint32_t ANCHOR_DIM = 3;
     // yuv type
     static const uint32_t YUV_BYTE_NU = 3;
     static const uint32_t YUV_BYTE_DE = 2;
+    static const uint32_t POINT_TYPE = 2;
 };
 
 #endif // MULTICHANNELVIDEODETECTION_UTIL_H

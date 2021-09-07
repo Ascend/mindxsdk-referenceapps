@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MULTICHANNELVIDEODETECTION_ResnetDETECTOR_H
-#define MULTICHANNELVIDEODETECTION_ResnetDETECTOR_H
+#ifndef VIDEOGESTURERECOGNITION_RESNET_DETECTOR_H
+#define VIDEOGESTURERECOGNITION_RESNET_DETECTOR_H
 
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
@@ -25,20 +25,20 @@
 
 namespace AscendResnetDetector {
 struct ResnetInitParam {
-    uint32_t deviceId;
+    uint32_t deviceId = 0;
     std::string labelPath;
-    bool checkTensor;
+    bool checkTensor = true;
     std::string modelPath;
-    uint32_t classNum;
-    uint32_t biasesNum;
+    uint32_t classNum = 0;
+    uint32_t biasesNum = 0;
     std::string biases;
     std::string objectnessThresh;
     std::string iouThresh;
     std::string scoreThresh;
-    uint32_t resnetType;
-    uint32_t modelType;
-    uint32_t inputType;
-    uint32_t anchorDim;
+    uint32_t resnetType = 0;
+    uint32_t modelType = 0;
+    uint32_t inputType = 0;
+    uint32_t anchorDim = 0;
 };
 
 class ResnetDetector {
@@ -50,8 +50,14 @@ public:
     APP_ERROR DeInit();
     APP_ERROR Process();
 
-    APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo, std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
-                     const uint32_t &imageOriginWidth, const uint32_t &imageOriginHeight);
+    APP_ERROR Detect(const MxBase::DvppDataInfo &imageInfo,
+                     std::vector<std::vector<MxBase::ClassInfo>> &objInfos,
+                     const uint32_t &imageOriginWidth,
+                     const uint32_t &imageOriginHeight);
+
+public:
+    // running flag
+    bool stopFlag = true;
 
 protected:
     static APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
@@ -64,12 +70,10 @@ private:
     APP_ERROR InitPostProcess(const ResnetInitParam &initParam);
     APP_ERROR TransformImageToTensor(const MxBase::DvppDataInfo &imageInfo, MxBase::TensorBase &tensor) const;
     APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
-    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs, const uint32_t &width,
-                          const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos);
-
-public:
-    // running flag
-    bool stopFlag;
+    APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
+                          const uint32_t &width,
+                          const uint32_t &height,
+                          std::vector<std::vector<MxBase::ClassInfo>> &objInfos);
 
 private:
     // model
@@ -80,11 +84,11 @@ private:
     std::map<int, std::string> labelMap = {};
 
     // device id
-    uint32_t deviceId;
+    uint32_t deviceId = 1;
     // network width
     uint32_t const netWidth = 256;
     // network height
     uint32_t const netHeight = 224;
 };
 } // end AscendResnetDetector
-#endif // MULTICHANNELVIDEODETECTION_ResnetDETECTOR_H
+#endif // VIDEOGESTURERECOGNITION_RESNET_DETECTOR_H

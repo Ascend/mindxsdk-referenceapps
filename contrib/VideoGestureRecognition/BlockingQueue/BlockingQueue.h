@@ -24,18 +24,18 @@
 
 template <typename T> class BlockingQueue {
 public:
-    explicit BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stopped_(false) {}
+    explicit BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : maxSize(maxSize), isStopped(false) {}
     ~BlockingQueue() = default;
 
     APP_ERROR Pop(T& item)
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
 
-        while (queue_.empty() && !is_stopped_) {
-            empty_cond_.wait(lock);
+        while (queue_.empty() && !isStopped) {
+            emptyCond.wait(lock);
         }
 
-        if (is_stopped_) {
+        if (isStopped) {
             return APP_ERR_QUEUE_STOPED;
         }
 
@@ -46,21 +46,21 @@ public:
             queue_.pop_front();
         }
 
-        full_cond_.notify_one();
+        fullCond.notify_one();
 
         return APP_ERR_OK;
     }
 
     APP_ERROR Pop(T& item, uint32_t timeOutMs)
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
         auto realTime = std::chrono::milliseconds(timeOutMs);
 
-        while (queue_.empty() && !is_stopped_) {
-            empty_cond_.wait_for(lock, realTime);
+        while (queue_.empty() && !isStopped) {
+            emptyCond.wait_for(lock, realTime);
         }
 
-        if (is_stopped_) {
+        if (isStopped) {
             return APP_ERR_QUEUE_STOPED;
         }
 
@@ -71,52 +71,52 @@ public:
             queue_.pop_front();
         }
 
-        full_cond_.notify_one();
+        fullCond.notify_one();
 
         return APP_ERR_OK;
     }
 
     APP_ERROR Push(const T& item, bool isWait = false)
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
 
-        while (queue_.size() >= max_size_ && isWait && !is_stopped_) {
-            full_cond_.wait(lock);
+        while (queue_.size() >= maxSize && isWait && !isStopped) {
+            fullCond.wait(lock);
         }
 
-        if (is_stopped_) {
+        if (isStopped) {
             return APP_ERR_QUEUE_STOPED;
         }
 
-        if (queue_.size() >= max_size_) {
+        if (queue_.size() >= maxSize) {
             return APP_ERR_QUEUE_FULL;
         }
         queue_.push_back(item);
 
-        empty_cond_.notify_one();
+        emptyCond.notify_one();
 
         return APP_ERR_OK;
     }
 
     APP_ERROR Push_Front(const T &item, bool isWait = false)
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
 
-        while (queue_.size() >= max_size_ && isWait && !is_stopped_) {
-            full_cond_.wait(lock);
+        while (queue_.size() >= maxSize && isWait && !isStopped) {
+            fullCond.wait(lock);
         }
 
-        if (is_stopped_) {
+        if (isStopped) {
             return APP_ERR_QUEUE_STOPED;
         }
 
-        if (queue_.size() >= max_size_) {
+        if (queue_.size() >= maxSize) {
             return APP_ERR_QUEUE_FULL;
         }
 
         queue_.push_front(item);
 
-        empty_cond_.notify_one();
+        emptyCond.notify_one();
 
         return APP_ERR_OK;
     }
@@ -124,28 +124,28 @@ public:
     void Stop()
     {
         {
-            std::unique_lock<std::mutex> lock(mutex_);
-            is_stopped_ = true;
+            std::unique_lock<std::mutex> lock(mutex);
+            isStopped = true;
         }
 
-        full_cond_.notify_all();
-        empty_cond_.notify_all();
+        fullCond.notify_all();
+        emptyCond.notify_all();
     }
 
     void Restart()
     {
         {
-            std::unique_lock<std::mutex> lock(mutex_);
-            is_stopped_ = false;
+            std::unique_lock<std::mutex> lock(mutex);
+            isStopped = false;
         }
     }
 
 // if the queue is stopped ,need call this function to release the unprocessed items
     std::list<T> GetRemainItems()
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
 
-        if (!is_stopped_) {
+        if (!isStopped) {
             return std::list<T>();
         }
 
@@ -154,7 +154,7 @@ public:
 
     APP_ERROR GetBackItem(T &item)
     {
-        if (is_stopped_) {
+        if (isStopped) {
             return APP_ERR_QUEUE_STOPED;
         }
 
@@ -173,34 +173,34 @@ public:
 
     APP_ERROR IsFull()
     {
-        std::unique_lock<std::mutex> lock(mutex_);
-        return queue_.size() >= max_size_;
+        std::unique_lock<std::mutex> lock(mutex);
+        return queue_.size() >= maxSize;
     }
 
-    const int GetSize()
+    int GetSize() const
     {
         return queue_.size();
     }
 
     std::mutex *GetLock()
     {
-        return &mutex_;
+        return &mutex;
     }
 
-    const void Clear()
+    void Clear()
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> lock(mutex);
         queue_.clear();
     }
 
 private:
     std::list<T> queue_;
-    std::mutex mutex_;
-    std::condition_variable empty_cond_;
-    std::condition_variable full_cond_;
-    uint32_t max_size_;
+    std::mutex mutex;
+    std::condition_variable emptyCond;
+    std::condition_variable fullCond;
+    uint32_t maxSize;
 
-    bool is_stopped_;
+    bool isStopped;
 
 private:
     static const int DEFAULT_MAX_QUEUE_SIZE = 256;

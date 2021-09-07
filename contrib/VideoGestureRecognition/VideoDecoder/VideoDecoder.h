@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MULTICHANNELVIDEODETECTION_VIDEODECODER_H
-#define MULTICHANNELVIDEODETECTION_VIDEODECODER_H
+#ifndef VIDEOGESTUREREASONER_VIDEODECODER_H
+#define VIDEOGESTUREREASONER_VIDEODECODER_H
 
 #include "MxBase/ErrorCode/ErrorCode.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
@@ -24,10 +24,10 @@
 
 namespace AscendVideoDecoder {
 struct DecoderInitParam {
-    uint32_t deviceId;
-    uint32_t channelId;
-    uint32_t inputVideoWidth;
-    uint32_t inputVideoHeight;
+    uint32_t deviceId = 0;
+    uint32_t channelId = 0;
+    uint32_t inputVideoWidth = 0;
+    uint32_t inputVideoHeight = 0;
     MxBase::MxbaseStreamFormat inputVideoFormat;
     MxBase::MxbasePixelFormat outputImageFormat;
 };
@@ -44,14 +44,14 @@ public:
                      const uint32_t &width,
                      const uint32_t &height, void *userData);
 
+public:
+    // running flag
+    bool stopFlag = true;
+
 private:
     APP_ERROR InitDvppWrapper(const DecoderInitParam &initParam);
     static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer,
                                          MxBase::DvppDataInfo &inputDataInfo, void *userData);
-
-public:
-    // running flag
-    bool stopFlag;
 
 private:
     // channel id
@@ -71,4 +71,4 @@ private:
 };
 } // end AscendVideoDecoder
 
-#endif // MULTICHANNELVIDEODETECTION_VIDEODECODER_H
+#endif // VIDEOGESTUREREASONER_VIDEODECODER_H

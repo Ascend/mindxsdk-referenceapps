@@ -41,11 +41,11 @@ namespace {
 static void SigHandler(int signal)
 {
     if (signal == SIGINT) {
-        VideoGestureReasoner::forceStop = true;
+        VideoGestureReasoner::g_forceStop = true;
         LogInfo << "Force quit VideoGestureReasoner.";
     }
 }
-static APP_ERROR process(std::vector<std::string> rtspList)
+static APP_ERROR Process(std::vector<std::string> rtspList)
 {
     auto videoGestureReasoner = std::make_shared<VideoGestureReasoner>();
     ReasonerConfig reasonerConfig;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     std::string rtspPrefix = "rtsp";
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], rtspPrefix.c_str()) == 0) {
-            auto rtspIndex = strtok(argv[i], reinterpret_cast<const char *>('='));
+            auto rtspIndex = strtok(argv[i], "=");
             auto rtspStream = strtok(NULL, "=");
 
             LogInfo << rtspIndex << " = " << rtspStream;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
         rtspList.emplace_back("#{rtsp流地址}");
     }
 
-    ///=== resource init ===///
+    /// === resource init === ///
     // init devices
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     }
 
     // inference start
-    ret = process(rtspList);
+    ret = Process(rtspList);
     if (ret != APP_ERR_OK) {
         LogError << "inference start failed";
         return ret;

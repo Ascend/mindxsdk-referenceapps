@@ -36,13 +36,13 @@ namespace AscendFrameSkippingSampling {
         bool stopFlag;
 
     private:
-        static uint32_t samplingCounter;
+        static uint32_t g_samplingCounter;
         // device id
-        uint32_t deviceId;
+        uint32_t deviceId = 0;
         // Sampling interval
-        uint32_t samplingInterval;
+        uint32_t samplingInterval = 0;
         // max Sampling interval
-        uint32_t maxSamplingInterval;
+        uint32_t maxSamplingInterval = 0;
     };
 } // end AscendFrameSkippingSampling
 #endif // MULTICHANNELVIDEODETECTION_FRAMESKIPPINGSAMPLING_H

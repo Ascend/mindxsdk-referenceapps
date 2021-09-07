@@ -35,16 +35,16 @@ void Util::InitResnetParam(AscendResnetDetector::ResnetInitParam &initParam,
     initParam.labelPath = labelPath;
     initParam.checkTensor = true;
     initParam.modelPath = modelPath;
-    initParam.classNum = classLabelNum;
-    initParam.biasesNum = biasesLabelNum;
+    initParam.classNum = CLASS_LABEL_NUM;
+    initParam.biasesNum = BIASES_LABEL_NUM;
     initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
     initParam.objectnessThresh = "0.001";
     initParam.iouThresh = "0.5";
     initParam.scoreThresh = "0.001";
-    initParam.resnetType = resnetType;
+    initParam.resnetType = RESNET_TYPE;
     initParam.modelType = 0;
     initParam.inputType = 0;
-    initParam.anchorDim = anchorDim;
+    initParam.anchorDim = ANCHOR_DIM;
 }
 
 bool Util::IsExistDataInQueueMap(const std::map<int,
@@ -66,8 +66,7 @@ APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const
 {
     MxBase::MemoryData memoryDst(resultInfo->size, MxBase::MemoryData::MEMORY_HOST_NEW);
     APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, *resultInfo);
-    if (ret != APP_ERR_OK)
-    {
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
@@ -93,7 +92,7 @@ APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const
         const uint32_t lineType = 8;
         const float fontScale = 2.0;
 
-        cv::putText(imgBgr, info[i].className, cv::Point(videoHeight / 2, videoWidth / 2),
+        cv::putText(imgBgr, info[i].className, cv::Point(videoHeight / POINT_TYPE, videoWidth / POINT_TYPE),
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
 
         // write result

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MULTICHANNELVIDEODETECTION_STREAMPULLER_H
-#define MULTICHANNELVIDEODETECTION_STREAMPULLER_H
+#ifndef VIDEOGESTUREREASONER_STREAMPULLER_H
+#define VIDEOGESTUREREASONER_STREAMPULLER_H
 
 #include <MxBase/DvppWrapper/DvppWrapper.h>
 #include "MxBase/MemoryHelper/MemoryHelper.h"
@@ -28,10 +28,10 @@ extern "C" {
 
 namespace AscendStreamPuller {
 struct VideoFrameInfo {
-    uint32_t width;
-    uint32_t height;
+    uint32_t width = 0;
+    uint32_t height = 0;
     // video stream channel id
-    int32_t videoStream;
+    int32_t videoStream = 0;
     // video format
     MxBase::MxbaseStreamFormat format;
     // video source
@@ -47,18 +47,18 @@ public:
     APP_ERROR Process();
     MxBase::MemoryData GetNextFrame();
 
-    const VideoFrameInfo GetFrameInfo();
+    VideoFrameInfo GetFrameInfo() const;
+
+public:
+    // running flag
+    bool stopFlag = true;
 
 private:
     APP_ERROR TryToStartStream();
     APP_ERROR StartStream();
     APP_ERROR CreateFormatContext();
     APP_ERROR GetStreamInfo();
-    const void PullStreamDataLoop();
-
-public:
-    // running flag
-    bool stopFlag;
+    void PullStreamDataLoop();
 
 private:
     // rtsp stream source
@@ -74,4 +74,4 @@ private:
 };
 } // end AscendStreamPuller
 
-#endif // MULTICHANNELVIDEODETECTION_STREAMPULLER_H
+#endif // VIDEOGESTUREREASONER_STREAMPULLER_H

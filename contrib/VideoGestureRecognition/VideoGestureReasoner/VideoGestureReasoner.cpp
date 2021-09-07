@@ -19,7 +19,7 @@
 #include "MxBase/DeviceManager/DeviceManager.h"
 
 // init static variable
-bool VideoGestureReasoner::forceStop = false;
+bool VideoGestureReasoner::g_forceStop = false;
 
 APP_ERROR VideoGestureReasoner::Init(const ReasonerConfig &initConfig)
 {
@@ -106,7 +106,7 @@ void VideoGestureReasoner::Process()
         }
 
         // force stop case
-        if (VideoGestureReasoner::forceStop) {
+        if (VideoGestureReasoner::g_forceStop) {
             LogInfo << "Force stop VideoGestureReasoner.";
             stopFlag = true;
         }
@@ -156,7 +156,8 @@ APP_ERROR VideoGestureReasoner::DeInit()
 /// ========== static Method ========== ///
 void VideoGestureReasoner::GetDecodeVideoFrame(const std::shared_ptr<AscendStreamPuller::StreamPuller> &streamPuller,
                                                const std::shared_ptr<AscendVideoDecoder::VideoDecoder> &videoDecoder,
-                                               const std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> &decodeFrameQueue,
+                                               const std::shared_ptr<BlockingQueue
+                                                       <std::shared_ptr<void>>> &decodeFrameQueue,
                                                const VideoGestureReasoner *videoGestureReasoner)
 {
     // set device
@@ -238,15 +239,11 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                 continue;
             }
 
-            auto startTime = std::chrono::high_resolution_clock::now();
             ret = frameSkippingSampling->Process();
             if (ret != APP_ERR_OK) {
                 LogError << "FrameSkippingSampling failed";
                 continue;
             }
-            auto endTime = std::chrono::high_resolution_clock::now();
-            double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-            LogInfo << "frameSkippingSampling time: " << costMs;
 
             // get decode frame data
             std::shared_ptr<void> data = nullptr;
@@ -263,7 +260,6 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                 LogError << "resize frame and iter :";
                 // resize frame
                 MxBase::DvppDataInfo resizeFrame = {};
-                auto startTime = std::chrono::high_resolution_clock::now();
                 AscendImageResizer::ImageResizerParma imageInitParma;
                 imageInitParma.originHeight = videoFrameInfos[rtspIndex].height;
                 imageInitParma.originWidth = videoFrameInfos[rtspIndex].width;
@@ -275,13 +271,9 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                     LogError << "Resize image failed, ret = " << ret << " " << GetError(ret);
                     continue;
                 }
-                auto endTime = std::chrono::high_resolution_clock::now();
-                double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-                LogInfo << "resize frame time: " << costMs;
 
                 // resnet detect
                 std::vector<std::vector<MxBase::ClassInfo>> objInfos;
-                startTime = std::chrono::high_resolution_clock::now();
                 ret = resnetDetector->Detect(resizeFrame, objInfos,
                                              videoFrameInfos[rtspIndex].width,
                                              videoFrameInfos[rtspIndex].height);
@@ -289,9 +281,6 @@ void VideoGestureReasoner::GetDetectionResult(const uint32_t &modelWidth,
                     LogError << "Resnet detect image failed, ret = " << ret << " " << GetError(ret) << ".";
                     continue;
                 }
-                endTime = std::chrono::high_resolution_clock::now();
-                costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-                LogInfo << "resnet detect time: " << costMs;
 
                 // save detect result
                 ret = Util::SaveResult(decodeFrame, resizeFrame.frameId, objInfos,
@@ -427,7 +416,7 @@ APP_ERROR VideoGestureReasoner::DestroyResnetDetector()
     return APP_ERR_OK;
 }
 
-const void VideoGestureReasoner::ClearData()
+void VideoGestureReasoner::ClearData()
 {
     // stop and clear queue
     std::_Rb_tree_const_iterator<std::pair<const int, std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>>> iter;

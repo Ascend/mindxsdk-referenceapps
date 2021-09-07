@@ -18,7 +18,7 @@
 #include "MxBase/Log/Log.h"
 
 namespace AscendFrameSkippingSampling {
-    uint32_t FrameSkippingSampling::samplingCounter = 0;
+    uint32_t FrameSkippingSampling::g_samplingCounter = 0;
 
     APP_ERROR FrameSkippingSampling::Init(uint32_t maxSamplingInterval,
                                           uint32_t samplingInterval,
@@ -53,10 +53,10 @@ namespace AscendFrameSkippingSampling {
             LogError << "sample interval exceeding the upper limit";
             return APP_ERR_COMM_FAILURE;
         }
-        if (samplingCounter % samplingInterval == 0) {
+        if (g_samplingCounter % samplingInterval == 0) {
             stopFlag = true;
         }
-        samplingCounter += 1;
+        g_samplingCounter += 1;
         return APP_ERR_OK;
     }
 }

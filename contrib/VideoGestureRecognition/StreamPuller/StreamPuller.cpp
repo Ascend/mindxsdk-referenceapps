@@ -113,7 +113,7 @@ MxBase::MemoryData StreamPuller::GetNextFrame()
     return {nullptr, 0, MxBase::MemoryData::MEMORY_HOST_NEW, deviceId};
 }
 
-const VideoFrameInfo StreamPuller::GetFrameInfo()
+VideoFrameInfo StreamPuller::GetFrameInfo() const
 {
     return frameInfo;
 }
@@ -235,7 +235,7 @@ APP_ERROR StreamPuller::GetStreamInfo()
     return APP_ERR_OK;
 }
 
-const void StreamPuller::PullStreamDataLoop()
+void StreamPuller::PullStreamDataLoop()
 {
     while (true) {
         if (stopFlag || formatContext == nullptr) {

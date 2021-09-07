@@ -225,8 +225,10 @@ APP_ERROR ResnetDetector::Inference(const std::vector<MxBase::TensorBase> &input
     return APP_ERR_OK;
 }
 
-APP_ERROR ResnetDetector::PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs, const uint32_t &width,
-                                      const uint32_t &height, std::vector<std::vector<MxBase::ClassInfo>> &objInfos)
+APP_ERROR ResnetDetector::PostProcess(const std::vector<MxBase::TensorBase> &modelOutputs,
+                                      const uint32_t &width,
+                                      const uint32_t &height,
+                                      std::vector<std::vector<MxBase::ClassInfo>> &objInfos)
 {
     MxBase::ResizedImageInfo imageInfo = {};
     imageInfo.widthOriginal = width;
