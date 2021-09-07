@@ -39,7 +39,7 @@ namespace MxBase {
 
     private:
         uint32_t classNum_ = 0;
-        bool softmax_ = true;
+        bool softMax = true;
         uint32_t topK_ = 40;
     };
 
