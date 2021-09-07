@@ -318,17 +318,17 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
             std::vector<size_t> nearest_index {};
             auto it = std::find_if(std::begin(non_zero_coordinates) + j + 1, std::end(non_zero_coordinates),
                                    [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
-                float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
-                        powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+                    float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) + 
+		        powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
+                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
 		});
             while (it != std::end(non_zero_coordinates)) {
                 nearest_index.push_back(std::distance(std::begin(non_zero_coordinates) + j + 1, it) + j + 1);
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
-                    float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
+                        float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+                        return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
 		    });
             }
             for (int ii = 0; ii < nearest_index.size(); ii++) {
