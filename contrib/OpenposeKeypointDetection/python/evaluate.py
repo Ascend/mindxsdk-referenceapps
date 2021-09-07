@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import json
 from enum import Enum
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 
 class CocoPart(Enum):
@@ -48,9 +48,10 @@ class CocoPart(Enum):
 
 
 # Generate detect result in coco format
-def generateEvalResult(person_list):
+def generate_eval_result(person_list):
     coco_keypoints = []
     scores = []
+    coor_bias = 0.5
     for person in person_list:
         skeletons = person.skeletonInfoVec
         person_score = person.score - 1 # -1 for 'neck'
@@ -63,18 +64,18 @@ def generateEvalResult(person_list):
             part_idx2 = skele.cocoSkeletonIndex2 # two end points of a skeleton
             if part_idx1 not in seen_idx:
                 seen_idx.append(part_idx1)
-                cx = skele.x0 + 0.5
-                cy = skele.y0 + 0.5
-                keypoints[to_coco_map[part_idx1] * 3 + 0] = cx
-                keypoints[to_coco_map[part_idx1] * 3 + 1] = cy
+                center_x = skele.x0 + coor_bias
+                center_y = skele.y0 + coor_bias
+                keypoints[to_coco_map[part_idx1] * 3 + 0] = center_x
+                keypoints[to_coco_map[part_idx1] * 3 + 1] = center_y
                 keypoints[to_coco_map[part_idx1] * 3 + 2] = 1
 
             if part_idx2 not in seen_idx:
                 seen_idx.append(part_idx2)
-                cx = skele.x1 + 0.5
-                cy = skele.y1 + 0.5
-                keypoints[to_coco_map[part_idx2] * 3 + 0] = cx
-                keypoints[to_coco_map[part_idx2] * 3 + 1] = cy
+                center_x = skele.x1 + coor_bias
+                center_y = skele.y1 + coor_bias
+                keypoints[to_coco_map[part_idx2] * 3 + 0] = center_x
+                keypoints[to_coco_map[part_idx2] * 3 + 1] = center_y
                 keypoints[to_coco_map[part_idx2] * 3 + 2] = 1
         coco_keypoints.append(keypoints)
         scores.append(person_score)
@@ -145,14 +146,14 @@ if __name__ == '__main__':
         # Get person list data
         result_personlist = mxpiOpenposeProto.MxpiPersonList()
         result_personlist.ParseFromString(infer_result[0].messageBuf)
-        person_list = result_personlist.personInfoVec
-        coco_keypoints, scores = generateEvalResult(person_list)
-        for idx in range(len(coco_keypoints)):
+        detect_person_list = result_personlist.personInfoVec
+        eval_coco_keypoints, eval_scores = generate_eval_result(detect_person_list)
+        for idx, _ in enumerate(eval_coco_keypoints):
             coco_result.append({
                 'image_id': image_id,
                 'category_id': 1,  # person
-                'keypoints': coco_keypoints[idx],
-                'score': scores[idx]
+                'keypoints': eval_coco_keypoints[idx],
+                'score': eval_scores[idx]
             })
     with open(detect_file, 'w') as f:
         json.dump(coco_result, f, indent=4)

@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-import os
-import numpy as np
-import cv2
-from enum import Enum
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../proto")
 import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
+import os
+from enum import Enum
+import numpy as np
+import cv2
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 class CocoPart(Enum):
@@ -57,7 +57,7 @@ COCO_COLORS = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0], [170, 25
 
 
 # draw person keypoints and skeletons
-def drawPoseBbox(npimg, person_list, imgcopy=False):
+def draw_pose_bbox(npimg, person_list, imgcopy=False):
     if imgcopy:
         npimg = np.copy(npimg)
     joints, xcenter = [], []
@@ -136,9 +136,9 @@ if __name__ == '__main__':
     print("KEY: {}".format(str(infer_result[0].messageName)))
     result_personlist = mxpiOpenposeProto.MxpiPersonList()
     result_personlist.ParseFromString(infer_result[0].messageBuf)
-    person_list = result_personlist.personInfoVec
+    detect_person_list = result_personlist.personInfoVec
     img = cv2.imread(file_name)
-    image_show = drawPoseBbox(img, person_list)[0]
+    image_show = draw_pose_bbox(img, detect_person_list)[0]
     cv2.imwrite(file_name.split('.')[0] + "_detect_result.jpg", image_show)
 
     # destroy streams

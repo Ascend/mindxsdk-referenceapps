@@ -8,20 +8,19 @@ import onnxsim
 from torch.autograd import Variable
 
 def convert_to_onnx(net, output_name):
-    input = Variable(torch.randn(1, 3, 560, 560))
+    net_input = Variable(torch.randn(1, 3, 560, 560))
     input_names = ['data']
     output_names = ['stage_0_output_1_heatmaps', 'stage_0_output_0_pafs',
                     'stage_1_output_1_heatmaps', 'stage_1_output_0_pafs']
 
-    torch.onnx.export(net, input, output_name, verbose=True, opset_version=11, input_names=input_names, output_names=output_names)
+    torch.onnx.export(net, net_input, output_name, verbose=True, opset_version=11, input_names=input_names, output_names=output_names)
     print("====> check onnx model...")
-    import onnx
+
     model = onnx.load(output_name)
     onnx.checker.check_model(model)
 
     print("====> Simplifying...")
     model_opt, check = onnxsim.simplify(output_name)
-    # print("model_opt", model_opt)
     onnx.save(model_opt, output_name)
     print("onnx model simplify Ok!")
 
@@ -33,8 +32,8 @@ if __name__ == '__main__':
                         help='name of output model in ONNX format')
     args = parser.parse_args()
 
-    net = PoseEstimationWithMobileNet()
+    net_trained = PoseEstimationWithMobileNet()
     checkpoint = torch.load(args.checkpoint_path, map_location=torch.device('cpu'))
-    load_state(net, checkpoint)
+    load_state(net_trained, checkpoint)
 
-    convert_to_onnx(net, args.output_name)
+    convert_to_onnx(net_trained, args.output_name)

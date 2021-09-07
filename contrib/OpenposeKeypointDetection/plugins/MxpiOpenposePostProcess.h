@@ -30,21 +30,20 @@
 * @brief Definition of MxpiOpenposePostProcess class.
 */
 
-namespace {
-    struct PartPair {
-        float score;
-        int part_idx1;
-        int part_idx2;
-        int idx1;
-        int idx2;
-        std::vector<float> coord1;
-        std::vector<float> coord2;
-        float score1;
-        float score2;
-    };
-}
 
 namespace MxPlugins {
+    struct PartPair {
+	float score;
+	int partIdx1;
+	int partIdx2;
+	int idx1;
+	int idx2;
+	std::vector<float> coord1;
+	std::vector<float> coord2;
+	float score1;
+	float score2;
+    };
+
     class MxpiOpenposePostProcess : public MxTools::MxPluginBase {
     public:
         /**
@@ -75,7 +74,8 @@ namespace MxPlugins {
 
         /**
          * Overall process to generate all person skeleton information
-         * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data including origin size of input image
+         * @param image_decoder_visionListSptr - Source MxpiVisionList containing 
+	 * vision data including origin size of input image
          * @param src_mxpi_tensor_package - Source MxpiTensorPackage containing heatmap data
          * @param dst_mxpi_person_list - Target MxpiPersonList containing detection result list
          * @return APP_ERROR
@@ -162,8 +162,7 @@ namespace MxPlugins {
          * @param current_pair - Skeleton to be merged
          * @return True if merged successfully, otherwise false
          */
-        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> >& person_list,
-                                    PartPair current_pair);
+        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> >& person_list, PartPair current_pair);
 
         /**
          * @brief Calculate score of a person according to its skeletons
@@ -181,7 +180,6 @@ namespace MxPlugins {
         APP_ERROR GenerateMxpiOutput(const std::vector<std::vector<PartPair> >& person_list,
                                       mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list);
 
-
     private:
         APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string plugin_name,
                                    const MxTools::MxpiErrorInfo mxpi_error_info);
@@ -192,4 +190,4 @@ namespace MxPlugins {
         std::ostringstream ErrorInfo_;
     };
 }
-#endif //OPENPOSEPOSTPROCESS_MXPIOPENPOSEPOSTPROCESS_H
+#endif // OPENPOSEPOSTPROCESS_MXPIOPENPOSEPOSTPROCESS_H
