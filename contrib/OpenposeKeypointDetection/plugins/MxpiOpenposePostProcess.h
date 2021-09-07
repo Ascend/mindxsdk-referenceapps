@@ -30,10 +30,9 @@
 * @brief Definition of MxpiOpenposePostProcess class.
 */
 
-
 namespace MxPlugins {
     struct PartPair {
-	float score;
+        float score;
 	int partIdx1;
 	int partIdx2;
 	int idx1;

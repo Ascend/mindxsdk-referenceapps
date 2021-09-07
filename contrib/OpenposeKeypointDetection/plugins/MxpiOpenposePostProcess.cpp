@@ -172,7 +172,8 @@ static void NMS(cv::Mat& plain, float threshold)
     // Find points that is greater than all its four surround points
     cv::Mat plain_with_border;
     int border_padding = 2;
-    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding, BORDER_CONSTANT, cv::Scalar(0));
+    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding, 
+		    BORDER_CONSTANT, cv::Scalar(0));
     cv::Mat plain_with_border_clone = plain_with_border.clone();
     int sub_mat_cols = plain_with_border.cols - border_padding;
     int sub_mat_rows = plain_with_border.rows - border_padding;
@@ -196,7 +197,8 @@ static void NMS(cv::Mat& plain, float threshold)
             }
         }
     }
-    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, plain_center.cols - border_padding, plain_center.rows - border_padding)).clone();
+    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, 
+			    plain_center.cols - border_padding, plain_center.rows - border_padding)).clone();
 }
 
 /**
@@ -254,7 +256,8 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
     int width = keypoint_heatmap[0].cols;
     for (int i = 0; i < keypoint_heatmap.size(); i++) {
         cv::Mat single_channel_mat = keypoint_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
+			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             // remove height padding
             single_channel_mat = 
@@ -270,7 +273,8 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
     }
     for (int i = 0; i < paf_heatmap.size(); i++) {
         cv::Mat single_channel_mat = paf_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
+			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             single_channel_mat = 
 		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
@@ -316,14 +320,16 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
                                    [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
                 float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                         powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;});
+                return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+		});
             while (it != std::end(non_zero_coordinates)) {
                 nearest_index.push_back(std::distance(std::begin(non_zero_coordinates) + j + 1, it) + j + 1);
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
                     float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;});
+                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+		    });
             }
             for (int ii = 0; ii < nearest_index.size(); ii++) {
                 suppressed[nearest_index[ii]] = 1;
@@ -378,7 +384,7 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
     }
     std::vector<float> sub_score_vec;
     // calculate PAF value of each inner point
-    float sub_score;
+    float sub_score = 0.0;
     for (int i = 0; i < xs.size(); i++) {
         sub_score = paf_x.at<float>(ys[i], xs[i]) * vx + paf_y.at<float>(ys[i], xs[i]) * vy;
         sub_score_vec.push_back(sub_score);
@@ -743,7 +749,8 @@ APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*>& mxpi_buffer
             = static_pointer_cast<MxpiVisionList>(id_metadata);
 
     // Generate output
-    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = make_shared<mxpiopenposeproto::MxpiPersonList>();
+    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = 
+	    make_shared<mxpiopenposeproto::MxpiPersonList>();
     APP_ERROR ret = GeneratePersonList(*image_decoder_visionListSptr, 
 		    		*src_mxpi_tensor_packageListSptr, *dst_mxpi_person_listSptr);
     if (ret != APP_ERR_OK) {
