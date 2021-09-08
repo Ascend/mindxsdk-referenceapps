@@ -27,7 +27,7 @@ using namespace std;
 using namespace cv;
 
 namespace {
-    auto uint8Deleter = [] (uint8_t *p) { };
+    auto g_uint8Deleter = [] (uint8_t *p) { };
     const int K_NUM_BODY_PARTS = 18;
     const int K_UPSAMPLED_STRIDE = 8;
 
@@ -124,7 +124,7 @@ static std::vector<std::vector<cv::Mat> > ReadDataFromTensorPytorch(const std::v
     // Read keypoint data
     auto dataPtr = (uint8_t *)tensors[0].GetBuffer();
     std::shared_ptr<void> keypoint_pointer;
-    keypoint_pointer.reset(dataPtr, uint8Deleter);
+    keypoint_pointer.reset(dataPtr, g_uint8Deleter);
     std::vector<cv::Mat> keypoint_heatmap {};
     int idx = 0;
     for (int i = 0; i < channel_keypoint; i++) {
@@ -141,7 +141,7 @@ static std::vector<std::vector<cv::Mat> > ReadDataFromTensorPytorch(const std::v
     // Read PAF data
     auto data_paf_ptr = (uint8_t *)tensors[1].GetBuffer();
     std::shared_ptr<void> paf_pointer;
-    paf_pointer.reset(data_paf_ptr, uint8Deleter);
+    paf_pointer.reset(data_paf_ptr, g_uint8Deleter);
     std::vector<cv::Mat> paf_heatmap {};
     idx = 0;
     for (int i = 0; i < channel_paf; i++) {
@@ -171,18 +171,18 @@ static void NMS(cv::Mat &plain, float threshold)
     plain.setTo(0, plain < threshold);
     // Find points that is greater than all its four surround points
     cv::Mat plain_with_border;
-    int border_padding = 2;
-    int bottom_right_index = 2;
-    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding,
+    const int borderPadding = 2;
+    const int bottomRightIndex = 2;
+    cv::copyMakeBorder(plain, plain_with_border, borderPadding, borderPadding, borderPadding, borderPadding,
                        BORDER_CONSTANT, cv::Scalar(0));
     cv::Mat plain_with_border_clone = plain_with_border.clone();
-    int sub_mat_cols = plain_with_border.cols - border_padding;
-    int sub_mat_rows = plain_with_border.rows - border_padding;
-    cv::Mat plain_center = plain_with_border(cv::Rect(1, 1, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_bottom = plain_with_border(cv::Rect(1, bottom_right_index, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_up = plain_with_border(cv::Rect(1, 0, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_left = plain_with_border(cv::Rect(0, 1, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_right = plain_with_border(cv::Rect(bottom_right_index, 1, sub_mat_cols, sub_mat_rows));
+    int subMatCols = plain_with_border.cols - borderPadding;
+    int subMatRows = plain_with_border.rows - borderPadding;
+    cv::Mat plain_center = plain_with_border(cv::Rect(1, 1, subMatCols, subMatRows));
+    cv::Mat plain_bottom = plain_with_border(cv::Rect(1, bottomRightIndex, subMatCols, subMatRows));
+    cv::Mat plain_up = plain_with_border(cv::Rect(1, 0, subMatCols, subMatRows));
+    cv::Mat plain_left = plain_with_border(cv::Rect(0, 1, subMatCols, subMatRows));
+    cv::Mat plain_right = plain_with_border(cv::Rect(bottomRightIndex, 1, subMatCols, subMatRows));
     int count = 0;
     for (int i = 0; i < plain_center.rows; i++) {
         float *center_ptr = plain_center.ptr<float>(i);
@@ -198,8 +198,8 @@ static void NMS(cv::Mat &plain, float threshold)
             }
         }
     }
-    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, plain_center.cols - border_padding,
-                                             plain_center.rows - border_padding)).clone();
+    plain = plain_with_border_clone(cv::Rect(borderPadding, borderPadding, plain_center.cols - borderPadding,
+                                             plain_center.rows - borderPadding)).clone();
 }
 
 /**
@@ -262,11 +262,13 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat> &keypoint
         if (padding_direction == 0) {
             // remove height padding
             single_channel_mat =
-                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
+                    single_channel_mat(cv::Rect(0, 0,
+                                                single_channel_mat.cols, single_channel_mat.rows - padding_value));
         } else {
             // remove width padding
             single_channel_mat =
-                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
+                    single_channel_mat(cv::Rect(0, 0,
+                                                single_channel_mat.cols - padding_value, single_channel_mat.rows));
         }
         cv::resize(single_channel_mat, single_channel_mat, Size(origin_width, origin_height), 0, 0, INTER_CUBIC);
         keypoint_heatmap[i] = single_channel_mat;
@@ -277,10 +279,12 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat> &keypoint
                    K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             single_channel_mat =
-                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
+                    single_channel_mat(cv::Rect(0, 0,
+                                                single_channel_mat.cols, single_channel_mat.rows - padding_value));
         } else {
             single_channel_mat =
-                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
+                    single_channel_mat(cv::Rect(0, 0,
+                                                single_channel_mat.cols - padding_value, single_channel_mat.rows));
         }
         cv::resize(single_channel_mat, single_channel_mat, Size(origin_width, origin_height), 0, 0, INTER_CUBIC);
         paf_heatmap[i] = single_channel_mat;
@@ -317,8 +321,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
             }
             int thrown_index = j + 1;
             auto it = std::find_if(std::begin(non_zero_coordinates) + j + 1, std::end(non_zero_coordinates),
-                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p)
-                                   {
+                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
                 float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                         powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                 return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -327,8 +330,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
                 thrown_index = std::distance(std::begin(non_zero_coordinates) + thrown_index, it) + thrown_index;
                 suppressed[thrown_index] = 1;
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
-                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p)
-                                  {
+                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
                     float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                     return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -336,7 +338,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
             }
             keypoints_without_nearest.push_back(non_zero_coordinates[j]);
             keypoints_score.push_back(keypoint_heatmap[i].at<float>
-                    (non_zero_coordinates[j].y, non_zero_coordinates[j].x));
+                (non_zero_coordinates[j].y, non_zero_coordinates[j].x));
         }
         coor.push_back(keypoints_without_nearest);
         coor_score.push_back(keypoints_score);
@@ -390,11 +392,11 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
     }
     // remove inner points such that has PAF value < K_LOCAL_PAF_SCORE_THRESHOLD
     sub_score_vec.erase(std::remove_if(
-            sub_score_vec.begin(), sub_score_vec.end(),
-            [](const float &x)
-            {
-                return x <= K_LOCAL_PAF_SCORE_THRESHOLD;
-            }), sub_score_vec.end());
+        sub_score_vec.begin(), sub_score_vec.end(),
+        [](const float &x)
+        {
+            return x <= K_LOCAL_PAF_SCORE_THRESHOLD;
+        }), sub_score_vec.end());
     std::vector<float> result {0.0, 0.0};
     score = std::accumulate(sub_score_vec.begin(), sub_score_vec.end(), 0.0);
     count = sub_score_vec.size();
@@ -495,42 +497,42 @@ APP_ERROR MxpiOpenposePostProcess::ScoreSkeletons(const int part_idx,
 /**
  * @brief Merge a skeleton to an existed person
  * @param person_list - Currently existed person list
- * @param current_pair - Skeleton to be merged
+ * @param currentPair - Skeleton to be merged
  * @return True if merged successfully, otherwise false
  */
 bool MxpiOpenposePostProcess::MergeSkeletonToPerson(std::vector<std::vector<PartPair> > &person_list,
-                                                    PartPair current_pair)
+                                                    PartPair currentPair)
 {
-    // Use point1 and point2 to represent the two endpoints of a skeleton 
+    // Use point1 and point2 to represent the two endpoints of a skeleton
     for (int k = 0; k < person_list.size(); k++) {
         std::vector<PartPair> &current_person = person_list[k];
         for (int i = 0; i < current_person.size(); i++) {
-            if (current_pair.partIdx1 == current_person[i].partIdx1 &&
-                current_pair.idx1 == current_person[i].idx1) {
+            if (currentPair.partIdx1 == current_person[i].partIdx1 &&
+                currentPair.idx1 == current_person[i].idx1) {
                 // point1 of current skeleton is the same as point1 of a skeleton in current person
-                current_person.push_back(current_pair);
+                current_person.push_back(currentPair);
                 return true;
-            } else if (current_pair.partIdx1 == current_person[i].partIdx2 &&
-            current_pair.idx1 == current_person[i].idx2) {
+            } else if (currentPair.partIdx1 == current_person[i].partIdx2 &&
+                currentPair.idx1 == current_person[i].idx2) {
                 // point1 of current skeleton is the same as point2 of a skeleton in current person
-                current_person.push_back(current_pair);
+                current_person.push_back(currentPair);
                 return true;
-            } else if (current_pair.partIdx2 == current_person[i].partIdx1 &&
-            current_pair.idx2 == current_person[i].idx1) {
+            } else if (currentPair.partIdx2 == current_person[i].partIdx1 &&
+                currentPair.idx2 == current_person[i].idx1) {
                 // point2 of current skeleton is the same as point1 of a skeleton in current person
-                current_person.push_back(current_pair);
+                current_person.push_back(currentPair);
                 return true;
-            } else if (current_pair.partIdx2 == current_person[i].partIdx2 &&
-            current_pair.idx2 == current_person[i].idx2) {
+            } else if (currentPair.partIdx2 == current_person[i].partIdx2 &&
+                currentPair.idx2 == current_person[i].idx2) {
                 // point2 of current skeleton is the same as point2 of a skeleton in current person
-                current_person.push_back(current_pair);
+                current_person.push_back(currentPair);
                 return true;
             }
         }
     }
     // Can not merge to any existed person, create new person
     std::vector<PartPair> new_person {};
-    new_person.push_back(current_pair);
+    new_person.push_back(currentPair);
     person_list.push_back(new_person);
     return true;
 }
@@ -625,7 +627,7 @@ APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vec
             continue;
         }
         auto mxpi_person_ptr = dst_mxpi_person_list.add_personinfovec();
-        mxpiopenposeproto::MxpiMetaHeader* dst_person_mxpi_metaheader_list = mxpi_person_ptr->add_headervec();
+        mxpiopenposeproto::MxpiMetaHeader *dst_person_mxpi_metaheader_list = mxpi_person_ptr->add_headervec();
         dst_person_mxpi_metaheader_list->set_datasource(parentName_);
         dst_person_mxpi_metaheader_list->set_memberid(0);
         mxpi_person_ptr->set_score(person_score);
@@ -648,7 +650,7 @@ APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vec
 
 /**
  * Overall process to generate all person skeleton information
- * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data including size of input image
+ * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data about input image
  * @param src_mxpi_tensor_package - Source MxpiTensorPackage containing heatmap data
  * @param dst_mxpi_person_list - Target MxpiPersonList containing detection result list
  * @return APP_ERROR
@@ -730,7 +732,8 @@ APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*> &mxpi_buffer
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpi_metadata_manager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiOpenposePostProcess process is not implemented";
+        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) <<
+        "MxpiOpenposePostProcess process is not implemented";
         mxpi_error_info.ret = APP_ERR_COMM_FAILURE;
         mxpi_error_info.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpi_error_info);
@@ -748,8 +751,8 @@ APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*> &mxpi_buffer
             = static_pointer_cast<MxpiVisionList>(id_metadata);
 
     // Generate output
-    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = 
-	    make_shared<mxpiopenposeproto::MxpiPersonList>();
+    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr =
+            make_shared<mxpiopenposeproto::MxpiPersonList>();
     APP_ERROR ret = GeneratePersonList(*image_decoder_visionListSptr,
                                        *src_mxpi_tensor_packageListSptr, *dst_mxpi_person_listSptr);
     if (ret != APP_ERR_OK) {

@@ -73,7 +73,7 @@ namespace MxPlugins {
 
         /**
          * Overall process to generate all person skeleton information
-         * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data about input and aligned image 
+         * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data about input image
          * @param src_mxpi_tensor_package - Source MxpiTensorPackage containing heatmap data
          * @param dst_mxpi_person_list - Target MxpiPersonList containing detection result list
          * @return APP_ERROR
@@ -157,10 +157,10 @@ namespace MxPlugins {
         /**
          * @brief Merge a skeleton to an existed person
          * @param person_list - Currently existed person list
-         * @param current_pair - Skeleton to be merged
+         * @param currentPair - Skeleton to be merged
          * @return True if merged successfully, otherwise false
          */
-        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> > &person_list, PartPair current_pair);
+        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> > &person_list, PartPair currentPair);
 
         /**
          * @brief Calculate score of a person according to its skeletons
