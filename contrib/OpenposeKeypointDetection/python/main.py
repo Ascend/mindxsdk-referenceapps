@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import enum
 
@@ -22,8 +24,6 @@ import numpy as np
 import cv2
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 
 COCO_PAIRS = [(1, 2), (1, 5), (2, 3), (3, 4), (5, 6), (6, 7), (1, 8), (8, 9), (9, 10), (1, 11),

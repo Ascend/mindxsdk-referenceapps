@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import json
 import enum
@@ -23,8 +25,6 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 
 def generate_eval_result(person_list):

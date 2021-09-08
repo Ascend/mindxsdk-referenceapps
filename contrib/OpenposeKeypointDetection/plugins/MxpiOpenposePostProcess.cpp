@@ -219,7 +219,7 @@ static bool GreaterSort(PartPair p1, PartPair p2)
  * @param p2 - cv::Point p2
  * @return True if the x coordinate of p2 is greater than that of p1
  */
-static bool PointSort(cv::Point p1, cv::Point p2) 
+static bool PointSort(cv::Point p1, cv::Point p2)
 {
     return p1.x < p2.x;
 }
@@ -321,7 +321,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
             }
             int thrown_index = j + 1;
             auto it = std::find_if(std::begin(non_zero_coordinates) + j + 1, std::end(non_zero_coordinates),
-                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
+                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p) {
                 float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                         powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                 return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -330,7 +330,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
                 thrown_index = std::distance(std::begin(non_zero_coordinates) + thrown_index, it) + thrown_index;
                 suppressed[thrown_index] = 1;
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
-                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
+                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p) {
                     float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                     return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -393,8 +393,7 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
     // remove inner points such that has PAF value < K_LOCAL_PAF_SCORE_THRESHOLD
     sub_score_vec.erase(std::remove_if(
         sub_score_vec.begin(), sub_score_vec.end(),
-        [](const float &x)
-        {
+        [](const float &x) {
             return x <= K_LOCAL_PAF_SCORE_THRESHOLD;
         }), sub_score_vec.end());
     std::vector<float> result {0.0, 0.0};
@@ -447,8 +446,9 @@ APP_ERROR MxpiOpenposePostProcess::ScoreSkeletons(const int part_idx,
                                                   std::vector<PartPair> &connections)
 {
     // Use point1 and point2 to represent the two endpoints of a skeleton
-    int coco_skeleton_idx1 = K_POSE_BODY_PART_SKELETONS[2 * part_idx];
-    int coco_skeleton_idx2 = K_POSE_BODY_PART_SKELETONS[2 * part_idx + 1];
+    const int index_stride = 2;
+    int coco_skeleton_idx1 = K_POSE_BODY_PART_SKELETONS[index_stride * part_idx];
+    int coco_skeleton_idx2 = K_POSE_BODY_PART_SKELETONS[index_stride * part_idx + 1];
     int index_stride = 2;
     int end_point_num = 2;
     int paf_x_idx = K_POSE_MAP_INDEX[index_stride * part_idx];
