@@ -447,10 +447,9 @@ APP_ERROR MxpiOpenposePostProcess::ScoreSkeletons(const int part_idx,
 {
     // Use point1 and point2 to represent the two endpoints of a skeleton
     const int index_stride = 2;
+    const int end_point_num = 2;
     int coco_skeleton_idx1 = K_POSE_BODY_PART_SKELETONS[index_stride * part_idx];
     int coco_skeleton_idx2 = K_POSE_BODY_PART_SKELETONS[index_stride * part_idx + 1];
-    int index_stride = 2;
-    int end_point_num = 2;
     int paf_x_idx = K_POSE_MAP_INDEX[index_stride * part_idx];
     int paf_y_idx = K_POSE_MAP_INDEX[index_stride * part_idx + 1];
     std::vector<cv::Point> endpoints(end_point_num, cv::Point(0, 0));
@@ -686,23 +685,23 @@ APP_ERROR MxpiOpenposePostProcess::GeneratePersonList(const MxpiVisionList image
 
 /**
  * @brief Initialize configure parameter.
- * @param config_param_map
+ * @param configParamMap
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::Init(std::map<std::string, std::shared_ptr<void>> &config_param_map)
+APP_ERROR MxpiOpenposePostProcess::Init(std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     LogInfo << "MxpiOpenposePostProcess::Init start.";
     APP_ERROR ret = APP_ERR_OK;
     // Get the property values by key
-    std::shared_ptr<string> parent_name_prop_sptr = std::static_pointer_cast<string>(config_param_map["dataSource"]);
+    std::shared_ptr<string> parent_name_prop_sptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parent_name_prop_sptr.get();
-    std::shared_ptr<string> image_decoder_prop_sptr = std::static_pointer_cast<string>(config_param_map["imageSource"]);
+    std::shared_ptr<string> image_decoder_prop_sptr = std::static_pointer_cast<string>(configParamMap["imageSource"]);
     imageDecoderName_ = *image_decoder_prop_sptr.get();
     std::shared_ptr<uint32_t > input_height_prop_sptr =
-            std::static_pointer_cast<uint32_t >(config_param_map["inputHeight"]);
+            std::static_pointer_cast<uint32_t >(configParamMap["inputHeight"]);
     inputHeight_ = *input_height_prop_sptr.get();
     std::shared_ptr<uint32_t > input_width_prop_sptr =
-            std::static_pointer_cast<uint32_t >(config_param_map["inputWidth"]);
+            std::static_pointer_cast<uint32_t >(configParamMap["inputWidth"]);
     inputWidth_ = *input_width_prop_sptr.get();
     return APP_ERR_OK;
 }

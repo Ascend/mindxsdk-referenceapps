@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import enum
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 import numpy as np
 import cv2

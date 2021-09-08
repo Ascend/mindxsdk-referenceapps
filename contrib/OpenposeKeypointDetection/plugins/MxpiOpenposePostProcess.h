@@ -47,10 +47,10 @@ namespace MxPlugins {
     public:
         /**
          * @brief Initialize configure parameter.
-         * @param config_param_map
+         * @param configParamMap
          * @return APP_ERROR
          */
-        APP_ERROR Init(std::map<std::string, std::shared_ptr<void>> &config_param_map) override;
+        APP_ERROR Init(std::map<std::string, std::shared_ptr<void>> &configParamMap) override;
 
         /**
          * @brief DeInitialize configure parameter.

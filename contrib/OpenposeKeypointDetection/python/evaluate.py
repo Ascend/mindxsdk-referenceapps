@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import json
 import enum
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
