@@ -172,8 +172,7 @@ static void NMS(cv::Mat& plain, float threshold)
     // Find points that is greater than all its four surround points
     cv::Mat plain_with_border;
     int border_padding = 2;
-    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding, 
-		    BORDER_CONSTANT, cv::Scalar(0));
+    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding, BORDER_CONSTANT, cv::Scalar(0));
     cv::Mat plain_with_border_clone = plain_with_border.clone();
     int sub_mat_cols = plain_with_border.cols - border_padding;
     int sub_mat_rows = plain_with_border.rows - border_padding;
@@ -197,8 +196,7 @@ static void NMS(cv::Mat& plain, float threshold)
             }
         }
     }
-    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, 
-			    plain_center.cols - border_padding, plain_center.rows - border_padding)).clone();
+    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, plain_center.cols - border_padding, plain_center.rows - border_padding)).clone();
 }
 
 /**
@@ -256,8 +254,7 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
     int width = keypoint_heatmap[0].cols;
     for (int i = 0; i < keypoint_heatmap.size(); i++) {
         cv::Mat single_channel_mat = keypoint_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
-			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             // remove height padding
             single_channel_mat = 
@@ -273,8 +270,7 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
     }
     for (int i = 0; i < paf_heatmap.size(); i++) {
         cv::Mat single_channel_mat = paf_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
-			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             single_channel_mat = 
 		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
@@ -315,24 +311,22 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
             if (suppressed[j]) {
                 continue;
             }
-            std::vector<size_t> nearest_index {};
+            int thrown_index = j + 1;
             auto it = std::find_if(std::begin(non_zero_coordinates) + j + 1, std::end(non_zero_coordinates),
                                    [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
-                    float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) + 
-		        powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
-		});
+                float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
+                        powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
+                return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+            });
             while (it != std::end(non_zero_coordinates)) {
-                nearest_index.push_back(std::distance(std::begin(non_zero_coordinates) + j + 1, it) + j + 1);
+                thrown_index = std::distance(std::begin(non_zero_coordinates) + thrown_index, it) + thrown_index;
+                suppressed[thrown_index] = 1;
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
-                        float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
+                    float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
-                        return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
-		    });
-            }
-            for (int ii = 0; ii < nearest_index.size(); ii++) {
-                suppressed[nearest_index[ii]] = 1;
+                    return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
+                });
             }
             keypoints_without_nearest.push_back(non_zero_coordinates[j]);
             keypoints_score.push_back(keypoint_heatmap[i].at<float>
@@ -384,7 +378,7 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
     }
     std::vector<float> sub_score_vec;
     // calculate PAF value of each inner point
-    float sub_score = 0.0;
+    float sub_score;
     for (int i = 0; i < xs.size(); i++) {
         sub_score = paf_x.at<float>(ys[i], xs[i]) * vx + paf_y.at<float>(ys[i], xs[i]) * vy;
         sub_score_vec.push_back(sub_score);
@@ -587,7 +581,7 @@ float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair>& person)
 {
     // The score of a person is composed of the scores of all his keypoints and that of all his skeletons
     std::vector<int> seen_keypoints = {};
-    float person_score = 0;
+    float person_score = 0.0;
     for (int i = 0; i < person.size(); i++) {
         PartPair skeleton = person[i];
         if (std::find(seen_keypoints.begin(), seen_keypoints.end(), skeleton.partIdx1) == seen_keypoints.end()) {
@@ -604,7 +598,7 @@ float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair>& person)
     // the average score of each keypoint is less than K_PERSON_KEYPOINT_AVG_SCORE_THRESHOLD
     if (seen_keypoints.size() < K_PERSON_SKELETON_COUNT_THRESHOLD ||
         (person_score / seen_keypoints.size()) < K_PERSON_KEYPOINT_AVG_SCORE_THRESHOLD) {
-        return 0;
+        return 0.0;
     }
     return person_score;
 }
@@ -618,10 +612,11 @@ float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair>& person)
 APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vector<PartPair> >& person_list,
                                                  mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list) 
 {
+    float float_equal_zero_bias = 0.000001;
     for (int k = 0; k < person_list.size(); k++) {
         float person_score = PersonScore(person_list[k]);
         // Ignore person with score 0
-        if (person_score == 0) {
+        if (fabs(person_score - 0) < float_equal_zero_bias) {
             continue;
         }
         auto mxpi_person_ptr = dst_mxpi_person_list.add_personinfovec();
@@ -749,8 +744,7 @@ APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*>& mxpi_buffer
             = static_pointer_cast<MxpiVisionList>(id_metadata);
 
     // Generate output
-    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = 
-	    make_shared<mxpiopenposeproto::MxpiPersonList>();
+    shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = make_shared<mxpiopenposeproto::MxpiPersonList>();
     APP_ERROR ret = GeneratePersonList(*image_decoder_visionListSptr, 
 		    		*src_mxpi_tensor_packageListSptr, *dst_mxpi_person_listSptr);
     if (ret != APP_ERR_OK) {

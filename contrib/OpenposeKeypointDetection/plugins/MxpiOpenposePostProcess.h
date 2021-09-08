@@ -30,17 +30,18 @@
 * @brief Definition of MxpiOpenposePostProcess class.
 */
 
+
 namespace MxPlugins {
     struct PartPair {
-        float score;
-        int partIdx1;
-        int partIdx2;
-        int idx1;
-        int idx2;
-        std::vector<float> coord1;
-        std::vector<float> coord2;
-        float score1;
-        float score2;
+	float score;
+	int partIdx1;
+	int partIdx2;
+	int idx1;
+	int idx2;
+	std::vector<float> coord1;
+	std::vector<float> coord2;
+	float score1;
+	float score2;
     };
 
     class MxpiOpenposePostProcess : public MxTools::MxPluginBase {

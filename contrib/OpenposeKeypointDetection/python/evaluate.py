@@ -25,30 +25,17 @@ from pycocotools.cocoeval import COCOeval
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
-class CocoPart(Enum):
-    Nose = 0
-    Neck = 1
-    RShoulder = 2
-    RElbow = 3
-    RWrist = 4
-    LShoulder = 5
-    LElbow = 6
-    LWrist = 7
-    RHip = 8
-    RKnee = 9
-    RAnkle = 10
-    LHip = 11
-    LKnee = 12
-    LAnkle = 13
-    REye = 14
-    LEye = 15
-    REar = 16
-    LEar = 17
-    Background = 18
-
-
-# Generate detect result in coco format
 def generate_eval_result(person_list):
+    """
+    Generate detect result in coco format
+        
+    Args:
+        person_list: MxpiPersonList object, each element of which is a MxpiPersonInfo object that stores data of person
+
+    Returns:
+        None
+
+    """
     coco_keypoints = []
     scores = []
     coor_bias = 0.5
@@ -83,8 +70,18 @@ def generate_eval_result(person_list):
     return coco_keypoints, scores
 
 
-# run coco evaluation process
 def run_coco_eval(gt_file_path, dt_file_path):
+    """
+    run coco evaluation process using COCO official evaluation tool, it will print evaluation result after execution
+    
+    Args:
+        gt_file_path: path of ground truth json file
+        dt_file_path: path of detected result json file
+
+    Returns:
+        None
+
+    """
     annotation_type = 'keypoints'
     print('Running test for {} results.'.format(annotation_type))
 
@@ -144,9 +141,9 @@ if __name__ == '__main__':
             print("infer_result error. errorCode=%d" % (infer_result[0].errorCode))
             exit()
         # Get person list data
-        result_personlist = mxpiOpenposeProto.MxpiPersonList()
-        result_personlist.ParseFromString(infer_result[0].messageBuf)
-        detect_person_list = result_personlist.personInfoVec
+        result_person_list = mxpiOpenposeProto.MxpiPersonList()
+        result_person_list.ParseFromString(infer_result[0].messageBuf)
+        detect_person_list = result_person_list.personInfoVec
         eval_coco_keypoints, eval_scores = generate_eval_result(detect_person_list)
         for idx, _ in enumerate(eval_coco_keypoints):
             coco_result.append({
