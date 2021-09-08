@@ -27,16 +27,16 @@ using namespace std;
 using namespace cv;
 
 namespace {
-    auto uint8Deleter = [] (uint8_t* p) { };
+    auto uint8Deleter = [] (uint8_t *p) { };
     const int K_NUM_BODY_PARTS = 18;
     const int K_UPSAMPLED_STRIDE = 8;
 
     // CocoSkeletonsNetwork
     const std::vector<unsigned int> K_POSE_MAP_INDEX {
-        12, 13, 20, 21, 14, 15, 16, 17, 22, 23, 
-	24, 25, 0, 1, 2, 3, 4, 5, 6, 7, 
-	8, 9, 10, 11, 28, 29, 30, 31, 34, 35, 
-	32, 33, 36, 37, 18, 19, 26, 27
+        12, 13, 20, 21, 14, 15, 16, 17, 22, 23,
+        24, 25, 0, 1, 2, 3, 4, 5, 6, 7,
+        8, 9, 10, 11, 28, 29, 30, 31, 34, 35,
+        32, 33, 36, 37, 18, 19, 26, 27
     };
 
     // CocoSkeletons
@@ -66,7 +66,7 @@ namespace {
  * @param tensors - Target TensorBase data
  */
 static void GetTensors(const MxTools::MxpiTensorPackageList tensor_package_list,
-                std::vector<MxBase::TensorBase>& tensors) 
+                       std::vector<MxBase::TensorBase> &tensors)
 {
     for (int i = 0; i < tensor_package_list.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensor_package_list.tensorpackagevec(i).tensorvec_size(); j++) {
@@ -97,7 +97,7 @@ static void GetTensors(const MxTools::MxpiTensorPackageList tensor_package_list,
  * @param vision_list - MxpiVisionList object obtained from upstream plugin
  * @param vision_infos - Result vector with elements [origin_height, origin_width, aligned_height, aligned_width]
  */
-static void GetImageSizes(const MxTools::MxpiVisionList vision_list, std::vector<int>& vision_infos) 
+static void GetImageSizes(const MxTools::MxpiVisionList vision_list, std::vector<int> &vision_infos)
 {
     MxpiVision vision = vision_list.visionvec(0);
     MxpiVisionInfo vision_info = vision.visioninfo();
@@ -112,7 +112,7 @@ static void GetImageSizes(const MxTools::MxpiVisionList vision_list, std::vector
  * @param tensors - TensorBase vector
  * @return Two-element vector, keeping keypoint heatmap and paf heatmap respectively
  */
-static std::vector<std::vector<cv::Mat> > ReadDataFromTensorPytorch(const std::vector <MxBase::TensorBase>& tensors) 
+static std::vector<std::vector<cv::Mat> > ReadDataFromTensorPytorch(const std::vector <MxBase::TensorBase> &tensors)
 {
     auto shape = tensors[0].GetShape();
     int channel_keypoint = shape[1];
@@ -165,23 +165,24 @@ static std::vector<std::vector<cv::Mat> > ReadDataFromTensorPytorch(const std::v
  * @param plain - 2D data for NMS
  * @param threshold - NMS threshold
  */
-static void NMS(cv::Mat& plain, float threshold) 
+static void NMS(cv::Mat &plain, float threshold)
 {
     // Keep points with score below the NMS score threshold are set to 0
     plain.setTo(0, plain < threshold);
     // Find points that is greater than all its four surround points
     cv::Mat plain_with_border;
     int border_padding = 2;
-    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding, 
-		    BORDER_CONSTANT, cv::Scalar(0));
+    int bottom_right_index = 2;
+    cv::copyMakeBorder(plain, plain_with_border, border_padding, border_padding, border_padding, border_padding,
+                       BORDER_CONSTANT, cv::Scalar(0));
     cv::Mat plain_with_border_clone = plain_with_border.clone();
     int sub_mat_cols = plain_with_border.cols - border_padding;
     int sub_mat_rows = plain_with_border.rows - border_padding;
     cv::Mat plain_center = plain_with_border(cv::Rect(1, 1, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_bottom = plain_with_border(cv::Rect(1, 2, sub_mat_cols, sub_mat_rows));
+    cv::Mat plain_bottom = plain_with_border(cv::Rect(1, bottom_right_index, sub_mat_cols, sub_mat_rows));
     cv::Mat plain_up = plain_with_border(cv::Rect(1, 0, sub_mat_cols, sub_mat_rows));
     cv::Mat plain_left = plain_with_border(cv::Rect(0, 1, sub_mat_cols, sub_mat_rows));
-    cv::Mat plain_right = plain_with_border(cv::Rect(2, 1, sub_mat_cols, sub_mat_rows));
+    cv::Mat plain_right = plain_with_border(cv::Rect(bottom_right_index, 1, sub_mat_cols, sub_mat_rows));
     int count = 0;
     for (int i = 0; i < plain_center.rows; i++) {
         float *center_ptr = plain_center.ptr<float>(i);
@@ -197,8 +198,8 @@ static void NMS(cv::Mat& plain, float threshold)
             }
         }
     }
-    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, 
-			    plain_center.cols - border_padding, plain_center.rows - border_padding)).clone();
+    plain = plain_with_border_clone(cv::Rect(border_padding, border_padding, plain_center.cols - border_padding,
+                                             plain_center.rows - border_padding)).clone();
 }
 
 /**
@@ -207,7 +208,7 @@ static void NMS(cv::Mat& plain, float threshold)
  * @param p2 - PartPair p2
  * @return True if the score of p1 is greater than that of p2
  */
-static bool GreaterSort(PartPair p1, PartPair p2) 
+static bool GreaterSort(PartPair p1, PartPair p2)
 {
     return p1.score > p2.score;
 }
@@ -230,9 +231,9 @@ static bool PointSort(cv::Point p1, cv::Point p2)
  * @param vision_infos - Vision infos of origin image and aligned image
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint_heatmap, 
-						std::vector<cv::Mat >& paf_heatmap,
-						std::vector<int>& vision_infos) 
+APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat> &keypoint_heatmap,
+                                                  std::vector<cv::Mat > &paf_heatmap,
+                                                  std::vector<int> &vision_infos)
 {
     // Calculate padding direction and padding value
     int origin_height = vision_infos[0];
@@ -256,31 +257,30 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
     int width = keypoint_heatmap[0].cols;
     for (int i = 0; i < keypoint_heatmap.size(); i++) {
         cv::Mat single_channel_mat = keypoint_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
-			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0),
+                   K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
             // remove height padding
-            single_channel_mat = 
-		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
-        }
-        else {
+            single_channel_mat =
+                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
+        } else {
             // remove width padding
-            single_channel_mat = 
-		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
+            single_channel_mat =
+                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
         }
         cv::resize(single_channel_mat, single_channel_mat, Size(origin_width, origin_height), 0, 0, INTER_CUBIC);
         keypoint_heatmap[i] = single_channel_mat;
     }
     for (int i = 0; i < paf_heatmap.size(); i++) {
         cv::Mat single_channel_mat = paf_heatmap[i];
-        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0), 
-			K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
+        cv::resize(single_channel_mat, single_channel_mat, Size(0, 0),
+                   K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (padding_direction == 0) {
-            single_channel_mat = 
-		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
+            single_channel_mat =
+                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols, single_channel_mat.rows - padding_value));
         } else {
-            single_channel_mat = 
-		    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
+            single_channel_mat =
+                    single_channel_mat(cv::Rect(0, 0, single_channel_mat.cols - padding_value, single_channel_mat.rows));
         }
         cv::resize(single_channel_mat, single_channel_mat, Size(origin_width, origin_height), 0, 0, INTER_CUBIC);
         paf_heatmap[i] = single_channel_mat;
@@ -296,9 +296,9 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat>& keypoint
  * @param coor_score - Scores corresponding to extracted keypoints
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoint_heatmap,
-						std::vector<std::vector<cv::Point> >& coor,
-						std::vector<std::vector<float> >& coor_score) 
+APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoint_heatmap,
+                                                    std::vector<std::vector<cv::Point> > &coor,
+                                                    std::vector<std::vector<float> > &coor_score)
 {
     int polynomial_exponent = 2;
     for (int i = 0; i < keypoint_heatmap.size() - 1; i++) {
@@ -317,7 +317,8 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
             }
             int thrown_index = j + 1;
             auto it = std::find_if(std::begin(non_zero_coordinates) + j + 1, std::end(non_zero_coordinates),
-                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
+                                   [non_zero_coordinates, j, polynomial_exponent](cv::Point p)
+                                   {
                 float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                         powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                 return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -326,7 +327,8 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
                 thrown_index = std::distance(std::begin(non_zero_coordinates) + thrown_index, it) + thrown_index;
                 suppressed[thrown_index] = 1;
                 it = std::find_if(std::next(it), std::end(non_zero_coordinates),
-                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p){
+                                  [non_zero_coordinates, j, polynomial_exponent](cv::Point p)
+                                  {
                     float distance = powf((non_zero_coordinates[j].x - p.x), polynomial_exponent) +
                             powf((non_zero_coordinates[j].y - p.y), polynomial_exponent);
                     return sqrtf(distance) < K_NEAREST_KEYPOINTS_THRESHOLD;
@@ -334,8 +336,7 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
             }
             keypoints_without_nearest.push_back(non_zero_coordinates[j]);
             keypoints_score.push_back(keypoint_heatmap[i].at<float>
-			    (non_zero_coordinates[j].y, non_zero_coordinates[j].x));
-
+                    (non_zero_coordinates[j].y, non_zero_coordinates[j].x));
         }
         coor.push_back(keypoints_without_nearest);
         coor_score.push_back(keypoints_score);
@@ -351,8 +352,8 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat>& keypoi
  * @return result - Keep confidence information of this skeleton in the form:
  * [confidence score, number of successfully hit sub points]
  */
-std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Point>& endpoints,
-                                               const cv::Mat& paf_x, const cv::Mat& paf_y) 
+std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Point> &endpoints,
+                                                             const cv::Mat &paf_x, const cv::Mat &paf_y)
 {
     int x1 = endpoints[0].x, y1 = endpoints[0].y;
     int x2 = endpoints[1].x, y2 = endpoints[1].y;
@@ -389,10 +390,11 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
     }
     // remove inner points such that has PAF value < K_LOCAL_PAF_SCORE_THRESHOLD
     sub_score_vec.erase(std::remove_if(
-                        sub_score_vec.begin(), sub_score_vec.end(),
-                        [](const float& x) {
-                            return x <= K_LOCAL_PAF_SCORE_THRESHOLD;
-                        }), sub_score_vec.end());
+            sub_score_vec.begin(), sub_score_vec.end(),
+            [](const float &x)
+            {
+                return x <= K_LOCAL_PAF_SCORE_THRESHOLD;
+            }), sub_score_vec.end());
     std::vector<float> result {0.0, 0.0};
     score = std::accumulate(sub_score_vec.begin(), sub_score_vec.end(), 0.0);
     count = sub_score_vec.size();
@@ -407,7 +409,7 @@ std::vector<float> MxpiOpenposePostProcess::OneSkeletonScore(std::vector<cv::Poi
  * @param dst - Target vector that collects candidate skeletons
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::ConntectionNms(std::vector<PartPair>& src, std::vector<PartPair>& dst) 
+APP_ERROR MxpiOpenposePostProcess::ConntectionNms(std::vector<PartPair> &src, std::vector<PartPair> &dst)
 {
     // Remove conflict skeletons, if two skeletons of the same type share a same end point, they are conflict
     std::vector<int> used_idx1 {};
@@ -437,17 +439,19 @@ APP_ERROR MxpiOpenposePostProcess::ConntectionNms(std::vector<PartPair>& src, st
  * @return APP_ERROR
  */
 APP_ERROR MxpiOpenposePostProcess::ScoreSkeletons(const int part_idx,
-                                             const std::vector<std::vector<cv::Point> >& coor,
-                                             const std::vector<std::vector<float> >& coor_score,
-                                             const std::vector<cv::Mat>& paf_heatmap,
-                                             std::vector<PartPair>& connections) 
+                                                  const std::vector<std::vector<cv::Point> > &coor,
+                                                  const std::vector<std::vector<float> > &coor_score,
+                                                  const std::vector<cv::Mat> &paf_heatmap,
+                                                  std::vector<PartPair> &connections)
 {
     // Use point1 and point2 to represent the two endpoints of a skeleton
     int coco_skeleton_idx1 = K_POSE_BODY_PART_SKELETONS[2 * part_idx];
     int coco_skeleton_idx2 = K_POSE_BODY_PART_SKELETONS[2 * part_idx + 1];
-    int paf_x_idx = K_POSE_MAP_INDEX[2 * part_idx];
-    int paf_y_idx = K_POSE_MAP_INDEX[2 * part_idx + 1];
-    std::vector<cv::Point> endpoints(2, cv::Point(0, 0));
+    int index_stride = 2;
+    int end_point_num = 2;
+    int paf_x_idx = K_POSE_MAP_INDEX[index_stride * part_idx];
+    int paf_y_idx = K_POSE_MAP_INDEX[index_stride * part_idx + 1];
+    std::vector<cv::Point> endpoints(end_point_num, cv::Point(0, 0));
     std::vector<PartPair> connection_temp {};
     std::vector<float> result {0.0, 0.0};
     // Calculate the affinity score of each skeleton composed of all candidate point1 and point2
@@ -494,8 +498,8 @@ APP_ERROR MxpiOpenposePostProcess::ScoreSkeletons(const int part_idx,
  * @param current_pair - Skeleton to be merged
  * @return True if merged successfully, otherwise false
  */
-bool MxpiOpenposePostProcess::MergeSkeletonToPerson(std::vector<std::vector<PartPair> >& person_list,
-                                               PartPair current_pair)
+bool MxpiOpenposePostProcess::MergeSkeletonToPerson(std::vector<std::vector<PartPair> > &person_list,
+                                                    PartPair current_pair)
 {
     // Use point1 and point2 to represent the two endpoints of a skeleton 
     for (int k = 0; k < person_list.size(); k++) {
@@ -506,21 +510,18 @@ bool MxpiOpenposePostProcess::MergeSkeletonToPerson(std::vector<std::vector<Part
                 // point1 of current skeleton is the same as point1 of a skeleton in current person
                 current_person.push_back(current_pair);
                 return true;
-            }
-            else if (current_pair.partIdx1 == current_person[i].partIdx2 &&
-                current_pair.idx1 == current_person[i].idx2) {
+            } else if (current_pair.partIdx1 == current_person[i].partIdx2 &&
+            current_pair.idx1 == current_person[i].idx2) {
                 // point1 of current skeleton is the same as point2 of a skeleton in current person
                 current_person.push_back(current_pair);
                 return true;
-            }
-            else if (current_pair.partIdx2 == current_person[i].partIdx1 &&
-                current_pair.idx2 == current_person[i].idx1) {
+            } else if (current_pair.partIdx2 == current_person[i].partIdx1 &&
+            current_pair.idx2 == current_person[i].idx1) {
                 // point2 of current skeleton is the same as point1 of a skeleton in current person
                 current_person.push_back(current_pair);
                 return true;
-            }
-            else if (current_pair.partIdx2 == current_person[i].partIdx2 &&
-                current_pair.idx2 == current_person[i].idx2) {
+            } else if (current_pair.partIdx2 == current_person[i].partIdx2 &&
+            current_pair.idx2 == current_person[i].idx2) {
                 // point2 of current skeleton is the same as point2 of a skeleton in current person
                 current_person.push_back(current_pair);
                 return true;
@@ -542,10 +543,10 @@ bool MxpiOpenposePostProcess::MergeSkeletonToPerson(std::vector<std::vector<Part
  * @param person_list - Target vector to store person, each person is stored as a vector of skeletons
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::GroupKeypoints(const std::vector<cv::Mat>& paf_heatmap,
-						const std::vector<std::vector<cv::Point> >& coor,
-						const std::vector<std::vector<float> >& coor_score,
-						std::vector<std::vector<PartPair> >& person_list) 
+APP_ERROR MxpiOpenposePostProcess::GroupKeypoints(const std::vector<cv::Mat> &paf_heatmap,
+                                                  const std::vector<std::vector<cv::Point> > &coor,
+                                                  const std::vector<std::vector<float> > &coor_score,
+                                                  std::vector<std::vector<PartPair> > &person_list)
 {
     for (int i = 0; i < K_NUM_BODY_PARTS + 1; i++) {
         // Chooose candidate skeletons for each category, there are a total of kNumBodyPart + 1 categories of skeletons
@@ -581,7 +582,7 @@ APP_ERROR MxpiOpenposePostProcess::GroupKeypoints(const std::vector<cv::Mat>& pa
  * @param person - Target person
  * @return Score value
  */
-float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair>& person) 
+float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair> &person)
 {
     // The score of a person is composed of the scores of all his keypoints and that of all his skeletons
     std::vector<int> seen_keypoints = {};
@@ -613,8 +614,8 @@ float MxpiOpenposePostProcess::PersonScore(const std::vector <PartPair>& person)
  * @param dst_mxpi_person_list - Target data in the format of MxpiPersonList
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vector<PartPair> >& person_list,
-                                                 mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list) 
+APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vector<PartPair> > &person_list,
+                                                      mxpiopenposeproto::MxpiPersonList &dst_mxpi_person_list)
 {
     float float_equal_zero_bias = 0.000001;
     for (int k = 0; k < person_list.size(); k++) {
@@ -653,8 +654,8 @@ APP_ERROR MxpiOpenposePostProcess::GenerateMxpiOutput(const std::vector<std::vec
  * @return APP_ERROR
  */
 APP_ERROR MxpiOpenposePostProcess::GeneratePersonList(const MxpiVisionList image_decoder_visionListSptr,
-						const MxpiTensorPackageList src_mxpi_tensor_package,
-						mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list)
+                                                      const MxpiTensorPackageList src_mxpi_tensor_package,
+                                                      mxpiopenposeproto::MxpiPersonList &dst_mxpi_person_list)
 {
     // Get tensor
     std::vector<MxBase::TensorBase> tensors = {};
@@ -686,7 +687,7 @@ APP_ERROR MxpiOpenposePostProcess::GeneratePersonList(const MxpiVisionList image
  * @param config_param_map
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::Init(std::map<std::string, std::shared_ptr<void>>& config_param_map)
+APP_ERROR MxpiOpenposePostProcess::Init(std::map<std::string, std::shared_ptr<void>> &config_param_map)
 {
     LogInfo << "MxpiOpenposePostProcess::Init start.";
     APP_ERROR ret = APP_ERR_OK;
@@ -720,17 +721,16 @@ APP_ERROR MxpiOpenposePostProcess::DeInit()
  * @param mxpi_buffer
  * @return APP_ERROR
  */
-APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*>& mxpi_buffer)
+APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*> &mxpi_buffer)
 {
     LogInfo << "MxpiOpenposePostProcess::Process start";
-    MxpiBuffer* buffer = mxpi_buffer[0];
+    MxpiBuffer *buffer = mxpi_buffer[0];
     MxpiMetadataManager mxpi_metadata_manager(*buffer);
     MxpiErrorInfo mxpi_error_info;
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpi_metadata_manager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << 
-		"MxpiOpenposePostProcess process is not implemented";
+        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiOpenposePostProcess process is not implemented";
         mxpi_error_info.ret = APP_ERR_COMM_FAILURE;
         mxpi_error_info.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpi_error_info);
@@ -750,8 +750,8 @@ APP_ERROR MxpiOpenposePostProcess::Process(std::vector<MxpiBuffer*>& mxpi_buffer
     // Generate output
     shared_ptr<mxpiopenposeproto::MxpiPersonList> dst_mxpi_person_listSptr = 
 	    make_shared<mxpiopenposeproto::MxpiPersonList>();
-    APP_ERROR ret = GeneratePersonList(*image_decoder_visionListSptr, 
-		    		*src_mxpi_tensor_packageListSptr, *dst_mxpi_person_listSptr);
+    APP_ERROR ret = GeneratePersonList(*image_decoder_visionListSptr,
+                                       *src_mxpi_tensor_packageListSptr, *dst_mxpi_person_listSptr);
     if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, pluginName_) << "MxpiOpenposePostProcess get skeleton information failed.";
         mxpi_error_info.ret = ret;
@@ -796,8 +796,8 @@ std::vector<std::shared_ptr<void>> MxpiOpenposePostProcess::DefineProperties()
     return properties;
 }
 
-APP_ERROR MxpiOpenposePostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string plugin_name,
-						const MxpiErrorInfo mxpi_error_info)
+APP_ERROR MxpiOpenposePostProcess::SetMxpiErrorInfo(MxpiBuffer &buffer, const std::string plugin_name,
+                                                    const MxpiErrorInfo mxpi_error_info)
 {
     APP_ERROR ret = APP_ERR_OK;
     // Define an object of MxpiMetadataManager

@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     with open("pipeline/Openpose.pipeline", "rb") as f:
-        pipelineStr = f.read()
-    ret = stream_manager_api.CreateMultipleStreams(pipelineStr)
+        pipeline_str = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()

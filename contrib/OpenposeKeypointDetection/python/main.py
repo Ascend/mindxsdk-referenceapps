@@ -49,7 +49,7 @@ def draw_pose_bbox(npimg, person_list):
     joints, xcenter = [], []
     for person in person_list:
         skeletons = person.skeletonInfoVec
-        xs, ys, centers = [], [], {}
+        x_coords, y_coords, centers = [], [], {}
         seen_idx = []
         # draw keypoints
         for skele in skeletons:
@@ -59,16 +59,16 @@ def draw_pose_bbox(npimg, person_list):
                 seen_idx.append(part_idx1)
                 center = (int(skele.x0), int(skele.y0))
                 centers[part_idx1] = center
-                xs.append(center[0])
-                ys.append(center[1])
+                x_coords.append(center[0])
+                y_coords.append(center[1])
                 cv2.circle(npimg, center, 3, COCO_COLORS[part_idx1], thickness=3, lineType=8, shift=0)
 
             if part_idx2 not in seen_idx:
                 seen_idx.append(part_idx2)
                 center = (int(skele.x1), int(skele.y1))
                 centers[part_idx2] = center
-                xs.append(center[0])
-                ys.append(center[1])
+                x_coords.append(center[0])
+                y_coords.append(center[1])
                 cv2.circle(npimg, center, 3, COCO_COLORS[part_idx2], thickness=3, lineType=8, shift=0)
         # draw skeletons
         for pair_order, pair in enumerate(COCO_PAIRS_RENDER):
@@ -90,8 +90,8 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     with open("pipeline/Openpose.pipeline", "rb") as f:
-        pipelineStr = f.read()
-    ret = stream_manager_api.CreateMultipleStreams(pipelineStr)
+        pipeline_str = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()

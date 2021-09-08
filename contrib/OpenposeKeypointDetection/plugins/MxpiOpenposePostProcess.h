@@ -50,7 +50,7 @@ namespace MxPlugins {
          * @param config_param_map
          * @return APP_ERROR
          */
-        APP_ERROR Init(std::map<std::string, std::shared_ptr<void>>& config_param_map) override;
+        APP_ERROR Init(std::map<std::string, std::shared_ptr<void>> &config_param_map) override;
 
         /**
          * @brief DeInitialize configure parameter.
@@ -63,7 +63,7 @@ namespace MxPlugins {
          * @param mxpi_buffer
          * @return APP_ERROR
          */
-        APP_ERROR Process(std::vector<MxTools::MxpiBuffer*>& mxpi_buffer) override;
+        APP_ERROR Process(std::vector<MxTools::MxpiBuffer*> &mxpi_buffer) override;
 
         /**
          * @brief Definition the parameter of configure properties.
@@ -79,8 +79,8 @@ namespace MxPlugins {
          * @return APP_ERROR
          */
         APP_ERROR GeneratePersonList(const MxTools::MxpiVisionList image_decoder_visionListSptr,
-                                    const MxTools::MxpiTensorPackageList src_mxpi_tensor_package,
-                                    mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list);
+                                     const MxTools::MxpiTensorPackageList src_mxpi_tensor_package,
+                                     mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list);
 
         /**
          * @brief Resize output heatmaps to the size of the origin image
@@ -89,9 +89,9 @@ namespace MxPlugins {
          * @param vision_infos - Vision infos of origin image and aligned image
          * @return APP_ERROR
          */
-        APP_ERROR ResizeHeatmaps(std::vector<cv::Mat>& keypoint_heatmap,
-                                 std::vector<cv::Mat >& paf_heatmap,
-                                 std::vector<int>& vision_infos);
+        APP_ERROR ResizeHeatmaps(std::vector<cv::Mat> &keypoint_heatmap,
+                                 std::vector<cv::Mat > &paf_heatmap,
+                                 std::vector<int> &vision_infos);
 
         /**
          * @brief Extract candidate keypoints from output heatmap
@@ -103,9 +103,9 @@ namespace MxPlugins {
          * @param width - Width of keypoint heatmap
          * @return APP_ERROR
          */
-        APP_ERROR ExtractKeypoints(std::vector<cv::Mat>& keypoint_heatmap,
-                                    std::vector<std::vector<cv::Point> >& coor,
-                                    std::vector<std::vector<float> >& coor_score);
+        APP_ERROR ExtractKeypoints(std::vector<cv::Mat> &keypoint_heatmap,
+                                   std::vector<std::vector<cv::Point> > &coor,
+                                   std::vector<std::vector<float> > &coor_score);
 
         /**
          * @breif Group keypoints to skeletons and assemble them to person
@@ -116,9 +116,9 @@ namespace MxPlugins {
          * @return APP_ERROR
          */
         APP_ERROR GroupKeypoints(const std::vector<cv::Mat>& paf_heatmap,
-                                 const std::vector<std::vector<cv::Point> >& coor,
-                                 const std::vector<std::vector<float> >& coor_score,
-                                 std::vector<std::vector<PartPair> >& person_list);
+                                 const std::vector<std::vector<cv::Point> > &coor,
+                                 const std::vector<std::vector<float> > &coor_score,
+                                 std::vector<std::vector<PartPair> > &person_list);
 
         /**
          * @breif Calculate expected confidence of each possible skeleton and choose candidates
@@ -130,10 +130,10 @@ namespace MxPlugins {
          * @return APP_ERROR
          */
         APP_ERROR ScoreSkeletons(const int part_idx,
-                                 const std::vector<std::vector<cv::Point> >& coor,
-                                 const std::vector<std::vector<float> >& coor_score,
-                                 const std::vector<cv::Mat>& paf_heatmap,
-                                 std::vector<PartPair>& connections);
+                                 const std::vector<std::vector<cv::Point> > &coor,
+                                 const std::vector<std::vector<float> > &coor_score,
+                                 const std::vector<cv::Mat> &paf_heatmap,
+                                 std::vector<PartPair> &connections);
 
         /**
          * @brief Compute expected confidence for each candidate skeleton
@@ -143,8 +143,8 @@ namespace MxPlugins {
          * @return result - Keep confidence information of this skeleton in the form:
          * [confidence score, number of successfully hit sub points]
          */
-        std::vector<float> OneSkeletonScore(std::vector<cv::Point>& endpoints,
-                                            const cv::Mat& paf_x, const cv::Mat& paf_y);
+        std::vector<float> OneSkeletonScore(std::vector<cv::Point> &endpoints,
+                                            const cv::Mat &paf_x, const cv::Mat &paf_y);
 
         /**
          * @brief Remove duplicate skeletons
@@ -152,7 +152,7 @@ namespace MxPlugins {
          * @param dst - Target vector that collects filter skeletons
          * @return APP_ERROR
          */
-        APP_ERROR ConntectionNms(std::vector<PartPair>& src, std::vector<PartPair>& dst);
+        APP_ERROR ConntectionNms(std::vector<PartPair> &src, std::vector<PartPair> &dst);
 
         /**
          * @brief Merge a skeleton to an existed person
@@ -160,14 +160,14 @@ namespace MxPlugins {
          * @param current_pair - Skeleton to be merged
          * @return True if merged successfully, otherwise false
          */
-        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> >& person_list, PartPair current_pair);
+        bool MergeSkeletonToPerson(std::vector<std::vector<PartPair> > &person_list, PartPair current_pair);
 
         /**
          * @brief Calculate score of a person according to its skeletons
          * @param person - Target person
          * @return Score value
          */
-        float PersonScore(const std::vector<PartPair>& person);
+        float PersonScore(const std::vector<PartPair> &person);
 
         /**
          * @brief Prepare output in the format of MxpiPersonList
@@ -175,11 +175,11 @@ namespace MxPlugins {
          * @param dst_mxpi_person_list - Target data in the format of MxpiPersonList
          * @return
          */
-        APP_ERROR GenerateMxpiOutput(const std::vector<std::vector<PartPair> >& person_list,
-                                      mxpiopenposeproto::MxpiPersonList& dst_mxpi_person_list);
+        APP_ERROR GenerateMxpiOutput(const std::vector<std::vector<PartPair> > &person_list,
+                                     mxpiopenposeproto::MxpiPersonList &dst_mxpi_person_list);
 
     private:
-        APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string plugin_name,
+        APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer &buffer, const std::string plugin_name,
                                    const MxTools::MxpiErrorInfo mxpi_error_info);
         std::string parentName_;
         std::string imageDecoderName_;
