@@ -25,7 +25,8 @@ def convert_to_onnx(net, output_name):
     output_names = ['stage_0_output_1_heatmaps', 'stage_0_output_0_pafs',
                     'stage_1_output_1_heatmaps', 'stage_1_output_0_pafs']
 
-    torch.onnx.export(net, net_input, output_name, verbose=True, opset_version=11, input_names=input_names, output_names=output_names)
+    torch.onnx.export(net, net_input, output_name, verbose=True, 
+            opset_version=11, input_names=input_names, output_names=output_names)
     print("====> check onnx model...")
 
     model = onnx.load(output_name)

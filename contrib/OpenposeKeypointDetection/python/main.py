@@ -18,7 +18,7 @@ import sys
 sys.path.append("../proto")
 import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
-from enum import Enum
+import enum
 import numpy as np
 import cv2
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector

@@ -19,7 +19,7 @@ sys.path.append("../proto")
 import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 import os
 import json
-from enum import Enum
+import enum
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
