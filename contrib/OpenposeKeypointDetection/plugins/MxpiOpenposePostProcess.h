@@ -73,8 +73,7 @@ namespace MxPlugins {
 
         /**
          * Overall process to generate all person skeleton information
-         * @param image_decoder_visionListSptr - Source MxpiVisionList containing 
-	 * vision data including origin size of input image
+         * @param image_decoder_visionListSptr - Source MxpiVisionList containing vision data about input and aligned image 
          * @param src_mxpi_tensor_package - Source MxpiTensorPackage containing heatmap data
          * @param dst_mxpi_person_list - Target MxpiPersonList containing detection result list
          * @return APP_ERROR
