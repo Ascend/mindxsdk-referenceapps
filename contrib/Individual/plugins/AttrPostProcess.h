@@ -35,7 +35,7 @@ namespace MxBase {
 
         AttrPostProcess &operator=(const AttrPostProcess &other);
 
-        bool IsValidTensors(const std::vector<TensorBase> &tensors) const override;
+        bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
 
     private:
         uint32_t classNum_ = 0;
