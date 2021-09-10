@@ -72,6 +72,7 @@ def draw_pose_bbox(npimg, person_list):
                 x_coords.append(center[0])
                 y_coords.append(center[1])
                 cv2.circle(npimg, center, 3, COCO_COLORS[part_idx2], thickness=3, lineType=8, shift=0)
+        
         # draw skeletons
         for pair_order, pair in enumerate(COCO_PAIRS_RENDER):
             if pair[0] not in seen_idx or pair[1] not in seen_idx:
@@ -120,8 +121,6 @@ if __name__ == '__main__':
     if infer_result[0].errorCode != 0:
         print("infer_result error. errorCode=%d" % (infer_result[0].errorCode))
         exit()
-    print("GetProtobuf errorCode=%d" % (infer_result[0].errorCode))
-    print("KEY: {}".format(str(infer_result[0].messageName)))
     result_personlist = mxpiOpenposeProto.MxpiPersonList()
     result_personlist.ParseFromString(infer_result[0].messageBuf)
     detect_person_list = result_personlist.personInfoVec
