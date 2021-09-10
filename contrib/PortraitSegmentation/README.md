@@ -2,7 +2,7 @@
 
 ## 1 简介
   本开发样例基于MindX SDK实现了端到端的人像分割与背景替换（Portrait Segmentation and Background Replacement, PSBR）。PSBR的主要功能是使用Portrait模型对输入图片中的人像进行分割，然后与背景图像融合，实现背景替换。  
-样例输入：带有一个人像的jpg图片和一张没有人像的背景图片。  
+样例输入：带有简单背景的单人jpg图片和一张没有人像的背景jpg图片。  
 样例输出：人像背景替换后的jpg图片。<br/>
 ## 2 目录结构
 本工程名称为PortraitSegmentation，工程目录如下图所示：
