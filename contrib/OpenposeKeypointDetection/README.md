@@ -153,16 +153,16 @@ PYTHONPATH: python环境路径
 
 ## 3. 模型转换
 
-本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，pytorch 模型下载链接：https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth
+本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，pytorch 模型下载链接：https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth 。
 
 
-本项目运行前需要将 pytorch 模型转换为 onnx 模型，onnx 模型下载链接：https://drive.google.com/file/d/1RGuHz5BkENqaCOyoR4xdQKaZWLpwN1o0/view?usp=sharing， 然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+本项目运行前需要将 pytorch 模型转换为 onnx 模型，onnx 模型下载链接：https://drive.google.com/file/d/1RGuHz5BkENqaCOyoR4xdQKaZWLpwN1o0/view?usp=sharing， 然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
 
 转换得到的 om 模型可以从该链接下载得到：https://drive.google.com/file/d/1c5NaIqBicSCcDHNoZ-XKHi31KcG2AgI3/view?usp=sharing 。
 
 也可以自行转换模型，步骤如下：
-1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models`` 文件夹下，文件名为：simplified_560_openpose_pytorch.onnx 
+1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models`` 文件夹下，文件名为：simplified_560_openpose_pytorch.onnx 。
 2. 进入 ``python/models`` 文件夹下执行命令：
 ```
 bash model_convertion.sh
@@ -189,24 +189,24 @@ git clone https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pyt
 
 4. 从上述 pytorch 模型下载链接中下载 pytorch 模型文件 checkpoint_iter_370000.pth, 放置在 ``lightweight-human-pose-estimation.pytorch-master/checkpoints`` 目录下。
 
-5. 编辑 ``lightweight-human-pose-estimation.pytorch-master/checkpoints/scripts/convert_to_onnx.py`` 中的 ``net_input = Variable(torch.randn(1, 3, 560, 560))`` 行，设置模型输入尺寸，如想要设置模型输入尺寸为（480，480）则将该行改为 ``net_input = Variable(torch.randn(1, 3, 480, 480))``
+5. 编辑 ``lightweight-human-pose-estimation.pytorch-master/checkpoints/scripts/convert_to_onnx.py`` 中的 ``net_input = Variable(torch.randn(1, 3, 560, 560))`` 行，设置模型输入尺寸，如想要设置模型输入尺寸为（480，480）则将该行改为 ``net_input = Variable(torch.randn(1, 3, 480, 480))`` 。
 
 6. 在``lightweight-human-pose-estimation.pytorch-master`` 目录下运行命令
 ```
 python scripts/convert_to_onnx.onnx --checkpoint-path=checkpoints/checkpoint_iter_370000.pth
 ```
-执行成功后会在当前文件夹下生成从 pytorch 模型转化得到的 onnx 模型，上述命令还可以设置 ``--output-name`` 参数，指定输出的 onnx 模型文件名，不指定时的默认文件名为 human-pose-estimation.onnx
+执行成功后会在当前文件夹下生成从 pytorch 模型转化得到的 onnx 模型，上述命令还可以设置 ``--output-name`` 参数，指定输出的 onnx 模型文件名，不指定时的默认文件名为 human-pose-estimation.onnx 。
 
 7. 成功转换得到 onnx 文件后，将 onnx 文件拷贝或移动到**本项目目录下**的 ``python/models`` 目录下，将其转换为 om 模型，转换步骤如下：
-- 进入 ``python/models`` 目录
-- 编辑 ``insert_op.cfg`` 文件，将 ``src_image_size_w`` 和 ``src_image_size_h`` 分别设置为上述转换 onnx 模型时指定的模型输入宽度和高度
+- 进入 ``python/models`` 目录；
+- 编辑 ``insert_op.cfg`` 文件，将 ``src_image_size_w`` 和 ``src_image_size_h`` 分别设置为上述转换 onnx 模型时指定的模型输入宽度和高度；
 - 编辑 ``model_conversion.sh`` 文件，将
 ```
 atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
 ```
-命令中的 ``--model`` 属性改为上述转换得到的 onnx 模型文件名，将 ``--output`` 属性设置为输出 om 模型的名称，将 ``--input_shape`` 属性设置为指定的模型输入宽、高。
+命令中的 ``--model`` 属性改为上述转换得到的 onnx 模型文件名，将 ``--output`` 属性设置为输出 om 模型的名称，将 ``--input_shape`` 属性设置为指定的模型输入宽、高；
 
-- 执行命令
+- 执行命令：
 ```
 bash model_convertion.sh
 ```
@@ -230,7 +230,7 @@ cp plugins/build/libmxpi_openposepostprocess.so ~/MindX_SDK/mxVision/lib/plugins
 cd python
 python3.7 main.py
 ```
-命令执行成功后在当前目录下生成检测结果文件 test_detect_result.jpg 查看结果文件验证检测结果。
+命令执行成功后在当前目录下生成检测结果文件 test_detect_result.jpg，查看结果文件验证检测结果。
 
 **步骤5** 精度测试。
 
@@ -239,7 +239,25 @@ python3.7 main.py
 pip3.7 install pycocotools
 ```
 
-2. 下载 COCO VAL 2017 数据集，下载链接：http://images.cocodataset.org/zips/val2017.zip ，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：http://images.cocodataset.org/annotations/annotations_trainval2017.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。
+2. 下载 COCO VAL 2017 数据集，下载链接：http://images.cocodataset.org/zips/val2017.zip ，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：http://images.cocodataset.org/annotations/annotations_trainval2017.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：
+```
+.
+├── dataset
+│   ├── annotations
+│   │   └── person_keypoints_val2017.json
+│   └── val2017
+│       ├── 000000581615.jpg
+│       ├── 000000581781.jpg
+│       └── other-images
+├── evaluate.py
+├── main.py
+├── models
+│   ├── convert_to_onnx.py
+│   ├── insert_op.cfg
+│   └── model_conversion.sh
+└── pipeline
+    └── Openpose.pipeline
+```
 
 3. 执行命令：
 ```
@@ -289,22 +307,13 @@ python3.7 evaluate.py
 </center>
 
 **解决方案：**
-确保下载完数据集和标注文件后的 python 目录结构为：
+下载完数据集和标注文件后，确保 ``python/dataset`` 目录结构为：
 ```
 .
-├── dataset
-│   ├── annotations
-│   │   └── person_keypoints_val2017.json
-│   └── val2017
-│       ├── 000000581615.jpg
-│       ├── 000000581781.jpg
-│       └── other-images
-├── evaluate.py
-├── main.py
-├── models
-│   ├── convert_to_onnx.py
-│   ├── insert_op.cfg
-│   └── model_conversion.sh
-└── pipeline
-    └── Openpose.pipeline
+├── annotations
+│   └── person_keypoints_val2017.json
+└── val2017
+    ├── 000000581615.jpg
+    ├── 000000581781.jpg
+    └── other-images
 ```
