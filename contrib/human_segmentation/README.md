@@ -30,7 +30,7 @@
 **步骤1**  在ModelZoo上下载human_segmentation原始模型：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/human_segmentation/human_segmentation.pb)      
 &ensp;&ensp;&ensp;&ensp;&ensp; 对应的cfg文件：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/human_segmentation/insert_op.cfg)  
 
-**步骤2**  将获取到的human_segmentation模型pb文件和cfg文件存放至：“项目所在目录/models”  
+**步骤2**  将获取到的human_segmentation模型pb文件和cfg文件存放至：“项目所在目录/model”  
 
 **步骤3**  模型转换  
 
