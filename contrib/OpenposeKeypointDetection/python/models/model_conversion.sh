@@ -28,15 +28,13 @@ export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/p
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
-
-if [ ! -f "simplified-560-human-pose-estimation.onnx" ]
-then
-	# 将 pytorch .pth 权重文件转化成 .onnx 格式文件
-	# Convert pytorch model to onnx format.
-	python3.7 convert_to_onnx.py --checkpoint-path checkpoint_iter_370000.pth --output-name simplified-560-human-pose-estimation.onnx
-fi
-
 # 执行，转换 Openpose 模型
 # Execute, transform Openpose model.
 
-atc --model=./simplified-560-human-pose-estimation.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
+atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
+
+# 删除除 om 模型外额外生成的文件
+# Remove miscellaneous
+
+rm fusion_result.json
+rm -rf kernel_meta 
