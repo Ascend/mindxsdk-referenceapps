@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
     ResizedImageInfos.push_back(resizedImageInfo);
     draw(tensors,semanticSegInfos,ResizedImageInfos,inputPicname);
     zoom("./data/mask_"+inputPicname+".jpg",Pre_Height,Pre_Width);
-    image_fusion(inputPicPath,"./data/mask_"+inputPicname+".jpg",inputPicname);
+    image_fusion(inputPicPath,"./data/mask_"+inputPicname,inputPicname);
 
     mxStreamManager->DestroyAllStreams();
     return 0;
