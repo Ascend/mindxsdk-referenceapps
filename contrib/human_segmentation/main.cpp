@@ -193,7 +193,7 @@ void  image_fusion(std::string filename,std::string maskname,std::string &inputP
 int main(int argc, char* argv[])
 {
     //Enter the image name, path
-    std::string inputPicname = "test.jpeg";
+    std::string inputPicname = "test.jpg";
     std::string inputPicPath = "./data/"+inputPicname;
 
     // Read the test.pipeline file information
