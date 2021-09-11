@@ -21,7 +21,7 @@
 #include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/ErrorCode/ErrorCode.h"
-#include "mxpiHeadPoseProto.pb.h"
+#include "../proto/mxpiHeadPoseProto.pb.h"
 
 /**
 * @api
@@ -37,7 +37,7 @@ namespace {
         int roll_x;
         int roll_y;
         // float confidence;
-    }
+    };
 }
 namespace MxPlugins {
     class MxpiHeadPosePlugin : public MxTools::MxPluginBase {
@@ -75,8 +75,8 @@ namespace MxPlugins {
              * @param buffer
              * @return APP_ERROR
              */
-            APP_ERROR GenerateClassList(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
-                mxpiheadposeproto::MxpiHeadPoseInfo& dstMxpiHeadPoseInfo);
+            APP_ERROR GenerateHeadPoseInfo(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+                mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList);
         private:
             APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
             const MxTools::MxpiErrorInfo mxpiErrorInfo);

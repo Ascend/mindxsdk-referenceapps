@@ -68,6 +68,13 @@
                 "modelPath": "./models/WHENet_b2_a1_modified.om"
             },
             "factory": "mxpi_tensorinfer",
+            "next": "mxpi_headposeplugin1"
+        },
+		"mxpi_headposeplugin1": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer1",
+            },
+            "factory": "mxpi_headposeplugin",
             "next": "appsink0"
         },
         "appsink0": {
