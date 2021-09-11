@@ -104,11 +104,17 @@ env
 示例步骤如下：
 **步骤1** 
 
-cd至plugins/MxpiHeadPoseEstimationPostProcess
+cd至plugins/    执行
 ```
 bash build.sh
 ```
 **步骤2** 
+
+cd至plugins/MxpiHeadPosePlugin/build/   修改下面代码中的SDK目录并执行
+```
+cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugins/
+```
+**步骤3** 
 
 自行在网络找一张包含头部的jpg图像，重命名为test.jpg，放入项目根目录中，再执行
 ```
