@@ -18,13 +18,13 @@ import sys
 import os
 import json
 import enum
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 
 def generate_eval_result(person_list):

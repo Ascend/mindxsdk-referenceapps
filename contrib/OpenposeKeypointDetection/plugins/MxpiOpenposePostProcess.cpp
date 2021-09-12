@@ -199,7 +199,7 @@ static void NMS(cv::Mat &plain, float threshold)
         }
     }
     plain = plainWithBorderClone(cv::Rect(borderPadding, borderPadding, plainCenter.cols - borderPadding,
-                                             plainCenter.rows - borderPadding)).clone();
+                                          plainCenter.rows - borderPadding)).clone();
 }
 
 /**
@@ -262,13 +262,11 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat> &keypoint
         if (paddingDirection == 0) {
             // remove height padding
             singleChannelMat =
-                    singleChannelMat(cv::Rect(0, 0,
-                                                singleChannelMat.cols, singleChannelMat.rows - paddingValue));
+                    singleChannelMat(cv::Rect(0, 0, singleChannelMat.cols, singleChannelMat.rows - paddingValue));
         } else {
             // remove width padding
             singleChannelMat =
-                    singleChannelMat(cv::Rect(0, 0,
-                                                singleChannelMat.cols - paddingValue, singleChannelMat.rows));
+                    singleChannelMat(cv::Rect(0, 0, singleChannelMat.cols - paddingValue, singleChannelMat.rows));
         }
         cv::resize(singleChannelMat, singleChannelMat, Size(originWidth, originHeight), 0, 0, INTER_CUBIC);
         keypointHeatmap[i] = singleChannelMat;
@@ -279,12 +277,10 @@ APP_ERROR MxpiOpenposePostProcess::ResizeHeatmaps(std::vector<cv::Mat> &keypoint
                    K_UPSAMPLED_STRIDE, K_UPSAMPLED_STRIDE, INTER_CUBIC);
         if (paddingDirection == 0) {
             singleChannelMat =
-                    singleChannelMat(cv::Rect(0, 0,
-                                                singleChannelMat.cols, singleChannelMat.rows - paddingValue));
+                    singleChannelMat(cv::Rect(0, 0, singleChannelMat.cols, singleChannelMat.rows - paddingValue));
         } else {
             singleChannelMat =
-                    singleChannelMat(cv::Rect(0, 0,
-                                                singleChannelMat.cols - paddingValue, singleChannelMat.rows));
+                    singleChannelMat(cv::Rect(0, 0, singleChannelMat.cols - paddingValue, singleChannelMat.rows));
         }
         cv::resize(singleChannelMat, singleChannelMat, Size(originWidth, originHeight), 0, 0, INTER_CUBIC);
         pafHeatmap[i] = singleChannelMat;
@@ -783,13 +779,13 @@ std::vector<std::shared_ptr<void>> MxpiOpenposePostProcess::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto parentNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string>{
             STRING, "dataSource", "parentName", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
-    auto imageDecoderNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto imageDecoderNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string>{
             STRING, "imageSource", "inputName", "the name of imagedecoder", "mxpi_imagedecoder0", "NULL", "NULL"});
-    auto inputHeightProSptr = std::make_shared<ElementProperty<uint32_t>>(ElementProperty<uint32_t>{
+    auto inputHeightProSptr = (std::make_shared<ElementProperty<uint32_t>>)(ElementProperty<uint32_t>{
             UINT, "inputHeight", "inputHeightValue", "the height of the input image", 368, 0, 1000});
-    auto inputWidthProSptr = std::make_shared<ElementProperty<uint32_t>>(ElementProperty<uint32_t>{
+    auto inputWidthProSptr = (std::make_shared<ElementProperty<uint32_t>>)(ElementProperty<uint32_t>{
             UINT, "inputWidth", "inputWidthValue", "the width of the input image", 368, 0, 1000});
     properties.push_back(imageDecoderNameProSptr);
     properties.push_back(parentNameProSptr);

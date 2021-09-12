@@ -17,13 +17,13 @@
 import sys
 import os
 import enum
-sys.path.append("../proto")
-import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 import numpy as np
 import cv2
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+sys.path.append("../proto")
+import mxpiOpenposeProto_pb2 as mxpiOpenposeProto
 
 
 COCO_PAIRS = [(1, 2), (1, 5), (2, 3), (3, 4), (5, 6), (6, 7), (1, 8), (8, 9), (9, 10), (1, 11),
