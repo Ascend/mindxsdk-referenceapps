@@ -53,7 +53,7 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
     // If the contents of the file are not empty, write the contents of the file to dataBuffer
     if(fileSize > 0){
         dataBuffer.dataSize = fileSize;
-        dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize];//Memory is allocated based on file length
+        dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize];// Memory is allocated based on file length
         if(dataBuffer.dataPtr == nullptr){
             LogError << "allocate memory with \"new uint32_t\" failed.";
             fclose(fp);
@@ -96,7 +96,7 @@ static std::string readpipelineconfig(const std::string &pipelineConfigPath)
     return pipelineConfig;
 }
 
-//Gets the amount of tension
+// Gets the amount of tension
 void gettensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
@@ -127,16 +127,16 @@ void semanticsegoutput(const std::vector<MxBase::TensorBase>& tensors,
                        std::vector<MxBase::SemanticSegInfo> &semanticSegInfos)
 {
     auto tensor = tensors[0];
-    auto shape = tensor.GetShape();//4
-    uint32_t batchSize = shape[0];//1
-    int classNum_ = 1;//float32
+    auto shape = tensor.GetShape();
+    uint32_t batchSize = shape[0];
+    int classNum_ = 1;// float32
     // NCHW type is not supported yet.NHWC
     for (uint32_t i = 0; i < batchSize; i++) {
         uint32_t inputModelHeight = resizedImageInfos[i].heightResize;
         uint32_t inputModelWidth = resizedImageInfos[i].widthResize;
         uint32_t outputModelWidth = OUTPUT_MODEL_WIDTH;
         MxBase::SemanticSegInfo semanticSegInfo;
-        //The first address of the picture data
+        // The first address of the picture data
         auto tensorPtr = (float*)tensor.GetBuffer() + i * tensor.GetByteSize() / batchSize;
         std::vector<std::vector<int>> results(inputModelHeight, std::vector<int>(inputModelWidth));
         int count = 0;
@@ -147,12 +147,12 @@ void semanticsegoutput(const std::vector<MxBase::TensorBase>& tensors,
                 count++;
             }
         }
-        semanticSegInfo.pixels = results;//Information about a picture
+        semanticSegInfo.pixels = results;// Information about a picture
         semanticSegInfos.push_back(semanticSegInfo);
     }
 }
 
-//Mask diagram generation
+// Mask diagram generation
 APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
                std::vector<MxBase::SemanticSegInfo>& semanticSegInfos,
                const std::vector<MxBase::ResizedImageInfo>& resizedImageInfos,
@@ -171,7 +171,7 @@ APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
     return APP_ERR_OK;
 }
 
-//Mask chart zoom
+// Mask chart zoom
 void zoom(std::string filename,int height,int width){
     cv::Mat src = cv::imread("./"+filename,cv::IMREAD_UNCHANGED);
     cv::Mat dst;
@@ -179,21 +179,21 @@ void zoom(std::string filename,int height,int width){
     cv::imwrite(filename,dst);
 }
 
-//Picture fusion
+// Picture fusion
 void  image_fusion(std::string filename,std::string maskname,std::string &inputPicname){
     cv::Mat img1 = cv::imread(filename);
     cv::Mat img2 = cv::imread(maskname);
     cv::Mat dst;
-    //1 and 0.5 are the transparency of array
-    //0 means offset added to weighted sum
+    // 1 and 0.5 are the transparency of array
+    // 0 means offset added to weighted sum
     cv::addWeighted(img1,1,img2,0.5,0,dst);
     cv::imwrite("./result/result_"+inputPicname,dst);
 }
 
 int main(int argc, char* argv[])
 {
-    //Enter the image name, path
-    std::string inputPicname = "test.jpg";
+    // Enter the image name, path
+    std::string inputPicname = "test.jpeg";
     std::string inputPicPath = "./data/"+inputPicname;
     unsigned long idx = inputPicname.find(".jpg");
 
@@ -211,13 +211,13 @@ int main(int argc, char* argv[])
     std::string streamName = "detection";
     // Create a new stream management MxStreamManager object and initialize it
     auto mxStreamManager = std::make_shared<MxStream::MxStreamManager>();
-    APP_ERROR ret = mxStreamManager->InitManager();//Initialize the flow management tool
+    APP_ERROR ret = mxStreamManager->InitManager();// Initialize the flow management tool
     if(ret != APP_ERR_OK){
         LogError << GetError(ret) << "Fail to init Stream manager.";
         return ret;
     }
     // Load the information that pipeline gets to create a new stream business flow
-    ret = mxStreamManager->CreateMultipleStreams(pipelineConfig);//The incoming profile
+    ret = mxStreamManager->CreateMultipleStreams(pipelineConfig);// The incoming profile
     if(ret != APP_ERR_OK){
         LogError << GetError(ret) << "Fail to creat Stream.";
         return ret;
@@ -258,7 +258,7 @@ int main(int argc, char* argv[])
     gettensors(*tensorPackageList,tensors);
     std::vector<MxBase::ResizedImageInfo> ResizedImageInfos;
     std::vector<MxBase::SemanticSegInfo> semanticSegInfos;
-    MxBase::ResizedImageInfo resizedImageInfo;//输入图片数据信息
+    MxBase::ResizedImageInfo resizedImageInfo;
     resizedImageInfo.heightResize = INPUT_MODEL_HEIGHT;
     resizedImageInfo.widthResize = INPUT_MODEL_WIDTH;
     ResizedImageInfos.push_back(resizedImageInfo);
