@@ -36,7 +36,7 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
     }
     // Gets the absolute path to the file
     char path[PATH_MAX + 1] = { 0x00 };
-    if((strlen(c) > PATH_MAX) || (realpath(c, path) == nullptr)){
+    if((strlen(c) > PATH_MAX) || (realpath(c,path) == nullptr)){
         LogError << "Failed to get image, the image path is (" << filePath << ").";
         return APP_ERR_COMM_NO_EXIST;
     }
@@ -53,7 +53,7 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
     // If the contents of the file are not empty, write the contents of the file to dataBuffer
     if(fileSize > 0){
         dataBuffer.dataSize = fileSize;
-        dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize];// Memory is allocated based on file length
+        dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize]; // Memory is allocated based on file length
         if(dataBuffer.dataPtr == nullptr){
             LogError << "allocate memory with \"new uint32_t\" failed.";
             fclose(fp);
@@ -129,7 +129,7 @@ void semanticsegoutput(const std::vector<MxBase::TensorBase>& tensors,
     auto tensor = tensors[0];
     auto shape = tensor.GetShape();
     uint32_t batchSize = shape[0];
-    int classNum_ = 1;// float32
+    int classNum_ = 1; // float32
     // NCHW type is not supported yet.NHWC
     for (uint32_t i = 0; i < batchSize; i++) {
         uint32_t inputModelHeight = resizedImageInfos[i].heightResize;
@@ -147,7 +147,7 @@ void semanticsegoutput(const std::vector<MxBase::TensorBase>& tensors,
                 count++;
             }
         }
-        semanticSegInfo.pixels = results;// Information about a picture
+        semanticSegInfo.pixels = results; // Information about a picture
         semanticSegInfos.push_back(semanticSegInfo);
     }
 }
@@ -175,7 +175,7 @@ APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
 void zoom(std::string filename,int height,int width){
     cv::Mat src = cv::imread("./"+filename,cv::IMREAD_UNCHANGED);
     cv::Mat dst;
-    resize(src, dst, cv::Size(width, height));//缩放图像
+    resize(src, dst, cv::Size(width, height));
     cv::imwrite(filename,dst);
 }
 
@@ -211,13 +211,13 @@ int main(int argc, char* argv[])
     std::string streamName = "detection";
     // Create a new stream management MxStreamManager object and initialize it
     auto mxStreamManager = std::make_shared<MxStream::MxStreamManager>();
-    APP_ERROR ret = mxStreamManager->InitManager();// Initialize the flow management tool
+    APP_ERROR ret = mxStreamManager->InitManager(); // Initialize the flow management tool
     if(ret != APP_ERR_OK){
         LogError << GetError(ret) << "Fail to init Stream manager.";
         return ret;
     }
     // Load the information that pipeline gets to create a new stream business flow
-    ret = mxStreamManager->CreateMultipleStreams(pipelineConfig);// The incoming profile
+    ret = mxStreamManager->CreateMultipleStreams(pipelineConfig); // The incoming profile
     if(ret != APP_ERR_OK){
         LogError << GetError(ret) << "Fail to creat Stream.";
         return ret;
