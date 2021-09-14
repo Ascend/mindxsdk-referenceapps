@@ -363,8 +363,6 @@ for txt_file in ground_truth_files_list:
     # check if there is a correspondent detection-results file
     temp_path = os.path.join(DR_PATH, (file_id + ".txt"))
     if not os.path.exists(temp_path):
-        # error_msg = "Error. File not found: {}\n".format(temp_path)
-        # error(error_msg)
         continue
     lines_list = file_lines_to_list(txt_file)
     # create ground-truth dictionary
@@ -437,7 +435,7 @@ if specific_iou_flagged:
         '\n --set-class-iou [class_1] [IoU_1] [class_2] [IoU_2] [...]'
     if n_args % 2 != 0:
         error('Error, missing arguments. Flag usage:' + error_msg)
-    # [class_1] [IoU_1] [class_2] [IoU_2]
+    # Its format is [class_1] [IoU_1] [class_2] [IoU_2]
     specific_iou_classes = args.set_class_iou[::2]  # even
     iou_list = args.set_class_iou[1::2]  # odd
     if len(specific_iou_classes) != len(iou_list):
@@ -457,7 +455,7 @@ if specific_iou_flagged:
 # """
 # get a list with the detection-results files
 dr_files_list = glob.glob(DR_PATH + '/*.txt')
-# print(dr_files_list)
+
 dr_files_list.sort()
 
 for class_index, class_name in enumerate(gt_classes):
@@ -466,7 +464,6 @@ for class_index, class_name in enumerate(gt_classes):
         # the first time it checks
         # if all the corresponding ground-truth files exist
         file_id = txt_file.split(".txt", 1)[0]
-        # print("file_id",file_id)
 
         file_id = os.path.basename(os.path.normpath(file_id))
         temp_path = os.path.join(GT_PATH, (file_id + ".txt"))
@@ -705,7 +702,7 @@ with open(output_files_path + "/output.txt", 'w') as output_file:
 
         ap, mrec, mprec = voc_ap(rec[:], prec[:])
         sum_AP += ap
-        # class_name + " AP = {0:.2f}%".format(ap*100)
+        # class_name + " AP is {0:.2f}%".format(ap*100)
         text = "{0:.2f}%".format(ap * 100) + " = " + class_name + " AP "
         # """
         #  Write to output.txt
@@ -796,7 +793,6 @@ shutil.rmtree(TEMP_FILES_PATH)
 det_counter_per_class = {}
 for txt_file in dr_files_list:
     file_id = txt_file.split(".txt", 1)[0]
-    # print("file_id",file_id)
 
     # get lines to list
     lines_list = file_lines_to_list(txt_file)
