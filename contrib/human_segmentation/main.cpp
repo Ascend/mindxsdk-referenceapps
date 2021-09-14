@@ -164,7 +164,7 @@ APP_ERROR draw(const std::vector<MxBase::TensorBase>& tensors,
     if (dumpImage_) {
         for (uint32_t i = 0; i < semanticSegInfos.size(); i++) {
             std::ostringstream outputPath;
-            outputPath << "./data/mask_" << inputPicname << ".jpg";
+            outputPath << "./data/mask_" << inputPicname;
             MxBase::DrawPixelsRGB(semanticSegInfos[i].pixels, outputPath.str());
         }
     }
@@ -193,8 +193,14 @@ void  image_fusion(std::string filename,std::string maskname,std::string &inputP
 int main(int argc, char* argv[])
 {
     //Enter the image name, path
-    std::string inputPicname = "test.jpg";
+    std::string inputPicname = "test.jpeg";
     std::string inputPicPath = "./data/"+inputPicname;
+    unsigned long idx = inputPicname.find(".jpg");
+
+    if(idx == std::string::npos ){
+        LogError << "The input is incorrect\n";
+        return 0;
+    }
 
     // Read the test.pipeline file information
     std::string pipelineConfigPath = "./test.pipeline";
@@ -257,7 +263,7 @@ int main(int argc, char* argv[])
     resizedImageInfo.widthResize = INPUT_MODEL_WIDTH;
     ResizedImageInfos.push_back(resizedImageInfo);
     draw(tensors,semanticSegInfos,ResizedImageInfos,inputPicname);
-    zoom("./data/mask_"+inputPicname+".jpg",Pre_Height,Pre_Width);
+    zoom("./data/mask_"+inputPicname,Pre_Height,Pre_Width);
     image_fusion(inputPicPath,"./data/mask_"+inputPicname,inputPicname);
 
     mxStreamManager->DestroyAllStreams();
