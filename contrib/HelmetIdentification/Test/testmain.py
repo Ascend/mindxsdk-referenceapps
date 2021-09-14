@@ -14,9 +14,9 @@
 
 import json
 import os
+import random
 import cv2
 import numpy as np
-import random
 import StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
@@ -127,11 +127,10 @@ if __name__ == '__main__':
             
 
         # print the infer result
-        # print(infer_result.data.decode())
 
         results = json.loads(infer_result.data.decode())
         img = cv2.imread(img_path)
-        img_shape=img.shape
+        img_shape = img.shape
         print(img_shape)
         bboxes = []
         key = "MxpiObject"
@@ -151,7 +150,6 @@ if __name__ == '__main__':
             L1.append(int(bboxes['x1']))
             L1.append(int(bboxes['y0']))
             L1.append(int(bboxes['y1']))
-            # L1=np.array(L1,dtype=np.int32)
             L1.append(bboxes['confidence'])
             L1.append(bboxes['text'])
             print(L1)
