@@ -79,7 +79,7 @@ while True:
 
     DictStructure = utils.get_inference_data(inferResult0)
     # the visualization of the inference result, save the output in the specified folder
-    utils.Visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
+    utils.cv_visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
