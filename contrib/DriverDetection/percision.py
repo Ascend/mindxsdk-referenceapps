@@ -20,8 +20,8 @@ import datetime
 import json
 import os
 import sys
-import numpy as np
 import math
+import numpy as np
 
 from StreamManagerApi import StreamManagerApi
 from StreamManagerApi import MxDataInput
@@ -46,22 +46,19 @@ def multiclass_logloss(actual, predicted, eps=1e-15):
     :param predicted: 分类预测结果矩阵, 每个类别都有一个概率
     """
     # Convert 'actual' to a binary array if it's not already:
-    # print("actual",actual)
     print(predicted.shape)
     if len(actual.shape) == 1:
         actual2 = np.zeros((actual.shape[0], predicted.shape[-1]))
         for i, val in enumerate(actual):
-            # print("actual2[{}, {}]:{}".format(i,val,actual2[i, val] ))
             actual2[i, val] = 1
         actual = actual2
-        # print("actual2:",actual2)
+        
 
     clip = np.clip(predicted, eps, 1 - eps)
     rows = actual.shape[0]
     vsota = np.sum(actual * np.log(clip))
-    # print("clip:{}  rows:{},  vsota:{}".format(clip, rows, vsota))
-    val = -1.0 / rows * vsota
-    print("LogLoss:",val)
+    logLoss = -1.0 / rows * vsota
+    print("LogLoss:",logloss)
     return val
 
 if __name__ == '__main__':
@@ -87,7 +84,7 @@ if __name__ == '__main__':
     file_list = os.listdir(dir_name)
     
     result = []
-    actual = []
+    actual_label = []
     
     for file_label in file_list:
         file_label_path = os.path.join(dir_name, file_label)
@@ -129,8 +126,8 @@ if __name__ == '__main__':
              
             #tmp = gui_yi_hua(tmp)
             result.append(tmp)
-            actual.append(int(file_label.split("c")[-1]))
+            actual_label.append(int(file_label.split("c")[-1]))
             
-    multiclass_logloss(np.array(actual),  gui_yi_hua(result))
+    multiclass_logloss(np.array(actual_label),  gui_yi_hua(result))
     # destroy streams
     stream_manager_api.DestroyAllStreams()

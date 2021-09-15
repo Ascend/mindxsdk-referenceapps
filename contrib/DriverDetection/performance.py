@@ -54,7 +54,7 @@ if __name__ == '__main__':
             print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
                 inferResult.errorCode, inferResult.data.decode()))
             break
-        total_frame= total_frame + 1
+        total_frame = total_frame + 1
         if (int(end - time_start) == 10):
             fps = total_frame / 10
             print("fps:",fps)
