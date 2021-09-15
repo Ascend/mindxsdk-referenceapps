@@ -43,7 +43,7 @@ if __name__ == '__main__':
     total_frame = 0
     st_frame = 0
     detect_time = sys.argv[1]
-    time_start = time.time() #开始计时
+    time_start = time.time() 
     while True:        
         # Obtain the inference result by specifying streamName and uniqueId.
         inferResult = streamManagerApi.GetResult(streamName, inPluginId, 10000)

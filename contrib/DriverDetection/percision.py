@@ -122,9 +122,8 @@ if __name__ == '__main__':
             tmp = [0,0,0,0,0,0,0,0,0,0]
             for val in res["MxpiClass"]:
                  idx = val["classId"]
-                 tmp[idx] = val["confidence"]
-             
-            #tmp = gui_yi_hua(tmp)
+                 tmp[idx] = val["confidence"] 
+            
             result.append(tmp)
             actual_label.append(int(file_label.split("c")[-1]))
             
