@@ -49,8 +49,8 @@ def multiclass_logloss(actual, predicted, eps=1e-15):
     print(predicted.shape)
     if len(actual.shape) == 1:
         actual2 = np.zeros((actual.shape[0], predicted.shape[-1]))
-        for i, val in enumerate(actual):
-            actual2[i, val] = 1
+        for i, value in enumerate(actual):
+            actual2[i, value] = 1
         actual = actual2
         
 
