@@ -87,6 +87,22 @@ static APP_ERROR Process(std::vector<std::string> rtspList)
     return APP_ERR_OK;
 }
 
+static void LoadVideoSource(int argc, const std::vector<std::string> &argv, std::vector<std::string> &rtspList)
+{
+    if (argc <= 1) {
+        LogWarn
+                << "Please enter at least one video stream address, such as './videoGestureRecognition xxx/xxx/xx.264'.";
+        LogWarn << "Not config rtsp video stream address, use code setting.";
+
+        rtspList.emplace_back("#{rtsp流地址}");
+    } else {
+        for (int i = 1; i < argc; i++) {
+            LogInfo << "rtsp video stream " << i << " " << argv[i];
+            rtspList.emplace_back(argv[i]);
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {
     // rtsp video string
@@ -103,9 +119,11 @@ int main(int argc, char *argv[])
             rtspList.emplace_back(rtspStream);
         }
     }
-    if (rtspList.empty()) {
-        rtspList.emplace_back("#{rtsp流地址}");
+    std::vector<std::string> arguments = {};
+    for (int i = 0; i < argc; i++) {
+        arguments.emplace_back(argv[i]);
     }
+    LoadVideoSource(argc, arguments, rtspList);
 
     /// === resource init === ///
     // init devices
