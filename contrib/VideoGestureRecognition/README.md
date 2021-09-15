@@ -103,7 +103,7 @@ atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel -
 
 > 相关参数修改
 
-main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频流格式为H264或H265)
+main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频流格式为H264)
 
 提示：使用测试视频中的手势应当符合国际标准，视频背景保持白底，光线充足。
 
