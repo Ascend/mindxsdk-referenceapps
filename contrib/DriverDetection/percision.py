@@ -57,7 +57,7 @@ def multiclass_logloss(actual, predicted, eps=1e-15):
     clip = np.clip(predicted, eps, 1 - eps)
     rows = actual.shape[0]
     vsota = np.sum(actual * np.log(clip))
-    logLoss = -1.0 / rows * vsota
+    logloss = -1.0 / rows * vsota
     print("LogLoss:",logloss)
     return val
 
