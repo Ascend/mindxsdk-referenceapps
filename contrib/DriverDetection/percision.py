@@ -121,8 +121,8 @@ if __name__ == '__main__':
             res = eval(infer_res)
             tmp = [0,0,0,0,0,0,0,0,0,0]
             for val in res["MxpiClass"]:
-                 idx = val["classId"]
-                 tmp[idx] = val["confidence"] 
+                idx = val["classId"]
+                tmp[idx] = val["confidence"] 
             
             result.append(tmp)
             actual_label.append(int(file_label.split("c")[-1]))
