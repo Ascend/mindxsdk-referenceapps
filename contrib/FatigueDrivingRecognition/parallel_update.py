@@ -41,7 +41,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    pipeline_path = b"parallel2.pipeline"
+    pipeline_path = b"pipeline/parallel2.pipeline"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))

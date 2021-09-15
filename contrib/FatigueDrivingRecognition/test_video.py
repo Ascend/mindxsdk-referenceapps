@@ -35,7 +35,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    pipeline_path = b"test_video.pipeline"
+    pipeline_path = b"pipeline/test_video.pipeline"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -102,7 +102,7 @@ if __name__ == '__main__':
                 img_fatigue = cv2.cvtColor(img_yuv_fatigue, cv2.COLOR_YUV2BGR_NV12)
                 cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
                 index_print = index - 30 + max_index
-                image_path = "fatigue_1/1/"
+                image_path = "fatigue/"
                 if not os.path.exists(image_path):
                     os.mkdir(image_path)
                 image_name = image_path + str(index_print) + ".jpg"
