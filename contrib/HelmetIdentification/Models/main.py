@@ -69,11 +69,7 @@ while True:
     # Get data through GetProtobuf interface
     inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
     # Determine whether the output is empty
-    object_list = MxpiDataType.MxpiObjectList()
-    object_list.ParseFromString(inferResult0[0].messageBuf)
-    # Get target box information
-    objectlist_data = object_list.objectVec
-    if len(objectlist_data) == 0:
+    if len(inferResult0[0].messageBuf) == 0:
         print('Object detection result of model infer is null!!!')
         continue
 
