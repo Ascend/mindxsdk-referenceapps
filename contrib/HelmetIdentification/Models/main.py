@@ -11,12 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import cv2
 import time
 import signal
-import cv2
 import numpy as np
 import StreamManagerApi
-import utils
+import Utils
 import MxpiDataType_pb2 as MxpiDataType
 
 
@@ -73,9 +73,9 @@ while True:
         print('Object detection result of model infer is null!!!')
         continue
 
-    DictStructure = utils.get_inference_data(inferResult0)
+    DictStructure = Utils.get_inference_data(inferResult0)
     # the visualization of the inference result, save the output in the specified folder
-    utils.cv_visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
+    Utils.cv_visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
