@@ -5,7 +5,7 @@
         },
         "mxpi_rtspsrc0": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.107:8554/test1.264",
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/test1.264",
                 "channelId": "0"
             },
             "factory": "mxpi_rtspsrc",
