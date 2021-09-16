@@ -73,9 +73,9 @@ while True:
         if inferResult0[0].errorCode == 1001:
             print('Object detection result of model infer is null!!!')
         continue
-    if inferResult0 is None:
-        print("Warning:Input information not detected")
-        break
+    if len(inferResult0) == 0:
+        print("Object detection result of model infer is null!!!")
+        continue
 
     DictStructure = utils.get_inference_data(inferResult0)
     # the visualization of the inference result, save the output in the specified folder
