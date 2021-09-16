@@ -52,7 +52,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/resnet50.cfg",
                 "labelPath": "./models/dirver-detection_clsidx_to_label.names",
-                "postProcessLibPath": "/home/zhongzhi16/sdk/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libresnet50postprocess.so"
+                "postProcessLibPath": "../../../lib/modelpostprocessors/libresnet50postprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"

@@ -1,7 +1,6 @@
 model_path=$1
 output_model_name=$2
-
-#/usr/local/Ascend/atc/bin/atc \
+cfg=$3
 atc --model=$model_path \
     --framework=1 \
     --output=$output_model_name \
@@ -9,6 +8,5 @@ atc --model=$model_path \
     --enable_small_channel=1 \
     --log=error \
     --soc_version=Ascend310 \
-    --insert_op_conf=./yuv_aipp.config 
-    #--input_fp16_nodes=x \
-    # --output_type=FP32
+    --insert_op_conf=$cfg 
+    

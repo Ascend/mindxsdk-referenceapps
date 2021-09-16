@@ -43,6 +43,8 @@ if __name__ == '__main__':
     total_frame = 0
     st_frame = 0
     detect_time = sys.argv[1]
+    threshold_1 = 0.2
+    threshold_2 = 0.8
     time_start = time.time() 
     while True:        
         # Obtain the inference result by specifying streamName and uniqueId.
@@ -65,11 +67,11 @@ if __name__ == '__main__':
         if (int(end - time_start) == int(detect_time)):
             thr = st_frame / total_frame
             print("frame_tatal:{}, st_frame:{}, thr:{}".format(total_frame, st_frame, thr))
-            if thr < 0.2:
+            if thr < threshold_1:
                 print("严重警告")
-            elif thr >= 0.2 and thr < 0.8:
+            elif thr >= threshold_1 and thr < threshold_2:
                 print("警告")
-            elif thr >= 0.8:
+            elif thr >= threshold_2:
                 print("有危险行为")
             thr = st_frame = total_frame = 0            
             time_start = time.time()

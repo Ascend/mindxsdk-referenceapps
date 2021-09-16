@@ -27,7 +27,7 @@ from StreamManagerApi import StreamManagerApi
 from StreamManagerApi import MxDataInput
 
 
-def gui_yi_hua(predicted):
+def normalization_fun(predicted):
     predicted = np.array(predicted)
     add_val = 0
     min_val = np.min(predicted)
@@ -127,6 +127,6 @@ if __name__ == '__main__':
             result.append(tmp)
             actual_label.append(int(file_label.split("c")[-1]))
             
-    multiclass_logloss(np.array(actual_label),  gui_yi_hua(result))
+    multiclass_logloss(np.array(actual_label),  normalization_fun(result))
     # destroy streams
     stream_manager_api.DestroyAllStreams()
