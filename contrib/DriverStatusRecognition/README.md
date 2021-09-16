@@ -60,7 +60,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
  cd convert
- bash mindir2om.sh /path/to/*.air  /path/to/output_name_use_to_video_test.om  yuv_aipp.config
+ bash air2om.sh /path/to/*.air  /path/to/output_name_use_to_video_test.om  yuv_aipp.config
 ```
 
 **步骤3**  启动rtsp服务
