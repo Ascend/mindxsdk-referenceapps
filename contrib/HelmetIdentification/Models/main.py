@@ -17,6 +17,7 @@ import cv2
 import numpy as np
 import StreamManagerApi
 import utils
+import MxpiDataType_pb2 as MxpiDataType
 
 
 def my_handler(signum, frame):
