@@ -69,7 +69,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 **步骤4** 修改配置文件
 
-修改pipeline中的 "rtspUrl", "modelPath"选项
+修改pipeline中的 "rtspUrl", "modelPath", "postProcessLibPath" 等选项
 
 **步骤4** 进行驾驶员状态识别
 
