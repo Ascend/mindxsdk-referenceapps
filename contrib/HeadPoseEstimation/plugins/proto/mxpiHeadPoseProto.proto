@@ -9,15 +9,14 @@ string dataSource = 3;
 
 message MxpiHeadPoseInfo
 {
-    int32 yaw_x = 1;
-    int32 yaw_y = 2;
-    int32 pitch_x = 3;
-    int32 pitch_y = 4;
-    int32 roll_x = 5;
-    int32 roll_y = 6;
+    repeated MxpiMetaHeader headerVec = 1;
+    int32 yaw = 2;
+    int32 pitch = 3;
+    int32 roll = 4;
+
 }
 
 message MxpiHeadPoseList
 {
-    repeated MxpiHeadPoseInfo headposeVec = 1;
+    repeated MxpiHeadPoseInfo headposeInfoVec = 1;
 }

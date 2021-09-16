@@ -146,10 +146,11 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
     if (tensors.size() == 1) {
         // tensorflow model
         auto headpose = tensors[0].GetShape();
+        LogWarn << "source Tensor number:" << tensors.size() << endl;
+        LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
         LogWarn << "headpose[0]:" << headpose[0] << endl;
-        LogWarn << "headpose[1]:" << headpose[1] << endl;
-        LogWarn << "headpose[2]:" << headpose[2] << endl;
-        LogWarn << "headpose[3]:" << headpose[3] << endl;
+        // LogWarn << "headpose[1]:" << headpose[1] << endl;
+        // LogWarn << "headpose[2]:" << headpose[2] << endl;
     }
     else {
         LogWarn << "Tensor Size Error!!" << endl;
@@ -158,13 +159,12 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
     }
 
     // Generate HeadPoseInfo
-    // Todo: change class to dstMxpiHeadPoseList
     
-    // MxpiClass* dstMxpiClass = dstMxpiClassList.add_classvec();
-    // MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiClass->add_headervec();
-    // dstMxpiMetaHeaderList->set_datasource(parentName_);
-    // dstMxpiMetaHeaderList->set_memberid(0);
-    // dstMxpiClass->set_classid(SAMPLE_CLASS_ID);
+    auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
+    mxpiheadposeproto::MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHeadPoseInfoPtr->add_headervec();
+    dstMxpiMetaHeaderList->set_datasource(parentName_);
+    dstMxpiMetaHeaderList->set_memberid(0);
+    dstMxpiHeadPoseInfoPtr->set_yaw(SAMPLE_CLASS_ID);
     // dstMxpiClass->set_confidence(SAMPLE_CONF);
     // std::string OutputClassStr =  SAMPLE_CLASS_NAME + std::to_string(tensors[0].GetByteSize());
     // dstMxpiClass->set_classname(OutputClassStr + ", " + descriptionMessage_);
@@ -211,8 +211,7 @@ APP_ERROR MxpiHeadPosePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
 
 
 
-    // Generate sample output
-    // dont understand
+    // Generate WHENet output
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<mxpiheadposeproto::MxpiHeadPoseList> dstMxpiHeadPoseListSptr = make_shared<mxpiheadposeproto::MxpiHeadPoseList>();
     APP_ERROR ret = GenerateHeadPoseInfo(*srcMxpiTensorPackageListSptr, *dstMxpiHeadPoseListSptr);
