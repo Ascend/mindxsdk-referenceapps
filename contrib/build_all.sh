@@ -21,6 +21,9 @@ SAMPLE_FOLDER=(
     ActionRecognition/
     CrowdCounting/
     human_segmentation/
+	ActionRecognition/
+	CrowdCounting/
+    MultiChannelVideoDetection/
 )
 
 
