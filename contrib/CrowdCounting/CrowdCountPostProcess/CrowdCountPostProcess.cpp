@@ -16,11 +16,11 @@
 
 #include "CrowdCount.h"
 #include "MxBase/Log/Log.h"
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/core.hpp> 
-#include <opencv2/highgui.hpp> 
+#include "opencv2/opencv.hpp"
+#include "opencv2/core/mat.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
 #include "MxBase/Maths/FastMath.h"
 
 namespace {
