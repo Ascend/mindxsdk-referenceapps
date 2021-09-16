@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MXBASE_YOLOV3DETECTIONOPENCV_H
-#define MXBASE_YOLOV3DETECTIONOPENCV_H
+#ifndef MXBASE_RCFDETECTION_H
+#define MXBASE_RCFDETECTION_H
 
 #include <opencv2/opencv.hpp>
 #include <RcfPostProcess.h>
@@ -24,14 +24,14 @@
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
 
 struct InitParam {
-    uint32_t deviceId;
-    bool checkTensor;
-    std::string modelPath;
-    uint32_t outSizeNum;
-    std::string outSize;
-    uint32_t rcfType;
-    uint32_t modelType;
-    uint32_t inputType;
+    uint32_t deviceId = 0;
+    bool checkTensor = true;
+    std::string modelPath = "";
+    uint32_t outSizeNum = 0;
+    std::string outSize = "";
+    uint32_t rcfType = 0;
+    uint32_t modelType = 0;
+    uint32_t inputType = 0;
 };
 
 class RcfDetection {
@@ -44,7 +44,8 @@ public:
     APP_ERROR Process(const std::string &imgPath);
 protected:
     APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor);
-    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,uint32_t resizeHeight,uint32_t resizeWidth);
+    APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,
+		                 uint32_t resizeHeight, uint32_t resizeWidth);
     APP_ERROR WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath);
     void SetRcfPostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 
@@ -54,8 +55,7 @@ private:
     std::shared_ptr<RcfPostProcess> post_;
     MxBase::ModelDesc modelDesc_ = {};
     uint32_t deviceId_ = 0;
-    int dvppHeightStride;
-    int dvppWidthStride;
-
+    int dvppHeightStride = 0;
+    int dvppWidthStride = 0;
 };
 #endif

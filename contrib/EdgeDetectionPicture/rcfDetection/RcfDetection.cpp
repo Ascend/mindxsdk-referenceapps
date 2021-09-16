@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,43 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "opencv2/opencv.hpp"
 #include "RcfDetection.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
 #include "MxBase/Log/Log.h"
 #include "../rcfPostProcess/RcfPostProcess.h"
 #include <unistd.h>
 #include <sys/stat.h>
+#include "opencv2/opencv.hpp"
 
-
-namespace{
+namespace {
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
     const uint32_t channel = 3;
-    const double alpha1 = 255.0/255;
+    const double ALPHA = 255.0 / 255;
 }
-
-
 void RcfDetection::SetRcfPostProcessConfig(const InitParam &initParam,
-                                                       std::map<std::string, std::shared_ptr<void>> &config) {
+                                           std::map<std::string, std::shared_ptr<void>> &config)
+{
     MxBase::ConfigData configData;
     const std::string checkTensor = initParam.checkTensor ? "true" : "false";
-    
     configData.SetJsonValue("OUTSIZE_NUM", std::to_string(initParam.outSizeNum));
     configData.SetJsonValue("OUTSIZE", initParam.outSize);
     configData.SetJsonValue("RCF_TYPE", std::to_string(initParam.rcfType));
     configData.SetJsonValue("MODEL_TYPE", std::to_string(initParam.modelType));
     configData.SetJsonValue("INPUT_TYPE", std::to_string(initParam.inputType));
     configData.SetJsonValue("CHECK_MODEL", checkTensor);
-
     auto jsonStr = configData.GetCfgJson().serialize();
     config["postProcessConfigContent"] = std::make_shared<std::string>(jsonStr);
-//    config["labelPath"] = std::make_shared<std::string>(initParam.labelPath);
 }
 
-APP_ERROR RcfDetection::Init(const InitParam &initParam) {
+APP_ERROR RcfDetection::Init(const InitParam &initParam)
+{
     deviceId_ = initParam.deviceId;
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
@@ -89,7 +84,8 @@ APP_ERROR RcfDetection::Init(const InitParam &initParam) {
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::DeInit() {
+APP_ERROR RcfDetection::DeInit()
+{
     dvppWrapper_->DeInit();
     model_->DeInit();
     post_->DeInit();
@@ -97,34 +93,33 @@ APP_ERROR RcfDetection::DeInit() {
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
+APP_ERROR RcfDetection::ReadImage(const std::string &imgPath,
+                                  MxBase::TensorBase &tensor)
+{
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
-	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                  MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
- 
     dvppHeightStride = output.heightStride;
-    dvppWidthStride = output.widthStride;    
-
-    std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU/YUV_BYTE_DE , output.widthStride};
+    dvppWidthStride = output.widthStride;
+    std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
     tensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
-
-APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,uint32_t resizeHeight, uint32_t resizeWidth) {
-    
+APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor,
+                               uint32_t resizeHeight, uint32_t resizeWidth)
+{
     auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
-
     input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
     input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
@@ -140,22 +135,21 @@ APP_ERROR RcfDetection::Resize(const MxBase::TensorBase &inputTensor, MxBase::Te
         LogError << "VpcResize failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
-	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                  MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
     shape = {1, channel, output.heightStride, output.widthStride};
-    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
-    
+    outputTensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
 
 APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
-                                           std::vector<MxBase::TensorBase> &outputs) {
-    
+                                  std::vector<MxBase::TensorBase> &outputs)
+{
     std::vector<MxBase::TensorBase> output={};
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
@@ -174,42 +168,37 @@ APP_ERROR RcfDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH;
     auto startTime = std::chrono::high_resolution_clock::now();
-
     APP_ERROR ret = model_->ModelInference(inputs, outputs, dynamicInfo);
-    
     auto endTime = std::chrono::high_resolution_clock::now();
     double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-    //g_inferCost.push_back(costMs);
     LogInfo<< "costMs:"<< costMs;
     if (ret != APP_ERR_OK) {
         LogError << "ModelInference failed, ret=" << ret << ".";
         return ret;
     }
-    
     return APP_ERR_OK;
 }
 
 APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
-                                             const std::vector<MxBase::TensorBase> &outputs,
-                                          std::vector<MxBase::TensorBase> &postProcessOutput)
+                                    const std::vector<MxBase::TensorBase> &outputs,
+                                    std::vector<MxBase::TensorBase> &postProcessOutput)
 {
-    
     auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
     imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE;
-    imgInfo.widthResize = 512;
-    imgInfo.heightResize = 512;
+    uint32_t widthResize = 512;
+    uint32_t heightResize = 512;
+    imgInfo.widthResize = widthResize;
+    imgInfo.heightResize = heightResize;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imgInfo);
     APP_ERROR ret = post_->Process(outputs, postProcessOutput);
-
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
         return ret;
     }
-
     ret = post_->DeInit();
     if (ret != APP_ERR_OK) {
         LogError << "RcfDetection DeInit failed";
@@ -218,31 +207,31 @@ APP_ERROR RcfDetection::PostProcess(const MxBase::TensorBase &tensor,
     return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor,const std::string &imgPath)
+APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::string &imgPath)
 {
-    
     auto shape = inferTensor.GetShape();
-    uint32_t h = shape[2];
-    uint32_t w = shape[3];
-
+    int dim2 = 2;
+    int dim3 = 3;
+    uint32_t height = shape[dim2];
+    uint32_t width = shape[dim3];
     cv::Mat imgBgr = cv::imread(imgPath);
     uint32_t imageWidth = imgBgr.cols;
-    uint32_t imageHeight = imgBgr.rows;    
-    cv::Mat modelOutput = cv::Mat(h, w, CV_32FC1, inferTensor.GetBuffer());
+    uint32_t imageHeight = imgBgr.rows;
+    cv::Mat modelOutput = cv::Mat(height, width, CV_32FC1, inferTensor.GetBuffer());
     cv::Mat grayMat;
     cv::Mat resizedMat;
     int crop = 5;
-    cv::Rect myROI(0, 0, imageWidth-crop, imageHeight );	
+    cv::Rect myROI(0, 0, imageWidth - crop, imageHeight);
     resize(modelOutput, resizedMat, cv::Size(dvppWidthStride, dvppHeightStride), 0, 0, cv::INTER_LINEAR);
-    resizedMat.convertTo(grayMat, CV_8UC1, alpha1);
+    resizedMat.convertTo(grayMat, CV_8UC1, ALPHA);
     cv::Mat croppedImage = grayMat(myROI);
     resize(croppedImage, croppedImage,  cv::Size(imageWidth, imageHeight), 0, 0, cv::INTER_LINEAR);
     cv::imwrite("./result.jpg", croppedImage);
-    return APP_ERR_OK; 
+    return APP_ERR_OK;
 }
 
-APP_ERROR RcfDetection::Process(const std::string &imgPath) {
-    
+APP_ERROR RcfDetection::Process(const std::string &imgPath)
+{
     MxBase::TensorBase inTensor;
     APP_ERROR ret = ReadImage(imgPath, inTensor);
     if (ret != APP_ERR_OK) {
@@ -257,25 +246,21 @@ APP_ERROR RcfDetection::Process(const std::string &imgPath) {
         LogError << "Resize failed, ret=" << ret << ".";
         return ret;
     }
-
     std::vector<MxBase::TensorBase> inputs = {};
     std::vector<MxBase::TensorBase> outputs = {};
     auto shape = outTensor.GetShape();
-
     inputs.push_back(outTensor);
     ret = Inference(inputs, outputs);
     if (ret != APP_ERR_OK) {
         LogError << "Inference failed, ret=" << ret << ".";
         return ret;
     }
-
     std::vector<MxBase::TensorBase> postProcessOutput={};
     ret = PostProcess(inTensor, outputs, postProcessOutput);
     if (ret != APP_ERR_OK) {
         LogError << "PostProcess failed, ret=" << ret << ".";
         return ret;
     }
-    
     ret = WriteResult(postProcessOutput[0], imgPath);
     if (ret != APP_ERR_OK) {
         LogError << "Save result failed, ret=" << ret << ".";
@@ -283,4 +268,3 @@ APP_ERROR RcfDetection::Process(const std::string &imgPath) {
     }
     return APP_ERR_OK;
 }
-
