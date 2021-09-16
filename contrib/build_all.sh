@@ -21,6 +21,7 @@ SAMPLE_FOLDER=(
 	ActionRecognition/
 	CrowdCounting/
 	OpenposeKeypointDetection/
+    MultiChannelVideoDetection/
 )
 
 
