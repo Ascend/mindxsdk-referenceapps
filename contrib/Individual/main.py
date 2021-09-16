@@ -42,7 +42,7 @@ if __name__ == '__main__':
     # Inputs data to a specified stream based on streamName.
     stream_name = b'classification+detection'
     inplugin_id = 0
-    unique_id = streamManagerApi.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
+    unique_id = stream_manager_api.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
     if unique_id < 0:
         print("Failed to send data to stream.")
 
