@@ -67,7 +67,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "model/yolov4.cfg",
                 "labelPath": "model/coco.names",
-                "postProcessLibPath": "/home/nku_wang2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "${MX_SDK_HOME}/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"

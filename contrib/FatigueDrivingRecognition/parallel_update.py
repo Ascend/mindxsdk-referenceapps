@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-"""
-Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
 import cv2
 import numpy as np
 import threading
@@ -27,9 +26,16 @@ import time
 index = 0
 index_second = 0
 
-def fun_timer():
-    print("frame_mine:",index+index_second)
-    print("average:",(index+index_second)/60)
+def fun_timer(time):
+    print("frame_num",index+index_second)
+    speed = (index+index_second)/time
+    print("speed:",speed)
+    f = open("performance.txt","w")
+    str1 = "Time:"+str(time)+"s\n"
+    str2 = "Speed:"+str(speed)+"fps\n"
+    f.write(str1)
+    f.write(str2)
+    f.close()
     
 
 if __name__ == '__main__':
@@ -41,7 +47,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    pipeline_path = b"pipeline/parallel2.pipeline"
+    pipeline_path = b"pipeline/parallel_pipeline.pipeline"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -78,9 +84,10 @@ if __name__ == '__main__':
             break
         
         if index == 0 and index_second == 0 :
-            timer = threading.Timer(60, fun_timer)
+            timer = threading.Timer(10, fun_timer,(10,))
             timer.start()
-        
+        if index+index_second>=800:
+            break
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
         tensorList = MxpiDataType.MxpiTensorPackageList()
         tensorList.ParseFromString(infer_result[1].messageBuf)
