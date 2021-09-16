@@ -16,7 +16,7 @@ import time
 import signal
 import numpy as np
 import StreamManagerApi
-import Utils
+import utils
 import MxpiDataType_pb2 as MxpiDataType
 
 
