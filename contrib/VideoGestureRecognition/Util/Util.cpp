@@ -96,7 +96,7 @@ APP_ERROR Util::SaveResult(std::shared_ptr<MxBase::MemoryData> resultInfo, const
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
 
         // write result
-        std::string resultDir = "./result8";
+        std::string resultDir = "./result";
         if (opendir(resultDir.c_str()) == NULL) {
             LogDebug << "result dir not exist. create it!";
             std::string command = "mkdir -p " + resultDir;
