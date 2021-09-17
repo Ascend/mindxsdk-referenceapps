@@ -20,12 +20,16 @@ import numpy as np
 from StreamManagerApi import *
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-
 import argparse
+
 parser = argparse.ArgumentParser(description="hello")
 parser.add_argument('--url_video', type=str,metavar='PATH',default="rtsp://192.168.88.109:8554/1.264",help='video path.')
 parser.add_argument('--label', type=str,default="0",help='ground truth.')
 parser.add_argument('--frame_num', type=str,default="40",help='length of video.')
+
+# obtain the parameters
+# input parameter:(1)sys_args:input variables
+# output parameter:(1)global_args: key-value dictionary of variables.
 def get_args(sys_args):
   global_args = parser.parse_args(sys_args)
   return global_args
@@ -52,7 +56,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-
+    # The name of the plugin to get the results from  
     streamName = b"detection"
 
     keyVec = StringVector()
@@ -60,7 +64,7 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_videodecoder0")
     keyVec.push_back(b"mxpi_distributor0_0")
     keyVec.push_back(b"mxpi_pfldpostprocess0")
-
+    # Init the list and counting variable
     index = 0
     img_yuv_list = []
     heightAligned_list = []
@@ -73,29 +77,29 @@ if __name__ == '__main__':
     while True:
         if index == frame_num:
             break
-
+        # Obtain the inference result
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
-
+        # Obtain the PFLD inference results
         tensorList = MxpiDataType.MxpiTensorPackageList()
         tensorList.ParseFromString(infer_result[0].messageBuf)
         ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         if ids.shape[0] == 0:
             continue
+        # Obtain the PFLD post-processing plugin results
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result[3].messageBuf)
 
         MAR = objectList.objectVec[0].x0
-
+        # Obtain the the original image
         visionList = MxpiDataType.MxpiVisionList()
         visionList.ParseFromString(infer_result[1].messageBuf)
         visionData = visionList.visionVec[0].visionData.dataStr
         visionInfo = visionList.visionVec[0].visionInfo
-
         img_yuv = np.frombuffer(visionData, dtype=np.uint8)
         heightAligned = visionInfo.heightAligned
         widthAligned = visionInfo.widthAligned
 
-
+        # Add the result of the current frame to the list
         MARS.append(MAR)
         img_yuv_list.append(img_yuv)
         heightAligned_list.append(heightAligned)
@@ -107,13 +111,14 @@ if __name__ == '__main__':
             max_mar = aim_MARS[0]
             num = 0
             for index_mar, mar in enumerate(aim_MARS):
+                # Judge the threshold
                 if mar >= 0.14:
                     num += 1
                 if mar > max_mar:
                     max_mar = mar
                     max_index = index_mar
             perclos = num / 30
-            # threshold
+            # Conform to the fatigue driving conditions
             if perclos >= 0.7:
                 isFatigue = 1
                 print('Fatigue!!!')
@@ -121,7 +126,7 @@ if __name__ == '__main__':
             widthAligned_list.pop(0)
             img_yuv_list.pop(0)
         index = index + 1
-
+    # write th result file
     f = open("result.txt", "a+")
     if isFatigue == 0:
         print('Normal')

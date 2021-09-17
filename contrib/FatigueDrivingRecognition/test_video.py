@@ -38,14 +38,14 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    
+    # The name of the plugin to get the results from  
     streamName = b"detection"
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer1")
     keyVec.push_back(b"mxpi_videodecoder0")
     keyVec.push_back(b"mxpi_distributor0_0")
     keyVec.push_back(b"mxpi_pfldpostprocess0")
-    
+    # Init the list and counting variable
     img_yuv_list = []
     heightAligned_list = []
     widthAligned_list = []
@@ -57,12 +57,13 @@ if __name__ == '__main__':
     while True:
         if index == frame_num:
             break
+        # Obtain the inference result
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
-
+        # Obtain the PFLD post-processing plugin results
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result[3].messageBuf)
         MAR = objectList.objectVec[0].x0
-
+        # Obtain the the original image
         visionList = MxpiDataType.MxpiVisionList()
         visionList.ParseFromString(infer_result[1].messageBuf)
         visionData = visionList.visionVec[0].visionData.dataStr
@@ -72,8 +73,7 @@ if __name__ == '__main__':
         heightAligned = visionInfo.heightAligned
         widthAligned = visionInfo.widthAligned
         
-        
-        
+        # Add the result of the current frame to the list
         MARS.append(MAR)
         img_yuv_list.append(img_yuv)
         heightAligned_list.append(heightAligned)
@@ -85,6 +85,7 @@ if __name__ == '__main__':
             max_mar = aim_MARS[0]
             num = 0
             for index_mar, mar in enumerate(aim_MARS):
+                # Judge the threshold
                 if mar >= 0.14:
                     num += 1
                 if mar > max_mar:
@@ -93,7 +94,7 @@ if __name__ == '__main__':
                 
             # Calculate percentage
             perclos = num / 30
-            # threshold
+            # Conform to the fatigue driving conditions
             if perclos >= 0.7:
                 isFatigue = 1
                 print('Fatigue!!!')
