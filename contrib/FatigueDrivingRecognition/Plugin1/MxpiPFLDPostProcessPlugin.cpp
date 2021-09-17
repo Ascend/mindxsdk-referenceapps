@@ -87,7 +87,7 @@ APP_ERROR MxpiPFLDPostProcessPlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const 
 }
 
 APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageList srcMxpiTensorPackage,
-                                                      MxpiObjectList& dstMxpiObjectList)
+                                                        MxpiObjectList& dstMxpiObjectList)
 {
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
