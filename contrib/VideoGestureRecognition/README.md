@@ -13,6 +13,9 @@
 |-------- ImageResizer
 |           |---- ImageResizer.cpp                  // 图片缩放.cpp
 |           |---- ImageResizer.h                    // 图片缩放.h
+|-------- FrameSkippingSampling
+|           |---- FrameSkippingSampling.cpp         // 跳帧采样.cpp
+|           |---- FrameSkippingSampling.h           // 跳帧采样.h
 |-------- data
 |           |---- gesture_test1.264                  // 手势识别测试数据1 (本地测试自行准备)
 |           |---- gesture_test2.264                  // 手势识别测试数据2 (本地测试自行准备)
