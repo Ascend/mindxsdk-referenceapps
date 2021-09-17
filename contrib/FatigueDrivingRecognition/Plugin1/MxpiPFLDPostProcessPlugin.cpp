@@ -24,7 +24,9 @@ using namespace MxTools;
 using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiTensorPackageList";
+    auto uint8Deleter = [] (uint8_t* p) { };
 }
+
 
 // Decode MxpiTensorPackageList
 void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
@@ -91,20 +93,22 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
     GetTensors(srcMxpiTensorPackage, tensors);
     // Get the coordinates of eyes and mouth
     auto dataPtr = (uint8_t *)tensors[0].GetBuffer();
+    std::shared_ptr<void> keypointPointer;
+    keypointPointer.reset(dataPtr, uint8Deleter);
     float* eyes_left = new float[20];
     float* eyes_right = new float[20];
     float* mouth = new float[40];
     for(int i = 0; i < 20; i++)
     {
-        eyes_left[i] = *((float*)dataPtr + i + 66);
+        eyes_left[i] = static_cast<float *>(keypointPointer.get())[i + 66];
     }
     for(int i = 0; i < 20; i++)
     {
-        eyes_right[i] = *((float*)dataPtr + i + 174);
+        eyes_right[i] = static_cast<float *>(keypointPointer.get())[i + 174];
     }
     for(int i = 0; i < 40; i++)
     {
-        mouth[i] = *((float*)dataPtr + i + 104);
+        mouth[i] = static_cast<float *>(keypointPointer.get())[i + 104];
     }
     // Calculate the MAR(Mouth Aspect Ratio) of person
     float MAR = (sqrt(pow(fabs(mouth[5] - mouth[29]), 2) + pow(fabs(mouth[4] - mouth[28]), 2)) + sqrt(pow(fabs(mouth[11] - mouth[37]), 2) + pow(fabs(mouth[10] - mouth[36]), 2))) / (2 * sqrt(pow(fabs(mouth[19] - mouth[1]), 2) + pow(fabs(mouth[18] - mouth[0]), 2)));
