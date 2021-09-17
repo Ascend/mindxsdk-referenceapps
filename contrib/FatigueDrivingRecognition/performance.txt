@@ -1,2 +1,0 @@
-Time:10s
-Speed:29.2fps
