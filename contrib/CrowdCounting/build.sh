@@ -16,6 +16,10 @@
 
 path_cur="$(dirname "$0")"
 
+function prepare_env()
+{
+   export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
+}
 function check_env()
 {
     # set ASCEND_VERSION to ascend-toolkit/latest when it was not specified by user
@@ -39,6 +43,7 @@ function build_CrowdCount()
 {
     cd "$path_cur" || exit
     rm -rf build
+    prepare_env
     mkdir -p build
     cd build || exit
     cmake ..
