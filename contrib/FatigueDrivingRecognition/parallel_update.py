@@ -25,15 +25,17 @@ index = 0
 index_second = 0
 
 # set timer
-# input parameter:(1)time:Length of time to be measured
-# output parameter: none.
+# input parameter:
+#       time:Length of time to be measured
+# return: 
+#       void
 def fun_timer(time_limit):
-    print("frame_num",index+index_second)
-    speed = (index+index_second)/time_limit
-    print("speed:",speed)
-    f = open("performance.txt","w")
-    str1 = "Time:"+str(time_limit)+"s\n"
-    str2 = "Speed:"+str(speed)+"fps\n"
+    print("frame_num", index + index_second)
+    speed = (index + index_second) / time_limit
+    print("speed:", speed)
+    f = open("performance.txt", "w")
+    str1 = "Time:" + str(time_limit) + "s\n"
+    str2 = "Speed:" + str(speed) + "fps\n"
     f.write(str1)
     f.write(str2)
     f.close()
@@ -79,7 +81,7 @@ if __name__ == '__main__':
     img_yuv_list_2 = []
     heightAligned_list_2 = []
     widthAligned_list_2 = []
-    frame_num_list = [frame_num1,frame_num2]
+    frame_num_list = [frame_num1, frame_num2]
     MARS_1 = []
     MARS_2 = []
     
@@ -87,8 +89,8 @@ if __name__ == '__main__':
         if index == frame_num_list[0] and index_second == frame_num_list[1]:
             break
         # Set timer
-        if index == 0 and index_second == 0 :
-            timer = threading.Timer(limit_time, fun_timer,(limit_time,))
+        if index == 0 and index_second == 0:
+            timer = threading.Timer(limit_time, fun_timer, (limit_time, ))
             timer.start()
         # Obtain the inference result
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
@@ -148,10 +150,12 @@ if __name__ == '__main__':
                     print('Fatigue!!!')
                     # visualization
                     img_yuv_fatigue = img_yuv_list[max_index]
-                    img_yuv_fatigue = img_yuv_fatigue.reshape(heightAligned_list[max_index] * YUV_BYTES_NU // YUV_BYTES_DE,
-                                                            widthAligned_list[max_index])
+                    h = heightAligned_list[max_index] * YUV_BYTES_NU // YUV_BYTES_DE
+                    w = widthAligned_list[max_index]
+                    img_yuv_fatigue = img_yuv_fatigue.reshape(h, w)
                     img_fatigue = cv2.cvtColor(img_yuv_fatigue, cv2.COLOR_YUV2BGR_NV12)
-                    cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
+                    cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
                     index_print = index - 30 + max_index
                     image_path = "fatigue/0/"
                     if not os.path.exists(image_path):
@@ -209,10 +213,12 @@ if __name__ == '__main__':
                     print('Fatigue!!!')
                     # visualization
                     img_yuv_fatigue = img_yuv_list_2[max_index]
-                    img_yuv_fatigue = img_yuv_fatigue.reshape(heightAligned_list_2[max_index] * YUV_BYTES_NU // YUV_BYTES_DE,
-                                                            widthAligned_list_2[max_index])
+                    h = heightAligned_list_2[max_index] * YUV_BYTES_NU // YUV_BYTES_DE
+                    w = widthAligned_list_2[max_index]
+                    img_yuv_fatigue = img_yuv_fatigue.reshape(h, w)
                     img_fatigue = cv2.cvtColor(img_yuv_fatigue, cv2.COLOR_YUV2BGR_NV12)
-                    cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
+                    cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), 
+                              cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
                     index_print = index_second - 30 + max_index
                     image_path = "fatigue/1/"
                     if not os.path.exists(image_path):
