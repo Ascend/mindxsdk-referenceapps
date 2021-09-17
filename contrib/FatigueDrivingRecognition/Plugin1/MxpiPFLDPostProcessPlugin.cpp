@@ -86,7 +86,8 @@ APP_ERROR MxpiPFLDPostProcessPlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const 
     return ret;
 }
 
-APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageList srcMxpiTensorPackage,MxpiObjectList& dstMxpiObjectList)
+APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageList srcMxpiTensorPackage,
+                                                      MxpiObjectList& dstMxpiObjectList)
 {
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
@@ -111,7 +112,9 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
         mouth[i] = static_cast<float *>(keypointPointer.get())[i + 104];
     }
     // Calculate the MAR(Mouth Aspect Ratio) of person
-    float MAR = (sqrt(pow(fabs(mouth[5] - mouth[29]), 2) + pow(fabs(mouth[4] - mouth[28]), 2)) + sqrt(pow(fabs(mouth[11] - mouth[37]), 2) + pow(fabs(mouth[10] - mouth[36]), 2))) / (2 * sqrt(pow(fabs(mouth[19] - mouth[1]), 2) + pow(fabs(mouth[18] - mouth[0]), 2)));
+    float MAR = (sqrt(pow(fabs(mouth[5] - mouth[29]), 2) + pow(fabs(mouth[4] - mouth[28]), 2))
+             + sqrt(pow(fabs(mouth[11] - mouth[37]), 2) + pow(fabs(mouth[10] - mouth[36]), 2)))
+              / (2 * sqrt(pow(fabs(mouth[19] - mouth[1]), 2) + pow(fabs(mouth[18] - mouth[0]), 2)));
     // Generate an ObjectList to save relevant information
     MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
     MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiObject->add_headervec();
@@ -124,9 +127,11 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
      * @y1 Height of the right eye
      */
     dstMxpiObject->set_x0(MAR);
-    dstMxpiObject->set_y0(sqrt(pow(fabs(eyes_left[1] - eyes_left[15]), 2) + pow(fabs(eyes_left[0] - eyes_left[14]), 2)));
+    dstMxpiObject->set_y0(sqrt(pow(fabs(eyes_left[1] - eyes_left[15]), 2)
+                       + pow(fabs(eyes_left[0] - eyes_left[14]), 2)));
     dstMxpiObject->set_x1(fabs(eyes_right[12] - eyes_right[4]));
-    dstMxpiObject->set_y1(sqrt(pow(fabs(eyes_right[1] - eyes_right[15]), 2) + pow(fabs(eyes_right[0] - eyes_right[14]), 2)));
+    dstMxpiObject->set_y1(sqrt(pow(fabs(eyes_right[1] - eyes_right[15]), 2)
+                       + pow(fabs(eyes_right[0] - eyes_right[14]), 2)));
     // Release dynamic array
     delete []eyes_left;
     delete []eyes_right;
@@ -143,7 +148,8 @@ APP_ERROR MxpiPFLDPostProcessPlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffe
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiPFLDPostProcessPlugin process is not implemented";
+        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << 
+            "MxpiPFLDPostProcessPlugin process is not implemented";
         mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
@@ -168,10 +174,12 @@ APP_ERROR MxpiPFLDPostProcessPlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffe
         mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
+        return APP_ERR_PROTOBUF_NAME_MISMATCH; 
+        // self define the error code
     }
     // Generate output
-    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
+    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = 
+        static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
     APP_ERROR ret = GenerateObjectList(*srcMxpiTensorPackageListSptr, *dstMxpiObjectListSptr);
     if (ret != APP_ERR_OK) {
