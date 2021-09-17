@@ -20,9 +20,8 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 SAMPLE_FOLDER=(
 	ActionRecognition/
 	CrowdCounting/
-  MultiChannelVideoDetection/
-  human_segmentation/
-  VideoGestureRecognition/
+    human_segmentation/
+    VideoGestureRecognition/
 )
 
 
