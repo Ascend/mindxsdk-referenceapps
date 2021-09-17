@@ -41,10 +41,40 @@ npu-smi info
 
 ### 1.4 代码目录结构与说明
 
-本sample工程名称为 **FatigueDrivingRecognition**，工程目录如下图所示：
+本sample工程名称为 **FatigueDrivingRecognition**，工程目录如下所示：
 
-```
-
+```python
+├── images #readme图片
+│   ├── diagram.png
+│   ├── Q1.png
+│   ├── Q2.png
+│   └── Q4.png
+├── model #模型目录
+│   ├── coco.names
+│   ├── pfld_106.om
+│   ├── yolov4.cfg
+│   └── yolov4_detection.om
+├── ModelTransformation #转换模型
+│   ├── aipp_pfld_112_112.aippconfig
+│   ├── atc_env.sh
+│   ├── pfld_106.onnx
+│   └── pytorch2onnx.py
+├── pipeline
+│   ├── parallel_pipeline.pipeline
+│   ├── test.pipeline
+│   └── test_video.pipeline
+├── Plugin1 #插件1工程目录
+│   ├── build.sh
+│   ├── CMakeLists.txt
+│   ├── MxpiPFLDPostProcessPlugin.cpp
+│   └── MxpiPFLDPostProcessPlugin.h
+├── build.sh
+├── evaluate.py
+├── parallel_update.py
+├── README.md
+├── run.sh
+├── test.py
+└── test_video.py
 ```
 
 
