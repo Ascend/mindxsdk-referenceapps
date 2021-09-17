@@ -37,8 +37,12 @@ def init_loss_scale():
  
  bash run_standalone_train.sh /path/to/distracted_driver_detection/train /path/to/resnet50_distracted_driver_detection_Acc_config.yaml
 ```
+(3) .ckpt和.air模型下载
 
-(3) 转换模型
+链接：https://pan.baidu.com/s/12RJ8pep44YZJmUNDJ9Rd6Q 
+提取码：qwer
+
+(4) 转换模型
 
 ```
 python3 export.py --network_dataset resnet50_dirver_detection  --ckpt_file scripts/train/output/checkpoint/best_acc.ckpt  --file_name resnet50-dirver_detection-915-air --file_format AIR --config_path /path/to/resnet50_distracted_driver_detection_Acc_config.yaml
