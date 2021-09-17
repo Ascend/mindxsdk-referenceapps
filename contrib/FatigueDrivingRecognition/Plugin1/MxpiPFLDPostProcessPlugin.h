@@ -71,5 +71,4 @@ private:
     std::ostringstream ErrorInfo_;
 };
 }
-
-#endif //SDKMEMORY_MXPIPFLDPOSTPROCESSPLUGIN_H
+#endif // SDKMEMORY_MXPIPFLDPOSTPROCESSPLUGIN_H
