@@ -184,14 +184,15 @@ APP_ERROR CrowdCount::PostProcess(const std::vector<MxBase::TensorBase> &inputs,
 }
 // 输出人群计数结果图
 APP_ERROR CrowdCount::WriteResult(const std::vector<MxBase::TensorBase> &outputs, 
-		                 const std::vector<MxBase::TensorBase> &postimage, const std::vector<int> &results) {
+		                 const std::vector<MxBase::TensorBase> &postimage, const std::vector<int> &results,
+				 const std::string &imgPath) {
     cv::Mat mergeImage;
     cv::Mat dstimgBgr;
     double alpha = 1.0;
     double beta = 0.5;
     double gamma = 0.0;    
     cv::Mat imgBgr;
-    imgBgr = cv::imread("crowd.jpg");
+    imgBgr = cv::imread(imgPath, cv::IMREAD_COLOR);
     imageWidth_ = imgBgr.cols;
     imageHeight_ = imgBgr.rows;
     int number = results[0];
@@ -255,7 +256,7 @@ APP_ERROR CrowdCount::Process(const std::string &imgPath) {
     }
     //wirte result
     std::vector<MxBase::TensorBase> postimage = {outTensor};
-    ret = WriteResult(heatmap, postimage, results);
+    ret = WriteResult(heatmap, postimage, results, imgPath);
     if (ret != APP_ERR_OK) {
         LogError << "Save result failed, ret=" << ret << ".";
         return ret;
