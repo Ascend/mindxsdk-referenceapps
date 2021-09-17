@@ -26,12 +26,14 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 index = 0
 index_second = 0
 
-# set timer
-# input parameter:
-#       time:Length of time to be measured
-# return: 
-#       void
 def fun_timer(time_limit):
+    """
+    # set timer
+    # input parameter:
+    #       time:Length of time to be measured
+    # return: 
+    #       void
+    """
     print("frame_num", index + index_second)
     speed = (index + index_second) / time_limit
     print("speed:", speed)
