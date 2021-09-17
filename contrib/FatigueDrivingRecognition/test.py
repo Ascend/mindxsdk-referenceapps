@@ -15,11 +15,12 @@
 import json
 import sys
 import os
+import argparse
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import argparse
+
 
 parser = argparse.ArgumentParser(description="hello")
 parser.add_argument('--url_video', type=str,metavar='PATH',default="rtsp://192.168.88.109:8554/1.264",help='video path.')
@@ -30,8 +31,8 @@ parser.add_argument('--frame_num', type=str,default="40",help='length of video.'
 # input parameter:(1)sys_args:input variables
 # output parameter:(1)global_args: key-value dictionary of variables.
 def get_args(sys_args):
-  global_args = parser.parse_args(sys_args)
-  return global_args
+    global_args = parser.parse_args(sys_args)
+    return global_args
 
 
 if __name__ == '__main__':

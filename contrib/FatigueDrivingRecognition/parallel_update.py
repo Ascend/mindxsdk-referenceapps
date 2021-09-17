@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import sys
+import time
+import threading
 import cv2
 import numpy as np
-import threading
-import os
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import time
-import sys
 
 index = 0
 index_second = 0
@@ -90,8 +90,6 @@ if __name__ == '__main__':
         if index == 0 and index_second == 0 :
             timer = threading.Timer(limit_time, fun_timer,(limit_time,))
             timer.start()
-        if index+index_second>=800:
-            break
         # Obtain the inference result
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
         # Obtain the PFLD inference results

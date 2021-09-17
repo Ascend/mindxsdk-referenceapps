@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import onnx
 import os
 import argparse
+import onnx
 from models.pfld import PFLDInference
 import torch
 import onnxsim
