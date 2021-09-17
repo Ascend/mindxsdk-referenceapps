@@ -47,11 +47,11 @@ if __name__ == '__main__':
         # Inputs data to a specified stream based on streamName.
         stream_name = b'classification+detection'
         inplugin_id = 0
-        unique_id = streamManagerApi.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
+        unique_id = stream_manager_api.SendDataWithUniqueId(stream_name, inplugin_id, data_input)
         if unique_id < 0:
             print("Failed to send data to stream.")
         # Obtain the inference result by specifying streamName and uniqueId.
-        infer_result = streamManagerApi.GetResultWithUniqueId(stream_name, unique_id, 3000)
+        infer_result = stream_manager_api.GetResultWithUniqueId(stream_name, unique_id, 3000)
         if infer_result.errorCode != 0:
             print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
               infer_result.errorCode, infer_result.data.decode()))
