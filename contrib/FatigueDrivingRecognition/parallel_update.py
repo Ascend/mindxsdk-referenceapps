@@ -27,12 +27,12 @@ index_second = 0
 # set timer
 # input parameter:(1)time:Length of time to be measured
 # output parameter: none.
-def fun_timer(time):
+def fun_timer(time_limit):
     print("frame_num",index+index_second)
-    speed = (index+index_second)/time
+    speed = (index+index_second)/time_limit
     print("speed:",speed)
     f = open("performance.txt","w")
-    str1 = "Time:"+str(time)+"s\n"
+    str1 = "Time:"+str(time_limit)+"s\n"
     str2 = "Speed:"+str(speed)+"fps\n"
     f.write(str1)
     f.write(str2)
