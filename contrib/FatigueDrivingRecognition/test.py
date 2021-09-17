@@ -17,7 +17,6 @@ import sys
 import os
 import cv2
 import numpy as np
-from StreamManagerApi import *
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import argparse
