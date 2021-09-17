@@ -41,7 +41,11 @@ npu-smi info
 
 ### 1.4 代码目录结构与说明
 
-eg：本sample工程名称为XXX，工程目录如下图所示：
+本sample工程名称为 **FatigueDrivingRecognition**，工程目录如下图所示：
+
+```
+
+```
 
 
 
@@ -87,7 +91,7 @@ PYTHONPATH: python环境路径
 
 所用模型为yolov4模型与PFLD模型：
 
-* yolov4为已经转换好的om模型，可通过[百度云链接](https://pytorch.org/get-started/previous-versions/)（提取码：）获取模型及其相应的coco.names和cfg文件。
+* yolov4为已经转换好的om模型，可通过[百度云链接](https://pan.baidu.com/s/1NDDNqANNjFwqeacCHN2_9w)（提取码：36d9）获取，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。
 * PFLD模型为[github项目](https://github.com/Hsintao/pfld_106_face_landmarks)中提供的模型
 
 转换PFLD模型所需软件依赖如下表所示。
@@ -127,7 +131,7 @@ bash atc-env.sh
 ## 4 编译与运行
 **步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在本项目的 `model` 目录下。
+**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在本项目的 `model` 目录下。（model目录下有已经转换好的om文件，如果要直接利用，则跳过此步骤）
 
 **步骤3** 编译。在项目目录下执行命令：
 
@@ -138,40 +142,40 @@ bash build.sh
 **步骤4** 单个视频疲劳驾驶识别。
 
 1. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，将准备测试的264文件放到 `${Home_live555}/live/mediaServer/` 目录下，其中`Home_live555`为live555安装路径。
-2. 根据[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)确定264文件的rtsp_Url，将`pipeline/test_video.pipeline` 中的`264file`修改为rtsp_Url。将`pipeline/test_video.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
-3. 执行命令：
+2. 根据[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)确定264文件的rtsp_Url，将`pipeline/test_video.pipeline` 中`mxpi_rtspsrc0`中的`rtspUrl`属性中的264file_path修改为rtsp_Url。
+3. 将`pipeline/test_video.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
+4. 将下面命令中frame_num替换为测试的视频的帧数，并执行命令：
 
 ```
-python3.7 test_video.py
+python3.7 test_video.py ${frame_num}
 ```
 
 执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶，输出`Fatigue!!!`为疲劳驾驶。可视化结果保存在`fatigue`文件夹中。
 
-**步骤4** 性能测试。
+**步骤5** 性能测试。
 
 1. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，将准备测试的2个264文件放到 `${Home_live555}/live/mediaServer/` 目录下，其中`Home_live555`为live555安装路径。
-2. 将`pipeline/parallel_pipeline.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
-3. parallel_update.py测试的是一定时间内每秒处理视频的平均帧数，根据需要修改parallel_update.py中的时间参数。
-4. 执行命令：
+2. 根据[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)确定264文件的rtsp_Url，将`pipeline/test_video.pipeline` 中`mxpi_rtspsrc0`和`mxpi_rtspsrc1`中的`rtspUrl`属性中的264file_path1和264file_path2分别修改为两个264文件的rtsp_Url。
+3. 将`pipeline/parallel_pipeline.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
+4. parallel_update.py测试的是一定时间内每秒处理视频的平均帧数，根据需要修改parallel_update.py中的时间参数。
+5. 将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
 
 ```
-python3.7 parallel_update.py
+python3.7 parallel_update.py ${time} ${frame_num1} ${frame_num2}
 ```
 
 命令执行成功后在当前目录下生成检测结果文件 performance.txt，查看结果文件查看处理速度信息。
 
-**步骤5** 精度测试。
+**步骤6** 精度测试。
 
-1. 下载测试数据集，下载链接：<http://images.cocodataset.org/zips/val2017.zip> ，并解压成一个label.txt以节一个video文件夹。
+1. 下载测试数据集，可通过[百度云链接](https://pan.baidu.com/s/1NDDNqANNjFwqeacCHN2_9w)（提取码：36d9）获取，解压后包含一个yolov4文件夹，一个txt文件，和一个video文件夹。将解压出的label.txt文件上传到项目的当前目录。
 2. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，并新建一个文件夹`${Home_live555}/live/mediaServer/dataset` ，将上一步解压出的video文件夹中的264文件上传到 dataset文件夹下。其中`Home_live555`为live555安装路径。
-3. 将解压出的label.txt文件上传到项目的当前目录。
-4. 将`pipeline/test.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
-5. 修改`run.sh`中的RTSP_URL修改为`rtsp://${host}:${port}/dataset`，其中`host`为服务器ip地址，`port`根据运行live555后终端显示的最后一行的提示进行确定。
-6. 执行命令：
+3. 将`pipeline/test.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
+4. 修改`run.sh`中的RTSP_URL修改为`rtsp://${host}:${port}/dataset`，其中`host`为服务器ip地址，`port`根据运行live555后终端显示的最后一行的提示进行确定。
+5. 执行命令：
 
 ```
 bash run.sh
-python3.7 evaluate.py
 ```
 
 命令执行成功后在当前目录下生成测试结果result.txt，终端显示precision和recall。

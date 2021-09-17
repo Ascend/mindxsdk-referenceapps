@@ -6,7 +6,7 @@
         "mxpi_rtspsrc0": {
             "factory": "mxpi_rtspsrc",
             "props": {
-                "rtspUrl": "rtsp://192.168.88.109:8554/2.264",
+                "rtspUrl": "${264file_path}",
                 "channelId": "0"
             },
             "next": "mxpi_videodecoder0"
@@ -43,7 +43,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "model/yolov4.cfg",
                 "labelPath": "model/coco.names",
-                "postProcessLibPath": "/home/nku_wang2/MindX_SDK/mxVision-2.0.2/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"

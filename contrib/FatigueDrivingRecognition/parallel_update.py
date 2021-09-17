@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding=utf-8
-
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +19,7 @@ import os
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import time
+import sys
 
 index = 0
 index_second = 0
@@ -39,6 +37,9 @@ def fun_timer(time):
     
 
 if __name__ == '__main__':
+    limit_time = int(sys.argv[1])
+    frame_num1 = int(sys.argv[2])
+    frame_num2 = int(sys.argv[3])
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
@@ -75,7 +76,7 @@ if __name__ == '__main__':
     img_yuv_list_2 = []
     heightAligned_list_2 = []
     widthAligned_list_2 = []
-    frame_num_list = [2741,2741]
+    frame_num_list = [frame_num1,frame_num2]
     MARS_1 = []
     MARS_2 = []
     
@@ -84,7 +85,7 @@ if __name__ == '__main__':
             break
         
         if index == 0 and index_second == 0 :
-            timer = threading.Timer(10, fun_timer,(10,))
+            timer = threading.Timer(limit_time, fun_timer,(limit_time,))
             timer.start()
         if index+index_second>=800:
             break

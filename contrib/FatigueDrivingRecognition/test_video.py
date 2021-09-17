@@ -1,24 +1,21 @@
-#!/usr/bin/env python
-# coding=utf-8
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-"""
-Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
 import cv2
 import numpy as np
 import os
+import sys
 import time
 import threading
 import MxpiDataType_pb2 as MxpiDataType
@@ -27,6 +24,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 if __name__ == '__main__':
+    frame_num = int(sys.argv[1])
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
@@ -40,9 +38,8 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    time_start=time.time()
-    streamName = b"detection"
     
+    streamName = b"detection"
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer1")
     keyVec.push_back(b"mxpi_videodecoder0")
@@ -58,7 +55,7 @@ if __name__ == '__main__':
     MARS = []
     index = 0
     while True:
-        if index == 2741:
+        if index == frame_num:
             break
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
 
@@ -74,7 +71,9 @@ if __name__ == '__main__':
         img_yuv = np.frombuffer(visionData, dtype=np.uint8)
         heightAligned = visionInfo.heightAligned
         widthAligned = visionInfo.widthAligned
-        time_start_calcu = time.time()
+        
+        
+        
         MARS.append(MAR)
         img_yuv_list.append(img_yuv)
         heightAligned_list.append(heightAligned)
@@ -92,11 +91,13 @@ if __name__ == '__main__':
                     max_mar = mar
                     max_index = index_mar
                 
+            # Calculate percentage
             perclos = num / 30
             # threshold
             if perclos >= 0.7:
                 isFatigue = 1
                 print('Fatigue!!!')
+                # Visual result
                 img_yuv_fatigue = img_yuv_list[max_index]
                 img_yuv_fatigue = img_yuv_fatigue.reshape(heightAligned_list[max_index] * YUV_BYTES_NU // YUV_BYTES_DE,widthAligned_list[max_index])
                 img_fatigue = cv2.cvtColor(img_yuv_fatigue, cv2.COLOR_YUV2BGR_NV12)
@@ -107,9 +108,12 @@ if __name__ == '__main__':
                     os.mkdir(image_path)
                 image_name = image_path + str(index_print) + ".jpg"
                 cv2.imwrite(image_name, img_fatigue)
-                
+            heightAligned_list.pop(0)
+            widthAligned_list.pop(0)
+            img_yuv_list.pop(0)
+        
         index = index + 1
-    
+    # Output result
     if isFatigue == 0:
         print('Normal')
     else:

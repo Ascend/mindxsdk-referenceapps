@@ -1,40 +1,38 @@
-#!/usr/bin/env python
-# coding=utf-8
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-"""
-Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
+import json
+import sys
+import os
 import cv2
 import numpy as np
-import os
-import time
-import threading
+from StreamManagerApi import *
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import argparse
 
+import argparse
 parser = argparse.ArgumentParser(description="hello")
 parser.add_argument('--url_video', type=str,metavar='PATH',default="rtsp://192.168.88.109:8554/1.264",help='video path.')
 parser.add_argument('--label', type=str,default="0",help='ground truth.')
 parser.add_argument('--frame_num', type=str,default="40",help='length of video.')
-
 def get_args(sys_args):
   global_args = parser.parse_args(sys_args)
   return global_args
 
-def test_acc(args):
+
+if __name__ == '__main__':
+    args = get_args(sys.argv[1:])
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
@@ -48,19 +46,22 @@ def test_acc(args):
         pipelineStr = f.read().decode()
     pipeline = pipelineStr.split("rtsp_url")[0] + args.url_video + pipelineStr.split("rtsp_url")[1]
     pipeline = pipeline.encode()
-    ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
+
+    ret = streamManagerApi.CreateMultipleStreams(pipeline)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    time_start=time.time()
+
+
     streamName = b"detection"
-    
+
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer1")
     keyVec.push_back(b"mxpi_videodecoder0")
     keyVec.push_back(b"mxpi_distributor0_0")
     keyVec.push_back(b"mxpi_pfldpostprocess0")
-    
+
+    index = 0
     img_yuv_list = []
     heightAligned_list = []
     widthAligned_list = []
@@ -68,14 +69,21 @@ def test_acc(args):
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     MARS = []
-    index = 0
+    frame_num = int(args.frame_num) 
     while True:
-        if index == 2741:
+        if index == frame_num:
             break
+
         infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
 
+        tensorList = MxpiDataType.MxpiTensorPackageList()
+        tensorList.ParseFromString(infer_result[0].messageBuf)
+        ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        if ids.shape[0] == 0:
+            continue
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result[3].messageBuf)
+
         MAR = objectList.objectVec[0].x0
 
         visionList = MxpiDataType.MxpiVisionList()
@@ -86,7 +94,8 @@ def test_acc(args):
         img_yuv = np.frombuffer(visionData, dtype=np.uint8)
         heightAligned = visionInfo.heightAligned
         widthAligned = visionInfo.widthAligned
-        time_start_calcu = time.time()
+
+
         MARS.append(MAR)
         img_yuv_list.append(img_yuv)
         heightAligned_list.append(heightAligned)
@@ -103,15 +112,16 @@ def test_acc(args):
                 if mar > max_mar:
                     max_mar = mar
                     max_index = index_mar
-                
             perclos = num / 30
             # threshold
             if perclos >= 0.7:
                 isFatigue = 1
                 print('Fatigue!!!')
-
-                
+            heightAligned_list.pop(0)
+            widthAligned_list.pop(0)
+            img_yuv_list.pop(0)
         index = index + 1
+
     f = open("result.txt", "a+")
     if isFatigue == 0:
         print('Normal')
@@ -122,7 +132,4 @@ def test_acc(args):
     f.close()
     # destroy streams
     streamManagerApi.DestroyAllStreams()
-    
-if __name__ == '__main__':
-    args = get_args(sys.argv[1:])
-    test_acc(args)
+
