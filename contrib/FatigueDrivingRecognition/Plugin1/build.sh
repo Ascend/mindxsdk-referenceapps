@@ -28,7 +28,6 @@ function build_plugin() {
     cmake ..
     make -j
     cd ..
-    cp plugins/libmxpi_pfldpostprocess.so "${MX_SDK_HOME}"/lib/plugins/
     exit 0
 }
 
