@@ -45,7 +45,7 @@ static void SigHandler(int signal)
         LogInfo << "Force quit VideoGestureReasoner.";
     }
 }
-static APP_ERROR Process(std::vector<std::string> rtspList)
+static APP_ERROR Process(std::vector<std::string> &rtspList)
 {
     auto videoGestureReasoner = std::make_shared<VideoGestureReasoner>();
     ReasonerConfig reasonerConfig;
