@@ -14,8 +14,10 @@
 # limitations under the License.
 """
 
-import os
+import json
 import sys
+import os
+import argparse
 import time
 import threading
 import cv2
@@ -25,6 +27,14 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 index = 0
 index_second = 0
+
+parser = argparse.ArgumentParser(description="hello")
+parser.add_argument('--limit_of_time', type=int,default=10,help='time of test.')
+parser.add_argument('--frame_num_1', type=int,default=40,help='length of video1.')
+parser.add_argument('--frame_num_2', type=int,default=40,help='length of video2.')
+parser.add_argument('--frame_threshold', type=int,default=30,help='threshold of frame num.')
+parser.add_argument('--perclos_threshold', type=int,default=0.7,help='threshold of perclos.')
+parser.add_argument('--mar_threshold', type=int,default=0.14,help='threshold of mar.')
 
 def fun_timer(time_limit):
     """
@@ -43,12 +53,22 @@ def fun_timer(time_limit):
     f.write(str1)
     f.write(str2)
     f.close()
+
+def get_args(sys_args):
+    """
+    # obtain the parameters
+    # input parameter:(1)sys_args:input variables
+    # output parameter:(1)global_args: key-value dictionary of variables.
+    """
+    global_args = parser.parse_args(sys_args)
+    return global_args
     
 
 if __name__ == '__main__':
-    limit_time = int(sys.argv[1])
-    frame_num1 = int(sys.argv[2])
-    frame_num2 = int(sys.argv[3])
+    args = get_args(sys.argv[1:])
+    limit_time = args.limit_of_time
+    frame_num1 = args.frame_num_1
+    frame_num2 = args.frame_num_2
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
@@ -133,23 +153,24 @@ if __name__ == '__main__':
             heightAligned_list.append(heightAligned)
             widthAligned_list.append(widthAligned)
             # number of frame
-            if len(MARS_1) >= 30:
-                aim_MARS = MARS_1[-30:]
+            if len(MARS_1) >= args.frame_threshold:
+                cut_list_num = -1 * args.frame_threshold
+                aim_MARS = MARS_1[cut_list_num:]
                 max_index = 0
                 max_mar = aim_MARS[0]
                 num = 0
                 for index_mar, mar in enumerate(aim_MARS):
                     # Judge the threshold
-                    if mar >= 0.14:
+                    if mar >= args.mar_threshold:
                         num += 1
                     if mar > max_mar:
                         max_mar = mar
                         max_index = index_mar
                 
-                perclos = num / 30
+                perclos = num / args.frame_threshold
                 
                 # Conform to the fatigue driving conditions
-                if perclos >= 0.7:
+                if perclos >= args.perclos_threshold:
                     isFatigue = 1
                     print('Fatigue!!!')
                     # visualization
@@ -161,6 +182,9 @@ if __name__ == '__main__':
                     cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), 
                               cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
                     index_print = index - 30 + max_index
+                    image_path = "fatigue/"
+                    if not os.path.exists(image_path):
+                        os.mkdir(image_path)
                     image_path = "fatigue/0/"
                     if not os.path.exists(image_path):
                         os.mkdir(image_path)
@@ -197,22 +221,23 @@ if __name__ == '__main__':
             heightAligned_list_2.append(heightAligned)
             widthAligned_list_2.append(widthAligned)
             # Judge the threshold
-            if len(MARS_2) >= 30:
-                aim_MARS = MARS_2[-30:]
+            if len(MARS_2) >= args.frame_threshold:
+                cut_list_num = -1 * args.frame_threshold
+                aim_MARS = MARS_2[cut_list_num:]
                 max_index = 0
                 max_mar = aim_MARS[0]
                 num = 0
                 for index_mar, mar in enumerate(aim_MARS):
-                    if mar >= 0.14:
+                    if mar >= args.mar_threshold:
                         num += 1
                     if mar < max_mar:
                         max_mar = mar
                         max_index = index_mar
                 
-                perclos = num / 30
+                perclos = num / args.frame_threshold
                 
                 # Conform to the fatigue driving conditions
-                if perclos >= 0.7:
+                if perclos >= args.perclos_threshold:
                     isFatigue_1 = 1
                     print('Fatigue!!!')
                     # visualization
@@ -224,6 +249,9 @@ if __name__ == '__main__':
                     cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), 
                               cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
                     index_print = index_second - 30 + max_index
+                    image_path = "fatigue/"
+                    if not os.path.exists(image_path):
+                        os.mkdir(image_path)
                     image_path = "fatigue/1/"
                     if not os.path.exists(image_path):
                         os.mkdir(image_path)

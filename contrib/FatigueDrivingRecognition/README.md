@@ -163,7 +163,9 @@ bash atc-env.sh
 
 **步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在本项目的 `model` 目录下。（model目录下有已经转换好的om文件，如果要直接利用，则跳过此步骤）
 
-**步骤3** 编译。在项目目录下执行命令：
+**步骤3** 编译。修改Plugin1/CMakeLists.txt文件中`set(MX_SDK_HOME xxxx)`，将MX_SDK_HOME 设置为mxVision SDK 安装路径。
+
+在项目目录下执行命令：
 
 ```
 bash build.sh
@@ -177,7 +179,7 @@ bash build.sh
 4. 将下面命令中frame_num替换为测试的视频的帧数，并执行命令：
 
 ```
-python3.7 test_video.py ${frame_num}
+python3.7 test_video.py --frame_num ${frame_num}
 ```
 
 执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶，输出`Fatigue!!!`为疲劳驾驶。可视化结果保存在`fatigue`文件夹中。
@@ -191,7 +193,7 @@ python3.7 test_video.py ${frame_num}
 5. 将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
 
 ```
-python3.7 parallel_update.py ${time} ${frame_num1} ${frame_num2}
+python3.7 parallel_update.py  --limit_of_time ${time} --frame_num_1 ${frame_num1} --frame_num_2  ${frame_num2} 
 ```
 
 命令执行成功后在当前目录下生成检测结果文件 performance.txt，查看结果文件查看处理速度信息。

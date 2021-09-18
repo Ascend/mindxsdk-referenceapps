@@ -8,14 +8,16 @@ set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ../plugins)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(/home/nku_wang5/MindX_SDK/mxVision/include)
-include_directories(/home/nku_wang5/MindX_SDK/mxVision/opensource/include)
-include_directories(/home/nku_wang5/MindX_SDK/mxVision/opensource/include/gstreamer-1.0)
-include_directories(/home/nku_wang5/MindX_SDK/mxVision/opensource/include/glib-2.0)
-include_directories(/home/nku_wang5/MindX_SDK/mxVision/opensource/lib/glib-2.0/include)
 
-link_directories(/home/nku_wang5/MindX_SDK/mxVision/lib)
-link_directories(/home/nku_wang5/MindX_SDK/mxVision/opensource/lib)
+set(MX_SDK_HOME xxxx)
+include_directories(${MX_SDK_HOME}/include)
+include_directories(${MX_SDK_HOME}/opensource/include)
+include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
+include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
+include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
+
+link_directories(${MX_SDK_HOME}/lib)
+link_directories(${MX_SDK_HOME}/opensource/lib)
 
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")

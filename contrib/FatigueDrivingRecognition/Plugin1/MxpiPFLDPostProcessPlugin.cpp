@@ -25,6 +25,21 @@ using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiTensorPackageList";
     auto uint8Deleter = [] (uint8_t* p) { };
+    const int length_of_mouth = 40;
+    const int default_value = 0;
+    const int offset_of_left_eye = 104;
+    const int point_x_54 = 5;
+    const int point_x_66 = 29;
+    const int point_y_54 = 4;
+    const int point_y_66 = 28;
+    const int point_x_57 = 11;
+    const int point_x_70 = 37;
+    const int point_y_57 = 10;
+    const int point_y_70 = 36;
+    const int point_x_52 = 19;
+    const int point_x_61 = 1;
+    const int point_y_52 = 18;
+    const int point_y_61 = 0;
 }
 
 
@@ -96,25 +111,15 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
     auto dataPtr = (uint8_t *)tensors[0].GetBuffer();
     std::shared_ptr<void> keypointPointer;
     keypointPointer.reset(dataPtr, uint8Deleter);
-    float* eyes_left = new float[20];
-    float* eyes_right = new float[20];
-    float* mouth = new float[40];
-    for(int i = 0; i < 20; i++)
+    float* mouth = new float[length_of_mouth];
+    for(int i = 0; i < length_of_mouth; i++)
     {
-        eyes_left[i] = static_cast<float *>(keypointPointer.get())[i + 66];
-    }
-    for(int i = 0; i < 20; i++)
-    {
-        eyes_right[i] = static_cast<float *>(keypointPointer.get())[i + 174];
-    }
-    for(int i = 0; i < 40; i++)
-    {
-        mouth[i] = static_cast<float *>(keypointPointer.get())[i + 104];
+        mouth[i] = static_cast<float *>(keypointPointer.get())[i + offset_of_mouth];
     }
     // Calculate the MAR(Mouth Aspect Ratio) of person
-    float MAR = (sqrt(pow(fabs(mouth[5] - mouth[29]), 2) + pow(fabs(mouth[4] - mouth[28]), 2))
-             + sqrt(pow(fabs(mouth[11] - mouth[37]), 2) + pow(fabs(mouth[10] - mouth[36]), 2)))
-              / (2 * sqrt(pow(fabs(mouth[19] - mouth[1]), 2) + pow(fabs(mouth[18] - mouth[0]), 2)));
+    float MAR = (sqrt(pow(fabs(mouth[point_x_54] - mouth[point_x_66]), 2) + pow(fabs(mouth[point_y_54] - mouth[point_y_66]), 2))
+             + sqrt(pow(fabs(mouth[point_x_57] - mouth[point_x_70]), 2) + pow(fabs(mouth[point_y_57] - mouth[point_y_70]), 2)))
+              / (2 * sqrt(pow(fabs(mouth[point_x_52] - mouth[point_x_61]), 2) + pow(fabs(mouth[point_y_52] - mouth[point_y_61]), 2)));
     // Generate an ObjectList to save relevant information
     MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
     MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiObject->add_headervec();
@@ -127,11 +132,9 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
      * @y1 Height of the right eye
      */
     dstMxpiObject->set_x0(MAR);
-    dstMxpiObject->set_y0(sqrt(pow(fabs(eyes_left[1] - eyes_left[15]), 2)
-                       + pow(fabs(eyes_left[0] - eyes_left[14]), 2)));
-    dstMxpiObject->set_x1(fabs(eyes_right[12] - eyes_right[4]));
-    dstMxpiObject->set_y1(sqrt(pow(fabs(eyes_right[1] - eyes_right[15]), 2)
-                       + pow(fabs(eyes_right[0] - eyes_right[14]), 2)));
+    dstMxpiObject->set_y0(default_value);
+    dstMxpiObject->set_x1(default_value);
+    dstMxpiObject->set_y1(default_value);
     // Release dynamic array
     delete []eyes_left;
     delete []eyes_right;

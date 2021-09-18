@@ -28,11 +28,16 @@ parser = argparse.ArgumentParser(description="hello")
 parser.add_argument('--url_video', type=str,metavar='PATH',default="rtsp://192.168.88.109:8554/1.264",help='video path.')
 parser.add_argument('--label', type=str,default="0",help='ground truth.')
 parser.add_argument('--frame_num', type=str,default="40",help='length of video.')
+parser.add_argument('--frame_threshold', type=int,default=30,help='threshold of frame num.')
+parser.add_argument('--perclos_threshold', type=int,default=0.7,help='threshold of perclos.')
+parser.add_argument('--mar_threshold', type=int,default=0.14,help='threshold of mar.')
 
-# obtain the parameters
-# input parameter:(1)sys_args:input variables
-# output parameter:(1)global_args: key-value dictionary of variables.
 def get_args(sys_args):
+    """
+    # obtain the parameters
+    # input parameter:(1)sys_args:input variables
+    # output parameter:(1)global_args: key-value dictionary of variables.
+    """
     global_args = parser.parse_args(sys_args)
     return global_args
 
@@ -107,21 +112,22 @@ if __name__ == '__main__':
         heightAligned_list.append(heightAligned)
         widthAligned_list.append(widthAligned)
         # number of frame
-        if len(MARS) >= 30:
-            aim_MARS = MARS[-30:]
+        if len(MARS) >= args.frame_threshold:
+            cut_list_num = -1 * args.frame_threshold
+            aim_MARS = MARS[cut_list_num:]
             max_index = 0
             max_mar = aim_MARS[0]
             num = 0
             for index_mar, mar in enumerate(aim_MARS):
                 # Judge the threshold
-                if mar >= 0.14:
+                if mar >= args.mar_threshold:
                     num += 1
                 if mar > max_mar:
                     max_mar = mar
                     max_index = index_mar
-            perclos = num / 30
+            perclos = num / args.frame_threshold
             # Conform to the fatigue driving conditions
-            if perclos >= 0.7:
+            if perclos >= args.perclos_threshold:
                 isFatigue = 1
                 print('Fatigue!!!')
             heightAligned_list.pop(0)
