@@ -33,7 +33,7 @@ parser.add_argument('--perclos_threshold', type = int, default = 0.7, help = 'th
 parser.add_argument('--mar_threshold', type = int, default = 0.14, help = 'threshold of mar.')
 
 def get_args(sys_args):
-"""
+    """
     # obtain the parameters
     # input parameter:
     #         sys_args:input variables
