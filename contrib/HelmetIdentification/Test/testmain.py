@@ -22,7 +22,7 @@ import MxpiDataType_pb2 as MxpiDataType
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
+    streamManagerApi = StreamManagerApi.StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
