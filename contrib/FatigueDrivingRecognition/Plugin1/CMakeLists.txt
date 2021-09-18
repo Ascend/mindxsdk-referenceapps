@@ -9,7 +9,7 @@ set(LIBRARY_OUTPUT_PATH ../plugins)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(MX_SDK_HOME xxxx)
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 include_directories(${MX_SDK_HOME}/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
 include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
