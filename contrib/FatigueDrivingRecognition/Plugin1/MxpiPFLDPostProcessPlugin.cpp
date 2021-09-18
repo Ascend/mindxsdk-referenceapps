@@ -27,7 +27,7 @@ namespace {
     auto uint8Deleter = [] (uint8_t* p) { };
     const int length_of_mouth = 40;
     const int default_value = 0;
-    const int offset_of_left_eye = 104;
+    const int offset_of_mouth = 104;
     const int point_x_54 = 5;
     const int point_x_66 = 29;
     const int point_y_54 = 4;
