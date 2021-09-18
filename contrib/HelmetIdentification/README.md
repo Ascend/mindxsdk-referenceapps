@@ -278,14 +278,30 @@ python3.7.5 main.py
 
 #### 步骤3 测试性能与精度
 
+
 ##### 3.1 性能测试
 
-下载[benchmark工具包](https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346827)解压至服务器任意文件夹。切换到工具包所在目录，使用root权限运行以下命令得到推理结果：              
+###### 3.1.1 数据集说明
+
+- 数据集来源:  [Safety-Helmet-Wearing-Dataset](https://github.com/njvisionpower/Safety-Helmet-Wearing-Dataset)
+
+- 数据集结构
+
+```
+├── Test
+  ├── Annotations                 # 图片解释文件，含标签等信息，与JPEGImages中图片一一对应
+  ├── ImageSets                 # 存放txt文件
+  ├── JPEGImages                 # 数据集原图片
+```
+
+###### 3.1.2 性能测试
+
+下载[benchmark工具包](https://support.huawei.com/enterprise/zh/software/251707127-ESW2000346827)解压至服务器任意文件夹。切换到工具包所在目录，使用root权限运行以下命令，即可对测试集测试得到推理结果：              
 
 ```shell
 chmod +x benchmark.aarch64
 
-./benchmark.aarch64 -model_type=yolocaffe -batch_size=1 -device_id=0 -om_path=./YOLOv5_s.om -input_width=640 -input_height=640 -input_imgFiles_path=./test_imgFiles -useDvpp=true -output_binary=False 
+./benchmark.aarch64 -model_type=yolocaffe -batch_size=1 -device_id=0 -om_path=./YOLOv5_s.om -input_width=640 -input_height=640 -input_imgFiles_path=./JPEGImages -useDvpp=true -output_binary=False 
 ```
 
 参数说明具体如下表所示：
@@ -311,22 +327,9 @@ chmod +x benchmark.aarch64
 
 #####  3.2 精度测试
 
-###### 3.2.1 数据集说明
+###### 3.2.1测试数据集筛选
 
-- 数据集来源:  [Safety-Helmet-Wearing-Dataset](https://github.com/njvisionpower/Safety-Helmet-Wearing-Dataset)
-
-- 数据集结构
-
-```
-├── Test
-  ├── Annotations                 # 图片解释文件，含标签等信息，与JPEGImages中图片一一对应
-  ├── ImageSets                 # 存放txt文件
-  ├── JPEGImages                 # 数据集原图片
-```
-
-- 测试数据集筛选
-  依据ImageSets文件夹中test.txt文件，从原始数据集中筛选出测试数据集，该程序**select.py**放在源码根目录Test中，其内容如下：
-
+依据ImageSets文件夹中test.txt文件，从原始数据集中筛选出测试数据集，该程序**select.py**放在源码根目录Test中，其内容如下：
 ```python
 import os
 import shutil
