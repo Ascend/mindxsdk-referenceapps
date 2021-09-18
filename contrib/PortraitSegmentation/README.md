@@ -124,7 +124,7 @@ mkdir result
 其中阈值参数的范围是闭区间[0,1]，从0到1，随着阈值参数增加，人像的广度也越高，即会将所有的人像部分进行背景替换。  
 默认的阈值参数为1。
 
-
+```
 例：python3.7 main.py data/background.jpg data/portrait.jpg 1
 ```
 
