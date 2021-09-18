@@ -136,8 +136,6 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
     dstMxpiObject->set_x1(default_value);
     dstMxpiObject->set_y1(default_value);
     // Release dynamic array
-    delete []eyes_left;
-    delete []eyes_right;
     delete []mouth;
     return APP_ERR_OK;
 }
