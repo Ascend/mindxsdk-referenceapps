@@ -25,18 +25,20 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 parser = argparse.ArgumentParser(description="hello")
-parser.add_argument('--url_video', type=str,metavar='PATH',default="rtsp://192.168.88.109:8554/1.264",help='video path.')
-parser.add_argument('--label', type=str,default="0",help='ground truth.')
-parser.add_argument('--frame_num', type=str,default="40",help='length of video.')
-parser.add_argument('--frame_threshold', type=int,default=30,help='threshold of frame num.')
-parser.add_argument('--perclos_threshold', type=int,default=0.7,help='threshold of perclos.')
-parser.add_argument('--mar_threshold', type=int,default=0.14,help='threshold of mar.')
+parser.add_argument('--url_video', type = str, metavar = 'PATH', default = "rtsp://192.168.88.109:8554/1.264", help = 'video path.')
+parser.add_argument('--label', type = str, default = "0", help = 'ground truth.')
+parser.add_argument('--frame_num', type = str, default = "40", help = 'length of video.')
+parser.add_argument('--frame_threshold', type = int, default = 30, help = 'threshold of frame num.')
+parser.add_argument('--perclos_threshold', type = int, default = 0.7, help = 'threshold of perclos.')
+parser.add_argument('--mar_threshold', type = int, default = 0.14, help = 'threshold of mar.')
 
 def get_args(sys_args):
-    """
+"""
     # obtain the parameters
-    # input parameter:(1)sys_args:input variables
-    # output parameter:(1)global_args: key-value dictionary of variables.
+    # input parameter:
+    #         sys_args:input variables
+    # return: 
+    #         global_args: key-value dictionary of variables.
     """
     global_args = parser.parse_args(sys_args)
     return global_args

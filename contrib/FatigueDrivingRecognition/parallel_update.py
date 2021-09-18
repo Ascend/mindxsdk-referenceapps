@@ -29,12 +29,12 @@ index = 0
 index_second = 0
 
 parser = argparse.ArgumentParser(description="hello")
-parser.add_argument('--limit_of_time', type=int,default=10,help='time of test.')
-parser.add_argument('--frame_num_1', type=int,default=40,help='length of video1.')
-parser.add_argument('--frame_num_2', type=int,default=40,help='length of video2.')
-parser.add_argument('--frame_threshold', type=int,default=30,help='threshold of frame num.')
-parser.add_argument('--perclos_threshold', type=int,default=0.7,help='threshold of perclos.')
-parser.add_argument('--mar_threshold', type=int,default=0.14,help='threshold of mar.')
+parser.add_argument('--limit_of_time', type = int, default = 10, help = 'time of test.')
+parser.add_argument('--frame_num_1', type = int, default = 40, help = 'length of video1.')
+parser.add_argument('--frame_num_2', type = int, default = 40, help = 'length of video2.')
+parser.add_argument('--frame_threshold', type = int, default = 30, help = 'threshold of frame num.')
+parser.add_argument('--perclos_threshold', type = int, default = 0.7, help = 'threshold of perclos.')
+parser.add_argument('--mar_threshold', type = int, default = 0.14, help = 'threshold of mar.')
 
 def fun_timer(time_limit):
     """
@@ -54,11 +54,14 @@ def fun_timer(time_limit):
     f.write(str2)
     f.close()
 
+
 def get_args(sys_args):
     """
     # obtain the parameters
-    # input parameter:(1)sys_args:input variables
-    # output parameter:(1)global_args: key-value dictionary of variables.
+    # input parameter:
+    #         sys_args:input variables
+    # return: 
+    #         global_args: key-value dictionary of variables.
     """
     global_args = parser.parse_args(sys_args)
     return global_args

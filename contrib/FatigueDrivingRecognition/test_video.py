@@ -32,8 +32,10 @@ parser.add_argument('--mar_threshold', type=int,default=0.14,help='threshold of 
 def get_args(sys_args):
     """
     # obtain the parameters
-    # input parameter:(1)sys_args:input variables
-    # output parameter:(1)global_args: key-value dictionary of variables.
+    # input parameter:
+    #         sys_args:input variables
+    # return: 
+    #         global_args: key-value dictionary of variables.
     """
     global_args = parser.parse_args(sys_args)
     return global_args
