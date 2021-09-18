@@ -18,15 +18,13 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-	ActionRecognition/
-	CrowdCounting/
-    FatigueDrivingRecognition/
+/plugins/
 )
 
 
 err_flag=0
-for sample in ${SAMPLE_FOLDER[@]};do
-    cd ${current_folder}/${sample}
+for sample in "${SAMPLE_FOLDER[@]}";do
+    cd "${current_folder}/${sample}"
     bash build.sh || {
         echo -e "Failed to build ${sample}"
 		err_flag=1
