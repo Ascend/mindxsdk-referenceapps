@@ -269,15 +269,14 @@ if __name__ == '__main__':
 
     # print the result
     if isFatigue == 0:
-        print('Normal')
+        print('Video1 is Normal')
         
     else:
-        print('Fatigue!!!')
+        print('Video1 is Fatigue!!!')
     if isFatigue_1 == 0:
-        print('1 is Normal')
+        print('Video2 is Normal')
         
     else:
-        print('1 is Fatigue!!!')
-
+        print('Video2 isFatigue!!!')
     # destroy streams
     streamManagerApi.DestroyAllStreams()
