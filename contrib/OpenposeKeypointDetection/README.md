@@ -156,11 +156,11 @@ PYTHONPATH: python环境路径
 本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，pytorch 模型下载链接：https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth 。
 
 
-本项目运行前需要将 pytorch 模型转换为 onnx 模型，onnx 模型下载链接：https://drive.google.com/file/d/1RGuHz5BkENqaCOyoR4xdQKaZWLpwN1o0/view?usp=sharing（百度网盘下载：链接：https://pan.baidu.com/s/1-FtAje3y09RTPT8EeaJKRQ 
+本项目运行前需要将 pytorch 模型转换为 onnx 模型，onnx 模型下载链接：https://drive.google.com/file/d/1RGuHz5BkENqaCOyoR4xdQKaZWLpwN1o0/view?usp=sharing  （百度网盘下载：链接：https://pan.baidu.com/s/1-FtAje3y09RTPT8EeaJKRQ 
 提取码：q2dk ），然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
 
-转换得到的 om 模型可以从该链接下载得到：https://drive.google.com/file/d/1c5NaIqBicSCcDHNoZ-XKHi31KcG2AgI3/view?usp=sharing （百度网盘下载：链接：https://pan.baidu.com/s/1i5LWpTpuc0XUtyM7-lp2hA 
+转换得到的 om 模型可以从该链接下载得到：https://drive.google.com/file/d/1c5NaIqBicSCcDHNoZ-XKHi31KcG2AgI3/view?usp=sharing   （百度网盘下载：链接：https://pan.baidu.com/s/1i5LWpTpuc0XUtyM7-lp2hA 
 提取码：k4z6 ）。
 
 也可以自行转换模型，步骤如下：
