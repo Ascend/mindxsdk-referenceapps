@@ -63,12 +63,12 @@ if __name__ == '__main__':
                     "next": "mxpi_modelinfer0"
                 },
                 "mxpi_modelinfer0": {
-                    "props": {
-                        "dataSource": "mxpi_imageresize0",
-                        "modelPath": "./ExampleProject/HelmetIdentification/Models/YOLOv5_s.om",
-                        "postProcessConfigPath": "./HelmetExample/MAP/VOC2028/Helmet_yolov5.cfg",
-                        "labelPath": "./ExampleProject/HelmetIdentification/Models/imgclass.names",
-                        "postProcessLibPath": "./MindX_SDK/mxVision/lib/libMpYOLOv5PostProcessor.so"
+                    "props":{
+                        "dataSource":"mxpi_imageresize0",
+                        "modelPath":"./YOLOv5_s.om",
+                        "postProcessConfigPath":"./Helmet_yolov5.cfg",
+                        "labelPath":"./imgclass.names",
+                        "postProcessLibPath":"./libMpYOLOv5PostProcessor.so"
                     },
                     "factory": "mxpi_modelinfer",
                     "next": "mxpi_dataserialize0"
@@ -117,14 +117,13 @@ if __name__ == '__main__':
 
         if ret < 0:
             print("Failed to send data to stream.")
-           
+
 
         # Obtain the inference result by specifying streamName and uniqueId.
         infer_result = streamManagerApi.GetResult(streamName, 0)
         if infer_result.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (
                 infer_result.errorCode, infer_result.data.decode()))
-            
 
         # print the infer result
 
