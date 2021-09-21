@@ -285,10 +285,10 @@ python3.7.5 main.py
 性能测试使用脚本performance_test_main.py，该脚本与main.py大体相同，不同之处是在performance_test_main.py中添加了时间戳测试，测试数据为mxpi_rtspsrc拉取的视频流。两路视频尺寸分别取多组不同尺寸的视频做对比。推理三百帧图片后取平均时间值，运行如下命令得到结果：
 
 ```shell
-python3.7 main_test.py
+python3.7 performance_test_main.py
 ```
 
-注：与运行main.py时相同，运行main_test.py时要先使用live555进行推流。**测试视频**上传至[云盘][https://pan.baidu.com/s/14Xmf6UbJy-3KYhx1ZjoVUw](提取码：b123)，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
+注：与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[云盘][https://pan.baidu.com/s/14Xmf6UbJy-3KYhx1ZjoVUw](提取码：b123)，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
 
 #####  3.2 精度测试
 
