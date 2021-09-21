@@ -67,15 +67,15 @@ while True:
     if stop_stream:
         break
     # Get data through GetProtobuf interface
-    inferResult0 = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
+    inferResult0 = streamManagerApi.GetResult(streamName, b'appsink0', keyVec0)
     # Determine whether the output is empty
-    if len(inferResult0[0].messageBuf) == 0:
+    if inferResult0.metadataVec.size() == 0:
         print('Object detection result of model infer is null!!!')
         continue
 
-    DictStructure = Utils.get_inference_data(inferResult0)
+    DictStructure = utils.get_inference_data(inferResult0)
     # the visualization of the inference result, save the output in the specified folder
-    Utils.cv_visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
+    utils.cv_visualization(DictStructure[0], DictStructure[1], DictStructure[2], DictStructure[3], DictStructure[4])
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
