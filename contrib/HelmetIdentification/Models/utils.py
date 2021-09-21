@@ -81,20 +81,20 @@ def get_inference_data(inference):
     # add inferennce data into DATA structure
     # Frame information structure
     frame_list0 = MxpiDataType.MxpiFrameInfo()
-    frame_list0.ParseFromString(inference[0].messageBuf)
+    frame_list0.ParseFromString(inference.metadataVec[0].serializedMetadata)
     # Target object structure
     object_list = MxpiDataType.MxpiObjectList()
-    object_list.ParseFromString(inference[1].messageBuf)
+    object_list.ParseFromString(inference.metadataVec[1].serializedMetadata)
     # Get target box information
     objectlist_data = object_list.objectVec
     # track structure
     tracklet_list = MxpiDataType.MxpiTrackLetList()
-    tracklet_list.ParseFromString(inference[2].messageBuf)
+    tracklet_list.ParseFromString(inference.metadataVec[2].serializedMetadata)
     # Obtain tracking information
     tracklet_data = tracklet_list.trackLetVec
     # image structure
     vision_list0 = MxpiDataType.MxpiVisionList()
-    vision_list0.ParseFromString(inference[3].messageBuf)
+    vision_list0.ParseFromString(inference.metadataVec[3].serializedMetadata)
     vision_data0 = vision_list0.visionVec[0].visionData.dataStr
     # Get picture information
     vision_info0 = vision_list0.visionVec[0].visionInfo
