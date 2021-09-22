@@ -296,7 +296,7 @@ export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python:{path}
 python3.7 performance_test_main.py
 ```
 
-注：1.与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[云盘][https://pan.baidu.com/s/14Xmf6UbJy-3KYhx1ZjoVUw]，提取码：b123，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
+注：1.与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[云盘](https://pan.baidu.com/s/14Xmf6UbJy-3KYhx1ZjoVUw)，提取码：b123，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
 
 2.performance_test_main.py中加载pipline文件应写HelmetDetection.pipline的绝对路径
 
