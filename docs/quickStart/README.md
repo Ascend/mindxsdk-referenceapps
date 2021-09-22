@@ -20,5 +20,5 @@ MindX SDK快速入门教程
   - [cmake入门](Cmake介绍.md)
   - 自定义插件开发
     - [插件开发调试步骤指导](4-1插件开发调试指导.md)
-  - [mxBase 图像检测样例运行](./mxBase 图像检测样例运行.md)
+  - [mxBase图像检测样例运行](./mxBase图像检测样例运行.md)
 
