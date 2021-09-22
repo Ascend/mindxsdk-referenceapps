@@ -68,10 +68,10 @@ while True:
     # exit flag
     if stop_stream:
         break
-    i+=1
-    if i>300:
+    i += 1
+    if i > 300:
         break
-    t1=time.time()
+    t1 = time.time()
     inferResult0 = streamManagerApi.GetResult(streamName, b'appsink0', keyVec0)
     if inferResult0.metadataVec.size() == 0:
         print('Object detection result of model infer is null!!!')
