@@ -121,7 +121,7 @@ PYTHONPATH: python环境路径
 
 所用模型为yolov4模型与PFLD模型：
 
-* yolov4为已经转换好的om模型，可通过[百度云链接](https://pan.baidu.com/s/117eyVVMVGR8lsvy7VlgvGw)（提取码：hlmi）获取，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。
+* yolov4为已经转换好的om模型，可通过[百度云链接](https://pan.baidu.com/s/117eyVVMVGR8lsvy7VlgvGw)（提取码：hlmi）获取，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。将om模型和coco.names以及cfg文件放置到model文件夹中。
 * PFLD模型为[github项目](https://github.com/Hsintao/pfld_106_face_landmarks)中提供的模型
 
 转换PFLD模型所需软件依赖如下表所示。
@@ -161,7 +161,7 @@ bash atc-env.sh
 ## 4 编译与运行
 **步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在本项目的 `model` 目录下。（model目录下有已经转换好的om文件，如果要直接利用，则跳过此步骤）
+**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在本项目的 `model` 目录下。
 
 **步骤3** 编译。修改Plugin1/CMakeLists.txt文件中`set(MX_SDK_HOME xxxx)`，将MX_SDK_HOME 设置为mxVision SDK 安装路径。
 

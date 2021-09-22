@@ -74,6 +74,10 @@ if __name__ == '__main__':
     YUV_BYTES_DE = 2
     MARS = []
     index = 0
+    position = (5, 50)
+    color = (0, 0, 255)
+    font_weight = 2
+    font_size = 1.3
     while True:
         if index == frame_num:
             break
@@ -123,8 +127,8 @@ if __name__ == '__main__':
                 img_yuv_fatigue = img_yuv_list[max_index]
                 img_yuv_fatigue = img_yuv_fatigue.reshape(heightAligned_list[max_index] * YUV_BYTES_NU // YUV_BYTES_DE,widthAligned_list[max_index])
                 img_fatigue = cv2.cvtColor(img_yuv_fatigue, cv2.COLOR_YUV2BGR_NV12)
-                cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 255), 2)
-                index_print = index - 30 + max_index
+                cv2.putText(img_fatigue, "Warning!!! Fatigue!!!", position, cv2.FONT_HERSHEY_SIMPLEX, font_size, color, font_weight)
+                index_print = index - args.frame_threshold + max_index
                 image_path = "fatigue/"
                 if not os.path.exists(image_path):
                     os.mkdir(image_path)

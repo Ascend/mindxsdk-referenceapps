@@ -40,6 +40,7 @@ namespace {
     const int point_x_61 = 1;
     const int point_y_52 = 18;
     const int point_y_61 = 0;
+    const int exponent = 2;
 }
 
 
@@ -117,9 +118,12 @@ APP_ERROR MxpiPFLDPostProcessPlugin::GenerateObjectList(const MxpiTensorPackageL
         mouth[i] = static_cast<float *>(keypointPointer.get())[i + offset_of_mouth];
     }
     // Calculate the MAR(Mouth Aspect Ratio) of person
-    float MAR = (sqrt(pow(fabs(mouth[point_x_54] - mouth[point_x_66]), 2) + pow(fabs(mouth[point_y_54] - mouth[point_y_66]), 2))
-             + sqrt(pow(fabs(mouth[point_x_57] - mouth[point_x_70]), 2) + pow(fabs(mouth[point_y_57] - mouth[point_y_70]), 2)))
-              / (2 * sqrt(pow(fabs(mouth[point_x_52] - mouth[point_x_61]), 2) + pow(fabs(mouth[point_y_52] - mouth[point_y_61]), 2)));
+    float MAR = (sqrt(pow(fabs(mouth[point_x_54] - mouth[point_x_66]), exponent) 
+                + pow(fabs(mouth[point_y_54] - mouth[point_y_66]), exponent))
+                + sqrt(pow(fabs(mouth[point_x_57] - mouth[point_x_70]), exponent) 
+                + pow(fabs(mouth[point_y_57] - mouth[point_y_70]), exponent)))
+                / (exponent * sqrt(pow(fabs(mouth[point_x_52] - mouth[point_x_61]), exponent) 
+                + pow(fabs(mouth[point_y_52] - mouth[point_y_61]), exponent)));
     // Generate an ObjectList to save relevant information
     MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
     MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiObject->add_headervec();
