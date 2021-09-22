@@ -43,7 +43,7 @@ npu-smi info
 
 本sample工程名称为 **FatigueDrivingRecognition**，工程目录如下所示：
 
-```python
+```she&#39;l&#39;l
 ├── images #readme图片
 │   ├── diagram.png
 │   ├── Q1.png
