@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
-        error_message ="Failed to create Stream, streamState=%s" % str(stream_state)
+        error_message = "Failed to create Stream, streamState=%s" % str(stream_state)
         raise AssertionError(error_message)
 
     # prepare the input of the stream #begin
