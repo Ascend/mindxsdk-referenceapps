@@ -21,7 +21,6 @@ SAMPLE_FOLDER=(
 	ActionRecognition/
 	CrowdCounting/
     human_segmentation/
-    VideoGestureRecognition/
     Individual/
 )
 
