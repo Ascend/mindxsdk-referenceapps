@@ -266,9 +266,16 @@ pip3.7 install pycocotools
 cd python
 python3.7 evaluate.py
 ``` 
-命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_keypoint_detect_result.json 检测结果文件。
-
-
+命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_keypoint_detect_result.json 检测结果文件。输出结果如下图所示：
+<center>
+    <img src="./images/EvaluateInfo.png">
+    <br>
+    <div style="color:orange;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图4. 模型精度测试输出结果 </div>
+</center>
+其中圈出来的部分为模型在 COCO VAL 2017 数据集上，IOU 阈值为 0.50:0.05:0.95 时的精度值。
 
 ## 5 常见问题
 
@@ -285,7 +292,7 @@ python3.7 evaluate.py
     <div style="color:orange;
     display: inline-block;
     color: #999;
-    padding: 2px;">图4. 模型输入尺寸和 pipeline 中参数设置不匹配报错 </div>
+    padding: 2px;">图5. 模型输入尺寸和 pipeline 中参数设置不匹配报错 </div>
 </center>
 
 **解决方案：**
@@ -305,7 +312,7 @@ python3.7 evaluate.py
     <div style="color:orange;
     display: inline-block;
     color: #999;
-    padding: 2px;">图5. 文件路径报错 </div>
+    padding: 2px;">图6. 文件路径报错 </div>
 </center>
 
 **解决方案：**
