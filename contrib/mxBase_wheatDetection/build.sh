@@ -48,7 +48,6 @@ function build_yolov3()
         echo "Failed to build yolov3."
         exit ${ret}
     fi
-    make install
 }
 
 check_env
