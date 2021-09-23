@@ -62,6 +62,34 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 |Ubantu|18.04|
 |MindX SDK|2.0.2|
 
+## 模型转换
+
+**步骤1** 模型获取
+在Kaggle上下载YOLOv5模型 。[下载地址](https://www.kaggle.com/yunyung/yolov5-wheat)
+在Github上下载YOLOv5的各个文件。[下载地址](https://github.com/ultralytics/yolov5)
+将下载的YOLOv5模型pt文件通过YOLOv5自带的export模型转换函数转换为onnx格式的文件
+```
+python export.py --weights best_v3.pt --img 416 --batch 1 --simplify
+```
+**步骤2** 模型存放
+将获取到的YOLOv5模型onnx文件放至上一级的model文件夹中
+**步骤3** 执行模型转换命令
+
+(1) 配置环境变量
+#### 设置环境变量（请确认install_path路径是否正确）
+#### Set environment PATH (Please confirm that the install_path is correct).
+```c
+export install_path=/usr/local/Ascend/ascend-toolkit/latest
+export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
+export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
+export ASCEND_OPP_PATH=${install_path}/opp
+
+```
+(2) 转换模型
+```
+atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version=Ascend310 --insert_op_conf=./aipp.aippconfig --input_shape="images:1,3,416,416" --output_type="Conv_1228:0:FP32;Conv_1276:0:FP32;Conv_1324:0:FP32" --out_nodes="Conv_1228:0;Conv_1276:0;Conv_1324:0"
+```
 
 ## 编译与运行
 
