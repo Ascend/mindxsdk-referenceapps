@@ -48,9 +48,9 @@ public:
 
     ~Yolov5PostProcess() = default;
 
-    Yolov5PostProcess(const Yolov5PostProcess &other) = default;
+    Yolov5PostProcess(const Yolov5PostProcess &other);
 
-    Yolov5PostProcess &operator=(const Yolov5PostProcess &other) = default;
+    Yolov5PostProcess &operator=(const Yolov5PostProcess &other);
 
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 
