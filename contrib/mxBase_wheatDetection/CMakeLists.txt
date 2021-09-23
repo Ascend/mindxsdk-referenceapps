@@ -1,0 +1,36 @@
+cmake_minimum_required(VERSION 3.10)
+project(mxBase_wheatDetection)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
+include_directories(./yolov5PostProcess)
+include_directories(./yolov5Detection)
+file(GLOB_RECURSE YOLOV5_POSTPROCESS ${PROJECT_SOURCE_DIR}/yolov5PostProcess/*cpp)
+file(GLOB_RECURSE YOLOV5_DETECTION ${PROJECT_SOURCE_DIR}/yolov5Detection/*cpp)
+set(TARGET mxBase_wheatDetection)
+add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z,now,-z,noexecstack -s -pie -Wall)
+add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
+
+set(MX_SDK_HOME /home/zhongzhi22/MindX_SDK/mxVision-2.0.2/)
+
+include_directories(
+        ${MX_SDK_HOME}/include
+        ${MX_SDK_HOME}/opensource/include
+        ${MX_SDK_HOME}/opensource/include/opencv4
+)
+
+link_directories(
+        ${MX_SDK_HOME}/lib
+        ${MX_SDK_HOME}/opensource/lib
+        ${MX_SDK_HOME}/lib/modelpostprocessors
+        /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
+        /usr/local/Ascend/driver/lib64/
+)
+
+add_executable(mxBase_wheatDetection main.cpp ${YOLOV5_DETECTION} ${YOLOV5_POSTPROCESS})
+target_link_libraries(mxBase_wheatDetection
+        glog
+        mxbase
+        cpprest
+        opencv_world
+        )

@@ -1,0 +1,15 @@
+[
+	{
+		"name":"Build-Configuration",
+		"type":"AscendAppBuild",
+		"lastBuild":true,
+		"buildProperties":{
+			"HOST_OS":"Linux",
+			"BUILD_ENVIRONMENT":"",
+			"BUILD_TYPE":"Debug",
+			"BUILD_MODE":"Remote",
+			"HOST_ARCH":"aarch64",
+			"TARGET_TYPE":"SOC"
+		}
+	}
+]
