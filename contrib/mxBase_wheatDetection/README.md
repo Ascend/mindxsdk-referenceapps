@@ -66,10 +66,13 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 ## 编译与运行
 
 示例步骤如下：
+
 **步骤1** 
+
 修改CMakeLists.txt文件 将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
 
 **步骤2** 
+
 ASCEND_HOME Ascend安装的路径，一般为/usr/local/Ascend
 LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及libyolov3postprocess.so的路径
 ```
@@ -80,10 +83,12 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 ```
 
 **步骤3** 
+
 cd到mxbase目录下，执行如下编译命令：
 bash build.sh
 
 **步骤4** 
+
 制定jpg图片进行推理，将需要进行推理的图片放入mxbase 目录下的新文件夹中，例如mxbase/test。 eg:推理图片为xxx.jpg
 cd 到mxbase 目录下
 ```
