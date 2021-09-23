@@ -61,6 +61,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 | :--------: | :------: |
 |Ubantu|18.04|
 |MindX SDK|2.0.2|
+|Python|3.7.9|
 
 ## 模型转换
 
