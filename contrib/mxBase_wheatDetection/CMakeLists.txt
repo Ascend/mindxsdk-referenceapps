@@ -11,7 +11,7 @@ set(TARGET mxBase_wheatDetection)
 add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z,now,-z,noexecstack -s -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-set(MX_SDK_HOME /home/zhongzhi22/MindX_SDK/mxVision-2.0.2/)
+set(MX_SDK_HOME "ENV{MX_SDK_HOME}")
 
 include_directories(
         ${MX_SDK_HOME}/include
