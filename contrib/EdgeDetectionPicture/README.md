@@ -15,18 +15,22 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 #### 1.3 代码目录结构与说明
 本sample工程名称为EdgeDetectionPicture，工程目录如下图所示：
 
-├── model  
-   ├── aipp.cfg            # 模型转换配置文件  
-├── rcfDetection   
-   ├──RcfDetection.cpp     
-   ├──RcfDetection.h   
-├── rcfPostProcess          
-   ├──RcfPostProcess.cpp    
-   ├──RcfPostProcess.h  
-├── CMakeLists.txt  
-├── License   
-├── main.cpp   
-├── build.sh    
+```
+.
+├── model
+│   ├── aipp.cfg // 模型转换aipp配置文件
+├── rcfDetection
+│   ├── RcfDetection.cpp
+│   └── RcfDetection.h
+├──  rcfPostProcess
+│   ├── rcfPostProcess.cpp
+│   └── rcfPostProcess.h
+├── build.sh
+├── main.cpp
+├── README.md
+├── CMakeLists.txt
+└── License
+```
 
 ## 2 环境依赖
 环境依赖软件和版本如下表：
