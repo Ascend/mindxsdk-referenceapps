@@ -26,6 +26,9 @@ namespace{
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
     const float CONFIDENCE = 0.25;
+    const uint32_t MODEL_HEIGHT = 416;
+    const uint32_t MODEL_WIDTH = 416;
+    const uint32_t GREEN = 255;
 }
 
 // 加载标签文件
@@ -163,8 +166,8 @@ APP_ERROR Yolov5Detection::Resize(const MxBase::TensorBase &inputTensor, MxBase:
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
-    const uint32_t resizeHeight = 416;
-    const uint32_t resizeWidth = 416;
+    const uint32_t resizeHeight = MODEL_HEIGHT;
+    const uint32_t resizeWidth = MODEL_WIDTH;
     MxBase::ResizeConfig resize = {};
     resize.height = resizeHeight;
     resize.width = resizeWidth;
@@ -231,8 +234,8 @@ APP_ERROR Yolov5Detection::PostProcess(const MxBase::TensorBase &tensor,
     imgInfo.widthOriginal = shape[1]; 
     imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU; 
 
-    imgInfo.widthResize = 416;
-    imgInfo.heightResize = 416;
+    imgInfo.widthResize = MODEL_WIDTH;
+    imgInfo.heightResize = MODEL_HEIGHT;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imgInfo);
@@ -291,7 +294,7 @@ APP_ERROR Yolov5Detection::WriteResult(MxBase::TensorBase &tensor,
                 << "; box: [ (" << resultInfo[k].x0 << "," << resultInfo[k].y0 << ") "
                 << "(" << resultInfo[k].x1-resultInfo[k].x0 << "," << resultInfo[k].y1 - resultInfo[k].y0 << ") ]" ;
 
-        const cv::Scalar green = cv::Scalar(0, 255, 0);
+        const cv::Scalar green = cv::Scalar(0, GREEN, 0);
         const uint32_t thickness = 4;
         const uint32_t xOffset = 10;
         const uint32_t yOffset = 10;
