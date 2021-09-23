@@ -394,7 +394,7 @@ void Yolov5PostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLaye
         int heightIndex_ = modelType_ ? NCHW_HEIGHTINDEX : NHWC_HEIGHTINDEX;
         // OutputLayer是Yolov5每个输出池对应的信息
         OutputLayer layer = {featLayerShapes[i][widthIndex_], featLayerShapes[i][heightIndex_]};
-        if(BIASESDIM != 0){
+        if(BIASESDIM != 0 && netWidth != 0){
             logOrder = log(featLayerShapes[i][widthIndex_] * SCALE / netWidth) / log(BIASESDIM);
         }
         else{
