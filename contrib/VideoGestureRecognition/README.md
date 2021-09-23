@@ -16,10 +16,6 @@
 |-------- FrameSkippingSampling
 |           |---- FrameSkippingSampling.cpp         // 跳帧采样.cpp
 |           |---- FrameSkippingSampling.h           // 跳帧采样.h
-|-------- data
-|           |---- gesture_test1.264                  // 手势识别测试数据1 (本地测试自行准备)
-|           |---- gesture_test2.264                  // 手势识别测试数据2 (本地测试自行准备)
-|           |---- gesture_test3.264                  // 手势识别测试数据3 (本地测试自行准备)
 |-------- model
 |           |---- resnet18.cfg                      // Resnet18 模型转换配置文件
 |           |---- resnet18.names                    // Resnet18 标签文件
@@ -39,6 +35,7 @@
 |-------- ResnetDetector
 |           |---- ResnetDetector.cpp                  // Resnet识别.cpp
 |           |---- ResnetDetector.h                    // Resnet识别.h
+|-------- data
 |-------- build.sh                                  // 样例编译脚本
 |-------- CMakeLists.txt                            // CMake配置
 |-------- main.cpp                                  // 视频手势识别测试样例
