@@ -69,7 +69,10 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 **步骤1** 
 
-修改CMakeLists.txt文件 将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
+修改CMakeLists.txt文件 
+```
+将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
+```
 
 **步骤2** 
 
@@ -85,7 +88,10 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 **步骤3** 
 
 cd到mxbase目录下，执行如下编译命令：
+
+```
 bash build.sh
+```
 
 **步骤4** 
 
