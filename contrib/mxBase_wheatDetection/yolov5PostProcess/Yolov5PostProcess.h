@@ -18,7 +18,6 @@
 #define YOLOV5_POST_PROCESS_H
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 
-
 const float DEFAULT_OBJECTNESS_THRESH = 0.3;
 const float DEFAULT_IOU_THRESH = 0.45;
 const int DEFAULT_ANCHOR_DIM = 3;
@@ -42,7 +41,6 @@ struct NetInfo {
     int netWidth;
     int netHeight;
 };
-
 
 class Yolov5PostProcess : public MxBase::ObjectPostProcessBase {
 public:
