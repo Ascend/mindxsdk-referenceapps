@@ -58,3 +58,6 @@ cd 到mxbase 目录下
 ```
 ./mxBase_wheatDetection ./test/
 ```
+```
+./mxBase_wheatDetection ./test
+```
