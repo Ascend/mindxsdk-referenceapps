@@ -23,6 +23,7 @@ SAMPLE_FOLDER=(
     HelmetIdentification/
     Individual/
     human_segmentation/
+    mxBase_wheatDetection/
 )
 
 
