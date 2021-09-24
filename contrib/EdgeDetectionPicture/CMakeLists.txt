@@ -10,7 +10,9 @@ add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
-
+#target_link_libraries(Stereo boost_system boost_filesystem)  
+#target_link_libraries(RGBD boost_system boost_filesystem) 
+#target_link_libraries(ABC boost_system boost_filesystem)
 include_directories(
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include
@@ -32,5 +34,7 @@ target_link_libraries(edge_detection_picture
         mxbase
         cpprest
         opencv_world
+	boost_system
+	boost_filesystem
         )
 install(TARGETS ${TARGET} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/)

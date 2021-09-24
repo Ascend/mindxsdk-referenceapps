@@ -215,6 +215,7 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::
     uint32_t height = shape[dim2];
     uint32_t width = shape[dim3];
     cv::Mat imgBgr = cv::imread(imgPath);
+    std::string fileName = imgPath.substr(imgPath.find_last_of("/") + 1);
     uint32_t imageWidth = imgBgr.cols;
     uint32_t imageHeight = imgBgr.rows;
     cv::Mat modelOutput = cv::Mat(height, width, CV_32FC1, inferTensor.GetBuffer());
@@ -226,7 +227,17 @@ APP_ERROR RcfDetection::WriteResult(MxBase::TensorBase &inferTensor, const std::
     resizedMat.convertTo(grayMat, CV_8UC1, ALPHA);
     cv::Mat croppedImage = grayMat(myROI);
     resize(croppedImage, croppedImage,  cv::Size(imageWidth, imageHeight), 0, 0, cv::INTER_LINEAR);
-    cv::imwrite("./result.jpg", croppedImage);
+ 
+    std::string resultPathName = "result";
+    if (access(resultPathName.c_str(), 0) != 0) {
+        int ret = mkdir(resultPathName.c_str(), S_IRUSR | S_IWUSR | S_IXUSR);
+        if (ret != 0) {
+            LogError << "Failed to create result directory: " << resultPathName << ", ret = " << ret;
+            return APP_ERR_COMM_FAILURE;
+        }
+    }
+
+    cv::imwrite("./result/"+fileName, croppedImage);
     return APP_ERR_OK;
 }
 

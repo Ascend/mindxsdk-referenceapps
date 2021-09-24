@@ -17,8 +17,11 @@
 #include <iostream>
 #include <vector>
 #include <RcfDetection.h>
+//#include <experimental/filesystem>
+#include <boost/filesystem.hpp>
 #include "MxBase/Log/Log.h"
 
+namespace fs = boost::filesystem;
 namespace {
     const uint32_t OUTSIZE_NU = 5;
     const uint32_t RCF_TYPE = 5;
@@ -52,6 +55,23 @@ int main(int argc, char *argv[])
         return ret;
     }
     std::string imgPath = argv[1];
+    //++++++++++++++++++
+     
+    for (auto & entry : fs::directory_iterator(imgPath)) {
+        LogInfo << "read image path " << entry.path();
+        ret = rcf->Process(entry.path().string());
+        if (ret != APP_ERR_OK) {
+            LogError << "Inceptionv4Opencv process failed, ret=" << ret << ".";
+            rcf->DeInit();
+            return ret;
+        }
+    }
+
+    rcf->DeInit();
+    return APP_ERR_OK;
+
+    //++++++++++++++++++
+    /**
     ret = rcf->Process(imgPath);
     if (ret != APP_ERR_OK) {
         LogError << "rcfDetection process failed, ret=" << ret << ".";
@@ -60,4 +80,5 @@ int main(int argc, char *argv[])
     }
     rcf->DeInit();
     return APP_ERR_OK;
+    **/
 }
