@@ -333,8 +333,8 @@ APP_ERROR MxpiOpenposePostProcess::ExtractKeypoints(std::vector<cv::Mat> &keypoi
                 });
             }
             keypointsWithoutNearest.push_back(nonZeroCoordinates[j]);
-            keypointsScore.push_back(keypointHeatmap[i].at<float>
-                (nonZeroCoordinates[j].y, nonZeroCoordinates[j].x));
+            keypointsScore.push_back(keypointHeatmap[i].at<float>(
+                nonZeroCoordinates[j].y, nonZeroCoordinates[j].x));
         }
         coor.push_back(keypointsWithoutNearest);
         coorScore.push_back(keypointsScore);
