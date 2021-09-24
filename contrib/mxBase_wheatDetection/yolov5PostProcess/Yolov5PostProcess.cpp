@@ -233,7 +233,10 @@ void Yolov5PostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo in
                           layer.anchors[BIASESDIM * k] / info.netWidth;
             float height = fastmath::exp(static_cast<float *>(netout.get())[bIdx + OFFSETHEIGHT * stride]) *
                            layer.anchors[BIASESDIM * k + OFFSETBIASES] / info.netHeight;
-            CodeDuplicationSetDet(det, x, y, height, width);
+            det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
+            det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
+            det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
+            det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
             det.classId = classID;
             det.className = configData_.GetClassName(classID);
             det.confidence = maxProb;
@@ -285,7 +288,10 @@ void Yolov5PostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo i
                                                  COORDINATE_PARAM) * layer.anchors[BIASESDIM * k + OFFSETBIASES] /
                            info.netHeight;
 
-            CodeDuplicationSetDet(det, x, y, width, height);
+            det.x0 = std::max(0.0f, x - width / COORDINATE_PARAM);
+            det.x1 = std::min(1.0f, x + width / COORDINATE_PARAM);
+            det.y0 = std::max(0.0f, y - height / COORDINATE_PARAM);
+            det.y1 = std::min(1.0f, y + height / COORDINATE_PARAM);
             det.classId = classID;
             det.className = configData_.GetClassName(classID);
             det.confidence = maxProb;
