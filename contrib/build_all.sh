@@ -21,8 +21,6 @@ SAMPLE_FOLDER=(
     ActionRecognition/
 	CrowdCounting/
     HelmetIdentification/
-    Individual/
-    human_segmentation/
     mxBase_wheatDetection/
 	PersonCount/
 	human_segmentation/
