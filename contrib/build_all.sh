@@ -21,8 +21,6 @@ SAMPLE_FOLDER=(
     ActionRecognition/
 	CrowdCounting/
 	OpenposeKeypointDetection/
-    Individual/
-    human_segmentation/
 	PersonCount/
 	human_segmentation/
 	Individual/
