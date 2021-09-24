@@ -1,5 +1,5 @@
-#!/bin/bash
-# Copyright 2021 Huawei Technologies Co., Ltd
+#! /bin/sh
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,31 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
-set -e 
-current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
-
-SAMPLE_FOLDER=(
-    ActionRecognition/
-	CrowdCounting/
-	PersonCount/
-	human_segmentation/
-	Individual/
-)
-
-
-err_flag=0
-for sample in ${SAMPLE_FOLDER[@]};do
-    cd ${current_folder}/${sample}
-    bash build.sh || {
-        echo -e "Failed to build ${sample}"
-		err_flag=1
-    }
-done
-
-
-if [ ${err_flag} -eq 1 ]; then
-	exit 1
-fi
-exit 0
+#build post process share library
+cd Plugin1 || exit
+mkdir build
+cd build || exit
+cmake ..
+make

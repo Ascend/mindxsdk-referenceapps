@@ -1,0 +1,52 @@
+pipeline = {
+        "detection": {
+            "stream_config": {
+                "deviceId": "0"
+            },
+            "appsrc0": {
+                "props": {
+                    "blocksize": "409600"
+                },
+                "factory": "appsrc",
+                "next": "mxpi_imagedecoder0"
+            },
+            "mxpi_imagedecoder0": {
+                "factory": "mxpi_imagedecoder",
+                "next": "mxpi_imageresize0"
+            },
+            "mxpi_imageresize0": {
+                "props": {
+                  "resizeHeight":"800",
+                  "resizeWidth":"1408",
+                  "dataSource":"mxpi_imagedecoder0"
+                },
+                "factory": "mxpi_imageresize",
+                "next": "mxpi_tensorinfer0"
+            },
+            "mxpi_tensorinfer0": {
+                "props": {
+                    "dataSource":"mxpi_imageresize0",
+                    "modelPath": "model/count_person_8.caffe.om",
+                },
+                "factory": "mxpi_tensorinfer",
+                "next": "mxpi_objectpostprocessor0"
+            },
+            "mxpi_objectpostprocessor0": {
+                "props": {
+                        "dataSource": "mxpi_tensorinfer0",
+                        "funcLanguage":"c++",
+                        "postProcessConfigPath": "config/insert_op.cfg",
+                        "labelPath": "config/person.names",
+                        "postProcessLibPath": "Plugin1/build/libcountpersonpostprocess.so",
+                },
+                "factory": "mxpi_objectpostprocessor",
+                "next": "appsink0"
+            },
+            "appsink0": {
+                "props": {
+                    "blocksize": "40960000"
+                },
+                "factory": "appsink"
+            }
+        }
+    }
