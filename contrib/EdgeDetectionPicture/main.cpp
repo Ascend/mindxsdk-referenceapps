@@ -17,7 +17,6 @@
 #include <iostream>
 #include <vector>
 #include <RcfDetection.h>
-//#include <experimental/filesystem>
 #include <boost/filesystem.hpp>
 #include "MxBase/Log/Log.h"
 
@@ -55,8 +54,6 @@ int main(int argc, char *argv[])
         return ret;
     }
     std::string imgPath = argv[1];
-    //++++++++++++++++++
-     
     for (auto & entry : fs::directory_iterator(imgPath)) {
         LogInfo << "read image path " << entry.path();
         ret = rcf->Process(entry.path().string());
@@ -69,16 +66,4 @@ int main(int argc, char *argv[])
 
     rcf->DeInit();
     return APP_ERR_OK;
-
-    //++++++++++++++++++
-    /**
-    ret = rcf->Process(imgPath);
-    if (ret != APP_ERR_OK) {
-        LogError << "rcfDetection process failed, ret=" << ret << ".";
-        rcf->DeInit();
-        return ret;
-    }
-    rcf->DeInit();
-    return APP_ERR_OK;
-    **/
 }

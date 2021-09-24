@@ -90,14 +90,15 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 bash build.sh
 
 **步骤4** 进行图像边缘检测
-请自行准备jpg格式的测试图像进行边缘检测 
+请自行准备jpg格式的测试图像保存在文件夹中(例如 data/**.jpg)进行边缘检测 
 ```
-./edge_detection_picture ./**.jpg
+./edge_detection_picture ./data
 ```
-生成边缘检测图像 result.jpg
+生成边缘检测图像 result/**.jpg
 
 ## 5 精度测试
-下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500), 使用test数据进行测试
+下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500), 使用 BSR/BSDS500/data/images/test数据进行测试
+
 
 (1) 下载开源代码
 
@@ -111,7 +112,13 @@ cd edge_eval_python
 cd cxx/src
 source build.sh
 ```
-(3) 将检测后的边缘图像保存在文件中
+(3) 将test中的图像经过边缘检测后的结果保存在result文件夹中
+
+``` shell
+./edge_detection_picture path/to/BSR/BSDS500/data/images/test/
+
+```
+
 
 (4) 修改检测代码
 
@@ -121,7 +128,10 @@ vim mian.py
 (5) 测试精度
 
 ``` shell
-python main.py --alg "HED" --model_name_list "hed" --result_dir examples/hed_result \
---save_dir examples/hed_eval_result --gt_dir examples/bsds500_gt --key result \ --workers -1
+python main.py  --result_dir path/to/result  --gt_dir paht/to/BSR/BSDS500/data/groundTruth/test 
 
 ```
+注: 
+  result_dir: results directory
+  gt_dir    : ground truth directory
+
