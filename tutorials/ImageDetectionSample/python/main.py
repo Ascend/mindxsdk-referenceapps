@@ -125,8 +125,8 @@ if __name__ == '__main__':
         exit()
 
     if infer_result[0].errorCode != 0:
-        print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            infer_result[0].errorCode, infer_result[0].data.decode()))
+        print("GetProtobuf error. errorCode=%d" % (
+            infer_result[0].errorCode))
         exit()
 
     YUV_BYTES_NU = 3
