@@ -24,6 +24,9 @@ SAMPLE_FOLDER=(
     Individual/
     human_segmentation/
     mxBase_wheatDetection/
+	PersonCount/
+	human_segmentation/
+	Individual/
 )
 
 
