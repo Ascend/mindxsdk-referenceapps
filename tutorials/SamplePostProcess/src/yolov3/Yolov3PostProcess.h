@@ -45,8 +45,8 @@ struct NetInfo {
 }
 
 namespace MxBase {
-    class Yolov3PostProcess{
-
+    class Yolov3PostProcess: public ObjectPostProcessBase
+    {
     public:
         Yolov3PostProcess() = default;
 
