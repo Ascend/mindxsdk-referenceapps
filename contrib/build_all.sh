@@ -20,15 +20,9 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 SAMPLE_FOLDER=(
     ActionRecognition/
 	CrowdCounting/
-<<<<<<< HEAD
 	PersonCount/
 	human_segmentation/
 	Individual/
-=======
-    PersonCount/
-    human_segmentation/
-    Individual/
->>>>>>> 7938455630fc7fe35146cbfe952d04db46bf199b
 )
 
 
