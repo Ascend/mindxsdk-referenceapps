@@ -78,20 +78,18 @@ if __name__ == '__main__':
     color = (0, 0, 255)
     font_weight = 2
     font_size = 1.3
+    err_code = 2017
     while True:
         if index == frame_num:
             break
         # Obtain the inference result
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        if infer.errorCode == err_code:
+            index = index + 1
+            continue
         if infer.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
         # Obtain the PFLD post-processing plugin results
-        infer_result_0 = infer.metadataVec[0]
-        tensorList = MxpiDataType.MxpiTensorPackageList()
-        tensorList.ParseFromString(infer_result_0.serializedMetadata)
-        ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-        if ids.shape[0] == 0:
-            continue
         infer_result_3 = infer.metadataVec[3]
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(infer_result_3.serializedMetadata)

@@ -82,21 +82,19 @@ if __name__ == '__main__':
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     MARS = []
-    frame_num = int(args.frame_num) 
+    frame_num = int(args.frame_num)
+    err_code = 2017
     while True:
         if index == frame_num:
             break
         # Obtain the inference result
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        if infer.errorCode == err_code:
+            index = index + 1
+            continue
         if infer.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
-        # Obtain the PFLD inference results
-        infer_result_0 = infer.metadataVec[0]
-        tensorList = MxpiDataType.MxpiTensorPackageList()
-        tensorList.ParseFromString(infer_result_0.serializedMetadata)
-        ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-        if ids.shape[0] == 0:
-            continue
+        
         # Obtain the PFLD post-processing plugin results
         infer_result_3 = infer.metadataVec[3]
         objectList = MxpiDataType.MxpiObjectList()

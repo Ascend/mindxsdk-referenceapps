@@ -111,7 +111,7 @@ if __name__ == '__main__':
     frame_num_list = [frame_num1, frame_num2]
     MARS_1 = []
     MARS_2 = []
-    
+    err_code = 2017
     while True:
         if index == frame_num_list[0] and index_second == frame_num_list[1]:
             break
@@ -121,6 +121,9 @@ if __name__ == '__main__':
             timer.start()
         # Obtain the inference result
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        if infer.errorCode == err_code:
+            index = index + 1
+            continue
         if infer.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
         # Obtain the PFLD inference results
