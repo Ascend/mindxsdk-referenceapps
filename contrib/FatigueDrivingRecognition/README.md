@@ -121,7 +121,7 @@ PYTHONPATH: python环境路径
 
 所用模型为yolov4模型与PFLD模型：
 
-* yolov4为已经转换好的om模型，可通过[百度云链接](https://pan.baidu.com/s/1zK3-6usQC7753IlL8UKvAQ  )（提取码：84jl）获取，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。将om模型和coco.names以及cfg文件放置到model文件夹中。
+* yolov4模型为已经转换好的om模型，可通过[百度云链接](https://pan.baidu.com/s/1zK3-6usQC7753IlL8UKvAQ  )（提取码：84jl）获取，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。将om模型和coco.names以及cfg文件放置到model文件夹中。
 * PFLD模型为[github项目](https://github.com/Hsintao/pfld_106_face_landmarks)中提供的模型
 
 转换PFLD模型所需软件依赖如下表所示。
