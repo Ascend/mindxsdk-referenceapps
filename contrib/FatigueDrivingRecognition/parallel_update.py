@@ -120,16 +120,20 @@ if __name__ == '__main__':
             timer = threading.Timer(limit_time, fun_timer, (limit_time, ))
             timer.start()
         # Obtain the inference result
-        infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+        infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        if infer.errorCode != 0:
+            print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
         # Obtain the PFLD inference results
+        infer_result_1 = infer.metadataVec[1]
         tensorList = MxpiDataType.MxpiTensorPackageList()
-        tensorList.ParseFromString(infer_result[1].messageBuf)
+        tensorList.ParseFromString(infer_result_1.serializedMetadata)
         ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         if ids.shape[0] == 0:
             continue
         # Obtain the frame information
+        infer_result_0 = infer.metadataVec[0]
         FrameList0 = MxpiDataType.MxpiFrameInfo()
-        FrameList0.ParseFromString(infer_result[0].messageBuf)
+        FrameList0.ParseFromString(infer_result_0.serializedMetadata)
         if index == frame_num_list[0] and FrameList0.channelId == 0:
             continue
         elif index_second == frame_num_list[1] and FrameList0.channelId == 1:
@@ -137,14 +141,16 @@ if __name__ == '__main__':
         # Channel 0
         if FrameList0.channelId == 0:
             # Obtain the PFLD post-processing plugin results
+            infer_result_4 = infer.metadataVec[4]
             objectList = MxpiDataType.MxpiObjectList()
-            objectList.ParseFromString(infer_result[4].messageBuf)
+            objectList.ParseFromString(infer_result_4.serializedMetadata)
             MAR = objectList.objectVec[0].x0
             height_left = objectList.objectVec[0].y0
             height_right = objectList.objectVec[0].y1
             # Obtain the the original image
+            infer_result_2 = infer.metadataVec[2]
             visionList = MxpiDataType.MxpiVisionList()
-            visionList.ParseFromString(infer_result[2].messageBuf)
+            visionList.ParseFromString(infer_result_2.serializedMetadata)
             visionData = visionList.visionVec[0].visionData.dataStr
             visionInfo = visionList.visionVec[0].visionInfo
             img_yuv = np.frombuffer(visionData, dtype=np.uint8)
@@ -203,14 +209,16 @@ if __name__ == '__main__':
         # Channel 0
         elif FrameList0.channelId == 1:
             # Obtain the PFLD post-processing plugin results
+            infer_result_3 = infer.metadataVec[3]
             objectList = MxpiDataType.MxpiObjectList()
-            objectList.ParseFromString(infer_result[3].messageBuf)
+            objectList.ParseFromString(infer_result_3.serializedMetadata)
             MAR = objectList.objectVec[0].x0
             height_left = objectList.objectVec[0].y0
             height_right = objectList.objectVec[0].y1
             # Obtain the the original image
+            infer_result_4 = infer.metadataVec[4]
             visionList = MxpiDataType.MxpiVisionList()
-            visionList.ParseFromString(infer_result[4].messageBuf)
+            visionList.ParseFromString(infer_result_4.serializedMetadata)
             visionData = visionList.visionVec[0].visionData.dataStr
             visionInfo = visionList.visionVec[0].visionInfo
             
