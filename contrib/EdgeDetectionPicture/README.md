@@ -129,6 +129,9 @@ vim mian.py
 vim /impl/edges_eval_dir.py
 修改155行为  im = os.path.join(res_dir, "{}.jpg".format(i))
 
+vim eval_edge.py
+修改14行为  res_dir = result_dir
+
 (5) 测试精度
 
 ``` shell
