@@ -64,16 +64,10 @@ int main(int argc, char *argv[])
 
     for (auto & entry : fs::directory_iterator(imgPath))
     {
-        if (entry.path().extension() != ".jpg")
-        {
-            continue;
-        }
         LogInfo << "read image path " << entry.path();
         ret = rcf->Process(entry.path().string());
         if (ret != APP_ERR_OK) {
             LogError << "Inceptionv4Opencv process failed, ret=" << ret << ".";
-            rcf->DeInit();
-            return ret;
         }
     }
 
