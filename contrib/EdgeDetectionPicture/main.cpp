@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
         ret = rcf->Process(entry.path().string());
         if (ret != APP_ERR_OK) {
             LogError << "Inceptionv4Opencv process failed, ret=" << ret << ".";
+	    continue;
         }
     }
 
