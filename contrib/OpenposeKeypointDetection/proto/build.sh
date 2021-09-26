@@ -11,34 +11,26 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
- 
+# limitations under the License.mitations under the License.
+
 set -e 
+
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
+function build_plugin() {
+    build_path=$current_folder/build
+    if [ -d "$build_path" ]; then
+        rm -rf "$build_path"
+    else
+        echo "file $build_path is not exist."
+    fi
+    mkdir -p "$build_path"
+    cd "$build_path"
+    cmake ..
+    make -j
+    cd ..
+    exit 0
+}
 
-SAMPLE_FOLDER=(
-    ActionRecognition/
-	CrowdCounting/
-	OpenposeKeypointDetection/
-	PersonCount/
-	human_segmentation/
-	Individual/
-	FatigueDrivingRecognition/
-)
-
-
-err_flag=0
-for sample in ${SAMPLE_FOLDER[@]};do
-    cd ${current_folder}/${sample}
-    bash build.sh || {
-        echo -e "Failed to build ${sample}"
-		err_flag=1
-    }
-done
-
-
-if [ ${err_flag} -eq 1 ]; then
-	exit 1
-fi
+build_plugin
 exit 0
