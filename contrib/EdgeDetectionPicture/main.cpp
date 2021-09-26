@@ -42,7 +42,7 @@ static void InitRcfParam(InitParam &initParam)
 int main(int argc, char *argv[])
 {
     if (argc <= 1) {
-        LogWarn << "Please input image path, such as './test.jpg'.";
+        LogWarn << "Please input image path, such as './result/test.jpg'.";
         return APP_ERR_OK;
     }
     InitParam initParam;
@@ -54,7 +54,20 @@ int main(int argc, char *argv[])
         return ret;
     }
     std::string imgPath = argv[1];
-    for (auto & entry : fs::directory_iterator(imgPath)) {
+    fs::directory_iterator item_begin(imgPath);
+    fs::directory_iterator item_end;
+    if (fs::exists(imgPath) && item_begin == item_end)
+    {
+        LogError << " directory is null" << ".";
+        return APP_ERR_OK;;
+    }
+
+    for (auto & entry : fs::directory_iterator(imgPath))
+    {
+        if (entry.path().extension() != ".jpg")
+        {
+            continue;
+        }
         LogInfo << "read image path " << entry.path();
         ret = rcf->Process(entry.path().string());
         if (ret != APP_ERR_OK) {
