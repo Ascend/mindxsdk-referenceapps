@@ -18,12 +18,8 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-    ActionRecognition/
-	CrowdCounting/
-	OpenposeKeypointDetection/
-	PersonCount/
-	human_segmentation/
-	Individual/
+	/proto/
+	/plugins/
 )
 
 
