@@ -124,6 +124,10 @@ source build.sh
 
 vim mian.py
 注释第17行代码 nms_process(model_name_list, result_dir, save_dir, key, file_format)
+修改18行为   eval_edge(alg, model_name_list, result_dir, gt_dir, workers)
+
+vim /impl/edges_eval_dir.py
+修改155行为  im = os.path.join(res_dir, "{}.jpg".format(i))
 
 (5) 测试精度
 
@@ -133,5 +137,6 @@ python main.py  --result_dir path/to/result  --gt_dir paht/to/BSR/BSDS500/data/g
 ```
 注: 
   result_dir: results directory
+
   gt_dir    : ground truth directory
 

@@ -42,7 +42,7 @@ static void InitRcfParam(InitParam &initParam)
 int main(int argc, char *argv[])
 {
     if (argc <= 1) {
-        LogWarn << "Please input image path, such as './result/test.jpg'.";
+        LogWarn << "Please input image directory path, such as './result'.";
         return APP_ERR_OK;
     }
     InitParam initParam;
