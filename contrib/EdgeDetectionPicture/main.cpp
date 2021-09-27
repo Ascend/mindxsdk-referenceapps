@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     if (fs::exists(imgPath) && item_begin == item_end)
     {
         LogError << " directory is null" << ".";
-        return APP_ERR_OK;;
+        return APP_ERR_OK;
     }
 
     for (auto & entry : fs::directory_iterator(imgPath))
