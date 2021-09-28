@@ -55,7 +55,7 @@ def generate_data_description(save_path):
     for idx in range(19000):
         dataset['test_image'].append('%05d.png' % (idx + 1))
         dataset['att'].append(data['peta'][0][0][0][idx, 4:].tolist())
-    with open(os.path.join(save_dir, 'peta_dataset.pkl'), 'wb') as f:
+    with open(os.path.join(save_path, 'peta_dataset.pkl'), 'wb') as f:
         pickle.dump(dataset, f)
 
 
