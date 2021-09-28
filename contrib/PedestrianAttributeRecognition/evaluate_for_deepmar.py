@@ -16,16 +16,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 """
+import os
+import argparse
+import pickle as pickle
+import random
 import cv2
 import numpy as np
 import torch
-import os
-from PIL import Image
-import argparse
-import pickle as pickle
 from PIL import Image
 import torchvision.transforms as transforms
-import random
 from evaluate import attribute_evaluate_lidw
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
@@ -70,7 +69,6 @@ if __name__ == '__main__':
     jpg_name = os.listdir(filePath)
     valid_img = []
     invalid_img = []
-    # label_index = []
     label_selected = []
     for name in image:
         if name[0:5] + '.jpg' not in jpg_name:
