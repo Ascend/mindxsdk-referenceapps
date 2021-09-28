@@ -15,11 +15,11 @@
 """
 
 import os
+import copy
+import time
 import torch
 from torch.autograd import Variable
 import numpy as np
-import copy
-import time
 import sys
 
 # Attribute evaluation subfunction
