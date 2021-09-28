@@ -37,7 +37,7 @@ def xml_to_txt(indir, outdir):
 
 
 if __name__ == "__main__":
-    indir = "/home/zhongzhi2/facemask_project/newenv_mask/testimages/FaceMaskDataset/label"  # xml目录
-    outdir = "/home/zhongzhi2/facemask_project/newenv_mask/testimages/FaceMaskDataset/ground_truth"  # txt目录
+    indir1 = "/home/zhongzhi2/facemask_project/newenv_mask/testimages/FaceMaskDataset/label"  # xml目录
+    outdir1 = "/home/zhongzhi2/facemask_project/newenv_mask/testimages/FaceMaskDataset/ground_truth"  # txt目录
 
-    xml_to_txt(indir, outdir)
+    xml_to_txt(indir1, outdir1)

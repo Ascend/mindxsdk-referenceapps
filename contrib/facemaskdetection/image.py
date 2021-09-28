@@ -36,7 +36,7 @@ from nms import single_class_non_max_suppression
 
 
 def inference(
-    image,
+    image0,
     conf_thresh=0.5,
     iou_thresh=0.4,
     target_shape=(260, 260),
@@ -53,7 +53,7 @@ def inference(
     :param show_result: whether to display the image.
     :return:
     """
-    image = np.copy(image)
+    image = np.copy(image0)
     output_info = []
     height, width, _ = image.shape
     y_bboxes_output = ids
