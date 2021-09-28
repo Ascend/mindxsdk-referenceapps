@@ -238,8 +238,7 @@ if __name__ == '__main__':
     text_lower = "lowerBody:" + text_lower[:-1]
     text_accessory = "accessory:" + text_accessory[:-1]
     text_foot = "foot:" + text_foot[:-1]
-    line = line + text_carrying + "\n" + text_upper + "\n" + text_lower + 
-    "\n" + text_accessory + "\n" + text_foot + "\n" + "置信度：" + str(bboxes['confidence'])
+    line = line + text_carrying + "\n" + text_upper + "\n" + text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "置信度：" + str(bboxes['confidence'])
 
     img2 = cv2.imread(img_path)
     cv2.rectangle(img2, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
