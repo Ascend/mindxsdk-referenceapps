@@ -17,9 +17,9 @@
 """
 
 import os
-import numpy as np
 import random
 import pickle
+import numpy as np
 from scipy.io import loadmat
 
 np.random.seed(0)
@@ -47,7 +47,7 @@ def generate_data_description(save_path):
     dataset['att_name'] = []
     dataset['selected_attribute'] = range(35)
     # load PETA.MAT
-    petaPath='/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/PETA.mat'
+    petaPath = '/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/PETA.mat'
     data = loadmat(petaPath)
     for idx in range(105):
         dataset['att_name'].append(data['peta'][0][0][1][idx, 0][0])
@@ -98,11 +98,11 @@ if __name__ == "__main__":
     parser.add_argument(
         '--save_dir',
         type=str,
-        default='/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/')
+        default = '/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/')
     parser.add_argument(
         '--traintest_split_file',
         type=str,
-        default="/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/peta_partition.pkl")
+        default = "/home/wn/下载/race/pedestrian_attribute_recognition_pytorch_master/dataset/peta/peta_partition.pkl")
     args = parser.parse_args()
     save_dir = args.save_dir
     traintest_split_file = args.traintest_split_file
