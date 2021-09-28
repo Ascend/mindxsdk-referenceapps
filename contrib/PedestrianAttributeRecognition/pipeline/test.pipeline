@@ -1,0 +1,90 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "3"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource":"mxpi_imageresize0",
+                "modelPath": "model/yolov3/yolov3_tf_bs1_fp16.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "model/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "model/yolov3/coco.names",
+                "postProcessLibPath": "/home/hdu_guo3/MindXSDK/mxVision-2.0.2/lib/modelpostprocessors/libyolov3postprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_distributor0"
+        },
+        "mxpi_distributor0": {
+            "props": {
+                "dataSource": "mxpi_objectpostprocessor0",
+                "classIds": "0"
+            },
+            "factory": "mxpi_distributor",
+            "next": "mxpi_imagecrop0"
+        },
+        "mxpi_imagecrop0": {
+            "props": {
+                "dataSource": "mxpi_distributor0_0",
+                "dataSourceImage": "mxpi_imagedecoder0",
+                "resizeWidth": "224",
+                "resizeHeight": "224",
+                "leftExpandRatio": "0.05",
+                "rightExpandRatio": "0.05",
+                "upExpandRatio": "0.05",
+                "downExpandRatio": "0.05",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imagecrop",
+            "next": "mxpi_tensorinfer1"
+        },
+        "mxpi_tensorinfer1": {
+            "props": {
+                "dataSource":"mxpi_imagecrop0",
+                "modelPath": "model/deepmar/deepmar_bs1_aipp_1.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+        "props": {
+            "outputDataKeys": "mxpi_tensorinfer1,mxpi_distributor0_0"
+        },
+        "factory": "mxpi_dataserialize",
+        "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
