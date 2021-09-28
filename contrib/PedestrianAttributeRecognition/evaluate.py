@@ -113,15 +113,15 @@ def attribute_evaluate_lidw(gt_result, pt_result):
     union_pos = np.sum(((gt_result == 1) + (pt_result == 1)).astype(float), axis=1)
     # avoid empty label in predicted results
     cnt_eff = float(gt_result.shape[0])
-    for iter, key in enumerate(gt_pos):
+    for i, key in enumerate(gt_pos):
         if key == 0:
-            union_pos[iter] = 1
-            pt_pos[iter] = 1
-            gt_pos[iter] = 1
+            union_pos[i] = 1
+            pt_pos[i] = 1
+            gt_pos[i] = 1
             cnt_eff = cnt_eff - 1
             continue
-        if pt_pos[iter] == 0:
-            pt_pos[iter] = 1
+        if pt_pos[i] == 0:
+            pt_pos[i] = 1
     instance_acc = np.sum(floatersect_pos / union_pos) / cnt_eff
     instance_precision = np.sum(floatersect_pos / pt_pos) / cnt_eff
     instance_recall = np.sum(floatersect_pos / gt_pos) / cnt_eff
