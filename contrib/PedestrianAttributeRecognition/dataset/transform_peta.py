@@ -59,7 +59,7 @@ def generate_data_description(save_path):
         pickle.dump(dataset, f)
 
 
-def create_trainvaltest_split(traintest_split_file):
+def create_trainvaltest_split(file):
     """
     create a dataset split file, which consists of index of the train/val/test splits
     """
@@ -87,7 +87,7 @@ def create_trainvaltest_split(traintest_split_file):
         weight_train = np.mean(data['peta'][0][0][0][train, 4:].astype('float32') == 1, axis=0).tolist()
         partition['weight_trainval'].append(weight_trainval)
         partition['weight_train'].append(weight_train)
-    with open(traintest_split_file, 'wb') as f:
+    with open(file, 'wb') as f:
         pickle.dump(partition, f)
 
 
