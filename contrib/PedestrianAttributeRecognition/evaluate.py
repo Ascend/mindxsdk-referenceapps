@@ -35,7 +35,7 @@ def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
     print('-' * 60)
 
 
-def attribute_evaluate(feat_func, dataset, **kwargs):
+def attribute_evaluate(feat_func, dataset):
     """
     Attribute evaluation
     """
