@@ -4,6 +4,12 @@ import glob
 
 
 def xml_to_txt(indir, outdir):
+    """
+        Transfer xml to txt
+        :param indir: path of xml files
+        :param outdir: path of txt files.
+        :return:
+        """
 
     os.chdir(indir)
     annotations = os.listdir(".")
