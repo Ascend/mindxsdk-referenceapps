@@ -17,10 +17,11 @@
 import os
 import copy
 import time
+import sys
 import torch
 from torch.autograd import Variable
 import numpy as np
-import sys
+
 
 # Attribute evaluation subfunction
 def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
