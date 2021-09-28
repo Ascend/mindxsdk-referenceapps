@@ -32,7 +32,7 @@ def make_dir(path):
         os.mkdir(path)
 
 
-def generate_data_description(save_dir):
+def generate_data_description(save_path):
     """
     create a dataset description file, which consists of images, labels
     """
