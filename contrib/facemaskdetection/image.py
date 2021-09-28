@@ -17,15 +17,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import json
-import os
 import cv2
-import time
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import (
     StreamManagerApi,
-    MxDataInput,
     StringVector,
     InProtobufVector,
     MxProtobufIn,
@@ -127,10 +123,10 @@ if __name__ == "__main__":
     streamName = b"detection"
     inPluginId = 0
     # image preprocess
-    image = cv2.imread(img_path)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    height, width, _ = image.shape
-    image_resized = cv2.resize(image, (260, 260))
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    height, width, _ = img.shape
+    image_resized = cv2.resize(img, (260, 260))
     image_np = image_resized / 255.0  # 归一化到0~1
     image_exp = np.expand_dims(image_np, axis=0).astype(np.float32)
 

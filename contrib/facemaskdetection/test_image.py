@@ -36,7 +36,7 @@ from nms import single_class_non_max_suppression
 
 
 def inference(
-    image,
+    image0,
     conf_thresh=0.5,
     iou_thresh=0.4,
     target_shape=(260, 260),
@@ -53,7 +53,7 @@ def inference(
     :param show_result: whether to display the image.
     :return:
     """
-    image = np.copy(image)
+    image = np.copy(image0)
     output_info = []
     height, width, _ = image.shape
     y_bboxes_output = ids
@@ -119,11 +119,11 @@ if __name__ == "__main__":
         streamName = b"detection"
         inPluginId = 0
 
-        image = cv2.imread(img_path)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        img = cv2.imread(img_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         read_frame_stamp = time.time()
-        height, width, _ = image.shape
-        image_resized = cv2.resize(image, (260, 260))
+        height, width, _ = img.shape
+        image_resized = cv2.resize(img, (260, 260))
         image_np = image_resized / 255.0  # 归一化到0~1
         image_exp = np.expand_dims(image_np, axis=0).astype(np.float32)
 
