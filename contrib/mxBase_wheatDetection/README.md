@@ -132,8 +132,8 @@ bash build.sh
 
 **步骤4** 
 
-制定jpg图片进行推理，将需要进行推理的图片放入mxbase 目录下的新文件夹中，例如mxbase/test。 eg:推理图片为xxx.jpg
-cd 到mxbase 目录下
+制定jpg图片进行推理，将需要进行推理的图片放入mxBase_wheatDetection目录下的新文件夹中，例如mxBase_wheatDetection/test。 eg:推理图片为xxx.jpg
+cd 到mxBase_wheatDetection目录下
 ```
-./mxBase_sample ./test/
+./mxBase_wheatDetection ./test/
 ```
