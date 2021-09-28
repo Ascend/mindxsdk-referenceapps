@@ -33,8 +33,11 @@ def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
           % (result['instance_acc'], result['instance_precision'], result['instance_recall'], result['instance_F1']))
     print('-' * 60)
 
-# Attribute evaluation
+
 def attribute_evaluate(feat_func, dataset, **kwargs):
+    """
+    Attribute evaluation
+    """
     print("extracting features for attribute recognition")
     pt_result = extract_feat(feat_func, dataset)
     # obain the attributes from the attribute dictionary
