@@ -1,0 +1,70 @@
+{
+    "im_resnet50": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "props": {
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/test1.264",
+                "channelId": "0"
+            },
+            "factory": "mxpi_rtspsrc",
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV21",
+                "deviceId": "0",
+                "vdecChannelId": "0"
+            },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_imageresize0"
+        }, 
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "224",
+                "resizeWidth": "224",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+         },
+
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./convert/resnet50-dirver_detection-air-915-yuv.om",
+                "waitingTime": "2000",
+                "outputDeviceId": "-1"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_classpostprocessor0"
+        },
+        "mxpi_classpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "./models/resnet50.cfg",
+                "labelPath": "./models/dirver-detection_clsidx_to_label.names",
+                "postProcessLibPath": "../../../lib/modelpostprocessors/libresnet50postprocess.so"
+            },
+            "factory": "mxpi_classpostprocessor",
+            "next": "mxpi_dataserialize0"
+        },       
+
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_classpostprocessor0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
