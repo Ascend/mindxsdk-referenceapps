@@ -22,7 +22,7 @@ import copy
 import time
 import sys
 
-
+# Attribute evaluation subfunction
 def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
     """ evaluate the attribute recognition precision """
     result = attribute_evaluate(feat_func, test_set, **test_kwargs)
@@ -33,7 +33,7 @@ def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
           % (result['instance_acc'], result['instance_precision'], result['instance_recall'], result['instance_F1']))
     print('-' * 60)
 
-
+# Attribute evaluation
 def attribute_evaluate(feat_func, dataset, **kwargs):
     print("extracting features for attribute recognition")
     pt_result = extract_feat(feat_func, dataset)
@@ -49,7 +49,7 @@ def attribute_evaluate(feat_func, dataset, **kwargs):
     pt_result[pt_result < 0] = 0
     return attribute_evaluate_lidw(gt_result, pt_result)
 
-
+# Feature extraction
 def extract_feat(feat_func, dataset):
     """
     extract feature for images
@@ -74,7 +74,7 @@ def extract_feat(feat_func, dataset):
     print('{} batches done, total {:.2f}s'.format(total_eps, end_time - start_time))
     return feat
 
-
+# Attribute evaluation
 def attribute_evaluate_lidw(gt_result, pt_result):
     """
     Input:
