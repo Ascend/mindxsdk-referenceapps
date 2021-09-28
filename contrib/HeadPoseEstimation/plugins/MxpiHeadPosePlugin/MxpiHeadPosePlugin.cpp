@@ -56,53 +56,18 @@ void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
     }
 }
 
-/**
- * @brief Parsing TensorBase data to keypoint heatmap and PAF heatmap of openpose model
- * @param tensors - TensorBase vector
- * @param keypoint_heatmap - Keep keypoint data
- * @param paf_heatmap - Keep PAF data
- * @param channel_keypoint - Channel number of keypoint heatmap
- * @param channel_paf - Channel number of PAF heatmap
- * @param height - Height of two heatmaps
- * @param width - Width of two heatmaps
- */
-// void ReadDataFromTensor(const std::vector <MxBase::TensorBase> &tensors,
-//                                             std::vector<std::vector<std::vector<float> > > &keypoint_heatmap,
-//                                             std::vector<std::vector<std::vector<float> > > &paf_heatmap,
-//                                             int channel_keypoint, int channel_paf, int height, int width) {
-//     auto dataPtr = (uint8_t *)tensors[1].GetBuffer();
-//     std::shared_ptr<void> keypoint_pointer;
-//     keypoint_pointer.reset(dataPtr, uint8Deleter);
-//     int idx = 0;
-//     float temp_data = 0.0;
-//     for (int i = 0; i < channel_keypoint; i++) {
-//         for (int j = 0; j < height; j++) {
-//             for (int k = 0; k < width;  k++) {
-//                 temp_data = static_cast<float *>(keypoint_pointer.get())[idx];
-//                 if (temp_data < 0) {
-//                     temp_data = 0;
-//                 }
-//                 keypoint_heatmap[i][j][k] = temp_data;
-//                 idx += 1;
-//             }
-//         }
-//     }
-
-//     auto data_paf_ptr = (uint8_t *)tensors[0].GetBuffer();
-//     std::shared_ptr<void> paf_pointer;
-//     paf_pointer.reset(data_paf_ptr, uint8Deleter);
-//     idx = 0;
-//     temp_data = 0.0;
-//     for (int i = 0; i < channel_paf; i++) {
-//         for (int j = 0; j < height; j++) {
-//             for (int k = 0; k < width;  k++) {
-//                 temp_data = static_cast<float *>(paf_pointer.get())[idx];
-//                 paf_heatmap[i][j][k] = temp_data;
-//                 idx += 1;
-//             }
-//         }
-//     }
-// }
+void Softmax(std::vector<float> myVector, std::vector<float> &result){
+    float maxPosition = *max_element(myVector.begin(), myVector.end());
+    std::vector<double> a;
+    double b = 0;
+    for(float& element : myVector){
+        element -= maxPosition;
+        a.push_back(exp(element));
+        b += exp(element);
+    }
+    for(double& element : a)
+        result.push_back(element*1.0/b);
+}
 
 APP_ERROR MxpiHeadPosePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
@@ -111,6 +76,9 @@ APP_ERROR MxpiHeadPosePlugin::Init(std::map<std::string, std::shared_ptr<void>>&
     // Get the property values by key
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
+    std::shared_ptr<string> descriptionMessageProSptr = 
+        std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
+    descriptionMessage_ = *descriptionMessageProSptr.get();
     LogInfo << "MxpiHeadPosePlugin::Init complete.";
     return APP_ERR_OK;
 }
@@ -143,31 +111,63 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
-    if (tensors.size() == 1) {
+    if (tensors.size() == 3) {
         // tensorflow model
-        auto headpose = tensors[0].GetShape();
-        LogWarn << "source Tensor number:" << tensors.size() << endl;
-        LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
-        LogWarn << "headpose[0]:" << headpose[0] << endl;
-        // LogWarn << "headpose[1]:" << headpose[1] << endl;
-        // LogWarn << "headpose[2]:" << headpose[2] << endl;
+
+        auto headpose1 = tensors[0].GetShape();
+        auto headpose2 = tensors[1].GetShape();
+        auto headpose3 = tensors[2].GetShape();
+
+        auto yaw_dataPtr = (float *)tensors[0].GetBuffer();
+        std::vector<float> myyaw, yaw_predicted_vec;
+        for(int i=0; i<headpose1[1]; i++){
+            myyaw.push_back(yaw_dataPtr[i]);
+        }
+        Softmax(myyaw, yaw_predicted_vec);
+        float yaw_predicted = 0;
+        for(int i=0; i<headpose1[1]; i++){
+            yaw_predicted += yaw_predicted_vec[i] * i;
+        }
+        yaw_predicted = yaw_predicted * 3 - 180;
+
+        auto pitch_dataPtr = (float *)tensors[1].GetBuffer();
+        std::vector<float> mypitch, pitch_predicted_vec;
+        for(int i=0; i<headpose2[1]; i++){
+            mypitch.push_back(pitch_dataPtr[i]);
+        }
+        Softmax(mypitch, pitch_predicted_vec);
+        float pitch_predicted = 0;
+        for(int i=0; i<headpose2[1]; i++){
+            pitch_predicted += pitch_predicted_vec[i] * i;
+        }
+        pitch_predicted = pitch_predicted * 3 - 99;
+
+        auto roll_dataPtr = (float *)tensors[2].GetBuffer();
+        std::vector<float> myroll, roll_predicted_vec;
+        for(int i=0; i<headpose2[1]; i++){
+            myroll.push_back(roll_dataPtr[i]);
+        }
+        Softmax(myroll, roll_predicted_vec);
+        float roll_predicted = 0;
+        for(int i=0; i<headpose3[1]; i++){
+            roll_predicted += roll_predicted_vec[i] * i;
+        }
+        roll_predicted = roll_predicted * 3 - 99;
+
+        // Generate HeadPoseInfo
+        auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
+        mxpiheadposeproto::MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHeadPoseInfoPtr->add_headervec();
+        dstMxpiMetaHeaderList->set_datasource(parentName_);
+        dstMxpiMetaHeaderList->set_memberid(0);
+        dstMxpiHeadPoseInfoPtr->set_yaw(yaw_predicted);
+        dstMxpiHeadPoseInfoPtr->set_pitch(pitch_predicted);
+        dstMxpiHeadPoseInfoPtr->set_roll(roll_predicted);
     }
     else {
         LogWarn << "Tensor Size Error!!" << endl;
         LogWarn << "source Tensor number:" << tensors.size() << endl;
         LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
     }
-
-    // Generate HeadPoseInfo
-    
-    auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
-    mxpiheadposeproto::MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHeadPoseInfoPtr->add_headervec();
-    dstMxpiMetaHeaderList->set_datasource(parentName_);
-    dstMxpiMetaHeaderList->set_memberid(0);
-    dstMxpiHeadPoseInfoPtr->set_yaw(SAMPLE_CLASS_ID);
-    // dstMxpiClass->set_confidence(SAMPLE_CONF);
-    // std::string OutputClassStr =  SAMPLE_CLASS_NAME + std::to_string(tensors[0].GetByteSize());
-    // dstMxpiClass->set_classname(OutputClassStr + ", " + descriptionMessage_);
 
     return APP_ERR_OK;
 }
@@ -209,8 +209,6 @@ APP_ERROR MxpiHeadPosePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
 
-
-
     // Generate WHENet output
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<mxpiheadposeproto::MxpiHeadPoseList> dstMxpiHeadPoseListSptr = make_shared<mxpiheadposeproto::MxpiHeadPoseList>();
@@ -222,8 +220,6 @@ APP_ERROR MxpiHeadPosePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return ret;
     }
-
-
 
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiHeadPoseListSptr));
@@ -247,9 +243,12 @@ std::vector<std::shared_ptr<void>> MxpiHeadPosePlugin::DefineProperties()
     // Set the type and related information of the properties, and the key is the name
     auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorinfer1", "NULL", "NULL"});
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+        STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
+    properties.push_back(descriptionMessageProSptr);
     return properties;
 }
 
 // Register the Sample plugin through macro
-MX_PLUGIN_GENERATE(MxpiHeadPosePlugin)
+    MX_PLUGIN_GENERATE(MxpiHeadPosePlugin)

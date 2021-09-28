@@ -28,17 +28,6 @@
 * @brief Definition of MxpiHeadPosePlugin class.
 */
 
-namespace {
-    struct HeadPose {
-        int yaw_x;
-        int yaw_y;
-        int pitch_x;
-        int pitch_y;
-        int roll_x;
-        int roll_y;
-        // float confidence;
-    };
-}
 namespace MxPlugins {
     class MxpiHeadPosePlugin : public MxTools::MxPluginBase {
         public:

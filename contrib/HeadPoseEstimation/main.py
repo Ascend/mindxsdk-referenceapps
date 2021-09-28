@@ -16,9 +16,59 @@
 # limitations under the License.
 
 import os
-
+import sys
+import cv2
+import copy
+import argparse
+import math
+import numpy as np
+sys.path.append("./plugins/proto")
+import mxpiHeadPoseProto_pb2 as mxpiHeadPoseProto
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
+def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
+    """
+    Plot lines based on yaw pitch roll values
+
+    Args:
+        yaw, pitch, roll: values of angles
+        tdx, tdy: center of detected head area
+
+    Returns:
+        graph: locations of three lines
+    """
+    # taken from hopenet
+    pitch = pitch * np.pi / 180
+    yaw = -(yaw * np.pi / 180)
+    roll = roll * np.pi / 180
+
+    tdx = tdx
+    tdy = tdy
+
+    # X-Axis pointing to right. drawn in red
+    x1 = size * (math.cos(yaw) * math.cos(roll)) + tdx
+    y1 = size * (math.cos(pitch) * math.sin(roll) + math.cos(roll)
+                    * math.sin(pitch) * math.sin(yaw)) + tdy
+
+    # Y-Axis | drawn in green
+    x2 = size * (-math.cos(yaw) * math.sin(roll)) + tdx
+    y2 = size * (math.cos(pitch) * math.cos(roll) - math.sin(pitch)
+                    * math.sin(yaw) * math.sin(roll)) + tdy
+
+    # Z-Axis (out of the screen) drawn in blue
+    x3 = size * (math.sin(yaw)) + tdx
+    y3 = size * (-math.cos(yaw) * math.sin(pitch)) + tdy
+    
+    
+    return {
+        "yaw_x": x1,
+        "yaw_y": y1, 
+        "pitch_x": x2, 
+        "pitch_y": y2, 
+        "roll_x": x3, 
+        "roll_y": y3
+    }
 
 if __name__ == '__main__':
     # Create and initialize a new StreamManager object
@@ -54,7 +104,7 @@ if __name__ == '__main__':
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 
     # Get the result returned by the plugins
-    keys = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1"]
+    keys = [b"mxpi_objectpostprocessor0", b"mxpi_headposeplugin0"]
     keyVec = StringVector()
     for key in keys:
         keyVec.push_back(key)
@@ -74,6 +124,63 @@ if __name__ == '__main__':
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[0].messageBuf)
     print(objectList)
+    results = objectList.objectVec[0]
 
+
+    if infer_result[1].errorCode != 0:
+        print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
+            infer_result[1].errorCode, infer_result[1].messageName))
+        exit()
+
+    result_protolist = mxpiHeadPoseProto.MxpiHeadPoseList()
+    result_protolist.ParseFromString(infer_result[1].messageBuf)
+    print("YAW:")
+    print("result: {}".format(
+        result_protolist.headposeInfoVec[0].yaw))
+    print("PITCH:")
+    print("result: {}".format(
+        result_protolist.headposeInfoVec[0].pitch))
+    print("ROLL:")
+    print("result: {}".format(
+        result_protolist.headposeInfoVec[0].roll))
+
+    yaw_predicted = result_protolist.headposeInfoVec[0].yaw
+    pitch_predicted = result_protolist.headposeInfoVec[0].pitch
+    roll_predicted = result_protolist.headposeInfoVec[0].roll
+
+    image = cv2.imread('test.jpg')
+    image_height, image_width = image.shape[0], image.shape[1]
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    box_width = (results.x0 + results.x1)/2
+    box_height = (results.y0 + results.y1)/2
+    detection_item = whenet_draw(yaw_predicted, pitch_predicted, roll_predicted, 
+                tdx=box_width, tdy=box_height, size=100)
+
+    save_img = True
+    if save_img:
+        image_res = copy.deepcopy(image)
+    #plot head detection box from yolo predictions
+    line_thickness = 4
+    red = (255, 0, 0)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
+
+    
+    cv2.rectangle(image_res, (int(results.x0), int(results.y0)), 
+        (int(results.x1), int(results.y1)), (127, 125, 125), 2)
+    #plot head pose detection lines from whenet predictions
+    cv2.line(image_res, (int(box_width), int(box_height)), 
+        (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
+    cv2.line(image_res, (int(box_width), int(box_height)), 
+        (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
+    cv2.line(image_res, (int(box_width), int(box_height)), 
+        (int(detection_item["roll_x"]), int(detection_item["roll_y"])), blue, line_thickness)
+
+    if save_img:
+        image_res = cv2.cvtColor(image_res, cv2.COLOR_RGB2BGR)
+        SRC_PATH = os.path.realpath(__file__).rsplit("/", 1)[0]
+        Output_PATH = os.path.join(SRC_PATH, "./test_output.jpg")
+        cv2.imwrite(Output_PATH, image_res)
     # destroy streams
     streamManagerApi.DestroyAllStreams()

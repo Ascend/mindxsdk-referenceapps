@@ -51,7 +51,7 @@
         },
         "mxpi_imagecrop0": {
             "props": {
-                "dataSource": "mxpi_distributor0",
+                "dataSource": "mxpi_distributor0_0",
                 "dataSourceImage": "mxpi_imagedecoder0",
                 "resizeWidth": "112",
                 "resizeHeight": "112",
