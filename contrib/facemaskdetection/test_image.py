@@ -207,7 +207,7 @@ if __name__ == "__main__":
         infer_time += inference_stamp - read_frame_stamp
         print(infer_time)
         open(img_txt, "a+")
-        for i in range(len(output_info)):
+        for i in enumerate(output_info):
             with open(img_txt, "a+") as f:
                 result = "{} {} {} {} {} {}".format(
                     id2class[output_info[i][0]],
