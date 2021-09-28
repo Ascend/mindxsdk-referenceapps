@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def decode_bbox(anchors, raw_outputs, variances=[0.1, 0.1, 0.2, 0.2]):
+def decode_bbox(anchors, raw_outputs, variances):
     """
     Decode the actual bbox according to the anchors.
     the anchor value order is:[xmin,ymin, xmax, ymax]

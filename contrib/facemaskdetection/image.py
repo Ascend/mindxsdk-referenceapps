@@ -60,7 +60,9 @@ def inference(
     y_cls_output = ids2
 
     # remove the batch dimension, for batch is always 1 for inference.
-    y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
+    y_bboxes = decode_bbox(
+        anchors_exp, y_bboxes_output, variances=[0.1, 0.1, 0.2, 0.2]
+    )[0]
     y_cls = y_cls_output[0]
     # To speed up, do single class NMS, not multiple classes NMS.
     bbox_max_scores = np.max(y_cls, axis=1)
@@ -201,7 +203,9 @@ if __name__ == "__main__":
     anchor_ratios = [[1, 0.62, 0.42]] * 5
 
     # generate anchors
-    anchors = generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios)
+    anchors = generate_anchors(
+        feature_map_sizes, anchor_sizes, anchor_ratios, offset=0.5
+    )
 
     # for inference , the batch size is 1, the model output shape is [1, N, 4],
     # so we expand dim for anchors to [1, anchor_num, 4]

@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios, offset=0.5):
+def generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios, offset):
     """
     generate anchors.
     :param feature_map_sizes: list of list, for example: [[40,40], [20,20]]
