@@ -5,11 +5,11 @@ import glob
 
 def xml_to_txt(indir, outdir):
     """
-        Transfer xml to txt
-        :param indir: path of xml files
-        :param outdir: path of txt files.
-        :return:
-        """
+    Transfer xml to txt
+    :param indir: path of xml files
+    :param outdir: path of txt files.
+    :return:
+    """
 
     os.chdir(indir)
     annotations = os.listdir(".")
@@ -37,7 +37,6 @@ def xml_to_txt(indir, outdir):
             label = "{} {} {} {} {}".format(name, xn, yn, xx, yx)
             f_w.write(label)
             f_w.write("\n")
-
 
 
 if __name__ == "__main__":
