@@ -96,7 +96,7 @@ if __name__ == '__main__':
         normalize, ])
 
     # Collect model inferencing results
-    for i,key in enumerate(valid_img_selected):
+    for i, key in enumerate(valid_img_selected):
         img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
         dataInput = MxDataInput()
         img = Image.open(img_path)
