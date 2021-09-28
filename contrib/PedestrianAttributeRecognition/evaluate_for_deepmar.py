@@ -39,7 +39,7 @@ if __name__ == '__main__':
     with open("dataset/peta_partition.pkl", 'rb') as data_file:
         partition = pickle.load(data_file)
     for idx in partition['test'][0]:
-        image.append(dataset['test_image'][idx])
+        image.append(dataset['image'][idx])
         label_tmp = np.array(dataset['att'][idx])[dataset['selected_attribute']].tolist()
         label.append(label_tmp)
 
@@ -96,8 +96,8 @@ if __name__ == '__main__':
         normalize, ])
 
     # Collect model inferencing results
-    for i in range(0, len(valid_img_selected)):
-        img_path = "dataset/image_jpg/" + valid_img_selected[i][0:5] + '.jpg'
+    for i,key in enumerate(valid_img_selected):
+        img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
         dataInput = MxDataInput()
         img = Image.open(img_path)
         img_trans = test_transform(img)
