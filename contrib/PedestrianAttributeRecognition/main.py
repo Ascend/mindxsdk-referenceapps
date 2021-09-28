@@ -197,8 +197,8 @@ if __name__ == '__main__':
 
     # Classify 35 pedestrian attributes
     text_result = {}
-    for i in range(len(index)):
-        text_result.update({atts[index[i]]: name_dict[atts[index[i]]][0]})
+    for i, key in enumerate(index)
+        text_result.update({atts[key]: name_dict[atts[key]][0]})
     line = ""
     text_carrying = ""
     text_upper = ""
