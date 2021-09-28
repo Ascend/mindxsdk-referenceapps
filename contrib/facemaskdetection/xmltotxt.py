@@ -1,5 +1,4 @@
 import os
-import sys
 import xml.etree.ElementTree as ET
 import glob
 
@@ -29,7 +28,6 @@ def xml_to_txt(indir, outdir):
             xx = xmlbox.find("xmax").text
             yn = xmlbox.find("ymin").text
             yx = xmlbox.find("ymax").text
-            # print xn
             label = "{} {} {} {} {}".format(name, xn, yn, xx, yx)
             f_w.write(label)
             f_w.write("\n")

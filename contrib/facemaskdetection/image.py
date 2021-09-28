@@ -50,8 +50,8 @@ def inference(
     :return:
     """
     image = np.copy(image0)
-    output_info = []
-    height, width, _ = image.shape
+    output_info0 = []
+    height0, width0, _ = image.shape
     y_bboxes_output = ids
     y_cls_output = ids2
 
@@ -76,10 +76,10 @@ def inference(
         class_id = bbox_max_score_classes[idx]
         bbox = y_bboxes[idx]
         # clip the coordinate, avoid the value exceed the image boundary.
-        xmin = max(0, int(bbox[0] * width))
-        ymin = max(0, int(bbox[1] * height))
-        xmax = min(int(bbox[2] * width), width)
-        ymax = min(int(bbox[3] * height), height)
+        xmin = max(0, int(bbox[0] * width0))
+        ymin = max(0, int(bbox[1] * height0))
+        xmax = min(int(bbox[2] * width0), width0)
+        ymax = min(int(bbox[3] * height0), height0)
 
         if draw_result:
             if class_id == 0:
@@ -95,11 +95,11 @@ def inference(
                 0.8,
                 color,
             )
-        output_info.append([class_id, conf, xmin, ymin, xmax, ymax])
+        output_info0.append([class_id, conf, xmin, ymin, xmax, ymax])
 
     if show_result:
         cv2.imwrite("./my_result.jpg", image)
-    return output_info
+    return output_info0
 
 
 if __name__ == "__main__":
