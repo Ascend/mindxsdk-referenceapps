@@ -1,3 +1,4 @@
+"""
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
 
 import os
 import torch
@@ -42,7 +44,7 @@ def attribute_evaluate(feat_func, dataset, **kwargs):
     gt_result = np.zeros(pt_result.shape)
     # get the groundtruth attributes
     for idx, label in enumerate(dataset.label):
-        gt_result[idx, :] = label  # gt_result：真实结果　pt_result:预测结果
+        gt_result[idx, :] = label  
     pt_result[pt_result >= 0] = 1
     pt_result[pt_result < 0] = 0
     return attribute_evaluate_lidw(gt_result, pt_result)
@@ -89,10 +91,10 @@ def attribute_evaluate_lidw(gt_result, pt_result):
         print('Shape beteen groundtruth and predicted results are different')
     # compute the label-based accuracy
     result = {}
-    gt_pos = np.sum((gt_result == 1).astype(float), axis=0)  # 标签上：求各个属性在所样本上为1的总数
-    gt_neg = np.sum((gt_result == 0).astype(float), axis=0)  # 标签上：求各个属性在所样本上为0的总数
-    pt_pos = np.sum((gt_result == 1).astype(float) * (pt_result == 1).astype(float), axis=0)  # 实例上： 求各个属性在所样本上为1的总数
-    pt_neg = np.sum((gt_result == 0).astype(float) * (pt_result == 0).astype(float), axis=0)  # 实例上： 求各个属性在所样本上为0的总数
+    gt_pos = np.sum((gt_result == 1).astype(float), axis=0)  
+    gt_neg = np.sum((gt_result == 0).astype(float), axis=0)  
+    pt_pos = np.sum((gt_result == 1).astype(float) * (pt_result == 1).astype(float), axis=0) 
+    pt_neg = np.sum((gt_result == 0).astype(float) * (pt_result == 0).astype(float), axis=0)  
     label_pos_acc = 1.0 * pt_pos / gt_pos
     label_neg_acc = 1.0 * pt_neg / gt_neg
     label_acc = (label_pos_acc + label_neg_acc) / 2
