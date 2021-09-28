@@ -19,8 +19,8 @@ limitations under the License.
 
 import json
 import os
-import cv2
 import time
+import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import (
