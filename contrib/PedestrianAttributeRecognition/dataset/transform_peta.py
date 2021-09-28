@@ -25,8 +25,10 @@ from scipy.io import loadmat
 np.random.seed(0)
 random.seed(0)
 
-# create folder
 def make_dir(path):
+    """
+    create folder
+    """
     if os.path.exists(path):
         pass
     else:
