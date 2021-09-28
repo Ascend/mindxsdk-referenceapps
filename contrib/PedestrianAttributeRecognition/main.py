@@ -143,8 +143,8 @@ if __name__ == '__main__':
 
     # Visual attribute recognition results
     index = []
-    for i in range(len(result)):
-        if result[i] == 1:
+    for i, key in enumerate(result):
+        if key == 1:
             index.append(i)
 
     name_dict = {
