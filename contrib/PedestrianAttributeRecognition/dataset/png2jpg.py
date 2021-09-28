@@ -27,5 +27,5 @@ if __name__ == '__main__':
     for name in jpg_name:
         im = Image.open('image/images/'+name)
         im = im.convert('RGB')
-        im.save('image_jpg/'+name[0:5]+'.jpg', quality=95)
+        im.save('image_jpg/'+ name[0:5] + '.jpg', quality = 95)
         print(name[0:5])
