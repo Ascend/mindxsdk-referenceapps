@@ -73,12 +73,15 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 这里提供了已经转好的416*416尺寸的onnx和om模型。（提取码为rlyv）[下载地址](https://pan.baidu.com/s/1ePh-VOlem_Pmx6rQbUW0Kw)
 
-将下载的YOLOv5模型pt文件通过YOLOv5自带的export模型转换函数转换为onnx格式的文件
+将下载的YOLOv5模型pt文件通过YOLOv5自带的export模型转换函数转换为onnx格式的文件（onnx模型已提供）
 ```
 python export.py --weights best_v3.pt --img 416 --batch 1 --simplify
 ```
+
 **步骤2** 模型存放
+
 将获取到的YOLOv5模型onnx文件放至上一级的model文件夹中
+
 **步骤3** 执行模型转换命令
 
 (1) 配置环境变量
@@ -121,7 +124,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 
 **步骤3** 
 
-cd到mxbase目录下，执行如下编译命令：
+cd到mxBase_wheatDetection目录下，执行如下编译命令：
 
 ```
 bash build.sh
