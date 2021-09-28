@@ -15,6 +15,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
 import os
 from PIL import Image
 
@@ -25,7 +27,7 @@ jpg_name = os.listdir(filePath)
 if __name__ == '__main__':
     # Convert PNG format pictures to JPG format pictures
     for name in jpg_name:
-        im = Image.open('image/images/'+name)
+        im = Image.open('image/images/' + name)
         im = im.convert('RGB')
         im.save('image_jpg/'+ name[0:5] + '.jpg', quality = 95)
         print(name[0:5])
