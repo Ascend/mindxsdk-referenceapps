@@ -49,8 +49,8 @@ def generate_data_description(save_path):
     # load PETA.MAT
     petaPath = '${样例工程路径}/dataset/PETA.mat'
     data = loadmat(petaPath)
-    attri_num=105
-    sample_num=19000
+    attri_num = 105
+    sample_num = 19000
     for idx in range(attri_num):
         dataset['att_name'].append(data['peta'][0][0][1][idx, 0][0])
 
