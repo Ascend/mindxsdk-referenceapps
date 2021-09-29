@@ -77,7 +77,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | mxVision    | 2.0.2  |
 | pillow      | 8.0.1  |
 | pickle5     | 0.0.11 |
-| torchvision | 0.9.1  |
 
 确保环境中正确安装mxVision SDK。
 
