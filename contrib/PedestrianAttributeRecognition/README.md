@@ -131,7 +131,7 @@ python png2jpg.py
 
 （3）拆分数据集
 
-修改transform_peta.py脚本中的petaPath为PETA.mat文件的路径，添加save_file参数的文件保存路径以及traintest_split_file的参数路径，并运行下面命令：
+修改transform_peta.py脚本中的petaPath为PETA.mat文件的路径，添加save_file参数的文件保存路径以及traintest_split_file的参数路径，即将"样例工程路径"修改为自己的代码运行路径并运行下面命令：
 
 ```python
 python dataset/transform_peta.py 
