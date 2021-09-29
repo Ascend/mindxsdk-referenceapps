@@ -86,8 +86,6 @@ if __name__ == '__main__':
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer0")
 
-    # Normalize and standardize the test image
-
     # Collect model inferencing results
     for i, key in enumerate(valid_img_selected):
         img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
@@ -97,6 +95,7 @@ if __name__ == '__main__':
         img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
         img = img.transpose(2, 0, 1)
         img = img.reshape(1, 3, 224, 224)
+        # Normalize and standardize the test image
         image = (img - np.min(img)) / (np.max(img) - np.min(img))
         image[0][0] = (image[0][0] - 0.485) / 0.229
         image[0][1] = (image[0][1] - 0.456) / 0.224
