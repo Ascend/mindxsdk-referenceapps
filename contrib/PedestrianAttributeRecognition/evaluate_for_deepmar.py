@@ -22,9 +22,7 @@ import pickle as pickle
 import random
 import cv2
 import numpy as np
-import torch
 from PIL import Image
-import torchvision.transforms as transforms
 from evaluate import attribute_evaluate_lidw
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
@@ -89,20 +87,20 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_tensorinfer0")
 
     # Normalize and standardize the test image
-    normalize = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    test_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        normalize, ])
 
     # Collect model inferencing results
     for i, key in enumerate(valid_img_selected):
         img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
         dataInput = MxDataInput()
         img = Image.open(img_path)
-        img_trans = test_transform(img)
-        img = np.array(img_trans)
-        image = img.reshape(1, 3, 224, 224)
+        img = np.array(img)
+        img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
+        img = img.transpose(2, 0, 1)
+        img = img.reshape(1, 3, 224, 224)
+        image = (img - np.min(img)) / (np.max(img) - np.min(img))
+        image[0][0] = (image[0][0] - 0.485) / 0.229
+        image[0][1] = (image[0][1] - 0.456) / 0.224
+        image[0][2] = (image[0][2] - 0.406) / 0.225
 
         image = image.astype(np.float32)
         protobuf_vec = InProtobufVector()
@@ -145,7 +143,9 @@ if __name__ == '__main__':
             feat_tmp = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
             print(feat_tmp)
             if i == 0:
-                feat = np.zeros((4500, 35))
+                row_num=4500
+                col_num=35
+                feat = np.zeros((row_num, col_num))
             feat[j:j + 1, :] = feat_tmp.reshape((1, -1))
             j = j + 1
             valid_label.append(label_selected_[i])
