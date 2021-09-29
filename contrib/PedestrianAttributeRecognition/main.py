@@ -21,7 +21,6 @@ import copy
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import torch
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
