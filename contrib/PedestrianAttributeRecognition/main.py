@@ -51,7 +51,7 @@ def draw_text(img, point, text, drawType="custom"):
     return img
 
 
-def draw_text_line(img, point, text_line: str, drawType="custom"):
+def write_line(img, point, text_line: str, drawType="custom"):
     '''
     :param img:
     :param point:
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     img1 = np.zeros((img2.shape[0], 250, 3), np.uint8)
     img1 = img1 * 0 + 255
     point = (10, 10)
-    img1 = draw_text_line(img1, point, line)
+    img1 = write_line(img1, point, line)
     img_rst = np.hstack([img2, img1])
     cv2.imwrite("final_result.jpg", img_rst)
 
