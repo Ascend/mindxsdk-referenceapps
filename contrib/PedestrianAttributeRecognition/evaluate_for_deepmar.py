@@ -142,8 +142,8 @@ if __name__ == '__main__':
             feat_tmp = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
             print(feat_tmp)
             if i == 0:
-                row_num=4500
-                col_num=35
+                row_num = 4500
+                col_num = 35
                 feat = np.zeros((row_num, col_num))
             feat[j:j + 1, :] = feat_tmp.reshape((1, -1))
             j = j + 1
