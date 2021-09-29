@@ -109,7 +109,7 @@ deepmar离线模型的转换及下载参考华为昇腾社区[ModelZoo](https://
 
 **步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)
 
-**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改yolov3_deepmar.py中“img_path"为需要推理的图片名字
+**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改yolov3_deepmar.py中“img_path"为需要推理的图片名字，将test.pipeline中的后处理so文件修改问SDK安装路径。
 
 **步骤4** 执行命令：python main.py,得到final_result.jpg可视化结果
 
