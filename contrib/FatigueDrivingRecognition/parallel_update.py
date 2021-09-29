@@ -35,6 +35,7 @@ parser.add_argument('--frame_num_2', type = int, default = 40, help = 'length of
 parser.add_argument('--frame_threshold', type = int, default = 30, help = 'threshold of frame num.')
 parser.add_argument('--perclos_threshold', type = int, default = 0.7, help = 'threshold of perclos.')
 parser.add_argument('--mar_threshold', type = int, default = 0.14, help = 'threshold of mar.')
+parser.add_argument('--online_flag', type = bool, default = False, help = 'if the video is online.')
 
 def fun_timer(time_limit):
     """
@@ -95,6 +96,8 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_distributor0_0")
     keyVec.push_back(b"mxpi_pfldpostprocess0")
     keyVec.push_back(b"mxpi_videodecoder1")
+    keyVec0 = StringVector()
+    keyVec0.push_back(b"ReservedFrameInfo")
 
     # Init the list and counting variable
     img_yuv_list = []
@@ -103,6 +106,11 @@ if __name__ == '__main__':
     isFatigue = 0
     img_yuv_list_1 = []
     isFatigue_1 = 0
+    nobody_flag = 0
+    nobody_num = 0
+    nobody_threshold = 30
+    nobody_flag1 = 0
+    nobody_num1 = 0
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     img_yuv_list_2 = []
@@ -113,17 +121,34 @@ if __name__ == '__main__':
     MARS_2 = []
     err_code = 2017
     while True:
-        if index == frame_num_list[0] and index_second == frame_num_list[1]:
+        if index >= frame_num_list[0] and index_second >= frame_num_list[1] and args.online_flag == False:
             break
         # Set timer
         if index == 0 and index_second == 0:
             timer = threading.Timer(limit_time, fun_timer, (limit_time, ))
             timer.start()
+        
+        
+        infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec0)
+        FrameList = MxpiDataType.MxpiFrameInfo()
+        FrameList.ParseFromString(infer_result[0].messageBuf)
         # Obtain the inference result
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
         if infer.errorCode == err_code:
-            index = index + 1
-            continue
+            if FrameList.channelId == 0:
+                index = index + 1
+                nobody_num = nobody_num + 1
+                if nobody_num >= nobody_threshold:
+                    nobody_flag = 1
+                    print('Nobody is detected in video1.')                    
+                continue
+            if FrameList.channelId == 1:
+                index_second = index_second + 1
+                nobody_num1 = nobody_num1 + 1
+                if nobody_num1 >= nobody_threshold:
+                    nobody_flag1 = 1
+                    print('Nobody is detected in video2.')
+                continue
         if infer.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
         # Obtain the PFLD inference results
@@ -143,6 +168,7 @@ if __name__ == '__main__':
             continue
         # Channel 0
         if FrameList0.channelId == 0:
+            nobody_num = 0
             # Obtain the PFLD post-processing plugin results
             infer_result_4 = infer.metadataVec[4]
             objectList = MxpiDataType.MxpiObjectList()
@@ -184,7 +210,7 @@ if __name__ == '__main__':
                 # Conform to the fatigue driving conditions
                 if perclos >= args.perclos_threshold:
                     isFatigue = 1
-                    print('Fatigue!!!')
+                    print('Fatigue in video1!!!')
                     # visualization
                     img_yuv_fatigue = img_yuv_list[max_index]
                     h = heightAligned_list[max_index] * YUV_BYTES_NU // YUV_BYTES_DE
@@ -211,6 +237,7 @@ if __name__ == '__main__':
 
         # Channel 0
         elif FrameList0.channelId == 1:
+            nobody_num1 = 0
             # Obtain the PFLD post-processing plugin results
             infer_result_3 = infer.metadataVec[3]
             objectList = MxpiDataType.MxpiObjectList()
@@ -253,7 +280,7 @@ if __name__ == '__main__':
                 # Conform to the fatigue driving conditions
                 if perclos >= args.perclos_threshold:
                     isFatigue_1 = 1
-                    print('Fatigue!!!')
+                    print('Fatigue in video2!!!')
                     # visualization
                     img_yuv_fatigue = img_yuv_list_2[max_index]
                     h = heightAligned_list_2[max_index] * YUV_BYTES_NU // YUV_BYTES_DE
@@ -279,6 +306,10 @@ if __name__ == '__main__':
             index_second = index_second + 1
 
     # print the result
+    if nobody_flag == 1:
+        print('No one was detected for some time in video1.')
+    if nobody_flag1 == 1:
+        print('No one was detected for some time in video2.')
     if isFatigue == 0:
         print('Video1 is Normal')
         

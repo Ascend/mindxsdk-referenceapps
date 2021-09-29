@@ -31,6 +31,7 @@ parser.add_argument('--frame_num', type = str, default = "40", help = 'length of
 parser.add_argument('--frame_threshold', type = int, default = 30, help = 'threshold of frame num.')
 parser.add_argument('--perclos_threshold', type = int, default = 0.7, help = 'threshold of perclos.')
 parser.add_argument('--mar_threshold', type = int, default = 0.14, help = 'threshold of mar.')
+parser.add_argument('--online_flag', type = bool, default = False, help = 'if the video is online.')
 
 def get_args(sys_args):
     """
@@ -79,22 +80,31 @@ if __name__ == '__main__':
     heightAligned_list = []
     widthAligned_list = []
     isFatigue = 0
+    nobody_flag = 0
+    nobody_num = 0
+    nobody_threshold = 30
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     MARS = []
     frame_num = int(args.frame_num)
     err_code = 2017
+    
     while True:
-        if index == frame_num:
+        if index == frame_num and args.online_flag == False:
             break
         # Obtain the inference result
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        
         if infer.errorCode == err_code:
             index = index + 1
+            nobody_num = nobody_num + 1
+            if nobody_num >= nobody_threshold:
+                nobody_flag = 1
+                print('Nobody is detected.')
             continue
         if infer.errorCode != 0:
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
-        
+        nobody_num = 0
         # Obtain the PFLD post-processing plugin results
         infer_result_3 = infer.metadataVec[3]
         objectList = MxpiDataType.MxpiObjectList()
@@ -141,6 +151,8 @@ if __name__ == '__main__':
         index = index + 1
     # write th result file
     f = open("result.txt", "a+")
+    if nobody_flag == 1:
+        print('No one was detected for some time.')
     if isFatigue == 0:
         print('Normal')
         f.write(args.url_video.split('/')[-1] + ' ' + args.label + ' 0\n')

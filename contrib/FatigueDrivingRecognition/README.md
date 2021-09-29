@@ -174,10 +174,16 @@ bash build.sh
 1. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，将准备测试的264文件放到 `${Home_live555}/live/mediaServer/` 目录下，其中`Home_live555`为live555安装路径。
 2. 根据[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)确定264文件的rtsp_Url，将`pipeline/test_video.pipeline` 中`mxpi_rtspsrc0`中的`rtspUrl`属性中的264file_path修改为rtsp_Url。
 3. 将`pipeline/test_video.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
-4. 将下面命令中frame_num替换为测试的视频的帧数，并执行命令：
+4. 如果为离线视频，将下面命令中frame_num替换为测试的视频的帧数，并执行命令：
 
 ```
 python3.7 test_video.py --frame_num ${frame_num}
+```
+
+如果为在线视频，执行命令：
+
+```
+python3.7 test_video.py --online_flag True
 ```
 
 执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶，输出`Fatigue!!!`为疲劳驾驶。可视化结果保存在`fatigue`文件夹中。
@@ -188,11 +194,19 @@ python3.7 test_video.py --frame_num ${frame_num}
 2. 根据[live555使用教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)确定264文件的rtsp_Url，将`pipeline/test_video.pipeline` 中`mxpi_rtspsrc0`和`mxpi_rtspsrc1`中的`rtspUrl`属性中的264file_path1和264file_path2分别修改为两个264文件的rtsp_Url。
 3. 将`pipeline/parallel_pipeline.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
 4. parallel_update.py测试的是一定时间内每秒处理视频的平均帧数，根据需要修改parallel_update.py中的时间参数。
-5. 将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
+5. 如果为离线视频，将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
 
 ```
 python3.7 parallel_update.py  --limit_of_time ${time} --frame_num_1 ${frame_num1} --frame_num_2  ${frame_num2} 
 ```
+
+如果为在线视频，将下面命令中的time替换为自己限制的测试时间，并执行命令：
+
+```
+python3.7 parallel_update.py  --limit_of_time ${time} --online_flag True
+```
+
+执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶
 
 命令执行成功后在当前目录下生成检测结果文件 performance.txt，查看结果文件查看处理速度信息。
 
