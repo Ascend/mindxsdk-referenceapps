@@ -21,7 +21,7 @@ import numpy as np
 
 def decode_bbox(anchors, raw_outputs, variances):
     """
-    Decode the actual bbox according to the anchors.
+    calculate the coordinate and size of bounding box by anchor
     the anchor value order is:[xmin,ymin, xmax, ymax]
     :param anchors: numpy array with shape [batch, num_anchors, 4]
     :param raw_outputs: numpy array with the same shape with anchors

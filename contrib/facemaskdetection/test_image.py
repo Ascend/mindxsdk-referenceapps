@@ -31,7 +31,7 @@ from StreamManagerApi import (
 )
 from anchor_generator import generate_anchors
 from anchor_decode import decode_bbox
-from nms import single_class_non_max_suppression
+from nmsout import single_class_non_max_suppression
 
 
 def inference(
