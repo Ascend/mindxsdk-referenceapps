@@ -18,65 +18,8 @@ import os
 import copy
 import time
 import sys
-import torch
-from torch.autograd import Variable
 import numpy as np
 
-
-# Attribute evaluation subfunction
-def attribute_evaluate_subfunc(feat_func, test_set, **test_kwargs):
-    """ evaluate the attribute recognition precision """
-    result = attribute_evaluate(feat_func, test_set, **test_kwargs)
-    print('-' * 60)
-    print('Evaluation on test set:')
-    print('Label-based evaluation: \n mA: %.4f' % (np.mean(result['label_acc'])))
-    print('Instance-based evaluation: \n Acc: %.4f, Prec: %.4f, Rec: %.4f, F1: %.4f' \
-          % (result['instance_acc'], result['instance_precision'], result['instance_recall'], result['instance_F1']))
-    print('-' * 60)
-
-
-def attribute_evaluate(feat_func, dataset):
-    """
-    Attribute evaluation
-    """
-    print("extracting features for attribute recognition")
-    pt_result = extract_feat(feat_func, dataset)
-    # obain the attributes from the attribute dictionary
-    print("computing attribute recognition result")
-    N = pt_result.shape[0]
-    L = pt_result.shape[1]
-    gt_result = np.zeros(pt_result.shape)
-    # get the groundtruth attributes
-    for idx, label in enumerate(dataset.label):
-        gt_result[idx, :] = label  
-    pt_result[pt_result >= 0] = 1
-    pt_result[pt_result < 0] = 0
-    return attribute_evaluate_lidw(gt_result, pt_result)
-
-# Feature extraction
-def extract_feat(feat_func, dataset):
-    """
-    extract feature for images
-    """
-    test_loader = torch.utils.data.DataLoader(
-        dataset=dataset, batch_size=32,
-        num_workers=2, pin_memory=True)
-    # extract feature for all the images of test/val identities
-    start_time = time.time()
-    total_eps = len(test_loader)
-    N = len(dataset.image)
-    start = 0
-    for ep, (imgs, labels) in enumerate(test_loader):
-        imgs_var = Variable(imgs, volatile=True).cuda()
-        feat_tmp = feat_func(imgs_var)
-        batch_size = feat_tmp.shape[0]
-        if ep == 0:
-            feat = np.zeros((N, int(feat_tmp.size / batch_size)))
-        feat[start:start + batch_size, :] = feat_tmp.reshape((batch_size, -1))
-        start += batch_size
-    end_time = time.time()
-    print('{} batches done, total {:.2f}s'.format(total_eps, end_time - start_time))
-    return feat
 
 # Attribute evaluation
 def attribute_evaluate_lidw(gt_result, pt_result):
