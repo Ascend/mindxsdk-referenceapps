@@ -49,10 +49,12 @@ def generate_data_description(save_path):
     # load PETA.MAT
     petaPath = '${样例工程路径}/dataset/PETA.mat'
     data = loadmat(petaPath)
-    for idx in range(105):
+    attri_num=105
+    sample_num=19000
+    for idx in range(attri_num):
         dataset['att_name'].append(data['peta'][0][0][1][idx, 0][0])
 
-    for idx in range(19000):
+    for idx in range(sample_num):
         dataset['test_image'].append('%05d.png' % (idx + 1))
         dataset['att'].append(data['peta'][0][0][0][idx, 4:].tolist())
     with open(os.path.join(save_path, 'peta_dataset.pkl'), 'wb') as f:
