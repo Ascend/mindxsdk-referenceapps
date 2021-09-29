@@ -25,10 +25,10 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
-def draw_text(img, point, text, drawType="custom"):
+def draw_text(pic, pot, txt, drawType="custom"):
     """
-    :param img:
-    :param point:
+    :param pic:
+    :param pot:
     :param text:
     :param drawType: custom or custom
     :return:
@@ -39,22 +39,22 @@ def draw_text(img, point, text, drawType="custom"):
     bg_color = (255, 255, 255)
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
     if drawType == "custom":
-        text_size, baseline = cv2.getTextSize(str(text), fontFace, fontScale, thickness)
-        text_loc = (point[0], point[1] + text_size[1])
-        cv2.rectangle(img, (text_loc[0] - 2 // 2, text_loc[1] - 2 - baseline),
+        text_size, baseline = cv2.getTextSize(str(txt), fontFace, fontScale, thickness)
+        text_loc = (pot[0], pot[1] + text_size[1])
+        cv2.rectangle(pic, (text_loc[0] - 2 // 2, text_loc[1] - 2 - baseline),
                       (text_loc[0] + text_size[0], text_loc[1] + text_size[1]), bg_color, -1)
         # draw score value
-        cv2.putText(img, str(text), (text_loc[0], text_loc[1] + baseline), fontFace, fontScale,
+        cv2.putText(pic, str(txt), (text_loc[0], text_loc[1] + baseline), fontFace, fontScale,
                     (0, 0, 255), text_thickness, 8)
     elif drawType == "simple":
-        cv2.putText(img, '%d' % (text), point, fontFace, 0.5, (255, 0, 0))
-    return img
+        cv2.putText(pic, '%d' % (txt), point, fontFace, 0.5, (255, 0, 0))
+    return pic
 
 
-def write_line(img, point, text_line: str, drawType="custom"):
+def write_line(pic, pot, text_line: str, drawType="custom"):
     '''
-    :param img:
-    :param point:
+    :param pic:
+    :param pot:
     :param text:
     :param drawType: custom or custom
     :return:
@@ -64,11 +64,11 @@ def write_line(img, point, text_line: str, drawType="custom"):
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
     text_line = text_line.split("\n")
     text_size, baseline = cv2.getTextSize(str(text_line), fontFace, fontScale, thickness)
-    for i, text in enumerate(text_line):
-        if text:
-            draw_point = [point[0], point[1] + (text_size[1] + 2 + baseline) * i]
-            img = draw_text(img, draw_point, text, drawType)
-    return img
+    for i_, text_ in enumerate(text_line):
+        if text_:
+            draw_point = [pot[0], pot[1] + (text_size[1] + 2 + baseline) * i_]
+            pic = draw_text(pic, draw_point, text_, drawType)
+    return pic
 
 
 if __name__ == '__main__':
