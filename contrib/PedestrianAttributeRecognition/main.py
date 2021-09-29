@@ -24,6 +24,53 @@ from PIL import Image, ImageDraw, ImageFont
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+
+def draw_text(img, point, text, drawType="custom"):
+    """
+    :param img:
+    :param point:
+    :param text:
+    :param drawType: custom or custom
+    :return:
+    """
+    fontScale = 0.4
+    thickness = 7
+    text_thickness = 1
+    bg_color = (255, 255, 255)
+    fontFace = cv2.FONT_HERSHEY_SIMPLEX
+    if drawType == "custom":
+        text_size, baseline = cv2.getTextSize(str(text), fontFace, fontScale, thickness)
+        text_loc = (point[0], point[1] + text_size[1])
+        cv2.rectangle(img, (text_loc[0] - 2 // 2, text_loc[1] - 2 - baseline),
+                      (text_loc[0] + text_size[0], text_loc[1] + text_size[1]), bg_color, -1)
+        # draw score value
+        cv2.putText(img, str(text), (text_loc[0], text_loc[1] + baseline), fontFace, fontScale,
+                    (0, 0, 255), text_thickness, 8)
+    elif drawType == "simple":
+        cv2.putText(img, '%d' % (text), point, fontFace, 0.5, (255, 0, 0))
+    return img
+
+
+def draw_text_line(img, point, text_line: str, drawType="custom"):
+    '''
+    :param img:
+    :param point:
+    :param text:
+    :param drawType: custom or custom
+    :return:
+    '''
+    fontScale = 0.4
+    thickness = 5
+    fontFace = cv2.FONT_HERSHEY_SIMPLEX
+    text_line = text_line.split("\n")
+    text_size, baseline = cv2.getTextSize(str(text_line), fontFace, fontScale, thickness)
+    for i, text in enumerate(text_line):
+        if text:
+            draw_point = [point[0], point[1] + (text_size[1] + 2 + baseline) * i]
+            img = draw_text(img, draw_point, text, drawType)
+    return img
+
+
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     # init stream manager
@@ -151,37 +198,37 @@ if __name__ == '__main__':
         "personalLess45": ['less 45'],
         "personalLess60": ['less 60'],
         "personalLarger60": ['larger 60'],
-        "carryingBackpack": ['携带背包'],
-        "carryingOther": ['携带其他物品'],
-        "lowerBodyCasual": ['休闲裤'],
-        "upperBodyCasual": ['休闲上衣'],
-        "lowerBodyFormal": ['正装裤'],
-        "upperBodyFormal": ['正装上衣'],
-        "accessoryHat": ['戴帽子'],
-        "upperBodyJacket": ['夹克'],
-        "lowerBodyJeans": ['牛仔裤'],
-        "footwearLeatherShoes": ['皮鞋'],
-        "upperBodyLogo": ['上身有logo'],
-        "hairLong": ['长发', '短发'],
-        "personalMale": ['男', '女'],
-        "carryingMessengerBag": ['斜挎包'],
-        "accessoryMuffler": ['戴围巾'],
-        "accessoryNothing": ['没有佩戴饰品'],
-        "carryingNothing": ['没有携带物品'],
-        "upperBodyPlaid": ['格子图案上衣'],
-        "carryingPlasticBags": ['携带塑料包'],
-        "footwearSandals": ['穿凉鞋'],
-        "footwearShoes": ['穿有鞋'],
-        "lowerBodyShorts": ['短裤'],
-        "upperBodyShortSleeve": ['短袖'],
-        "lowerBodyShortSkirt": ['短裙'],
-        "footwearSneaker": ['运动鞋'],
-        "upperBodyThinStripes": ['条纹图案上衣'],
-        "accessorySunglasses": ['戴眼镜'],
-        "lowerBodyTrousers": ['长裤'],
-        "upperBodyTshirt": ['体恤衫'],
-        "upperBodyOther": ['其他上衣'],
-        "upperBodyVNeck": ['V字领上衣']
+        "carryingBackpack": ['carrying backpack'],
+        "carryingOther": ['carrying other'],
+        "lowerBodyCasual": ['casual'],
+        "upperBodyCasual": ['casual'],
+        "lowerBodyFormal": ['formal'],
+        "upperBodyFormal": ['formal'],
+        "accessoryHat": ['Hat'],
+        "upperBodyJacket": ['Jacket'],
+        "lowerBodyJeans": ['jeans'],
+        "footwearLeatherShoes": ['Leather Shoes'],
+        "upperBodyLogo": ['logo'],
+        "hairLong": ['long hair', 'short hair'],
+        "personalMale": ['boy', 'girl'],
+        "carryingMessengerBag": ['Messenger Bag'],
+        "accessoryMuffler": ['Muffler'],
+        "accessoryNothing": ['Nothing'],
+        "carryingNothing": ['Nothing'],
+        "upperBodyPlaid": ['Plaid'],
+        "carryingPlasticBags": ['carrying Plastic Bags'],
+        "footwearSandals": ['Sandals'],
+        "footwearShoes": ['Shoes'],
+        "lowerBodyShorts": ['Shorts'],
+        "upperBodyShortSleeve": ['Short Sleeve'],
+        "lowerBodyShortSkirt": ['Short Skirt'],
+        "footwearSneaker": ['Sneaker'],
+        "upperBodyThinStripes": ['Thin Stripes'],
+        "accessorySunglasses": ['Sunglasses'],
+        "lowerBodyTrousers": ['Trousers'],
+        "upperBodyTshirt": ['Tshirt'],
+        "upperBodyOther": ['Other'],
+        "upperBodyVNeck": ['VNeck']
     }
     atts = ["personalLess30", "personalLess45", "personalLess60", "personalLarger60", "carryingBackpack",
             "carryingOther",
@@ -205,51 +252,47 @@ if __name__ == '__main__':
     text_accessory = ""
     text_foot = ""
     if "personalMale" in text_result:
-        line += "%s:%s\n" % ("gender", name_dict["personalMale"][0])
+        line += "%s: %s\n" % ("gender", name_dict["personalMale"][0])
     else:
-        line += "%s:%s\n" % ("gender", name_dict["personalMale"][1])
+        line += "%s: %s\n" % ("gender", name_dict["personalMale"][1])
     if "personalLess30" in text_result:
-        line += "%s:%s\n" % ("age", name_dict["personalLess30"][0])
+        line += "%s: %s\n" % ("age", name_dict["personalLess30"][0])
     elif "personalLess45" in text_result:
-        line += "%s:%s\n" % ("age", name_dict["personalLess45"][0])
+        line += "%s: %s\n" % ("age", name_dict["personalLess45"][0])
     elif "personalLess60" in text_result:
-        line += "%s:%s\n" % ("age", name_dict["personalLess60"][0])
+        line += "%s: %s\n" % ("age", name_dict["personalLess60"][0])
     elif "personalLarger60" in text_result:
-        line += "%s:%s\n" % ("age", name_dict["personalLarger60"][0])
+        line += "%s: %s\n" % ("age", name_dict["personalLarger60"][0])
     if "hairLong" in text_result:
-        line += "%s:%s\n" % ("hair", name_dict["hairLong"][0])
+        line += "%s: %s\n" % ("hair", name_dict["hairLong"][0])
     else:
-        line += "%s:%s\n" % ("hair", name_dict["hairLong"][1])
+        line += "%s: %s\n" % ("hair", name_dict["hairLong"][1])
 
     for key, value in text_result.items():
         if key.startswith('carrying'):
-            text_carrying = text_carrying + value + "、"
+            text_carrying = text_carrying + value + ","
         elif key.startswith('upper'):
-            text_upper = text_upper + value + "、"
+            text_upper = text_upper + value + ","
         elif key.startswith('lower'):
-            text_lower = text_lower + value + "、"
+            text_lower = text_lower + value + ","
         elif key.startswith('accessory'):
-            text_accessory = text_accessory + value + "、"
+            text_accessory = text_accessory + value + ","
         elif key.startswith('foot'):
-            text_foot = text_foot + value + "、"
-    text_carrying = "carrying:" + text_carrying[:-1]
-    text_upper = "upperBody:" + text_upper[:-1]
-    text_lower = "lowerBody:" + text_lower[:-1]
-    text_accessory = "accessory:" + text_accessory[:-1]
+            text_foot = text_foot + value + ","
+    text_carrying = "carrying: " + text_carrying[:-1]
+    text_upper = "upperBody: " + text_upper[:-1]
+    text_lower = "lowerBody: " + text_lower[:-1]
+    text_accessory = "accessory: " + text_accessory[:-1]
     text_foot = "foot:" + text_foot[:-1]
     line = line + text_carrying + "\n" + text_upper + "\n" + \
-            text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "置信度：" + str(bboxes['confidence'])
+            text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "confidence: " + str(bboxes['confidence'])
 
     img2 = cv2.imread(img_path)
     cv2.rectangle(img2, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
-    img1 = np.zeros((img2.shape[0], 250), np.uint8)
+    img1 = np.zeros((img2.shape[0], 250, 3), np.uint8)
     img1 = img1 * 0 + 255
-    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-    img1 = Image.fromarray(img1)
-    draw = ImageDraw.Draw(img1)
-    font = ImageFont.truetype("./simhei.ttf", 15, encoding="utf-8")
-    draw.text((0, 0), line, (255, 0, 0), font=font)
-    img1 = cv2.cvtColor(np.array(img1), cv2.COLOR_RGB2BGR)
+    point = (10, 10)
+    img1 = draw_text_line(img1, point, line)
     img_rst = np.hstack([img2, img1])
     cv2.imwrite("final_result.jpg", img_rst)
 
