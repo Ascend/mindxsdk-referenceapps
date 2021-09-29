@@ -34,7 +34,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ### 1.4 代码目录结构与说明
 
 本sample工程名称为yolov3_deepmar，工程目录如下图所示：
-```python
+```
 .
 ├──dataset
 │   ├── image
