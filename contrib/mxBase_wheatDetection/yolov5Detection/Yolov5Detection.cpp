@@ -25,7 +25,7 @@ namespace{
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
-    const float CONFIDENCE = 0.25;
+    const float CONFIDENCE = 0.5;
     const uint32_t MODEL_HEIGHT = 416;
     const uint32_t MODEL_WIDTH = 416;
     const uint32_t GREEN = 255;
