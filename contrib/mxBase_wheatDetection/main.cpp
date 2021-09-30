@@ -41,8 +41,8 @@ void InitYolov5Param(InitParam &initParam)
     initParam.biasesNum = BIASES_NU;
     initParam.biases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
     initParam.objectnessThresh = "0.3";
-    initParam.iouThresh = "0.45";
-    initParam.scoreThresh = "0.3";
+    initParam.iouThresh = "0.3";
+    initParam.scoreThresh = "0.45";
     initParam.yoloType = YOLO_TYPE;
     initParam.modelType = 1;
     initParam.inputType = 0;
