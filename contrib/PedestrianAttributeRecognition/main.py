@@ -51,7 +51,7 @@ def draw_text(pic, pot, txt, drawType="custom"):
     return pic
 
 
-def write_line(pic, pot, text_line: str, drawType="custom"):
+def write_line(pic, pot, text_line, drawType="custom"):
     '''
     :param pic:
     :param pot:
