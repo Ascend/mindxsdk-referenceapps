@@ -100,6 +100,28 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```
 atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version=Ascend310 --insert_op_conf=./aipp.aippconfig --input_shape="images:1,3,416,416" --output_type="Conv_1228:0:FP32;Conv_1276:0:FP32;Conv_1324:0:FP32" --out_nodes="Conv_1228:0;Conv_1276:0;Conv_1324:0"
 ```
+## 使用场景概括
+
+# 适用条件
+
+适用于各个生长阶段的小麦，必须是以麦穗的形式，可在任何天气条件下进行识别，视角包含正视、俯视、仰视。
+
+# 限制条件
+
+尺寸条件：单个小麦的宽高像素不得超过500
+
+光照条件：光线较为良好，如果光线不足，必须有小麦的完整轮廓
+
+小麦条件：小麦应为根、茎、叶、穗的形式，不能为小麦粒
+
+## 参数调节
+
+| 参数名称 |参数介绍| 修改方法   | 默认值   |
+| :--------: | :------: | :------: |
+|CONFIDENCE|置信度|在mxBase_wheatDetection/yolov5Detection/yolov5Detection.cpp文件中，修改CONFIDENCE的大小即可| 0.5 |
+|objectnessThresh|是否为目标的阈值，大于阈值即认为是目标|在mxBase_wheatDetection/main.app文件中，修改initParam.objectnessThresh的大小即可|0.3|
+|iouThresh|两个框的IOU阈值，超过阈值即认为同一个框,用于nms算法|在mxBase_wheatDetection/main.app文件中，修改initParam.iouThresh的大小即可|0.3|
+|scoreThresh|是否为框的阈值，大于阈值即认为是框|在mxBase_wheatDetection/main.app文件中，修改initParam.scoreThresh的大小即可|0.45|
 
 ## 编译与运行
 
