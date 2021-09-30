@@ -119,9 +119,9 @@ atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version
 | 参数名称 |参数介绍| 修改方法   | 默认值   |
 | -------------- | --------------------------------------------- | --------------------------------------------------------------------- | -------- |
 |CONFIDENCE      |置信度|在mxBase_wheatDetection/yolov5Detection/yolov5Detection.cpp文件中，修改CONFIDENCE的大小即可| 0.5 |
-|objectnessThresh|是否为目标的阈值，大于阈值即认为是目标 |在mxBase_wheatDetection/main.app文件中，修改initParam.objectnessThresh的大小即可|0.3|
-|iouThresh       |两个框的IOU阈值，超过阈值即认为同一个框,用于nms算法|在mxBase_wheatDetection/main.app文件中，修改initParam.iouThresh的大小即可|0.3|
-|scoreThresh     |是否为框的阈值，大于阈值即认为是框|在mxBase_wheatDetection/main.app文件中，修改initParam.scoreThresh的大小即可|0.45|
+|objectnessThresh|是否为目标的阈值，大于阈值即认为是目标 |在mxBase_wheatDetection/main.cpp文件中，修改initParam.objectnessThresh的大小即可|0.3|
+|iouThresh       |两个框的IOU阈值，超过阈值即认为同一个框,用于nms算法|在mxBase_wheatDetection/main.cpp文件中，修改initParam.iouThresh的大小即可|0.3|
+|scoreThresh     |是否为框的阈值，大于阈值即认为是框|在mxBase_wheatDetection/main.cpp文件中，修改initParam.scoreThresh的大小即可|0.45|
 
 ## 编译与运行
 
