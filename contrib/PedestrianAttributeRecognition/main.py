@@ -52,13 +52,13 @@ def draw_text(pic, pot, txt, drawType="custom"):
 
 
 def write_line(pic, pot, text_line, drawType="custom"):
-    '''
+    """
     :param pic:
     :param pot:
     :param text:
     :param drawType: custom or custom
     :return:
-    '''
+    """
     fontScale = 0.4
     thickness = 5
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
