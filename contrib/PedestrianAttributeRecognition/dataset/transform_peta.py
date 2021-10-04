@@ -41,7 +41,7 @@ def generate_data_description(save_path):
     """
     dataset = dict()
     dataset['description'] = 'peta'
-    dataset['root'] = './dataset/peta/images/'
+    dataset['root'] = './dataset/image/images/'
     dataset['test_image'] = []
     dataset['att'] = []
     dataset['att_name'] = []
