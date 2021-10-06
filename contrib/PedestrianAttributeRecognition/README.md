@@ -102,6 +102,50 @@ yolov3的模型转换及下载参考华为昇腾社区[ModelZoo](https://www.hia
 
 deepmar离线模型的转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
 
+对于aipp的设置，如下:
+
+```python
+aipp_op{
+    aipp_mode:static
+    input_format : YUV420SP_U8
+
+    src_image_size_w : 224
+    src_image_size_h : 224
+
+    crop: false
+    load_start_pos_h : 0
+    load_start_pos_w : 0
+    crop_size_w : 224
+    crop_size_h: 224
+
+    csc_switch : true
+    rbuv_swap_switch : false
+
+    mean_chn_0 : 123
+    mean_chn_1 : 116
+    mean_chn_2 : 103
+    min_chn_0 : 0.675
+    min_chn_1 : 0.28
+    min_chn_2 : 0.53
+    var_reci_chn_0: 0.0171
+    var_reci_chn_1: 0.0175
+    var_reci_chn_2: 0.0174
+
+    matrix_r0c0: 256
+    matrix_r0c1: 0
+    matrix_r0c2: 359
+    matrix_r1c0: 256
+    matrix_r1c1: -88
+    matrix_r1c2: -183
+    matrix_r2c0: 256
+    matrix_r2c1: 454
+    matrix_r2c2: 0
+    input_bias_0: 16
+    input_bias_1: 128
+    input_bias_2: 128}
+```
+
+
 ## 3 编译与运行
 示例步骤如下：
 **步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
