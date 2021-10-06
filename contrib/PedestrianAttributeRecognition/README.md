@@ -102,7 +102,7 @@ yolov3的模型转换及下载参考华为昇腾社区[ModelZoo](https://www.hia
 
 deepmar离线模型的转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
 
-对于aipp的设置，如下:
+对于deepmar离线模型的aipp的设置，如下:
 
 ```python
 aipp_op{
