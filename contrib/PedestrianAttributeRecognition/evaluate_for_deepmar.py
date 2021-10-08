@@ -68,10 +68,11 @@ if __name__ == '__main__':
     valid_img = []
     invalid_img = []
     label_selected = []
+    str_num=5
     for name in image:
-        if name[0:5] + '.jpg' not in jpg_name:
+        if name[0:str_num] + '.jpg' not in jpg_name:
             continue
-        im = Image.open('dataset/image_jpg/' + name[0:5] + '.jpg')
+        im = Image.open('dataset/image_jpg/' + name[0:str_num] + '.jpg')
         height, width = im.size
         if width == 160 and height == 80:
             valid_img.append(name)
@@ -86,20 +87,28 @@ if __name__ == '__main__':
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer0")
 
+    pic_size=(224, 224)
+    channel0=2
+    channel1=0
+    channel2=1
+    size=[1,3,224,224]
+    mean_value=[0.485,0.456,0.406]
+    std_value=[0.229,0.224,0.225]
+
     # Collect model inferencing results
     for i, key in enumerate(valid_img_selected):
         img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
         dataInput = MxDataInput()
         img = Image.open(img_path)
         img = np.array(img)
-        img = cv2.resize(img, (224, 224), interpolation=cv2.INTER_AREA)
-        img = img.transpose(2, 0, 1)
-        img = img.reshape(1, 3, 224, 224)
+        img = cv2.resize(img, pic_size, interpolation=cv2.INTER_AREA)
+        img = img.transpose(channel0, channel1, channel2)
+        img = img.reshape(size[0], size[1], size[2], size[3])
         # Normalize and standardize the test image
         image = (img - np.min(img)) / (np.max(img) - np.min(img))
-        image[0][0] = (image[0][0] - 0.485) / 0.229
-        image[0][1] = (image[0][1] - 0.456) / 0.224
-        image[0][2] = (image[0][2] - 0.406) / 0.225
+        image[0][0] = (image[0][0] - mean_value[0]) / std_value[0]
+        image[0][1] = (image[0][1] - mean_value[1]) / std_value[1]
+        image[0][2] = (image[0][2] - mean_value[2]) / std_value[2]
 
         image = image.astype(np.float32)
         protobuf_vec = InProtobufVector()
