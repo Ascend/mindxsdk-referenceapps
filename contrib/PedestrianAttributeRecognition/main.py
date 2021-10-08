@@ -94,8 +94,8 @@ if __name__ == '__main__':
         print("The test test_image does not exist.")
         exit()
     img_cv = cv2.imread(img_path)
-    max_size=8192
-    min_size=32
+    max_size = 8192
+    min_size = 32
     if img_cv.shape[0] > max_size or img_cv.shape[1] > max_size or img_cv.shape[0] < min_size or img_cv.shape[1] < min_size:
         print("The test test_image is out of range of between 32 and 8192.")
         exit()
@@ -296,10 +296,10 @@ if __name__ == '__main__':
         cv2.rectangle(img2, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
         cv2.putText(img2, "Pedestrian " + str(i + 1), (bboxes['x0'], bboxes['y0'] + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                     (0, 0, 255), 1)
-    col_num=250
-    channel_num=3
-    x=10
-    y=10
+    col_num = 250
+    channel_num = 3
+    x = 10
+    y = 10
     img1 = np.zeros((img2.shape[0], col_num, channel_num), np.uint8)
     img1 = img1 * 0 + 255
     point = (x, y)
