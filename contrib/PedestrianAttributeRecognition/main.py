@@ -37,6 +37,8 @@ def draw_text(pic, pot, txt, drawType="custom"):
     thickness = 7
     text_thickness = 1
     bg_color = (255, 255, 255)
+    font_size=0.5
+    font_color=(255, 0, 0)
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
     if drawType == "custom":
         text_size, baseline = cv2.getTextSize(str(txt), fontFace, fontScale, thickness)
@@ -47,7 +49,7 @@ def draw_text(pic, pot, txt, drawType="custom"):
         cv2.putText(pic, str(txt), (text_loc[0], text_loc[1] + baseline), fontFace, fontScale,
                     (0, 0, 255), text_thickness, 8)
     elif drawType == "simple":
-        cv2.putText(pic, '%d' % (txt), point, fontFace, 0.5, (255, 0, 0))
+        cv2.putText(pic, '%d' % (txt), point, fontFace, font_size, font_color)
     return pic
 
 
@@ -92,7 +94,9 @@ if __name__ == '__main__':
         print("The test test_image does not exist.")
         exit()
     img_cv = cv2.imread(img_path)
-    if img_cv.shape[0] > 8192 or img_cv.shape[1] > 8192 or img_cv.shape[0] < 32 or img_cv.shape[1] < 32:
+    max_size=8192
+    min_size=32
+    if img_cv.shape[0] > max_size or img_cv.shape[1] > max_size or img_cv.shape[0] < min_size or img_cv.shape[1] < min_size:
         print("The test test_image is out of range of between 32 and 8192.")
         exit()
     if img_path.endswith("png"):
@@ -141,10 +145,6 @@ if __name__ == '__main__':
     mxpiObjectList = MxpiDataType.MxpiObjectList()
     mxpiObjectList.ParseFromString(infer_result[1].messageBuf)
     print(mxpiObjectList)
-    y0 = mxpiObjectList.objectVec[0].y0
-    x0 = mxpiObjectList.objectVec[0].x0
-    y1 = mxpiObjectList.objectVec[0].y1
-    x1 = mxpiObjectList.objectVec[0].x1
 
     tensorList = MxpiDataType.MxpiTensorPackageList()
     tensorList.ParseFromString(infer_result[2].messageBuf)
@@ -158,40 +158,6 @@ if __name__ == '__main__':
     img_yuv_crop = img_yuv_crop.reshape(visionInfoCrop.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
                                         visionInfoCrop.widthAligned)
     img_crop = cv2.cvtColor(img_yuv_crop, cv2.COLOR_YUV2BGR_NV12)
-
-    ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-    print(ids)
-    result = []
-    for j in ids:
-        if j >= 0:
-            result.append(1)
-        elif j < 0:
-            result.append(0)
-    print(result)
-
-    # Draw detection bounding box
-    bboxes = []
-    bboxes = {'x0': int(x0),
-              'x1': int(x1),
-              'y0': int(y0),
-              'y1': int(y1),
-              'confidence': round(mxpiObjectList.objectVec[0].classVec[0].confidence, 4),
-              'text': mxpiObjectList.objectVec[0].classVec[0].className}
-
-    text = "{}{}".format(str(bboxes['confidence']), " ")
-    img_copy = copy.copy(img)
-    for item in bboxes['text']:
-        text += item
-    cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
-
-    cv2.imwrite("./result.jpg", img)
-    cv2.imwrite("./result_crop.jpg", img_crop)
-
-    # Visual attribute recognition results
-    index = []
-    for i, key in enumerate(result):
-        if key == 1:
-            index.append(i)
 
     name_dict = {
         "personalLess30": ['less 30'],
@@ -240,58 +206,103 @@ if __name__ == '__main__':
             "lowerBodyShortSkirt",
             "footwearSneaker", "upperBodyThinStripes", "accessorySunglasses", "lowerBodyTrousers", "upperBodyTshirt",
             "upperBodyOther", "upperBodyVNeck"]
-
-    # Classify 35 pedestrian attributes
-    text_result = {}
-    for i, key in enumerate(index):
-        text_result.update({atts[key]: name_dict[atts[key]][0]})
     line = ""
-    text_carrying = ""
-    text_upper = ""
-    text_lower = ""
-    text_accessory = ""
-    text_foot = ""
-    if "personalMale" in text_result:
-        line += "%s: %s\n" % ("gender", name_dict["personalMale"][0])
-    else:
-        line += "%s: %s\n" % ("gender", name_dict["personalMale"][1])
-    if "personalLess30" in text_result:
-        line += "%s: %s\n" % ("age", name_dict["personalLess30"][0])
-    elif "personalLess45" in text_result:
-        line += "%s: %s\n" % ("age", name_dict["personalLess45"][0])
-    elif "personalLess60" in text_result:
-        line += "%s: %s\n" % ("age", name_dict["personalLess60"][0])
-    elif "personalLarger60" in text_result:
-        line += "%s: %s\n" % ("age", name_dict["personalLarger60"][0])
-    if "hairLong" in text_result:
-        line += "%s: %s\n" % ("hair", name_dict["hairLong"][0])
-    else:
-        line += "%s: %s\n" % ("hair", name_dict["hairLong"][1])
 
-    for key, value in text_result.items():
-        if key.startswith('carrying'):
-            text_carrying = text_carrying + value + ","
-        elif key.startswith('upper'):
-            text_upper = text_upper + value + ","
-        elif key.startswith('lower'):
-            text_lower = text_lower + value + ","
-        elif key.startswith('accessory'):
-            text_accessory = text_accessory + value + ","
-        elif key.startswith('foot'):
-            text_foot = text_foot + value + ","
-    text_carrying = "carrying: " + text_carrying[:-1]
-    text_upper = "upperBody: " + text_upper[:-1]
-    text_lower = "lowerBody: " + text_lower[:-1]
-    text_accessory = "accessory: " + text_accessory[:-1]
-    text_foot = "foot:" + text_foot[:-1]
-    line = line + text_carrying + "\n" + text_upper + "\n" + \
-            text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "confidence: " + str(bboxes['confidence'])
+    for key_meta, value_meta in enumerate(tensorList.tensorPackageVec):
+        ids = np.frombuffer(tensorList.tensorPackageVec[key_meta].tensorVec[0].dataStr, dtype=np.float32)
+        print(ids)
+        result = []
+        for j in ids:
+            if j >= 0:
+                result.append(1)
+            elif j < 0:
+                result.append(0)
+        print(result)
+
+        # Visual attribute recognition results
+        index = []
+        for i, key in enumerate(result):
+            if key == 1:
+                index.append(i)
+
+    
+
+        # Classify 35 pedestrian attributes
+        text_result = {}
+        for i, key in enumerate(index):
+            text_result.update({atts[key]: name_dict[atts[key]][0]})
+        text_carrying = ""
+        text_upper = ""
+        text_lower = ""
+        text_accessory = ""
+        text_foot = ""
+        line = line + "Pedestrian " + str(key_meta + 1) + ": " + "\n" 
+        if "personalMale" in text_result:
+            line += "%s: %s\n" % ("gender", name_dict["personalMale"][0])
+        else:
+            line += "%s: %s\n" % ("gender", name_dict["personalMale"][1])
+        if "personalLess30" in text_result:
+            line += "%s: %s\n" % ("age", name_dict["personalLess30"][0])
+        elif "personalLess45" in text_result:
+            line += "%s: %s\n" % ("age", name_dict["personalLess45"][0])
+        elif "personalLess60" in text_result:
+            line += "%s: %s\n" % ("age", name_dict["personalLess60"][0])
+        elif "personalLarger60" in text_result:
+            line += "%s: %s\n" % ("age", name_dict["personalLarger60"][0])
+        if "hairLong" in text_result:
+            line += "%s: %s\n" % ("hair", name_dict["hairLong"][0])
+        else:
+            line += "%s: %s\n" % ("hair", name_dict["hairLong"][1])
+
+        for key, value in text_result.items():
+            if key.startswith('carrying'):
+                text_carrying = text_carrying + value + ","
+            elif key.startswith('upper'):
+                text_upper = text_upper + value + ","
+            elif key.startswith('lower'):
+                text_lower = text_lower + value + ","
+            elif key.startswith('accessory'):
+                text_accessory = text_accessory + value + ","
+            elif key.startswith('foot'):
+                text_foot = text_foot + value + ","
+        text_carrying = "carrying: " + text_carrying[:-1]
+        text_upper = "upperBody: " + text_upper[:-1]
+        text_lower = "lowerBody: " + text_lower[:-1]
+        text_accessory = "accessory: " + text_accessory[:-1]
+        text_foot = "foot:" + text_foot[:-1]
+        line = line + text_carrying + "\n" + text_upper + "\n" + \
+               text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "confidence: " + str(
+            round(mxpiObjectList.objectVec[key_meta].classVec[0].confidence, 4)) + "\n"
 
     img2 = cv2.imread(img_path)
-    cv2.rectangle(img2, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
-    img1 = np.zeros((img2.shape[0], 250, 3), np.uint8)
+    for i, _ in enumerate(mxpiObjectList.objectVec):
+        y0 = mxpiObjectList.objectVec[i].y0
+        x0 = mxpiObjectList.objectVec[i].x0
+        y1 = mxpiObjectList.objectVec[i].y1
+        x1 = mxpiObjectList.objectVec[i].x1
+
+        # Draw detection bounding box
+        bboxes = []
+        bboxes = {'x0': int(x0),
+                'x1': int(x1),
+                'y0': int(y0),
+                'y1': int(y1),
+                'confidence': round(mxpiObjectList.objectVec[i].classVec[0].confidence, 4),
+                'text': mxpiObjectList.objectVec[i].classVec[0].className}
+
+        text = "{}{}".format(str(bboxes['confidence']), " ")
+        for item in bboxes['text']:
+            text += item
+        cv2.rectangle(img2, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
+        cv2.putText(img2, "Pedestrian " + str(i + 1), (bboxes['x0'], bboxes['y0'] + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                    (0, 0, 255), 1)
+    col_num=250
+    channel_num=3
+    x=10
+    y=10
+    img1 = np.zeros((img2.shape[0], col_num, channel_num), np.uint8)
     img1 = img1 * 0 + 255
-    point = (10, 10)
+    point = (x, y)
     img1 = write_line(img1, point, line)
     img_rst = np.hstack([img2, img1])
     cv2.imwrite("final_result.jpg", img_rst)
