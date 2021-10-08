@@ -37,8 +37,8 @@ def draw_text(pic, pot, txt, drawType="custom"):
     thickness = 7
     text_thickness = 1
     bg_color = (255, 255, 255)
-    font_size=0.5
-    font_color=(255, 0, 0)
+    font_size = 0.5
+    font_color = (255, 0, 0)
     fontFace = cv2.FONT_HERSHEY_SIMPLEX
     if drawType == "custom":
         text_size, baseline = cv2.getTextSize(str(txt), fontFace, fontScale, thickness)
