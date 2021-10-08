@@ -213,7 +213,7 @@ python3.7 parallel_update.py  --limit_of_time ${time} --online_flag True
 **步骤6** 精度测试。
 
 1. 下载测试数据集，可通过[百度云链接](https://pan.baidu.com/s/1zK3-6usQC7753IlL8UKvAQ  )（提取码：84jl）获取，解压后包含一个yolov4文件夹，一个txt文件，一个test文件夹和一个video文件夹。将解压出的label.txt文件上传到项目的当前目录。
-2. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，并新建一个文件夹`${Home_live555}/live/mediaServer/dataset` ，将上一步解压出的video文件夹中的264文件上传到 dataset文件夹下。其中`Home_live555`为live555安装路径。
+2. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，并新建一个文件夹`${Home_live555}/live/mediaServer/dataset/` ，将上一步解压出的video文件夹中的264文件上传到 dataset文件夹下。其中`Home_live555`为live555安装路径。
 3. 将`pipeline/test.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
 4. 修改`run.sh`中的RTSP_URL修改为`rtsp://${host}:${port}/dataset`，其中`host`为服务器ip地址，`port`根据运行live555后终端显示的最后一行的提示进行确定。
 5. 执行命令：
