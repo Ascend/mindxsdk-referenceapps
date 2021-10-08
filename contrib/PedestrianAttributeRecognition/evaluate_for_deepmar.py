@@ -68,7 +68,7 @@ if __name__ == '__main__':
     valid_img = []
     invalid_img = []
     label_selected = []
-    str_num=5
+    str_num = 5
     for name in image:
         if name[0:str_num] + '.jpg' not in jpg_name:
             continue
@@ -87,13 +87,13 @@ if __name__ == '__main__':
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_tensorinfer0")
 
-    pic_size=(224, 224)
-    channel0=2
-    channel1=0
-    channel2=1
-    size=[1,3,224,224]
-    mean_value=[0.485,0.456,0.406]
-    std_value=[0.229,0.224,0.225]
+    pic_size = (224, 224)
+    channel0 = 2
+    channel1 = 0
+    channel2 = 1
+    size = [1,3,224,224]
+    mean_value = [0.485,0.456,0.406]
+    std_value = [0.229,0.224,0.225]
 
     # Collect model inferencing results
     for i, key in enumerate(valid_img_selected):
