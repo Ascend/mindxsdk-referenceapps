@@ -96,8 +96,10 @@ if __name__ == '__main__':
     img_cv = cv2.imread(img_path)
     max_size = 8192
     min_size = 32
-    if img_cv.shape[0] > max_size or img_cv.shape[1] > max_size or img_cv.shape[0] < min_size or img_cv.shape[1] < min_size:
-        print("The test test_image is out of range of between 32 and 8192.")
+    if img_cv.shape[0] > max_size or img_cv.shape[1] > max_size or \
+        img_cv.shape[0] < min_size or img_cv.shape[1] < min_size:
+        print("The test test_image is "
+        "out of range of between 32 and 8192.")
         exit()
     if img_path.endswith("png"):
         print("This example does not support PNG format image inferencing for the time being.")
