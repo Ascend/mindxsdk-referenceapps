@@ -29,7 +29,6 @@ target_link_libraries(CartoonGAN_picture
         mxbase
         cpprest
         opencv_world
-        yolov3postprocess
         boost_filesystem
         stdc++fs
         )
