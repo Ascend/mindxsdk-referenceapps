@@ -87,7 +87,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 - 环境变量介绍
 
 ```python
-export MX_SDK_HOME+${SDK安装路径}/mxVision
+export MX_SDK_HOME=${SDK安装路径}/mxVision
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
