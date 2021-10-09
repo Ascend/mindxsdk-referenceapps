@@ -18,7 +18,6 @@
 #include "CartoonGANPicture.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
 
-
 namespace{
 const uint32_t YUV_BYTE_NU = 3;
 const uint32_t YUV_BYTE_DE = 2;
@@ -187,9 +186,10 @@ APP_ERROR CartoonGANPicture::WriteResult(const cv::Mat &result, const std::strin
     std::string fileName = imgPath.substr(imgPath.find_last_of("/") + 1);
     std::string directorPath = "./data/output/";
 
-    size_t pre = 0, pos;
+    size_t pre = 0;
+	size_t pos = 0;
     std::string dir;
-    int ret;
+    int ret = 0;
 
     while((pos = directorPath.find_first_of('/', pre)) != std::string::npos){
         dir = directorPath.substr(0, pos++);

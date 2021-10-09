@@ -24,7 +24,7 @@ namespace fs = boost::filesystem;
 
 APP_ERROR ReadImagesPath(const std::string &imgPath, std::vector<std::string> &imagesPath)
 {
-    if(!fs::exists(imgPath) )
+    if(!fs::exists(imgPath))
     {
         LogError << " directory is not exist." ;
         return APP_ERR_COMM_FAILURE;
