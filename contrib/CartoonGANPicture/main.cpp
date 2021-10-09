@@ -1,11 +1,11 @@
 /*
- * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright (c) 2021. Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,29 +16,35 @@
 
 #include <iostream>
 #include <vector>
+#include <csignal>
 #include "boost/filesystem.hpp"
 #include "CartoonGANPicture/CartoonGANPicture.h"
 
 std::vector<double> g_inferCost;
+bool stop_flag = false;
 namespace fs = boost::filesystem;
+
+void sig_handler(int sig)
+{
+    if(sig == SIGINT){
+        stop_flag = true;
+    }
+}
 
 APP_ERROR ReadImagesPath(const std::string &imgPath, std::vector<std::string> &imagesPath)
 {
-    if(!fs::exists(imgPath))
-    {
+    if(!fs::exists(imgPath) ){
         LogError << " directory is not exist." ;
         return APP_ERR_COMM_FAILURE;
     }
     fs::directory_iterator item_begin(imgPath);
     fs::directory_iterator item_end;
-    if (item_begin == item_end)
-    {
+    if (item_begin == item_end){
         LogError << " directory is null.";
         return APP_ERR_COMM_FAILURE;
     }
 
-    for (auto & entry : fs::directory_iterator(imgPath))
-    {
+    for (auto & entry : fs::directory_iterator(imgPath)){
         imagesPath.push_back(entry.path().string());
     }
 
@@ -57,6 +63,8 @@ int main(int argc, char* argv[])
         LogWarn << "Please input image path, such as './CartoonGAN_picture ./data/images'.";
         return APP_ERR_OK;
     }
+    
+    signal(SIGINT, sig_handler);
 
     InitParam initParam;
     InitYolov3Param(initParam);
@@ -66,6 +74,7 @@ int main(int argc, char* argv[])
         LogError << "CartoonGANPicture init failed, ret=" << ret << ".";
         return ret;
     }
+    
     std::string inferText = argv[1];
     std::vector<std::string> imagesPath;
     ret = ReadImagesPath(inferText, imagesPath);
@@ -75,6 +84,9 @@ int main(int argc, char* argv[])
         return ret;
     }
     for (uint32_t i = 0; i < imagesPath.size(); i++) {
+        if(stop_flag){
+            break;
+        }
         LogInfo << imagesPath[i];
         auto startTime = std::chrono::high_resolution_clock::now();
         ret = cartoon->Process(imagesPath[i]);
