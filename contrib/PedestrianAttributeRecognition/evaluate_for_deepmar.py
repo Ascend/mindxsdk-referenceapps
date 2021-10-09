@@ -92,9 +92,8 @@ if __name__ == '__main__':
     channel1 = 0
     channel2 = 1
     size = [1,3,224,224]
-    mean_value = [0.485,0.456,0.406]
-    std_value = [0.229,0.224,0.225]
-
+    mean_value = [0.485, 0.456, 0.406]
+    std_value = [0.229, 0.224, 0.225]
     # Collect model inferencing results
     for i, key in enumerate(valid_img_selected):
         img_path = "dataset/image_jpg/" + key[0:5] + '.jpg'
