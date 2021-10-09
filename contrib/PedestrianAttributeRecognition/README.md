@@ -87,6 +87,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 - 环境变量介绍
 
 ```python
+export MX_SDK_HOME+${SDK安装路径}/mxVision
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
@@ -148,12 +149,12 @@ aipp_op{
 
 ## 3 编译与运行
 
-**步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7),点击yolov3离线模型链接，选择“历史版本”中的版本1.1下载，并将“yolov3_framework_tensorflow_ascend310_input_fp32_batch_1_fp16_output_fp32.om
-”其更名为：“yolo_tf_bs1_fp16.om”，并将其拷贝到本样例model文件夹下的yolov3文件夹中
+**步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7),点击yolov3离线模型链接，选择“历史版本”中的版本1.1下载，将“yolov3_framework_tensorflow_ascend310_input_fp32_batch_1_fp16_output_fp32.om
+”更名为：“yolo_tf_bs1_fp16.om”，并将其拷贝到本样例model文件夹下的yolov3文件夹中
 
-**步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)
+**步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7),打开链接，点击“下载模型脚本”，将其下载到本地，并将其中的deepmar_bs1.om文件拷贝到本样例model文件夹中的deepmar文件夹中，并将其更名为“deepmar_bs1_aipp_1.om”
 
-**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改yolov3_deepmar.py中“img_path"为需要推理的图片名字，将test.pipeline中的后处理so文件修改问SDK安装路径。
+**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改yolov3_deepmar.py中“img_path"为需要推理的图片路径，将test.pipeline中的后处理so文件修改问SDK安装路径。
 
 **步骤4** 执行命令：python main.py,得到final_result.jpg可视化结果
 
