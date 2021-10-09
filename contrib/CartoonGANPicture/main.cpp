@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
         LogError << "CartoonGANPicture init failed, ret=" << ret << ".";
         return ret;
     }
-    //std::vector<double> g_inferCost;
     std::string inferText = argv[1];
     std::vector<std::string> imagesPath;
     ret = ReadImagesPath(inferText, imagesPath);
