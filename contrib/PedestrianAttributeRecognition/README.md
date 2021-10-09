@@ -147,8 +147,9 @@ aipp_op{
 
 
 ## 3 编译与运行
-示例步骤如下：
-**步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
+
+**步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7),点击yolov3离线模型链接，选择“历史版本”中的版本1.1下载，并将“yolov3_framework_tensorflow_ascend310_input_fp32_batch_1_fp16_output_fp32.om
+”其更名为：“yolo_tf_bs1_fp16.om”，并将其拷贝到本样例model文件夹下的yolov3文件夹中
 
 **步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)
 
