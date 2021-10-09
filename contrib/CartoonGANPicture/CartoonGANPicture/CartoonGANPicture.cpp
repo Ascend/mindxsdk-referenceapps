@@ -187,7 +187,7 @@ APP_ERROR CartoonGANPicture::WriteResult(const cv::Mat &result, const std::strin
     std::string directorPath = "./data/output/";
 
     size_t pre = 0;
-	size_t pos = 0;
+    size_t pos = 0;
     std::string dir;
     int ret = 0;
 
