@@ -49,6 +49,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 │   ├── deepmar
 │       ├── deepmar_bs1_aipp_1.om
 │       ├── deepmar_bs1_unaipp.om
+│       ├── aipp_deepmar.config
+│       ├── Deepmar_bs1.onnx
 │   ├── yolov3
 │       ├── coco.names
 │       ├── yolov3_tf_bs1_fp16.cfg
@@ -153,12 +155,12 @@ aipp_op{
     input_bias_1: 128
     input_bias_2: 128}
 ```
-从modelzoo中下载好deepmar之后，在工程的根目录执行下面命令进行将onnx模型转om模型：
+从modelzoo中下载好deepmar之后，将其根目录下的Deepmar_bs1.onnx文件拷贝到本样例的“model/deepmar”路径下，并在终端中移至该路径下，执行下面命令进行将onnx模型转om模型：
 
 ```python
-atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310  --insert_op_conf=aipp.config
+atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310  --insert_op_conf=aipp_deepmar.config
 ```
-模型转换成功之后，将deepmar_bs1_aipp_1.om模型拷贝至本样例的"model/deepmar"路径下，对于无aipp设置的离线模型，可执行下面命令得到：
+对于无aipp设置的离线模型，可执行下面命令得到：
 
 ```python
 atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310
