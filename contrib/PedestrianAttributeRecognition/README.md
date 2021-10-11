@@ -154,7 +154,7 @@ aipp_op{
 
 **步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7),打开链接，点击“下载模型脚本”，将其下载到本地，并将其中的deepmar_bs1.om文件拷贝到本样例model文件夹中的deepmar文件夹中，并将其更名为“deepmar_bs1_aipp_1.om”
 
-**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改main.py中“img_path"为需要推理的图片路径，将test.pipeline中的后处理so文件修改问SDK安装路径。
+**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改main.py脚本中第91行中的“img_path"为需要推理的图片路径，将test.pipeline中的后处理so文件修改问SDK安装路径。
 
 **步骤4** 执行命令：python main.py,得到final_result.jpg可视化结果
 
