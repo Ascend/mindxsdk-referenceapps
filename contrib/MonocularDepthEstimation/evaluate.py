@@ -33,8 +33,8 @@ ground_truth_cache_file = 'test_set/ground_truth.npy'
 infer_result_cache_file = 'test_set/infer_result.npy'
 
 # test set image size
-test_image_height = ${测试集图片的高}
-test_image_width = ${测试集图片的宽}
+test_image_height = '${测试集图片的高}'
+test_image_width = '${测试集图片的宽}'
 
 # thresholds for accuracy
 threshold_1 = 1.25
