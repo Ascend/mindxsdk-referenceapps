@@ -68,9 +68,9 @@ def load_test_set(image_set_path, image_depth_info_path):
     images_data = []
     for test_image_file in image_files:
         # open image file
-        with open(os.path.join(image_set_path, test_image_file), 'rb') as f:
+        with open(os.path.join(image_set_path, test_image_file), 'rb') as image_file:
             # load image data
-            images_data.append(f.read())
+            images_data.append(image_file.read())
 
     if os.path.exists(ground_truth_cache_file) != 1:
         print('ground_truth.npy not exist, query all data.')
