@@ -53,6 +53,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 │       ├── coco.names
 │       ├── yolov3_tf_bs1_fp16.cfg
 │       ├── yolov3_tf_bs_fp16.om
+│       ├── yolov3_tf.pb
+│       ├── aipp_yolov3_416_416.aippconfig
 ├── pipeline
 │   ├── test.pipeline
 │   ├── test_only_deepmar.pipeline
@@ -99,9 +101,15 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 本项目中用到的模型有：yolov3，deeomar两个模型。
 
-yolov3的模型转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)。
+yolov3的模型pb文件可从此链接获取[yolov3模型链接：密码：utyh](https://pan.baidu.com/s/1bbmPFHFQz2IGBKD7OKccWw)。
+将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：
 
-deepmar离线模型的转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
+```python
+atc --model=./yolov3_tf_1.pb --framework=3 --output=./yolov3_tf_bs1_fp16_1 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+```
+更多的atc模型转换信息可以参考此链接样例：https://support.huaweicloud.com/ug-mfac-mindxsdk201/atlasmx_02_0053.html
+
+deepmar模型的onnx文件可以从此链接中获取[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
 
 对于deepmar离线模型的aipp的设置，如下:
 
@@ -145,6 +153,18 @@ aipp_op{
     input_bias_1: 128
     input_bias_2: 128}
 ```
+从modelzoo中下载好deepmar之后，在工程的根目录执行下面命令进行将onnx模型转om模型：
+
+```python
+atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310  --insert_op_conf=aipp.config
+```
+模型转换成功之后，将deepmar_bs1_aipp_1.om模型拷贝至本样例的"model/deepmar"路径下，对于无aipp设置的离线模型，可执行下面命令得到：
+
+```python
+atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310
+```
+
+
 
 
 ## 3 编译与运行
