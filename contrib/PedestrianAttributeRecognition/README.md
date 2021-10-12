@@ -103,7 +103,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 本项目中用到的模型有：yolov3，deeomar两个模型。
 
-yolov3的模型pb文件可从此链接获取[yolov3模型链接：密码：utyh](https://pan.baidu.com/s/1bbmPFHFQz2IGBKD7OKccWw)。
+yolov3的模型pb文件可从此链接获取[yolov3模型链接：密码：q2kt](https://pan.baidu.com/s/1VhneQSvvSC5VXP1cftsRFA)。
 将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：
 
 ```python
