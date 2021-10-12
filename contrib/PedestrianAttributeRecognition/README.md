@@ -9,7 +9,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2.b011。
+支持的SDK版本为2.0.2.b011。 
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
