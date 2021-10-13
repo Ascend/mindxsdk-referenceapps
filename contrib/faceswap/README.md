@@ -28,7 +28,7 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸
 |-------- models
 |           |---- aipp_yolov4.cfg              // yolov4模型转换配置文件（用于人脸检测）
 |           |---- coco.names                   // yolov4模型所有可识别类
-|           |---- V3ONNX2OM.cfg                // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
+|           |---- V3ONNX.cfg                // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
 |-------- pipline
 |           |---- faceswap.pipeline            // 人脸替换流水线配置文件
 |-------- pipline                              // 存放结果文件
