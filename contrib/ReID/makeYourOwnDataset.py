@@ -33,8 +33,16 @@ YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
 
 
-# initialize streams:
 def initialize_stream():
+    """
+    Initialize streams.
+
+    :arg:
+        None
+
+    :return:
+        Stream api
+    """
     streamApi = StreamManagerApi()
     streamState = streamApi.InitManager()
     if streamState != 0:
@@ -54,9 +62,18 @@ def initialize_stream():
     return streamApi
 
 
-# Crop persons from given images for making your own dataset
 def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
+    """
+    Crop persons from given images for making your own dataset
 
+    :arg:
+        imagePath: the directory of input images
+        outputPath: the directory of output
+        streamApi: stream api
+
+    :return:
+        None
+    """
     # constructing the results returned by the stream
     pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_imagecrop0"]
     pluginNameVector = StringVector()

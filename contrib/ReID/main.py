@@ -41,10 +41,18 @@ FIND_COLOR = (0, 255, 0)
 NONE_FIND_COLOR = (255, 0, 0)
 
 
-# initialize two streams:
-# queryImageProcess for extracting the features of query images
-# galleryImageProcess for detecting and re-identifying persons in galley images
 def initialize_stream():
+    """
+    Initialize two streams:
+        queryImageProcess for extracting the features of query images
+        galleryImageProcess for detecting and re-identifying persons in galley images
+
+    :arg:
+        None
+
+    :return:
+        Stream api
+    """
     streamApi = StreamManagerApi()
     streamState = streamApi.InitManager()
     if streamState != 0:
@@ -64,8 +72,19 @@ def initialize_stream():
     return streamApi
 
 
-# Extract the features of query images, return the feature vector and the corresponding Pid vector
 def extract_query_feature(queryPath, streamApi):
+    """
+    Extract the features of query images, return the feature vector and the corresponding Pid vector
+
+
+    :arg:
+        queryPath: the directory of query images
+        streamApi: stream api
+
+    :return:
+        queryFeatures: the vectors of queryFeatures
+        queryPid: the vectors of queryPid
+    """
     queryFeatures = []
     queryPid = []
 
@@ -132,6 +151,19 @@ def extract_query_feature(queryPath, streamApi):
 
 
 def process_ReID(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
+    """
+    Detect and re-identify person in gallery image
+
+    :arg:
+        galleryPath: the directory of gallery images
+        queryFeatures: the vectors of queryFeatures
+        queryPid: the vectors of queryPid
+        streamApi: stream api
+        matchThreshold: match threshold
+
+    :return:
+        None
+    """
     # constructing the results returned by the galleryImageProcess stream
     pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1"]
     pluginNameVector = StringVector()

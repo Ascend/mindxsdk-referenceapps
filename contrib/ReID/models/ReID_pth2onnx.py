@@ -24,6 +24,15 @@ from collections import OrderedDict
 
 
 def proc_nodes_module(checkpoint):
+    """
+    proc_nodes_module
+
+    :arg:
+        checkpoint
+
+    :return:
+        new_state_dict
+    """
     new_state_dict = OrderedDict()
     for k, v in checkpoint.items():
         if "classifier" in k:
@@ -33,6 +42,15 @@ def proc_nodes_module(checkpoint):
 
 
 def main():
+    """
+    main function
+
+    :arg:
+        None
+
+    :return:
+        None
+    """
     parser = argparse.ArgumentParser(description="ReID Baseline Inference")
     parser.add_argument(
         "--config_file", default="", help="path to config file", type=str
