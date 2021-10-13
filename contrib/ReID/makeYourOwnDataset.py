@@ -55,7 +55,7 @@ def initialize_stream():
 
 
 # Crop persons from given images for making your own dataset
-def crop_personFrom_own_dataset(imagePath, outputPath, streamApi):
+def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
 
     # constructing the results returned by the stream
     pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_imagecrop0"]
@@ -127,5 +127,5 @@ if __name__ == '__main__':
     parser.add_argument('--outputFilePath', type=str, default='data/cropOwnDataset', help="Gallery File Path")
     opt = parser.parse_args()
     streamManagerApi = initialize_stream()
-    crop_personFrom_own_dataset(opt.imageFilePath, opt.outputFilePath, streamManagerApi)
+    crop_person_from_own_dataset(opt.imageFilePath, opt.outputFilePath, streamManagerApi)
 
