@@ -150,7 +150,7 @@ def extract_query_feature(queryPath, streamApi):
     return queryFeatures, queryPid
 
 
-def process_ReID(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
+def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
     """
     Detect and re-identify person in gallery image
 
@@ -313,4 +313,4 @@ if __name__ == '__main__':
     print(opt)
     streamManagerApi = initialize_stream()
     queryFeatureVector, queryPidVector = extract_query_feature(opt.queryFilePath, streamManagerApi)
-    process_ReID(opt.galleryFilePath, queryFeatureVector, queryPidVector, streamManagerApi, opt.matchThreshold)
+    process_reid(opt.galleryFilePath, queryFeatureVector, queryPidVector, streamManagerApi, opt.matchThreshold)
