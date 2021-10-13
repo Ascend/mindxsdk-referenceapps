@@ -1,0 +1,71 @@
+{
+    "faceswap": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "model/yolov4_detection.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+           "props": {
+                    "dataSource": "mxpi_tensorinfer0",
+                    "postProcessConfigPath": "model/yolov4.cfg",
+                    "labelPath": "model/coco.names",
+                    "postProcessLibPath": "${MindXSDK安装路径}/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
+                },
+             "factory": "mxpi_objectpostprocessor",
+             "next": "mxpi_imagecrop0"
+        },
+        "mxpi_imagecrop0":{
+            "props":{
+                    "dataSource":"mxpi_objectpostprocessor0",
+                    "resizeHeight": "112",
+                    "resizeWidth": "112"
+            },
+            "factory":"mxpi_imagecrop",
+            "next":"mxpi_tensorinfer1"
+        },
+        "mxpi_tensorinfer1": {
+            "props": {
+                "dataSource": "mxpi_imagecrop0",
+                "modelPath": "model/V3ONNXX.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
