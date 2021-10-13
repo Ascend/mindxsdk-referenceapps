@@ -34,7 +34,7 @@ YUV_BYTES_DE = 2
 
 
 # initialize streams:
-def InitializeStream():
+def initialize_stream():
     streamApi = StreamManagerApi()
     streamState = streamApi.InitManager()
     if streamState != 0:
@@ -55,7 +55,7 @@ def InitializeStream():
 
 
 # Crop persons from given images for making your own dataset
-def CropPersonFromOwnDataset(imagePath, outputPath, streamApi):
+def crop_personFrom_own_dataset(imagePath, outputPath, streamApi):
 
     # constructing the results returned by the stream
     pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_imagecrop0"]
@@ -125,6 +125,6 @@ if __name__ == '__main__':
     parser.add_argument('--imageFilePath', type=str, default='data/ownDataset', help="Query File Path")
     parser.add_argument('--outputFilePath', type=str, default='data/cropOwnDataset', help="Gallery File Path")
     opt = parser.parse_args()
-    streamManagerApi = InitializeStream()
-    CropPersonFromOwnDataset(opt.imageFilePath, opt.outputFilePath, streamManagerApi)
+    streamManagerApi = initialize_stream()
+    crop_personFrom_own_dataset(opt.imageFilePath, opt.outputFilePath, streamManagerApi)
 

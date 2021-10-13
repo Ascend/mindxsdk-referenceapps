@@ -35,7 +35,6 @@ IN_PLUGIN_ID = 0
 DETECTED_PERSON_THRESHOLD = 5000
 INITIAL_MIN_DISTANCE = 99
 
-
 LINE_THICKNESS = 2
 FONT_SCALE = 1.0
 FIND_COLOR = (0, 255, 0)
@@ -45,7 +44,7 @@ NONE_FIND_COLOR = (255, 0, 0)
 # initialize two streams:
 # queryImageProcess for extracting the features of query images
 # galleryImageProcess for detecting and re-identifying persons in galley images
-def InitializeStream():
+def initialize_stream():
     streamApi = StreamManagerApi()
     streamState = streamApi.InitManager()
     if streamState != 0:
@@ -66,7 +65,7 @@ def InitializeStream():
 
 
 # Extract the features of query images, return the feature vector and the corresponding Pid vector
-def ExtractQueryFeature(queryPath, streamApi):
+def extract_query_feature(queryPath, streamApi):
     queryFeatures = []
     queryPid = []
 
@@ -90,7 +89,7 @@ def ExtractQueryFeature(queryPath, streamApi):
             if file.endswith('.jpg'):
                 # store the corresponding pid
                 # we use the market1501 as dataset, which is named by
-                # '0001(person id)_c1(camera id)s1(sequence id)_000151(frame id)_00(box id).jpg'
+                # 0001(person id)_c1(camera id)s1(sequence id)_000151(frame id)_00(box id).jpg
                 # if you use other dataset, modify it to identify the person label
                 queryPid.append(file[:4])
 
@@ -132,7 +131,7 @@ def ExtractQueryFeature(queryPath, streamApi):
     return queryFeatures, queryPid
 
 
-def ProcessReID(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
+def process_ReID(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
     # constructing the results returned by the galleryImageProcess stream
     pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1"]
     pluginNameVector = StringVector()
@@ -223,8 +222,6 @@ def ProcessReID(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold)
 
                 minDistanceIndexMatrix = distanceMatrix.argmin(axis=1)
                 minDistanceMatrix = distanceMatrix.min(axis=1)
-                # print(minDistanceIndexMatrix)
-                # print(minDistanceMatrix)
 
                 galleryLabelSet = np.full(shape=galleryFeatureLength, fill_value='None')
                 galleryLabelDistance = np.full(shape=galleryFeatureLength, fill_value=INITIAL_MIN_DISTANCE, dtype=float)
@@ -282,6 +279,6 @@ if __name__ == '__main__':
     parser.add_argument('--matchThreshold', type=float, default=0.3, help="Match Threshold for ReID Processing")
     opt = parser.parse_args()
     print(opt)
-    streamManagerApi = InitializeStream()
-    queryFeatureVector, queryPidVector = ExtractQueryFeature(opt.queryFilePath, streamManagerApi)
-    ProcessReID(opt.galleryFilePath, queryFeatureVector, queryPidVector, streamManagerApi, opt.matchThreshold)
+    streamManagerApi = initialize_stream()
+    queryFeatureVector, queryPidVector = extract_query_feature(opt.queryFilePath, streamManagerApi)
+    process_ReID(opt.galleryFilePath, queryFeatureVector, queryPidVector, streamManagerApi, opt.matchThreshold)

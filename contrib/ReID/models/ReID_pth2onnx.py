@@ -20,8 +20,9 @@ import torch.onnx
 sys.path.append('./reid-strong-baseline')
 from config import cfg
 from modeling import build_model
-
 from collections import OrderedDict
+
+
 def proc_nodes_module(checkpoint):
     new_state_dict = OrderedDict()
     for k, v in checkpoint.items():
@@ -29,6 +30,7 @@ def proc_nodes_module(checkpoint):
             continue
         new_state_dict[k] = v
     return new_state_dict
+
 
 def main():
     parser = argparse.ArgumentParser(description="ReID Baseline Inference")
@@ -46,7 +48,6 @@ def main():
     num_classes = 751
     model = build_model(cfg, num_classes)
     checkpoint = torch.load(cfg.TEST.WEIGHT, map_location='cpu')
-    #checkpoint = proc_nodes_module(checkpoint)
     model.load_state_dict(checkpoint)
     model.eval()
 
@@ -58,6 +59,7 @@ def main():
 
     torch.onnx.export(model, dummy_input, export_onnx_file, input_names=input_names, dynamic_axes=dynamic_axes,
                       output_names=output_names, opset_version=11, verbose=True)
+
 
 if __name__ == '__main__':
     main()
