@@ -28,6 +28,7 @@ ReID
 |---- makeYourOwnDataset.py
 |---- README.md   
 ```
+由于无法在Gitee上创建空文件夹，请按照该工程目录，自行创建data文件夹、result文件夹以及其内部的文件夹。
 ## 3 依赖
 | 软件名称 | 版本   |
 | :--------: | :------: |
