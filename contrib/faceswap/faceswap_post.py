@@ -29,8 +29,6 @@ LEFT_BROW_POINTS = list(range(97, 106))
 RIGHT_EYE_POINTS = list(range(33, 43))
 LEFT_EYE_POINTS = list(range(87, 97))
 NOSE_POINTS = list(range(72, 87))
-JAW_POINTS = list(range(0, 17))
-
 
 # Points used to line up the images.
 ALIGN_POINTS = (LEFT_BROW_POINTS + RIGHT_EYE_POINTS + LEFT_EYE_POINTS + RIGHT_BROW_POINTS +
@@ -45,6 +43,7 @@ COLOUR_CORRECT_BLUR_FRAC = 0.5
 
 # Feather parameter(an odd number) can blur the edges of the selection, causing the edges to fade out.
 FEATHER_AMOUNT = 15
+
 def transform_from_points(base_points, cover_points):
     """
     Aligning faces with a procrustes analysis.

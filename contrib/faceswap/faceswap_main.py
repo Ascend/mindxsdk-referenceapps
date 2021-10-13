@@ -23,7 +23,7 @@ import numpy as np
 import sys
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-from faceswap_post import *
+from faceswap_post import swap_face
 
 sys.path.append('.')
 sys.path.append('../')
