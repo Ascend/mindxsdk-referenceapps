@@ -37,7 +37,7 @@ ALIGN_POINTS = (LEFT_BROW_POINTS + RIGHT_EYE_POINTS + LEFT_EYE_POINTS + RIGHT_BR
                 NOSE_POINTS + MOUTH_POINTS)
 
 # Points from the cover image to overlay on the base image. The convex hull of each element will be overlaid.
-OVERLAY_POINTS = [ LEFT_EYE_POINTS + RIGHT_EYE_POINTS + LEFT_BROW_POINTS + RIGHT_BROW_POINTS,
+OVERLAY_POINTS = [LEFT_EYE_POINTS + RIGHT_EYE_POINTS + LEFT_BROW_POINTS + RIGHT_BROW_POINTS,
                    NOSE_POINTS + MOUTH_POINTS,]
 
 # Amount of blur to use during color correction, as a fraction of the pupillary distance.

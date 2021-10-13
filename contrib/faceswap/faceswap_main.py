@@ -21,13 +21,12 @@ import os
 import cv2
 import numpy as np
 import sys
-sys.path.append('.')
-sys.path.append('../')
-
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-
 from faceswap_post import *
+
+sys.path.append('.')
+sys.path.append('../')
 
 FACE1_PATH =  sys.argv[1]
 FACE2_PATH =  sys.argv[2]
@@ -147,12 +146,14 @@ if __name__ == '__main__':
     #  get the cropped face #begin
     base_face = cv2.imread(FACE1_PATH)
     cover_face = cv2.imread(FACE2_PATH)
-    crop_base_face = base_face[int(crop_face1_bottom): int(crop_face1_top), int(crop_face1_left): int(crop_face1_right)]
-    crop_cover_face = cover_face[int(crop_face2_bottom): int(crop_face2_top), int(crop_face2_left):int(crop_face2_right)]
+    crop_base_face = base_face[int(crop_face1_bottom): int(crop_face1_top),
+                     int(crop_face1_left): int(crop_face1_right)]
+    crop_cover_face = cover_face[int(crop_face2_bottom): int(crop_face2_top),
+                      int(crop_face2_left):int(crop_face2_right)]
     #  get the cropped face #end
 
     for i in range(0, DATA_NUMS):
-        if i % 2 ==0:
+        if i % 2 == 0:
             face1_points[i] = int(face1_points[i] * crop_face1_width)
             face2_points[i] = int(face2_points[i] * crop_face2_width)
         else:
