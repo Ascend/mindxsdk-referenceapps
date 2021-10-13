@@ -111,7 +111,8 @@ git clone https://github.com/michuanhaohao/reid-strong-baseline
 &ensp;&ensp;&ensp;&ensp;&ensp; [Google Drive](https://drive.google.com/drive/folders/1hn0sXLZ5yJcxtmuY-ItQfYD7hBtHwt7A)
 &ensp;&ensp;&ensp;&ensp;&ensp; [Baidu Cloud, 提取码: v5uh](https://pan.baidu.com/s/1ohWunZOrOGMq8T7on85-5w)
 
-***3*** 在“项目所在目录/models”路径下执行ReID_pth2onnx脚本，生成.onnx模型文件
+***3*** 获取ReID_pth2onnx.py：[获取链接](https://gitee.com/ascend/modelzoo/blob/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/ReID_pth2onnx.py)  
+&ensp; 将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
 ```
 python3.7 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_triplet_with_center.yml' MODEL.PRETRAIN_CHOICE "('self')" TEST.WEIGHT "('market_resnet50_model_120_rank1_945.pth')"
 ```
