@@ -28,6 +28,7 @@ SAMPLE_FOLDER=(
 	OpenposeKeypointDetection/
 	PersonCount/
 	FatigueDrivingRecognition/
+	ReID/
 )
 
 
