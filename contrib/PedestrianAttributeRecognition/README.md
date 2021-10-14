@@ -103,7 +103,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 本项目中用到的模型有：yolov3，deeomar两个模型。
 
-在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载，获取yolov3_tf.pb文件，将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)。
+在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载，获取yolov3_tf.pb文件，[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)，将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：。
 
 ```python
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
