@@ -168,20 +168,19 @@ atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --inp
 
 
 
-## 3 编译与运行
+## 4 编译与运行
 
-**步骤1** 下载yolov3的离线模型：[yolo_tf_bs1_fp16.om](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7),点击yolov3离线模型链接，选择“历史版本”中的版本1.1下载，将“yolov3_framework_tensorflow_ascend310_input_fp32_batch_1_fp16_output_fp32.om
-”更名为：“yolo_tf_bs1_fp16.om”，并将其拷贝到本样例model文件夹下的yolov3文件夹中
+**步骤1** 参照第3章节中的模型转换步骤，将yolov3的离线模型转换成功
 
-**步骤2** 下载Deepmar的离线模型：[deepmar_bs1_aipp_1.om](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7),打开链接，点击“下载模型脚本”，将其下载到本地，并将其中的deepmar_bs1.om文件拷贝到本样例model文件夹中的deepmar文件夹中，并将其更名为“deepmar_bs1_aipp_1.om”
+**步骤2** 参照第3章节中的模型转换步骤，将deepmar的离线模型转换成功
 
-**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改main.py脚本中第91行中的“img_path"为需要推理的图片路径，将test.pipeline中的后处理so文件修改问SDK安装路径。
+**步骤3** 将需要进行推理的行人图片放入/dataset/test_image文件夹下，并修改main.py脚本中第91行中的“img_path"为需要推理的图片路径，将test.pipeline中的后处理so文件修改为SDK安装路径。
 
 **步骤4** 执行命令：python main.py,得到final_result.jpg可视化结果
 
 
 
-## 4 精度测试
+## 5 精度测试
 
 下载开源数据集Peta，[下载地址：密码：5vep](https://pan.baidu.com/share/init?surl=q8nsydT7xkDjZJOxvPcoEw)，
 
@@ -224,9 +223,9 @@ python evaluate_for_deepmar.py
 
 可得到五组测试结果，并将五组测试结果求平均，可得到最终的peta测试集的平均属性识别准确率。
 
-## 5 常见问题
+## 6 常见问题
 
 测试样例的像素大小要做在32\*32～8192\*8192之间(其中不包含32*32的像素，图片像素大小必须大于32\*32)，且里边的行人对象像素的高度需在[6,4096]之间，宽度需在[32,4096]之间。
 
-## 6 适用场景
+## 7 适用场景
 本样例适用于常见行人所处场景，如街道、红路灯路口、商场等，对于所推理的图片中的行人对象要求尽可能的完整、清晰、无遮挡、无重叠等。
