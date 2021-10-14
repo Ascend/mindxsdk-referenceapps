@@ -312,7 +312,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--queryFilePath', type=str, default='data/querySet', help="Query File Path")
     parser.add_argument('--galleryFilePath', type=str, default='data/gallerySet', help="Gallery File Path")
-    parser.add_argument('--matchThreshold', type=float, default=DEFAULT_MATCH_THRESHOLD, help="Match Threshold for ReID Processing")
+    parser.add_argument('--matchThreshold', type=float, default=DEFAULT_MATCH_THRESHOLD,
+                        help="Match Threshold for ReID Processing")
     opt = parser.parse_args()
     print(opt)
     streamManagerApi = initialize_stream()
