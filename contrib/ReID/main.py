@@ -40,6 +40,10 @@ FONT_SCALE = 1.0
 FIND_COLOR = (0, 255, 0)
 NONE_FIND_COLOR = (255, 0, 0)
 
+DEFAULT_MATCH_THRESHOLD = 0.3
+FEATURE_RESHAPE_ROW = -1
+FEATURE_RESHAPE_COLUMN = 2048
+
 
 def initialize_stream():
     """
@@ -144,7 +148,7 @@ def extract_query_feature(queryPath, streamApi):
 
     # feature reshape and normalization
     queryFeatures = torch.cat(queryFeatures, dim=0)
-    queryFeatures = queryFeatures.reshape(-1, 2048)
+    queryFeatures = queryFeatures.reshape(FEATURE_RESHAPE_ROW, FEATURE_RESHAPE_COLUMN)
     queryFeatures = torch.nn.functional.normalize(queryFeatures, dim=1, p=2)
 
     return queryFeatures, queryPid
@@ -236,7 +240,7 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
 
                 # feature reshape and normalization
                 detectedPersonFeature = torch.cat(detectedPersonFeature, dim=0)
-                detectedPersonFeature = detectedPersonFeature.reshape(-1, 2048)
+                detectedPersonFeature = detectedPersonFeature.reshape(FEATURE_RESHAPE_ROW, FEATURE_RESHAPE_COLUMN)
                 detectedPersonFeature = torch.nn.functional.normalize(detectedPersonFeature, dim=1, p=2)
 
                 # get the number of the query images
@@ -308,7 +312,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--queryFilePath', type=str, default='data/querySet', help="Query File Path")
     parser.add_argument('--galleryFilePath', type=str, default='data/gallerySet', help="Gallery File Path")
-    parser.add_argument('--matchThreshold', type=float, default=0.3, help="Match Threshold for ReID Processing")
+    parser.add_argument('--matchThreshold', type=float, default=DEFAULT_MATCH_THRESHOLD, help="Match Threshold for ReID Processing")
     opt = parser.parse_args()
     print(opt)
     streamManagerApi = initialize_stream()
