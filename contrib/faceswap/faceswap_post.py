@@ -41,6 +41,9 @@ OVERLAY_POINTS = [LEFT_EYE_POINTS + RIGHT_EYE_POINTS + LEFT_BROW_POINTS + RIGHT_
 # Amount of blur to use during color correction, as a fraction of the pupillary distance.
 COLOUR_CORRECT_BLUR_FRAC = 0.5
 
+# The bias of GaussianBlur
+BLUR_BIAS = 128
+
 # Feather parameter(an odd number) can blur the edges of the selection, causing the edges to fade out.
 FEATHER_AMOUNT = 15
 
@@ -129,7 +132,7 @@ def correct_colors(img1, img2, landmarks1):
     img1_blur = cv2.GaussianBlur(img1, (blur_amount, blur_amount), 0)
     img2_blur = cv2.GaussianBlur(img2, (blur_amount, blur_amount), 0)
     # Avoid divide-by-zero errors:
-    img2_blur += (128 * (img2_blur <= 1.0)).astype(img2_blur.dtype)
+    img2_blur += (BLUR_BIAS * (img2_blur <= 1.0)).astype(img2_blur.dtype)
     return (img2.astype(np.float64) * img1_blur.astype(np.float64) /
             img2_blur.astype(np.float64))
 
