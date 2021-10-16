@@ -23,7 +23,7 @@ import numpy as np
 import sys
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-from faceswap_post import swap_face
+import faceswap_post
 
 sys.path.append('.')
 sys.path.append('../')
@@ -161,11 +161,11 @@ if __name__ == '__main__':
             face2_points[i] = int(face2_points[i] * crop_face2_height)
     base_points = np.array(face1_points, dtype=np.int32).reshape(POINTS_NUMS, 2)
     cover_points = np.array(face2_points, dtype=np.int32).reshape(POINTS_NUMS, 2)
-    baseLandmarks = mat(base_points)
-    coverLandmarks = mat(cover_points)
+    baseLandmarks = np.mat(base_points)
+    coverLandmarks = np.mat(cover_points)
 
     # scan <faceswap_post.py> for more details of this process
-    swap_face(baseLandmarks, coverLandmarks, crop_base_face, crop_cover_face)
+    faceswap_post.swap_face(baseLandmarks, coverLandmarks, crop_base_face, crop_cover_face)
 
     # swap the cropped face #end
     face_swap_result = cv2.imread("./only_face_swap.jpg")

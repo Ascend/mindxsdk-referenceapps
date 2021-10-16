@@ -30,13 +30,13 @@ RIGHT_EYE_POINTS = list(range(33, 43))
 LEFT_EYE_POINTS = list(range(87, 97))
 NOSE_POINTS = list(range(72, 87))
 
-# Points used to line up the images.
+# Points used to line up the images
 ALIGN_POINTS = (LEFT_BROW_POINTS + RIGHT_EYE_POINTS + LEFT_EYE_POINTS + RIGHT_BROW_POINTS +
                 NOSE_POINTS + MOUTH_POINTS)
 
 # Points from the cover image to overlay on the base image. The convex hull of each element will be overlaid.
 OVERLAY_POINTS = [LEFT_EYE_POINTS + RIGHT_EYE_POINTS + LEFT_BROW_POINTS + RIGHT_BROW_POINTS,
-                   NOSE_POINTS + MOUTH_POINTS,]
+                  NOSE_POINTS + MOUTH_POINTS, ]
 
 # Amount of blur to use during color correction, as a fraction of the pupillary distance.
 COLOUR_CORRECT_BLUR_FRAC = 0.5
@@ -46,6 +46,7 @@ BLUR_BIAS = 128
 
 # Feather parameter(an odd number) can blur the edges of the selection, causing the edges to fade out.
 FEATHER_AMOUNT = 15
+
 
 def transform_from_points(base_points, cover_points):
     """
@@ -88,6 +89,7 @@ def transform_from_points(base_points, cover_points):
 
     return convert_matrix
 
+
 def warp_img(cover_img, convert_matrix, base_shape):
     """
     Different sizes and angles caused by the shooting Angle and distance or the image resolution difference may lead to
@@ -111,6 +113,7 @@ def warp_img(cover_img, convert_matrix, base_shape):
                    borderMode=cv2.BORDER_TRANSPARENT,
                    flags=cv2.WARP_INVERSE_MAP)
     return output_im
+
 
 def correct_colors(img1, img2, landmarks1):
     """
@@ -136,6 +139,7 @@ def correct_colors(img1, img2, landmarks1):
     return (img2.astype(np.float64) * img1_blur.astype(np.float64) /
             img2_blur.astype(np.float64))
 
+
 def draw_convex_hull(img, points, color):
     """
     Draw the convex hull based on the points.
@@ -150,6 +154,7 @@ def draw_convex_hull(img, points, color):
     """
     points = cv2.convexHull(points)
     cv2.fillConvexPoly(img, points, color=color)
+
 
 def get_face_mask(img, landmarks):
     """
@@ -177,6 +182,7 @@ def get_face_mask(img, landmarks):
 
     return img
 
+
 def swap_face(base_landmarks, cover_landmarks, base_face, cover_face):
     """
     Args:
@@ -196,5 +202,3 @@ def swap_face(base_landmarks, cover_landmarks, base_face, cover_face):
     warped_corrected_im2 = correct_colors(base_face, warped_im2, base_landmarks)
     output_im = base_face * (1.0 - combined_mask) + warped_corrected_im2 * combined_mask
     return cv2.imwrite("only_face_swap.jpg", output_im)
-
-
