@@ -118,7 +118,9 @@ python3.7 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_t
 ```
 > 注意目前ATC支持的onnx算子版本为11  
 
-此时在“项目所在目录/models”路径下会出现ReID.onnx模型，到此步骤1已完成
+此时在“项目所在目录/models”路径下会出现ReID.onnx模型，到此步骤1已完成  
+如果在线环境中无法安装pytorch，你可以在本地环境中进行上述.pth模型转.onnx模型操作，然后将得到的.pth模型放在“项目所在目录/models”即可
+
 
 **步骤2** .onnx模型转.om模型
 
@@ -139,7 +141,7 @@ ATC run success, welcome to the next use.
 4.3 参考链接
 > 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)  
 > Yolov3模型转换的参考链接：[ATC_yolov3_tensorflow](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/yolov3/ATC_yolov3_tensorflow/)  
-> ReID模型转换的参考链接：[ReID_for_Pytorch](https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/#31-pth%E8%BD%AConnx%E6%A8%A1%E5%9E%8B)
+> ReID模型转换的参考链接：[ReID_for_Pytorch](https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/#31-pth%E8%BD%AConnx%E6%A8%A1%E5%9E%8B)  
 
 ## 5 数据集  
 5.1 Market1501数据集  

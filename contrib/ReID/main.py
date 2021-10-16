@@ -21,7 +21,6 @@ import argparse
 import os
 import cv2
 import numpy as np
-import torch
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -43,6 +42,8 @@ NONE_FIND_COLOR = (255, 0, 0)
 DEFAULT_MATCH_THRESHOLD = 0.3
 FEATURE_RESHAPE_ROW = -1
 FEATURE_RESHAPE_COLUMN = 2048
+ADMM_BETA = 1
+ADMM_ALPHA = -2
 
 
 def initialize_stream():
@@ -144,14 +145,203 @@ def extract_query_feature(queryPath, streamApi):
                 tensorPackage.ParseFromString(inferResult[0].messageBuf)
                 featureFromTensor = np.frombuffer(tensorPackage.tensorPackageVec[0].tensorVec[0].dataStr,
                                                   dtype=np.float32)
-                queryFeatures.append(torch.from_numpy(featureFromTensor))
+                cv2.normalize(src=featureFromTensor, dst=featureFromTensor, norm_type=cv2.NORM_L2)
+                queryFeatures.append(featureFromTensor.tolist())
 
-    # feature reshape and normalization
-    queryFeatures = torch.cat(queryFeatures, dim=0)
-    queryFeatures = queryFeatures.reshape(FEATURE_RESHAPE_ROW, FEATURE_RESHAPE_COLUMN)
-    queryFeatures = torch.nn.functional.normalize(queryFeatures, dim=1, p=2)
-
+    queryFeatures = np.array(queryFeatures)
     return queryFeatures, queryPid
+
+
+def get_pipeline_results(filePath, streamApi):
+    """
+    Get the results of current gallery image in pipeline
+
+    :arg:
+        filePath: directory of current gallery image
+        streamApi: stream api
+
+    :return:
+        objectList: results from mxpi_objectpostprocessor0
+        featureList: results from mxpi_tensorinfer1
+    """
+    # constructing the results returned by the galleryImageProcess stream
+    pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1"]
+    pluginNameVector = StringVector()
+    for key in pluginNames:
+        pluginNameVector.push_back(key)
+
+    galleryDataInput = MxDataInput()
+    with open(filePath, 'rb') as f:
+        galleryDataInput.data = f.read()
+
+    # send the prepared data to the stream
+    uniqueId = streamApi.SendData(GALLERY_STREAM_NAME, IN_PLUGIN_ID, galleryDataInput)
+    if uniqueId < 0:
+        errorMessage = 'Failed to send data to galleryImageProcess stream.'
+        raise AssertionError(errorMessage)
+
+    # get infer result
+    inferResult = streamApi.GetProtobuf(GALLERY_STREAM_NAME, IN_PLUGIN_ID, pluginNameVector)
+
+    # checking whether the infer results is valid or not
+    if inferResult.size() == 0:
+        errorMessage = 'unable to get effective infer results, please check the stream log for details'
+        raise IndexError(errorMessage)
+    if inferResult[0].errorCode != 0:
+        errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
+                                                                             inferResult[0].messageName)
+        raise AssertionError(errorMessage)
+
+    # get the output information of "mxpi_objectpostprocessor0" plugin
+    objectList = MxpiDataType.MxpiObjectList()
+    objectList.ParseFromString(inferResult[0].messageBuf)
+
+    # get the output information of "mxpi_tensorinfer1" plugin
+    featureList = MxpiDataType.MxpiTensorPackageList()
+    featureList.ParseFromString(inferResult[1].messageBuf)
+
+    return objectList, featureList
+
+
+def compute_feature_distance(objectList, featureList, queryFeatures):
+    """
+    Record the location and features of the person in gallery image
+    Compute the feature distance between persons in gallery image and query image
+
+    :arg:
+        objectList: the results from mxpi_objectpostprocessor0
+        featureList: the results from mxpi_tensorinfer1
+        queryFeatures: the vectors of queryFeatures
+
+    :return:
+        detectedPersonInformation: location information of the detected person in gallery image
+        detectedPersonFeature: feature of the detected person in gallery image
+        galleryFeatureLength: the length of gallery feature set
+        queryFeatureLength: the length of query feature set
+        minDistanceIndexMatrix: the index of minimal distance in distance matrix
+        minDistanceMatrix: the index of minimal distance value in distance matrix
+    """
+    # store the information and features for detected person
+    detectedPersonInformation = []
+    detectedPersonFeature = []
+
+    # select the detected person, and store its location and features
+    for detectedItemIndex in range(0, len(objectList.objectVec)):
+        detectedItem = objectList.objectVec[detectedItemIndex]
+        if detectedItem.classVec[0].className == "person":
+            xLength = int(detectedItem.x1) - int(detectedItem.x0)
+            yLength = int(detectedItem.y1) - int(detectedItem.y0)
+            # ignore the detected person with small size
+            # you can change the threshold
+            if xLength * yLength < DETECTED_PERSON_THRESHOLD:
+                continue
+            detectedPersonInformation.append({'x0': int(detectedItem.x0), 'x1': int(detectedItem.x1),
+                                              'y0': int(detectedItem.y0), 'y1': int(detectedItem.y1)})
+            detectedFeature = \
+                np.frombuffer(featureList.tensorPackageVec[detectedItemIndex].tensorVec[0].dataStr,
+                              dtype=np.float32)
+
+            cv2.normalize(src=detectedFeature, dst=detectedFeature, norm_type=cv2.NORM_L2)
+            detectedPersonFeature.append(detectedFeature.tolist())
+
+    detectedPersonFeature = np.array(detectedPersonFeature)
+
+    # get the number of the query images
+    queryFeatureLength = queryFeatures.shape[0]
+    # get the number of the detected persons in this gallery image
+    galleryFeatureLength = detectedPersonFeature.shape[0]
+
+    # compute the distance between query feature and gallery feature
+    distanceMatrix = np.tile(np.sum(np.power(queryFeatureVector, 2), axis=1, keepdims=True),
+                             reps=galleryFeatureLength) + \
+                     np.tile(np.sum(np.power(detectedPersonFeature, 2), axis=1, keepdims=True),
+                             reps=queryFeatureLength).T
+    distanceMatrix = ADMM_BETA * distanceMatrix + \
+                     ADMM_ALPHA * np.dot(queryFeatureVector, detectedPersonFeature.T)
+
+    # find minimal distance for each query image
+    minDistanceIndexMatrix = distanceMatrix.argmin(axis=1)
+    minDistanceMatrix = distanceMatrix.min(axis=1)
+
+    return detectedPersonInformation, detectedPersonFeature, galleryFeatureLength, queryFeatureLength, \
+           minDistanceIndexMatrix, minDistanceMatrix
+
+
+def label_for_gallery_image(galleryFeatureLength, queryFeatureLength, queryPid, minDistanceIndexMatrix,
+                            minDistanceMatrix, matchThreshold):
+    """
+    Label each detected person in gallery image, find the most possible Pid
+
+    :arg:
+        galleryFeatureLength: the length of gallery feature set
+        queryFeatureLength: the length of query feature set
+        queryPid: the vectors of queryPid
+        minDistanceIndexMatrix: the index of minimal distance in distance matrix
+        minDistanceMatrix: the index of minimal distance value in distance matrix
+        matchThreshold: match threshold
+
+    :return:
+        galleryLabelSet: labels for current gallery image
+    """
+    # one person only exists once in each gallery image, thus the Pid in this galleryLabelSet must be unique
+    galleryLabelSet = np.full(shape=galleryFeatureLength, fill_value='None')
+    galleryLabelDistance = np.full(shape=galleryFeatureLength, fill_value=INITIAL_MIN_DISTANCE, dtype=float)
+
+    for queryIndex in range(0, queryFeatureLength):
+        currentPid = queryPid[queryIndex]
+        preferGalleryIndex = minDistanceIndexMatrix[queryIndex]
+        preferDistance = minDistanceMatrix[queryIndex]
+        if preferDistance < matchThreshold:
+            pidExistSet = np.where(galleryLabelSet == currentPid)
+            pidExistIndex = pidExistSet[0]
+            if len(pidExistIndex) == 0:
+                if galleryLabelSet[preferGalleryIndex] == 'None':
+                    galleryLabelSet[preferGalleryIndex] = currentPid
+                    galleryLabelDistance[preferGalleryIndex] = preferDistance
+                else:
+                    if preferDistance < galleryLabelDistance[preferGalleryIndex]:
+                        galleryLabelSet[preferGalleryIndex] = currentPid
+                        galleryLabelDistance[preferGalleryIndex] = preferDistance
+            else:
+                if preferDistance < galleryLabelDistance[pidExistIndex]:
+                    galleryLabelSet[pidExistIndex] = 'None'
+                    galleryLabelDistance[pidExistIndex] = INITIAL_MIN_DISTANCE
+                    galleryLabelSet[preferGalleryIndex] = currentPid
+                    galleryLabelDistance[preferGalleryIndex] = preferDistance
+    return galleryLabelSet
+
+
+def draw_results(filePath, galleryFeatureLength, detectedPersonInformation, galleryLabelSet, file):
+    """
+    Draw and label the detection and re-identification results
+
+    :arg:
+        filePath: directory of current gallery image
+        galleryFeatureLength: the length of gallery feature set
+        detectedPersonInformation: location information of the detected person in gallery image
+        galleryLabelSet: labels for current gallery image
+        file: name of current gallery image
+
+    :return:
+        None
+    """
+    # read the original image and label the detection results
+    image = cv2.imread(filePath)
+
+    for galleryIndex in range(0, galleryFeatureLength):
+        # get the locations of the detected person in gallery image
+        locations = detectedPersonInformation[galleryIndex]
+        # if some pid meets the constraints, change the legendText and color
+        if galleryLabelSet[galleryIndex] == 'None':
+            color = NONE_FIND_COLOR
+        else:
+            color = FIND_COLOR
+        # label the detected person in the original image
+        cv2.rectangle(image, (locations.get('x0'), locations.get('y0')),
+                      (locations.get('x1'), locations.get('y1')), color, LINE_THICKNESS)
+        cv2.putText(image, galleryLabelSet[galleryIndex], (locations.get('x0'), locations.get('y0')),
+                    cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, color, LINE_THICKNESS)
+    cv2.imwrite("./result/result_{}".format(str(file)), image)
 
 
 def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
@@ -168,12 +358,6 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
     :return:
         None
     """
-    # constructing the results returned by the galleryImageProcess stream
-    pluginNames = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1"]
-    pluginNameVector = StringVector()
-    for key in pluginNames:
-        pluginNameVector.push_back(key)
-
     # check the gallery file
     if os.path.exists(galleryPath) != 1:
         errorMessage = 'The gallery file does not exist.'
@@ -186,126 +370,18 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
     for root, dirs, files in os.walk(galleryPath):
         for file in files:
             if file.endswith('.jpg'):
-                galleryDataInput = MxDataInput()
                 filePath = os.path.join(root, file)
-                with open(filePath, 'rb') as f:
-                    galleryDataInput.data = f.read()
 
-                # send the prepared data to the stream
-                uniqueId = streamApi.SendData(GALLERY_STREAM_NAME, IN_PLUGIN_ID, galleryDataInput)
-                if uniqueId < 0:
-                    errorMessage = 'Failed to send data to galleryImageProcess stream.'
-                    raise AssertionError(errorMessage)
+                objectList, featureList = get_pipeline_results(filePath, streamApi)
 
-                # get infer result
-                inferResult = streamApi.GetProtobuf(GALLERY_STREAM_NAME, IN_PLUGIN_ID, pluginNameVector)
+                detectedPersonInformation, detectedPersonFeature, galleryFeatureLength, queryFeatureLength, \
+                minDistanceIndexMatrix, minDistanceMatrix = \
+                    compute_feature_distance(objectList, featureList, queryFeatures)
 
-                # checking whether the infer results is valid or not
-                if inferResult.size() == 0:
-                    errorMessage = 'unable to get effective infer results, please check the stream log for details'
-                    raise IndexError(errorMessage)
-                if inferResult[0].errorCode != 0:
-                    errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
-                                                                                         inferResult[0].messageName)
-                    raise AssertionError(errorMessage)
+                galleryLabelSet = label_for_gallery_image(galleryFeatureLength, queryFeatureLength, queryPid,
+                                                                minDistanceIndexMatrix, minDistanceMatrix, matchThreshold)
 
-                # get the output information of "mxpi_objectpostprocessor0" plugin
-                objectList = MxpiDataType.MxpiObjectList()
-                objectList.ParseFromString(inferResult[0].messageBuf)
-
-                # get the output information of "mxpi_tensorinfer1" plugin
-                featureList = MxpiDataType.MxpiTensorPackageList()
-                featureList.ParseFromString(inferResult[1].messageBuf)
-
-                # store the information and features for detected person
-                detectedPersonInformation = []
-                detectedPersonFeature = []
-
-                # select the detected person, and store its location and features
-                for detectedItemIndex in range(0, len(objectList.objectVec)):
-                    detectedItem = objectList.objectVec[detectedItemIndex]
-                    if detectedItem.classVec[0].className == "person":
-                        xLength = int(detectedItem.x1) - int(detectedItem.x0)
-                        yLength = int(detectedItem.y1) - int(detectedItem.y0)
-                        # ignore the detected person with small size
-                        # you can change the threshold
-                        if xLength * yLength < DETECTED_PERSON_THRESHOLD:
-                            continue
-                        detectedPersonInformation.append({'x0': int(detectedItem.x0), 'x1': int(detectedItem.x1),
-                                                          'y0': int(detectedItem.y0), 'y1': int(detectedItem.y1)})
-                        detectedFeature = \
-                            np.frombuffer(featureList.tensorPackageVec[detectedItemIndex].tensorVec[0].dataStr,
-                                          dtype=np.float32)
-                        detectedPersonFeature.append(torch.from_numpy(detectedFeature))
-
-                # feature reshape and normalization
-                detectedPersonFeature = torch.cat(detectedPersonFeature, dim=0)
-                detectedPersonFeature = detectedPersonFeature.reshape(FEATURE_RESHAPE_ROW, FEATURE_RESHAPE_COLUMN)
-                detectedPersonFeature = torch.nn.functional.normalize(detectedPersonFeature, dim=1, p=2)
-
-                # get the number of the query images
-                queryFeatureLength = queryFeatures.shape[0]
-                # get the number of the detected persons in this gallery image
-                galleryFeatureLength = detectedPersonFeature.shape[0]
-
-                # compute the distance between query feature and gallery feature
-                distanceMatrix = torch.pow(queryFeatures, 2).sum(dim=1, keepdim=True).expand(queryFeatureLength,
-                                                                                             galleryFeatureLength) + \
-                          torch.pow(detectedPersonFeature, 2).sum(dim=1, keepdim=True).expand(galleryFeatureLength,
-                                                                                              queryFeatureLength).t()
-                distanceMatrix.addmm_(queryFeatures, detectedPersonFeature.t(), beta=1, alpha=-2)
-                distanceMatrix = distanceMatrix.cpu().numpy()
-
-                minDistanceIndexMatrix = distanceMatrix.argmin(axis=1)
-                minDistanceMatrix = distanceMatrix.min(axis=1)
-
-                galleryLabelSet = np.full(shape=galleryFeatureLength, fill_value='None')
-                galleryLabelDistance = np.full(shape=galleryFeatureLength, fill_value=INITIAL_MIN_DISTANCE, dtype=float)
-
-                for queryIndex in range(0, queryFeatureLength):
-                    currentPid = queryPid[queryIndex]
-                    preferGalleryIndex = minDistanceIndexMatrix[queryIndex]
-                    preferDistance = minDistanceMatrix[queryIndex]
-                    if preferDistance < matchThreshold:
-                        pidExistSet = np.where(galleryLabelSet == currentPid)
-                        pidExistIndex = pidExistSet[0]
-                        if len(pidExistIndex) == 0:
-                            if galleryLabelSet[preferGalleryIndex] == 'None':
-                                galleryLabelSet[preferGalleryIndex] = currentPid
-                                galleryLabelDistance[preferGalleryIndex] = preferDistance
-                            else:
-                                if preferDistance < galleryLabelDistance[preferGalleryIndex]:
-                                    galleryLabelSet[preferGalleryIndex] = currentPid
-                                    galleryLabelDistance[preferGalleryIndex] = preferDistance
-                        else:
-                            if preferDistance < galleryLabelDistance[pidExistIndex]:
-                                galleryLabelSet[pidExistIndex] = 'None'
-                                galleryLabelDistance[pidExistIndex] = INITIAL_MIN_DISTANCE
-                                galleryLabelSet[preferGalleryIndex] = currentPid
-                                galleryLabelDistance[preferGalleryIndex] = preferDistance
-
-                # read the original image and label the detection results
-                image = cv2.imread(filePath)
-                # set default legendText and color
-                color = NONE_FIND_COLOR
-
-                for galleryIndex in range(0, galleryFeatureLength):
-                    # get the locations of the detected person in gallery image
-                    locations = detectedPersonInformation[galleryIndex]
-                    # if some pid meets the constraints, change the legendText and color
-                    if galleryLabelSet[galleryIndex] == 'None':
-                        color = NONE_FIND_COLOR
-                    else:
-                        color = FIND_COLOR
-                    # label the detected person in the original image
-                    cv2.rectangle(image,
-                                  (locations.get('x0'), locations.get('y0')),
-                                  (locations.get('x1'), locations.get('y1')),
-                                  color, LINE_THICKNESS)
-                    cv2.putText(image, galleryLabelSet[galleryIndex],
-                                (locations.get('x0'), locations.get('y0')),
-                                cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, color, LINE_THICKNESS)
-                cv2.imwrite("./result/result_{}".format(str(file)), image)
+                draw_results(filePath, galleryFeatureLength, detectedPersonInformation, galleryLabelSet, file)
 
 
 if __name__ == '__main__':
@@ -315,7 +391,6 @@ if __name__ == '__main__':
     parser.add_argument('--matchThreshold', type=float, default=DEFAULT_MATCH_THRESHOLD,
                         help="Match Threshold for ReID Processing")
     opt = parser.parse_args()
-    print(opt)
     streamManagerApi = initialize_stream()
     queryFeatureVector, queryPidVector = extract_query_feature(opt.queryFilePath, streamManagerApi)
     process_reid(opt.galleryFilePath, queryFeatureVector, queryPidVector, streamManagerApi, opt.matchThreshold)
