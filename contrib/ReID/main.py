@@ -263,8 +263,9 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
     minDistanceIndexMatrix = distanceMatrix.argmin(axis=1)
     minDistanceMatrix = distanceMatrix.min(axis=1)
 
-    return detectedPersonInformation, detectedPersonFeature, galleryFeatureLength, queryFeatureLength, \
-           minDistanceIndexMatrix, minDistanceMatrix
+    return {'detectedPersonInformation': detectedPersonInformation,
+            'galleryFeatureLength': galleryFeatureLength, 'queryFeatureLength': queryFeatureLength,
+            'minDistanceIndexMatrix': minDistanceIndexMatrix, 'minDistanceMatrix': minDistanceMatrix}
 
 
 def label_for_gallery_image(galleryFeatureLength, queryFeatureLength, queryPid, minDistanceIndexMatrix,
@@ -374,12 +375,16 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
 
                 objectList, featureList = get_pipeline_results(filePath, streamApi)
 
-                detectedPersonInformation, detectedPersonFeature, galleryFeatureLength, queryFeatureLength, \
-                minDistanceIndexMatrix, minDistanceMatrix = \
-                    compute_feature_distance(objectList, featureList, queryFeatures)
+                metricDirectory = compute_feature_distance(objectList, featureList, queryFeatures)
+
+                detectedPersonInformation = metricDirectory.get('detectedPersonInformation')
+                galleryFeatureLength = metricDirectory.get('galleryFeatureLength')
+                queryFeatureLength = metricDirectory.get('queryFeatureLength')
+                minDistanceIndexMatrix = metricDirectory.get('minDistanceIndexMatrix')
+                minDistanceMatrix = metricDirectory.get('minDistanceMatrix')
 
                 galleryLabelSet = label_for_gallery_image(galleryFeatureLength, queryFeatureLength, queryPid,
-                                                                minDistanceIndexMatrix, minDistanceMatrix, matchThreshold)
+                                                          minDistanceIndexMatrix, minDistanceMatrix, matchThreshold)
 
                 draw_results(filePath, galleryFeatureLength, detectedPersonInformation, galleryLabelSet, file)
 
