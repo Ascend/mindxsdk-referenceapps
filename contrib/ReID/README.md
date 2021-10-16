@@ -119,7 +119,7 @@ python3.7 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_t
 > 注意目前ATC支持的onnx算子版本为11  
 
 此时在“项目所在目录/models”路径下会出现ReID.onnx模型，到此步骤1已完成  
-如果在线环境中无法安装pytorch，你可以在本地环境中进行上述.pth模型转.onnx模型操作，然后将得到的.pth模型放在“项目所在目录/models”即可
+如果在线环境中无法安装pytorch，你可以在本地环境中进行上述.pth模型转.onnx模型操作，然后将得到的.onnx模型放在“项目所在目录/models”即可
 
 
 **步骤2** .onnx模型转.om模型
