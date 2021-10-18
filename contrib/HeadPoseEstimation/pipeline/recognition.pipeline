@@ -57,6 +57,8 @@
                 "resizeHeight": "112",
                 "leftExpandRatio": "0.2",
                 "rightExpandRatio": "0.2",
+				"upExpandRatio": "0.2",
+				"downExpandRatio": "0.2",
                 "resizeType": "Resizer_Stretch"
             },
             "next": "mxpi_tensorinfer1",
@@ -68,11 +70,12 @@
                 "modelPath": "./models/WHENet_b2_a1_modified.om"
             },
             "factory": "mxpi_tensorinfer",
-            "next": "mxpi_headposeplugin1"
+            "next": "mxpi_headposeplugin0"
         },
-		"mxpi_headposeplugin1": {
+		"mxpi_headposeplugin0": {
             "props": {
-                "dataSource": "mxpi_tensorinfer1",
+                "dataSource":"mxpi_tensorinfer1",
+                "descriptionMessage": "Don’t panic!"
             },
             "factory": "mxpi_headposeplugin",
             "next": "appsink0"

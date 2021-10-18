@@ -112,12 +112,13 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
     if (tensors.size() == 3) {
-        // tensorflow model
 
+        // Get output shape of model
         auto headpose1 = tensors[0].GetShape();
         auto headpose2 = tensors[1].GetShape();
         auto headpose3 = tensors[2].GetShape();
 
+        // Generate yaw,pitch,roll
         auto yaw_dataPtr = (float *)tensors[0].GetBuffer();
         std::vector<float> myyaw, yaw_predicted_vec;
         for(int i=0; i<headpose1[1]; i++){
@@ -197,7 +198,7 @@ APP_ERROR MxpiHeadPosePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-    // check whether the proto struct name is MxpiObjectList
+    // Check whether the proto struct name is MxpiObjectList
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {

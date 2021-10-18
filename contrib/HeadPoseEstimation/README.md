@@ -66,7 +66,6 @@ npu-smi info
 |ubantu|18.04.1 LTS   |
 |MindX SDK|2.0.2|
 |Python|3.7.5|
-|opencv2| |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -96,12 +95,15 @@ env
 
 提供转换好的YOLOV4模型以及WHENet模型的om文件：[下载地址](https://pan.baidu.com/s/1yZtjIZf8FdMwb1cyJVv4hA)，提取码：je7y
 
+注：**下载后请放置于models目录下**
+
 
 
 ## 4 编译与运行
 （描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
 示例步骤如下：
+
 **步骤1** 
 
 cd至plugins/    执行
@@ -114,7 +116,12 @@ cd至plugins/MxpiHeadPosePlugin/build/   修改下面代码中的SDK目录并执
 ```
 cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugins/
 ```
+
 **步骤3** 
+
+修改pipeline/recognition.pipeline文件中: **mxpi_objectpostprocessor0**插件的postProcessLibPath属性，修改为{MindX_SDK实际安装目录}/lib/modelpostprocessors/libyolov3postprocess.so
+
+**步骤4** 
 
 自行在网络找一张包含头部的jpg图像，重命名为test.jpg，放入项目根目录中，再执行
 ```
