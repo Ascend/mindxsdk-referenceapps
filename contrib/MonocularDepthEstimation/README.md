@@ -38,7 +38,7 @@
 
 **步骤1** 在 [GitHub AdaBins](https://github.com/shariqfarooq123/AdaBins) 上下载预训练模型 `AdaBins_nyu.pt`, [下载地址](https://drive.google.com/drive/folders/1nYyaQXOBjNdUJDsmJpcRpu6oE55aQoLA)
 
-**步骤2** 将获取到的 `AdaBins_nyu.pt` 转换为 `AdaBins_nyu.onnx`, [参考链接](https://blog.csdn.net/weixin_46773169/article/details/108889559)
+**步骤2** 将获取到的 `AdaBins_nyu.pt` 转换为 `AdaBins_nyu.onnx`, [参考链接](https://blog.csdn.net/ApathyT/article/details/120834163)
 
 **步骤3** 将转换得到的 `AdaBins_nyu.onnx` 放在 `model` 目录下
 
@@ -79,6 +79,12 @@ atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_ver
             "factory": "mxpi_tensorinfer",
             "next": "appsink0"
         }
+```
+2) [monocular_depth_estimation.py](./depth_estimation/monocular_depth_estimation.py) 中配置模型的实际输出宽高
+```python
+# depth estimation model output size
+model_output_height = 240
+model_output_width = 320
 ```
 
 **推理配置**

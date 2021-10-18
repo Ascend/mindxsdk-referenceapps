@@ -19,6 +19,10 @@ import numpy as np
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+# depth estimation model output size
+model_output_height = 240
+model_output_width = 320
+
 
 def infer(stream_manager, stream_name, in_plugin_id, data_input):
     """
@@ -72,8 +76,8 @@ def infer(stream_manager, stream_name, in_plugin_id, data_input):
 
     # get output depth pic data
     output_depth_info_data = infer_result_list.tensorPackageVec[0].tensorVec[0].dataStr
-    # converting the byte data into little-endian 32 bit float array ('<f4')
-    depth_info = np.frombuffer(output_depth_info_data, dtype='<f4')
+    # converting the byte data into 32 bit float array
+    depth_info = np.frombuffer(output_depth_info_data, dtype=np.float32)
     depth_info = depth_info.reshape(output_depth_pic_height, output_depth_pic_width)
 
     return input_pic_width, input_pic_height, depth_info
@@ -87,7 +91,6 @@ def depth_estimation(images_data, is_batch=False):
     :return: depth info and image info of input data
     """
     stream_manager = StreamManagerApi()
-    error_message = 'program common error'
 
     # init stream manager
     ret = stream_manager.InitManager()
@@ -109,8 +112,9 @@ def depth_estimation(images_data, is_batch=False):
     in_plugin_id = 0
 
     # infer results
-    input_images_info = np.empty(shape=(0, 2))
-    images_depth_info = np.empty(shape=(0, 240, 320))
+    image_info_size = 2  # height and width
+    input_images_info = np.empty(shape=(0, image_info_size))
+    images_depth_info = np.empty(shape=(0, model_output_height, model_output_width))
 
     # Construct the input of the stream
     data_input = MxDataInput()
