@@ -45,6 +45,8 @@ npu-smi info
 
 本工程名称为CartoonGAN_picture，工程目录如下图所示：
 
+> data文件及目录下的images、model文件夹需要用户在项目运行前手动创建
+
 ```
 |-----CartoonGANPicture
 |     |---CartoonGANPicture.cpp

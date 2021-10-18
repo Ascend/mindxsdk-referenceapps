@@ -20,7 +20,6 @@
 #include "boost/filesystem.hpp"
 #include "CartoonGANPicture/CartoonGANPicture.h"
 
-std::vector<double> g_inferCost;
 bool stop_flag = false;
 namespace fs = boost::filesystem;
 
@@ -63,9 +62,8 @@ int main(int argc, char* argv[])
         LogWarn << "Please input image path, such as './CartoonGAN_picture ./data/images'.";
         return APP_ERR_OK;
     }
-    
-    signal(SIGINT, sig_handler);
 
+    std::vector<double> g_inferCost;
     InitParam initParam;
     InitYolov3Param(initParam);
     auto cartoon = std::make_shared<CartoonGANPicture>();
@@ -74,6 +72,8 @@ int main(int argc, char* argv[])
         LogError << "CartoonGANPicture init failed, ret=" << ret << ".";
         return ret;
     }
+	
+	signal(SIGINT, sig_handler);
     
     std::string inferText = argv[1];
     std::vector<std::string> imagesPath;
