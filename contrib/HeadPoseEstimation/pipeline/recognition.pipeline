@@ -53,12 +53,12 @@
             "props": {
                 "dataSource": "mxpi_distributor0_0",
                 "dataSourceImage": "mxpi_imagedecoder0",
-                "resizeWidth": "112",
-                "resizeHeight": "112",
-                "leftExpandRatio": "0.2",
-                "rightExpandRatio": "0.2",
-				"upExpandRatio": "0.2",
-				"downExpandRatio": "0.2",
+                "resizeWidth": "224",
+                "resizeHeight": "224",
+                "leftExpandRatio": "0.25",
+                "rightExpandRatio": "0.25",
+				"upExpandRatio": "0.25",
+				"downExpandRatio": "0.1",
                 "resizeType": "Resizer_Stretch"
             },
             "next": "mxpi_tensorinfer1",
