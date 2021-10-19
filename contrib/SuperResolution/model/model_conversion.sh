@@ -33,7 +33,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换Adabins_nyu模型
 # Execute, transform Adabins_nyu model.
 
-atc --model=./FSRCNN.prototxt --weight=./FSRCNN.caffemodel --framework=0 --input_format=NCHW --input_shape="data: 1, 1, 256, 256" --output=./FSRCNN_256_256 --soc_version=Ascend310 --output_type=FP32 --insert_op_conf=YUV420SP_U8_GRAY.cfg
+atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_format=NCHW --input_shape="data: 1, 1, 768, 768" --output=./VDSR_768_768 --soc_version=Ascend310 --output_type=FP32 --insert_op_conf=YUV420SP_U8_GRAY.cfg
 # 退出
 # exit
 exit 0

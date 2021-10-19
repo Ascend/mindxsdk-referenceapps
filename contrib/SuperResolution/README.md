@@ -2,7 +2,7 @@
 
 ## 介绍
 
-基于MindX SDK 2.0.1 mxVision开发图像超分辨率程序。本程序采用python开发，通过预处理操作对输入的图片数据解码为YUV格式图片，并将解码后的图片缩放到模型推理要求的尺寸。然后利用图像超分辨率模型FSRCNN获取得到图片超分辨率重建结果。最后，利用python的第三方图像处理库PIL将低分辨率的输入图像和超分辨率重建的结果一同可视化。其次，针对两个图片集91-images和General-100进行PSNR（峰值信噪比）验证。
+基于MindX SDK 2.0.1 mxVision开发图像超分辨率程序。本程序采用python开发，通过预处理操作对输入的图片数据解码为YUV格式图片，并将解码后的图片缩放到模型推理要求的尺寸。然后利用图像超分辨率模型VDSR获取得到图片超分辨率重建结果。最后，利用python的第三方图像处理库PIL将低分辨率的输入图像和超分辨率重建的结果一同可视化。其次，针对两个图片集91-images和General-100进行PSNR（峰值信噪比）验证。
 
 程序输入：任意jpg图片
 程序输出：输出得到低分辨率图片（256 x 256px）和超分辨率重建图片（768 x 768px）组合的可视化大图
@@ -20,7 +20,7 @@ super_resolution
 |-------- model
 |           |---- YUV420SP_U8_GRAY.cfg              // 模型转换配置文件(灰度图)
 |           |---- model_conversion.sh               // 模型转换脚本
-|           |---- FSRCNN_256_256.om                 // 转换后OM模型存放在此处
+|           |---- VDSR_768_768.om                   // 转换后OM模型存放在此处
 |-------- testSet
 |           |---- 91-images-jpg                     // 91-images图片验证集
 |           |---- general-100-jpg                   // general-100图片验证集
@@ -36,7 +36,7 @@ super_resolution
 
 > 模型转换
 
-**步骤1** 获取原始模型网络及权重, [权重下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/FSRCNN/FSRCNN.caffemodel)、[网络下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/FSRCNN/FSRCNN.prototxt)
+**步骤1** 获取原始模型网络及权重, [权重下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/VDSR/VDSR.caffemodel)、[网络下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/VDSR/VDSR.prototxt)
 
 **步骤2** AIPP配置文件-YUV420SP_U8_GRAY.cfg
 
@@ -63,7 +63,7 @@ aipp_op {
 
 色域转换，用于将输入的图片格式，转换为模型需要的图片格式，这里将YUV420SP_U8转GRAY，详细色域转换配置说明请参考 [这里](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/3e66a3c#ZH-CN_TOPIC_0000001095142890)
 
-**步骤3** 将下载得到模型网络及权重(`FSRCNN.prototxt`、`FSRCNN.caffemodel`)、AIPP配置文件(`YUV420SP_U8_GRAY.cfg`)放在 `model` 目录下
+**步骤3** 将下载得到模型网络及权重(`VDSR.prototxt`、`VDSR.caffemodel`)、AIPP配置文件(`YUV420SP_U8_GRAY.cfg`)放在 `model` 目录下
 
 **步骤4** 使用ATC模型转换工具进行模型转换
 
@@ -80,10 +80,10 @@ export ASCEND_OPP_PATH=${install_path}/opp
 参照指令执行，转换FSRCNN模型成om格式
 
 ```
-atc --model=./FSRCNN.prototxt --weight=./FSRCNN.caffemodel --framework=0 --input_format=NCHW --input_shape="data: 1, 1, 256, 256" --output=./FSRCNN_256_256 --soc_version=Ascend310 --output_type=FP32 --insert_op_conf=YUV420SP_U8_GRAY.cfg
+atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_format=NCHW --input_shape="data: 1, 1, 768, 768" --output=./VDSR_768_768 --soc_version=Ascend310 --output_type=FP32 --insert_op_conf=YUV420SP_U8_GRAY.cfg
 ```
 
-执行完模型转换脚本后，会在model目录下生成相应的FSRCNN_256_256.om模型文件。
+执行完模型转换脚本后，会在model目录下生成相应的VDSR_768_768.om模型文件。
 
 模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
 
@@ -112,7 +112,7 @@ source ~/.bashrc
 env
 ```
 
-2) 准备一张室内图片，置于 image 文件夹中（仅支持jpg格式）
+2) 准备一张测试图片，置于 image 文件夹中（仅支持jpg格式）
 
 2) 进入工程目录，键入执行指令，发起推理性能测试：
 

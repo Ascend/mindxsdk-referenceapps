@@ -28,7 +28,9 @@ DEFAULT_IMAGE_WIDTH = 768
 DEFAULT_IMAGE_HEIGHT = 768
 SCALE = 3
 FONT_SIZE = 16
-OFFSET = 5
+OFFSET_5 = 5
+OFFSET_20 = 20
+
 
 if __name__ == '__main__':
     # init stream manager
@@ -57,8 +59,8 @@ if __name__ == '__main__':
             "mxpi_imageresize0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
-                    "resizeHeight": "256",
-                    "resizeWidth": "256"
+                    "resizeHeight": "768",
+                    "resizeWidth": "768"
                 },
                 "factory": "mxpi_imageresize",
                 "next": "mxpi_tensorinfer0"
@@ -66,7 +68,7 @@ if __name__ == '__main__':
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
-                    "modelPath": "model/FSRCNN_256_256.om"
+                    "modelPath": "model/VDSR_768_768.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "appsink0"
@@ -97,16 +99,19 @@ if __name__ == '__main__':
         print("The image image does not exist.")
 
     image = Image.open(input_image_path).convert('RGB')
-    # 768 x 768 high resolution image and 3x reduced image
+    # high resolution image, (that is ground true)
     hr = image.resize((DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT), resample=Image.BICUBIC)
+    # low resolution image
     lr = hr.resize((hr.width // SCALE, hr.height // SCALE), resample=Image.BILINEAR)
-    lr.save("./result/lr.jpg")
+    # interpolated low-resolution image
+    ilr = lr.resize((lr.width * SCALE, lr.height * SCALE), resample=Image.BICUBIC)
+    ilr.save("./result/ilr.jpg")
 
     # construct the input of the stream
     dataInput = MxDataInput()
-    with open("./result/lr.jpg", 'rb') as f:
+    with open("./result/ilr.jpg", 'rb') as f:
         dataInput.data = f.read()
-        os.remove("./result/lr.jpg")
+        os.remove("./result/ilr.jpg")
     streamName = b'superResolution'
     inPluginId = 0
     key = b"mxpi_tensorinfer0"
@@ -132,35 +137,30 @@ if __name__ == '__main__':
     inferList0.ParseFromString(inferResult[1].messageBuf)
     inferVisionData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
 
-    inferTensorShape = inferList0.tensorPackageVec[0].tensorVec[0].tensorShape
-    output_pic_data = np.frombuffer(inferVisionData, dtype="<f4")
-    output_y = colorize(output_pic_data, value_min=None, value_max=None)
-    output_y = output_y.reshape(inferTensorShape[2], inferTensorShape[3])
-    out_img_y = Image.fromarray(np.uint8(output_y), mode="L")
+    output_img_data = np.frombuffer(inferVisionData, dtype="<f4")
+    output_y = colorize(output_img_data, value_min=None, value_max=None)
+    output_y = output_y.reshape(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)
+    sr_img_y = Image.fromarray(np.uint8(output_y), mode="L")
 
     hr_YCbCr = hr.convert("YCbCr")
-    old_y, cb, cr = hr_YCbCr.split()
-    out_img = Image.merge("YCbCr", [out_img_y, cb, cr]).convert("RGB")
+    hr_img_y, cb, cr = hr_YCbCr.split()
+    output_img = Image.merge("YCbCr", [sr_img_y, cb, cr]).convert("RGB")
 
     # calculate peak signal-to-noise ratio
-    PSNR = calc_psnr(out_img_y, old_y)
+    PSNR = calc_psnr(sr_img_y, hr_img_y)
     print('PSNR: {:.2f}'.format(PSNR))
 
     # create canvas for finished drawing
-    target = Image.new('RGB', (lr.width + OFFSET + out_img.width, out_img.height + OFFSET * 5), "white")
+    target = Image.new('RGB', (lr.width + OFFSET_5 + output_img.width, output_img.height), "white")
     # splice the pictures line by line
-    target.paste(lr, (0, out_img.height - lr.height))
-    target.paste(out_img, (lr.width + OFFSET, 0))
+    target.paste(lr, (0, output_img.height - lr.height))
+    target.paste(output_img, (lr.width + OFFSET_5, 0))
     font_set = {
         "type": "./font/SourceHanSansCN-Normal-2.otf",
         "size": FONT_SIZE,
         "color": (0, 0, 0),
         "psnr_content": 'PSNR: {:.2f}'.format(PSNR),
-        "origin_content": '输入图像',
-        "infer_content": '输出图像',
-        "psnr_location": (0, out_img.height - lr.height - OFFSET * 6),
-        "origin_location": (lr.width // 2 - OFFSET * 10, out_img.height + OFFSET * 2),
-        "infer_location": (lr.width * 2 + OFFSET * 20, out_img.height + OFFSET * 2),
+        "psnr_location": (0, output_img.height - lr.height - OFFSET_20),
     }
     # create a brush to write text to the picture
     draw = ImageDraw.Draw(target)
@@ -168,11 +168,9 @@ if __name__ == '__main__':
     font = ImageFont.truetype(font_set["type"], font_set["size"])
     # draw into the picture according to the position, content, color and font
     draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
-    draw.text(font_set["origin_location"], font_set["origin_content"], font_set["color"], font=font)
-    draw.text(font_set["infer_location"], font_set["infer_content"], font_set["color"], font=font)
     # save visualization results
-    _, fileName = os.path.split(input_image_path)
-    out_path = "./result/" + fileName
-    target.save(out_path, quality=50)
+    _, file_name = os.path.split(input_image_path)
+    out_path = "./result/" + file_name
+    target.save(out_path)
     # destroy streams
     streamManagerApi.DestroyAllStreams()

@@ -1,4 +1,4 @@
-# !/usr/bin/env python
+#!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
@@ -16,7 +16,7 @@
 
 import json
 import os
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+from StreamManagerApi import *
 import MxpiDataType_pb2 as MxpiDataType
 from utils import colorize, calc_psnr
 import numpy as np
@@ -27,40 +27,39 @@ DEFAULT_IMAGE_WIDTH = 768
 DEFAULT_IMAGE_HEIGHT = 768
 SCALE = 3
 FONT_SIZE = 16
-OFFSET = 5
+OFFSET_5 = 5
+OFFSET_20 = 20
 
 
-def infer(inner_img, streamManagerapi, resample__):
-    streamName = b'superResolution'
-    inPluginId = 0
-    key = b"mxpi_tensorinfer0"
+def infer(input_image_path, streamManagerapi):
+    if os.path.exists(input_image_path) != 1:
+        print("The image image does not exist.")
+    image = Image.open(input_image_path).convert('RGB')
+    # high resolution image, (that is ground true)
+    hr = image.resize((DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT), resample=Image.BICUBIC)
+    # low resolution image
+    lr = hr.resize((hr.width // SCALE, hr.height // SCALE), resample=Image.BILINEAR)
+    # interpolated low-resolution image
+    ilr = lr.resize((lr.width * SCALE, lr.height * SCALE), resample=Image.BICUBIC)
+    ilr.save("./output/ilr.jpg")
 
     # construct the input of the stream
-    hr_img_path = inner_img
-    if os.path.exists(hr_img_path) != 1:
-        print("The image image does not exist.")
-    image = Image.open(hr_img_path).convert('RGB')
-
-    # 768 x 768 high resolution image and 3x reduced image
-    hr = image.resize((DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT), resample=Image.BICUBIC)
-    lr = hr.resize((hr.width // SCALE, hr.height // SCALE), resample=resample__)
-    lr.save("./output/lr.jpg")
-
     dataInput = MxDataInput()
-    with open("./output/lr.jpg", 'rb') as f:
+    with open("./output/ilr.jpg", 'rb') as f:
         dataInput.data = f.read()
-        os.remove("./output/lr.jpg")
-
+        os.remove("./output/ilr.jpg")
+    # inputs data to a specified stream based on streamName
+    streamName = b'superResolution'
+    inPluginId = 0
     uniqueId = streamManagerapi.SendData(streamName, inPluginId, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
-    keys = [b"mxpi_imagedecoder0", b"mxpi_tensorinfer0"]
+    # Obtain the inference result
+    key = b"mxpi_tensorinfer0"
     keyVec = StringVector()
-    for key in keys:
-        keyVec.push_back(key)
-
-    inferResult = streamManagerapi.GetProtobuf(streamName, 0, keyVec)
+    keyVec.push_back(key)
+    inferResult = streamManagerapi.GetProtobuf(streamName, inPluginId, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
@@ -68,41 +67,35 @@ def infer(inner_img, streamManagerapi, resample__):
         print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
             inferResult[0].errorCode, inferResult[0].messageName.decode()))
         exit()
-    # get the infer result
     inferList0 = MxpiDataType.MxpiTensorPackageList()
-    inferList0.ParseFromString(inferResult[1].messageBuf)
+    inferList0.ParseFromString(inferResult[0].messageBuf)
     inferVisionData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
 
-    inferTensorShape = inferList0.tensorPackageVec[0].tensorVec[0].tensorShape
-    output_pic_data = np.frombuffer(inferVisionData, dtype="<f4")
-    output_y = colorize(output_pic_data, value_min=None, value_max=None)
-    output_y = output_y.reshape(inferTensorShape[2], inferTensorShape[3])
-    out_img_y = Image.fromarray(np.uint8(output_y), mode="L")
+    output_img_data = np.frombuffer(inferVisionData, dtype="<f4")
+    output_y = colorize(output_img_data, value_min=None, value_max=None)
+    output_y = output_y.reshape(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)
+    sr_img_y = Image.fromarray(np.uint8(output_y), mode="L")
 
     hr_YCbCr = hr.convert("YCbCr")
-    old_y, cb, cr = hr_YCbCr.split()
-    out_img = Image.merge("YCbCr", [out_img_y, cb, cr]).convert("RGB")
+    hr_img_y, cb, cr = hr_YCbCr.split()
+    output_img = Image.merge("YCbCr", [sr_img_y, cb, cr]).convert("RGB")
 
     # calculate peak signal-to-noise ratio
-    PSNR = calc_psnr(out_img_y, old_y)
+    PSNR = calc_psnr(sr_img_y, hr_img_y)
     res_all.append(PSNR)
     print('PSNR: {:.2f}'.format(PSNR))
 
     # create canvas for finished drawing
-    target = Image.new('RGB', (lr.width + OFFSET + out_img.width, out_img.height + OFFSET * 5), "white")
+    target = Image.new('RGB', (lr.width + OFFSET_5 + output_img.width, output_img.height), "white")
     # splice the pictures line by line
-    target.paste(lr, (0, out_img.height - lr.height))
-    target.paste(out_img, (lr.width + OFFSET, 0))
+    target.paste(lr, (0, output_img.height - lr.height))
+    target.paste(output_img, (lr.width + OFFSET_5, 0))
     font_set = {
-        "type": "./font/SourceHanSansCN-Normal-2.otf",
+        "type": "../font/SourceHanSansCN-Normal-2.otf",
         "size": FONT_SIZE,
         "color": (0, 0, 0),
         "psnr_content": 'PSNR: {:.2f}'.format(PSNR),
-        "origin_content": '输入图像',
-        "infer_content": '输出图像',
-        "psnr_location": (0, out_img.height - lr.height - OFFSET * 6),
-        "origin_location": (lr.width // 2 - OFFSET * 10, out_img.height + OFFSET * 2),
-        "infer_location": (lr.width * 2 + OFFSET * 20, out_img.height + OFFSET * 2),
+        "psnr_location": (0, output_img.height - lr.height - OFFSET_20),
     }
     # create a brush to write text to the picture
     draw = ImageDraw.Draw(target)
@@ -110,12 +103,10 @@ def infer(inner_img, streamManagerapi, resample__):
     font = ImageFont.truetype(font_set["type"], font_set["size"])
     # draw into the picture according to the position, content, color and font
     draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
-    draw.text(font_set["origin_location"], font_set["origin_content"], font_set["color"], font=font)
-    draw.text(font_set["infer_location"], font_set["infer_content"], font_set["color"], font=font)
     # save visualization results
-    _, fileName = os.path.split(inner_img)
-    out_path = "./output/" + fileName
-    target.save(out_path, quality=50)
+    _, file_name = os.path.split(input_image_path)
+    out_path = "./output/"+file_name
+    target.save(out_path)
 
 
 if __name__ == '__main__':
@@ -145,8 +136,8 @@ if __name__ == '__main__':
             "mxpi_imageresize0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
-                    "resizeHeight": "256",
-                    "resizeWidth": "256"
+                    "resizeHeight": "768",
+                    "resizeWidth": "768"
                 },
                 "factory": "mxpi_imageresize",
                 "next": "mxpi_tensorinfer0"
@@ -154,7 +145,7 @@ if __name__ == '__main__':
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
-                    "modelPath": "../model/FSRCNN_256_256.om"
+                    "modelPath": "../model/VDSR_768_768.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "appsink0"
@@ -173,16 +164,14 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     res_all = []
-    resample_ = Image.BILINEAR
     for i in range(1, 92, 1):
         image_file = './91-images-jpg/t_'+str(i)+'.jpg'
-        infer(image_file, streamManagerApi, resample_)
-
+        infer(image_file, streamManagerApi)
     for i in range(1, 101, 1):
         image_file = './general-100-jpg/im_'+str(i)+'.jpg'
-        infer(image_file, streamManagerApi, resample_)
+        infer(image_file, streamManagerApi)
 
-    print(str(resample_) + " sum = " + str(sum(res_all)/len(res_all)))
+    print("average psnr = " + str(sum(res_all)/len(res_all)))
     print(res_all)
     # destroy streams
     streamManagerApi.DestroyAllStreams()
