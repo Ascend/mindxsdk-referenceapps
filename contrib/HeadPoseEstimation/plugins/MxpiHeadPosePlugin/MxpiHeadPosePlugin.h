@@ -30,48 +30,48 @@
 
 namespace MxPlugins {
     class MxpiHeadPosePlugin : public MxTools::MxPluginBase {
-        public:
-            /**
-             * @api
-             * @brief Initialize configure parameter.
-             * @param configParamMap
-             * @return APP_ERROR
-             */
-            APP_ERROR Init(std::map<std::string, std::shared_ptr<void>>& configParamMap) override;
-            /**
-             * @api
-             * @brief DeInitialize configure parameter.
-             * @return APP_ERROR
-             */
-            APP_ERROR DeInit() override;
-            /**
-             * @api
-             * @brief Process the data of MxpiBuffer.
-             * @param mxpiBuffer
-             * @return APP_ERROR
-             */
-            APP_ERROR Process(std::vector<MxTools::MxpiBuffer*>& mxpiBuffer) override;
-            /**
-             * @api
-             * @brief Definition the parameter of configure properties.
-             * @return std::vector<std::shared_ptr<void>>
-             */
-            static std::vector<std::shared_ptr<void>> DefineProperties();
-            /**
-             * @api
-             * @brief Get the number of class id and confidence from model inference.
-             * @param key
-             * @param buffer
-             * @return APP_ERROR
-             */
-            APP_ERROR GenerateHeadPoseInfo(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
-                mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList);
-        private:
-            APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
-            const MxTools::MxpiErrorInfo mxpiErrorInfo);
-            std::string parentName_;
-            std::string descriptionMessage_;
-            std::ostringstream ErrorInfo_;
+    public:
+        /**
+            * @api
+            * @brief Initialize configure parameter.
+            * @param configParamMap
+            * @return APP_ERROR
+            */
+        APP_ERROR Init(std::map<std::string, std::shared_ptr<void>>& configParamMap) override;
+        /**
+            * @api
+            * @brief DeInitialize configure parameter.
+            * @return APP_ERROR
+            */
+        APP_ERROR DeInit() override;
+        /**
+            * @api
+            * @brief Process the data of MxpiBuffer.
+            * @param mxpiBuffer
+            * @return APP_ERROR
+            */
+        APP_ERROR Process(std::vector<MxTools::MxpiBuffer*>& mxpiBuffer) override;
+        /**
+            * @api
+            * @brief Definition the parameter of configure properties.
+            * @return std::vector<std::shared_ptr<void>>
+            */
+        static std::vector<std::shared_ptr<void>> DefineProperties();
+        /**
+            * @api
+            * @brief Get the number of class id and confidence from model inference.
+            * @param key
+            * @param buffer
+            * @return APP_ERROR
+            */
+        APP_ERROR GenerateHeadPoseInfo(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+            mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList);
+    private:
+        APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
+        const MxTools::MxpiErrorInfo mxpiErrorInfo);
+        std::string parentName_;
+        std::string descriptionMessage_;
+        std::ostringstream ErrorInfo_;
     };
 }
 #endif // SDKMEMORY_MXPIHEADPOSEPLUGIN_H

@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding:utf-8 -*-
+#!/usr/bin/env python
+# coding=utf-8
 
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
@@ -165,10 +165,10 @@ if __name__ == '__main__':
     green = (0, 255, 0)
     blue = (0, 0, 255)
 
-    cv2.rectangle(image_res, (int(results.x0-((results.x1-results.x0)*0.25)),
-                              int(results.y0-((results.y1-results.y0)*0.35))),
-                             (int(results.x1+((results.x1-results.x0)*0.25)),
-                              int(results.y1+((results.y1-results.y0)*0.1))),
+    cv2.rectangle(image_res, (int(results.x0 - ((results.x1 - results.x0) * 0.25)),
+                              int(results.y0 - ((results.y1 - results.y0) * 0.35))),
+                             (int(results.x1 + ((results.x1 - results.x0) * 0.25)),
+                              int(results.y1 + ((results.y1 - results.y0) * 0.1))),
                              (127, 125, 125), 2)
     # plot head pose detection lines from whenet predictions
     cv2.line(image_res, (int(box_width), int(box_height)),

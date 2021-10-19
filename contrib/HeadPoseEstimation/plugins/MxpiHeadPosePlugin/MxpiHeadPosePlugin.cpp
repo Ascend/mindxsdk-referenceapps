@@ -63,8 +63,9 @@ void Softmax(std::vector<float> myVector, std::vector<float> &result){
         a.push_back(exp(element));
         b += exp(element);
     }
-    for(double& element : a)
-        result.push_back(element*1.0/b);
+    for(double& element : a){
+        result.push_back(element * 1.0 / b);
+    }
 }
 
 APP_ERROR MxpiHeadPosePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
@@ -104,7 +105,7 @@ APP_ERROR MxpiHeadPosePlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::st
 }
 
 APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList srcMxpiTensorPackage,
-                                                    mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList)
+    mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList)
 {
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
@@ -119,36 +120,36 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
         // Generate yaw,pitch,roll
         auto yaw_dataPtr = (float *)tensors[0].GetBuffer();
         std::vector<float> myyaw, yaw_predicted_vec;
-        for(int i=0; i<headpose1[1]; i++){
+        for(int i = 0; i < headpose1[1]; i++){
             myyaw.push_back(yaw_dataPtr[i]);
         }
         Softmax(myyaw, yaw_predicted_vec);
         float yaw_predicted = 0;
-        for(int i=0; i<headpose1[1]; i++){
+        for(int i = 0; i < headpose1[1]; i++){
             yaw_predicted += yaw_predicted_vec[i] * i;
         }
         yaw_predicted = yaw_predicted * 3 - 180;
 
         auto pitch_dataPtr = (float *)tensors[1].GetBuffer();
         std::vector<float> mypitch, pitch_predicted_vec;
-        for(int i=0; i<headpose2[1]; i++){
+        for(int i = 0; i < headpose2[1]; i++){
             mypitch.push_back(pitch_dataPtr[i]);
         }
         Softmax(mypitch, pitch_predicted_vec);
         float pitch_predicted = 0;
-        for(int i=0; i<headpose2[1]; i++){
+        for(int i = 0; i < headpose2[1]; i++){
             pitch_predicted += pitch_predicted_vec[i] * i;
         }
         pitch_predicted = pitch_predicted * 3 - 99;
 
         auto roll_dataPtr = (float *)tensors[2].GetBuffer();
         std::vector<float> myroll, roll_predicted_vec;
-        for(int i=0; i<headpose2[1]; i++){
+        for(int i = 0; i < headpose2[1]; i++){
             myroll.push_back(roll_dataPtr[i]);
         }
         Softmax(myroll, roll_predicted_vec);
         float roll_predicted = 0;
-        for(int i=0; i<headpose3[1]; i++){
+        for(int i = 0; i < headpose3[1]; i++){
             roll_predicted += roll_predicted_vec[i] * i;
         }
         roll_predicted = roll_predicted * 3 - 99;
