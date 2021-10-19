@@ -120,11 +120,12 @@ cd至`plugins/MxpiHeadPosePlugin/build/`   修改下面代码中的SDK目录并�
 ```
 cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugins/
 ```
-
 **步骤3** 
 
-修改`pipeline/recognition.pipeline`文件中: **mxpi_objectpostprocessor0**插件的postProcessLibPath属性，修改为{MindX_SDK实际安装目录}/lib/modelpostprocessors/libyolov3postprocess.so
-
+修改`pipeline/recognition.pipeline`文件中: **mxpi_objectpostprocessor0**插件的`postProcessLibPath`属性，修改为
+```
+{MindX_SDK实际安装目录}/lib/modelpostprocessors/libyolov3postprocess.so
+```
 **步骤4** 
 
 自行在网络找一张包含头部的jpg图像，重命名为test.jpg，放入项目根目录中，再执行
