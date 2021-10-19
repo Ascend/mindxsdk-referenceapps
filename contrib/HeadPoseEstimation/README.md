@@ -56,11 +56,11 @@ npu-smi info
 
 ### 1.5 技术实现流程图
 
-![diagram1](diagram1.jpg)
+![diagram1](https://i.loli.net/2021/10/19/OqSelM4NZk6rtRd.jpg)
 
 图1 头部姿态识别流程图
 
-![diagram2](diagram2.jpg)
+![diagram2](https://i.loli.net/2021/10/19/pmo81UAgzTS2QN4.jpg)
 
 图2 头部姿态识别pipeline示意图
 

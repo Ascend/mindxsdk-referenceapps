@@ -24,9 +24,6 @@ using namespace MxTools;
 using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiTensorPackageList";
-    const int SAMPLE_CLASS_ID = 42;
-    const float SAMPLE_CONF = 0.314;
-    const string SAMPLE_CLASS_NAME = "The shape of tensor[0] in metadata is ";
 }
 
 // decode MxpiTensorPackageList
@@ -56,6 +53,7 @@ void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
     }
 }
 
+// Softmax the data in the tensor
 void Softmax(std::vector<float> myVector, std::vector<float> &result){
     float maxPosition = *max_element(myVector.begin(), myVector.end());
     std::vector<double> a;
@@ -198,12 +196,12 @@ APP_ERROR MxpiHeadPosePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-    // Check whether the proto struct name is MxpiObjectList
+    // Check the proto struct name
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {
         ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_)
-            << "Proto struct name is not MxpiObjectList, failed";
+            << "Proto struct name is not MxpiTensorPackageList, failed";
         mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);

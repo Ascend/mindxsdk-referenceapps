@@ -19,13 +19,13 @@ import os
 import sys
 import cv2
 import copy
-import argparse
 import math
 import numpy as np
-sys.path.append("./plugins/proto")
 import mxpiHeadPoseProto_pb2 as mxpiHeadPoseProto
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+sys.path.append("./plugins/proto")
+
 
 def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
     """
@@ -48,18 +48,15 @@ def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
 
     # X-Axis pointing to right. drawn in red
     x1 = size * (math.cos(yaw) * math.cos(roll)) + tdx
-    y1 = size * (math.cos(pitch) * math.sin(roll) + math.cos(roll)
-                    * math.sin(pitch) * math.sin(yaw)) + tdy
+    y1 = size * (math.cos(pitch) * math.sin(roll) + math.cos(roll) * math.sin(pitch) * math.sin(yaw)) + tdy
 
     # Y-Axis | drawn in green
     x2 = size * (-math.cos(yaw) * math.sin(roll)) + tdx
-    y2 = size * (math.cos(pitch) * math.cos(roll) - math.sin(pitch)
-                    * math.sin(yaw) * math.sin(roll)) + tdy
+    y2 = size * (math.cos(pitch) * math.cos(roll) - math.sin(pitch) * math.sin(yaw) * math.sin(roll)) + tdy
 
     # Z-Axis (out of the screen) drawn in blue
     x3 = size * (math.sin(yaw)) + tdx
     y3 = size * (-math.cos(yaw) * math.sin(pitch)) + tdy
-    
     
     return {
         "yaw_x": x1,
@@ -69,6 +66,7 @@ def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
         "roll_x": x3, 
         "roll_y": y3
     }
+
 
 if __name__ == '__main__':
     # Create and initialize a new StreamManager object
@@ -112,28 +110,29 @@ if __name__ == '__main__':
     outPluginId = 0
     infer_result = streamManagerApi.GetProtobuf(streamName, outPluginId, keyVec)
 
+    yolo_result_index = 0
+    whenet_result_index = 1
     if infer_result.size() == 0:
         print("infer_result is null")
         exit()
 
-    if infer_result[0].errorCode != 0:
+    if infer_result[yolo_result_index].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
-            infer_result[0].errorCode, infer_result[0].messageName))
+            infer_result[yolo_result_index].errorCode, infer_result[yolo_result_index].messageName))
         exit()
 
     objectList = MxpiDataType.MxpiObjectList()
-    objectList.ParseFromString(infer_result[0].messageBuf)
+    objectList.ParseFromString(infer_result[yolo_result_index].messageBuf)
     print(objectList)
     results = objectList.objectVec[0]
 
-
-    if infer_result[1].errorCode != 0:
+    if infer_result[whenet_result_index].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
-            infer_result[1].errorCode, infer_result[1].messageName))
+            infer_result[whenet_result_index].errorCode, infer_result[whenet_result_index].messageName))
         exit()
 
     result_protolist = mxpiHeadPoseProto.MxpiHeadPoseList()
-    result_protolist.ParseFromString(infer_result[1].messageBuf)
+    result_protolist.ParseFromString(infer_result[whenet_result_index].messageBuf)
     print("YAW:")
     print("result: {}".format(
         result_protolist.headposeInfoVec[0].yaw))
@@ -154,28 +153,30 @@ if __name__ == '__main__':
 
     box_width = (results.x0 + results.x1)/2
     box_height = (results.y0 + results.y1)/2
-    detection_item = whenet_draw(yaw_predicted, pitch_predicted, roll_predicted, 
-                tdx=box_width, tdy=box_height, size=100)
+    detection_item = whenet_draw(yaw_predicted, pitch_predicted, roll_predicted,
+                                 tdx=box_width, tdy=box_height, size=100)
 
     save_img = True
     if save_img:
         image_res = copy.deepcopy(image)
-    #plot head detection box from yolo predictions
+    # plot head detection box from yolo predictions
     line_thickness = 4
     red = (255, 0, 0)
     green = (0, 255, 0)
     blue = (0, 0, 255)
 
-    
-    cv2.rectangle(image_res, (int(results.x0-((results.x1-results.x0)*0.25)), int(results.y0-((results.y1-results.y0)*0.35))), 
-        (int(results.x1+((results.x1-results.x0)*0.25)), int(results.y1+((results.y1-results.y0)*0.1))), (127, 125, 125), 2)
-    #plot head pose detection lines from whenet predictions
-    cv2.line(image_res, (int(box_width), int(box_height)), 
-        (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
-    cv2.line(image_res, (int(box_width), int(box_height)), 
-        (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
-    cv2.line(image_res, (int(box_width), int(box_height)), 
-        (int(detection_item["roll_x"]), int(detection_item["roll_y"])), blue, line_thickness)
+    cv2.rectangle(image_res, (int(results.x0-((results.x1-results.x0)*0.25)),
+                              int(results.y0-((results.y1-results.y0)*0.35))),
+                             (int(results.x1+((results.x1-results.x0)*0.25)),
+                              int(results.y1+((results.y1-results.y0)*0.1))),
+                             (127, 125, 125), 2)
+    # plot head pose detection lines from whenet predictions
+    cv2.line(image_res, (int(box_width), int(box_height)),
+             (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
+    cv2.line(image_res, (int(box_width), int(box_height)),
+             (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
+    cv2.line(image_res, (int(box_width), int(box_height)),
+             (int(detection_item["roll_x"]), int(detection_item["roll_y"])), blue, line_thickness)
 
     if save_img:
         image_res = cv2.cvtColor(image_res, cv2.COLOR_RGB2BGR)
