@@ -97,7 +97,9 @@ def inference(
                 0.8,
                 color,
             )
-        output_info.append([class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax +5.1])
+        output_info.append(
+            [class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax + 5.1]
+        )
 
     if show_result:
         cv2.imwrite("./my_result.jpg", image)
