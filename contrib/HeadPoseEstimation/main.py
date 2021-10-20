@@ -102,7 +102,7 @@ if __name__ == '__main__':
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 
     # Get the result returned by the plugins
-    keys = [b"mxpi_objectpostprocessor0", b"mxpi_headposeplugin0"]
+    keys = [b"mxpi_distributor0_0", b"mxpi_headposeplugin0"]
     keyVec = StringVector()
     for key in keys:
         keyVec.push_back(key)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[yolo_result_index].messageBuf)
     print(objectList)
-    results = objectList.objectVec[0]
+    results = objectList.objectVec
 
     if infer_result[whenet_result_index].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
@@ -133,50 +133,50 @@ if __name__ == '__main__':
 
     result_protolist = mxpiHeadPoseProto.MxpiHeadPoseList()
     result_protolist.ParseFromString(infer_result[whenet_result_index].messageBuf)
-    print("YAW:")
-    print("result: {}".format(
-        result_protolist.headposeInfoVec[0].yaw))
-    print("PITCH:")
-    print("result: {}".format(
-        result_protolist.headposeInfoVec[0].pitch))
-    print("ROLL:")
-    print("result: {}".format(
-        result_protolist.headposeInfoVec[0].roll))
-
-    yaw_predicted = result_protolist.headposeInfoVec[0].yaw
-    pitch_predicted = result_protolist.headposeInfoVec[0].pitch
-    roll_predicted = result_protolist.headposeInfoVec[0].roll
 
     image = cv2.imread('test.jpg')
     image_height, image_width = image.shape[0], image.shape[1]
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    box_width = (results.x0 + results.x1)/2
-    box_height = (results.y0 + results.y1)/2
-    detection_item = whenet_draw(yaw_predicted, pitch_predicted, roll_predicted,
-                                 tdx=box_width, tdy=box_height, size=100)
-
     save_img = True
     if save_img:
         image_res = copy.deepcopy(image)
-    # plot head detection box from yolo predictions
-    line_thickness = 4
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
 
-    cv2.rectangle(image_res, (int(results.x0 - ((results.x1 - results.x0) * 0.25)),
-                              int(results.y0 - ((results.y1 - results.y0) * 0.35))),
-                             (int(results.x1 + ((results.x1 - results.x0) * 0.25)),
-                              int(results.y1 + ((results.y1 - results.y0) * 0.1))),
-                             (127, 125, 125), 2)
-    # plot head pose detection lines from whenet predictions
-    cv2.line(image_res, (int(box_width), int(box_height)),
-             (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
-    cv2.line(image_res, (int(box_width), int(box_height)),
-             (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
-    cv2.line(image_res, (int(box_width), int(box_height)),
-             (int(detection_item["roll_x"]), int(detection_item["roll_y"])), blue, line_thickness)
+    index = 0
+    for headpose in result_protolist.headposeInfoVec:
+        print("YAW: {}".format(headpose.yaw))
+        print("PITCH: {}".format(headpose.pitch))
+        print("ROLL: {}".format(headpose.roll))
+        print("---------")
+
+        yaw_predicted = headpose.yaw
+        pitch_predicted = headpose.pitch
+        roll_predicted = headpose.roll
+
+        box_width = (results[index].x0 + results[index].x1)/2
+        box_height = (results[index].y0 + results[index].y1)/2
+        detection_item = whenet_draw(yaw_predicted, pitch_predicted, roll_predicted,
+                                     tdx=box_width, tdy=box_height, size=100)
+
+        # plot head detection box from yolo predictions
+        line_thickness = 4
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+        blue = (0, 0, 255)
+        grey = (127, 125, 125)
+
+        cv2.rectangle(image_res, (int(results[index].x0 - ((results[index].x1 - results[index].x0) * 0.25)),
+                                int(results[index].y0 - ((results[index].y1 - results[index].y0) * 0.35))),
+                                (int(results[index].x1 + ((results[index].x1 - results[index].x0) * 0.25)),
+                                int(results[index].y1 + ((results[index].y1 - results[index].y0) * 0.1))), grey, 2)
+        # plot head pose detection lines from whenet predictions
+        cv2.line(image_res, (int(box_width), int(box_height)),
+                 (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
+        cv2.line(image_res, (int(box_width), int(box_height)),
+                (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
+        cv2.line(image_res, (int(box_width), int(box_height)),
+                (int(detection_item["roll_x"]), int(detection_item["roll_y"])), blue, line_thickness)
+
+        index += 1
 
     if save_img:
         image_res = cv2.cvtColor(image_res, cv2.COLOR_RGB2BGR)

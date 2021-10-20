@@ -110,58 +110,60 @@ APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList s
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
-    if (tensors.size() == 3) {
+    if (tensors.size() % 3 == 0) {
+        for(int index = 0; index < tensors.size(); index = index + 3){
+            // Get output shape of model
+            auto headpose1 = tensors[index].GetShape();
+            auto headpose2 = tensors[index + 1].GetShape();
+            auto headpose3 = tensors[index + 2].GetShape();
 
-        // Get output shape of model
-        auto headpose1 = tensors[0].GetShape();
-        auto headpose2 = tensors[1].GetShape();
-        auto headpose3 = tensors[2].GetShape();
+            // Generate yaw,pitch,roll
+            auto yaw_dataPtr = (float *)tensors[index].GetBuffer();
+            std::vector<float> myyaw, yaw_predicted_vec;
+            for(int i = 0; i < headpose1[1]; i++){
+                myyaw.push_back(yaw_dataPtr[i]);
+            }
+            Softmax(myyaw, yaw_predicted_vec);
+            float yaw_predicted = 0;
+            for(int i = 0; i < headpose1[1]; i++){
+                yaw_predicted += yaw_predicted_vec[i] * i;
+            }
+            yaw_predicted = yaw_predicted * 3 - 180;
 
-        // Generate yaw,pitch,roll
-        auto yaw_dataPtr = (float *)tensors[0].GetBuffer();
-        std::vector<float> myyaw, yaw_predicted_vec;
-        for(int i = 0; i < headpose1[1]; i++){
-            myyaw.push_back(yaw_dataPtr[i]);
-        }
-        Softmax(myyaw, yaw_predicted_vec);
-        float yaw_predicted = 0;
-        for(int i = 0; i < headpose1[1]; i++){
-            yaw_predicted += yaw_predicted_vec[i] * i;
-        }
-        yaw_predicted = yaw_predicted * 3 - 180;
+            auto pitch_dataPtr = (float *)tensors[index + 1].GetBuffer();
+            std::vector<float> mypitch, pitch_predicted_vec;
+            for(int i = 0; i < headpose2[1]; i++){
+                mypitch.push_back(pitch_dataPtr[i]);
+            }
+            Softmax(mypitch, pitch_predicted_vec);
+            float pitch_predicted = 0;
+            for(int i = 0; i < headpose2[1]; i++){
+                pitch_predicted += pitch_predicted_vec[i] * i;
+            }
+            pitch_predicted = pitch_predicted * 3 - 99;
 
-        auto pitch_dataPtr = (float *)tensors[1].GetBuffer();
-        std::vector<float> mypitch, pitch_predicted_vec;
-        for(int i = 0; i < headpose2[1]; i++){
-            mypitch.push_back(pitch_dataPtr[i]);
-        }
-        Softmax(mypitch, pitch_predicted_vec);
-        float pitch_predicted = 0;
-        for(int i = 0; i < headpose2[1]; i++){
-            pitch_predicted += pitch_predicted_vec[i] * i;
-        }
-        pitch_predicted = pitch_predicted * 3 - 99;
+            auto roll_dataPtr = (float *)tensors[index + 2].GetBuffer();
+            std::vector<float> myroll, roll_predicted_vec;
+            for(int i = 0; i < headpose2[1]; i++){
+                myroll.push_back(roll_dataPtr[i]);
+            }
+            Softmax(myroll, roll_predicted_vec);
+            float roll_predicted = 0;
+            for(int i = 0; i < headpose3[1]; i++){
+                roll_predicted += roll_predicted_vec[i] * i;
+            }
+            roll_predicted = roll_predicted * 3 - 99;
 
-        auto roll_dataPtr = (float *)tensors[2].GetBuffer();
-        std::vector<float> myroll, roll_predicted_vec;
-        for(int i = 0; i < headpose2[1]; i++){
-            myroll.push_back(roll_dataPtr[i]);
+            // Generate HeadPoseInfo
+            auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
+            mxpiheadposeproto::MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHeadPoseInfoPtr->add_headervec();
+            dstMxpiMetaHeaderList->set_datasource(parentName_);
+            dstMxpiMetaHeaderList->set_memberid(0);
+            dstMxpiHeadPoseInfoPtr->set_yaw(yaw_predicted);
+            dstMxpiHeadPoseInfoPtr->set_pitch(pitch_predicted);
+            dstMxpiHeadPoseInfoPtr->set_roll(roll_predicted);
         }
-        Softmax(myroll, roll_predicted_vec);
-        float roll_predicted = 0;
-        for(int i = 0; i < headpose3[1]; i++){
-            roll_predicted += roll_predicted_vec[i] * i;
-        }
-        roll_predicted = roll_predicted * 3 - 99;
 
-        // Generate HeadPoseInfo
-        auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
-        mxpiheadposeproto::MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHeadPoseInfoPtr->add_headervec();
-        dstMxpiMetaHeaderList->set_datasource(parentName_);
-        dstMxpiMetaHeaderList->set_memberid(0);
-        dstMxpiHeadPoseInfoPtr->set_yaw(yaw_predicted);
-        dstMxpiHeadPoseInfoPtr->set_pitch(pitch_predicted);
-        dstMxpiHeadPoseInfoPtr->set_roll(roll_predicted);
     }
     else {
         LogWarn << "Tensor Size Error!!" << endl;
