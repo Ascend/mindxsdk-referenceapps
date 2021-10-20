@@ -21,10 +21,10 @@ import cv2
 import copy
 import math
 import numpy as np
-import mxpiHeadPoseProto_pb2 as mxpiHeadPoseProto
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("./plugins/proto")
+import mxpiHeadPoseProto_pb2 as mxpiHeadPoseProto
 
 
 def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
