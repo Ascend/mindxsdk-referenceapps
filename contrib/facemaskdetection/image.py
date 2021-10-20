@@ -183,17 +183,6 @@ if __name__ == "__main__":
 
     id2class = {0: "Mask", 1: "NoMask"}
 
-    # visionList = MxpiDataType.MxpiVisionList()
-    # visionList.ParseFromString(infer_result[1].messageBuf)
-    # visionData = visionList.visionVec[0].visionData.dataStr
-    # visionInfo = visionList.visionVec[0].visionInfo
-
-    # YUV_BYTES_NU = 3
-    # YUV_BYTES_DE = 2
-    # img_yuv = np.frombuffer(visionData, dtype=np.uint8)
-    # img_yuv = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
-    # img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
-
     img = cv2.imread(img_path)
     print(inference(img, show_result=True, target_shape=(260, 260)))
 

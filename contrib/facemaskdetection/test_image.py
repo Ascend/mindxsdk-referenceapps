@@ -86,7 +86,6 @@ def inference(
         output_info0.append(
             [class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax + 5.1]
         )
-    # cv2.imwrite("./testimages/FaceMaskDataset/testresult/" + img_name + ".jpg", image)
     return output_info
 
 
@@ -185,7 +184,7 @@ if __name__ == "__main__":
         img = cv2.imread(img_path)
         output_info = inference(img, show_result=False, target_shape=(260, 260))
         open(img_txt, "a+")
-        for i in range(len(output_info)):
+        for i in enumerate(output_info):
             with open(img_txt, "a+") as f:
                 result = "{} {} {} {} {} {}".format(
                     id2class[output_info[i][0]],
