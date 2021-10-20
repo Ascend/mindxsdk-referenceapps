@@ -17,7 +17,7 @@
 import numpy as np
 
 
-def bilinear_sampling(source, width_extend_multiple=2, height_extend_multiple=2):
+def bilinear_sampling(source, destination_width, destination_height):
     """
     Bilinear sampling of source data
 
@@ -39,8 +39,8 @@ def bilinear_sampling(source, width_extend_multiple=2, height_extend_multiple=2)
              w1 * w2 * value(P4)
 
     :param source: source data
-    :param width_extend_multiple: A multiple of the width expansion relative to the source data
-    :param height_extend_multiple: A multiple of the height expansion relative to the source data
+    :param destination_height: the height of destination data
+    :param destination_width: the width of destination data
     :return: output data after bilinear sampling
     """
     # source data size
@@ -48,16 +48,16 @@ def bilinear_sampling(source, width_extend_multiple=2, height_extend_multiple=2)
     src_height = source.shape[1]
     src_width = source.shape[2]
     # destination data size
-    dst_height = src_height * height_extend_multiple
-    dst_width = src_width * width_extend_multiple
+    dst_height = destination_height
+    dst_width = destination_width
 
     # scale factor
     scale_height = src_height / dst_height
     scale_width = src_width / dst_width
 
     # calculate the corresponding coordinate of source data
-    x_index = np.array([x for x in range(dst_width)])
-    y_index = np.array([y for y in range(dst_height)])
+    x_index = np.array([x for x in range(int(dst_width))])
+    y_index = np.array([y for y in range(int(dst_height))])
     src_x = (x_index + 0.5) * scale_width - 0.5
     src_y = (y_index + 0.5) * scale_height - 0.5
     src_x = np.repeat(np.expand_dims(src_x, axis=0), dst_height, axis=0)

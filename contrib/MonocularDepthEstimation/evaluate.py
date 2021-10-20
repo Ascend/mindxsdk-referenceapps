@@ -154,8 +154,8 @@ if __name__ == '__main__':
         # AdaBins_nyu model estimation
         test_images_infer_depth_info, test_images_info = depth_estimation(test_images_data, is_batch=True)
         # Bilinear sampling to restore to the original size
-        test_images_infer_depth_info = bilinear_sampling(test_images_infer_depth_info, width_extend_multiple=2,
-                                                         height_extend_multiple=2)
+        test_images_infer_depth_info = bilinear_sampling(test_images_infer_depth_info, test_image_width,
+                                                         test_image_height)
         # save infer result cache
         print('save infer_result.npy')
         np.save(infer_result_cache_file, test_images_infer_depth_info)

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import io
 import os
 import sys
 
@@ -57,11 +58,19 @@ if __name__ == '__main__':
     if os.path.exists(input_image_path) != 1:
         error_message = 'The {} does not exist'.format(input_image_path)
         raise FileNotFoundError(error_message)
-
-    # read input image
-    input_image_data = {}
-    with open(input_image_path, 'rb') as f:
-        input_image_data = f.read()
+    else:
+        try:
+            image = Image.open(input_image_path)
+            if image.format != 'JPEG':
+                raise AssertionError('input image only support jpg')
+            else:
+                # read input image bytes
+                image_bytes = io.BytesIO()
+                image.save(image_bytes, format='JPEG')
+                input_image_data = image_bytes.getvalue()
+        except IOError:
+            raise IOError(
+                'an IOError occurred while opening {}, maybe your input is not a picture'.format(input_image_path))
 
     # depth estimation
     depth_pic_array, input_image_info = depth_estimation(input_image_data)
@@ -69,16 +78,11 @@ if __name__ == '__main__':
     # get size of input image and output depth image
     input_image_height = input_image_info[0][0]
     input_image_width = input_image_info[0][1]
-    output_depth_pic_height = depth_pic_array.shape[1]
-    output_depth_pic_width = depth_pic_array.shape[2]
 
     print('save infer depth picture start.')
 
     # double linear sample to reconstruct depth pic whose size is approximate to input size
-    width_expand_multiple = round(input_image_width / output_depth_pic_width)
-    height_expand_multiple = round(input_image_height / output_depth_pic_height)
-    depth_pic_array = bilinear_sampling(depth_pic_array, width_extend_multiple=width_expand_multiple,
-                                        height_extend_multiple=height_expand_multiple)
+    depth_pic_array = bilinear_sampling(depth_pic_array, input_image_width, input_image_height)
 
     # colorize by inferred depth result
     is_extend_to_bgr = True
