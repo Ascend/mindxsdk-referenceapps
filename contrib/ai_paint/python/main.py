@@ -97,9 +97,9 @@ def preprocess(net_param):
 
     return mxpi_tensor_pack_list
 
-def read_config(config_file):
+def read_config(config_fname):
     curpath = os.path.dirname(os.path.realpath(__file__))
-    cfgpath = os.path.join(curpath, config_file)
+    cfgpath = os.path.join(curpath, config_fname)
     
     conf = configparser.ConfigParser()
     conf.read(cfgpath, encoding = "utf-8")
