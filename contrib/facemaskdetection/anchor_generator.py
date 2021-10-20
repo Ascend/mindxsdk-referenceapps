@@ -48,7 +48,7 @@ def generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios, offset):
 
         # different scales with the first aspect ratio
         for scale in anchor_sizes[idx]:
-            ratio = anchor_ratios[idx][0]  
+            ratio = anchor_ratios[idx][0]
             width = scale * np.sqrt(ratio)
             height = scale / np.sqrt(ratio)
             anchor_width_heights.extend(

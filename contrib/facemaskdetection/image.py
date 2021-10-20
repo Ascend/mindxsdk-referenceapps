@@ -17,11 +17,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
+import os
 import cv2
+import time
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import (
     StreamManagerApi,
+    MxDataInput,
     StringVector,
     InProtobufVector,
     MxProtobufIn,
@@ -32,7 +36,7 @@ from nms import single_class_non_max_suppression
 
 
 def inference(
-    image0,
+    image,
     conf_thresh=0.5,
     iou_thresh=0.4,
     target_shape=(260, 260),
@@ -49,16 +53,14 @@ def inference(
     :param show_result: whether to display the image.
     :return:
     """
-    image = np.copy(image0)
-    output_info0 = []
-    height0, width0, _ = image.shape
+    image = np.copy(image)
+    output_info = []
+    height, width, _ = image.shape
     y_bboxes_output = ids
     y_cls_output = ids2
 
     # remove the batch dimension, for batch is always 1 for inference.
-    y_bboxes = decode_bbox(
-        anchors_exp, y_bboxes_output, variances=[0.1, 0.1, 0.2, 0.2]
-    )[0]
+    y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
     y_cls = y_cls_output[0]
     # To speed up, do single class NMS, not multiple classes NMS.
     bbox_max_scores = np.max(y_cls, axis=1)
@@ -76,10 +78,10 @@ def inference(
         class_id = bbox_max_score_classes[idx]
         bbox = y_bboxes[idx]
         # clip the coordinate, avoid the value exceed the image boundary.
-        xmin = max(0, int(bbox[0] * width0))
-        ymin = max(0, int(bbox[1] * height0))
-        xmax = min(int(bbox[2] * width0), width0)
-        ymax = min(int(bbox[3] * height0), height0)
+        xmin = max(0, int(bbox[0] * width))
+        ymin = max(0, int(bbox[1] * height))
+        xmax = min(int(bbox[2] * width), width)
+        ymax = min(int(bbox[3] * height), height)
 
         if draw_result:
             if class_id == 0:
@@ -95,11 +97,11 @@ def inference(
                 0.8,
                 color,
             )
-        output_info0.append([class_id, conf, xmin, ymin, xmax, ymax])
+        output_info.append([class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax +5.1])
 
     if show_result:
         cv2.imwrite("./my_result.jpg", image)
-    return output_info0
+    return output_info
 
 
 if __name__ == "__main__":
@@ -109,68 +111,40 @@ if __name__ == "__main__":
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-
     # create streams by pipeline config file
     pipeline_path = b"main.pipeline"
-    tensor_key = b"appsrc0"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # Construct the input of the stream
-    img_path = "./image/test8.jpg"
+    img_path = "image/test7.jpg"
     streamName = b"detection"
     inPluginId = 0
-    # image preprocess
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    height, width, _ = img.shape
-    image_resized = cv2.resize(img, (260, 260))
-    image_np = image_resized / 255.0  # 归一化到0~1
-    image_exp = np.expand_dims(image_np, axis=0).astype(np.float32)
-
-    # input processed image to pipeline
-
-    protobuf_vec = InProtobufVector()
-    mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
-    tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
-
-    # add feature data #begin
-    tensorVec = tensor_package_vec.tensorVec.add()
-    tensorVec.memType = 1
-    tensorVec.deviceId = 0
-
-    # Compute the number of bytes of feature data.
-    tensorVec.tensorDataSize = int(height * width * 4)
-    tensorVec.tensorDataType = 0  # float32
-
-    for i in image_exp.shape:
-        tensorVec.tensorShape.append(i)
-
-    tensorVec.dataStr = image_exp.tobytes()
-    protobuf = MxProtobufIn()
-    protobuf.key = tensor_key
-    protobuf.type = b"MxTools.MxpiTensorPackageList"
-    protobuf.protobuf = mxpi_tensor_package_list.SerializeToString()
-    protobuf_vec.push_back(protobuf)
-
+    dataInput = MxDataInput()
+    with open(img_path, "rb") as f:
+        dataInput.data = f.read()
     # Inputs data to a specified stream based on streamName.
-    unique_id = streamManagerApi.SendProtobuf(streamName, inPluginId, protobuf_vec)
-    if unique_id < 0:
+    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
 
     key_vec = StringVector()
     key_vec.push_back(b"mxpi_tensorinfer0")
-
     # get inference result
     infer_result = streamManagerApi.GetProtobuf(streamName, inPluginId, key_vec)
+    a = infer_result.size()
     if infer_result.size() == 0:
         print("infer_result is null")
         exit()
     if infer_result[0].errorCode != 0:
-        print("GetProtobuf error. errorCode=%d" % (infer_result[0].errorCode))
+        print(
+            "GetProtobuf error. errorCode=%d, errorMsg=%s"
+            % (infer_result[0].errorCode, infer_result[0].data.decode())
+        )
+
         exit()
     tensorList = MxpiDataType.MxpiTensorPackageList()
     tensorList.ParseFromString(infer_result[0].messageBuf)
@@ -199,9 +173,7 @@ if __name__ == "__main__":
     anchor_ratios = [[1, 0.62, 0.42]] * 5
 
     # generate anchors
-    anchors = generate_anchors(
-        feature_map_sizes, anchor_sizes, anchor_ratios, offset=0.5
-    )
+    anchors = generate_anchors(feature_map_sizes, anchor_sizes, anchor_ratios)
 
     # for inference , the batch size is 1, the model output shape is [1, N, 4],
     # so we expand dim for anchors to [1, anchor_num, 4]
@@ -209,8 +181,19 @@ if __name__ == "__main__":
 
     id2class = {0: "Mask", 1: "NoMask"}
 
+    # visionList = MxpiDataType.MxpiVisionList()
+    # visionList.ParseFromString(infer_result[1].messageBuf)
+    # visionData = visionList.visionVec[0].visionData.dataStr
+    # visionInfo = visionList.visionVec[0].visionInfo
+
+    # YUV_BYTES_NU = 3
+    # YUV_BYTES_DE = 2
+    # img_yuv = np.frombuffer(visionData, dtype=np.uint8)
+    # img_yuv = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
+    # img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
+
     img = cv2.imread(img_path)
-    inference(img, show_result=True, target_shape=(260, 260))
+    print(inference(img, show_result=True, target_shape=(260, 260)))
 
     # destroy streams
 

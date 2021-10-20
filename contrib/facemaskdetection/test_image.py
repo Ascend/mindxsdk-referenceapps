@@ -17,32 +17,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
 import os
-import time
 import cv2
+import time
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import (
-    StreamManagerApi,
-    MxDataInput,
-    StringVector,
-    InProtobufVector,
-    MxProtobufIn,
-)
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector,InProtobufVector, MxProtobufIn
 from anchor_generator import generate_anchors
 from anchor_decode import decode_bbox
-from nmsout import single_class_non_max_suppression
+from nms import single_class_non_max_suppression
 
 
-def inference(
-    image0,
-    conf_thresh=0.5,
-    iou_thresh=0.4,
-    target_shape=(260, 260),
-    draw_result=True,
-    show_result=True,
-):
-    """
+def inference(image,
+              conf_thresh=0.5,
+              iou_thresh=0.4,
+              target_shape=(260, 260),
+              draw_result=True,
+              show_result=True
+              ):
+    '''
     Main function of detection inference
     :param image: 3D numpy array of image
     :param conf_thresh: the min threshold of classification probabity.
@@ -51,10 +45,10 @@ def inference(
     :param draw_result: whether to daw bounding box to the image.
     :param show_result: whether to display the image.
     :return:
-    """
-    image = np.copy(image0)
-    output_info0 = []
-    height0, width0, _ = image.shape
+    '''
+    image = np.copy(image)
+    output_info = []
+    height, width, _ = image.shape
     y_bboxes_output = ids
     y_cls_output = ids2
 
@@ -62,31 +56,34 @@ def inference(
     y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
     y_cls = y_cls_output[0]
     # To speed up, do single class NMS, not multiple classes NMS.
-    bbox_max_scores = np.max(y_cls, axis=1)
+    bbox_max_scores = np.max(y_cls, axis=1);
     bbox_max_score_classes = np.argmax(y_cls, axis=1)
     # keep_idx is the alive bounding box after nms.
-    keep_idxs = single_class_non_max_suppression(
-        y_bboxes,
-        bbox_max_scores,
-        conf_thresh=conf_thresh,
-        iou_thresh=iou_thresh,
-    )
+    keep_idxs = single_class_non_max_suppression(y_bboxes,
+                                                 bbox_max_scores,
+                                                 conf_thresh=conf_thresh,
+                                                 iou_thresh=iou_thresh,
+                                                 )
 
     for idx in keep_idxs:
         conf = float(bbox_max_scores[idx])
         class_id = bbox_max_score_classes[idx]
         bbox = y_bboxes[idx]
         # clip the coordinate, avoid the value exceed the image boundary.
-        xmin = max(0, int(bbox[0] * width0))
-        ymin = max(0, int(bbox[1] * height0))
-        xmax = min(int(bbox[2] * width0), width0)
-        ymax = min(int(bbox[3] * height0), height0)
+        xmin = max(0, int(bbox[0] * width))
+        ymin = max(0, int(bbox[1] * height))
+        xmax = min(int(bbox[2] * width), width)
+        ymax = min(int(bbox[3] * height), height)
 
-        output_info0.append([class_id, conf, xmin, ymin, xmax, ymax])
-    return output_info0
+        output_info.append([class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax +5.1])
+    #cv2.imwrite("./testimages/FaceMaskDataset/testresult/" + img_name + ".jpg", image)
+    return output_info
 
 
-if __name__ == "__main__":
+
+
+
+if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
@@ -96,7 +93,7 @@ if __name__ == "__main__":
 
     # create streams by pipeline config file
     pipeline_path = b"main.pipeline"
-    tensor_key = b"appsrc0"
+    tensor_key = b'appsrc0'
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -104,10 +101,10 @@ if __name__ == "__main__":
 
     # Construct the input of the stream
     PATH = "./testimages/FaceMaskDataset/test/"
-    infer_time = 0
     for item in os.listdir(PATH):
         start_stamp = time.time()
         img_path = os.path.join(PATH, item)
+        print(img_path)
         img_name = item.split(".")[0]
         img_txt = "./testimages/FaceMaskDataset/result_txt/" + img_name + ".txt"
         if os.path.exists(img_txt):
@@ -115,43 +112,15 @@ if __name__ == "__main__":
         if os.path.exists(img_path) != 1:
             print("The test image does not exist.")
 
-        streamName = b"detection"
+        streamName = b'detection'
         inPluginId = 0
 
-        img = cv2.imread(img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        read_frame_stamp = time.time()
-        height, width, _ = img.shape
-        image_resized = cv2.resize(img, (260, 260))
-        image_np = image_resized / 255.0  # 归一化到0~1
-        image_exp = np.expand_dims(image_np, axis=0).astype(np.float32)
-
-        protobuf_vec = InProtobufVector()
-        mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
-        tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
-
-        # add feature data #begin
-        tensorVec = tensor_package_vec.tensorVec.add()
-        tensorVec.memType = 1
-        tensorVec.deviceId = 0
-
-        # Compute the number of bytes of feature data.
-        tensorVec.tensorDataSize = int(height * width * 4)
-        tensorVec.tensorDataType = 0  # float32
-
-        for i in image_exp.shape:
-            tensorVec.tensorShape.append(i)
-
-        tensorVec.dataStr = image_exp.tobytes()
-        protobuf = MxProtobufIn()
-        protobuf.key = tensor_key
-        protobuf.type = b"MxTools.MxpiTensorPackageList"
-        protobuf.protobuf = mxpi_tensor_package_list.SerializeToString()
-        protobuf_vec.push_back(protobuf)
-
+        dataInput = MxDataInput()
+        with open(img_path, "rb") as f:
+            dataInput.data = f.read()
         # Inputs data to a specified stream based on streamName.
-        unique_id = streamManagerApi.SendProtobuf(streamName, inPluginId, protobuf_vec)
-        if unique_id < 0:
+        uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+        if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
 
@@ -159,12 +128,18 @@ if __name__ == "__main__":
         key_vec.push_back(b"mxpi_tensorinfer0")
         # get inference result
         infer_result = streamManagerApi.GetProtobuf(streamName, inPluginId, key_vec)
+        a = infer_result.size()
         if infer_result.size() == 0:
             print("infer_result is null")
-            exit()
+            open(img_txt, "a+")
+            continue
         if infer_result[0].errorCode != 0:
-            print("GetProtobuf error. errorCode=%d" % (infer_result[0].errorCode))
-            exit()
+            print(
+                "GetProtobuf error. errorCode=%d, errorMsg=%s"
+                % (infer_result[0].errorCode, infer_result[0].data.decode())
+            )
+
+            continue
         tensorList = MxpiDataType.MxpiTensorPackageList()
         tensorList.ParseFromString(infer_result[0].messageBuf)
 
@@ -182,13 +157,7 @@ if __name__ == "__main__":
         ids2.resize(shape2)
 
         feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
-        anchor_sizes = [
-            [0.04, 0.056],
-            [0.08, 0.11],
-            [0.16, 0.22],
-            [0.32, 0.45],
-            [0.64, 0.72],
-        ]
+        anchor_sizes = [[0.04, 0.056], [0.08, 0.11], [0.16, 0.22], [0.32, 0.45], [0.64, 0.72]]
         anchor_ratios = [[1, 0.62, 0.42]] * 5
 
         # generate anchors
@@ -198,33 +167,19 @@ if __name__ == "__main__":
         # so we expand dim for anchors to [1, anchor_num, 4]
         anchors_exp = np.expand_dims(anchors, axis=0)
 
-        id2class = {0: "face_mask", 1: "face"}
+        id2class = {0: 'face_mask', 1: 'face'}
+
+
 
         img = cv2.imread(img_path)
         output_info = inference(img, show_result=False, target_shape=(260, 260))
-        inference_stamp = time.time()
-        infer_time += inference_stamp - read_frame_stamp
-        print(infer_time)
         open(img_txt, "a+")
-        for i in enumerate(output_info):
+        for i in range(len(output_info)):
             with open(img_txt, "a+") as f:
-                result = "{} {} {} {} {} {}".format(
-                    id2class[output_info[i][0]],
-                    output_info[i][1],
-                    output_info[i][2],
-                    output_info[i][3],
-                    output_info[i][4],
-                    output_info[i][5],
-                )
+                result = '{} {} {} {} {} {}'.format(id2class[output_info[i][0]] ,output_info[i][1], output_info[i][2], output_info[i][3], output_info[i][4], output_info[i][5])
                 f.write(result)
-                f.write("\n")
-        print(
-            "read_frame:%f, infer time:%f"
-            % (
-                read_frame_stamp - start_stamp,
-                inference_stamp - read_frame_stamp,
-            )
-        )
+                f.write('\n')
+
         # destroy streams
 
     streamManagerApi.DestroyAllStreams()
