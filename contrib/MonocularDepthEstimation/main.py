@@ -63,6 +63,10 @@ if __name__ == '__main__':
             image = Image.open(input_image_path)
             if image.format != 'JPEG':
                 raise AssertionError('input image only support jpg')
+            elif image.width < 32 or image.width > 8192:
+                raise AssertionError('input image width must in range [32, 8192], curr is {}'.format(image.width))
+            elif image.height < 32 or image.height > 8192:
+                raise AssertionError('input image height must in range [32, 8192], curr is {}'.format(image.height))
             else:
                 # read input image bytes
                 image_bytes = io.BytesIO()
