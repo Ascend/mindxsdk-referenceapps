@@ -6,10 +6,10 @@
 项目的概述：基于MindX SDK，在昇腾平台上，开发端到端人群计数-人群密度估计，输入一幅人群图像，输出图像当中人的计数（估计）的结果。  
   
 项目的主要流程：  
-（1）输入类型是图片数据（jpg图片序列）,本项目使用的数据集图片来源是（https://pan.baidu.com/s/1iLqTLTEb3sgUX25-HXqngw 提取码：0418）   
+（1）输入类型是图片数据（jpg图片序列）,本项目使用的数据集图片来源是https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PersonCount/data.zip   
 （2）通过调用MindX SDK提供的图像解码接口mxpi_imagedecoder，解码后获取图像数据。  
 （3）然后进行图像尺寸大小变换，调用MindX SDK提供的图像尺寸大小变换接口mxpi_imageresize插件，检测模式的输入图像大小要求高800，宽1408。  
-（4）将尺寸变换后的图像数据输入人群计数模型进行推理,推理使用的caffemodel模型和om模型来源是(https://pan.baidu.com/s/1Qchq-hU_ciw_nD6s-qjB5A 提取码：osmv)。  
+（4）将尺寸变换后的图像数据输入人群计数模型进行推理,推理使用的caffemodel模型和om模型来源是https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PersonCount/model.zip。  
 （5）模型后处理，调用MindX SDK提供的模型推理插件mxpi_modelinfer，后处理配置文件存放的地址是"models/insert_op.cfg"。然后调用MindX SDK提供的插件mxpi_dataserialize，将stream结果组装成json字符串输出。  
 （6）模型输出经过后处理后，得到人群密度估计图和人群计数估计值。  
 场景限制：  
