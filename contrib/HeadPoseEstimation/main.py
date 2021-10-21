@@ -114,6 +114,13 @@ if __name__ == '__main__':
     whenet_result_index = 1
     if infer_result.size() == 0:
         print("infer_result is null")
+        image = cv2.imread('test.jpg')
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_res = copy.deepcopy(image)
+        image_res = cv2.cvtColor(image_res, cv2.COLOR_RGB2BGR)
+        SRC_PATH = os.path.realpath(__file__).rsplit("/", 1)[0]
+        Output_PATH = os.path.join(SRC_PATH, "./test_output.jpg")
+        cv2.imwrite(Output_PATH, image_res)
         exit()
 
     if infer_result[yolo_result_index].errorCode != 0:
@@ -170,7 +177,7 @@ if __name__ == '__main__':
                                 int(results[index].y1 + ((results[index].y1 - results[index].y0) * 0.1))), grey, 2)
         # plot head pose detection lines from whenet predictions
         cv2.line(image_res, (int(box_width), int(box_height)),
-                 (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
+                (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)
         cv2.line(image_res, (int(box_width), int(box_height)),
                 (int(detection_item["pitch_x"]), int(detection_item["pitch_y"])), green, line_thickness)
         cv2.line(image_res, (int(box_width), int(box_height)),
