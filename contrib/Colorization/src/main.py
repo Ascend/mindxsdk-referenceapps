@@ -83,6 +83,7 @@ if __name__ == '__main__':
     # 输入图片前处理 
     if os.path.exists(inputPic) != 1:
         print("The test image does not exist.")
+        exit()
     
     orig_shape, orig_l, l_data = preProcess(inputPic)
 
