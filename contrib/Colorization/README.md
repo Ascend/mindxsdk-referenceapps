@@ -12,6 +12,7 @@ Atlas300推理芯片
 
 ### 1.2 代码目录结构与说明
 
+```
 .
 ├── data
 ├── model
@@ -26,6 +27,7 @@ Atlas300推理芯片
 │   └── run.sh
 └── src
     └── main.py
+```
 
 ## 2 环境依赖
 
@@ -36,7 +38,8 @@ Atlas300推理芯片
 ### 2.2 软件依赖
 
 |     依赖软件     | 版本  |
-|------------------|-------| 
+|------------------|-------|
+|      CANN        | 20.2.rc1| 
 |     python       | 3.7.5 | 
 |    MindX_SDK     | 2.0.2 |
 |   opencv-python  | 4.5.3 |
@@ -47,14 +50,16 @@ Atlas300推理芯片
 示例步骤如下：
 ### 3.1 模型转换
 
-本工程原模型是caffee模型，需要使用atc工具转换为om模型，模型和所需权重文件已随工程上传，如需自行下载请使用以下命令下载
+本工程原模型是caffee模型，需要使用atc工具转换为om模型，模型和所需权重文件已上传，请使用以下命令创建目录并下载
 
 ```
+mkdir model
+cd model
 wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/colorization/colorization.prototxt
 wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/colorization/colorization.caffemodel
 ```
 
-下载完毕后将模型和权重文件移动至model目录，后进入scripts目录执行模型转换脚本
+下载完毕后，后进入scripts目录执行模型转换脚本
 
 ```
 cd scripts
@@ -66,16 +71,19 @@ bash atc_run.sh
 将待上色图片移动至data目录。本样例使用图片方式获取如下
 
 ```
+mkdir data
 cd data
 wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/colorization_picture-python/dog.png
 ```
 
 ### 3.3 运行推理工程
 
-进入scripts目录，修改INPUT_PIC变量为输入图片的路径，本示例为"../data/dog.png"，修改MX_SDK_HOME环境变量为SDK安装路径。
+创建out目录，并进入scripts目录，修改run.sh文件中INPUT_PIC变量为输入图片的路径，本示例为"../data/dog.png"，修改MX_SDK_HOME环境变量为SDK安装路径。
 执行脚本
 
 ```
+mkdir out
+cd ../scripts
 bash run.sh
 ```
 
