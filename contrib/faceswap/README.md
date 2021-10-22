@@ -52,7 +52,7 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸
 
 ## 4 模型获取及转换
 ### 4.1 人脸检测模型转换
-人脸检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的百度云[链接](https://pan.baidu.com/s/1mF_IY9g9rB_GSFaBhGY9jg) 提取码：rdkc， 点击`链接`，选择其中的yolov4_detection.om下载，获取相应的模型，将模型存放在工程/model目录下。
+人脸检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_detection.om) 点击`链接`，下载yolov4_detection.om,并将模型存放在工程/model目录下。
 ### 4.2 脸部特征点检测模型
 **步骤1**  
 在[Github_pfld_106_face_landmarks](https://github.com/Hsintao/pfld_106_face_landmarks) 上选择v3.onnx，下载特征点检测对应的onnx模型：[v3.onnx](https://github.com/Hsintao/pfld_106_face_landmarks/blob/master/output/v3.onnx) ；  
