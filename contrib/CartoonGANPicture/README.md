@@ -82,9 +82,7 @@ npu-smi info
 
 ### 3.1 模型下载
 
-[原始模型网络下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/cartoonization/cartoonization.pb)
-
-[对应的cfg文件下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/cartoonization/insert_op.cfg)
+[模型及配置文件下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CartoonGANPicture/model.zip)
 
 将下载好的模型和配置文件放入data/model目录下
 

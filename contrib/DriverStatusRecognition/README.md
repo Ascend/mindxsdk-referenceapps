@@ -8,11 +8,11 @@
 
 ## 基于MindSpore框架训练模型
 
-**步骤1** 训练数据获取 下载数据集 。[下载地址](https://www.kaggle.com/c/state-farm-distracted-driver-detection/leaderboard)
+**步骤1** 训练数据获取 下载数据集 。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/data.zip)
 
 **步骤2** 将数据集按照 4：1 分为训练集和验证集
 
-**步骤3** 训练代码下载  将获取到基于MindSpore的ResNet50模型 [下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/ea8c34895d1b4697b3f1e940da1e97d2)
+**步骤3** 训练代码下载  将获取到基于MindSpore的ResNet50模型 [下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/model.zip)
 
 **步骤3** 训练模型
 
@@ -41,8 +41,7 @@ def init_loss_scale():
 ```
 (3) .ckpt和.air模型下载
 
-链接：https://pan.baidu.com/s/12RJ8pep44YZJmUNDJ9Rd6Q 
-提取码：qwer
+[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/model.zip)
 
 (4) 转换模型
 

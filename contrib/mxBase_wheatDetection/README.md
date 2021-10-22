@@ -71,7 +71,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 在Github上下载YOLOv5的各个文件。[下载地址](https://github.com/ultralytics/yolov5)
 
-这里提供了已经转好的416*416尺寸的onnx和om模型。（提取码为rlyv）[下载地址](https://pan.baidu.com/s/1ePh-VOlem_Pmx6rQbUW0Kw)
+这里提供了已经转好的416*416尺寸的onnx和om模型，以及上述两个下载链接的模型和文件。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/mxBase_wheatDetection/model.zip)
 
 将下载的YOLOv5模型pt文件通过YOLOv5自带的export模型转换函数转换为onnx格式的文件（onnx模型已提供）
 ```
