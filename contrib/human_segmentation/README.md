@@ -27,8 +27,7 @@
 
 ## 4 模型转换
 人体语义分割采用提供的human_segmentation.pb模型。由于原模型是基于tensorflow的人体语义分割模型，因此我们需要借助于ATC工具将其转化为对应的om模型。  
-**步骤1**  在ModelZoo上下载human_segmentation原始模型：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/human_segmentation/human_segmentation.pb)      
-&ensp;&ensp;&ensp;&ensp;&ensp; 对应的cfg文件：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/human_segmentation/insert_op.cfg)  
+**步骤1**  [下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/human_segmentation/model.zip)  
 
 **步骤2**  将获取到的human_segmentation模型pb文件和cfg文件存放至：“项目所在目录/model”  
 
@@ -115,7 +114,7 @@ wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/human_segmentation/
 ```
 注：若想测试自己的.jpg图片可将其放如data目录下并修改main.cpp中int main函数的第一行std::string inputPicname = "test.jpg";将右边替换成自己图片的名称即可。
 编译项目文件
-   
+
     新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
    再执行make命令生成的smple就是CMakeLists文件中指定生成的可执行文件
 
@@ -130,3 +129,4 @@ wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/human_segmentation/
 
 6. 查看结果  
 执行`run.sh`文件后，可在工程目录`result`中查看人体语义分割结果。
+

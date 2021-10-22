@@ -73,9 +73,9 @@ make install
 
 > 模型转换
 
-**步骤1** 在ModelZoo上下载Resnet18模型权重和网络。[下载地址](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/gesture_recognition/ATC_gesture_recognition_Caffe_AE)
+**步骤1** 下载Resnet18模型权重和网络以及cfg文件。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VideoGestureRecognition/model.zip)
 
-**步骤2** 将获取到的Resnet18模型权重和网络文件存放至："样例项目所在目录/model/"，同时下载cfg文件：[下载方式]（wget https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/gesture_recognition/insert_op.cfg）
+**步骤2** 将获取到的文件存放至："样例项目所在目录/model/"
 
 **步骤3** 模型转换
 
@@ -106,7 +106,7 @@ atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel -
 > 相关参数修改
 
 main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频流格式为H264)。
-同样地测试视频也可在百度网盘下载（链接：https://pan.baidu.com/s/1E_A81t_OTJ7yXs7sACy1dg 提取码：eiP0）。
+同样地测试视频也可下载（[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VideoGestureRecognition/data.zip)）。
 
 提示：使用测试视频中的手势尺寸大致应为视频大小的二分之一，同时应当符合国际标准，背景要单一，手势要清晰，光线充足；视频切勿有遮挡，不清晰等情况。
 

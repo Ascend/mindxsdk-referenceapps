@@ -53,7 +53,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
   export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
   export ASCEND_OPP_PATH=${install_path}/opp
-
+  
   ```
 
 
@@ -61,7 +61,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ## 3 模型转换
 
 **步骤1** 模型获取
-下载RCF模型 。[下载地址](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/edge_detection/ATC_RCF_Caffe_AE)
+下载RCF模型 。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EdgeDetectionPicture/model.zip)
 
 **步骤2** 模型存放
 将获取到的RCF模型rcf.prototxt文件和rcf_bsds.caffemodel文件放在edge_detection_picture/model下
@@ -97,7 +97,7 @@ bash build.sh
 生成边缘检测图像 result/**.jpg
 
 ## 5 精度测试
-下载开源数据集 BSDS500 [下载地址](https://www2.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500), 使用 BSR/BSDS500/data/images/test数据进行测试
+下载开源数据集 BSDS500 [下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EdgeDetectionPicture/data.zip), 使用 BSR/BSDS500/data/images/test数据进行测试
 
 
 (1) 下载开源代码
