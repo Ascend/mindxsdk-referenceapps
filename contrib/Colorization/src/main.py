@@ -36,7 +36,7 @@ IMG_CHW_MAX = 255
 L_CHANL_DATA = 50 
 OUTPUT_DIR = '../out/'
 
-def preProcess(picPath):
+def preprocess(picPath):
     # 抽取黑白图像L通道
 
     bgr_img = cv.imread(picPath).astype(np.float32)
@@ -58,7 +58,7 @@ def preProcess(picPath):
     return orig_shape, orig_l, l_data
 
 
-def postProcess(result_list, pic, orig_shape, orig_l):
+def postprocess(result_list, pic, orig_shape, orig_l):
     # 预测a,b通道与初始L通道拼接获得彩色图像
 
     result_list = result_list.reshape(1, CHANL_NUM, OUT_W, OUT_H).transpose(0, CHANL_NUM, IMG_CHW_NUM, 1)
@@ -84,7 +84,6 @@ if __name__ == '__main__':
 
     # 构建pipeline
     pipeline = b"../pipeline/colorization.pipeline" 
-    #pipelineStr = json.dumps(pipeline).encode()
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     if os.path.exists(inputPic) != 1:
         print("The test image does not exist.")
     
-    origShape, origL, lData = preProcess(inputPic)
+    origShape, origL, lData = preprocess(inputPic)
     
     # 根据流名将检测目标传入流中
     streamName = b'colorization'
@@ -148,7 +147,7 @@ if __name__ == '__main__':
     res = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     
     # 推理结果后处理并输出结果
-    postProcess(res, inputPic, origShape, origL)
+    postprocess(res, inputPic, origShape, origL)
 
     # 销毁流 
     streamManagerApi.DestroyAllStreams()
