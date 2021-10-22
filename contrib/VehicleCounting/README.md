@@ -60,3 +60,14 @@
 ### 1.5 技术实现流程图
 
 ![Image text](https://gitee.com/wu-jindge/mindxsdk-referenceapps/raw/master/contrib/VehicleCounting/img/process.JPG)
+
+## 2 环境依赖
+环境依赖软件和版本如下表：
+
+
+
+| 软件                | 版本         | 说明                          | 获取方式                                                     |
+| ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
+| mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
+| Ascend-CANN-toolkit | 3.3.0        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
