@@ -7,4 +7,5 @@
 本样例配套的CANN版本为3.3.0，MindX SDK版本为2.0.2
 ### 1.3 软件方案介绍
 车流统计项目实现：输入类型是视频数据（需要将视频转换为.264的视频格式），ffmpeg打开视频流获取视频帧信息，图像经过尺寸大小变换，满足模型的输入尺寸要求；将尺寸变换后的图像数据依次输入Yolov4检测模型进行推理，模型输出经过后处理后，使用SORT算法进行车辆追踪得到车辆轨迹，再设置标志对车辆进行计数，最后得到某时刻已经通过的车辆数。
+
 本流程的视频检测模块参考的是Ascend的参考样例：[https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/mxBaseVideoSample](http://)
