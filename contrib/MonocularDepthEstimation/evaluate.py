@@ -50,13 +50,18 @@ def load_test_set(image_set_path, image_depth_info_path):
     :return: binary data of images and depth info of images
     """
     # check input paths
+    input_valid = True
     if os.path.exists(image_set_path) != 1:
-        error_message = "The test image set path does not exist."
-        raise FileNotFoundError(error_message)
+        input_valid = False
+        print('The image set path {} does not exist.'.format(image_set_path))
 
     if os.path.exists(image_depth_info_path) != 1:
-        error_message = "The test image depth info path does not exist."
-        raise FileNotFoundError(error_message)
+        input_valid = False
+        print('The image depth info path {} does not exist.'.format(image_depth_info_path))
+
+    if not input_valid:
+        print('input is invalid.')
+        return None, None
 
     # get all image files
     image_files = os.listdir(image_set_path)
@@ -147,12 +152,24 @@ if __name__ == '__main__':
     # load test images data and ground truth
     test_images_data, test_images_depth_data = load_test_set(test_image_set_path, test_image_depth_info_path)
 
+    if test_images_data is None or test_images_depth_data is None:
+        print('load test set ( {} and {} ) failed.'.format(test_image_set_path, test_image_depth_info_path))
+        exit(1)
+
     # model infer
     if os.path.exists(infer_result_cache_file) != 1:
         print('infer_result.npy not exist, infer all data.')
 
         # AdaBins_nyu model estimation
         test_images_infer_depth_info, test_images_info = depth_estimation(test_images_data, is_batch=True)
+
+        # check depth estimation result
+        if test_images_infer_depth_info is None or test_images_info is None or \
+                test_images_infer_depth_info.shape[0] < test_images_depth_data.shape[0] or \
+                test_images_info.shape[0] < test_images_data.shape[0]:
+            print('depth estimation error on test set.')
+            exit(1)
+
         # Bilinear sampling to restore to the original size
         test_images_infer_depth_info = bilinear_sampling(test_images_infer_depth_info, test_image_width,
                                                          test_image_height)

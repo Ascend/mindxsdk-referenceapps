@@ -1,12 +1,20 @@
 # 基于MxStream的AdaBins单目深度估计
 
-## 介绍
+## 1 介绍
 
 基于AdaBins室内模型的单目深度估计，输出输入图像的深度图 \
 样例输入：室内图片（如果要得到输出大小和输入完全一致的深度图，请输入宽 320 * n，高 240 * n 的图片）\
 样例输出：输入图片的深度图（灰度图形式）
 
-### 目录结构
+### 1.1 支持的产品
+昇腾310(推理)
+
+### 1.2 支持的版本
+本样例配套的CANN版本为 [3.3.0](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) 。
+
+MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
+
+### 1.3 目录结构
 ```
 .
 |-------- depth_estimation
@@ -31,16 +39,26 @@
 |-------- run.sh                                    // 样例运行脚本
 
 ```
+## 2 环境依赖
 
-### 准备工作
+### 2.1 软件版本
+| 软件                 | 版本         | 说明                          | 获取方式                                                     |
+| ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
+| mxVision            | 2.0.2       | mxVision软件包                  | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
+| Ascend-CANN-toolkit | 3.3.0       | Ascend-cann-toolkit开发套件包    | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| 操作系统             | Ubuntu 18.04 | 操作系统                        | Ubuntu官网获取                                               |
+
+
+### 2.2 准备工作
 
 > 模型转换
 
-**步骤1** 在 [GitHub AdaBins](https://github.com/shariqfarooq123/AdaBins) 上下载预训练模型 `AdaBins_nyu.pt`, [下载地址](https://drive.google.com/drive/folders/1nYyaQXOBjNdUJDsmJpcRpu6oE55aQoLA)
+**步骤1** 在 [GitHub AdaBins](https://github.com/shariqfarooq123/AdaBins) 上下载预训练模型 [AdaBins_nyu.pt](https://drive.google.com/drive/folders/1nYyaQXOBjNdUJDsmJpcRpu6oE55aQoLA) ，
+或者直接下载已经转换好的 [AdaBins_nyu.onnx]()，跳过 **步骤2** 直接进入om模型的转换
 
 **步骤2** 将获取到的 `AdaBins_nyu.pt` 转换为 `AdaBins_nyu.onnx`, [参考链接](https://blog.csdn.net/ApathyT/article/details/120834163)
 
-**步骤3** 将转换得到的 `AdaBins_nyu.onnx` 放在 `model` 目录下
+**步骤3** 将转换或下载得到的 `AdaBins_nyu.onnx` 放在 `model` 目录下
 
 **步骤4** 运行模型转换脚本 `model_conversion.sh` 或在 `model` 目录下执行以下命令
 
@@ -114,7 +132,7 @@ model_output_width = 320
    threshold_3 = 1.25 ** 3
 ```
 
-### 配置环境变量
+### 2.3 配置环境变量
 
 ```bash
 # 执行如下命令，打开.bashrc文件
@@ -139,7 +157,7 @@ source ~/.bashrc
 env
 ```
 
-### 运行
+## 3 运行
 手动运行请参照 ①， 脚本运行请参照 ②
 > ① 手动运行前请确保每一步环境变量均配置完成，随后进入工程目录，键入执行指令
 ```bash
@@ -166,5 +184,5 @@ bash run.sh -m infer -i image/test.jpg -o result/result.jpg
 bash run.sh -m evaluate
 ```
 
-### 查看结果
+## 4 查看结果
 执行`run.sh`完毕后，sample会将**图片深度信息**或**模型精度结果**保存在工程目录下`result`中。

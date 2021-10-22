@@ -55,29 +55,41 @@ if __name__ == '__main__':
     print('output result path: {}.'.format(output_result_path))
 
     # check input image
+    input_valid = False
+    min_image_size = 32
+    max_image_size = 8192
     if os.path.exists(input_image_path) != 1:
-        error_message = 'The {} does not exist'.format(input_image_path)
-        raise FileNotFoundError(error_message)
+        print('The {} does not exist.'.format(input_image_path))
     else:
         try:
             image = Image.open(input_image_path)
             if image.format != 'JPEG':
-                raise AssertionError('input image only support jpg')
-            elif image.width < 32 or image.width > 8192:
-                raise AssertionError('input image width must in range [32, 8192], curr is {}'.format(image.width))
-            elif image.height < 32 or image.height > 8192:
-                raise AssertionError('input image height must in range [32, 8192], curr is {}'.format(image.height))
+                print('input image only support jpg, curr format is {}.'.format(image.format))
+            elif image.width < min_image_size or image.width > max_image_size:
+                print('input image width must in range [{}, {}], curr width is {}.'.format(
+                    min_image_size, max_image_size, image.width))
+            elif image.height < min_image_size or image.height > max_image_size:
+                print('input image height must in range [{}, {}], curr height is {}.'.format(
+                    min_image_size, max_image_size, image.height))
             else:
+                input_valid = True
                 # read input image bytes
                 image_bytes = io.BytesIO()
                 image.save(image_bytes, format='JPEG')
                 input_image_data = image_bytes.getvalue()
         except IOError:
-            raise IOError(
-                'an IOError occurred while opening {}, maybe your input is not a picture'.format(input_image_path))
+            print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(input_image_path))
+
+    if not input_valid:
+        print('input image {} is invalid.'.format(input_image_path))
+        exit(1)
 
     # depth estimation
     depth_pic_array, input_image_info = depth_estimation(input_image_data)
+
+    if depth_pic_array is None or input_image_info is None:
+        print('depth estimation error.')
+        exit(1)
 
     # get size of input image and output depth image
     input_image_height = input_image_info[0][0]

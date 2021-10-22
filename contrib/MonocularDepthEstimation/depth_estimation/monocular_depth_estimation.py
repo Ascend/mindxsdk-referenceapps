@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 
 import MxpiDataType_pb2 as MxpiDataType
 import numpy as np
@@ -22,6 +23,9 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 # depth estimation model output size
 model_output_height = 240
 model_output_width = 320
+
+# depth estimation pipeline path
+depth_estimation_pipeline_path = 'pipeline/depth_estimation.pipeline'
 
 
 def infer(stream_manager, stream_name, in_plugin_id, data_input):
@@ -36,8 +40,8 @@ def infer(stream_manager, stream_name, in_plugin_id, data_input):
     # Inputs data to a specified stream based on streamName.
     unique_id = stream_manager.SendData(stream_name, in_plugin_id, data_input)
     if unique_id < 0:
-        error_message = 'Failed to send data to stream'
-        raise IOError(error_message)
+        print('Failed to send data to stream, ret = {}.'.format(unique_id))
+        return None, None, None
 
     # construct output plugin vector
     plugin_names = [b"mxpi_tensorinfer0", b"mxpi_imagedecoder0"]
@@ -49,13 +53,18 @@ def infer(stream_manager, stream_name, in_plugin_id, data_input):
     infer_result = stream_manager.GetProtobuf(stream_name, in_plugin_id, plugin_vec)
 
     # check whether the inferred results is valid
+    infer_result_valid = True
     if infer_result.size() == 0:
-        error_message = 'unable to get effective infer results, please check the stream log for details'
-        raise IOError(error_message)
+        infer_result_valid = False
+        print('unable to get effective infer results, please check the stream log for details.')
     if infer_result[0].errorCode != 0:
-        error_message = "GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            infer_result[0].errorCode, infer_result[0].data.decode())
-        raise AssertionError(error_message)
+        infer_result_valid = False
+        print('GetProtobuf error. errorCode = {}, errorMsg= {}.'.format(
+            infer_result[0].errorCode, infer_result[0].data.decode()))
+
+    if not infer_result_valid:
+        print('infer result is invalid.')
+        return None, None, None
 
     # get mxpi_tensorinfer0 output data
     infer_result_list = MxpiDataType.MxpiTensorPackageList()
@@ -95,17 +104,21 @@ def depth_estimation(images_data, is_batch=False):
     # init stream manager
     ret = stream_manager.InitManager()
     if ret != 0:
-        error_message = "Failed to init Stream manager, ret=%s" % str(ret)
-        raise ConnectionError(error_message)
+        print('Failed to init Stream manager, ret = {}.'.format(ret))
+        return None, None
+
+    if os.path.exists(depth_estimation_pipeline_path) != 1:
+        print('pipeline {} not exist.'.format(depth_estimation_pipeline_path))
+        return None, None
 
     # create streams by pipeline config file
-    with open('pipeline/depth_estimation.pipeline', 'rb') as f:
+    with open(depth_estimation_pipeline_path, 'rb') as f:
         pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
     pipeline_str = pipeline
     ret = stream_manager.CreateMultipleStreams(pipeline_str)
     if ret != 0:
-        error_message = "Failed to create Stream, ret=%s" % str(ret)
-        raise IOError(error_message)
+        print('Failed to create Stream, ret = {}.'.format(ret))
+        return None, None
 
     # config
     stream_name = b'estimation'
@@ -122,6 +135,14 @@ def depth_estimation(images_data, is_batch=False):
         data_input.data = images_data
         # model infer
         input_pic_width, input_pic_height, depth_info = infer(stream_manager, stream_name, in_plugin_id, data_input)
+
+        # check infer result
+        if input_pic_width is None or input_pic_height is None or depth_info is None:
+            print('depth estimation model infer error.')
+            # destroy streams
+            stream_manager.DestroyAllStreams()
+            return None, None
+
         # save data
         input_images_info = np.vstack([input_images_info, [input_pic_height, input_pic_width]])
         images_depth_info = np.vstack([images_depth_info, [depth_info]])
@@ -134,11 +155,16 @@ def depth_estimation(images_data, is_batch=False):
             # model infer
             input_pic_width, input_pic_height, depth_info = infer(stream_manager, stream_name, in_plugin_id, data_input)
 
+            # check infer result
+            if input_pic_width is None or input_pic_height is None or depth_info is None:
+                print('depth estimation model infer error on {}-th image.'.format(index))
+                continue
+
             # save infer result
             index += 1
             input_images_info = np.vstack([input_images_info, [input_pic_height, input_pic_width]])
             images_depth_info = np.vstack([images_depth_info, [depth_info]])
-            print('processed {}-th image: height = {} width = {}'.format(index, input_pic_height, input_pic_width))
+            print('processed {}-th image: height = {} width = {}.'.format(index, input_pic_height, input_pic_width))
 
     # destroy streams
     stream_manager.DestroyAllStreams()
