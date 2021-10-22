@@ -144,9 +144,6 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
                 tensorList = MxpiDataType.MxpiVisionList()
                 tensorList.ParseFromString(inferResult[1].messageBuf)
                 filterImageCount = 0
-                print(file)
-                print(len(objectList.objectVec))
-                print(len(tensorList.visionVec))
 
                 for detectedItemIndex in range(0, len(objectList.objectVec)):
                     item = objectList.objectVec[detectedItemIndex]
