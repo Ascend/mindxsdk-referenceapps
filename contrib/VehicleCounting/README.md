@@ -59,4 +59,4 @@
 
 ### 1.5 技术实现流程图
 
-![Image text](https://gitee.com/wu-jindge/mindxsdk-referenceapps/blob/master/contrib/VehicleCounting/img/face.jpg)
+![Image text](https://gitee.com/wu-jindge/mindxsdk-referenceapps/blob/master/contrib/VehicleCounting/img/process.JPG)
