@@ -57,10 +57,10 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 在编译运行项目前，需要设置环境变量：
 
-- 环境变量介绍
+将下述环境变量中的{MX_INSTALL_PATH}替换为实际的安装路径，一般为/usr/local/Ascend/ascend-toolkit/latest
 
 ```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
+export install_path={MX_INSTALL_PATH}
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
@@ -71,54 +71,41 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 **步骤1** 
 
-下载原始模型权重下载：
+下载原始模型权重、原始模型网络、对应的cfg文件：
 
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.caffemodel](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.caffemodel)
+[模型及配置文件下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CrowdCounting/model.zip)
 
-**步骤2** 
+**步骤2**
 
-下载原始模型网络：
-
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.prototxt](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.prototxt)
-
-**步骤3**
-
-下载对应的cfg文件：
-
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/insert_op.cfg](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/insert_op.cfg)
-
-**步骤4**
-
-使用ATC模型转换工具进行模型转换时可以参考如下指令:
+将上述下载得文件统一放在CrowdCounting/model文件夹下，并使用ATC模型转换工具进行模型转换，参考如下指令:
 
 ```
 atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" --input_format=NCHW --output="count_person.caffe" --soc_version=Ascend310 --insert_op_conf=insert_op.cfg --framework=0 --model="count_person.caffe.prototxt" 
 ```
 
+得到count_person.caffe.om文件
+
 ## 4 编译与运行
+
 **步骤1** 
 
 修改CMakeLists.txt文件 将set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")中的"$ENV{MX_SDK_HOME}"替换为实际的SDK安装路径
 
 **步骤2** 
 
-设置环境变量 ASCEND_HOME Ascend安装的路径，一般为/usr/local/Ascend LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及模型后处理开发的动态链接库路径，比如：libyolov3postprocess.so
-
-```
-export ASCEND_HOME=/usr/local/Ascend
-export ASCEND_VERSION=nnrt/latest
-export ARCH_PATTERN=.
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/
-opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
-```
+cd到CrowdCounting目录下，执行如下编译命令： bash build.sh
 
 **步骤3** 
 
-cd到CrowdCounting目录下，执行如下编译命令： bash build.sh
+设置环境变量 ASCEND_HOME Ascend安装的路径，将${MX_SDK_HOME}改为实际安装路径，一般为/usr/local/Ascend    LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及模型后处理开发的动态链接库路径，比如：libyolov3postprocess.so
+
+```
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
+```
 
 **步骤4**
 
-下载人群计数图像，需自行在网络找图。再将该下载的图片作为推理图片放入CrowdCounting目录下，执行：
+下载人群计数图像，需自行在网络找图，暂支持JPG格式，任意图像分辨率。再将该下载的图片作为推理图片放入CrowdCounting目录下，执行：
 
 ```
 ./crowd_counting  ./xxx.jpg

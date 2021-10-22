@@ -141,7 +141,7 @@
 
 注：本例中mxVision SDK安装路径为 /root/work/MindX_SDK/mxVision。
 
-**步骤3：** 推荐在${MX_SDK_HOME}/samples下创建ActionRecognition根目录，在项目根目录下创建目录models `mkdir models`，分别为yolov3和ECONet创建一个文件夹，将两个离线模型及各自的配置文件放入文件夹下。下载地址：[Baiduyun](https://pan.baidu.com/s/1IEWS0IjOFaQrXFdt-4kSRg)(passwd: rdpu)。创建完成后models文件夹下的目录结构如下：
+**步骤3：** 推荐在${MX_SDK_HOME}/samples下创建ActionRecognition根目录，在项目根目录下创建目录models `mkdir models`，分别为yolov3和ECONet创建一个文件夹，将两个离线模型及各自的配置文件放入文件夹下。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/models.zip)。创建完成后models文件夹下的目录结构如下：
 
 ```
 .models
@@ -418,7 +418,7 @@ terminate called after throwing an instance of 'cv::Exception'
 
 ### 7.3 数据下载与RTSP
 
-H264视频文件及ROI文件：[Baiduyun](https://pan.baidu.com/s/1Xz378sHh0WeeeYIjnZ-pPQ) ，提取码：as01 ；
+H264视频文件及ROI文件：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/data.zip) ；
 
 RTSP取流地址（可以从网络摄像机获取，也可通过Live555等工具将本地视频文 件转换为rtsp流）。自主搭建RTSP拉流教程：[live555链接](https://bbs.huaweicloud.com/forum/thread-68720-1-1.html)，需要注意的是在搭建RTSP时，使用./genMakefiles <os-platform>命令生成编译文件时，输入的<os-platform>参数是根据cofig.<后缀>获取的，与服务器架构等有关。
 
