@@ -73,6 +73,7 @@ npu-smi info
 |ubantu|18.04.1 LTS   |
 |MindX SDK|2.0.2|
 |Python|3.7.5|
+|CANN|3.3.0|
 
 在编译运行项目前，需要设置环境变量：
 
@@ -126,7 +127,7 @@ cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugi
 
 修改`pipeline/recognition.pipeline`文件中: **mxpi_objectpostprocessor0**插件的`postProcessLibPath`属性，修改为
 ```
-{MindXSDK实际安装目录}/lib/modelpostprocessors/libyolov3postprocess.so
+{SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so
 ```
 **步骤4** 
 
