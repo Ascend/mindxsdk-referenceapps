@@ -36,7 +36,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/yolov4.cfg",
                 "labelPath": "./models/coco.names",
-                "postProcessLibPath": "../../MindXSDK/mxVision-2.0.2/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "{SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "next": "mxpi_distributor0",
             "factory": "mxpi_objectpostprocessor"
@@ -57,7 +57,7 @@
                 "resizeHeight": "224",
                 "leftExpandRatio": "0.25",
                 "rightExpandRatio": "0.25",
-				"upExpandRatio": "0.25",
+				"upExpandRatio": "0.35",
 				"downExpandRatio": "0.1",
                 "resizeType": "Resizer_Stretch"
             },
@@ -72,7 +72,7 @@
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_headposeplugin0"
         },
-		"mxpi_headposeplugin0": {
+        "mxpi_headposeplugin0": {
             "props": {
                 "dataSource":"mxpi_tensorinfer1",
                 "descriptionMessage": "Don’t panic!"

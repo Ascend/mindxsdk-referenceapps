@@ -38,10 +38,11 @@ def whenet_draw(yaw, pitch, roll, tdx=None, tdy=None, size=200):
     Returns:
         graph: locations of three lines
     """
-    # taken from hopenet
-    pitch = pitch * np.pi / 180
-    yaw = -(yaw * np.pi / 180)
-    roll = roll * np.pi / 180
+    # Angle to radian: radian = angle * 2pi / circumferential_angle
+    circumferential_angle = 360
+    pitch = pitch * 2 * np.pi / circumferential_angle
+    yaw = -(yaw * 2 * np.pi / circumferential_angle)
+    roll = roll * 2 * np.pi / circumferential_angle
 
     tdx = tdx
     tdy = tdy
@@ -166,15 +167,21 @@ if __name__ == '__main__':
 
         # plot head detection box from yolo predictions
         line_thickness = 4
+        frame_thickness = 2
         red = (255, 0, 0)
         green = (0, 255, 0)
         blue = (0, 0, 255)
         grey = (127, 125, 125)
 
-        cv2.rectangle(image_res, (int(results[index].x0 - ((results[index].x1 - results[index].x0) * 0.25)),
-                                int(results[index].y0 - ((results[index].y1 - results[index].y0) * 0.35))),
-                                (int(results[index].x1 + ((results[index].x1 - results[index].x0) * 0.25)),
-                                int(results[index].y1 + ((results[index].y1 - results[index].y0) * 0.1))), grey, 2)
+        upExpandRatio = 0.35
+        downExpandRatio = 0.1
+        leftExpandRatio = 0.25
+        rightExpandRatio = 0.25
+        cv2.rectangle(image_res, (int(results[index].x0 - ((results[index].x1 - results[index].x0) * leftExpandRatio)),
+                                int(results[index].y0 - ((results[index].y1 - results[index].y0) * upExpandRatio))),
+                                (int(results[index].x1 + ((results[index].x1 - results[index].x0) * rightExpandRatio)),
+                                int(results[index].y1 + ((results[index].y1 - results[index].y0) * downExpandRatio))),
+                                grey, frame_thickness)
         # plot head pose detection lines from whenet predictions
         cv2.line(image_res, (int(box_width), int(box_height)),
                 (int(detection_item["yaw_x"]), int(detection_item["yaw_y"])), red, line_thickness)

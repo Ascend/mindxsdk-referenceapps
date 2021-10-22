@@ -24,9 +24,11 @@ using namespace MxTools;
 using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiTensorPackageList";
+    const int TENSORS_PER_OBJECT = 3;
+    const int BIN_WIDTH_IN_DEGREES = 3;
 }
 
-// decode MxpiTensorPackageList
+// Unpack MxpiTensorPackageList
 void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
                 std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
@@ -68,6 +70,23 @@ void Softmax(std::vector<float> myVector, std::vector<float> &result){
     }
 }
 
+// Get Predicted Angle From Tensor
+float GetAngleFromTensor(MxBase::TensorBase tensor, const int shape_size) {
+    auto dataPtr = (float *)tensor.GetBuffer();
+        std::vector<float> myangle, angle_predicted_vec;
+        for(int i = 0; i < shape_size; i++){
+            myangle.push_back(dataPtr[i]);
+        }
+        Softmax(myangle, angle_predicted_vec);
+        float angle_predicted = 0;
+        for(int i = 0; i < shape_size; i++){
+            angle_predicted += angle_predicted_vec[i] * i;
+        }
+        // Divide by 2 to turn the angle into the same positive and negative range,so as to avoid being positive numbers
+        angle_predicted = angle_predicted * BIN_WIDTH_IN_DEGREES - (shape_size / 2 * BIN_WIDTH_IN_DEGREES);
+        return angle_predicted;
+}
+
 APP_ERROR MxpiHeadPosePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
     LogInfo << "MxpiHeadPosePlugin::Init start.";
@@ -107,52 +126,25 @@ APP_ERROR MxpiHeadPosePlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::st
 APP_ERROR MxpiHeadPosePlugin::GenerateHeadPoseInfo(const MxpiTensorPackageList srcMxpiTensorPackage,
     mxpiheadposeproto::MxpiHeadPoseList& dstMxpiHeadPoseList)
 {
-    // Get Tensor
+    // Get Tensors
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
-    if (tensors.size() % 3 == 0) {
-        for(int index = 0; index < tensors.size(); index = index + 3){
+    if (tensors.size() % TENSORS_PER_OBJECT == 0) {
+        for(int index = 0; index < tensors.size(); index = index + TENSORS_PER_OBJECT){
             // Get output shape of model
-            auto headpose1 = tensors[index].GetShape();
-            auto headpose2 = tensors[index + 1].GetShape();
-            auto headpose3 = tensors[index + 2].GetShape();
+            int yaw_index = index;
+            int pitch_index = index + 1;
+            int roll_index = index + 2;
+            auto yaw_shape = tensors[yaw_index].GetShape();
+            auto pitch_shape = tensors[pitch_index].GetShape();
+            auto roll_shape = tensors[roll_index].GetShape();
 
             // Generate yaw,pitch,roll
-            auto yaw_dataPtr = (float *)tensors[index].GetBuffer();
-            std::vector<float> myyaw, yaw_predicted_vec;
-            for(int i = 0; i < headpose1[1]; i++){
-                myyaw.push_back(yaw_dataPtr[i]);
-            }
-            Softmax(myyaw, yaw_predicted_vec);
-            float yaw_predicted = 0;
-            for(int i = 0; i < headpose1[1]; i++){
-                yaw_predicted += yaw_predicted_vec[i] * i;
-            }
-            yaw_predicted = yaw_predicted * 3 - 180;
-
-            auto pitch_dataPtr = (float *)tensors[index + 1].GetBuffer();
-            std::vector<float> mypitch, pitch_predicted_vec;
-            for(int i = 0; i < headpose2[1]; i++){
-                mypitch.push_back(pitch_dataPtr[i]);
-            }
-            Softmax(mypitch, pitch_predicted_vec);
-            float pitch_predicted = 0;
-            for(int i = 0; i < headpose2[1]; i++){
-                pitch_predicted += pitch_predicted_vec[i] * i;
-            }
-            pitch_predicted = pitch_predicted * 3 - 99;
-
-            auto roll_dataPtr = (float *)tensors[index + 2].GetBuffer();
-            std::vector<float> myroll, roll_predicted_vec;
-            for(int i = 0; i < headpose2[1]; i++){
-                myroll.push_back(roll_dataPtr[i]);
-            }
-            Softmax(myroll, roll_predicted_vec);
-            float roll_predicted = 0;
-            for(int i = 0; i < headpose3[1]; i++){
-                roll_predicted += roll_predicted_vec[i] * i;
-            }
-            roll_predicted = roll_predicted * 3 - 99;
+            int effective_shape_index = 1;
+            // Shape: [1, effective_shape]
+            float yaw_predicted = GetAngleFromTensor(tensors[yaw_index], yaw_shape[effective_shape_index]);
+            float pitch_predicted = GetAngleFromTensor(tensors[pitch_index], pitch_shape[effective_shape_index]);
+            float roll_predicted = GetAngleFromTensor(tensors[roll_index], roll_shape[effective_shape_index]);
 
             // Generate HeadPoseInfo
             auto dstMxpiHeadPoseInfoPtr = dstMxpiHeadPoseList.add_headposeinfovec();
