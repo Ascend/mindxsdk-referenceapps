@@ -21,6 +21,8 @@ import argparse
 import os
 import cv2
 import numpy as np
+import io
+from PIL import Image
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -95,11 +97,27 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
     for root, dirs, files in os.walk(imagePath):
         for file in files:
             if file.endswith('.jpg'):
-
-                queryDataInput = MxDataInput()
                 filePath = os.path.join(root, file)
-                with open(filePath, 'rb') as f:
-                    queryDataInput.data = f.read()
+
+                try:
+                    image = Image.open(filePath)
+                    if image.format != 'JPEG':
+                        raise AssertionError('input image only support jpg')
+                    elif image.width < 32 or image.width > 8192:
+                        raise AssertionError(
+                            'input image width must in range [32, 8192], curr is {}'.format(image.width))
+                    elif image.height < 32 or image.height > 8192:
+                        raise AssertionError(
+                            'input image height must in range [32, 8192], curr is {}'.format(image.height))
+                    else:
+                        # read input image bytes
+                        image_bytes = io.BytesIO()
+                        image.save(image_bytes, format='JPEG')
+                except IOError:
+                    raise IOError(
+                        'an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
+                queryDataInput = MxDataInput()
+                queryDataInput.data = image_bytes.getvalue()
 
                 # send the prepared data to the stream
                 uniqueId = streamApi.SendData(StreamName, InPluginId, queryDataInput)
@@ -125,11 +143,21 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
                 # get the crop tensor
                 tensorList = MxpiDataType.MxpiVisionList()
                 tensorList.ParseFromString(inferResult[1].messageBuf)
+                filterImageCount = 0
+                print(file)
+                print(len(objectList.objectVec))
+                print(len(tensorList.visionVec))
+
                 for detectedItemIndex in range(0, len(objectList.objectVec)):
                     item = objectList.objectVec[detectedItemIndex]
+                    xLength = int(item.x1) - int(item.x0)
+                    yLength = int(item.y1) - int(item.y0)
+                    if xLength < 32 or yLength < 6:
+                        filterImageCount += 1
+                        continue
                     if item.classVec[0].className == "person":
-                        cropData = tensorList.visionVec[detectedItemIndex].visionData.dataStr
-                        cropInformation = tensorList.visionVec[detectedItemIndex].visionInfo
+                        cropData = tensorList.visionVec[detectedItemIndex - filterImageCount].visionData.dataStr
+                        cropInformation = tensorList.visionVec[detectedItemIndex - filterImageCount].visionInfo
                         img_yuv = np.frombuffer(cropData, np.uint8)
                         img_bgr = img_yuv.reshape(cropInformation.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
                                                   cropInformation.widthAligned)
@@ -140,7 +168,7 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--imageFilePath', type=str, default='data/ownDataset', help="Query File Path")
+    parser.add_argument('--imageFilePath', type=str, default='data/ownGallery', help="Query File Path")
     parser.add_argument('--outputFilePath', type=str, default='data/cropOwnDataset', help="Gallery File Path")
     opt = parser.parse_args()
     streamManagerApi = initialize_stream()

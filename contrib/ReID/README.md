@@ -163,8 +163,8 @@ ATC run success, welcome to the next use.
 ，也可以通过[Baidu Cloud，提取码：2xm1](https://pan.baidu.com/s/1UcqZ0G7X8dejR8ROPMsU5A)
 获取，然后将获取的图片放在“项目所在目录/data/gallerySet”中 
 
-5.2 自制数据集
-
+5.2 自制数据集  
+这里需要注意的是，自制数据集中的所有图片必须严格控制为横屏风格（图片的长度必须严格大于宽度）  
 涉及文件夹  
 > “项目所在目录/data/ownDataset”：用于存放制作行人底库的场景图片  
 > “项目所在目录/data/cropOwnDataset”：用于保存从场景图片提取的行人图片  
@@ -175,7 +175,7 @@ ATC run success, welcome to the next use.
 
 **步骤2** 调用makeYourOwnDataset.py将“项目所在目录/data/ownDataset”路径下场景图片中的所有行人提取出来，结果存放在“项目所在目录/data/cropOwnDataset”中
 ```
-python3.7 makeYoutOwnDataset.py --imageFilepath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
+python3.7 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
 ```
 **步骤3** 根据“项目所在目录/data/cropOwnDataset”中的结果，选择自己想要查询的行人，按照market1501的命名方式命名  
 > 将同一个行人的不同照片重命名成“xxxx_xx”，其中前4位是行人ID，后2位是该照片ID，例：第1个行人的第2张照片：0001_02  
@@ -267,7 +267,9 @@ env
 ```
 python3.7 main.py --queryFilePath='data/querySet' --galleryFilePath='data/gallerySet' --matchThreshold=0.3
 ```
-> matchThreshold是行人重定位的阈值，默认值是0.3，可根据行人底库的数量进行调整，建议的范围是0.2~0.35之间
+> matchThreshold是行人重定位的阈值，默认值是0.3，可根据行人底库的数量进行调整，建议的范围是0.2~0.4之间  
+> 如果使用自制数据集，可能由于数据噪声问题导致误报或漏检，此时将阈值酌情调大可减缓  
+> 尽可能选择背景与行人区别较为明显的图片作为自制数据集
 
 6.6 查看结果  
 执行`main.py`文件后，可在“项目所在目录/result”路径下查看结果。

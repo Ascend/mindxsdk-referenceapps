@@ -21,6 +21,8 @@ import argparse
 import os
 import cv2
 import numpy as np
+import io
+from PIL import Image
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -170,9 +172,22 @@ def get_pipeline_results(filePath, streamApi):
     for key in pluginNames:
         pluginNameVector.push_back(key)
 
+    try:
+        image = Image.open(filePath)
+        if image.format != 'JPEG':
+            raise AssertionError('input image only support jpg')
+        elif image.width < 32 or image.width > 8192:
+            raise AssertionError('input image width must in range [32, 8192], curr is {}'.format(image.width))
+        elif image.height < 32 or image.height > 8192:
+            raise AssertionError('input image height must in range [32, 8192], curr is {}'.format(image.height))
+        else:
+            # read input image bytes
+            image_bytes = io.BytesIO()
+            image.save(image_bytes, format='JPEG')
+    except IOError:
+        raise IOError('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
     galleryDataInput = MxDataInput()
-    with open(filePath, 'rb') as f:
-        galleryDataInput.data = f.read()
+    galleryDataInput.data = image_bytes.getvalue()
 
     # send the prepared data to the stream
     uniqueId = streamApi.SendData(GALLERY_STREAM_NAME, IN_PLUGIN_ID, galleryDataInput)
@@ -224,13 +239,17 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
     # store the information and features for detected person
     detectedPersonInformation = []
     detectedPersonFeature = []
+    filterImageCount = 0
 
     # select the detected person, and store its location and features
     for detectedItemIndex in range(0, len(objectList.objectVec)):
         detectedItem = objectList.objectVec[detectedItemIndex]
+        xLength = int(detectedItem.x1) - int(detectedItem.x0)
+        yLength = int(detectedItem.y1) - int(detectedItem.y0)
+        if xLength < 32 or yLength < 6:
+            filterImageCount += 1
+            continue
         if detectedItem.classVec[0].className == "person":
-            xLength = int(detectedItem.x1) - int(detectedItem.x0)
-            yLength = int(detectedItem.y1) - int(detectedItem.y0)
             # ignore the detected person with small size
             # you can change the threshold
             if xLength * yLength < DETECTED_PERSON_THRESHOLD:
@@ -238,9 +257,8 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
             detectedPersonInformation.append({'x0': int(detectedItem.x0), 'x1': int(detectedItem.x1),
                                               'y0': int(detectedItem.y0), 'y1': int(detectedItem.y1)})
             detectedFeature = \
-                np.frombuffer(featureList.tensorPackageVec[detectedItemIndex].tensorVec[0].dataStr,
+                np.frombuffer(featureList.tensorPackageVec[detectedItemIndex - filterImageCount].tensorVec[0].dataStr,
                               dtype=np.float32)
-
             cv2.normalize(src=detectedFeature, dst=detectedFeature, norm_type=cv2.NORM_L2)
             detectedPersonFeature.append(detectedFeature.tolist())
 
