@@ -20,7 +20,7 @@
 | 5    | 目标跟踪         | 调用mxBase::MultipleObjectTracking和Hungarian接口完成车辆目标跟踪        |
 | 6    | 车辆计数         | 设置标志对通过的车辆进行计数                                |
 | 7    | 保存结果         | 使用opencv进行结果可视化并保存为视频文件                      |
-| 8    | 设备去初始化      | 调用mxBase::DeviceManager接口完成推理卡设备的去初始化。      |
+| 8    | 资源释放         | 调用mxBase::DeviceManager接口完成推理卡设备的去初始化。      |
 
 
 
