@@ -22,6 +22,35 @@
 | 7    | 保存结果         | 使用opencv进行结果可视化并保存为视频文件                      |
 | 8    | 资源释放         | 调用mxBase::DeviceManager接口完成推理卡设备的去初始化。      |
 
+### 1.4 代码目录结构与说明
 
-
+本sample工程名称为VehicleCounting，工程目录如下图所示：
+```
+.
+├── data
+│   └── test.264
+├── model
+│   ├── aipp_yolov3_416_416.aippconfig
+│   ├── coco.names
+│   ├── yolov3_tf_bs1_fp16.om
+│   ├── yolov4_bs.om
+├── BlockingQueue
+│   ├── BlockingQueue.h
+├── VideoProcess
+│   ├── DataType.h
+│   ├── Hungarian.h
+│   ├── Hungarian.cpp
+│   ├── KalmanTracker.h
+│   ├── KalmanTracker.cpp
+│   ├── MOTConnection.h
+│   ├── MOTConnection.cpp
+│   ├── VideoProcess.h
+│   ├── VideoProcess.cpp
+├── Yolov4Detection
+│   ├── Yolov4Detection.h
+│   ├── Yolov4Detection.cpp
+├── CMakeLists.txt
+├── main.cpp
+├── README.md
+└── run.sh
 
