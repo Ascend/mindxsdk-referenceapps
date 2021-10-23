@@ -120,7 +120,7 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 
 //-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
 ```
-**步骤2** 配置CMakeLists.txt文件中的MX_SDK_HOME与FFMPEG_PATH环境变量，将set(MX_SDK_HOME ${SDK安装路径})和set(FFMPEG_PATH ${ffmpeg安装路径})中的${SDK安装路径}替换为实际的SDK安装路径，${ffmpeg安装路径}替换为实际的ffmpeg安装路径。
+**步骤2** 配置CMakeLists.txt文件中的MX_SDK_HOME与FFMPEG_PATH环境变量，将set(MX_SDK_HOME ${SDK安装路径})中的${SDK安装路径}替换为实际的SDK安装路径和set(FFMPEG_PATH ${ffmpeg安装路径})中的${ffmpeg安装路径}替换为实际的ffmpeg安装路径。
 
 ```
 set(MX_SDK_HOME {SDK实际安装路径})
