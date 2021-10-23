@@ -80,3 +80,32 @@
 
 **步骤1** 模型获取
 在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)，选择“历史版本”中版本1.1下载）
+
+**步骤2** 模型存放
+将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/model/"。
+
+**步骤3** 模型转换
+在onnx文件所在目录下执行一下命令
+
+```
+# 设置环境变量（请确认install_path路径是否正确）
+# Set environment PATH (Please confirm that the install_path is correct).
+
+export install_path=/usr/local/Ascend/ascend-toolkit/latest
+export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
+export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
+export ASCEND_OPP_PATH=${install_path}/opp
+
+# 执行，转换YOLOv4模型
+# Execute, transform YOLOv4 model.
+
+atc --model=./yolov4_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp.config --input_shape="input:1,3,608,608" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
+# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+```
+
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
+
+模型转换使用了ATC工具，如需更多信息请参考:
+
+ https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
