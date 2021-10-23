@@ -98,7 +98,7 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
 # 执行，转换YOLOv4/YOLOv3模型
-# Execute, transform YOLOv4 model.
+# Execute, transform YOLOv4/YOLOv3 model.
 
 YOLOv4:
 atc --model=./yolov4_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp.config --input_shape="input:1,3,608,608" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
@@ -167,3 +167,9 @@ bash run.sh
 执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
 
 ## 6 常见问题
+### 模型更换问题
+**问题描述** 在用YOLOv4模型替换YOLOv3模型的时候，由于模型的输入的图片resize大小不一样以及模型输出的通道顺序也不一样，会导致模型无法正常推理和后处理
+**解决方案** 将YolovDetection.cpp中的图片resize大小由416*416改为608*608，并将main.cpp文件里的modelType由0改为1
+
+### 更换视频样例问题
+在测试更换视频样例时需要在VideoProcess.cpp文件中，设置视频的宽高值为样例的实际宽高值。并且车辆计数所用的标志位要根据视频实际情况和自己所想要计数的位置来重新规划
