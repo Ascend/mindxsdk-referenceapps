@@ -71,4 +71,4 @@
 | mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
 | Ascend-CANN-toolkit | 3.3.0        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
-| ffmpeg             | 4.2.1        | 视频转码解码组件              | [安装教程](https://bbs.huaweicloud.com/forum/thread-142431-1-1.html)|                                              | pc端ffmpeg         | 2021-09-01   | 将视频文件格式转换为.264      | [安装教程](https://gitee.com/ascend/mindxsdk)|
+| ffmpeg             | 4.2.1        | 视频转码解码组件              | [安装教程](https://bbs.huaweicloud.com/forum/thread-142431-1-1.html)|                                              | pc端ffmpeg         | 2021-09-01   | 将视频文件格式转换为.264      | [安装教程](https://bbs.huaweicloud.com/forum/thread-142431-1-1.html)|
