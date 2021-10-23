@@ -77,3 +77,6 @@
 
 
 ## 3 模型转换
+
+**步骤1** 模型获取
+在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)，选择“历史版本”中版本1.1下载）
