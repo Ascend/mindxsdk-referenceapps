@@ -114,9 +114,54 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
  https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 
 ## 4 编译与运行
-**步骤1** 通过pc端ffmpeg软件将视频格式转换为.264格式，如下所示为MP4转换为h.264命令：
+**步骤1** 通过pc端ffmpeg软件将输入视频格式转换为.264格式，如下所示为MP4转换为h.264命令：
 ```
-ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test1.264
+ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.264
 
 //-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
 ```
+**步骤2** 配置CMakeLists.txt文件中的`MX_SDK_HOME`与`FFMPEG_PATH`环境变量，将set(MX_SDK_HOME ${SDK安装路径})和set(FFMPEG_PATH {ffmpeg安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径，{ffmpeg安装路径}替换为实际的ffmpeg安装路径。
+
+```
+set(MX_SDK_HOME {SDK实际安装路径})
+set(FFMPEG_PATH {ffmpeg安装路径})
+```
+**步骤3** 设置环境变量
+FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
+LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
+```
+export FFMPEG_HOME=/home/cqu_liyong1/local/ffmpeg
+export MX_SDK_HOME=/home/cqu_liu1/MindXSDK/mxVision-2.0.2
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/python3.7.5/lib:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
+```
+**步骤4** 编译项目文件
+
+新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
+
+```
+mkdir build
+
+cd build
+
+cmake ..
+
+make -j
+Scanning dependencies of target stream_pull_test
+[ 25%] Building CXX object CMakeFiles/stream_pull_test.dir/main.cpp.o
+[ 50%] Building CXX object CMakeFiles/stream_pull_test.dir/VideoProcess/VideoProcess.cpp.o
+[ 75%] Building CXX object CMakeFiles/stream_pull_test.dir/Yolov3Detection/Yolov3Detection.cpp.o
+[100%] Linking CXX executable ../stream_pull_test
+[100%] Built target stream_pull_test
+
+# stream_pull_test就是CMakeLists文件中指定生成的可执行文件。
+```
+
+**步骤5** 运行
+将**步骤1**转换的视频文件test.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
+```
+chmod +x run.sh
+bash run.sh
+```
+**步骤6** 结果
+
+执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
