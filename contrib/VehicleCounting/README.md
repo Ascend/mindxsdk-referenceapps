@@ -97,15 +97,26 @@ export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/p
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
-# 执行，转换YOLOv4模型
+# 执行，转换YOLOv4/YOLOv3模型
 # Execute, transform YOLOv4 model.
 
+YOLOv4:
 atc --model=./yolov4_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp.config --input_shape="input:1,3,608,608" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
+YOLOv3:
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4/YOLOv3模型：链接
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
  https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+
+## 4 编译与运行
+**步骤1** 通过pc端ffmpeg软件将视频格式转换为.264格式，如下所示为MP4转换为h.264命令：
+```
+ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test1.264
+
+//-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
+```
