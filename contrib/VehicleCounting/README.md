@@ -107,7 +107,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4/YOLOv3模型：链接
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4/YOLOv3 om模型：链接
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
@@ -162,6 +162,8 @@ Scanning dependencies of target stream_pull_test
 chmod +x run.sh
 bash run.sh
 ```
-**步骤6** 结果
+**步骤6** 查看结果
 
 执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
+
+## 6 常见问题
