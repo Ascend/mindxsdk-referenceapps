@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import io
 import json
 import os
 import sys
@@ -30,6 +31,8 @@ SCALE = 3
 FONT_SIZE = 16
 OFFSET_5 = 5
 OFFSET_20 = 20
+MIN_IMAGE_SIZE = 32
+MAX_IMAGE_SIZE = 8192
 
 
 if __name__ == '__main__':
@@ -87,43 +90,56 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
+    # input image path
     input_image_path = "./image/head.jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':
-            print('input image path is valid, use default config.')
+            print('input image path is not valid, use default config.')
         else:
             input_image_path = sys.argv[1]
+
     # check input image
     if os.path.exists(input_image_path) != 1:
-        print("The image image does not exist.")
+        print('The {} does not exist.'.format(input_image_path))
+    else:
+        image = Image.open(input_image_path)
+        if image.format != 'JPEG':
+            print('input image only support jpg, curr format is {}.'.format(image.format))
+        elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
+            print('input image width must in range [{}, {}], curr width is {}.'.format(
+                MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.width))
+        elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
+            print('input image height must in range [{}, {}], curr height is {}.'.format(
+                MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.height))
 
-    image = Image.open(input_image_path).convert('RGB')
+    image = image.convert('RGB')
     # high resolution image, (that is ground true)
     hr = image.resize((DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT), resample=Image.BICUBIC)
     # low resolution image
     lr = hr.resize((hr.width // SCALE, hr.height // SCALE), resample=Image.BILINEAR)
     # interpolated low-resolution image
     ilr = lr.resize((lr.width * SCALE, lr.height * SCALE), resample=Image.BICUBIC)
-    ilr.save("./result/ilr.jpg")
 
     # construct the input of the stream
+    ilr_image_bytes = io.BytesIO()
+    ilr.save(ilr_image_bytes, format='JPEG')
+    input_image_data = ilr_image_bytes.getvalue()
     dataInput = MxDataInput()
-    with open("./result/ilr.jpg", 'rb') as f:
-        dataInput.data = f.read()
-        os.remove("./result/ilr.jpg")
+    dataInput.data = input_image_data
+
+    # Inputs data to a specified stream based on streamName.
     streamName = b'superResolution'
     inPluginId = 0
-    key = b"mxpi_tensorinfer0"
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
-    keys = [b"mxpi_imagedecoder0", b"mxpi_tensorinfer0"]
-    keyVec = StringVector()
-    for key in keys:
-        keyVec.push_back(key)
 
+    # get plugin output data
+    key = b"mxpi_tensorinfer0"
+    keyVec = StringVector()
+    keyVec.push_back(key)
     inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
@@ -134,14 +150,16 @@ if __name__ == '__main__':
         exit()
     # get the infer result
     inferList0 = MxpiDataType.MxpiTensorPackageList()
-    inferList0.ParseFromString(inferResult[1].messageBuf)
+    inferList0.ParseFromString(inferResult[0].messageBuf)
     inferVisionData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
 
-    output_img_data = np.frombuffer(inferVisionData, dtype="<f4")
+    # converting the byte data into 32 bit float array
+    output_img_data = np.frombuffer(inferVisionData, dtype=np.float32)
     output_y = colorize(output_img_data, value_min=None, value_max=None)
     output_y = output_y.reshape(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)
     sr_img_y = Image.fromarray(np.uint8(output_y), mode="L")
 
+    # construct super-resolution images
     hr_YCbCr = hr.convert("YCbCr")
     hr_img_y, cb, cr = hr_YCbCr.split()
     output_img = Image.merge("YCbCr", [sr_img_y, cb, cr]).convert("RGB")
@@ -150,7 +168,7 @@ if __name__ == '__main__':
     PSNR = calc_psnr(sr_img_y, hr_img_y)
     print('PSNR: {:.2f}'.format(PSNR))
 
-    # create canvas for finished drawing
+    # create a canvas for visualization
     target = Image.new('RGB', (lr.width + OFFSET_5 + output_img.width, output_img.height), "white")
     # splice the pictures line by line
     target.paste(lr, (0, output_img.height - lr.height))
@@ -169,8 +187,9 @@ if __name__ == '__main__':
     # draw into the picture according to the position, content, color and font
     draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
     # save visualization results
-    _, file_name = os.path.split(input_image_path)
-    out_path = "./result/" + file_name
+    _, fileName = os.path.split(input_image_path)
+    out_path = "./result/" + fileName
     target.save(out_path)
+
     # destroy streams
     streamManagerApi.DestroyAllStreams()
