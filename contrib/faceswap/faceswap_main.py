@@ -43,37 +43,43 @@ YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
 
 if __name__ == '__main__':
+    # check input image
     input_path = [FACE1_PATH, FACE2_PATH]
     input_image_data = []
+    count = 1
+    input_valid = False
     for i in input_path:
         # check input image
         if os.path.exists(i) != 1:
             error_message = 'The {} does not exist'.format(i)
-            raise FileNotFoundError(error_message)
+            print(error_message)
         else:
             try:
                 image = Image.open(i)
                 if image.format != 'JPEG':
-                    raise AssertionError('input image only support jpg')
-                elif image.width < 32 or image.width > 8192:
-                    raise AssertionError('input image width must in range [32, 8192], curr is {}'.format(image.width))
-                elif image.height < 32 or image.height > 8192:
-                    raise AssertionError('input image height must in range [32, 8192], curr is {}'.format(image.height))
+                    print('input image only support jpg, curr format is.'.format(image.format))
+                elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
+                    print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+                elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
+                    print('input image height must in range [32, 8192], curr is {}'.format(image.height))
                 else:
+                    input_valid = True
                     # read input image bytes
                     image_bytes = io.BytesIO()
                     image.save(image_bytes, format='JPEG')
                     input_image_data.append(image_bytes.getvalue())
             except IOError:
-                raise IOError(
-                    'an IOError occurred while opening {}, maybe your input is not a picture'.format(i))
+                print('an IOError occurred while opening {}, maybe your input is not a picture'.format(i))
+        if not input_valid:
+            print('input image {} is invalid.'.format(i))
+            exit(1)
     # initialize the stream manager
 
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
     if stream_state != 0:
-        error_message = "Failed to init Stream manager, stream_state=%s" % str(stream_state)
-        raise AssertionError(error_message)
+        print("Failed to init Stream manager, stream_state=%s" % str(stream_state))
+        exit(1)
 
     # create streams by pipeline config file
     with open("pipeline/faceswap.pipeline", 'rb') as f:
@@ -82,8 +88,8 @@ if __name__ == '__main__':
 
     stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
-        error_message = "Failed to create Stream, streamState=%s" % str(stream_state)
-        raise AssertionError(error_message)
+        print("Failed to create Stream manager, stream_state=%s" % str(stream_state))
+        exit(1)
 
     # prepare the input of the stream #begin
 
@@ -104,7 +110,8 @@ if __name__ == '__main__':
         unique_id = stream_manager.SendData(STREAM_NAME, IN_PLUGIN_ID, i)
         if unique_id < 0:
             error_message = 'Failed to send data to stream.'
-            raise AssertionError(error_message)
+            print(error_message)
+            exit()
 
         # construct the resulted streamStateurned by the stream
         plugin_names = [b"mxpi_objectpostprocessor0", b"mxpi_tensorinfer1", b"mxpi_imagedecoder0"]
@@ -118,11 +125,13 @@ if __name__ == '__main__':
         # checking whether the infer results is valid or not
         if infer_result.size() == 0:
             error_message = 'inferResult is null, please check the stream log for details'
-            raise IndexError(error_message)
+            print(error_message)
+            exit()
 
         if infer_result[0].errorCode != 0:
             error_message = 'Unable to get effective infer results, please check the stream log for details'
-            raise IndexError(error_message)
+            print(error_message)
+            exit()
 
         # the output information of "mxpi_objectpostprocessor0"
         object_list = MxpiDataType.MxpiObjectList()
@@ -134,7 +143,8 @@ if __name__ == '__main__':
                 face_detect_info.append(object_list.objectVec[0])
             else:
                 error_message = "The model cannot detect the obvious face in this picture, please input another image"
-                raise AssertionError(error_message)
+                print(error_message)
+                exit()
 
         # the output information of "mxpi-tensorinfer1" which is used to detect the features points of a crop face
         points_infer_list = MxpiDataType.MxpiTensorPackageList()

@@ -14,7 +14,9 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2。
+本样例配套的CANN版本为[3.3.0](https://www.hiascend.com/software/cann/commercial)  
+支持的SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)  
+MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 ### 1.3  技术实现流程图<br/>
 本项目的主要工作流程为，初始输入目标图像和原图像，第一阶段采用yolov4模型进行人脸检测，接着利用后处理插件、抠图插件对检测结果进行处理，得到人脸区域部分；
 第二阶段采用脸部特征点检测模型对得到的人脸区域进行检测，得到脸部106个特征点的坐标，并在后处理阶段进行脸部替换，最后人脸替换可视化结果。  
