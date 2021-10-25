@@ -19,7 +19,6 @@ ReID
 |---- models                            // 目标检测、ReID模型与配置文件夹
 |   |   |---- yolov3.cfg
 |   |   |---- coco.names
-|   |   |---- ReID_pth2onnx.py
 |   |   |---- ReID_pth2onnx.cfg
 |---- pipeline                          // 流水线配置文件夹
 |   |   |---- ReID.pipeline
@@ -28,7 +27,7 @@ ReID
 |---- makeYourOwnDataset.py
 |---- README.md   
 ```
-> 由于无法在Gitee上创建空文件夹，请按照该工程目录，自行创建data文件夹、result文件夹以及其内部的文件夹  
+> 由于无法在Gitee上创建空文件夹，请按照该工程目录，自行创建result文件夹、data文件夹与其内部的文件夹  
 > 如果没有创建result文件夹，将无法产生输出  
 ## 3 依赖
 | 软件名称 | 版本   |
@@ -111,7 +110,7 @@ git clone https://github.com/michuanhaohao/reid-strong-baseline
 ***2*** 获取.pth权重文件，将该.pth权重文件放在“项目所在目录/models”路径下  
 文件名：market_resnet50_model_120_rank1_945.pth  
 &ensp;&ensp;&ensp;&ensp;&ensp; [Google Drive](https://drive.google.com/drive/folders/1hn0sXLZ5yJcxtmuY-ItQfYD7hBtHwt7A)
-&ensp;&ensp;&ensp;&ensp;&ensp; [Baidu Cloud, 提取码: v5uh](https://pan.baidu.com/s/1ohWunZOrOGMq8T7on85-5w)
+&ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ReID/ReID%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6.rar)
 
 ***3*** 获取ReID_pth2onnx.py：[获取链接](https://gitee.com/ascend/modelzoo/blob/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/ReID_pth2onnx.py)  
 &ensp; 将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
@@ -150,7 +149,7 @@ ATC run success, welcome to the next use.
 
 文件名：Market-1501-v15.09.15.zip  
 &ensp;&ensp;&ensp;&ensp;&ensp; [Google Drive](https://drive.google.com/file/d/0B8-rUzbwVRk0c054eEozWG9COHM/view?resourcekey=0-8nyl7K9_x37HlQm34MmrYQ)
-&ensp;&ensp;&ensp;&ensp;&ensp; [Baidu Cloud](https://pan.baidu.com/s/1ntIi2Op)
+&ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ReID/ReID%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6.rar)
 
 5.1.1 行人底库  
 请解压“Market-1501-v15.09.15.zip”文件，在“Market-1501-v15.09.15\Market1501\gt_bbox”中选择想要查询的行人图片，将图片放在“项目所在目录/data/querySet”中  
@@ -162,7 +161,7 @@ ATC run success, welcome to the next use.
 5.1.2 场景图片数据集  
 这里使用的是market1501中的部分场景图片数据，来源于
 [Person Search Demo](https://github.com/songwsx/person_search_demo/tree/master/data/samples)
-，也可以通过[Baidu Cloud，提取码：2xm1](https://pan.baidu.com/s/1UcqZ0G7X8dejR8ROPMsU5A)
+，也可以通过[Huawei Cloud](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ReID/ReID%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6.rar)
 获取，然后将获取的图片放在“项目所在目录/data/gallerySet”中 
 
 5.2 自制数据集  
