@@ -39,33 +39,8 @@ keypointConnectMatrix = [
 colorArr = [(0, 215, 255), (255, 115, 55), (5, 255, 55), (25, 15, 255), (225, 15, 55)]
 
 def check_range(val, maxVal):
-    """Fetches rows from a Bigtable.
-
-    Retrieves rows pertaining to the given keys from the Table instance
-    represented by big_table.  Silly things may happen if
-    other_silly_variable is not None.
-
-    Args:
-        big_table: An open Bigtable Table instance.
-        keys: A sequence of strings representing the key of each table row
-            to fetch.
-        other_silly_variable: Another optional variable, that has a much
-            longer name than the other args, and which does nothing.
-
-    Returns:
-        A dict mapping keys to the corresponding table row data
-        fetched. Each row is represented as a tuple of strings. For
-        example:
-
-        {'Serak': ('Rigel VII', 'Preparer'),
-         'Zim': ('Irk', 'Invader'),
-         'Lrrr': ('Omicron Persei 8', 'Emperor')}
-
-        If a key from the keys argument is missing from the dictionary,
-        then that row was not found in the table.
-
-    Raises:
-        IOError: An error occurred accessing the bigtable.Table object.
+    """check val wether in range
+        check val invalid
     """
     if val >= maxVal - 3:
         return maxVal - 3
@@ -88,7 +63,7 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    path=b"./detection.pipeline"
+    path = b"./detection.pipeline"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
