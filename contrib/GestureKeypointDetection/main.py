@@ -26,16 +26,16 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 keypointConnectMatrix = [
-        [0, 1, 2, 3, 4],
-        [0, 5, 6, 7, 8],
-        [0, 9, 10, 11, 12],
-        [0, 13, 14, 15, 16],
+        [0, 1, 2, 3, 4], 
+        [0, 5, 6, 7, 8], 
+        [0, 9, 10, 11, 12], 
+        [0, 13, 14, 15, 16], 
         [0, 17, 18, 19, 20]
     ]
-colorArr = [(0,215,255),(255,115,55),(5,255,55),(25,15,255),(225,15,55)]
-
+colorArr = [(0, 215, 255), (255, 115, 55), (5, 255, 55), (25, 15, 255), (225, 15, 55)]
+# check val whether in range
 def check_range(val, maxVal):
-        if val >= maxVal -3:
+        if val >= maxVal - 3:
             return maxVal - 3
         if val > 3:
             return val
@@ -147,7 +147,11 @@ if __name__ == '__main__':
         print(mxpiObjectList.objectVec[i])
         print("y0, x0, y1, x1:", y0, x0, y1, x1)
         recColor = [random.randint(0, 255) for _ in range(3)]
-        cv2.rectangle(img, (check_range(x0, pic_width), check_range(y0, pic_height)), (check_range(x1, pic_width), check_range(y1, pic_height)), recColor, 1)
+        x0Range = check_range(x0, pic_width)
+        y0Range = check_range(y0, pic_height)
+        x1Range = check_range(x1, pic_width)
+        y1Range = check_range(y1, pic_height)
+        cv2.rectangle(img, (x0Range, y0Range), (x1Range, y1Range), recColor, 1)
 
         height = y1 - y0
         width = x1 - x0
@@ -181,7 +185,7 @@ if __name__ == '__main__':
             colorI = colorI + 1
 
         for pt in pointArr:
-            cv2.circle(img, pt, 2, (255,50,60), -1)
+            cv2.circle(img, pt, 2, (255, 50, 60), -1)
 
     buf = filePath
     sub = "/"
