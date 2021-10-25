@@ -43,19 +43,15 @@ if __name__ == '__main__':
 
     # get image data
     image = np.array(data['images'])
+    image = np.transpose(image, (0, 2, 3, 1))
+
     # get depth info data
     depth = np.array(data['depths'])
-
-    print(image.shape)
-    image = np.transpose(image, (0, 2, 3, 1))
-    print(image.shape)
-
-    print(depth.shape)
 
     # save image
     for i in range(image.shape[0]):
         index = str(i)
-        image_index_path = output_image_path + index + '.jpg'
+        image_index_path = output_image_path + '/' + index + '.jpg'
         out_img = image[i, :, :, :]
         out_img = out_img.transpose(1, 0, 2)
         imageio.imwrite(image_index_path, out_img)
@@ -63,7 +59,7 @@ if __name__ == '__main__':
     # save depth info
     for i in range(depth.shape[0]):
         index = str(i)
-        depth_index_path = output_depth_info_path + index + '.npy'
+        depth_index_path = output_depth_info_path + '/' + index + '.npy'
         out_depth = depth[i, :, :]
         out_depth = out_depth.transpose(1, 0)
         np.save(depth_index_path, out_depth)
