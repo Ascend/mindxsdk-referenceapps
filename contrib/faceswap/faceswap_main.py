@@ -42,6 +42,9 @@ DATA_NUMS = 212  # 106 points (x ,y): 106*2 = 212
 YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
 
+MIN_IMAGE_SIZE = 32
+MAX_IMAGE_SIZE = 8192
+
 if __name__ == '__main__':
     # check input image
     input_path = [FACE1_PATH, FACE2_PATH]
@@ -139,10 +142,17 @@ if __name__ == '__main__':
 
         # only select the image with a "face" label
         for item in object_list.objectVec:
-            if item.classVec[0].className == "face":
-                face_detect_info.append(object_list.objectVec[0])
-            else:
-                error_message = "The model cannot detect the obvious face in this picture, please input another image"
+            try:
+                if item.classVec[0].className == "face":
+                    face_detect_info.append(object_list.objectVec[0])
+                else:
+                    error_message = "The model cannot detect the obvious face in this picture, " \
+                                    "please input another image"
+                    print(error_message)
+                    exit()
+            except IndexError:
+                error_message = "The yolov4 model cannot detect anything in this picture," \
+                                " please change another image."
                 print(error_message)
                 exit()
 
