@@ -38,8 +38,12 @@ OUTPUT_DIR = '../out/'
 
 def preprocess(picPath):
     # 抽取黑白图像L通道
+    bgr_img = cv.imread(picPath)
+    if bgr_img == None:
+        print("This input picture does not compliant.")
+        exit()
+    bgr_img.astype(np.float32)
 
-    bgr_img = cv.imread(picPath).astype(np.float32)
     orig_shape = bgr_img.shape[:2]
     bgr_img = bgr_img / IMG_CHW_MAX
     lab_img = cv.cvtColor(bgr_img, cv.COLOR_BGR2Lab)
@@ -73,7 +77,11 @@ def postprocess(result_list, pic, orig_shape, orig_l):
 
 
 if __name__ == '__main__':
-    inputPic = sys.argv[1] 
+    if len(sys.argv) <= 1:
+        print("This input picture does not exit.")
+        exit()
+    else:
+        INPUT_PIC = sys.argv[1]
 
     # 新建一个流管理StreamManager对象并初始化
     streamManagerApi = StreamManagerApi()
@@ -92,6 +100,7 @@ if __name__ == '__main__':
     # 输入图片前处理 
     if os.path.exists(inputPic) != 1:
         print("The test image does not exist.")
+        exit()
     
     origShape, origL, lData = preprocess(inputPic)
     
