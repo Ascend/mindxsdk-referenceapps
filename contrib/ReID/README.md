@@ -34,6 +34,7 @@ ReID
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
+|CANN|3.3.0|
 |MindX SDK|2.0.2|
 |Python| 3.7.5|
 |numpy | 1.21.0 |
@@ -84,7 +85,7 @@ ATC run success, welcome to the next use.
 4.2.2 模型转换环境需求
 ```
 - 框架需求
-  CANN == 5.0.1
+  CANN == 3.3.0
   torch == 1.5.0
   torchvision == 0.6.0
   onnx == 1.7.0
@@ -268,8 +269,10 @@ env
 ```
 python3.7 main.py --queryFilePath='data/querySet' --galleryFilePath='data/gallerySet' --matchThreshold=0.3
 ```
-> matchThreshold是行人重定位的阈值，默认值是0.3，可根据行人底库的数量进行调整，建议的范围是0.2~0.4之间  
-> 如果使用自制数据集，可能由于数据噪声问题导致误报或漏检，此时将阈值酌情调大可减缓  
+> matchThreshold是行人重定位的阈值，默认值是0.3，可根据行人底库的数量进行调整  
+> 请注意这个阈值单位是距离单位，并不是比例阈值  
+> 对market1501数据集，建议的范围是0.2~0.4之间  
+> 如果使用自制数据集，可能由于数据噪声问题导致误报或漏检，此时将阈值酌情调大可减缓，建议调整在0.5左右    
 > 尽可能选择背景与行人区别较为明显的图片作为自制数据集
 
 6.6 查看结果  

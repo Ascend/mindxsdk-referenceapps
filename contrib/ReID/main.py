@@ -47,6 +47,10 @@ FEATURE_RESHAPE_COLUMN = 2048
 ADMM_BETA = 1
 ADMM_ALPHA = -2
 
+MIN_IMAGE_SIZE = 32
+MAX_IMAGE_SIZE = 8192
+MIN_IMAGE_WIDTH = 6
+
 
 def initialize_stream():
     """
@@ -64,7 +68,8 @@ def initialize_stream():
     streamState = streamApi.InitManager()
     if streamState != 0:
         errorMessage = "Failed to init Stream manager, streamState=%s" % str(streamState)
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     # creating stream based on json strings in the pipeline file: 'ReID.pipeline'
     with open("pipeline/ReID.pipeline", 'rb') as f:
@@ -74,7 +79,8 @@ def initialize_stream():
     streamState = streamApi.CreateMultipleStreams(pipelineString)
     if streamState != 0:
         errorMessage = "Failed to create Stream, streamState=%s" % str(streamState)
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     return streamApi
 
@@ -104,10 +110,12 @@ def extract_query_feature(queryPath, streamApi):
     # check the query file
     if os.path.exists(queryPath) != 1:
         errorMessage = 'The query file does not exist.'
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
     if len(os.listdir(queryPath)) == 0:
         errorMessage = 'The query file is empty.'
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     # extract the features for all images in query file
     for root, dirs, files in os.walk(queryPath):
@@ -128,7 +136,8 @@ def extract_query_feature(queryPath, streamApi):
                 uniqueId = streamApi.SendData(QUERY_STREAM_NAME, IN_PLUGIN_ID, queryDataInput)
                 if uniqueId < 0:
                     errorMessage = 'Failed to send data to queryImageProcess stream.'
-                    raise AssertionError(errorMessage)
+                    print(errorMessage)
+                    exit()
 
                 # get infer result
                 inferResult = streamApi.GetProtobuf(QUERY_STREAM_NAME, IN_PLUGIN_ID, pluginNameVector)
@@ -136,11 +145,13 @@ def extract_query_feature(queryPath, streamApi):
                 # checking whether the infer results is valid or not
                 if inferResult.size() == 0:
                     errorMessage = 'unable to get effective infer results, please check the stream log for details'
-                    raise IndexError(errorMessage)
+                    print(errorMessage)
+                    exit()
                 if inferResult[0].errorCode != 0:
                     errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
                                                                                          inferResult[0].messageName)
-                    raise AssertionError(errorMessage)
+                    print(errorMessage)
+                    exit()
 
                 # get the output tensor, change it into a numpy array and append it into queryFeatures
                 tensorPackage = MxpiDataType.MxpiTensorPackageList()
@@ -149,6 +160,9 @@ def extract_query_feature(queryPath, streamApi):
                                                   dtype=np.float32)
                 cv2.normalize(src=featureFromTensor, dst=featureFromTensor, norm_type=cv2.NORM_L2)
                 queryFeatures.append(featureFromTensor.tolist())
+            else:
+                print('input image only support jpg')
+                exit()
 
     queryFeatures = np.array(queryFeatures)
     return queryFeatures, queryPid
@@ -172,28 +186,33 @@ def get_pipeline_results(filePath, streamApi):
     for key in pluginNames:
         pluginNameVector.push_back(key)
 
+    galleryDataInput = MxDataInput()
     try:
         image = Image.open(filePath)
         if image.format != 'JPEG':
-            raise AssertionError('input image only support jpg')
-        elif image.width < 32 or image.width > 8192:
-            raise AssertionError('input image width must in range [32, 8192], curr is {}'.format(image.width))
-        elif image.height < 32 or image.height > 8192:
-            raise AssertionError('input image height must in range [32, 8192], curr is {}'.format(image.height))
+            print('input image only support jpg')
+            exit()
+        elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
+            print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+            exit()
+        elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
+            print('input image height must in range [32, 8192], curr is {}'.format(image.height))
+            exit()
         else:
             # read input image bytes
             image_bytes = io.BytesIO()
             image.save(image_bytes, format='JPEG')
+            galleryDataInput.data = image_bytes.getvalue()
     except IOError:
-        raise IOError('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
-    galleryDataInput = MxDataInput()
-    galleryDataInput.data = image_bytes.getvalue()
+        print('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
+        exit()
 
     # send the prepared data to the stream
     uniqueId = streamApi.SendData(GALLERY_STREAM_NAME, IN_PLUGIN_ID, galleryDataInput)
     if uniqueId < 0:
         errorMessage = 'Failed to send data to galleryImageProcess stream.'
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     # get infer result
     inferResult = streamApi.GetProtobuf(GALLERY_STREAM_NAME, IN_PLUGIN_ID, pluginNameVector)
@@ -201,11 +220,13 @@ def get_pipeline_results(filePath, streamApi):
     # checking whether the infer results is valid or not
     if inferResult.size() == 0:
         errorMessage = 'unable to get effective infer results, please check the stream log for details'
-        raise IndexError(errorMessage)
+        print(errorMessage)
+        exit()
     if inferResult[0].errorCode != 0:
         errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
                                                                              inferResult[0].messageName)
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     # get the output information of "mxpi_objectpostprocessor0" plugin
     objectList = MxpiDataType.MxpiObjectList()
@@ -246,7 +267,7 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
         detectedItem = objectList.objectVec[detectedItemIndex]
         xLength = int(detectedItem.x1) - int(detectedItem.x0)
         yLength = int(detectedItem.y1) - int(detectedItem.y0)
-        if xLength < 32 or yLength < 6:
+        if xLength < MIN_IMAGE_SIZE or yLength < MIN_IMAGE_WIDTH:
             filterImageCount += 1
             continue
         if detectedItem.classVec[0].className == "person":
@@ -380,10 +401,17 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
     # check the gallery file
     if os.path.exists(galleryPath) != 1:
         errorMessage = 'The gallery file does not exist.'
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
     if len(os.listdir(galleryPath)) == 0:
         errorMessage = 'The gallery file is empty.'
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
+    outputPath = 'result'
+    if os.path.exists(outputPath) != 1:
+        errorMessage = 'The result file does not exist.'
+        print(errorMessage)
+        exit()
 
     # detect and crop all person for all images in query file, and then extract the features
     for root, dirs, files in os.walk(galleryPath):
@@ -405,6 +433,9 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
                                                           minDistanceIndexMatrix, minDistanceMatrix, matchThreshold)
 
                 draw_results(filePath, galleryFeatureLength, detectedPersonInformation, galleryLabelSet, file)
+            else:
+                print('input image only support jpg')
+                exit()
 
 
 if __name__ == '__main__':

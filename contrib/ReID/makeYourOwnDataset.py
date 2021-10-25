@@ -34,6 +34,10 @@ InPluginId = 0
 YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
 
+MIN_IMAGE_SIZE = 32
+MAX_IMAGE_SIZE = 8192
+MIN_IMAGE_WIDTH = 6
+
 
 def initialize_stream():
     """
@@ -49,7 +53,8 @@ def initialize_stream():
     streamState = streamApi.InitManager()
     if streamState != 0:
         errorMessage = "Failed to init Stream manager, streamState=%s" % str(streamState)
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     # creating stream based on json strings in the pipeline file: 'ReID.pipeline'
     with open("pipeline/ReID.pipeline", 'rb') as f:
@@ -59,9 +64,61 @@ def initialize_stream():
     streamState = streamApi.CreateMultipleStreams(pipelineString)
     if streamState != 0:
         errorMessage = "Failed to create Stream, streamState=%s" % str(streamState)
-        raise AssertionError(errorMessage)
+        print(errorMessage)
+        exit()
 
     return streamApi
+
+
+def crop_process(streamApi, pluginNameVector, file):
+    """
+    Crop processing
+
+    :arg:
+        streamApi: stream api
+        pluginNameVector: the vector of  plugin name
+
+    :return:
+        None
+    """
+    # get infer result
+    inferResult = streamApi.GetProtobuf(StreamName, InPluginId, pluginNameVector)
+
+    # checking whether the infer results is valid or not
+    if inferResult.size() == 0:
+        errorMessage = 'unable to get effective infer results, please check the stream log for details'
+        print(errorMessage)
+        exit()
+    if inferResult[0].errorCode != 0:
+        errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
+                                                                             inferResult[0].messageName)
+        print(errorMessage)
+        exit()
+
+    # the output information of "mxpi_objectpostprocessor0" plugin后处理插件的输出数据
+    objectList = MxpiDataType.MxpiObjectList()
+    objectList.ParseFromString(inferResult[0].messageBuf)
+    # get the crop tensor
+    tensorList = MxpiDataType.MxpiVisionList()
+    tensorList.ParseFromString(inferResult[1].messageBuf)
+    filterImageCount = 0
+
+    for detectedItemIndex in range(0, len(objectList.objectVec)):
+        item = objectList.objectVec[detectedItemIndex]
+        xLength = int(item.x1) - int(item.x0)
+        yLength = int(item.y1) - int(item.y0)
+        if xLength < MIN_IMAGE_SIZE or yLength < MIN_IMAGE_WIDTH:
+            filterImageCount += 1
+            continue
+        if item.classVec[0].className == "person":
+            cropData = tensorList.visionVec[detectedItemIndex - filterImageCount].visionData.dataStr
+            cropInformation = tensorList.visionVec[detectedItemIndex - filterImageCount].visionInfo
+            img_yuv = np.frombuffer(cropData, np.uint8)
+            img_bgr = img_yuv.reshape(cropInformation.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
+                                      cropInformation.widthAligned)
+            img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
+            cv2.imwrite('./data/cropOwnDataset/{}_{}.jpg'.format(str(file[:-4]),
+                                                                 str(detectedItemIndex)), img)
 
 
 def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
@@ -84,14 +141,17 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
 
     # check the file paths
     if os.path.exists(imagePath) != 1:
-        errorMessage = 'The query file does not exist.'
-        raise AssertionError(errorMessage)
+        errorMessage = 'The ownDataset file does not exist.'
+        print(errorMessage)
+        exit()
     if os.path.exists(outputPath) != 1:
-        errorMessage = 'The query file does not exist.'
-        raise AssertionError(errorMessage)
+        errorMessage = 'The cropOwnDataset file does not exist.'
+        print(errorMessage)
+        exit()
     if len(os.listdir(imagePath)) == 0:
-        errorMessage = 'The query file is empty.'
-        raise AssertionError(errorMessage)
+        errorMessage = 'The ownDataset file is empty.'
+        print(errorMessage)
+        exit()
 
     # extract the features for all images in query file
     for root, dirs, files in os.walk(imagePath):
@@ -99,75 +159,44 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
             if file.endswith('.jpg'):
                 filePath = os.path.join(root, file)
 
+                queryDataInput = MxDataInput()
                 try:
                     image = Image.open(filePath)
                     if image.format != 'JPEG':
-                        raise AssertionError('input image only support jpg')
-                    elif image.width < 32 or image.width > 8192:
-                        raise AssertionError(
-                            'input image width must in range [32, 8192], curr is {}'.format(image.width))
-                    elif image.height < 32 or image.height > 8192:
-                        raise AssertionError(
-                            'input image height must in range [32, 8192], curr is {}'.format(image.height))
+                        print('input image only support jpg')
+                        exit()
+                    elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
+                        print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+                        exit()
+                    elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
+                        print('input image height must in range [32, 8192], curr is {}'.format(image.height))
+                        exit()
                     else:
                         # read input image bytes
                         image_bytes = io.BytesIO()
                         image.save(image_bytes, format='JPEG')
+                        queryDataInput.data = image_bytes.getvalue()
                 except IOError:
-                    raise IOError(
-                        'an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
-                queryDataInput = MxDataInput()
-                queryDataInput.data = image_bytes.getvalue()
+                    print('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
+                    exit()
 
                 # send the prepared data to the stream
                 uniqueId = streamApi.SendData(StreamName, InPluginId, queryDataInput)
                 if uniqueId < 0:
                     errorMessage = 'Failed to send data to queryImageProcess stream.'
-                    raise AssertionError(errorMessage)
+                    print(errorMessage)
+                    exit()
 
-                # get infer result
-                inferResult = streamApi.GetProtobuf(StreamName, InPluginId, pluginNameVector)
-
-                # checking whether the infer results is valid or not
-                if inferResult.size() == 0:
-                    errorMessage = 'unable to get effective infer results, please check the stream log for details'
-                    raise IndexError(errorMessage)
-                if inferResult[0].errorCode != 0:
-                    errorMessage = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (inferResult[0].errorCode,
-                                                                                         inferResult[0].messageName)
-                    raise AssertionError(errorMessage)
-
-                # the output information of "mxpi_objectpostprocessor0" plugin后处理插件的输出数据
-                objectList = MxpiDataType.MxpiObjectList()
-                objectList.ParseFromString(inferResult[0].messageBuf)
-                # get the crop tensor
-                tensorList = MxpiDataType.MxpiVisionList()
-                tensorList.ParseFromString(inferResult[1].messageBuf)
-                filterImageCount = 0
-
-                for detectedItemIndex in range(0, len(objectList.objectVec)):
-                    item = objectList.objectVec[detectedItemIndex]
-                    xLength = int(item.x1) - int(item.x0)
-                    yLength = int(item.y1) - int(item.y0)
-                    if xLength < 32 or yLength < 6:
-                        filterImageCount += 1
-                        continue
-                    if item.classVec[0].className == "person":
-                        cropData = tensorList.visionVec[detectedItemIndex - filterImageCount].visionData.dataStr
-                        cropInformation = tensorList.visionVec[detectedItemIndex - filterImageCount].visionInfo
-                        img_yuv = np.frombuffer(cropData, np.uint8)
-                        img_bgr = img_yuv.reshape(cropInformation.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
-                                                  cropInformation.widthAligned)
-                        img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
-                        cv2.imwrite('./data/cropOwnDataset/{}_{}.jpg'.format(str(file[:-4]),
-                                                                             str(detectedItemIndex)), img)
+                crop_process(streamApi, pluginNameVector, file)
+            else:
+                print('input image only support jpg')
+                exit()
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--imageFilePath', type=str, default='data/ownGallery', help="Query File Path")
-    parser.add_argument('--outputFilePath', type=str, default='data/cropOwnDataset', help="Gallery File Path")
+    parser.add_argument('--imageFilePath', type=str, default='data/ownDataset', help="Input File Path")
+    parser.add_argument('--outputFilePath', type=str, default='data/cropOwnDataset', help="Output File Path")
     opt = parser.parse_args()
     streamManagerApi = initialize_stream()
     crop_person_from_own_dataset(opt.imageFilePath, opt.outputFilePath, streamManagerApi)
-
