@@ -78,7 +78,7 @@ def postprocess(result_list, pic, orig_shape, orig_l):
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
-        print("This input picture does not exit.")
+        print("Please enter external parameters.")
         exit()
     else:
         INPUT_PIC = sys.argv[1]
