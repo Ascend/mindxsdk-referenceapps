@@ -39,7 +39,6 @@ def inference(
     image,
     conf_thresh=0.5,
     iou_thresh=0.4,
-    target_shape=(260, 260),
     draw_result=True,
     show_result=True,
 ):
@@ -58,6 +57,7 @@ def inference(
     height, width, _ = image.shape
     y_bboxes_output = ids
     y_cls_output = ids2
+    shift_size = 5.1
 
     # remove the batch dimension, for batch is always 1 for inference.
     y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
@@ -84,7 +84,14 @@ def inference(
         ymax = min(int(bbox[3] * height), height)
 
         output_info0.append(
-            [class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax + 5.1]
+            [
+                class_id,
+                conf,
+                xmin + shift_size,
+                ymin + shift_size,
+                xmax + shift_size,
+                ymax + shift_size,
+            ]
         )
     return output_info
 
@@ -163,6 +170,7 @@ if __name__ == "__main__":
         ids2.resize(shape2)
 
         feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
+        # use 5 different feature map size [33, 33], [17, 17], [9, 9], [5, 5], [3, 3]
         anchor_sizes = [
             [0.04, 0.056],
             [0.08, 0.11],
@@ -182,7 +190,7 @@ if __name__ == "__main__":
         id2class = {0: "face_mask", 1: "face"}
 
         img = cv2.imread(img_path)
-        output_info = inference(img, show_result=False, target_shape=(260, 260))
+        output_info = inference(img, show_result=False)
         open(img_txt, "a+")
         for i in enumerate(output_info):
             with open(img_txt, "a+") as f:

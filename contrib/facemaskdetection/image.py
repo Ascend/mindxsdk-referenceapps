@@ -39,7 +39,6 @@ def inference(
     image,
     conf_thresh=0.5,
     iou_thresh=0.4,
-    target_shape=(260, 260),
     draw_result=True,
     show_result=True,
 ):
@@ -48,7 +47,7 @@ def inference(
     :param image: 3D numpy array of image
     :param conf_thresh: the min threshold of classification probabity.
     :param iou_thresh: the IOU threshold of NMS
-    :param target_shape: the model input size.
+    :param target_shape: the model input size is 260*260
     :param draw_result: whether to daw bounding box to the image.
     :param show_result: whether to display the image.
     :return:
@@ -58,7 +57,8 @@ def inference(
     height, width, _ = image.shape
     y_bboxes_output = ids
     y_cls_output = ids2
-
+    shift_size = 5.1
+    txt_ration = 0.8
     # remove the batch dimension, for batch is always 1 for inference.
     y_bboxes = decode_bbox(anchors_exp, y_bboxes_output)[0]
     y_cls = y_cls_output[0]
@@ -86,19 +86,28 @@ def inference(
         if draw_result:
             if class_id == 0:
                 color = (0, 255, 0)
+            # if the class is 0, the bounding box color is green((0, 255, 0))
             else:
                 color = (0, 0, 255)
+            # if the class is 0, the bounding box color is red((0, 0, 255))
             cv2.rectangle(image, (xmin, ymin), (xmax, ymax), color, 2)
             cv2.putText(
                 image,
                 "%s: %.2f" % (id2class[class_id], conf),
                 (xmin + 2, ymin - 2),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
+                txt_ration,
                 color,
             )
         output_info.append(
-            [class_id, conf, xmin + 5.1, ymin + 5.1, xmax + 5.1, ymax + 5.1]
+            [
+                class_id,
+                conf,
+                xmin + shift_size,
+                ymin + shift_size,
+                xmax + shift_size,
+                ymax + shift_size,
+            ]
         )
 
     if show_result:
@@ -121,7 +130,7 @@ if __name__ == "__main__":
         exit()
 
     # Construct the input of the stream
-    img_path = "image/test7.jpg"
+    img_path = "./image/test.jpg"
     streamName = b"detection"
     inPluginId = 0
     dataInput = MxDataInput()
@@ -165,6 +174,7 @@ if __name__ == "__main__":
     ids2.resize(shape2)
 
     feature_map_sizes = [[33, 33], [17, 17], [9, 9], [5, 5], [3, 3]]
+    # use 5 different feature map size [33, 33], [17, 17], [9, 9], [5, 5], [3, 3]
     anchor_sizes = [
         [0.04, 0.056],
         [0.08, 0.11],
@@ -184,7 +194,7 @@ if __name__ == "__main__":
     id2class = {0: "Mask", 1: "NoMask"}
 
     img = cv2.imread(img_path)
-    print(inference(img, show_result=True, target_shape=(260, 260)))
+    print(inference(img, show_result=True))
 
     # destroy streams
 
