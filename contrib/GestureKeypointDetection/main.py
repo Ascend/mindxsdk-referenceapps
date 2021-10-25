@@ -37,7 +37,7 @@ keypointConnectMatrix = [
         [0, 17, 18, 19, 20]
     ]
 colorArr = [(0, 215, 255), (255, 115, 55), (5, 255, 55), (25, 15, 255), (225, 15, 55)]
-# TODO: check val whether in range
+
 def check_range(val, maxVal):
     """Fetches rows from a Bigtable.
 
@@ -105,7 +105,6 @@ if __name__ == '__main__':
     # Inputs data to a specified stream based on streamName.
     streamName = b'detection'
     inPluginId = 0
-    # uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
     ret = streamManagerApi.SendData(streamName, inPluginId, dataInput)
     if ret < 0:
         print("Failed to send data to stream.")
@@ -150,8 +149,6 @@ if __name__ == '__main__':
     img_path = filePath
     img = cv2.imread(img_path)
 
-    # print("rows:", img.rows, "cols:", img.cols)
-    # print(img)
     pic_height = len(img)
     pic_width = len(img[0])
 
@@ -166,7 +163,6 @@ if __name__ == '__main__':
 
     # print the infer result
     idsLen = len(tensorList.tensorPackageVec)
-    # idsArr = []
     for i in range(idsLen):
         ids = np.frombuffer(tensorList.tensorPackageVec[i].tensorVec[0].dataStr, dtype = np.float32)
         shape = tensorList.tensorPackageVec[i].tensorVec[0].tensorShape
@@ -188,8 +184,6 @@ if __name__ == '__main__':
         height = y1 - y0
         width = x1 - x0
 
-        # expand_width = 1.4 * width
-        # x0 = x0 - 0.2 * width
         ids = ids * [width, height] + [x0, y0]
 
         pointArr = []
