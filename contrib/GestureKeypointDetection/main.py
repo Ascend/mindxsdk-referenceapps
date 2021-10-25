@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+"""
+
+ Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+"""
 
 import sys
 import re
@@ -33,7 +37,7 @@ keypointConnectMatrix = [
         [0, 17, 18, 19, 20]
     ]
 colorArr = [(0, 215, 255), (255, 115, 55), (5, 255, 55), (25, 15, 255), (225, 15, 55)]
-# check val whether in range
+# TODO: check val whether in range
 def check_range(val, maxVal):
         if val >= maxVal - 3:
             return maxVal - 3
