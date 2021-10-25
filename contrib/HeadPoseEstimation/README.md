@@ -53,6 +53,7 @@ npu-smi info
 │   │   └── mxpiHeadPoseProto.proto
 │   └── build.sh
 ├── main.py
+├── build.sh # 编译头部姿态后处理插件脚本
 └── test.jpg
 ```
 
@@ -101,7 +102,7 @@ env
 
 ## 3 模型获取
 
-此处提供转换好的YOLOV4模型以及WHENet模型的om文件：[下载地址](https://pan.baidu.com/s/1E2FqL-X9zb0SM0v7BJu1SQ)，提取码：d5v9
+此处提供转换好的YOLOV4模型，WHENet模型的om文件以及一份测试集：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/HeadPoseEstimation/%E5%A4%B4%E9%83%A8%E5%A7%BF%E6%80%81%E8%AF%86%E5%88%AB.zip)
 
 注：**下载后请将两个模型请放置于models目录下**
 
@@ -113,7 +114,7 @@ env
 
 **步骤1** 
 
-cd至`plugins/`    执行
+在项目目录下执行
 ```
 bash build.sh
 ```
@@ -131,7 +132,7 @@ cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugi
 ```
 **步骤4** 
 
-自行在网络找一张包含头部的jpg图像，重命名为test.jpg，放入项目根目录中，再执行
+在测试集中input目录下选择一张jpg文件，重命名为test.jpg，放入项目根目录中，再执行
 ```
 python3.7 main.py
 ```

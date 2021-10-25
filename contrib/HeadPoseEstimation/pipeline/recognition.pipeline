@@ -57,8 +57,8 @@
                 "resizeHeight": "224",
                 "leftExpandRatio": "0.25",
                 "rightExpandRatio": "0.25",
-				"upExpandRatio": "0.35",
-				"downExpandRatio": "0.1",
+                "upExpandRatio": "0.35",
+                "downExpandRatio": "0.1",
                 "resizeType": "Resizer_Stretch"
             },
             "next": "mxpi_tensorinfer1",
