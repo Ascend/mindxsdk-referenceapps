@@ -144,7 +144,7 @@ def extract_query_feature(queryPath, streamApi):
 
                 # checking whether the infer results is valid or not
                 if inferResult.size() == 0:
-                    errorMessage = 'unable to get effective infer results, please check the stream log for details'
+                    errorMessage = 'Unable to get effective infer results, please check the stream log for details'
                     print(errorMessage)
                     exit()
                 if inferResult[0].errorCode != 0:
@@ -161,7 +161,7 @@ def extract_query_feature(queryPath, streamApi):
                 cv2.normalize(src=featureFromTensor, dst=featureFromTensor, norm_type=cv2.NORM_L2)
                 queryFeatures.append(featureFromTensor.tolist())
             else:
-                print('input image only support jpg')
+                print('Input image only support jpg')
                 exit()
 
     queryFeatures = np.array(queryFeatures)
@@ -190,13 +190,13 @@ def get_pipeline_results(filePath, streamApi):
     try:
         image = Image.open(filePath)
         if image.format != 'JPEG':
-            print('input image only support jpg')
+            print('Input image only support jpg')
             exit()
         elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
-            print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+            print('Input image width must in range [32, 8192], curr is {}'.format(image.width))
             exit()
         elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
-            print('input image height must in range [32, 8192], curr is {}'.format(image.height))
+            print('Input image height must in range [32, 8192], curr is {}'.format(image.height))
             exit()
         else:
             # read input image bytes
@@ -204,7 +204,7 @@ def get_pipeline_results(filePath, streamApi):
             image.save(image_bytes, format='JPEG')
             galleryDataInput.data = image_bytes.getvalue()
     except IOError:
-        print('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
+        print('An IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
         exit()
 
     # send the prepared data to the stream
@@ -219,7 +219,7 @@ def get_pipeline_results(filePath, streamApi):
 
     # checking whether the infer results is valid or not
     if inferResult.size() == 0:
-        errorMessage = 'unable to get effective infer results, please check the stream log for details'
+        errorMessage = 'Unable to get effective infer results, please check the stream log for details'
         print(errorMessage)
         exit()
     if inferResult[0].errorCode != 0:
@@ -434,7 +434,7 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
 
                 draw_results(filePath, galleryFeatureLength, detectedPersonInformation, galleryLabelSet, file)
             else:
-                print('input image only support jpg')
+                print('Input image only support jpg')
                 exit()
 
 

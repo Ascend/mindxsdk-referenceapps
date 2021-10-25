@@ -86,7 +86,7 @@ def crop_process(streamApi, pluginNameVector, file):
 
     # checking whether the infer results is valid or not
     if inferResult.size() == 0:
-        errorMessage = 'unable to get effective infer results, please check the stream log for details'
+        errorMessage = 'Unable to get effective infer results, please check the stream log for details'
         print(errorMessage)
         exit()
     if inferResult[0].errorCode != 0:
@@ -163,13 +163,13 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
                 try:
                     image = Image.open(filePath)
                     if image.format != 'JPEG':
-                        print('input image only support jpg')
+                        print('Input image only support jpg')
                         exit()
                     elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
-                        print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+                        print('Input image width must in range [32, 8192], curr is {}'.format(image.width))
                         exit()
                     elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
-                        print('input image height must in range [32, 8192], curr is {}'.format(image.height))
+                        print('Input image height must in range [32, 8192], curr is {}'.format(image.height))
                         exit()
                     else:
                         # read input image bytes
@@ -177,7 +177,7 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
                         image.save(image_bytes, format='JPEG')
                         queryDataInput.data = image_bytes.getvalue()
                 except IOError:
-                    print('an IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
+                    print('An IOError occurred while opening {}, maybe your input is not a picture'.format(filePath))
                     exit()
 
                 # send the prepared data to the stream
@@ -189,7 +189,7 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
 
                 crop_process(streamApi, pluginNameVector, file)
             else:
-                print('input image only support jpg')
+                print('Input image only support jpg')
                 exit()
 
 
