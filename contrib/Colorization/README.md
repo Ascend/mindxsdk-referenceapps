@@ -15,7 +15,7 @@ Atlas300推理芯片
 ```
 .
 ├── data         //需要手动创建
-├── model
+├── model        //需要手动创建
 │   ├── colorization.caffemodel
 │   └── colorization.prototxt
 ├── out          //需要手动创建
