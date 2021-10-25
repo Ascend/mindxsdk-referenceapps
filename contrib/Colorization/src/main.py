@@ -81,7 +81,7 @@ if __name__ == '__main__':
         print("Please enter external parameters.")
         exit()
     else:
-        INPUT_PIC = sys.argv[1]
+        inputPic = sys.argv[1]
 
     # 新建一个流管理StreamManager对象并初始化
     streamManagerApi = StreamManagerApi()
