@@ -178,7 +178,7 @@ ATC run success, welcome to the next use.
 ```
 python3.7 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
 ```
-**步骤3** 根据“项目所在目录/data/cropOwnDataset”中的结果，选择自己想要查询的行人，按照market1501的命名方式命名  
+**步骤3** 根据“项目所在目录/data/cropOwnDataset”中的结果，选择自己想要查询的行人，按照market1501的命名方式命名（请务必按照这种命名方式命名，否则行人的标识会出现问题）  
 > 将同一个行人的不同照片重命名成“xxxx_xx”，其中前4位是行人ID，后2位是该照片ID，例：第1个行人的第2张照片：0001_02  
 > 将制作好的行人底库图片放在“项目所在目录/data/querySet”中
 
