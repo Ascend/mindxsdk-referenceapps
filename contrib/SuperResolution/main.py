@@ -102,16 +102,20 @@ if __name__ == '__main__':
     # check input image
     if os.path.exists(input_image_path) != 1:
         print('The {} does not exist.'.format(input_image_path))
+        exit()
     else:
         image = Image.open(input_image_path)
         if image.format != 'JPEG':
             print('input image only support jpg, curr format is {}.'.format(image.format))
+            exit()
         elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
             print('input image width must in range [{}, {}], curr width is {}.'.format(
                 MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.width))
+            exit()
         elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
             print('input image height must in range [{}, {}], curr height is {}.'.format(
                 MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.height))
+            exit()
 
     image = image.convert('RGB')
     # high resolution image, (that is ground true)

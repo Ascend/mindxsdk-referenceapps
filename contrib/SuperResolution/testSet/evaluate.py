@@ -30,6 +30,7 @@ def infer(input_image_path, streamManagerapi):
 
     if os.path.exists(input_image_path) != 1:
         print("The image image does not exist.")
+        exit()
     image = Image.open(input_image_path).convert('RGB')
     # high resolution image, (that is ground true)
     hr = image.resize((DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT), resample=Image.BICUBIC)
@@ -146,6 +147,7 @@ if __name__ == '__main__':
     # check input paths
     if os.path.exists(test_image_set_path) != 1:
         print('The image set path {} does not exist.'.format(test_image_set_path))
+        exit()
     # get all image files
     image_files = os.listdir(test_image_set_path)
     # sort by file name
