@@ -49,7 +49,6 @@ if __name__ == '__main__':
     # check input image
     input_path = [FACE1_PATH, FACE2_PATH]
     input_image_data = []
-    count = 1
     input_valid = False
     for i in input_path:
         # check input image
@@ -107,6 +106,7 @@ if __name__ == '__main__':
     face_detect_info = []
     landmarks_infer_info = []
     input_face_list = []
+    image_count = 1
     data_input = [data_input1, data_input2]
     for i in data_input:
         # send the prepared data to the stream
@@ -146,16 +146,16 @@ if __name__ == '__main__':
                 if item.classVec[0].className == "face":
                     face_detect_info.append(object_list.objectVec[0])
                 else:
-                    error_message = "The model cannot detect the obvious face in this picture, " \
-                                    "please input another image"
+                    error_message = "The model cannot detect the obvious face in argument{}, " \
+                                    "please input another image".format(image_count)
                     print(error_message)
                     exit()
             except IndexError:
-                error_message = "The yolov4 model cannot detect anything in this picture," \
-                                " please change another image."
+                error_message = "The yolov4 model cannot detect anything in argument{}," \
+                                " please change another image.".format(image_count)
                 print(error_message)
                 exit()
-
+        image_count += 1
         # the output information of "mxpi-tensorinfer1" which is used to detect the features points of a crop face
         points_infer_list = MxpiDataType.MxpiTensorPackageList()
         points_infer_list.ParseFromString(infer_result[1].messageBuf)
