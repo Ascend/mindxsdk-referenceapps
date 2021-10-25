@@ -54,7 +54,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 > 模型转换
 
 **步骤1** 在 [GitHub AdaBins](https://github.com/shariqfarooq123/AdaBins) 上下载预训练模型 [AdaBins_nyu.pt](https://drive.google.com/drive/folders/1nYyaQXOBjNdUJDsmJpcRpu6oE55aQoLA) ，
-或者直接下载已经转换好的 [AdaBins_nyu.onnx]()，跳过 **步骤2** 直接进入om模型的转换
+或者直接下载已经转换好的 [AdaBins_nyu.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MonocularDepthEstimation/AdaBins_nyu.onnx) ，跳过 **步骤2** 直接进入om模型的转换
 
 **步骤2** 将获取到的 `AdaBins_nyu.pt` 转换为 `AdaBins_nyu.onnx`, [参考链接](https://blog.csdn.net/ApathyT/article/details/120834163)
 

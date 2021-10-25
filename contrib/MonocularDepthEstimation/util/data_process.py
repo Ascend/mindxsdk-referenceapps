@@ -26,9 +26,17 @@ if __name__ == '__main__':
     output_depth_info_path = '../test_set/depth_info'
 
     # check origin data file
+    path_ready = True
     if os.path.exists(data_file_path) != 1:
-        error_message = 'The {} does not exist'.format(data_file_path)
-        raise FileNotFoundError(error_message)
+        path_ready = False
+        print('The {} does not exist, please check first.'.format(data_file_path))
+    if os.path.exists(output_image_path) != 1 or os.path.exists(output_depth_info_path) != 1:
+        path_ready = False
+        print('The {} or {} does not exist, please check first.'.format(output_image_path, output_depth_info_path))
+
+    if not path_ready:
+        print('please ensure input file and output path correct first.')
+        exit(1)
 
     # load data file
     data = h5py.File(data_file_path)
