@@ -60,7 +60,7 @@ if __name__ == '__main__':
             try:
                 image = Image.open(i)
                 if image.format != 'JPEG':
-                    print('input image only support jpg, curr format is.'.format(image.format))
+                    print('input image only support jpg, curr format is {}'.format(image.format))
                 elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
                     print('input image width must in range [32, 8192], curr is {}'.format(image.width))
                 elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
