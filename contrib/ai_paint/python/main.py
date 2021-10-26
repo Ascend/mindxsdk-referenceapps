@@ -42,6 +42,15 @@ def gen_coarse_layout(objs, boxes, attributes, obj_valid_inds, layout_size=LAYOU
     for objs_item, box, attributes_item, obj_valid_inds_item in zip(objs, boxes, attributes, obj_valid_inds):
         if obj_valid_inds_item == 0:
             break
+        if box[0] > 1 or box[0] < 0:
+            print("error boxes x value with float in [0,1]! input: %d" % box[0])
+            exit()
+        if box[1] > 1 or box[1] < 0:
+            print("error boxes y value with float in [0,1]! input: %d" % box[1])
+            exit()
+        if attributes_item > 9 or attributes_item < 0:
+            print("error size_att value with int in [1,9]! input: %d" % attributes_item)
+            exit()
         x_c, y_c = width * box[0], height * box[1]
         obj_size = attributes_item
         w, h = width * float(obj_size) / 10, height * float(obj_size) / 10
@@ -57,10 +66,21 @@ def preprocess(net_param):
     # input param
     objects_str = net_param.get("net_param", "objects")
     objects = json.loads(objects_str)
+    objects_num = len(objects)
+    print("input object number:", objects_num)
+    if objects_num > 9:
+        print("objects limit ! max 9 input %d" % objects_num)
+        exit()
     boxes_str = net_param.get("net_param", "boxes")
     boxes = json.loads(boxes_str)
+    if len(boxes) != objects_num:
+        print("boxes not pair object! input: %d" % len(boxes))
+        exit()
     size_att_str = net_param.get("net_param", "size_att")
     size_att = json.loads(size_att_str)
+    if len(size_att) != objects_num:
+        print("size_att not pair object! input: %d" % len(size_att))
+        exit()
 
     # gen np array
     num_objs = len(objects)
