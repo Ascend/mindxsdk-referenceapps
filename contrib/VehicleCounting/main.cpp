@@ -70,7 +70,7 @@ int main() {
     configUtil.LoadConfiguration("/home/cqu_liu1/MindXSDK/mxVision/config/logging.conf", configData, MxBase::ConfigMode::CONFIGFILE);
     configData.SetFileValue<int>("global_level", 1);
     MxBase::Log::SetLogParameters(configData);
-    std::string streamName = "./data/test1.264";
+    std::string streamName = "./data/test.264";
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
         LogError << "InitDevices failed";
