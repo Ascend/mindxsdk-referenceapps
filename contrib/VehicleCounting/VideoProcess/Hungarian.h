@@ -42,6 +42,6 @@ struct g_hungarianhandle {
 };
 
 APP_ERROR hungarianhandleinit(g_hungarianhandle &handle, int row, int cols);
-int hungariansolve(g_hungarianhandle &handle, const std::vector<std::vector<int>> &gcost, int rows, int cols);
+int hungariansolve(g_hungarianhandle &g_handle, const std::vector<std::vector<int>> &gcost, int rows, int cols);
 
 #endif //STREAM_PULL_SAMPLE_HUNGARIAN_H
