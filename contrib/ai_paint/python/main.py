@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
     img1_rgb = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr
         , dtype = np.float32)
-    print(result.tensorPackageVec[0].tensorVec[0].tensorShape)
+    print("raw output shape:", result.tensorPackageVec[0].tensorVec[0].tensorShape)
     img1_rgb.resize(LAYOUT_HW_LEN, LAYOUT_HW_LEN, IMG_CHN_NUM)
 
     img2_rgb = np.frombuffer(result.tensorPackageVec[0].tensorVec[1].dataStr
