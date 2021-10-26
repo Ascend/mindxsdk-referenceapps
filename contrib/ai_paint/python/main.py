@@ -43,13 +43,13 @@ def gen_coarse_layout(objs, boxes, attributes, obj_valid_inds, layout_size=LAYOU
         if obj_valid_inds_item == 0:
             break
         if box[0] > 1 or box[0] < 0:
-            print("error boxes x value with float in [0,1]! input: %d" % box[0])
+            print("error boxes x value with float in [0,1]! input: ", box[0])
             exit()
         if box[1] > 1 or box[1] < 0:
-            print("error boxes y value with float in [0,1]! input: %d" % box[1])
+            print("error boxes y value with float in [0,1]! input: ", box[1])
             exit()
         if attributes_item > 9 or attributes_item < 0:
-            print("error size_att value with int in [1,9]! input: %d" % attributes_item)
+            print("error size_att value with int in [1,9]! input: ", attributes_item)
             exit()
         x_c, y_c = width * box[0], height * box[1]
         obj_size = attributes_item
