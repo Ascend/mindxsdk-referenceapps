@@ -41,7 +41,7 @@ struct g_hungarianhandle {
     std::shared_ptr<int> yVisit;
 };
 
-APP_ERROR hungarianhandleinit(g_hungarianhandle &handle, int row, int cols);
-int hungariansolve(g_hungarianhandle &handle, const std::vector<std::vector<int>> &cost, int rows, int cols);
+APP_ERROR hungarianhandleinit(hungarianhandle &handle, int row, int cols);
+int hungariansolve(hungarianhandle &handle, const std::vector<std::vector<int>> &gcost, int rows, int cols);
 
 #endif //STREAM_PULL_SAMPLE_HUNGARIAN_H
