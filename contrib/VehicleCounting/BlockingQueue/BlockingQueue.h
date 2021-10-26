@@ -145,7 +145,7 @@ public:
     }
 
     // if the queue is stoped ,need call this function to release the unprocessed items
-    std::list<T> GetRemainItems()
+    std::list<T> getRemainItems()
     {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -156,7 +156,7 @@ public:
         return queue_;
     }
 
-    APP_ERROR GetBackItem(T &item)
+    APP_ERROR getBackItem(T &item)
     {
         if (is_stoped_) {
             return APP_ERR_QUEUE_STOPED;
