@@ -30,7 +30,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "model/hand/hand.om"
+                "modelPath": "./model/hand/hand.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_objectpostprocessor0"
@@ -38,9 +38,9 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "model/hand/hand.cfg",
-                "labelPath": "model/hand/coco.names",
-                "postProcessLibPath": "/home/kongchibin/MindXSDK/mxManufacture/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessConfigPath": "./model/hand/hand.cfg",
+                "labelPath": "./model/hand/coco.names",
+                "postProcessLibPath": "{$MX_SDK_HOME}/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_imagecrop0"
@@ -59,7 +59,7 @@
         "mxpi_tensorinfer1": {
             "props": {
                 "dataSource":"mxpi_imagecrop0",
-                "modelPath": "model/keypoint/hand_keypoint.om"
+                "modelPath": "./model/keypoint/hand_keypoint.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "appsink0"

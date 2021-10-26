@@ -2,7 +2,7 @@
 ## 1. 介绍
 手势关键点检测插件基于 MindXSDK 开发，在晟腾芯片上进行人手检测以及手势关键点检测，将检测结果可视化并保存。输入一幅图像，可以检测得到图像中所有检测到的人手以及手势关键点连接成手势骨架。
 
-人手识别是在输入图像上对人手进行检测，采取yolov3模型，将待检测图片输入模型进行推理，推理得到所有人手的位置坐标，之后使用方框渲染标明在原来的图片上。本方案可以对人手正面、侧面、背面，多手进行检测，对于手部被遮挡的情况不能正确检测出来。
+人手识别是在输入图像上对人手进行检测，采取yolov3模型，将待检测图片输入模型进行推理，推理得到所有人手的位置坐标，之后使用方框渲染标明在原来的图片上。本方案可以对人手正面、侧面、背面，多手进行检测。但对于手部被遮挡的情况，不能准确检测出来。
 手势关键点检测是指在人手识别的基础上对人手识别推理出的结果进行手势21个关键点进行检测，包括大拇指，食指，中指，无名指上各有4个关键点，还有手腕上的一个关键点。然后将关键点正确配对组成相应的手势骨架，展示手势姿态。本方案采取resnet50模型，将待检测图片输入模型进行推理，推理得到包含手势关键点信息和关键点之间关联度信息的两个特征图，首先从关键点特征图中提取得到所有候选手势关键点，然后结合关联度信息特征图将不同的关键点组合连接成为手势骨架，再将所有手势骨架连接组成不同的手势，最后将关键点和手势信息标注在输入图像上，描绘手势形态。
 
 
@@ -45,9 +45,13 @@
 ├── detection.pipeline
 ├── model
 │   ├── hand
+│   │   ├── model_conversion.sh
 │   │   ├── coco.names
+│   │   ├── aipp.cfg
 │   │   └── hand.cfg
 │   └── keypoint
+│       ├── model_conversion.sh
+│       └── insert_op.cfg
 └── README.md
 ```
 
@@ -85,8 +89,8 @@ PYTHONPATH: python环境路径
 ## 3. 模型转换
 ### 3.1 yolov3模型转换
 本项目中适用的第一个模型是 yolov3 模型，参考实现代码：https://codechina.csdn.net/EricLee/yolo_v3， 选用的模型是该 pytorch 项目中提供的模型。
-下载onnx模型，下载链接为：使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
-
+下载onnx模型，下载链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/yolov3_hand.onnx。
+使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand`` 文件夹下，文件名为：yolov3_hand.onnx 。
 2. 进入 ``model/hand`` 文件夹下执行命令：
@@ -103,7 +107,7 @@ ATC run success, welcome to the next use.
 ### 3.2 resnet50模型转换
 
 第二个模型是 resnet50 模型，参考实现代码：https://codechina.csdn.net/EricLee/handpose_x。
-下载onnx模型，下载链接为https://pan.baidu.com/share/init?surl=Ur6Ikp31XGEuA3hQjYzwIw：提取码：99f3,使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
+下载onnx模型，下载链接为https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/resnet_50_size-256.onnx,使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
 
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand_keypoint`` 文件夹下，文件名为：resnet_50_size-256.onnx 。
@@ -118,14 +122,15 @@ ATC run success, welcome to the next use.
 ```
 
 ## 4. 运行
+**步骤1** 根据环境SDK的安装路径配置detection.pipeline中的{$MX_SDK_HOME}。
 
-**步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
+**步骤2** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``model/hand`` 和 ``model/hand_keypoint`` 目录下。
+**步骤3** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``model/hand`` 和 ``model/hand_keypoint`` 目录下。
 
-**步骤3** 网上下载手势图片。
+**步骤4** 网上下载手势图片。
 
-**步骤4** 图片检测。将关于人手手势的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
+**步骤5** 图片检测。将关于人手手势的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
 ```
 python3.7 main.py
 ```

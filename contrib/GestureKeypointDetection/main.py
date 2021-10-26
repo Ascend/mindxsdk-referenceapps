@@ -37,16 +37,31 @@ keypointConnectMatrix = [
         [0, 17, 18, 19, 20]
     ]
 colorArr = [(0, 215, 255), (255, 115, 55), (5, 255, 55), (25, 15, 255), (225, 15, 55)]
+pointColor = (255, 50, 60)
+
+resultCount = 3
+decodeResultIndex = 0
+handDetectResultIndex = 1
+keypointDetectResultIndex = 2
+channelCount = 3
+maxGray = 255
+gestureKeypointCount = 21
+
+YUV_BYTES_NU = 3
+YUV_BYTES_DE = 2
+EDGE_OFFSET = 3
+
+resizeParameter = 2
 
 def check_range(val, maxVal):
     """check val wether in range
         check val invalid
     """
-    if val >= maxVal - 3:
-        return maxVal - 3
-    if val > 3:
+    if val >= maxVal - EDGE_OFFSET:
+        return maxVal - EDGE_OFFSET
+    if val > EDGE_OFFSET:
         return val
-    return 3
+    return EDGE_OFFSET
 
 if __name__ == '__main__':
 
@@ -57,7 +72,6 @@ if __name__ == '__main__':
     filePath = sys.argv[1]
 
     streamManagerApi = StreamManagerApi()
-    # init stream manager
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
@@ -73,6 +87,7 @@ if __name__ == '__main__':
     dataInput = MxDataInput()
     if os.path.exists(filePath) != 1:
         print("The test image does not exist.")
+        exit()
 
     with open(filePath, 'rb') as f:
         dataInput.data = f.read()
@@ -86,12 +101,12 @@ if __name__ == '__main__':
         exit()
 
     keyVec = StringVector()
-    keyVec.push_back(b"mxpi_tensorinfer1")
     keyVec.push_back(b"mxpi_imagedecoder0")
     keyVec.push_back(b"mxpi_objectpostprocessor0")
+    keyVec.push_back(b"mxpi_tensorinfer1")
     infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
 
-    if len(infer_result) != 3:
+    if len(infer_result) != resultCount:
         print("no hand was detected!")
         streamManagerApi.DestroyAllStreams()
         exit()
@@ -101,23 +116,22 @@ if __name__ == '__main__':
         streamManagerApi.DestroyAllStreams()
         exit()
 
-    if infer_result[0].errorCode != 0:
+    if infer_result[keypointDetectResultIndex].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            infer_result[0].errorCode, infer_result[0].data.decode()))
+            infer_result[keypointDetectResultIndex].errorCode, infer_result[keypointDetectResultIndex].data.decode()))
         streamManagerApi.DestroyAllStreams()
         exit()
 
     tensorList = MxpiDataType.MxpiTensorPackageList()
-    tensorList.ParseFromString(infer_result[0].messageBuf)
+    tensorList.ParseFromString(infer_result[keypointDetectResultIndex].messageBuf)
     print("len of keypointSet size:", len(tensorList.tensorPackageVec))
 
     visionList = MxpiDataType.MxpiVisionList()
-    visionList.ParseFromString(infer_result[1].messageBuf)
+    visionList.ParseFromString(infer_result[decodeResultIndex].messageBuf)
     visionData = visionList.visionVec[0].visionData.dataStr
     visionInfo = visionList.visionVec[0].visionInfo
     print("len of decode result:", len(visionList.visionVec))
-    YUV_BYTES_NU = 3
-    YUV_BYTES_DE = 2
+
     img_yuv = np.frombuffer(visionData, dtype = np.uint8)
     img_yuv = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
     img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
@@ -128,7 +142,7 @@ if __name__ == '__main__':
     pic_width = len(img[0])
 
     mxpiObjectList = MxpiDataType.MxpiObjectList()
-    mxpiObjectList.ParseFromString(infer_result[2].messageBuf)
+    mxpiObjectList.ParseFromString(infer_result[keypointDetectResultIndex].messageBuf)
     print("len of hand size that were detected:", len(mxpiObjectList.objectVec))
 
     if len(tensorList.tensorPackageVec) != len(mxpiObjectList.objectVec):
@@ -141,7 +155,7 @@ if __name__ == '__main__':
     for i in range(idsLen):
         ids = np.frombuffer(tensorList.tensorPackageVec[i].tensorVec[0].dataStr, dtype = np.float32)
         shape = tensorList.tensorPackageVec[i].tensorVec[0].tensorShape
-        ids.resize(shape[1] // 2, 2)
+        ids.resize(shape[1] // 2, resizeParameter)
 
         y0 = int(mxpiObjectList.objectVec[i].y0)
         x0 = int(mxpiObjectList.objectVec[i].x0)
@@ -149,7 +163,7 @@ if __name__ == '__main__':
         x1 = int(mxpiObjectList.objectVec[i].x1)
         print(mxpiObjectList.objectVec[i])
         print("y0, x0, y1, x1:", y0, x0, y1, x1)
-        recColor = [random.randint(0, 255) for _ in range(3)]
+        recColor = [random.randint(0, maxGray) for _ in range(channelCount)]
         x0Range = check_range(x0, pic_width)
         y0Range = check_range(y0, pic_height)
         x1Range = check_range(x1, pic_width)
@@ -165,7 +179,7 @@ if __name__ == '__main__':
         for (x, y) in ids.astype(np.int32):
             pointArr.append((x, y))
 
-        if len(pointArr) != 21:
+        if len(pointArr) != gestureKeypointCount:
             print("keypoint size is not equal to 21")
             streamManagerApi.DestroyAllStreams()
             exit()
@@ -186,7 +200,7 @@ if __name__ == '__main__':
             colorI = colorI + 1
 
         for pt in pointArr:
-            cv2.circle(img, pt, 2, (255, 50, 60), -1)
+            cv2.circle(img, pt, 2, pointColor, -1)
 
     buf = filePath
     sub = "/"
