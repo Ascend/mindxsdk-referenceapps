@@ -39,10 +39,11 @@ OUTPUT_DIR = '../out/'
 def preprocess(picPath):
     # 抽取黑白图像L通道
     bgr_img = cv.imread(picPath)
-    if bgr_img == None:
+    if bgr_img is None:
         print("This input picture does not compliant.")
         exit()
-    bgr_img.astype(np.float32)
+    else:
+        bgr_img = bgr_img.astype(np.float32)
 
     orig_shape = bgr_img.shape[:2]
     bgr_img = bgr_img / IMG_CHW_MAX
