@@ -31,7 +31,7 @@ public:
 
     ~BlockingQueue() {}
 
-    APP_ERROR Pop(T &item)
+    APP_ERROR pop(T &item)
     {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -55,7 +55,7 @@ public:
         return APP_ERR_OK;
     }
 
-    APP_ERROR Pop(T& item, unsigned int timeOutMs)
+    APP_ERROR pop(T& item, unsigned int timeOutMs)
     {
         std::unique_lock<std::mutex> lock(mutex_);
         auto realTime = std::chrono::milliseconds(timeOutMs);
@@ -80,7 +80,7 @@ public:
         return APP_ERR_OK;
     }
 
-    APP_ERROR Push(const T& item, bool isWait = false)
+    APP_ERROR push(const T& item, bool isWait = false)
     {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -102,7 +102,7 @@ public:
         return APP_ERR_OK;
     }
 
-    APP_ERROR Push_Front(const T &item, bool isWait = false)
+    APP_ERROR push_front(const T &item, bool isWait = false)
     {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -125,7 +125,7 @@ public:
         return APP_ERR_OK;
     }
 
-    void Stop()
+    void stop()
     {
         {
             std::unique_lock<std::mutex> lock(mutex_);
@@ -136,7 +136,7 @@ public:
         empty_cond_.notify_all();
     }
 
-    void Restart()
+    void restart()
     {
         {
             std::unique_lock<std::mutex> lock(mutex_);
@@ -145,7 +145,7 @@ public:
     }
 
     // if the queue is stoped ,need call this function to release the unprocessed items
-    std::list<T> getRemainItems()
+    std::list<T> getremainitems()
     {
         std::unique_lock<std::mutex> lock(mutex_);
 
@@ -156,7 +156,7 @@ public:
         return queue_;
     }
 
-    APP_ERROR getBackItem(T &item)
+    APP_ERROR getbackitem(T &item)
     {
         if (is_stoped_) {
             return APP_ERR_QUEUE_STOPED;
@@ -170,28 +170,28 @@ public:
         return APP_ERR_OK;
     }
 
-    std::mutex *GetLock()
+    std::mutex *getlock()
     {
         return &mutex_;
     }
 
-    APP_ERROR IsFull()
+    APP_ERROR isfull()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         return queue_.size() >= max_size_;
     }
 
-    int GetSize()
+    int getsize()
     {
         return queue_.size();
     }
 
-    APP_ERROR IsEmpty()
+    APP_ERROR isempty()
     {
         return queue_.empty();
     }
 
-    void Clear()
+    void clear()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         queue_.clear();
