@@ -225,7 +225,7 @@ if __name__ == '__main__':
     # merge the face_swap result into the source image
     base_face[int(crop_face1_bottom): int(crop_face1_top),
     int(crop_face1_left):int(crop_face1_right)] = face_swap_result
-    cv2.imwrite("face_swap_result.jpg", base_face)
+    cv2.imwrite("./result/face_swap_result.jpg", base_face)
 
     # delete the intermediate process picture
     os.remove("./only_face_swap.jpg")

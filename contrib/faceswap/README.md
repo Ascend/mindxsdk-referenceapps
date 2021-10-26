@@ -27,13 +27,14 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ## 2  代码目录结构<br/>
 本Sample工程名称为faceswap,工程目录如下图所示：
 ```angular2html
+|-------- data                                 // 输入存放文件夹（需用户新建，见5.4）
 |-------- models
 |           |---- aipp_yolov4.cfg              // yolov4模型转换配置文件（用于人脸检测）
 |           |---- coco.names                   // yolov4模型所有可识别类
-|           |---- V3ONNX.cfg                // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
+|           |---- V3ONNX.cfg                   // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
 |-------- pipline
 |           |---- faceswap.pipeline            // 人脸替换流水线配置文件
-|-------- pipline                              // 存放结果文件
+|-------- result                               // 存放结果文件（需用户新建，见5.5）
 |-------- main.py                              
 |-------- faceswap_post.py                     // 后处理模块
 |-------- README.md   
