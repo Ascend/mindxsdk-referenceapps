@@ -11,7 +11,7 @@
   本样例中在model目录下已提供om模型和对应转换脚本，如仓库限制无法获取大文件，请使用以下下载地址：
   - https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/painting/AIPainting_v2.pb
   - https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/painting/AIPainting_v2.om
-  
+
 
 ## 3 目录结构
 
@@ -37,6 +37,7 @@
 |-----------|----------|
 | python    | 3.7.5    |
 | MindX SDK | 2.0.2    |
+| CANN | 3.3.0 |
 
 本样例无需外部依赖，在安装完成的SDK运行环境中即可执行。
 
