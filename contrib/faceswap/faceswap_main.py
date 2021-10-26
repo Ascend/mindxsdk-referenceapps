@@ -74,14 +74,14 @@ if __name__ == '__main__':
                 print('an IOError occurred while opening {}, maybe your input is not a picture'.format(i))
         if not input_valid:
             print('input image {} is invalid.'.format(i))
-            exit(1)
+            exit()
     # initialize the stream manager
 
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
     if stream_state != 0:
         print("Failed to init Stream manager, stream_state=%s" % str(stream_state))
-        exit(1)
+        exit()
 
     # create streams by pipeline config file
     with open("pipeline/faceswap.pipeline", 'rb') as f:
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
         print("Failed to create Stream manager, stream_state=%s" % str(stream_state))
-        exit(1)
+        exit()
 
     # prepare the input of the stream #begin
 
