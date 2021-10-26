@@ -49,8 +49,8 @@ if __name__ == '__main__':
     # check input image
     input_path = [FACE1_PATH, FACE2_PATH]
     input_image_data = []
-    input_valid = False
     for i in input_path:
+        input_valid = False
         # check input image
         if os.path.exists(i) != 1:
             error_message = 'The {} does not exist'.format(i)
