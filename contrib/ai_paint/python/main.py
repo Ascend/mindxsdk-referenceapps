@@ -17,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from StreamManagerApi import StreamManagerApi
+from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 import json
 import os
 import time
