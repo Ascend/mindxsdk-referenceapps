@@ -22,15 +22,10 @@ CANN版本为1.77.22.6.220。
 ├── README.md                     # 模型转换配置文件
 ├── anchor_decode.py              # 计算bbox
 ├── anchor_generator.py           # 生成先验框
-├── image													# 测试图片文件夹
-│   └── test.jpg									# 测试图片
 ├── image.py											# 图片识别主程序
 ├── main.pipeline									# 口罩识别推理流程pipline
 ├── models												# 推理模型文件夹
-│   ├── aipp.om										# 推理使用的om模型
-│   ├── face_mask_detection.pb		# 推理模型pb文件
-│   ├── fusion_result.json				# ATC运行文件
-│   └── model_conversion.sh				# 转模型脚本文件
+│   └── face_mask.aippconfig			# 转模型前处理配置文件
 ├── nms.py												# nms计算程序
 ├── test_image.py									# 精度测试程序
 ├── map_calculate.py							# mAP计算程序
@@ -154,7 +149,7 @@ python3.7.5 image.py
 
 ###### 数据集说明
 
-- 数据集来源: [GitHub提供Google Drive文件](https://drive.google.com/file/d/1QspxOJMDf_rAWVV7AU_Nc0rjo1_EPEDW/view?usp=sharing)
+- 数据集来源: [obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip)
 
 - 数据集结构
 
