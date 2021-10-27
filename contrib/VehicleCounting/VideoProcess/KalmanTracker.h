@@ -27,16 +27,13 @@ class KalmanTracker {
 public:
     KalmanTracker() {}
     ~KalmanTracker() {}
-
     void CvKalmanInit(MxBase::ObjectInfo initRect);
     MxBase::ObjectInfo Predict();
     void Update(MxBase::ObjectInfo stateMat);
-
 private:
     cv::KalmanFilter cvkalmanfilter_ = {};
     cv::Mat measurement_ = {};
 };
 } // namesapce ascendVehicleTracking
-
 
 #endif //STREAM_PULL_SAMPLE_KALMANTRACKER_H
