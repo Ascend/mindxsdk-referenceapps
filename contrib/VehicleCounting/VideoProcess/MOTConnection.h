@@ -20,8 +20,6 @@
 #include <thread>
 #include <list>
 #include <utility>
-//#include "ModuleBase/ModuleBase.h"
-//#include "acl/acl.h"
 #include "KalmanTracker.h"
 #include "Hungarian.h"
 #include "DataType.h"
