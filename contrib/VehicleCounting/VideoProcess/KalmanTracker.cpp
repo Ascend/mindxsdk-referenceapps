@@ -115,15 +115,6 @@ namespace ascendVehicleTracking {
         detectInfo.y0 = y;
         detectInfo.x1 = x+w;
         detectInfo.y1 = y+h;
-//        if ((x+w)>=1280)
-//            detectInfo.x1 = 1279;
-//        else
-//            detectInfo.x1 = x+w;
-//        if((y+h)>=720)
-//            detectInfo.y1 = 719;
-//        else
-//            detectInfo.y1 = y+h;
-
         return detectInfo;
     }
 
