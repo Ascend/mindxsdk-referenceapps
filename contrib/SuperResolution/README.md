@@ -58,7 +58,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 > 模型转换
 
-**步骤1** 获取原始模型网络及权重, [权重下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/VDSR/VDSR.caffemodel)、[网络下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/super_resolution/VDSR/VDSR.prototxt)
+**步骤1** 获取原始模型网络及权重, [权重下载 和 网络下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/model.zip)
 
 **步骤2** AIPP配置文件-YUV420SP_U8_GRAY.cfg
 
@@ -173,31 +173,9 @@ input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
 
 PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量的测量方法。
 
-1）准备测试集：下载验证图片集，[下载地址](https://drive.google.com/file/d/0B7tU5Pj1dfCMWjhhaE1HR3dqcGs/view?resourcekey=0-bp1OwS1HzuCuelcMG0sRvQ)，从zip文件中取出两个图片集91 images和General-100放置到testSet目录下，其中91 images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
+1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91 images和General-100放置到testSet目录下，其中91 images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
 
-2）图片格式转换：参考如下python脚本，两个图片集中bmp图片转换为jpg图片
-
-```python
-from PIL import Image
-import sys
-import os
-if __name__ == '__main__':
-    # test image set path
-    test_image_set_path = "./Set14"
-    # parse command arguments
-    if len(sys.argv) == 2:
-        if sys.argv[1] == '':
-            print('test image set path is not valid, use default config.')
-        else:
-            test_image_set_path = sys.argv[1]
-    # get all image files
-    image_files = os.listdir(test_image_set_path)
-    # convert bmp to jpg
-    for test_image_path in image_files:
-        image_file = test_image_set_path+"/" + test_image_path
-        out_img = Image.open(image_file).convert("RGB")
-        out_img.save(test_image_set_path + "-jpg/" + test_image_path[:-4] + ".jpg")
-```
+2）图片格式转换：参考`testSet/bmp2jpg.py`脚本，将两个图片集中bmp图片转换为jpg图片
 
 3) 利用`evaluate.py `脚本，计算得到两个图片集的平均PSNR（峰值信噪比）
 
