@@ -22,7 +22,6 @@
 #include "DataType.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
 #include "MxBase/ErrorCode/ErrorCodes.h"
-//#include "acl/acl.h"
 
 struct HungarianHandle {
     int rows;
