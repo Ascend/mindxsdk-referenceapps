@@ -13,7 +13,7 @@ import json
 import os
 import io
 import sys
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import MxpiDataType_pb2 as MxpiDataType
 from utils import colorize, calc_psnr
 import numpy as np
