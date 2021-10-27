@@ -32,7 +32,6 @@ namespace {
     static int counter_down = 0;
     static int counter_up = 0;
     static AVFormatContext *formatContext = nullptr; // 视频流信息
-//    static cv::VideoWriter writer("test.mp4", cv::CAP_OPENCV_MJPEG, 10, cv::Size(1280,720), true);
     static uint32_t cnt = 0;
     const uint32_t VIDEO_WIDTH = 1280;
     const uint32_t VIDEO_HEIGHT = 720;
@@ -259,20 +258,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
 
     std::vector<MxBase::ObjectInfo> info;
     for (uint32_t i = 0; i < objInfos.size(); i++) {
-//        float maxConfidence = 0;
-//        uint32_t index;
-
-//            if (objInfos[i][j].confidence > maxConfidence) {
-//                maxConfidence = objInfos[i][j].confidence;
-//                index = j;
-//            }
-//            if(objInfos[i][j].confidence < 0.4){
-//                objInfos[i].erase(objInfos[i].begin()+j);
-//                j--;
-//                continue;
-//            }
-//            info.push_back(objInfos[i][index]);
-            // 打印置信度最大推理结果
+        // 打印置信度最大推理结果
         LogInfo << "id: " << objInfos[i].classId << "; label: " << objInfos[i].className
                     << "; confidence: " << objInfos[i].confidence
                     << "; box: [ (" << objInfos[i].x0 << "," << objInfos[i].y0 << ") "
@@ -329,10 +315,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
     cv::putText(imgBgr,std::to_string(counter),cv::Point(20,90),0,0.8,cv::Scalar(0, 0, 255),2);
     cv::putText(imgBgr,std::to_string(counter_up),cv::Point(200,90),0,0.8,cv::Scalar(0, 255, 0),2);
     cv::putText(imgBgr,std::to_string(counter_down),cv::Point(450,90),0,0.8,cv::Scalar(255, 0, 0),2);
-//    LogInfo<<"obj size: "<<objInfos.size();
-//    writer->write(imgBgr);
     frameIf.push(imgBgr);
-//    LogInfo<<"队列大小"<<frameIf.size();
     // 把Mat类型的图像矩阵保存为图像到指定位置。
     std::string fileName = "./result/result" + std::to_string(frameId+1) + ".jpg";
     cv::imwrite(fileName, imgBgr);
@@ -399,7 +382,6 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         ret = tracker->ProcessSort(objInfos);
         if (ret != APP_ERR_OK) {
             LogError << "result failed ";
-//            return;
         }
         std::vector<MxBase::ObjectInfo> objInfos_ = {};
         ret = tracker->GettrackResult(objInfos_);
@@ -414,18 +396,12 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
             return;
         }
         frameId++;
-//        if(frameId == 7){
-//            for (unsigned int i=0;i<objInfos_.size();i++){
-//                LogInfo<<objInfos_[i].classId<<" "<<objInfos_[i].x0<<" "<<objInfos_[i].y0;
-//            }
-//            sleep(100);
-//        }
         if(cnt == frameId){
             stopFlag = true;
             }
     }
 }
-
+//获取每帧的可视化结果用于生成视频
 std::queue<cv::Mat> VideoProcess::Getframes(){
     return frameIf;
 }
