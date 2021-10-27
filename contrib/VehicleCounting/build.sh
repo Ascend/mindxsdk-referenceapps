@@ -1,4 +1,5 @@
-#! /bin/sh
+#!/bin/bash
+
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,8 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#build post process share library
-mkdir build || exit
-cd build
-cmake ..
-make
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.7.5/lib:${FFMPEG_PATH}/lib:${LD_LIBRARY_PATH}
+path_cur=$(dirname $0)
+
+function build_cartoonization()
+{
+    cd $path_cur
+    rm -rf build
+    mkdir -p build
+    cd build
+    cmake ..
+    make
+    ret=$?
+    if [ ${ret} -ne 0 ]; then
+        echo "Failed to build cartoonization."
+        exit ${ret}
+    fi
+}
+
+build_cartoonization
