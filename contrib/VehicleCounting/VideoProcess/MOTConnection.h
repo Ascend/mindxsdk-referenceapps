@@ -23,7 +23,6 @@
 #include "KalmanTracker.h"
 #include "Hungarian.h"
 #include "DataType.h"
-
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
@@ -75,6 +74,5 @@ private:
                            std::vector<cv::Point> &matchedTracedDetected, std::vector<MxBase::ObjectInfo> &unmatchedVehicleObjectQueue);
 };
 } // namespace ascendVehicleTracking
-
 
 #endif //STREAM_PULL_SAMPLE_MOTCONNECTION_H
