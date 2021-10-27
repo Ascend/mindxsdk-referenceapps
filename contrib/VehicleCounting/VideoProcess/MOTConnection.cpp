@@ -22,11 +22,9 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
-
 #include "MxBase/Log/Log.h"
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "Hungarian.h"
-
 
 namespace ascendVehicleTracking {
 namespace {
@@ -44,8 +42,6 @@ const float X_DIST_RATE_THRESH = 1.3f;
 const float Y_DIST_RATE_THRESH = 1.f;
 } // namespace
 
-
-
 // 计算bounding box的交并比
 float CalIOU(MxBase::ObjectInfo detect1, MxBase::ObjectInfo detect2)
 {
@@ -58,7 +54,6 @@ float CalIOU(MxBase::ObjectInfo detect1, MxBase::ObjectInfo detect2)
     }
     return (intersectionArea / unionArea);
 }
-
 
 float CalDistSimilarity(DetectInfo detect1, DetectInfo detect2)
 {
