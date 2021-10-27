@@ -23,20 +23,10 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 
-//#include "Log/Log.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/ErrorCode/ErrorCodes.h"
-//#include "FileEx/FileEx.h"
 #include "Hungarian.h"
 
-//#include "Common.h"
-//#include "QualityEvaluation/FaceBlockingMap.h"
-//#include "DataTrans/DataTrans.pb.h"
-//#include "TestCV/TestCV.h"
-
-//#ifdef ASCEND_ACL_OPEN_VESION
-//#include "HdcChannel/HdcChannel.h"
-//#endif
 
 namespace ascendVehicleTracking {
 namespace {
@@ -56,16 +46,11 @@ const float Y_DIST_RATE_THRESH = 1.f;
 
 
 
-
+// 计算bounding box的交并比
 float CalIOU(MxBase::ObjectInfo detect1, MxBase::ObjectInfo detect2)
 {
     cv::Rect_<float> bbox1(detect1.x0, detect1.y0, detect1.x1-detect1.x0, detect1.y1-detect1.y0);
     cv::Rect_<float> bbox2(detect2.x0, detect2.y0, detect2.x1-detect2.x0, detect2.y1-detect2.y0);
-//    if(std::isnan(detect1.x1-detect1.x0)){
-//        LogInfo<<detect1.x1<<"------"<<detect1.x0;
-//        LogInfo<<detect2.x1<<"------"<<detect2.x0;
-//        sleep(10);
-//    }
     float intersectionArea = (bbox1 & bbox2).area();
     float unionArea = bbox1.area() + bbox2.area() - intersectionArea;
     if (unionArea < DBL_EPSILON) {
@@ -88,12 +73,12 @@ float CalDistSimilarity(DetectInfo detect1, DetectInfo detect2)
     float value = (1.f - xDistance / minWidth) * (1.f - yDistance / minHeight);
     return value;
 }
-
+//计算前后两帧的两个bounding box是同一辆车的相似度
 float CalSimilarity(const TraceLet &traceLet, const MxBase::ObjectInfo &objectInfo, const int &method, const double &kIOU)
 {
     return CalIOU(traceLet.detectInfo, objectInfo);
 }
-
+//过滤掉交并比小于阈值的匹配
 void MOTConnection::FilterLowThreshold(const HungarianHandle &hungarianHandleObj,
     const std::vector<std::vector<int>> &disMatrix, std::vector<cv::Point> &matchedTracedDetected,
     std::vector<bool> &detectVehicleFlagVec)
@@ -108,7 +93,7 @@ void MOTConnection::FilterLowThreshold(const HungarianHandle &hungarianHandleObj
         }
     }
 }
-
+ //更新没有匹配上的跟踪器
 void MOTConnection::UpdateUnmatchedTraceLet(const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     for (auto itr = traceList_.begin(); itr != traceList_.end();) {
@@ -127,15 +112,13 @@ void MOTConnection::UpdateUnmatchedTraceLet(const std::vector<std::vector<MxBase
         itr = traceList_.erase(itr);
     }
 }
-
+//更新匹配上的跟踪器
 void MOTConnection::UpdateMatchedTraceLet(const std::vector<cv::Point> &matchedTracedDetected,
     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     for (unsigned int i = 0; i < matchedTracedDetected.size(); ++i) {
         int traceIndex = matchedTracedDetected[i].x;
         int detectIndex = matchedTracedDetected[i].y;
-//        LogDebug << "[frame id = " << 1 << "] matched traceindex =" << traceIndex <<
-//            ",matched detectindex = " << detectIndex << "";
         if (traceList_[traceIndex].info.survivalTime > MULTIPLE) {
             traceList_[traceIndex].info.flag = TRACkED_VEHICLE;
         }
@@ -145,10 +128,9 @@ void MOTConnection::UpdateMatchedTraceLet(const std::vector<cv::Point> &matchedT
         traceList_[traceIndex].detectInfo = objInfos[0][detectIndex];
         traceList_[traceIndex].kalman.Update(objInfos[0][detectIndex]);
 
-        // update frame
-//        frameAiInfo->face[detectIndex].trackInfo = traceList_[traceIndex].info;
     }
 }
+//将没有匹配上的检测更新为新的检测器
 void MOTConnection::AddNewDetectedVehicle(std::vector<MxBase::ObjectInfo> &unmatchedVehicleObjectQueue)
 {
     using Time = std::chrono::high_resolution_clock;
@@ -169,11 +151,8 @@ void MOTConnection::AddNewDetectedVehicle(std::vector<MxBase::ObjectInfo> &unmat
         traceLet.info.createTime = Time::now();
 
         traceLet.kalman.CvKalmanInit(vehicleObject);
-        // MOT embedding module may be disable
         traceList_.push_back(traceLet);
 
-        // update frame
-        // vehicleObject->trackInfo = traceLet.info;
     }
 }
 
@@ -213,8 +192,6 @@ void MOTConnection::TrackObjectUpdate(const std::vector<std::vector<MxBase::Obje
                 //计算交并比
                 float sim = CalSimilarity(traceList_[i], objInfos[0][j], method_, kIOU_); //method_=1, kIOU_=1.0
                 disMatrix[i][j] = (int)(sim * FLOAT_TO_INT);
-//                LogInfo << ", disMatrix[" << i << "][" << j << "] = " << disMatrix[i][j] << "";
-//                LogInfo <<"traceList_:"<<traceList_[i].detectInfo.x0<<","<<traceList_[i].detectInfo.y0<<" objInfos:"<<objInfos[0][j].x0<<","<<objInfos[0][j].y0;
             }
         }
 
