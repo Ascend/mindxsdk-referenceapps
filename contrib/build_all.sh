@@ -27,6 +27,7 @@ SAMPLE_FOLDER=(
     human_segmentation/
 	OpenposeKeypointDetection/
 	PersonCount/
+    VehicleCounting/
 	FatigueDrivingRecognition/
 )
 
