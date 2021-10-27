@@ -14,7 +14,7 @@
 # limitations under the License.
 
 #build post process share library
-mkdir build
+mkdir build || exit
 cd build
 cmake ..
 make
