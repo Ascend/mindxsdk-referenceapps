@@ -63,7 +63,7 @@ def colorize(value, value_min=10, value_max=1000, color_depth=255, extend_to_bgr
 
 
 def calc_psnr(src_img, dst_img):
-	"""
+    """
     Calculate the peak signal-to-noise ratio between two images
     :param src_img: Image inferred from the model
     :param dst_img: Original image
