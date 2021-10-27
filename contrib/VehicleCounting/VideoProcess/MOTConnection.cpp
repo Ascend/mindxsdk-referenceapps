@@ -136,10 +136,6 @@ void MOTConnection::AddNewDetectedVehicle(std::vector<MxBase::ObjectInfo> &unmat
     using Time = std::chrono::high_resolution_clock;
     for (auto &vehicleObject : unmatchedVehicleObjectQueue) {
         // add new detected into traceList
-        if(std::isnan(vehicleObject.x0)||std::isnan(vehicleObject.y0)){
-            LogInfo<<vehicleObject.y0<<","<<vehicleObject.x0<<"-----"<<vehicleObject.y1<<","<<vehicleObject.x1;
-            sleep(10);
-        }
         TraceLet traceLet;
         generatedId_++;
         traceLet.info.id = generatedId_;
@@ -222,16 +218,13 @@ APP_ERROR MOTConnection::ProcessSort(std::vector<std::vector<MxBase::ObjectInfo>
 
     if (traceList_.size() > 0) {
         // every traceLet should do kalman predict
-        LogInfo << "Stop 01";
         TrackObjectPredict();   //卡尔曼滤波预测
         TrackObjectUpdate(objInfos, matchedTracedDetected, unmatchedVehicleObjectQueue);  //选出matched track、unmatched detection
     } else {
         // traceList is empty, all the vehicle detected in the new frame are unmatched.
         if (objInfos[0].size() > 0) {
-            LogInfo << "Stop 02";
             for (unsigned int i = 0; i < objInfos[0].size(); ++i) {
                 unmatchedVehicleObjectQueue.push_back(objInfos[0][i]);
-                LogInfo << "Stop 03";
             }
         }
     }
