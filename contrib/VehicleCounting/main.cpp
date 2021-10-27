@@ -113,7 +113,7 @@ int main() {
     std::thread getFrame(videoProcess->GetFrames, blockingQueue, videoProcess);
     std::thread getResult(videoProcess->GetResults, blockingQueue, yolov4, videoProcess, tracker);
 
-    LogInfo << "wuyifan1...";
+
     if (signal(SIGINT, SigHandler) == SIG_ERR) {
         LogError << "can not catch SIGINT";
         return APP_ERR_COMM_FAILURE;
@@ -139,7 +139,6 @@ int main() {
 
     blockingQueue->Stop();
     blockingQueue->Clear();
-    LogInfo << "wuyifan4...";
     ret = yolov4->FrameDeInit();
     if (ret != APP_ERR_OK) {
         LogError << "FrameInit failed";
