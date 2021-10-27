@@ -23,7 +23,6 @@ namespace {
     const int INF = 0x3f3f3f3f;
     const int VISITED = 1;
     const int HUNGARIAN_CONTENT = 7;
-
     const int X_MATCH_OFFSET = 0;
     const int Y_MATCH_OFFSET = 1;
     const int X_VALUE_OFFSET = 2;
@@ -61,7 +60,6 @@ APP_ERROR HungarianHandleInit(HungarianHandle &handle, int row, int cols)
     handle.slack.reset((int *)ptr[SLACK_OFFSET], free);
     handle.xVisit.reset((int *)ptr[X_VISIT_OFFSET], free);
     handle.yVisit.reset((int *)ptr[Y_VISIT_OFFSET], free);
-
     return APP_ERR_OK;
 }
 
@@ -135,7 +133,6 @@ int HungarianSolve(HungarianHandle &handle, const std::vector<std::vector<int>> 
         while (true) {
             std::fill(handle.xVisit.get(), handle.xVisit.get() + handle.rows, 0);
             std::fill(handle.yVisit.get(), handle.yVisit.get() + handle.cols, 0);
-
             for (j = 0; j < handle.cols; ++j) {
                 handle.slack.get()[j] = INF;
             }
