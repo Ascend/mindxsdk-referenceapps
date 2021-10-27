@@ -24,7 +24,6 @@
 #include "opencv2/opencv.hpp"
 #include "VideoProcess.h"
 
-
 namespace {
     static std::vector<std::queue<center>> pts(10000);  //保存每个车辆轨迹的最新的20个bbox的中心点
     static std::vector<center> line = {center{0,100}, center{1280, 100}};  // 计数所用的线段
@@ -185,7 +184,6 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
     inputDataInfo.channelId = CHANNEL_ID;
     inputDataInfo.frameId = frameId;
     ret = vDvppWrapper->DvppVdec(inputDataInfo, userData);
-
     if (ret != APP_ERR_OK) {
         LogError << "DvppVdec Failed";
         MxBase::MemoryHelper::MxbsFree(dvppMemory);
@@ -207,7 +205,6 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
         LogError << "SetDevice failed";
         return;
     }
-
     AVPacket pkt;
     while(!stopFlag){
         //直接为一个已经分配好内存的指针或对象参数置为默认值，要求pkt的内存已经分配好了，如果为NULL，则此处会崩溃
@@ -255,7 +252,6 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
     cv::Mat imgBgr = cv::Mat(VIDEO_HEIGHT, VIDEO_WIDTH, CV_8UC3);
     // 颜色空间转换
     cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
-
     std::vector<MxBase::ObjectInfo> info;
     for (uint32_t i = 0; i < objInfos.size(); i++) {
         // 打印置信度最大推理结果
@@ -271,7 +267,6 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
         const uint32_t yOffset = 10;
         const uint32_t lineType = 8;
         const float fontScale = 1.0;
-
         // 在图像上绘制文字
         cv::putText(imgBgr, std::to_string((int)objInfos[i].classId), cv::Point(objInfos[i].x0 + xOffset, objInfos[i].y0 + yOffset),
                             cv::FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, lineType);
@@ -308,8 +303,6 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
                     counter_up++;
             }
         }
-
-
     }
     cv::line(imgBgr, cv::Point(line[0].x,line[0].y),cv::Point(line[1].x,line[1].y),  cv::Scalar(0, 255, 0),2);
     cv::putText(imgBgr,std::to_string(counter),cv::Point(20,90),0,0.8,cv::Scalar(0, 0, 255),2);
@@ -370,7 +363,6 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
             LogError << "Inference failed, ret=" << ret << ".";
             return;
         }
-
         std::vector<std::vector<MxBase::ObjectInfo>> objInfos;
         // 后处理
         ret = yolov4Detection->PostProcess(outputs, VIDEO_HEIGHT, VIDEO_WIDTH, objInfos);
