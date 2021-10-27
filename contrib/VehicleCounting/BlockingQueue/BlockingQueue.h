@@ -15,12 +15,10 @@
  */
 #ifndef BLOCKING_QUEUE_H
 #define BLOCKING_QUEUE_H
-
 #include <condition_variable>
 #include <list>
 #include <mutex>
 #include <stdint.h>
-
 #include "MxBase/ErrorCode/ErrorCodes.h"
 
 static const int DEFAULT_MAX_QUEUE_SIZE = 256;
@@ -203,7 +201,6 @@ private:
     std::condition_variable empty_cond_;
     std::condition_variable full_cond_;
     uint32_t max_size_;
-
     bool is_stoped_;
 };
 #endif // __INC_BLOCKING_QUEUE_H__
