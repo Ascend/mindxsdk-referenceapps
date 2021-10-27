@@ -15,6 +15,6 @@
 
 #build post process share library
 mkdir build
-cd build || exit
+cd build
 cmake ..
 make
