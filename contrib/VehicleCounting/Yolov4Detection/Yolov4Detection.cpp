@@ -230,7 +230,6 @@ static bool sort_score(MxBase::ObjectInfo box1,MxBase::ObjectInfo box2){
 void nms(std::vector<MxBase::ObjectInfo> &vec_boxs){
     std::vector<MxBase::ObjectInfo> results;
     std::sort(vec_boxs.begin(),vec_boxs.end(),sort_score);
-//    uint32_t updated_size = vec_boxs.size();
     for (uint32_t i = 0; i < vec_boxs.size(); i++){
         if (vec_boxs[i].confidence < 0.4){
             vec_boxs.erase(vec_boxs.begin()+i);
@@ -262,13 +261,6 @@ APP_ERROR Yolov4Detection::PostProcess(const std::vector<MxBase::TensorBase> &ou
     APP_ERROR ret = post->Process(outputs, objInfos, imageInfoVec);
     for (uint32_t i = 0; i < objInfos.size(); i++) {
         nms(objInfos[i]);
-//        for (uint32_t j = 0; j < objInfos[i].size(); j++) {
-//            if(objInfos[i][j].confidence < 0.4){
-//                objInfos[i].erase(objInfos[i].begin()+j);
-//                j--;
-//                continue;
-//            }
-//        }
     }
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
