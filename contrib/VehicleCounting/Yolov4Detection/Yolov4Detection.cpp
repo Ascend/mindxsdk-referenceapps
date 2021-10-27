@@ -71,7 +71,6 @@ void Yolov4Detection::SetYolov4PostProcessConfig(const InitParam &initParam, std
     configData.SetJsonValue("INPUT_TYPE", std::to_string(initParam.inputType));
     configData.SetJsonValue("ANCHOR_DIM", std::to_string(initParam.anchorDim));
     configData.SetJsonValue("CHECK_MODEL", checkTensor);
-
     auto jsonStr = configData.GetCfgJson().serialize();
     config["postProcessConfigContent"] = std::make_shared<std::string>(jsonStr);
     config["labelPath"] = std::make_shared<std::string>(initParam.labelPath);
@@ -103,7 +102,6 @@ APP_ERROR Yolov4Detection::FrameInit(const InitParam &initParam)
         LogError << "ModelInferenceProcessor init failed, ret=" << ret << ".";
         return ret;
     }
-
     std::map<std::string, std::shared_ptr<void>> config;
     SetYolov4PostProcessConfig(initParam, config);
     post = std::make_shared<MxBase::Yolov3PostProcess>();
@@ -141,13 +139,11 @@ APP_ERROR Yolov4Detection::ResizeFrame(const std::shared_ptr<MxBase::MemoryData>
     input.widthStride = width;
     input.dataSize = frameInfo->size;
     input.data = (uint8_t*)frameInfo->ptrData;
-
     const uint32_t resizeHeight = 608;
     const uint32_t resizeWidth = 608;
     MxBase::ResizeConfig resize = {};
     resize.height = resizeHeight;
     resize.width = resizeWidth;
-
     MxBase::DvppDataInfo output = {};
     // 图像缩放
     APP_ERROR ret = yDvppWrapper->VpcResize(input, output, resize);
@@ -166,7 +162,6 @@ APP_ERROR Yolov4Detection::ResizeFrame(const std::shared_ptr<MxBase::MemoryData>
     }
     std::vector<uint32_t> shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
     tensor = MxBase::TensorBase(outMemoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
-
     return APP_ERR_OK;
 }
 
