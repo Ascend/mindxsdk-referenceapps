@@ -27,8 +27,6 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 
-//#include "BlockingQueue/BlockingQueue.h"
-//#include "Proto/vehicle.pb.h"
 
 namespace ascendVehicleTracking {
 #define DVPP_ALIGN_UP(x, align) ((((x) + ((align)-1)) / (align)) * (align))
