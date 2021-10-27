@@ -17,6 +17,12 @@
 #ifndef STREAM_PULL_SAMPLE_VIDEOPROCESS_H
 #define STREAM_PULL_SAMPLE_VIDEOPROCESS_H
 
+extern "C"{
+#include "libavformat/avformat.h"
+#include "libavcodec/avcodec.h"
+#include "libavutil/avutil.h"
+#include "libswscale/swscale.h"
+}
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
@@ -26,13 +32,6 @@
 #include "../BlockingQueue/BlockingQueue.h"
 #include "../Yolov4Detection/Yolov4Detection.h"
 #include "MOTConnection.h"
-
-extern "C"{
-#include "libavformat/avformat.h"
-#include "libavcodec/avcodec.h"
-#include "libavutil/avutil.h"
-#include "libswscale/swscale.h"
-}
 
 struct center{
     double x;
