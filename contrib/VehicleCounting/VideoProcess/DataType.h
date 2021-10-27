@@ -27,7 +27,6 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 
-
 namespace ascendVehicleTracking {
 #define DVPP_ALIGN_UP(x, align) ((((x) + ((align)-1)) / (align)) * (align))
 
@@ -88,7 +87,6 @@ namespace ascendVehicleTracking {
 
 struct AttrT {
     AttrT(std::string name, std::string value) : name(std::move(name)), value(std::move(value)) {}
-
     std::string name = {};
     std::string value = {};
 };
