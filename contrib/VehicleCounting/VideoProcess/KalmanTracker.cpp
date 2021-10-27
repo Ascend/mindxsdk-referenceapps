@@ -62,12 +62,10 @@ namespace ascendVehicleTracking {
         const int measureDim = 4;
         cvkalmanfilter_ = cv::KalmanFilter(stateDim, measureDim, 0); // zero control
         measurement_ = cv::Mat::zeros(measureDim, 1, CV_32F);        // 4 measurements, Z(k), according to detection results
-
         // A, will not be updated
         cvkalmanfilter_.transitionMatrix = (cv::Mat_<float>(stateDim, stateDim) << 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0,
                 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1);
         cvkalmanfilter_.measurementMatrix =(cv::Mat_<float>(measureDim, stateDim) << 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 );
-
         cv::setIdentity(cvkalmanfilter_.measurementMatrix);                          // H, will not be updated
         cv::setIdentity(cvkalmanfilter_.processNoiseCov, cv::Scalar::all(1e-2));     // Q, will not be updated
         cv::setIdentity(cvkalmanfilter_.measurementNoiseCov, cv::Scalar::all(1e-1)); // R, will bot be updated
@@ -127,7 +125,6 @@ namespace ascendVehicleTracking {
         *(pData + 1) = stateMat.y0 + (stateMat.y1-stateMat.y0) / MULTIPLE;
         *(pData + OFFSET) = (stateMat.x1-stateMat.x0) * (stateMat.y1-stateMat.y0);
         *(pData + OFFSET + 1) = (stateMat.x1-stateMat.x0) / (stateMat.y1-stateMat.y0);
-
         // update, do the following steps:
         // Kg(k): P(k|k-1)H'/(HP(k|k-1))H'+R
         // X(k|k): X(k|k-1)+Kg(k)(Z(k)-HX(k|k-1))
