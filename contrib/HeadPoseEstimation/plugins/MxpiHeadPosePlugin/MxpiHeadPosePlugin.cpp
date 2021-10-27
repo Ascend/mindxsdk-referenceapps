@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <cmath>
 #include "MxpiHeadPosePlugin.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/Tensor/TensorBase/TensorBase.h"

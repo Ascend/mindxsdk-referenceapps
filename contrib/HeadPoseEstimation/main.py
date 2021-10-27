@@ -91,7 +91,12 @@ if __name__ == '__main__':
     # Create Input Object
     dataInput = MxDataInput()
     if os.path.exists('test.jpg') != 1:
-        print("The test image does not exist.")
+        print("Error!The test image does not exist.")
+        exit()
+
+    if os.path.getsize('test.jpg') == 0:
+        print("Error!The test image is empty.")
+        exit()
 
     with open("test.jpg", 'rb') as f:
         dataInput.data = f.read()
