@@ -61,8 +61,6 @@ void InitYolov4Param(InitParam &initParam, const uint32_t deviceID)
     initParam.anchorDim = 3;
 }
 
-
-
 int main() {
     ///=== modify config ===//
     MxBase::ConfigData configData;
@@ -76,13 +74,9 @@ int main() {
         LogError << "InitDevices failed";
         return ret;
     }
-
     auto videoProcess = std::make_shared<VideoProcess>();
     auto yolov4 = std::make_shared<Yolov4Detection>();
     auto tracker = std::make_shared<ascendVehicleTracking::MOTConnection>();
-
-
-
     InitParam initParam;
     InitYolov4Param(initParam, videoProcess->DEVICE_ID);
     // 初始化模型推理所需的配置信息
@@ -112,8 +106,6 @@ int main() {
     auto blockingQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(MAX_QUEUE_LENGHT);
     std::thread getFrame(videoProcess->GetFrames, blockingQueue, videoProcess);
     std::thread getResult(videoProcess->GetResults, blockingQueue, yolov4, videoProcess, tracker);
-
-
     if (signal(SIGINT, SigHandler) == SIG_ERR) {
         LogError << "can not catch SIGINT";
         return APP_ERR_COMM_FAILURE;
@@ -133,7 +125,7 @@ int main() {
     }
     writer.release();
     LogInfo << "Video creating finish...";
-
+    
     getFrame.join();
     getResult.join();
 
