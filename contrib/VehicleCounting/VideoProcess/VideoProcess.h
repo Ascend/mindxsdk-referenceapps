@@ -39,9 +39,6 @@ struct center{
     double y;
 };
 
-
-
-
 class VideoProcess {
 private:
     static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, 
@@ -70,7 +67,6 @@ private:
 public:
     static bool stopFlag;
     static const uint32_t DEVICE_ID = 0;
-
 };
 
 #endif //STREAM_PULL_SAMPLE_VIDEOPROCESS_H
