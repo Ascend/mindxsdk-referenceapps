@@ -253,7 +253,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                 for gtNum in range(len(gtPols)):
                     for detNum in range(len(detPols)):
                         if gtRectMat[gtNum] == 0 and detRectMat[detNum] == 0 and gtNum not in gtDontCarePolsNum and detNum not in detDontCarePolsNum:
-                            if iouMat[gtNum,detNum] > evaluationParams['IOU_CONSTRAINT']:
+                            if iouMat[gtNum, detNum] > evaluationParams['IOU_CONSTRAINT']:
                                 gtRectMat[gtNum] = 1
                                 detRectMat[detNum] = 1
                                 detMatched += 1
