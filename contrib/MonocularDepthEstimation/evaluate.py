@@ -65,7 +65,6 @@ def load_test_set(image_set_path, image_depth_info_path):
 
     # get all image files
     image_files = os.listdir(image_set_path)
-    image_files.remove('.gitkeep')
     # sort by file name
     image_files.sort(key=lambda x: int(x[:-4]))
 
@@ -82,7 +81,6 @@ def load_test_set(image_set_path, image_depth_info_path):
 
         # get all depth info files
         image_depth_info_files = os.listdir(image_depth_info_path)
-        image_depth_info_files.remove('.gitkeep')
 
         # sort by file name
         image_depth_info_files.sort(key=lambda x: int(x[:-4]))
@@ -101,7 +99,7 @@ def load_test_set(image_set_path, image_depth_info_path):
 
         # save ground truth cache
         print('save ground_truth.npy ...')
-        np.save('test_set/ground_truth.npy', test_images_depth_data)
+        np.save('test_set/ground_truth.npy', images_depth_data)
     else:
         # load ground truth cache
         print('ground_truth.npy exist, load ground_truth.npy.')
@@ -166,7 +164,7 @@ if __name__ == '__main__':
         # check depth estimation result
         if test_images_infer_depth_info is None or test_images_info is None or \
                 test_images_infer_depth_info.shape[0] < test_images_depth_data.shape[0] or \
-                test_images_info.shape[0] < test_images_data.shape[0]:
+                test_images_info.shape[0] < len(test_images_data):
             print('depth estimation error on test set.')
             exit(1)
 

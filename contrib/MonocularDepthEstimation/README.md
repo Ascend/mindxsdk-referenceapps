@@ -75,7 +75,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换AdaBins模型
 # Execute, transform AdaBins model.
 
-atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_version=Ascend310 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error"
+atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_version=Ascend310 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。

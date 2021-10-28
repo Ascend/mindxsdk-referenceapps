@@ -33,7 +33,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换Adabins_nyu模型
 # Execute, transform Adabins_nyu model.
 
-atc --model=./AdaBins_nyu_simple.onnx --framework=5 --output=./AdaBins_nyu_cc --soc_version=Ascend310 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error
+atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_version=Ascend310 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error
 
 # 退出
 # exit
