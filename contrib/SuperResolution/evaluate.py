@@ -156,7 +156,7 @@ if __name__ == '__main__':
     # save the peak signal-to-noise ratio of each image in the test set
     psnr_all = []
     for test_image_path in image_files:
-        image_file = test_image_set_path+"/"+test_image_path
+        image_file = test_image_set_path + "/" + test_image_path
         infer(image_file, streamManagerApi)
     print("average psnr = " + str(sum(psnr_all)/len(psnr_all)))
     print(psnr_all)
