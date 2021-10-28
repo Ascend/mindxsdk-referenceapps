@@ -15,13 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-import sys
-sys.path.append('./')
+
 import zipfile
 import re
 import os
 import importlib
+import json
+import sys
+sys.path.append('./')
+
 
 def print_help():
     sys.stdout.write('Usage: python %s.py -g=<gtFile> -s=<submFile> [-o=<outputFolder> -p=<jsonParams>]' % sys.argv[0])
