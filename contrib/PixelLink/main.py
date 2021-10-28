@@ -34,7 +34,7 @@ if __name__ == '__main__':
     #   exit()
 
     # create streams by pipeline config file
-    with open("Pixel.pipeline", 'rb') as f:
+    with open("./pipeline/Pixel.pipeline", 'rb') as f:
         pipeline_str = f.read()
     ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
