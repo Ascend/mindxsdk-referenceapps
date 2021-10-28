@@ -22,8 +22,8 @@ import cv2
 import process
 import get_version
 import sys
-sys.path.append("../../proto")
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+sys.path.append("../../proto")
 
 
 if __name__ == '__main__':
