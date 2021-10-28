@@ -16,7 +16,7 @@
 # limitations under the License.
 
 
-from StreamManagerApi import StreamManagerApi,MxDataInput,StringVector
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import sys
 sys.path.append("../../proto")
 import MxpiDataType_pb2 as MxpiDataType
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     infer_result = infer.metadataVec[0]
     if infer_result.errorCode != 0:
         print("GetResult error. errorCode=%d ,errorMsg=%s" % (
-            infer_result.errorCode,infer_result.errorMsg))
+            infer_result.errorCode, infer_result.errorMsg))
         exit()
     tensorList = MxpiDataType.MxpiTensorPackageList()
     tensorList.ParseFromString(infer_result.serializedMetadata)
