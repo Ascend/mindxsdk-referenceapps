@@ -18,7 +18,7 @@
 import cv2 as cv
 import numpy as np
 import os
-from PIL import Image,ImageDraw
+from PIL import Image, ImageDraw
 
 def img_version():
     image_path = './test.jpg'
@@ -37,9 +37,9 @@ def img_version():
         line = f.readline()
         while line:
             rect = []
-            line = line.replace(' ','').split(',')
+            line = line.replace(' ', '').split(',')
             for i in range(0, len(line), 2):
-                rect.append((int(line[i]),int(line[i + 1])))
+                rect.append((int(line[i]), int(line[i + 1])))
             draw.polygon(rect, outline = (255, 0, 0))
             left += 8
             right += 8
