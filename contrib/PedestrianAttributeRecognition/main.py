@@ -144,6 +144,10 @@ if __name__ == '__main__':
     img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
     cv2.imwrite("./source.jpg", img)
 
+    if len(infer_result) < 2 and len(infer_result) != 0:
+        print("No pedestrians detected")
+        exit()
+
     mxpiObjectList = MxpiDataType.MxpiObjectList()
     mxpiObjectList.ParseFromString(infer_result[1].messageBuf)
     print(mxpiObjectList)
