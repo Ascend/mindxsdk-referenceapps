@@ -40,7 +40,6 @@ def img_version():
             line = line.replace(' ','').split(',')
             for i in range(0, len(line), 2):
                 rect.append((int(line[i]),int(line[i + 1])))
-            print(rect, end='\n')
             draw.polygon(rect, outline = (255, 0, 0))
             left += 8
             right += 8
