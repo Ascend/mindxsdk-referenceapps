@@ -91,6 +91,4 @@ struct AttrT {
     std::string value = {};
 };
 
-
-
 #endif //STREAM_PULL_SAMPLE_DATATYPE_H
