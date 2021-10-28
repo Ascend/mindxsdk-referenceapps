@@ -113,7 +113,7 @@ def decode_image(pixel_scores, link_scores,
 
 
 def decode_batch(pixel_cls_scores, pixel_link_scores,
-                 pixel_conf_threshold = None, link_conf_threshold = None):
+                 pixel_conf_threshold=None, link_conf_threshold=None):
     if pixel_conf_threshold is None:
         pixel_conf_threshold = 0.8
 
@@ -142,7 +142,7 @@ def find_contours(mask, method=None):
         contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     except:
-        _,contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+        _, contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     return contours
 
@@ -194,7 +194,7 @@ def rect_to_xys(rect, image_shape):
 
 def mask_to_bboxes(mask, image_shape=None, min_area=None,
                   min_height=None, min_aspect_ratio=None):
-    image_h, image_w = image_shape[0:2]
+    image_h, image_w = image_shape[0: 2]
     if min_area is None:
         min_area = 300
     if min_height is None:
@@ -202,7 +202,7 @@ def mask_to_bboxes(mask, image_shape=None, min_area=None,
     bboxes = []
     max_bbox_idx = mask.max()
     mask = cv2.resize(mask, (image_w, image_h), interpolation = cv2.INTER_NEAREST)
-    for bbox_idx in range(1, max_bbox_idx+1):
+    for bbox_idx in range(1, max_bbox_idx + 1):
         bbox_mask = mask == bbox_idx
         cnts = find_contours(bbox_mask)
         if len(cnts) == 0:
@@ -210,7 +210,7 @@ def mask_to_bboxes(mask, image_shape=None, min_area=None,
         cnt = cnts[0]
         rect, rect_area = min_area_rect(cnt)
 
-        w,h = rect[2 : -1]
+        w,h = rect[2: -1]
         if min(w, h) < min_height:
             continue
         if rect_area < min_area:
