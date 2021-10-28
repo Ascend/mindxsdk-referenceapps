@@ -27,6 +27,12 @@ OFFSET_20 = 20
 
 
 def infer(input_image_path, streamManagerapi):
+	"""
+	image super-resolution inference
+	:param input_image_path: input image path
+	:param streamManagerapi: streamManagerapi
+	:return: no return
+	"""
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
         exit()
