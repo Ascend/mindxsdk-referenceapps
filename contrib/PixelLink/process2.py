@@ -145,7 +145,7 @@ def find_contours(mask, method=None):
         contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     except:
-        _,contours,_ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+        _, contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     return contours
 
@@ -196,7 +196,7 @@ def rect_to_xys(rect, image_shape):
 
 def mask_to_bboxes(mask, image_shape=None, min_area=None,
                   min_height=None, min_aspect_ratio=None):
-    image_h,image_w = image_shape[0:2]
+    image_h, image_w = image_shape[0:2]
     if min_area is None:
         min_area = 300
     if min_height is None:
