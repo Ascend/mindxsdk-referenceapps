@@ -37,8 +37,11 @@ if __name__ == '__main__':
 
     # example
     with open("./test.jpg", 'rb') as f:
+        if not f:
+            print("The image is not exist！")
+            exit()
         data_input.data = f.read()
-
+    
     # Inputs data to a specified stream based on streamName.
     stream_name = b'classification+detection'
     inplugin_id = 0
