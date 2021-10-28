@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-export MX_SDK_HOME=${/usr/local/MindXSDK/mxVision-2.0.2}
+export MX_SDK_HOME=${/usr/local/MindXSDK/mxVision}
 export FFMPEG_PATH=${/usr/local/ffmpeg}
 export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.7.5/lib:${FFMPEG_PATH}/lib:${LD_LIBRARY_PATH}
 path_cur=$(dirname $0)
