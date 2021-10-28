@@ -30,6 +30,7 @@ def is_valid_cord(x, y, w, h):
     """
     return x >= 0 and x < w and y >= 0 and y < h
 
+
 def get_neighbours_8(x, y):
     """
     Get 8 neighbours of point(x, y)
@@ -38,20 +39,26 @@ def get_neighbours_8(x, y):
             (x - 1, y), (x + 1, y), \
             (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)]
 
+
 def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_conf_threshold):
     pixel_mask = pixel_scores >= pixel_conf_threshold
     link_mask = link_scores >= link_conf_threshold
     points = zip(*np.where(pixel_mask))
     h, w = np.shape(pixel_mask)
     group_mask = dict.fromkeys(points, -1)
+
+
     def find_parent(point):
         return group_mask[point]
+
 
     def set_parent(point, parent):
         group_mask[point] = parent
 
+
     def is_root(point):
         return find_parent(point) == -1
+
 
     def find_root(point):
         root = point
@@ -61,17 +68,20 @@ def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_c
             update_parent = True
         if update_parent:
             set_parent(point, root)
-
         return root
+
+
     def join(p1, p2):
         root1 = find_root(p1)
         root2 = find_root(p2)
-
         if root1 != root2:
             set_parent(root1, root2)
 
+
     def get_all():
         root_map = {}
+
+
         def get_index(root):
             if root not in root_map:
                 root_map[root] = len(root_map) + 1
@@ -92,14 +102,15 @@ def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_c
                 pixel_cls = pixel_mask[ny, nx]
                 if link_value and pixel_cls:
                     join(point, (ny, nx))
-
     mask = get_all()
     return mask
+
 
 def decode_image(pixel_scores, link_scores,
                  pixel_conf_threshold, link_conf_threshold):
     mask = decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_conf_threshold)
     return mask
+
 
 def decode_batch(pixel_cls_scores, pixel_link_scores,
                  pixel_conf_threshold = None, link_conf_threshold = None):
@@ -112,14 +123,15 @@ def decode_batch(pixel_cls_scores, pixel_link_scores,
     batch_size = 1
     batch_mask = []
     for image_idx in range(batch_size):
-        image_pos_pixel_scores = pixel_cls_scores[image_idx, : , :]
-        image_pos_link_scores = pixel_link_scores[image_idx, : , : , :]
+        image_pos_pixel_scores = pixel_cls_scores[image_idx,:,:]
+        image_pos_link_scores = pixel_link_scores[image_idx,:,:,:]
         mask = decode_image(
             image_pos_pixel_scores, image_pos_link_scores,
             pixel_conf_threshold, link_conf_threshold
         )
         batch_mask.append(mask)
     return np.asarray(batch_mask, np.int32)
+
 
 def find_contours(mask, method=None):
     if method is None:
@@ -130,13 +142,15 @@ def find_contours(mask, method=None):
         contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     except:
-        _,contours,_ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+        _,contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     return contours
+
 
 def points_to_contour(points):
     contours = [[list(p)] for p in points]
     return np.asarray(contours, dtype = np.int32)
+
 
 def min_area_rect(cnt):
     rect = cv2.minAreaRect(cnt)
@@ -146,20 +160,26 @@ def min_area_rect(cnt):
     box = [cx, cy, w, h, theta]
     return box, w * h
 
+
 def rect_to_xys(rect, image_shape):
-    h, w = image_shape[0 : 2]
+    h, w = image_shape[0: 2]
+
+
     def get_valid_x(x):
         if x < 0:
             return 0
         if x >= w:
             return w - 1
         return x
+
+
     def get_valid_y(y):
         if y < 0:
             return 0
         if y >= h:
             return h - 1
         return y
+
 
     rect = ((rect[0], rect[1]), (rect[2], rect[3]), rect[4])
     points = cv2.boxPoints(rect)
@@ -171,6 +191,7 @@ def rect_to_xys(rect, image_shape):
     points = np.reshape(points, -1)
     return points
 
+
 def mask_to_bboxes(mask, image_shape=None, min_area=None,
                   min_height=None, min_aspect_ratio=None):
     image_h, image_w = image_shape[0:2]
@@ -181,7 +202,6 @@ def mask_to_bboxes(mask, image_shape=None, min_area=None,
     bboxes = []
     max_bbox_idx = mask.max()
     mask = cv2.resize(mask, (image_w, image_h), interpolation = cv2.INTER_NEAREST)
-
     for bbox_idx in range(1, max_bbox_idx+1):
         bbox_mask = mask == bbox_idx
         cnts = find_contours(bbox_mask)
@@ -195,11 +215,10 @@ def mask_to_bboxes(mask, image_shape=None, min_area=None,
             continue
         if rect_area < min_area:
             continue
-
         xys = rect_to_xys(rect, image_shape)
         bboxes.append(xys)
-
     return bboxes
+
 
 def to_txt(txt_path, image_name,
            image_data, pixel_pos_scores, link_pos_scores):
@@ -215,7 +234,6 @@ def to_txt(txt_path, image_name,
                 f.write(line)
 
     mask = decode_batch(pixel_pos_scores, link_pos_scores)[0, ...]
-
     bboxes = mask_to_bboxes(mask, image_data)
     write_result_as_txt(image_name, bboxes, txt_path)
 
@@ -223,6 +241,7 @@ def to_txt(txt_path, image_name,
 def test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores):
     image_name = 'img_' + str(i)
     to_txt(outputFolder, image_name, image_data_shape, pixel_pos_scores, link_pos_scores)
+
 
 def deal(pixel_pos_scores, link_pos_scores):
     # 输出txt目标位置
