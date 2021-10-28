@@ -44,7 +44,7 @@ if __name__ == '__main__':
         data_input = MxDataInput()
         with open("./ch4_test_images/" + "img_" + str(img_id) + ".jpg", 'rb') as f:
             data_input.data = f.read()
-        print("Now, we are dealing the number:",img_id)
+        print("Now, we are dealing the number:", img_id)
         # Inputs data to a specified stream based on streamName.
         stream_name = b'classification'
         inPlugin_id = 0
