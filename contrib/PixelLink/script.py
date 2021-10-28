@@ -15,9 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import namedtuple
+
 import rrc_evaluation_funcs_1_1 as rrc_evaluation_funcs
 import importlib
+from collections import namedtuple
+
 
 def evaluation_imports():
     """
@@ -80,7 +82,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         """
         Returns a Polygon object to use with the Polygon2 class from a list of 8 points: x1,y1,x2,y2,x3,y3,x4,y4
         """        
-        resBoxes=np.empty([1, 8], dtype = 'int32')
+        resBoxes = np.empty([1, 8], dtype = 'int32')
         resBoxes[0, 0] = int(points[0])
         resBoxes[0, 4] = int(points[1])
         resBoxes[0, 1] = int(points[2])
@@ -298,7 +300,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                                             'hmean': hmean,
                                             'pairs': pairs,
                                             'AP': sampleAP,
-                                            'iouMat': [] if len(detPols)>100 else iouMat.tolist(),
+                                            'iouMat': [] if len(detPols) > 100 else iouMat.tolist(),
                                             'gtPolPoints': gtPolPoints,
                                             'detPolPoints': detPolPoints,
                                             'gtDontCare': gtDontCarePolsNum,
