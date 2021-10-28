@@ -23,14 +23,14 @@ import subprocess as commands
 import cv2
 
 
-def is_valid_cord(x,y,w,h):
+def is_valid_cord(x, y, w, h):
     """
     Tell whether the 2D coordinate (x,y) is valid or not.
     If valid, it should be on an h x w image
     """
-    return x >=0 and x < w and y>=0 and y < h;
+    return x >= 0 and x < w and y >= 0 and y < h
 
-def get_neighbours_8(x,y):
+def get_neighbours_8(x, y):
     """
     Get 8 neighbours of point(x,y)
     """
@@ -84,25 +84,25 @@ def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_c
         return mask
 
     for point in zip(*np.where(pixel_mask)):
-        y,x = point
-        neighbours = get_neighbours_8(x,y)
-        for n_idx,(nx,ny) in enumerate(neighbours):
-            if is_valid_cord(nx,ny,w,h):
-                link_value = link_mask[y,x,n_idx]
-                pixel_cls = pixel_mask[ny,nx]
+        y, x = point
+        neighbours = get_neighbours_8(x, y)
+        for n_idx, (nx, ny) in enumerate(neighbours):
+            if is_valid_cord(nx, ny, w, h):
+                link_value = link_mask[y, x, n_idx]
+                pixel_cls = pixel_mask[ny, nx]
                 if link_value and pixel_cls:
-                    join(point,(ny,nx))
+                    join(point, (ny, nx))
 
     mask = get_all()
     return mask
 
 def decode_image(pixel_scores, link_scores,
-                 pixel_conf_threshold,link_conf_threshold):
-    mask = decode_image_by_join(pixel_scores, link_scores,pixel_conf_threshold,link_conf_threshold)
+                 pixel_conf_threshold, link_conf_threshold):
+    mask = decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_conf_threshold)
     return mask
 
 def decode_batch(pixel_cls_scores, pixel_link_scores,
-                 pixel_conf_threshold=None, link_conf_threshold=None):
+                 pixel_conf_threshold = None, link_conf_threshold = None):
     if pixel_conf_threshold is None:
         pixel_conf_threshold = 0.8
 
@@ -112,14 +112,14 @@ def decode_batch(pixel_cls_scores, pixel_link_scores,
     batch_size = 1
     batch_mask = []
     for image_idx in range(batch_size):
-        image_pos_pixel_scores = pixel_cls_scores[image_idx,:,:]
-        image_pos_link_scores = pixel_link_scores[image_idx,:,:,:]
+        image_pos_pixel_scores = pixel_cls_scores[image_idx, : , :]
+        image_pos_link_scores = pixel_link_scores[image_idx, : , : , :]
         mask = decode_image(
-            image_pos_pixel_scores,image_pos_link_scores,
-            pixel_conf_threshold,link_conf_threshold
+            image_pos_pixel_scores, image_pos_link_scores,
+            pixel_conf_threshold, link_conf_threshold
         )
         batch_mask.append(mask)
-    return np.asarray(batch_mask,np.int32)
+    return np.asarray(batch_mask, np.int32)
 
 def find_contours(mask, method=None):
     if method is None:
@@ -127,11 +127,11 @@ def find_contours(mask, method=None):
     mask = np.asarray(mask, dtype=np.uint8)
     mask = mask.copy()
     try:
-        contours, _ = cv2.findContours(mask, mode=cv2.RETR_CCOMP,
-                                       method=method)
+        contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+                                       method = method)
     except:
-        _,contours,_ =cv2.findContours(mask, mode=cv2.RETR_CCOMP,
-                                       method=method)
+        _,contours,_ =cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+                                       method = method)
     return contours
 
 def points_to_contour(points):
@@ -144,43 +144,43 @@ def min_area_rect(cnt):
     w, h = rect[1]
     theta = rect[2]
     box = [cx, cy, w, h, theta]
-    return box, w*h
+    return box, w * h
 
 def rect_to_xys(rect, image_shape):
-    h, w = image_shape[0:2]
+    h, w = image_shape[0 : 2]
     def get_valid_x(x):
         if x < 0:
             return 0
         if x >= w:
-            return w-1
+            return w - 1
         return x
     def get_valid_y(y):
-        if y <0:
+        if y < 0:
             return 0
-        if y >=h:
-            return h-1
+        if y >= h:
+            return h - 1
         return y
 
-    rect = ((rect[0], rect[1]),(rect[2], rect[3]), rect[4])
+    rect = ((rect[0], rect[1]), (rect[2], rect[3]), rect[4])
     points = cv2.boxPoints(rect)
     points = np.int0(points)
-    for i_xy,(x,y) in enumerate(points):
+    for i_xy, (x, y) in enumerate(points):
         x = get_valid_x(x)
         y = get_valid_y(y)
-        points[i_xy, :] = [x,y]
+        points[i_xy, :] = [x, y]
     points = np.reshape(points, -1)
     return points
 
-def mask_to_bboxes(mask, image_shape= None, min_area=None,
-                  min_height=None, min_aspect_ratio=None):
-    image_h,image_w = image_shape[0:2]
+def mask_to_bboxes(mask, image_shape = None, min_area = None,
+                  min_height=None, min_aspect_ratio = None):
+    image_h, image_w = image_shape[0:2]
     if min_area is None:
         min_area = 300
     if min_height is None:
         min_height = 10
     bboxes = []
     max_bbox_idx = mask.max()
-    mask = cv2.resize(mask, (image_w,image_h), interpolation=cv2.INTER_NEAREST)
+    mask = cv2.resize(mask, (image_w, image_h), interpolation = cv2.INTER_NEAREST)
 
     for bbox_idx in range(1, max_bbox_idx+1):
         bbox_mask = mask == bbox_idx
@@ -190,8 +190,8 @@ def mask_to_bboxes(mask, image_shape= None, min_area=None,
         cnt = cnts[0]
         rect, rect_area = min_area_rect(cnt)
 
-        w,h = rect[2:-1]
-        if min(w,h) < min_height:
+        w,h = rect[2 : -1]
+        if min(w, h) < min_height:
             continue
         if rect_area < min_area:
             continue
@@ -204,11 +204,11 @@ def mask_to_bboxes(mask, image_shape= None, min_area=None,
 def to_txt(txt_path, image_name,
            image_data, pixel_pos_scores, link_pos_scores):
     def write_result_as_txt(image_name, bboxes, path):
-        filename = 'res_'+image_name+'.txt'
+        filename = 'res_' + image_name + '.txt'
         lines = []
         for b_idx, bbox in enumerate(bboxes):
             values = [int(v) for v in bbox]
-            line = "%d, %d, %d, %d, %d, %d, %d, %d\n"%tuple(values)
+            line = "%d, %d, %d, %d, %d, %d, %d, %d\n" % tuple(values)
             lines.append(line)
         with open(os.path.join(txt_path,filename), 'w') as f:
             for line in lines:
@@ -220,16 +220,16 @@ def to_txt(txt_path, image_name,
     write_result_as_txt(image_name, bboxes, txt_path)
 
 
-def test(outputFolder,i,image_data_shape, pixel_pos_scores,link_pos_scores):
+def test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores):
     image_name = 'img_' + str(i)
-    to_txt(outputFolder,image_name,image_data_shape, pixel_pos_scores,link_pos_scores)
+    to_txt(outputFolder, image_name, image_data_shape, pixel_pos_scores, link_pos_scores)
 
-def deal(pixel_pos_scores,link_pos_scores):
+def deal(pixel_pos_scores, link_pos_scores):
     # 输出txt目标位置
     outputFolder = './test'
     if not os.path.exists(outputFolder):
             os.mkdir(outputFolder)
     image_data_shape = (720, 1280, 3)
 # test only need one process
-    for i in range(1,2):
-        test(outputFolder, i ,image_data_shape,pixel_pos_scores,link_pos_scores)
+    for i in range(1, 2):
+        test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores)
