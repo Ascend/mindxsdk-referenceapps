@@ -353,7 +353,7 @@ def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence
         pointsList.append(points)
         transcriptionsList.append(transcription)
         confidencesList.append(confidence)
-    if withConfidence and len(confidencesList)>0 and sort_by_confidences:
+    if withConfidence and len(confidencesList) > 0 and sort_by_confidences:
         import numpy as np
         sorted_ind = np.argsort(-np.array(confidencesList))
         confidencesList = [confidencesList[i] for i in sorted_ind]
