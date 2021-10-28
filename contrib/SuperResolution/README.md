@@ -182,7 +182,7 @@ PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量�
 
 ```python
 python3.7 bmp2jpg.py ${测试图片集路径}
-例如: python3.7 evaluate.py 91-images
+例如: python3.7 bmp2jpg.py 91-images
     
 # 或者在evaluate.py中配置 test_image_set_path 
 test_image_set_path = './${测试图片集路径}'
