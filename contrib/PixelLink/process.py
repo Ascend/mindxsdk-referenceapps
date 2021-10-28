@@ -210,7 +210,7 @@ def mask_to_bboxes(mask, image_shape=None, min_area=None,
         cnt = cnts[0]
         rect, rect_area = min_area_rect(cnt)
 
-        w,h = rect[2: -1]
+        w, h = rect[2: -1]
         if min(w, h) < min_height:
             continue
         if rect_area < min_area:
@@ -229,7 +229,7 @@ def to_txt(txt_path, image_name,
             values = [int(v) for v in bbox]
             line = "%d, %d, %d, %d, %d, %d, %d, %d\n" % tuple(values)
             lines.append(line)
-        with open(os.path.join(txt_path,filename), 'w') as f:
+        with open(os.path.join(txt_path, filename), 'w') as f:
             for line in lines:
                 f.write(line)
 
