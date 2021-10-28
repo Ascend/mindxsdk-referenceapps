@@ -99,7 +99,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         return plg.Polygon(pointMat)    
     
     def rectangle_to_polygon(rect):
-        resBoxes=np.empty([1, 8], dtype = 'int32')
+        resBoxes = np.empty([1, 8], dtype = 'int32')
         resBoxes[0, 0] = int(rect.xmin)
         resBoxes[0, 4] = int(rect.ymax)
         resBoxes[0, 1] = int(rect.xmin)
