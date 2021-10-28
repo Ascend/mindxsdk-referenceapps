@@ -88,6 +88,7 @@ def load_zip_file(file, fileNameRegExp='', allEntries=False):
 
     return dict(pairs)
 	
+
 def decode_utf8(raw):
     """
     Returns a Unicode object on success, or None on failure
@@ -97,6 +98,7 @@ def decode_utf8(raw):
     except:
        return None
    
+
 def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0):
     """
     This function validates that all lines of the file calling the Line validation function for each line
@@ -112,11 +114,11 @@ def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTr
             try:
                 validate_tl_line(line, LTRB, withTranscription, withConfidence, imWidth, imHeight)
             except Exception as e:
-                raise Exception(("Line in sample not valid. Sample: %s Line: %s Error: %s"  % (fileName, line, str(e))).encode('utf-8', 'replace'))
+                raise Exception(("Line in sample not valid. Sample: %s Line: %s Error: %s" % (fileName, line, str(e))).encode('utf-8', 'replace'))
     
    
    
-def validate_tl_line(line,LTRB=True, withTranscription=True, withConfidence=True, imWidth=0, imHeight=0):
+def validate_tl_line(line, LTRB=True, withTranscription=True, withConfidence=True, imWidth=0, imHeight=0):
     """
     Validate the format of the line. If the line is not valid an exception will be raised.
     If maxWidth and maxHeight are specified, all points must be inside the imgage bounds.
@@ -168,7 +170,7 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
         if(ymax < ymin):
                 raise Exception("Ymax value (%s)  not valid (Ymax < Ymin)." % (ymax))  
 
-        points = [float(m.group(i)) for i in range(1, (numPoints+1))]
+        points = [float(m.group(i)) for i in range(1, (numPoints + 1))]
         
         if (imWidth > 0 and imHeight > 0):
             validate_point_inside_bounds(xmin, ymin, imWidth, imHeight)
@@ -215,6 +217,7 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
     
     return points, confidence, transcription
     
+
 def get_tl_dict_values(detection, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, validNumPoints=[], validate_cw=True):
     """
     Validate the format of the dictionary. If the dictionary is not valid an exception will be raised.
@@ -236,7 +239,7 @@ def get_tl_dict_values(detection, withTranscription=False, withConfidence=False,
         raise Exception("Incorrect format. Object points key have to be an array)") 
     num_points = len(detection['points'])
     if num_points < 3:
-        raise Exception("Incorrect format. Incorrect number of points. At least 3 points are necessary. Found: " +  str(num_points))    
+        raise Exception("Incorrect format. Incorrect number of points. At least 3 points are necessary. Found: " + str(num_points))    
 
     if(len(validNumPoints) > 0 and num_points in validNumPoints == False):
         raise Exception("Incorrect format. Incorrect number of points. Only allowed 4,8 or 12 points)")
@@ -259,7 +262,7 @@ def get_tl_dict_values(detection, withTranscription=False, withConfidence=False,
         if not 'confidence' in detection:
             raise Exception("Incorrect format. No confidence key)")
 
-        if isinstance(detection['confidence'], (int,float)) == False:
+        if isinstance(detection['confidence'], (int, float)) == False:
             raise Exception("Incorrect format. Confidence key has to be a float)")
         
         if detection['confidence'] < 0 or detection['confidence'] > 1:
@@ -286,11 +289,13 @@ def get_tl_dict_values(detection, withTranscription=False, withConfidence=False,
                 
     return points, confidence, transcription
     
+
 def validate_point_inside_bounds(x, y, imWidth, imHeight):
     if(x < 0 or x > imWidth):
             raise Exception("X value (%s) not valid. Image dimensions: (%s,%s)" % (xmin, imWidth, imHeight))
     if(y < 0 or y > imHeight):
             raise Exception("Y value (%s)  not valid. Image dimensions: (%s,%s) Sample: %s Line:%s" % (ymin, imWidth, imHeight))
+
 
 def validate_clockwise_points(points):
     """
@@ -301,6 +306,7 @@ def validate_clockwise_points(points):
         edge.append((int(points[(i + 1) * 2 % len(points)]) - int(points[i * 2])) * (int(points[((i + 1) * 2 + 1) % len(points)]) + int(points[i * 2 + 1])))
     if sum(edge) > 0:
         raise Exception("Points are not clockwise. The coordinates of bounding points have to be given in clockwise order. Regarding the correct interpretation of 'clockwise' remember that the image coordinate system used is the standard one, with the image origin at the upper left, the X axis extending to the right and Y axis extending downwards.")
+
 
 def get_tl_line_values_from_file_contents(content, CRLF=True, LTRB=True, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, sort_by_confidences=True):
     """
@@ -330,6 +336,7 @@ def get_tl_line_values_from_file_contents(content, CRLF=True, LTRB=True, withTra
         
     return pointsList, confidencesList, transcriptionsList
 
+
 def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, sort_by_confidences=True, validNumPoints=[], validate_cw=True):
     """
     Returns all points, confindences and transcriptions of a file in lists. Valid dict formats:
@@ -354,6 +361,7 @@ def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence
         transcriptionsList = [transcriptionsList[i] for i in sorted_ind]        
         
     return pointsList, confidencesList, transcriptionsList
+
 
 def main_evaluation(p, default_evaluation_params_fn, validate_data_fn, evaluate_method_fn, show_result=True, per_sample=True):
     """
