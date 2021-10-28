@@ -32,7 +32,6 @@ if __name__ == '__main__':
     ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-    #   exit()
 
     # create streams by pipeline config file
     with open("./pipeline/Pixel.pipeline", 'rb') as f:
@@ -40,7 +39,6 @@ if __name__ == '__main__':
     ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-    #   exit()
 
     # Construct the input of the stream
     data_input = MxDataInput()
@@ -58,7 +56,7 @@ if __name__ == '__main__':
     key_vec = StringVector()
     # choose which metadata to be got.In this case we use the custom "mxpi_sampleproto"
     key_vec.push_back(b"pixelLink_process")
-# get inference result
+    # get inference result
     infer = stream_manager_api.GetResult(stream_name, b'appsink0', key_vec)
 
     infer_result = infer.metadataVec[0]
@@ -68,7 +66,7 @@ if __name__ == '__main__':
         exit()
     tensorList = MxpiDataType.MxpiTensorPackageList()
     tensorList.ParseFromString(infer_result.serializedMetadata)
-# get the result
+    # get the result
     ids = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     ids2 = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[1].dataStr, dtype=np.float32)
 
@@ -81,7 +79,7 @@ if __name__ == '__main__':
 
     np.set_printoptions(threshold=sys.maxsize)
 
-# post-processing
+    # post-processing
     img_height = 192
     img_width = 320
 
