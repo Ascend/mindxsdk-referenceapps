@@ -32,11 +32,11 @@ def is_valid_cord(x, y, w, h):
 
 def get_neighbours_8(x, y):
     """
-    Get 8 neighbours of point(x,y)
+    Get 8 neighbours of point(x, y)
     """
-    return [(x-1,y-1),(x,y-1),(x+1,y-1), \
-            (x-1,y),(x+1,y), \
-            (x-1,y+1),(x,y+1),(x+1,y+1)]
+    return [(x - 1, y - 1), (x, y - 1), (x + 1, y - 1), \
+            (x - 1, y), (x + 1, y), \
+            (x - 1, y + 1), (x, y + 1), (x + 1, y + 1)]
 
 def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_conf_threshold):
     pixel_mask = pixel_scores >= pixel_conf_threshold
@@ -60,7 +60,7 @@ def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_c
             root = find_parent(root)
             update_parent = True
         if update_parent:
-            set_parent(point,root)
+            set_parent(point, root)
 
         return root
     def join(p1, p2):
@@ -68,7 +68,7 @@ def decode_image_by_join(pixel_scores, link_scores, pixel_conf_threshold, link_c
         root2 = find_root(p2)
 
         if root1 != root2:
-            set_parent(root1,root2)
+            set_parent(root1, root2)
 
     def get_all():
         root_map = {}
@@ -130,7 +130,7 @@ def find_contours(mask, method=None):
         contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     except:
-        _,contours,_ =cv2.findContours(mask, mode = cv2.RETR_CCOMP,
+        _,contours,_ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     return contours
 
