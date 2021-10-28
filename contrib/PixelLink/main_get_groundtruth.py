@@ -15,14 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import sys
 sys.path.append("../../proto")
 import MxpiDataType_pb2 as MxpiDataType
 import numpy as np
 import cv2
 import process2
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
 
 if __name__ == '__main__':
     # init stream manager
@@ -30,7 +30,6 @@ if __name__ == '__main__':
     ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-    #   exit()
 
     # create streams by pipeline config file
     with open("Pixel.pipeline", 'rb') as f:
@@ -77,7 +76,7 @@ if __name__ == '__main__':
         ids2.resize(shape2)
         np.set_printoptions(threshold=sys.maxsize)
 
-# post-processing
+        # post-processing
         img_height = 192
         img_width = 320
         result = np.zeros((1, img_height, img_width), dtype=float)
