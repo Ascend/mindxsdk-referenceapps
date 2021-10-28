@@ -86,8 +86,7 @@ def load_zip_file(file, fileNameRegExp='', allEntries=False):
             pairs.append([keyName, archive.read(name)])
         else:
             if allEntries:
-                raise Exception('ZIP entry not valid: %s' % name)             
-
+                raise Exception('ZIP entry not valid: %s' % name)
     return dict(pairs)
 	
 
@@ -214,7 +213,8 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
         posTranscription = numPoints + (2 if withConfidence else 1)
         transcription = m.group(posTranscription)
         m2 = re.match(r'^\s*\"(.*)\"\s*$', transcription)
-        if m2 is not None: #Transcription with double quotes, we extract the value and replace escaped characters
+        #Transcription with double quotes, we extract the value and replace escaped characters
+        if m2 is not None:
             transcription = m2.group(1).replace("\\\\", "\\").replace("\\\"", "\"")
     
     return points, confidence, transcription
@@ -280,12 +280,12 @@ def get_tl_dict_values(detection, withTranscription=False, withConfidence=False,
             raise Exception("Incorrect format. Transcription has to be a string. Detected: " + type(detection['transcription']).__name__)
         
         transcription = detection['transcription']
-        
-        if 'illegibility' in detection: #Ensures that if illegibility atribute is present and is True the transcription is set to ### (don't care)
+        #Ensures that if illegibility atribute is present and is True the transcription is set to ### (don't care)
+        if 'illegibility' in detection:
             if detection['illegibility'] == True:
                 transcription = "###"
-                
-        if 'dontCare' in detection: #Ensures that if dontCare atribute is present and is True the transcription is set to ### (don't care)
+        #Ensures that if dontCare atribute is present and is True the transcription is set to ### (don't care)        
+        if 'dontCare' in detection:
             if detection['dontCare'] == True:
                 transcription = "###"
                 
@@ -354,7 +354,6 @@ def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence
         pointsList.append(points)
         transcriptionsList.append(transcription)
         confidencesList.append(confidence)
-
     if withConfidence and len(confidencesList)>0 and sort_by_confidences:
         import numpy as np
         sorted_ind = np.argsort(-np.array(confidencesList))
