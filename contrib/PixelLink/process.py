@@ -171,8 +171,8 @@ def rect_to_xys(rect, image_shape):
     points = np.reshape(points, -1)
     return points
 
-def mask_to_bboxes(mask, image_shape = None, min_area = None,
-                  min_height=None, min_aspect_ratio = None):
+def mask_to_bboxes(mask, image_shape=None, min_area=None,
+                  min_height=None, min_aspect_ratio=None):
     image_h, image_w = image_shape[0:2]
     if min_area is None:
         min_area = 300
