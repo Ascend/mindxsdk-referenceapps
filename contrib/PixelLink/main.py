@@ -16,14 +16,15 @@
 # limitations under the License.
 
 
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import sys
-sys.path.append("../../proto")
 import MxpiDataType_pb2 as MxpiDataType
 import numpy as np
 import cv2
 import process
 import get_version
+import sys
+sys.path.append("../../proto")
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
 
 if __name__ == '__main__':
     # init stream manager
