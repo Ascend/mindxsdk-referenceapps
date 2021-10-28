@@ -81,14 +81,13 @@ def load_zip_file(file, fileNameRegExp='', allEntries=False):
             else:
                 if len(m.groups()) > 0:
                     keyName = m.group(1)
-        
         if addFile:
             pairs.append([keyName, archive.read(name)])
         else:
             if allEntries:
                 raise Exception('ZIP entry not valid: %s' % name)
     return dict(pairs)
-	
+
 
 def decode_utf8(raw):
     """
