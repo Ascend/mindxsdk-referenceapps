@@ -27,9 +27,8 @@ OFFSET_20 = 20
 
 
 def infer(input_image_path, streamManagerapi):
-
     if os.path.exists(input_image_path) != 1:
-        print("The image image does not exist.")
+        print("The input image does not exist.")
         exit()
     image = Image.open(input_image_path).convert('RGB')
     # high resolution image, (that is ground true)
@@ -118,7 +117,7 @@ if __name__ == '__main__':
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
-                    "modelPath": "../model/VDSR_768_768.om"
+                    "modelPath": "./model/VDSR_768_768.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "appsink0"
@@ -137,7 +136,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     # test image set path
-    test_image_set_path = "./general-100-jpg"
+    test_image_set_path = "testSet/91-images-jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':

@@ -16,8 +16,8 @@
 
 set -e
 
-# 该脚本用来将onnx模型文件转换成.om模型文件
-# This is used to convert onnx model file to .om model file.
+# 该脚本用来将caffe模型文件转换成.om模型文件
+# This is used to convert caffe model file to .om model file.
 
 
 # 设置环境变量（请确认install_path路径是否正确）

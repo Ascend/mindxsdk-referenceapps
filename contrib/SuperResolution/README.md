@@ -1,4 +1,4 @@
-# 基于MxVision的FSRCNN图像超分辨率
+# 基于MxVision的VDSR图像超分辨率
 
 ## 介绍
 
@@ -30,12 +30,13 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |-------- model
 |           |---- YUV420SP_U8_GRAY.cfg              // 模型转换配置文件(灰度图)
 |           |---- model_conversion.sh               // 模型转换脚本
-|           |---- VDSR_768_768.om                   // 转换后OM模型存放在此处
+|           |---- VDSR_768_768.om                   // 转换后OM模型存放在此处(需自行上传)
 |-------- testSet
-|           |---- 91-images-jpg                     // 91-images图片验证集
-|           |---- general-100-jpg                   // general-100图片验证集
+|           |---- 91-images                         // 91-images验证集(含bmp图片)
+|           |---- 91-images-jpg                     // 91-images验证集转换后集(含jpg图片)
 |           |---- output                            // 验证集结果输出目录
-|           |---- evaluate.py                       // 模型精度验证
+|           |---- bmp2jpg.py                        // bmp转jpg脚本
+|-------- evaluate.py                               // 模型精度验证
 |-------- README.md                                 // ReadMe
 |-------- main.py                                   // 图像超分辨率主程序
 |-------- util.py                                   // 工具方法
@@ -173,20 +174,32 @@ input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
 
 PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量的测量方法。
 
-1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91 images和General-100放置到testSet目录下，其中91 images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
+1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
 
 2）图片格式转换：参考`testSet/bmp2jpg.py`脚本，将两个图片集中bmp图片转换为jpg图片
 
-3) 利用`evaluate.py `脚本，计算得到两个图片集的平均PSNR（峰值信噪比）
-
-进入`testSet`目录，键入执行指令，发起精度验证测试：
+进入`testSet`目录，键入执行指令，图片格式转换：
 
 ```python
-python3.7 evaluate.py ${测试图片集路径}
-例如: python3.7 evaluate.py ./general-100-jpg
+python3.7 bmp2jpg.py ${测试图片集路径}
+例如: python3.7 evaluate.py 91-images
     
 # 或者在evaluate.py中配置 test_image_set_path 
-test_image_set_path = './${测试图片集文件名}'
+test_image_set_path = './${测试图片集路径}'
 ```
 
-执行完毕后，会在控制台输出该测试图片集的平均峰值信噪比
+然后会在`testSet`目录下，生成转换后的包含jpg格式图片的文件夹，文件夹名称为`${测试图片集路径}-jpg`
+
+3) 利用`evaluate.py `脚本，计算得到两个图片集的平均PSNR（峰值信噪比）
+
+键入执行指令，发起精度验证测试：
+
+```python
+python3.7 evaluate.py ${验证图片集路径}
+例如: python3.7 evaluate.py testSet/91-images-jpg
+    
+# 或者在evaluate.py中配置 test_image_set_path 
+test_image_set_path = './${验证图片集路径}'
+```
+
+执行完毕后，会在控制台输出该验证图片集的平均峰值信噪比
