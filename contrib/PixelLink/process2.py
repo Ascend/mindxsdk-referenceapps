@@ -144,7 +144,7 @@ def find_contours(mask, method=None):
     try:
         contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
-    except:
+    except Exception:
         _, contours, _ = cv2.findContours(mask, mode = cv2.RETR_CCOMP,
                                        method = method)
     return contours
