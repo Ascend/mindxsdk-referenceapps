@@ -70,6 +70,7 @@
 
 模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html
 
+
 在编译运行项目前，需要设置环境变量：
 
 步骤1：安装mxVision SDK。 
@@ -96,7 +97,8 @@ pb模型提供在链接链接：https://pan.baidu.com/s/1Avrjhc_J6va3YrGm91GXdQ 
 
 pixellink.om模型下载链接：链接：https://pan.baidu.com/s/1YhrPKZzh_sZQCUfqY9Xxqw  提取码：xhyf;
 
-转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录models下。使用命令
+转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。
+首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录models下。使用命令
 
 ```
 atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 --soc_version=Ascend310 --input_shape="Placeholder:1,768,1280,3"
@@ -105,7 +107,7 @@ atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 
 转化项目模型。
 
 
-注意：转化时，可根据需要修改输出的模型名称。转化成功的模型也同时附在pb模型下载链接中。注意模型以及转化所需文件的路径，防止atc命令找不到相关文件。
+注意：转化时，可根据需要修改输出的模型名称。转化成功的om模型也同时附在pb模型下载链接中。注意模型以及转化所需文件的路径，防止atc命令找不到相关文件。
 
 
 ## 4 编译与运行
