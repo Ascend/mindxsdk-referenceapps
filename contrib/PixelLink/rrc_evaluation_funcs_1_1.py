@@ -37,8 +37,9 @@ def load_zip_file_keys(file, fileNameRegExp=''):
     """
     try:
         archive = zipfile.ZipFile(file, mode='r', allowZip64 = True)
-    except:
-        raise Exception('Error loading the ZIP archive.')
+    except BadZipfile:
+        print('Error loading the ZIP archive.')
+        exit()
 
     pairs = []
     
@@ -67,8 +68,9 @@ def load_zip_file(file, fileNameRegExp='', allEntries=False):
     """
     try:
         archive = zipfile.ZipFile(file, mode='r', allowZip64 = True)
-    except:
-        raise Exception('Error loading the ZIP archive')    
+    except BadZipfile:
+        print('Error loading the ZIP archive')
+        exit()
 
     pairs = []
     for name in archive.namelist():
@@ -95,7 +97,7 @@ def decode_utf8(raw):
     """
     try:
         return raw.decode('utf-8-sig', errors = 'replace')
-    except:
+    except UnicodeDecodeError:
         return None
 
 def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0):
