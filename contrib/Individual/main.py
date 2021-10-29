@@ -36,11 +36,12 @@ if __name__ == '__main__':
     data_input = MxDataInput()
 
     # example
-    with open("./test.jpg", 'rb') as f:
-        if not f:
-            print("The image is not exist！")
-            exit()
-        data_input.data = f.read()
+    try:
+        f = open('./test.jpg')
+    except FileNotFoundError as reason:
+        print('想要访问的文件不存在', '\n错误的原因是:', str(reason))
+        exit()
+    data_input.data = f.read()
     
     # Inputs data to a specified stream based on streamName.
     stream_name = b'classification+detection'
