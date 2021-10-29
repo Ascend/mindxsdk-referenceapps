@@ -202,7 +202,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
         
         pointsList, _, transcriptionsList = rrc_evaluation_funcs.get_tl_line_values_from_file_contents(gtFile, evaluationParams['CRLF'], evaluationParams['LTRB'], True, False)
         n_pointslist = len(pointsList)
-        for n in range(len(n_pointslist)):
+        for n in range(n_pointslist):
             points = pointsList[n]
             transcription = transcriptionsList[n]
             dontCare = transcription == "###"
@@ -223,7 +223,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
             detFile = rrc_evaluation_funcs.decode_utf8(subm[resFile]) 
             
             pointsList, confidencesList, _ = rrc_evaluation_funcs.get_tl_line_values_from_file_contents(detFile, evaluationParams['CRLF'], evaluationParams['LTRB'], False, evaluationParams['CONFIDENCES'])
-            for n in range(len(n_pointslist)):
+            for n in range(n_pointslist):
                 points = pointsList[n]
                 
                 if evaluationParams['LTRB']:
@@ -253,8 +253,8 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                 detRectMat = np.zeros(len(detPols), np.int8)
                 n_gtpols = len(gtPols)
                 n_delpols = len(detPols)
-                for gtNum in range(len(n_gtpols)):
-                    for detNum in range(len(n_detpols)):
+                for gtNum in range(n_gtpols):
+                    for detNum in range(n_detpols):
                         pG = gtPols[gtNum]
                         pD = detPols[detNum]
                         iouMat[gtNum, detNum] = get_intersection_over_union(pD, pG)
