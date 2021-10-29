@@ -47,7 +47,7 @@
 ├── main.py
 ├── README.md
 ├── main_get_groundtruth.py
-├── rrc_1_1.py
+├── rrc_evaluation_funcs_1_1.py
 └── script.py
 ```
 
