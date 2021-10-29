@@ -100,6 +100,7 @@ def decode_utf8(raw):
     except UnicodeDecodeError:
         return None
 
+
 def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0):
     """
     This function validates that all lines of the file calling the Line validation function for each line
@@ -117,7 +118,6 @@ def validate_lines_in_file(fileName, file_contents, CRLF=True, LTRB=True, withTr
             except Exception as e:
                 raise Exception(("Line in sample not valid. Sample: %s Line: %s Error: %s" % (fileName, line, str(e))).encode('utf-8', 'replace'))
     
-   
    
 def validate_tl_line(line, LTRB=True, withTranscription=True, withConfidence=True, imWidth=0, imHeight=0):
     """
@@ -194,7 +194,7 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
             m = re.match(r'^\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*,\s*(-?[0-9]+)\s*$', line)
             if m is None:
                 raise Exception("Format incorrect. Should be: x1,y1,x2,y2,x3,y3,x4,y4")  
-        points = [float(m.group(i)) for i in range(1, (numPoints+1))]
+        points = [float(m.group(i)) for i in range(1, (numPoints + 1))]
         validate_clockwise_points(points)
         if (imWidth > 0 and imHeight > 0):
             validate_point_inside_bounds(points[0], points[1], imWidth, imHeight)
