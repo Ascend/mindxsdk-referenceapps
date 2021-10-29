@@ -97,7 +97,8 @@ pb模型提供在链接链接：https://pan.baidu.com/s/1Avrjhc_J6va3YrGm91GXdQ 
 
 pixellink.om模型下载链接：链接：https://pan.baidu.com/s/1YhrPKZzh_sZQCUfqY9Xxqw  提取码：xhyf;
 
-转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。
+转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+
 首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录models下。使用命令
 
 ```
