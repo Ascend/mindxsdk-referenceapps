@@ -3,7 +3,7 @@
 ## 1 介绍
 （项目的概述，包含的功能）
 （项目的主要流程）
-本开发样例完成图像文本检测功能，供用户参考。本系统基于mxVision SDK进行开发，以昇腾Atlas310卡为主要的硬件平台，开发端到端准确识别图像文本的位置信息，最后能够实现可视化，将识别到的文本位置用线条框选出来。本项目试用场景为：包含文字区域的图像，要求文字区域尽可能清晰，区域大小能够占图像尺寸的20%及以上最佳。图像要求为760x1280x3的彩色图像。文字区域不清晰或者不存在文字区域时，识别可能会出现问题。本项目在运行业务流后，会生成一个txt文件，其中包含文字区域位置的点坐标，每一个文字区域由四个坐标点组成。最后会根据txt文件中的每一组坐标点在图像上绘制出文本区域的线条框。
+本开发样例完成图像文本检测功能，供用户参考。本系统基于mxVision SDK进行开发，以昇腾Atlas310卡为主要的硬件平台，开发端到端准确识别图像文本的位置信息，最后能够实现可视化，将识别到的文本位置用线条框选出来。本项目试用场景为：包含文字区域的图像，要求文字区域尽可能清晰，区域大小能够占图像尺寸的20%及以上最佳。图像要求为768x1280x3的彩色图像。文字区域不清晰或者不存在文字区域时，识别可能会出现问题。本项目在运行业务流后，会生成一个txt文件，其中包含文字区域位置的点坐标，每一个文字区域由四个坐标点组成。最后会根据txt文件中的每一组坐标点在图像上绘制出文本区域的线条框。
 
 
 ### 1.1 支持的产品
@@ -40,13 +40,7 @@
 ```
 .
 ├── models
-│   ├── attr.names // label文件
-│   ├── coco.names // label文件
-│   ├── insert_op.cfg // 模型转换aipp配置文件
-│   ├── insert_op3.cfg // 模型转换aipp配置文件
-│   ├── resnet50_aipp_tf.cfg  // 模型后处理配置文件
-│   ├── resnet50_aipp_tf1.cfg // 模型后处理配置文件
-│   └── yolov4.cfg  // 模型后处理配置文件
+│   └── convert.cfg  // 模型后处理配置文件
 ├── pipeline
 │   └── Pixel.pipeline
 ├── get_version.py
@@ -100,9 +94,9 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 ## 3 模型转换
 本项目中用到的模型有：基于tensorflow转化出的pb形式的pixelLink模型。
 
-pb模型提供在链接https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+pb模型提供在链接链接：https://pan.baidu.com/s/1Avrjhc_J6va3YrGm91GXdQ  提取码：fy4j;
 
-face_quality_0605_b1.om模型下载链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho；
+pixellink.om模型下载链接：链接：https://pan.baidu.com/s/1YhrPKZzh_sZQCUfqY9Xxqw  提取码：xhyf;
 
 转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录models下。使用命令
 
@@ -118,37 +112,10 @@ atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 
 
 ## 4 编译与运行
 **步骤1**
-下载项目文件，以及数据集，其中项目文件里的部分文件获取链接：https://pan.baidu.com/s/1LolBqYrszngc3y3xhAeXTQ 提取码：sxho。数据集链接：https://pan.baidu.com/s/1_HhMLN73PX78fSrLPGqK1w  提取码:u4cy。
+下载项目文件，以及数据集，其中项目文件链接在模型转换部分已经给出。数据集链接：链接：https://pan.baidu.com/s/107gUYlJP0v4_KlKksJy5pw   提取码：b59b
 
 **步骤2**
 在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，这些路径需要根据用户实际情况配置，例如SDK安装路径需要与用户本身安装路径一致，不一致将导致环境错误。同理，lib路径与python路径，都需要与实际情况一致。将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与模型文件一致。需要按照代码中的路径去创建文件路径，也可以根据实际需要修改代码中的路径变量。在准备计算指标时，需要人工将代码生成的txt文件压缩到一个zip文件中，并将zip文件和groudtruth的zip文件放到相同路径下，运行评测代码计算指标。
-
-需要修改路径的位置如下：
-Attr_part.pipeline：
-```
-"mxpi_objectpostprocessor0": {
-            "props": {
-                "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "./models/yolov4.cfg",
-                "labelPath": "./models/coco.names",
-                "postProcessLibPath": "${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
-            },
-            "factory": "mxpi_objectpostprocessor",
-            "next": "mxpi_objectdistributor0"
-        },
-```
-
-```
-"face_landmark": {
-              "props":{
-                   "dataSource":"mxpi_imageresize1",
-                   "modelPath":"./models/face_quality_0605_b1.om",
-                   "postProcessLibPath":"${SDK安装路径}/lib/libfacelandmarkpostprocessor.so"
-               },
-               "factory": "mxpi_modelinfer",
-               "next": "mxpi_facealignment0:1"
-           },
-```
 
 
 **步骤3** 
@@ -164,24 +131,10 @@ python3.7 main.py
 
 运行评测代码：
 
-将解压后的ch4_test_image数据集放置在与main_get_groundtruth.py同目录下，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip，压缩后将zip文件和groundtruth的zip文件放到script.py路径下，gt.zip是原模型的运行结果，用以作为评测的基准。该zip文件可以在链接：获取。最后，运行script.py，得到评测结果。
+将解压后的ch4_test_image数据集放置在与main_get_groundtruth.py同目录下，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip，压缩后将zip文件和groundtruth的zip文件放到script.py路径下，gt.zip是原模型的运行结果，用以作为评测的基准。该zip文件可以在链接：https://pan.baidu.com/s/1bo9-ooew4DaOqj-QlAQ_kw  提取码：guea获取。最后，运行script.py，得到评测结果。
 ```
 python3.7 main_get_groundtruth.py
 python3.7 script.py --g=./gt.zip --s=./om_result.zip
 ```
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 
-
-## 5 常见问题
-
-请按照问题重要程度，详细列出可能要到的问题，和解决方法。
-
-### 6.1 XXX问题
-
-**问题描述：**
-
-截图或报错信息
-
-**解决方案：**
-
-详细描述解决方法。
