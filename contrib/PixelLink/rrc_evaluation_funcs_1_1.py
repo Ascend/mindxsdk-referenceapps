@@ -345,8 +345,8 @@ def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence
     pointsList = []
     transcriptionsList = []
     confidencesList = []
-    
-    for n in range(len(array)):
+    n_array = len(array)
+    for n in range(n_array):
         objectDict = array[n]
         points, confidence, transcription = get_tl_dict_values(objectDict, withTranscription, withConfidence, imWidth, imHeight, validNumPoints, validate_cw)
         pointsList.append(points)
