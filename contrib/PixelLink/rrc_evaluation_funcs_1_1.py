@@ -218,7 +218,7 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
     return points, confidence, transcription
     
 
-def get_tl_dict_values(detection, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, validNumPoints=[], validate_cw=True):
+def get_tl_dict_values(detection, validNumPoints, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, validate_cw=True):
     """
     Validate the format of the dictionary. If the dictionary is not valid an exception will be raised.
     If maxWidth and maxHeight are specified, all points must be inside the imgage bounds.
@@ -337,7 +337,7 @@ def get_tl_line_values_from_file_contents(content, CRLF=True, LTRB=True, withTra
     return pointsList, confidencesList, transcriptionsList
 
 
-def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, sort_by_confidences=True, validNumPoints=[], validate_cw=True):
+def get_tl_dict_values_from_array(array, validNumPoints, withTranscription=False, withConfidence=False, imWidth=0, imHeight=0, sort_by_confidences=True, validate_cw=True):
     """
     Returns all points, confindences and transcriptions of a file in lists. Valid dict formats:
     {"points":[[x1,y1],[x2,y2],[x3,x3],..,[xn,yn]],"transcription":"###","confidence":0.4}
@@ -348,7 +348,7 @@ def get_tl_dict_values_from_array(array, withTranscription=False, withConfidence
     n_array = len(array)
     for n in range(n_array):
         objectDict = array[n]
-        points, confidence, transcription = get_tl_dict_values(objectDict, withTranscription, withConfidence, imWidth, imHeight, validNumPoints, validate_cw)
+        points, confidence, transcription = get_tl_dict_values(objectDict, validNumPoints, withTranscription, withConfidence, imWidth, imHeight, validate_cw)
         pointsList.append(points)
         transcriptionsList.append(transcription)
         confidencesList.append(confidence)
