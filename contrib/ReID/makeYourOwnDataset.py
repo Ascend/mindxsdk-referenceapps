@@ -119,7 +119,7 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
             img_bgr = img_yuv.reshape(cropInformation.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
                                       cropInformation.widthAligned)
             img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
-            fileOutputPath = outputPath + '/{}_{}.jpg'.format(str(file[:-4]),str(detectedItemIndex))
+            fileOutputPath = outputPath + '/{}_{}.jpg'.format(str(file[:-4]), str(detectedItemIndex))
             cv2.imwrite(fileOutputPath, img)
 
 
