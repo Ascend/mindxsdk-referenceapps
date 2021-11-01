@@ -97,14 +97,14 @@ if __name__ == '__main__':
     for i in range(img_height):
         for j in range(img_width):
             for k in range(0, 16, 2):
-                    num1 = np.exp(ids2[0][i][j][k])
-                    num2 = np.exp(ids2[0][i][j][k + 1])
-                    max1 = num1 / (num1 + num2)
-                    max2 = num2 / (num1 + num2)
-                    if k < 2:
-                        result2[0][i][j][k] = max2
-                    else:
-                        result2[0][i][j][k // 2] = max2
+                num1 = np.exp(ids2[0][i][j][k])
+                num2 = np.exp(ids2[0][i][j][k + 1])
+                max1 = num1 / (num1 + num2)
+                max2 = num2 / (num1 + num2)
+                if k < 2:
+                    result2[0][i][j][k] = max2
+                else:
+                    result2[0][i][j][k // 2] = max2
 
     process.deal(result, result2)
     print("post-processing done!                                                                   ")
