@@ -37,11 +37,11 @@ if __name__ == '__main__':
 
     # example
     try:
-        f = open('./test.jpg')
+        f2 = open('./test.jpg')
     except FileNotFoundError as reason:
-        print('想要访问的文件不存在', '\n错误的原因是:', str(reason))
+        print('Can not find the image!\n')
         exit()
-    data_input.data = f.read()
+    data_input.data = f2.read()
     
     # Inputs data to a specified stream based on streamName.
     stream_name = b'classification+detection'
