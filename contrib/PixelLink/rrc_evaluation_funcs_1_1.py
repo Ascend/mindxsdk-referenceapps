@@ -294,9 +294,9 @@ def get_tl_dict_values(detection, validNumPoints, withTranscription=False, withC
 
 def validate_point_inside_bounds(x, y, imWidth, imHeight):
     if(x < 0 or x > imWidth):
-        raise Exception("X value (%s) not valid. Image dimensions: (%s,%s)" % (xmin, imWidth, imHeight))
+        raise Exception("X value (%s) not valid. Image dimensions: (%s,%s)" % (x, imWidth, imHeight))
     if(y < 0 or y > imHeight):
-        raise Exception("Y value (%s)  not valid. Image dimensions: (%s,%s) Sample: %s Line:%s" % (ymin, imWidth, imHeight))
+        raise Exception("Y value (%s) not valid. Image dimensions: (%s,%s)" % (y, imWidth, imHeight))
 
 
 def validate_clockwise_points(points):
