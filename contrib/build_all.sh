@@ -22,6 +22,7 @@ SAMPLE_FOLDER=(
 	CrowdCounting/
     Individual/
     human_segmentation/
+    PixelLink/
 )
 
 
