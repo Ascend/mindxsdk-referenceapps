@@ -195,7 +195,7 @@ def rect_to_xys(rect, image_shape):
 
 
 def mask_to_bboxes(mask, image_shape=None, min_area=None,
-                  min_height=None, min_aspect_ratio=None):
+                  min_height=None):
     image_h, image_w = image_shape[0:2]
     if min_area is None:
         min_area = 300
@@ -229,7 +229,7 @@ def to_txt(txt_path, image_name,
            image_data, pixel_pos_scores, link_pos_scores):
 
 
-    def write_result_as_txt(image_name, bboxes, path):
+    def write_result_as_txt(image_name, bboxes):
         filename = 'res_' + image_name + '.txt'
         lines = []
         for b_idx, bbox in enumerate(bboxes):
@@ -243,7 +243,7 @@ def to_txt(txt_path, image_name,
     mask = decode_batch(pixel_pos_scores, link_pos_scores)[0, ...]
 
     bboxes = mask_to_bboxes(mask, image_data)
-    write_result_as_txt(image_name, bboxes, txt_path)
+    write_result_as_txt(image_name, bboxes)
 
 
 def test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores):
