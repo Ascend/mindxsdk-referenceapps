@@ -132,7 +132,7 @@ python3.7 main.py
 
 运行评测代码：
 
-将解压后的ch4_test_image数据集放置在与main_get_groundtruth.py同目录下，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip，压缩后将zip文件和groundtruth的zip文件放到script.py路径下，gt.zip是原模型的运行结果，用以作为评测的基准。该zip文件可以在链接：https://pan.baidu.com/s/1bo9-ooew4DaOqj-QlAQ_kw  提取码：guea获取。最后，运行script.py，得到评测结果。
+将解压后的icdar2015数据集中ch4_test_image文件夹放置在与main_get_groundtruth.py同目录下，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip，压缩后将zip文件和groundtruth的zip文件放到script.py路径下，gt.zip是原模型的运行结果，用以作为评测的基准。该zip文件可以在链接：https://pan.baidu.com/s/1bo9-ooew4DaOqj-QlAQ_kw  提取码：guea获取。最后，运行script.py，得到评测结果。
 ```
 python3.7 main_get_groundtruth.py
 python3.7 script.py --g=./gt.zip --s=./om_result.zip
