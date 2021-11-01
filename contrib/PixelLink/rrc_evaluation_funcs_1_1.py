@@ -167,9 +167,9 @@ def get_tl_line_values(line, LTRB=True, withTranscription=False, withConfidence=
         xmax = int(m.group(3))
         ymax = int(m.group(4))
         if(xmax < xmin):
-                raise Exception("Xmax value (%s) not valid (Xmax < Xmin)." % (xmax))
+            raise Exception("Xmax value (%s) not valid (Xmax < Xmin)." % (xmax))
         if(ymax < ymin):
-                raise Exception("Ymax value (%s)  not valid (Ymax < Ymin)." % (ymax))  
+            raise Exception("Ymax value (%s)  not valid (Ymax < Ymin)." % (ymax))  
 
         points = [float(m.group(i)) for i in range(1, (numPoints + 1))]
         
@@ -294,9 +294,9 @@ def get_tl_dict_values(detection, validNumPoints, withTranscription=False, withC
 
 def validate_point_inside_bounds(x, y, imWidth, imHeight):
     if(x < 0 or x > imWidth):
-            raise Exception("X value (%s) not valid. Image dimensions: (%s,%s)" % (xmin, imWidth, imHeight))
+        raise Exception("X value (%s) not valid. Image dimensions: (%s,%s)" % (xmin, imWidth, imHeight))
     if(y < 0 or y > imHeight):
-            raise Exception("Y value (%s)  not valid. Image dimensions: (%s,%s) Sample: %s Line:%s" % (ymin, imWidth, imHeight))
+        raise Exception("Y value (%s)  not valid. Image dimensions: (%s,%s) Sample: %s Line:%s" % (ymin, imWidth, imHeight))
 
 
 def validate_clockwise_points(points):
