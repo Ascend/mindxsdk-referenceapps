@@ -70,7 +70,7 @@ def initialize_stream():
     return streamApi
 
 
-def crop_process(streamApi, pluginNameVector, file):
+def crop_process(streamApi, pluginNameVector, file, outputPath):
     """
     Crop processing
 
@@ -117,8 +117,8 @@ def crop_process(streamApi, pluginNameVector, file):
             img_bgr = img_yuv.reshape(cropInformation.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
                                       cropInformation.widthAligned)
             img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
-            cv2.imwrite('./data/cropOwnDataset/{}_{}.jpg'.format(str(file[:-4]),
-                                                                 str(detectedItemIndex)), img)
+            fileOutputPath = outputPath + '/{}_{}.jpg'.format(str(file[:-4]),str(detectedItemIndex))
+            cv2.imwrite(fileOutputPath, img)
 
 
 def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
@@ -187,7 +187,7 @@ def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
                     print(errorMessage)
                     exit()
 
-                crop_process(streamApi, pluginNameVector, file)
+                crop_process(streamApi, pluginNameVector, file, outputPath)
             else:
                 print('Input image only support jpg')
                 exit()
