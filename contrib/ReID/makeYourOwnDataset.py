@@ -77,7 +77,7 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
     :arg:
         streamApi: stream api
         pluginNameVector: the vector of  plugin name
-        file: the name of image
+        file: the name of scenario image
         outputPath: the directory of output
 
     :return:
