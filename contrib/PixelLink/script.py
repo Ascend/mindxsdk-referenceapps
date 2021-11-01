@@ -19,6 +19,8 @@
 import rrc_evaluation_funcs_1_1 as rrc_evaluation_funcs
 import importlib
 from collections import namedtuple
+import numpy as np
+import Polygon as plg
 
 
 def evaluation_imports():
@@ -252,7 +254,7 @@ def evaluate_method(gtFilePath, submFilePath, evaluationParams):
                 gtRectMat = np.zeros(len(gtPols), np.int8)
                 detRectMat = np.zeros(len(detPols), np.int8)
                 n_gtpols = len(gtPols)
-                n_delpols = len(detPols)
+                n_detpols = len(detPols)
                 for gtNum in range(n_gtpols):
                     for detNum in range(n_detpols):
                         pG = gtPols[gtNum]
