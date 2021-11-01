@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     # example
     try:
-        f2 = open('./test.jpg')
+        f2 = open('./test.jpg', 'rb')
     except FileNotFoundError as reason:
         print('Can not find the image!\n')
         exit()
