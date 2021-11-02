@@ -110,8 +110,9 @@ if __name__ == '__main__':
                     result2[0][i][j][k] = max2
                 else:
                     result2[0][i][j][k // 2] = max2
-
-    process.deal(result, result2)
+    image = cv2.imread('./test.jpg')
+    image_shape = image.shape
+    process.deal(image_shape, result, result2)
     print("post-processing done!                                                                   ")
     # get the version of the test
     get_version.img_version()
