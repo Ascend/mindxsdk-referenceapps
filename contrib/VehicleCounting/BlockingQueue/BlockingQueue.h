@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include "MxBase/ErrorCode/ErrorCodes.h"
 
-static const int DEFAULT_MAX_QUEUE_SIZE = 256;
+const int DEFAULT_MAX_QUEUE_SIZE = 256;
 
 template<typename T> class BlockingQueue {
 public:
