@@ -35,7 +35,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |-------- pipline
 |           |---- faceswap.pipeline            // 人脸替换流水线配置文件
 |-------- result                               // 存放结果文件（需用户新建，见5.5）
-|-------- main.py                              
+|-------- faceswap_main.py                              
 |-------- faceswap_post.py                     // 后处理模块
 |-------- README.md   
 |-------- run.sh                               // 样例运行脚本
@@ -160,7 +160,7 @@ mkdir result
 ```
 切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3.7 faceswap_main.py 源人脸图片路径 目标人脸图片路径]  
 
-例：python3.7 faceswap_main_2.py data/face1.jpg data/face2.jpg
+例：python3.7 faceswap_main.py data/face1.jpg data/face2.jpg
 ```
 
 7. 查看结果  
