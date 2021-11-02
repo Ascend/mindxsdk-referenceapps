@@ -40,25 +40,22 @@ limitations under the License.
 # -*- coding:utf-8 -*-
 import numpy as np
 
-
-def single_class_non_max_suppression(
-    bboxes, confidences, conf_thresh, iou_thresh, keep_top_k=-1
-):
-    """
-    single class nms .
+def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_thresh=0.5, keep_top_k=-1):
+    '''
+    do nms on single class.
+    Hint: for the specific class, given the bbox and its confidence,
     1) sort the bbox according to the confidence from top to down, we call this a set
     2) select the bbox with the highest confidence, remove it from set, and do IOU calculate with the rest bbox
     3) remove the bbox whose IOU is higher than the iou_thresh from the set,
     4) loop step 2 and 3, util the set is empty.
-    :param bboxes: bounding boxs, numpy array of 2D, [num_bboxes, 4].
+    :param bboxes: numpy array of 2D, [num_bboxes, 4]
     :param confidences: numpy array of 1D. [num_bboxes]
-    :param conf_thresh: confidence threshold
+    :param conf_thresh:
     :param iou_thresh:
     :param keep_top_k:
     :return:
-    """
-    if len(bboxes) == 0:
-        return []
+    '''
+    if len(bboxes) == 0: return []
 
     conf_keep_idx = np.where(confidences > conf_thresh)[0]
 
@@ -93,9 +90,9 @@ def single_class_non_max_suppression(
         overlap_area = overlap_w * overlap_h
         overlap_ratio = overlap_area / (area[idxs[:last]] + area[i] - overlap_area)
 
-        need_to_be_deleted_idx = np.concatenate(
-            ([last], np.where(overlap_ratio > iou_thresh)[0])
-        )
+        need_to_be_deleted_idx = np.concatenate(([last], np.where(overlap_ratio > iou_thresh)[0]))
         idxs = np.delete(idxs, need_to_be_deleted_idx)
 
+    # if the number of final bboxes is less than keep_top_k, we need to pad it.
+    # TODO
     return conf_keep_idx[pick]

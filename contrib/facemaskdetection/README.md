@@ -38,7 +38,7 @@ CANN版本为1.77.22.6.220。
 
 
 
-![截屏2021-09-26 下午6.48.36](/Users/eric/Library/Application Support/typora-user-images/截屏2021-09-26 下午6.48.36.png)
+<img src="./image/image1.png" alt="image2" style="zoom:50%;" />
 
 
 
@@ -60,11 +60,16 @@ CANN版本为1.77.22.6.220。
 - 环境变量介绍
 
 ```
-export LD_LIBRARY_PATH=$"/home/sd_xiong6/MindX_SDK/mxVision/lib:/home/sd_xiong6/MindX_SDK/mxVision/opensource/lib:/home/sd_xiong6/MindX_SDK/mxVision/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:"
+export MX_SDK_HOME=${MX_SDK_HOME}
+export install_path=/usr/local/Ascend/ascend-toolkit/latest
+export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin
+export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python
+export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
 
-export MX_SDK_HOME = /home/sd_xiong6/MindX_SDK/mxVision
-
-export PYTHONPATH=/home/sd_xiong6/MindX_SDK/mxVision/python:
+export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
+export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
+export ASCEND_OPP_PATH=${install_path}/opp
+export GST_DEBUG=3
 ```
 
 
@@ -133,7 +138,7 @@ pipline根据1.5节中技术实现流程图编写，该文件**main.pipeline**�
 
 编写完pipline文件后即可运行推理流程进行识别，该程序**image.py**放在源码根目录。
 
-可在image.py中124行修改进行推理的原图地址。![截屏2021-10-21 上午9.58.42](/Users/eric/Library/Application Support/typora-user-images/截屏2021-10-21 上午9.58.42.png)
+可在image.py中124行修改进行推理的原图地址。![image2](./image/image2.png)
 
 在根目录下，运行命令：
 
