@@ -33,7 +33,6 @@ QUERY_STREAM_NAME = b'queryImageProcess'
 
 IN_PLUGIN_ID = 0
 
-DETECTED_PERSON_THRESHOLD = 5000
 INITIAL_MIN_DISTANCE = 99
 
 LINE_THICKNESS = 2
@@ -261,6 +260,7 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
     detectedPersonInformation = []
     detectedPersonFeature = []
     filterImageCount = 0
+    personDetectedFlag = False
 
     # select the detected person, and store its location and features
     for detectedItemIndex in range(0, len(objectList.objectVec)):
@@ -271,10 +271,7 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
             filterImageCount += 1
             continue
         if detectedItem.classVec[0].className == "person":
-            # ignore the detected person with small size
-            # you can change the threshold
-            if xLength * yLength < DETECTED_PERSON_THRESHOLD:
-                continue
+            personDetectedFlag = True
             detectedPersonInformation.append({'x0': int(detectedItem.x0), 'x1': int(detectedItem.x1),
                                               'y0': int(detectedItem.y0), 'y1': int(detectedItem.y1)})
             detectedFeature = \
@@ -282,6 +279,9 @@ def compute_feature_distance(objectList, featureList, queryFeatures):
                               dtype=np.float32)
             cv2.normalize(src=detectedFeature, dst=detectedFeature, norm_type=cv2.NORM_L2)
             detectedPersonFeature.append(detectedFeature.tolist())
+
+    if not personDetectedFlag:
+        return None
 
     detectedPersonFeature = np.array(detectedPersonFeature)
 
@@ -382,6 +382,7 @@ def draw_results(filePath, galleryFeatureLength, detectedPersonInformation, gall
         cv2.putText(image, galleryLabelSet[galleryIndex], (locations.get('x0'), locations.get('y0')),
                     cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, color, LINE_THICKNESS)
     cv2.imwrite("./result/result_{}".format(str(file)), image)
+    print("detect ", file, " successfully.")
 
 
 def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):
@@ -422,6 +423,10 @@ def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold
                 objectList, featureList = get_pipeline_results(filePath, streamApi)
 
                 metricDirectory = compute_feature_distance(objectList, featureList, queryFeatures)
+
+                if not metricDirectory:
+                    print("Cannot detect person for image:", file)
+                    continue
 
                 detectedPersonInformation = metricDirectory.get('detectedPersonInformation')
                 galleryFeatureLength = metricDirectory.get('galleryFeatureLength')

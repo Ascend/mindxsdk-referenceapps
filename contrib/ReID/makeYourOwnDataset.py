@@ -104,6 +104,7 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
     tensorList = MxpiDataType.MxpiVisionList()
     tensorList.ParseFromString(inferResult[1].messageBuf)
     filterImageCount = 0
+    personDetectedFlag = False
 
     for detectedItemIndex in range(0, len(objectList.objectVec)):
         item = objectList.objectVec[detectedItemIndex]
@@ -113,6 +114,7 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
             filterImageCount += 1
             continue
         if item.classVec[0].className == "person":
+            personDetectedFlag = True
             cropData = tensorList.visionVec[detectedItemIndex - filterImageCount].visionData.dataStr
             cropInformation = tensorList.visionVec[detectedItemIndex - filterImageCount].visionInfo
             img_yuv = np.frombuffer(cropData, np.uint8)
@@ -121,6 +123,11 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
             img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
             fileOutputPath = outputPath + '/{}_{}.jpg'.format(str(file[:-4]), str(detectedItemIndex))
             cv2.imwrite(fileOutputPath, img)
+
+    if not personDetectedFlag:
+        print("Cannot detect person for image:", file)
+    else:
+        print("detect ", file, " successfully.")
 
 
 def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
