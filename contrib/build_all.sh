@@ -30,6 +30,7 @@ SAMPLE_FOLDER=(
 	PersonCount/
 	FatigueDrivingRecognition/
 	CartoonGANPicture/
+    HeadPoseEstimation/
 )
 
 
