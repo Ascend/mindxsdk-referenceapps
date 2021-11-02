@@ -21,7 +21,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
 """
 Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
 
@@ -38,10 +37,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 # -*- coding:utf-8 -*-
+
 import numpy as np
 
-def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_thresh=0.5, keep_top_k=-1):
-    '''
+
+def single_class_non_max_suppression(
+    bboxes, confidences, conf_thresh=0.2, iou_thresh=0.5, keep_top_k=-1
+):
+    """
     do nms on single class.
     Hint: for the specific class, given the bbox and its confidence,
     1) sort the bbox according to the confidence from top to down, we call this a set
@@ -54,8 +57,9 @@ def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_t
     :param iou_thresh:
     :param keep_top_k:
     :return:
-    '''
-    if len(bboxes) == 0: return []
+    """
+    if len(bboxes) == 0:
+        return []
 
     conf_keep_idx = np.where(confidences > conf_thresh)[0]
 
@@ -90,7 +94,9 @@ def single_class_non_max_suppression(bboxes, confidences, conf_thresh=0.2, iou_t
         overlap_area = overlap_w * overlap_h
         overlap_ratio = overlap_area / (area[idxs[:last]] + area[i] - overlap_area)
 
-        need_to_be_deleted_idx = np.concatenate(([last], np.where(overlap_ratio > iou_thresh)[0]))
+        need_to_be_deleted_idx = np.concatenate(
+            ([last], np.where(overlap_ratio > iou_thresh)[0])
+        )
         idxs = np.delete(idxs, need_to_be_deleted_idx)
 
     # if the number of final bboxes is less than keep_top_k, we need to pad it.
