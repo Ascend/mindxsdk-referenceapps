@@ -1,0 +1,81 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "416",
+                "resizeWidth": "416",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+	
+"mxpi_tensorinfer0": {
+            "props": {
+                "dataSource":"mxpi_imageresize0",
+                "modelPath": "yolov4/yolov4_detection.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "yolov4/yolov4.cfg",
+                "labelPath": "yolov4/coco.names",
+                "postProcessLibPath": "/home/cqu_liyong1/MindXSDK/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_distributor0"
+        },
+        "mxpi_distributor0": {
+            "props": {
+                "dataSource": "mxpi_objectpostprocessor0",
+                "classIds": "3"
+            },
+            "factory": "mxpi_distributor",
+            "next": "mxpi_imagecrop0"
+        },
+	"mxpi_imagecrop0": {
+            "props": {
+	"dataSource": "mxpi_distributor0_0",
+                "dataSourceImage": "mxpi_imagedecoder0",
+                "resizeWidth": "224",
+                "resizeHeight": "224",
+                "resizeType": "Resizer_Stretch"
+            },
+            "factory": "mxpi_imagecrop",
+            "next": "mxpi_tensorinfer1"
+        },
+	"mxpi_tensorinfer1": {
+            "props": {
+                "dataSource":"mxpi_imagecrop0",
+                "modelPath": "out/scn.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
