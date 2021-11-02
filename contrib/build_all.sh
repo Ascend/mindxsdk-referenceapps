@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,55 +12,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+ 
+set -e 
+current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
-set -e
 
-# curr path
-cur_path=$(cd "$(dirname "$0")" || exit; pwd)
+SAMPLE_FOLDER=(
+    ActionRecognition/
+	CrowdCounting/
+    mxBase_wheatDetection/
+	EdgeDetectionPicture/
+    HelmetIdentification/
+    Individual/
+    human_segmentation/
+	OpenposeKeypointDetection/
+	PersonCount/
+	FatigueDrivingRecognition/
+	CartoonGANPicture/
+	HeadPoseEstimation/
+)
 
-# build type
-build_type="Release"
 
-function prepare_env()
-{
-   export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
-}
+err_flag=0
+for sample in ${SAMPLE_FOLDER[@]};do
+    cd ${current_folder}/${sample}
+    bash build.sh || {
+        echo -e "Failed to build ${sample}"
+		err_flag=1
+    }
+done
 
-function prepare_path() {
-    if [ -d "$1" ]; then
-      rm -rf "$1"
-      echo "dir $1 exist, erase it and recreate."
-    else
-      echo "dir $1 is not exist."
-    fi
-    mkdir -p "$1"
-    cd  "$1"
-}
 
-function build() {
-    echo "current dir: $cur_path"
-    prepare_env
-    path_build=${cur_path}/build
-    prepare_path "$path_build"
-
-    cmake -DCMAKE_BUILD_TYPE=$build_type ..
-    # shellcheck disable=SC2181
-    if [ $? -ne 0 ]; then
-        echo "cmake failed"
-        exit 0
-    fi
-    make -j8
-    # shellcheck disable=SC2181
-    if [ $? -ne 0 ]; then
-        echo "make failed"
-        exit 0
-    fi
-    cd ..
-}
-
-build
-if [ ! -f "${cur_path}/videoGestureRecognition" ]; then
-  echo "videoGestureRecognition not generated, build failed."
-else
-  echo "build successfully."
+if [ ${err_flag} -eq 1 ]; then
+	exit 1
 fi
+exit 0
