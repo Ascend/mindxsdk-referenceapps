@@ -382,7 +382,7 @@ def draw_results(filePath, galleryFeatureLength, detectedPersonInformation, gall
         cv2.putText(image, galleryLabelSet[galleryIndex], (locations.get('x0'), locations.get('y0')),
                     cv2.FONT_HERSHEY_SIMPLEX, FONT_SCALE, color, LINE_THICKNESS)
     cv2.imwrite("./result/result_{}".format(str(file)), image)
-    print("detect ", file, " successfully.")
+    print("Detect ", file, " successfully.")
 
 
 def process_reid(galleryPath, queryFeatures, queryPid, streamApi, matchThreshold):

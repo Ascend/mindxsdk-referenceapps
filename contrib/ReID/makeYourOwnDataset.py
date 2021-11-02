@@ -125,9 +125,9 @@ def crop_process(streamApi, pluginNameVector, file, outputPath):
             cv2.imwrite(fileOutputPath, img)
 
     if not personDetectedFlag:
-        print("Cannot detect person for image:", file)
+        print("Cannot crop person for image:", file)
     else:
-        print("detect ", file, " successfully.")
+        print("Crop ", file, " successfully.")
 
 
 def crop_person_from_own_dataset(imagePath, outputPath, streamApi):
