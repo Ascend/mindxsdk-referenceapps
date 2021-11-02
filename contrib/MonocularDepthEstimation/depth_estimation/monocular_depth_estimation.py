@@ -1,0 +1,172 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import os
+
+import MxpiDataType_pb2 as MxpiDataType
+import numpy as np
+
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
+# depth estimation model output size
+model_output_height = 240
+model_output_width = 320
+
+# depth estimation pipeline path
+depth_estimation_pipeline_path = 'pipeline/depth_estimation.pipeline'
+
+
+def infer(stream_manager, stream_name, in_plugin_id, data_input):
+    """
+    send data into infer stream and get infer result
+    :param stream_manager: the manager of infer streams
+    :param stream_name: name of infer stream that needs to operate
+    :param in_plugin_id: ID of the plug-in that needs to send data
+    :param data_input: data that needs to send into infer stream
+    :return: infer results
+    """
+    # Inputs data to a specified stream based on streamName.
+    unique_id = stream_manager.SendData(stream_name, in_plugin_id, data_input)
+    if unique_id < 0:
+        print('Failed to send data to stream, ret = {}.'.format(unique_id))
+        return None, None, None
+
+    # construct output plugin vector
+    plugin_names = [b"mxpi_tensorinfer0", b"mxpi_imagedecoder0"]
+    plugin_vec = StringVector()
+    for key in plugin_names:
+        plugin_vec.push_back(key)
+
+    # get plugin output data
+    infer_result = stream_manager.GetProtobuf(stream_name, in_plugin_id, plugin_vec)
+
+    # check whether the inferred results is valid
+    infer_result_valid = True
+    if infer_result.size() == 0:
+        infer_result_valid = False
+        print('unable to get effective infer results, please check the stream log for details.')
+    if infer_result[0].errorCode != 0:
+        infer_result_valid = False
+        print('GetProtobuf error. errorCode = {}, errorMsg= {}.'.format(
+            infer_result[0].errorCode, infer_result[0].data.decode()))
+
+    if not infer_result_valid:
+        print('infer result is invalid.')
+        return None, None, None
+
+    # get mxpi_tensorinfer0 output data
+    infer_result_list = MxpiDataType.MxpiTensorPackageList()
+    infer_result_list.ParseFromString(infer_result[0].messageBuf)
+
+    # get mxpi_imagedecoder0 output data
+    vision_list = MxpiDataType.MxpiVisionList()
+    vision_list.ParseFromString(infer_result[1].messageBuf)
+
+    # get input picture size
+    input_pic_info = vision_list.visionVec[0].visionInfo
+    input_pic_height = input_pic_info.heightAligned
+    input_pic_width = input_pic_info.widthAligned
+
+    # get output depth pic size
+    output_depth_pic_height = infer_result_list.tensorPackageVec[0].tensorVec[0].tensorShape[2]
+    output_depth_pic_width = infer_result_list.tensorPackageVec[0].tensorVec[0].tensorShape[3]
+
+    # get output depth pic data
+    output_depth_info_data = infer_result_list.tensorPackageVec[0].tensorVec[0].dataStr
+    # converting the byte data into 32 bit float array
+    depth_info = np.frombuffer(output_depth_info_data, dtype=np.float32)
+    depth_info = depth_info.reshape(output_depth_pic_height, output_depth_pic_width)
+
+    return input_pic_width, input_pic_height, depth_info
+
+
+def depth_estimation(images_data, is_batch=False):
+    """
+    get depth info of input images
+    :param images_data: binary data of input images
+    :param is_batch: whether is batch mode (True represents that need to process plural pictures)
+    :return: depth info and image info of input data
+    """
+    stream_manager = StreamManagerApi()
+
+    # init stream manager
+    ret = stream_manager.InitManager()
+    if ret != 0:
+        print('Failed to init Stream manager, ret = {}.'.format(ret))
+        return None, None
+
+    if os.path.exists(depth_estimation_pipeline_path) != 1:
+        print('pipeline {} not exist.'.format(depth_estimation_pipeline_path))
+        return None, None
+
+    # create streams by pipeline config file
+    with open(depth_estimation_pipeline_path, 'rb') as f:
+        pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
+    pipeline_str = pipeline
+    ret = stream_manager.CreateMultipleStreams(pipeline_str)
+    if ret != 0:
+        print('Failed to create Stream, ret = {}.'.format(ret))
+        return None, None
+
+    # config
+    stream_name = b'estimation'
+    in_plugin_id = 0
+
+    # infer results
+    image_info_size = 2  # height and width
+    input_images_info = np.empty(shape=(0, image_info_size))
+    images_depth_info = np.empty(shape=(0, model_output_height, model_output_width))
+
+    # Construct the input of the stream
+    data_input = MxDataInput()
+    if not is_batch:
+        data_input.data = images_data
+        # model infer
+        input_pic_width, input_pic_height, depth_info = infer(stream_manager, stream_name, in_plugin_id, data_input)
+
+        # check infer result
+        if input_pic_width is None or input_pic_height is None or depth_info is None:
+            print('depth estimation model infer error.')
+            # destroy streams
+            stream_manager.DestroyAllStreams()
+            return None, None
+
+        # save data
+        input_images_info = np.vstack([input_images_info, [input_pic_height, input_pic_width]])
+        images_depth_info = np.vstack([images_depth_info, [depth_info]])
+        print('processed image: height = {} width = {}'.format(input_pic_height, input_pic_width))
+    else:
+        index = 0
+        for image in images_data:
+            data_input.data = image
+
+            # model infer
+            input_pic_width, input_pic_height, depth_info = infer(stream_manager, stream_name, in_plugin_id, data_input)
+
+            # check infer result
+            if input_pic_width is None or input_pic_height is None or depth_info is None:
+                print('depth estimation model infer error on {}-th image.'.format(index))
+                continue
+
+            # save infer result
+            index += 1
+            input_images_info = np.vstack([input_images_info, [input_pic_height, input_pic_width]])
+            images_depth_info = np.vstack([images_depth_info, [depth_info]])
+            print('processed {}-th image: height = {} width = {}.'.format(index, input_pic_height, input_pic_width))
+
+    # destroy streams
+    stream_manager.DestroyAllStreams()
+
+    return images_depth_info, input_images_info

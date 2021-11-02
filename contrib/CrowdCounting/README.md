@@ -71,23 +71,11 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 **步骤1** 
 
-下载原始模型权重下载：
+下载原始模型权重、原始模型网络、对应的cfg文件：
 
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.caffemodel](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.caffemodel)
+[模型及配置文件下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CrowdCounting/model.zip)
 
-**步骤2** 
-
-下载原始模型网络：
-
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/count_person.caffe.prototxt](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/count_person.caffe.prototxt)
-
-**步骤3**
-
-下载对应的cfg文件：
-
-[https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/crowdCount/insert_op.cfg](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC Model/crowdCount/insert_op.cfg)
-
-**步骤4**
+**步骤2**
 
 将上述下载得文件统一放在CrowdCounting/model文件夹下，并使用ATC模型转换工具进行模型转换，参考如下指令:
 

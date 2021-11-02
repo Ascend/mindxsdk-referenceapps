@@ -103,7 +103,7 @@ export GST_DEBUG=3
 | pytorch                 | 1.5.1    | [pytorch官网](https://pytorch.org/get-started/previous-versions/) |
 | ONNX                    | 1.7.0    | pip install onnx==1.7.0                                      |
 | helmet_head_person_s.pt | v2.0     | [原项目链接](https://github.com/PeterH0323/Smart_Construction)(选择项目中yolov5s权重文件，权重文件保存在README所述网盘中) |
-| YOLOv5_s.onnx           | YOLOv5_s | [链接](https://pan.baidu.com/s/15qjahlaO9TTd6orzGrm0Sw) 提取码：b123 |
+| YOLOv5_s.onnx           | YOLOv5_s | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/HelmetIdentification/model.zip) |
 
 
 
@@ -296,7 +296,7 @@ export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python:{path}
 python3.7 performance_test_main.py
 ```
 
-注：1.与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[云盘](https://pan.baidu.com/s/14Xmf6UbJy-3KYhx1ZjoVUw)，提取码：b123，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
+注：1.与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/HelmetIdentification/test_video.zip)，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
 
 2.performance_test_main.py中加载pipline文件应写HelmetDetection.pipline的绝对路径
 
@@ -305,7 +305,7 @@ python3.7 performance_test_main.py
 
 ###### 3.2.1 数据集说明
 
-- 数据集来源:  [Safety-Helmet-Wearing-Dataset](https://github.com/njvisionpower/Safety-Helmet-Wearing-Dataset)
+- 数据集来源:  [Safety-Helmet-Wearing-Dataset](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/HelmetIdentification/data.zip)
 
 - 数据集结构
 

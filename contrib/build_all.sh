@@ -28,6 +28,8 @@ SAMPLE_FOLDER=(
 	OpenposeKeypointDetection/
 	PersonCount/
 	FatigueDrivingRecognition/
+	CartoonGANPicture/
+	HeadPoseEstimation/
 )
 
 

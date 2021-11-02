@@ -30,8 +30,7 @@
 `apt-get install libpython3.7`
 ## 4 模型转换
 人体语义分割采用提供的Portrait.pb模型。由于原模型是基于tensorflow的人像分割模型，因此我们需要借助于ATC工具将其转化为对应的om模型。  
-**步骤1**  在ModelZoo上下载Portrait原始模型：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/PortraitNet%20/portrait.pb)      
-&ensp;&ensp;&ensp;&ensp;&ensp; 对应的cfg文件：[下载地址](https://modelzoo-train-atc.obs.cn-north-4.myhuaweicloud.com/003_Atc_Models/AE/ATC%20Model/PortraitNet%20/insert_op.cfg)  
+**步骤1**  下载Portrait原始模型与&ensp; 对应的cfg文件：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PortraitSegmentation/model.zip)      
 
 **步骤2**  将获取到的Portrait模型pb文件和cfg文件存放至：“项目所在目录/models”  
 
