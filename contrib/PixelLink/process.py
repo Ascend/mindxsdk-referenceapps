@@ -243,12 +243,11 @@ def test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores):
     to_txt(outputFolder, image_name, image_data_shape, pixel_pos_scores, link_pos_scores)
 
 
-def deal(pixel_pos_scores, link_pos_scores):
+def deal(image_shape, pixel_pos_scores, link_pos_scores):
     # 输出txt目标位置
     outputFolder = './test'
     if not os.path.exists(outputFolder):
         os.mkdir(outputFolder)
-    image_data_shape = (768, 1280, 3)
 # test only need one process
     for i in range(1, 2):
-        test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores)
+        test(outputFolder, i, image_shape, pixel_pos_scores, link_pos_scores)
