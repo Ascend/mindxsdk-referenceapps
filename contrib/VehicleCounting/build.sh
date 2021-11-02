@@ -13,21 +13,55 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-path_cur=$(dirname $0)
 
-function build_cartoonization()
+set -e
+
+# curr path
+cur_path=$(cd "$(dirname "$0")" || exit; pwd)
+
+# build type
+build_type="Release"
+
+function prepare_env()
 {
-    cd $path_cur
-    rm -rf build
-    mkdir -p build
-    cd build
-    cmake ..
-    make
-    ret=$?
-    if [ ${ret} -ne 0 ]; then
-        echo "Failed to build cartoonization."
-        exit ${ret}
-    fi
+   export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
 }
 
-build_cartoonization
+function prepare_path() {
+    if [ -d "$1" ]; then
+      rm -rf "$1"
+      echo "dir $1 exist, erase it and recreate."
+    else
+      echo "dir $1 is not exist."
+    fi
+    mkdir -p "$1"
+    cd  "$1"
+}
+
+function build() {
+    echo "current dir: $cur_path"
+    prepare_env
+    path_build=${cur_path}/build
+    prepare_path "$path_build"
+
+    cmake -DCMAKE_BUILD_TYPE=$build_type ..
+    # shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+        echo "cmake failed"
+        exit 0
+    fi
+    make -j8
+    # shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+        echo "make failed"
+        exit 0
+    fi
+    cd ..
+}
+
+build
+if [ ! -f "${cur_path}/videoGestureRecognition" ]; then
+  echo "videoGestureRecognition not generated, build failed."
+else
+  echo "build successfully."
+fi
