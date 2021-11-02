@@ -31,7 +31,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |-------- models
 |           |---- yolov4.cfg                   // yolov4后处理配置文件（用于人脸检测）
 |           |---- coco.names                   // yolov4模型所有可识别类
+|           |---- yolov4_detection.om          // yolov4离线推理模型，见4.1
 |           |---- V3ONNX.cfg                   // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
+|           |---- V3ONNXX.om                   // 脸部特征点检测离线模型，见4.2
 |-------- pipline
 |           |---- faceswap.pipeline            // 人脸替换流水线配置文件
 |-------- result                               // 存放结果文件（需用户新建，见5.5）
@@ -75,20 +77,8 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 # 执行，转换v3.onnx模型
 # Execute, transform v3.onnx model.
-atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310 --insert_op_conf=V3ONNX.cfg
+atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310 --insert_op_conf=V3ONNX.cfg --out_nodes="Gemm_169:0"
 ```
-其参数说明如下表所示：
-
-
-| 参数名           | 参数描述 |
-| :------------- :| :------------- |
-| --Img4md|readme图片|
-| --framework    | 原始框架类型。当取值为5时，即为onnx网络模型 |
-| --model          | 原始模型文件路径与文件名 |
-| --output         | 如果是开源框架的网络模型，存放转换后的离线模型的路径以及文件名 |
-| --soc_version    | 模型转换时指定芯片版本 |
-| --insert_op_conf | 插入算子的配置文件路径与文件名|
-
 
 其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件V3ONNX.cfg在输入图像进入模型前对其进行预处理。该配置文件保存在项目/model目录下。  
 执行完模型转换脚本后，若提示如下信息说明模型转换成功，会在output参数指定的路径下生成V3ONNXX.om模型文件。  
@@ -167,8 +157,7 @@ mkdir result
 执行`faceswap_main.py`完毕后，可在工程目录`result`中查看人脸替换结果`face_swap_result.jpg`。  
 8. 常见问题  
 ① 在人脸检测阶段，由于yolov4_detection.om模型的coco.names标签集中同时存在people，face两类标签。当对输入图片的检测结果为people时，无法进行后续的换脸操作，故输入图片应尽可能体现脸部特征，建议输入图片为类似于证件照的半身人像。否则，当输入为全身人像时候，图片标签为people，无法进行后续换脸操作；  
-② 在特征点检测阶段，由于特征点检测模型限制，输入图片最好采用正面人像，脸部特征清晰，轮廓完整，以防止存在刘海，墨镜，帽檐等遮住脸部特征；  
-③ 两张图片中人脸的朝向应该尽量保持一致。
+② 在特征点检测阶段，由于特征点检测模型限制，输入图片最好采用正面人像，脸部特征清晰，轮廓完整，以防止存在刘海，墨镜，帽檐等遮住脸部特征；
 
 
 
