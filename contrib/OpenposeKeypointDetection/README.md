@@ -131,17 +131,11 @@ PYTHONPATH: python环境路径
 
 ## 3. 模型转换
 
-本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，pytorch 模型下载链接：https://download.01.org/opencv/openvino_training_extensions/models/human_pose_estimation/checkpoint_iter_370000.pth 。
+本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，本项目运行前需要将 pytorch 模型转换为 onnx 模型，pytorch 模型和onnx 模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/model.zip。
 
+然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
-本项目运行前需要将 pytorch 模型转换为 onnx 模型，onnx 模型下载链接：https://drive.google.com/file/d/1RGuHz5BkENqaCOyoR4xdQKaZWLpwN1o0/view?usp=sharing  （百度网盘下载：链接：https://pan.baidu.com/s/1-FtAje3y09RTPT8EeaJKRQ 
-提取码：q2dk ），然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
-
-
-转换得到的 om 模型可以从该链接下载得到：https://drive.google.com/file/d/1c5NaIqBicSCcDHNoZ-XKHi31KcG2AgI3/view?usp=sharing   （百度网盘下载：链接：https://pan.baidu.com/s/1i5LWpTpuc0XUtyM7-lp2hA 
-提取码：k4z6 ）。
-
-也可以自行转换模型，步骤如下：
+自行转换模型，步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models`` 文件夹下，文件名为：simplified_560_openpose_pytorch.onnx 。
 2. 进入 ``python/models`` 文件夹下执行命令：
 ```
@@ -219,7 +213,7 @@ python3.7 main.py
 pip3.7 install pycocotools
 ```
 
-2. 下载 COCO VAL 2017 数据集，下载链接：http://images.cocodataset.org/zips/val2017.zip ，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：http://images.cocodataset.org/annotations/annotations_trainval2017.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：
+2. 下载 COCO VAL 2017 数据集，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：
 ```
 .
 ├── dataset
@@ -243,7 +237,7 @@ pip3.7 install pycocotools
 ```
 cd python
 python3.7 evaluate.py
-``` 
+```
 命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_keypoint_detect_result.json 检测结果文件。输出结果如下图所示：
 <center>
     <img src="./images/EvaluateInfo.png">

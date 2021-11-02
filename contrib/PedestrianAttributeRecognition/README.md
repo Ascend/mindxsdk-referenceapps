@@ -101,16 +101,16 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ## 3 模型转换
 
-本项目中用到的模型有：yolov3，deeomar两个模型。
+本项目中用到的模型有：yolov3，deeomar两个模型。模型下载链接为：[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PedestrianAttributeRecognition/model.zip)
 
-在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载，获取yolov3_tf.pb文件，[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)，将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：。
+获取yolov3_tf.pb文件，将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：。
 
 ```python
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 ```
 更多的atc模型转换信息可以参考此链接样例：https://support.huaweicloud.com/ug-mfac-mindxsdk201/atlasmx_02_0053.html
 
-deepmar模型的onnx文件可以从此链接中获取[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/4c787d576d284d1fa482cfa0ec3d4fb7)，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
+deepmar模型，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
 
 对于deepmar离线模型的aipp的设置，如下:
 
@@ -154,7 +154,7 @@ aipp_op{
     input_bias_1: 128
     input_bias_2: 128}
 ```
-从modelzoo中下载好deepmar之后，将其根目录下的Deepmar_bs1.onnx文件拷贝到本样例的“model/deepmar”路径下，并在终端中移至该路径下，执行下面命令进行将onnx模型转om模型：
+下载好deepmar之后，将Deepmar_bs1.onnx文件拷贝到本样例的“model/deepmar”路径下，并在终端中移至该路径下，执行下面命令进行将onnx模型转om模型：
 
 ```python
 atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310  --insert_op_conf=aipp_deepmar.config
@@ -182,7 +182,7 @@ atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --inp
 
 ## 5 精度测试
 
-下载开源数据集Peta，[下载地址：密码：5vep](https://pan.baidu.com/share/init?surl=q8nsydT7xkDjZJOxvPcoEw)，
+下载开源数据集Peta，[下载地址](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PedestrianAttributeRecognition/data.zip)，
 
 （1）将下载好的文件夹中”./dataset/peta/images/*.png“中的images文件夹放入样例代码中的dataset/image文件夹下；将PETA.mat文件放在样例代码的dataset文件夹下。
 

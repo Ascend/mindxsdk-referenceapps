@@ -130,7 +130,7 @@ make -j
 
 ### 4.1部署
 
-**步骤1**：联系我们获取最新模型，将```ctpn```模型放到```models/ctpn```文件夹内，将```crnn```模型放到```models/paddlecrnn```文件夹内。
+**步骤1**：[cptn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_cptn.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内。
 
 **步骤2**：配置环境变量，根据自己的环境变量不同，需要配置不同的环境变量，下面给出参考示例：
 
@@ -212,3 +212,6 @@ make -j8
 ## 7.测试数据来源
 
 比赛数据：https://www.datafountain.cn/competitions/346
+
+[测试数据](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/data/idcard.rar)
+
