@@ -17,6 +17,7 @@
 #ifndef STREAM_PULL_SAMPLE_KALMANTRACKER_H
 #define STREAM_PULL_SAMPLE_KALMANTRACKER_H
 
+#include "opencv2/highgui/highgui.hpp"
 #include "opencv2/video/tracking.hpp"
 #include "DataType.h"
 #include "MxBase/PostProcessBases/PostProcessDataType.h"
