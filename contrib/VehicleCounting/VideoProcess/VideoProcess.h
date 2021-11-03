@@ -60,7 +60,7 @@ public:
 	                       std::shared_ptr<VideoProcess> videoProcess, std::shared_ptr<ascendVehicleTracking::MOTConnection> tracker);
 private:
     std::queue<cv::Mat> frameIf;
-    int color_num[200][3]; //随机颜色存储
+    int color_num[200][3]; // 随机颜色存储
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
     const uint32_t CHANNEL_ID = 0;
 public:
@@ -68,4 +68,4 @@ public:
     static const uint32_t DEVICE_ID = 0;
 };
 
-#endif //STREAM_PULL_SAMPLE_VIDEOPROCESS_H
+#endif // STREAM_PULL_SAMPLE_VIDEOPROCESS_H
