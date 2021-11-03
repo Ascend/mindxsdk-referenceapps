@@ -19,7 +19,6 @@
 #include <sstream>
 #include <queue>
 #include <list>
-#include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/Log/Log.h"
 #include "opencv2/opencv.hpp"
 #include "VideoProcess.h"
