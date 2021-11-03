@@ -16,7 +16,6 @@
 
  // 代码来源：https://blog.csdn.net/qq_31261509/article/details/83503591
 
-
 #ifndef OPENCV_CVX_TEXT_HPP_
 #define OPENCV_CVX_TEXT_HPP_
 
@@ -24,14 +23,13 @@
 #include FT_FREETYPE_H
 #include "opencv2/opencv.hpp"
 
-
 class CvxText {
 
 public:
     CvxText(const char* freeType);
     virtual ~CvxText();
-    void getFont(int* type, cv::Scalar* size=nullptr, bool* underline=nullptr, float* diaphaneity=nullptr);
-    void setFont(int* type, cv::Scalar* size=nullptr, bool* underline=nullptr, float* diaphaneity=nullptr);
+    void getFont(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
+    void setFont(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
     void restoreFont();
     int putText(cv::Mat& img, char* text, cv::Point pos);
     int putText(cv::Mat& img, const wchar_t* text, cv::Point pos);
@@ -40,7 +38,7 @@ public:
     int ToWchar(char* src, wchar_t* &dest, const char *locale = "zh_CN.utf8");
 
 private:
-    CvxText& operator=(const CvxText&);
+    CvxText& operator = (const CvxText&);
     void putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color);
     FT_Library   m_library;   // 字库
     FT_Face      m_face;      // 字体
@@ -51,4 +49,3 @@ private:
 };
 
 #endif
-
