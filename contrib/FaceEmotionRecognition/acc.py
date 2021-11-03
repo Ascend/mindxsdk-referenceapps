@@ -79,11 +79,11 @@ if __name__ == '__main__':
         # print the infer result
         res1 = np.frombuffer(tensorList3.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         maxindex = np.argmax(res1)
-        if(int(maxindex) + 1==int(labels[index])):
+        if(int(maxindex) + 1 == int(labels[index])):
             count=count + 1
         print(int(maxindex) + 1, "***********************", int(labels[index]))
         # streamManagerApi.DestroyAllStreams()
-    print("***********************", count/nums, nums)
+    print("***********************", count / nums, nums)
     
     # destroy streams
     streamManagerApi.DestroyAllStreams()
