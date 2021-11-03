@@ -73,9 +73,12 @@ void RetinaFace_PostProcess::SetDefaultParams(){
    @retval:none
    @notice:图像输入前会被resize成640×640
 */
-void RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w, int h)
+APP_ERROR RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w, int h)
 {
     anchor.clear();
+
+    if(w == 0 || h == 0)
+        return APP_ERR_COMM_INVALID_PARAM;
 
     // feature_map= [[80,80], [40,40], [20,20]]
     // 计算原理：step=8时， 640÷8=80，即将输入的图像划分为 80×80个方格
@@ -107,6 +110,7 @@ void RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w, int
             }
         }
     }
+    return APP_ERR_OK;
 }
 
 
@@ -187,7 +191,11 @@ APP_ERROR RetinaFace_PostProcess::Process(std::vector<MxBase::TensorBase> detect
 
     // 生成锚框anchor
     std::vector<box> anchor;
-    GenerateAnchor(anchor, width_, height_);
+    APP_ERROR ret = GenerateAnchor(anchor, width_, height_);
+    if (ret != APP_ERR_OK) {
+        LogError << "RetinaFace_PostProcess GenerateAnchor failed, ret=" << ret << ".";
+        return ret;
+    }
 
     // 对模型的输出数据进行解码，获取loc conf landms
     std::vector<MxBase::ObjectInfo> total_boxs;

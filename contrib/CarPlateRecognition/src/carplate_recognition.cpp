@@ -236,7 +236,7 @@ APP_ERROR CarPlate_Recognition::Crop(const MxBase::TensorBase &inputTensor, MxBa
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
 	// STEP2:进行抠图
-    MxBase::CropRoiConfig croproiconfig= {}; //抠图配置参数
+    MxBase::CropRoiConfig croproiconfig= {}; // 抠图配置参数
 	croproiconfig.x0 = objInfo.x0;
 	croproiconfig.x1 = objInfo.x1;
 	croproiconfig.y0 = objInfo.y0;
@@ -347,7 +347,7 @@ APP_ERROR CarPlate_Recognition::Detection_PostProcess(const MxBase::TensorBase o
     // STEP2:进行模型后处理
     APP_ERROR ret = detection_post_->Process(detect_outputs, objectInfos, resizedImageInfo);
     if (ret != APP_ERR_OK) {
-        LogError << "Process failed, ret=" << ret << ".";
+        LogError << "RetinaFace_PostProcess failed, ret=" << ret << ".";
         return ret;
     }
 	// STEP3:后处理完成，将资源释放
