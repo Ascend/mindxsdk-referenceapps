@@ -68,12 +68,12 @@ float CalDistSimilarity(DetectInfo detect1, DetectInfo detect2)
     float value = (1.f - xDistance / minWidth) * (1.f - yDistance / minHeight);
     return value;
 }
-//计算前后两帧的两个bounding box是同一辆车的相似度
+// 计算前后两帧的两个bounding box是同一辆车的相似度
 float CalSimilarity(const TraceLet &traceLet, const MxBase::ObjectInfo &objectInfo, const int &method, const double &kIOU)
 {
     return CalIOU(traceLet.detectInfo, objectInfo);
 }
-//过滤掉交并比小于阈值的匹配
+// 过滤掉交并比小于阈值的匹配
 void MOTConnection::FilterLowThreshold(const HungarianHandle &hungarianHandleObj,
     const std::vector<std::vector<int>> &disMatrix, std::vector<cv::Point> &matchedTracedDetected,
     std::vector<bool> &detectVehicleFlagVec)
@@ -88,7 +88,7 @@ void MOTConnection::FilterLowThreshold(const HungarianHandle &hungarianHandleObj
         }
     }
 }
- //更新没有匹配上的跟踪器
+ // 更新没有匹配上的跟踪器
 void MOTConnection::UpdateUnmatchedTraceLet(const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     for (auto itr = traceList_.begin(); itr != traceList_.end();) {
@@ -107,7 +107,7 @@ void MOTConnection::UpdateUnmatchedTraceLet(const std::vector<std::vector<MxBase
         itr = traceList_.erase(itr);
     }
 }
-//更新匹配上的跟踪器
+// 更新匹配上的跟踪器
 void MOTConnection::UpdateMatchedTraceLet(const std::vector<cv::Point> &matchedTracedDetected,
     std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
@@ -125,7 +125,7 @@ void MOTConnection::UpdateMatchedTraceLet(const std::vector<cv::Point> &matchedT
 
     }
 }
-//将没有匹配上的检测更新为新的检测器
+// 将没有匹配上的检测更新为新的检测器
 void MOTConnection::AddNewDetectedVehicle(std::vector<MxBase::ObjectInfo> &unmatchedVehicleObjectQueue)
 {
     using Time = std::chrono::high_resolution_clock;
@@ -150,9 +150,9 @@ void MOTConnection::AddNewDetectedVehicle(std::vector<MxBase::ObjectInfo> &unmat
 void MOTConnection::UpdateTraceLetAndFrame(const std::vector<cv::Point> &matchedTracedDetected,
                                            std::vector<std::vector<MxBase::ObjectInfo>> &objInfos, std::vector<MxBase::ObjectInfo> &unmatchedVehicleObjectQueue)
 {
-    UpdateMatchedTraceLet(matchedTracedDetected, objInfos);  //更新匹配上的跟踪器
-    AddNewDetectedVehicle(unmatchedVehicleObjectQueue);  //将没有匹配上的检测更新为新的检测器
-    UpdateUnmatchedTraceLet(objInfos);  //更新没有匹配上的跟踪器
+    UpdateMatchedTraceLet(matchedTracedDetected, objInfos);  // 更新匹配上的跟踪器
+    AddNewDetectedVehicle(unmatchedVehicleObjectQueue);  // 将没有匹配上的检测更新为新的检测器
+    UpdateUnmatchedTraceLet(objInfos);  // 更新没有匹配上的跟踪器
 }
 
 
@@ -160,7 +160,7 @@ void MOTConnection::TrackObjectPredict()
 {
     // every traceLet should do kalman predict
     for (auto &traceLet : traceList_) {
-        traceLet.detectInfo = traceLet.kalman.Predict();  //卡尔曼滤波预测的框
+        traceLet.detectInfo = traceLet.kalman.Predict();  // 卡尔曼滤波预测的框
     }
 }
 void MOTConnection::TrackObjectUpdate(const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos,
@@ -180,7 +180,7 @@ void MOTConnection::TrackObjectUpdate(const std::vector<std::vector<MxBase::Obje
         disMatrix.resize(traceList_.size(), std::vector<int>(objInfos[0].size(), 0));
         for (unsigned int j = 0; j < objInfos[0].size(); ++j) {
             for (unsigned int i = 0; i < traceList_.size(); ++i) {
-                //计算交并比
+                // 计算交并比
                 float sim = CalSimilarity(traceList_[i], objInfos[0][j], method_, kIOU_); //method_=1, kIOU_=1.0
                 disMatrix[i][j] = (int)(sim * FLOAT_TO_INT);
             }
@@ -213,7 +213,7 @@ APP_ERROR MOTConnection::ProcessSort(std::vector<std::vector<MxBase::ObjectInfo>
 
     if (traceList_.size() > 0) {
         // every traceLet should do kalman predict
-        TrackObjectPredict();   //卡尔曼滤波预测
+        TrackObjectPredict();   // 卡尔曼滤波预测
         TrackObjectUpdate(objInfos, matchedTracedDetected, unmatchedVehicleObjectQueue);  //选出matched track、unmatched detection
     } else {
         // traceList is empty, all the vehicle detected in the new frame are unmatched.
@@ -227,10 +227,10 @@ APP_ERROR MOTConnection::ProcessSort(std::vector<std::vector<MxBase::ObjectInfo>
         matchedTracedDetected.size() << ", unmatched detect size = " << unmatchedVehicleObjectQueue.size() << "";
 
     // update all the tracelet in the tracelist per frame
-    UpdateTraceLetAndFrame(matchedTracedDetected, objInfos, unmatchedVehicleObjectQueue);  //用matched track、unmatched detection更新跟踪器
+    UpdateTraceLetAndFrame(matchedTracedDetected, objInfos, unmatchedVehicleObjectQueue);  // 用matched track、unmatched detection更新跟踪器
     return APP_ERR_OK;
 }
-//获取跟踪后的检测框
+// 获取跟踪后的检测框
 APP_ERROR MOTConnection::GettrackResult(std::vector<MxBase::ObjectInfo> &objInfos_)
 {
     if (traceList_.size() > 0){
