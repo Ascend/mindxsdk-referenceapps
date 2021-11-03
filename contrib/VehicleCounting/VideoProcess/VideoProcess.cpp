@@ -25,8 +25,8 @@
 #include "VideoProcess.h"
 
 namespace {
-    static std::vector<std::queue<center>> pts(10000);  //保存每个车辆轨迹的最新的20个bbox的中心点
-    static std::vector<center> line = {center{0,100}, center{1280, 100}};  // 计数所用的线段
+    static std::vector<std::queue<center>> pts(10000); // 保存每个车辆轨迹的最新的20个bbox的中心点
+    static std::vector<center> line = {center{0,100}, center{1280, 100}}; // 计数所用的线段
     static int counter = 0;
     static int counter_down = 0;
     static int counter_up = 0;
@@ -44,7 +44,7 @@ bool ccw(center A, center B, center C){
     return (C.y - A.y) * (B.x - A.x) > (B.y - A.y) * (C.x - A.x);
 }
 
-//计算两根线是否相交
+// 计算两根线是否相交
 bool intersect(center A, center B, center C, center D){
     if((ccw(A, C, D) != ccw(B, C, D)) && (ccw(A, B, C) != ccw(A, B, D)))
         return true;
@@ -230,7 +230,7 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
             LogError << "VideoDecode failed";
             return;
         }
-        //内部还是调用的av_init_packet,相当于先分配内存再设为默认值
+        // 内部还是调用的av_init_packet,相当于先分配内存再设为默认值
         av_packet_unref(&pkt);
     }
     av_packet_unref(&pkt);
@@ -393,7 +393,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
             }
     }
 }
-//获取每帧的可视化结果用于生成视频
+// 获取每帧的可视化结果用于生成视频
 std::queue<cv::Mat> VideoProcess::Getframes(){
     return frameIf;
 }
