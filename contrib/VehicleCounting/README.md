@@ -126,7 +126,7 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 set(MX_SDK_HOME {SDK实际安装路径})
 set(FFMPEG_PATH {ffmpeg安装路径})
 ```
-**步骤3** 设置环境变量
+**步骤3** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
 LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
 ```
