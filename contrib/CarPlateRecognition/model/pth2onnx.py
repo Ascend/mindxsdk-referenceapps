@@ -21,7 +21,7 @@ model.load_state_dict(pretrained_dict, strict=False)
 model.eval()
 
 # 构建模型的输入
-img = torch.randn((1, 3, (640,640)))
+img = torch.randn(1, 3, 640, 640)
 
 # 转换后的onnx模型的文件名
 f = opt.weights.replace('.pth', '.onnx')  # filename
