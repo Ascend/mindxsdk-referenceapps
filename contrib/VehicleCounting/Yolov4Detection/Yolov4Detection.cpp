@@ -166,7 +166,7 @@ APP_ERROR Yolov4Detection::ResizeFrame(const std::shared_ptr<MxBase::MemoryData>
 }
 
 APP_ERROR Yolov4Detection::Inference(const std::vector<MxBase::TensorBase> &inputs,
-                                  std::vector<MxBase::TensorBase> &outputs)
+                                     std::vector<MxBase::TensorBase> &outputs)
 {
     auto dtypes = model->GetOutputDataType();
     for (size_t i = 0; i < modelDesc.outputTensors.size(); ++i) {
@@ -205,7 +205,7 @@ APP_ERROR Yolov4Detection::Inference(const std::vector<MxBase::TensorBase> &inpu
     }
     return APP_ERR_OK;
 }
-//获得检测框之间的交并比
+// 获得检测框之间的交并比
 float get_iou(MxBase::ObjectInfo box1,MxBase::ObjectInfo box2){
     float x1 = std::max(box1.x0,box2.x0);
     float y1 = std::max(box1.y0,box2.y0);
@@ -217,11 +217,11 @@ float get_iou(MxBase::ObjectInfo box1,MxBase::ObjectInfo box2){
     float over_area = insection_width*insection_height;
     return over_area/((box1.x1-box1.x0) * (box1.y1-box1.y0) + (box2.x1-box2.x0) * (box2.y1-box2.y0) - over_area);
 }
-//用于sort函数从大到小排序
+// 用于sort函数从大到小排序
 static bool sort_score(MxBase::ObjectInfo box1,MxBase::ObjectInfo box2){
     return box1.confidence > box2.confidence ? true : false;
 }
-//检测结果的非最大值抑制，筛除掉交并比较高和置信度较低的检测框
+// 检测结果的非最大值抑制，筛除掉交并比较高和置信度较低的检测框
 void nms(std::vector<MxBase::ObjectInfo> &vec_boxs){
     std::vector<MxBase::ObjectInfo> results;
     std::sort(vec_boxs.begin(),vec_boxs.end(),sort_score);
