@@ -46,10 +46,12 @@ bool ccw(center A, center B, center C){
 
 // 计算两根线是否相交
 bool intersect(center A, center B, center C, center D){
-    if((ccw(A, C, D) != ccw(B, C, D)) && (ccw(A, B, C) != ccw(A, B, D)))
+    if((ccw(A, C, D) != ccw(B, C, D)) && (ccw(A, B, C) != ccw(A, B, D))){
         return true;
-    else
+    }
+    else{
         return false;
+    }
 }
 // 生成随机颜色
 VideoProcess::VideoProcess() {
