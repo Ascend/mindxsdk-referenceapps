@@ -8,8 +8,8 @@ from data import cfg_mnet
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--weights', type=str, default='./weights/mnet_plate.pth', help='weights path')
-parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='image size')
-parser.add_argument('--batch-size', type=int, default=1, help='batch size')
+#parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='image size')
+#parser.add_argument('--batch-size', type=int, default=1, help='batch size')
 opt = parser.parse_args()
 
 # 载入所需进行转换的PyTorch模型
@@ -21,7 +21,7 @@ model.load_state_dict(pretrained_dict, strict=False)
 model.eval()
 
 # 构建模型的输入
-img = torch.randn((opt.batch_size, 3, *opt.img_size))
+img = torch.randn((1, 3, (640,640)))
 
 # 转换后的onnx模型的文件名
 f = opt.weights.replace('.pth', '.onnx')  # filename
