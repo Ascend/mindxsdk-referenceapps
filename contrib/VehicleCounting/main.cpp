@@ -20,7 +20,6 @@
 #include <thread>
 #include <csignal>
 #include <unistd.h>
-#include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
