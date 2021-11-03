@@ -38,7 +38,7 @@ public:
     APP_ERROR Recognition_PostProcess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs, std::vector<MxBase::ObjectInfo>& objectInfos); // 车牌识别后处理函数
     APP_ERROR Process(const std::string &imgPath); // 整体流程处理函数
 protected:
-    APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor); // 读取图像函数(必须为.jpg格式)
+    APP_ERROR ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor); // 读取图像函数
     APP_ERROR Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor);  // 图像缩放函数
     APP_ERROR Resize1(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor); // 图像缩放函数，被Crop_Resize1函数调用
 	APP_ERROR Crop(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor, MxBase::ObjectInfo objInfo); // 抠图函数，被Crop_Resize1函数调用
