@@ -17,6 +17,7 @@ CUR_PATH=$(cd "$path_cur" || exit ; pwd)
 
 echo "$CUR_PATH"
 export MX_SDK_HOME="$ENV{MX_SDK_HOME}"
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.7.5/lib:/home/cqu_liyong1/local/ffmpeg/lib:${LD_LIBRARY_PATH}
+export FFMPEG_PATH={ffmpeg实际安装路径}
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.7.5/lib:${FFMPEG_PATH}/lib:${LD_LIBRARY_PATH}
 
 ./stream_pull_test
