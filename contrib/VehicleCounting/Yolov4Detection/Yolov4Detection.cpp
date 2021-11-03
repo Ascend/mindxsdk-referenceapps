@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/Log/Log.h"
 #include "Yolov4Detection.h"
 #include <algorithm>
