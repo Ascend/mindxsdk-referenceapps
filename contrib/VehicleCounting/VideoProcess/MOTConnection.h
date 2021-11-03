@@ -75,4 +75,4 @@ private:
 };
 } // namespace ascendVehicleTracking
 
-#endif //STREAM_PULL_SAMPLE_MOTCONNECTION_H
+#endif // STREAM_PULL_SAMPLE_MOTCONNECTION_H
