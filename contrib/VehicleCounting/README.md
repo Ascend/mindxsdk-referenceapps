@@ -28,7 +28,7 @@
 ```
 .
 ├── data
-│   └── test.264
+│   └── test1.264
 ├── model
 │   ├── aipp_yolov3_416_416.aippconfig
 │   ├── coco.names
@@ -130,9 +130,20 @@ set(FFMPEG_PATH {ffmpeg安装路径})
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
 LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
 ```
-export FFMPEG_HOME=/home/cqu_liyong1/local/ffmpeg
-export MX_SDK_HOME=/home/cqu_liu1/MindXSDK/mxVision-2.0.2
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/python3.7.5/lib:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
+# 执行如下命令，打开.bashrc文件
+vi .bashrc
+# 在.bashrc文件中添加以下环境变量
+MX_SDK_HOME=${SDK安装路径}
+FFMPEG_PATH=${FFMPEG安装路径} 
+# 若环境中没有安装ffmpeg，请联系支撑人员
+
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/python3.7.5/lib:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
+# 保存退出.bashrc文件
+# 执行如下命令使环境变量生效
+source ~/.bashrc
+
+#查看环境变量
+env
 ```
 **步骤4** 编译项目文件
 
@@ -149,7 +160,7 @@ make -j
 Scanning dependencies of target stream_pull_test
 [ 25%] Building CXX object CMakeFiles/stream_pull_test.dir/main.cpp.o
 [ 50%] Building CXX object CMakeFiles/stream_pull_test.dir/VideoProcess/VideoProcess.cpp.o
-[ 75%] Building CXX object CMakeFiles/stream_pull_test.dir/Yolov3Detection/Yolov3Detection.cpp.o
+[ 75%] Building CXX object CMakeFiles/stream_pull_test.dir/Yolov3Detection/Yolov4Detection.cpp.o
 [100%] Linking CXX executable ../stream_pull_test
 [100%] Built target stream_pull_test
 
@@ -157,7 +168,7 @@ Scanning dependencies of target stream_pull_test
 ```
 
 **步骤5** 运行
-将**步骤1**转换的视频文件test.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
+将**步骤1**转换的视频文件test1.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
 ```
 chmod +x run.sh
 bash run.sh
