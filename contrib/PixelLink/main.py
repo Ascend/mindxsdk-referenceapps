@@ -34,8 +34,12 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
 
     # create streams by pipeline config file
-    with open("./pipeline/Pixel.pipeline", 'rb') as f:
+    try:
+        f = open("./pipeline/Pixel.pipeline", 'rb')
         pipeline_str = f.read()
+    except:
+        print('pipeline not find!\n')
+        exit()
     ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
