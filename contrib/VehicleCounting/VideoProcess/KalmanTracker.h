@@ -36,4 +36,4 @@ private:
 };
 } // namesapce ascendVehicleTracking
 
-#endif //STREAM_PULL_SAMPLE_KALMANTRACKER_H
+#endif // STREAM_PULL_SAMPLE_KALMANTRACKER_H
