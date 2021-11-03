@@ -43,4 +43,4 @@ struct HungarianHandle {
 APP_ERROR HungarianHandleInit(HungarianHandle &handle, int row, int cols);
 int HungarianSolve(HungarianHandle &handle, const std::vector<std::vector<int>> &cost, int rows, int cols);
 
-#endif //STREAM_PULL_SAMPLE_HUNGARIAN_H
+#endif // STREAM_PULL_SAMPLE_HUNGARIAN_H
