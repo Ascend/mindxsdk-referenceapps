@@ -197,7 +197,7 @@ APP_ERROR VideoProcess::VideoDecode(MxBase::MemoryData &streamData, const uint32
 
 // 获取视频帧
 void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>  blockingQueue,
-                            std::shared_ptr<VideoProcess> videoProcess)
+                             std::shared_ptr<VideoProcess> videoProcess)
 {
     LogInfo << "GetFrames";
     MxBase::DeviceContext device;
@@ -209,7 +209,7 @@ void VideoProcess::GetFrames(std::shared_ptr<BlockingQueue<std::shared_ptr<void>
     }
     AVPacket pkt;
     while(!stopFlag){
-        //直接为一个已经分配好内存的指针或对象参数置为默认值，要求pkt的内存已经分配好了，如果为NULL，则此处会崩溃
+        // 直接为一个已经分配好内存的指针或对象参数置为默认值，要求pkt的内存已经分配好了，如果为NULL，则此处会崩溃
         av_init_packet(&pkt);
         LogInfo << cnt;
         // 读取视频帧
@@ -263,7 +263,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
                     << "(" << objInfos[i].x1 << "," << objInfos[i].y1 << ") ]";
 
         int index = (int)objInfos[i].classId;
-        const cv::Scalar color = cv::Scalar(color_num[index%200][0],color_num[index%200][1],color_num[index%200][2]); //随机颜色
+        const cv::Scalar color = cv::Scalar(color_num[index%200][0],color_num[index%200][1],color_num[index%200][2]); // 随机颜色
         const uint32_t thickness = 2;
         const uint32_t xOffset = 10;
         const uint32_t yOffset = 10;
