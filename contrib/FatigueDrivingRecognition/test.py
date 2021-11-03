@@ -17,6 +17,7 @@
 import json
 import sys
 import os
+import signal
 import argparse
 import cv2
 import numpy as np
@@ -43,6 +44,14 @@ def get_args(sys_args):
     """
     global_args = parser.parse_args(sys_args)
     return global_args
+
+
+def quit_ctrlc(signum, frame):
+    """
+    # obtain the Keyboard Interrupt
+    """
+    print('Keyboard Interrupt.Program forced termination.')
+    sys.exit()
 
 
 if __name__ == '__main__':
@@ -88,7 +97,8 @@ if __name__ == '__main__':
     MARS = []
     frame_num = int(args.frame_num)
     err_code = 2017
-    
+    signal.signal(signal.SIGINT, quit_ctrlc)
+    signal.signal(signal.SIGTERM, quit_ctrlc)
     while True:
         if index == frame_num and args.online_flag == False:
             break

@@ -17,6 +17,7 @@
 import json
 import sys
 import os
+import signal
 import argparse
 import cv2
 import numpy as np
@@ -41,6 +42,13 @@ def get_args(sys_args):
     global_args = parser.parse_args(sys_args)
     return global_args
 
+
+def quit_ctrlc(signum, frame):
+    """
+    # obtain the Keyboard Interrupt
+    """
+    print('Keyboard Interrupt.Program forced termination.')
+    sys.exit()
 
 
 if __name__ == '__main__':
@@ -73,6 +81,7 @@ if __name__ == '__main__':
     isFatigue = 0
     nobody_flag = 0
     nobody_num = 0
+    empty_flag = 0
     nobody_threshold = 30
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
@@ -83,6 +92,8 @@ if __name__ == '__main__':
     font_weight = 2
     font_size = 1.3
     err_code = 2017
+    signal.signal(signal.SIGINT, quit_ctrlc)
+    signal.signal(signal.SIGTERM, quit_ctrlc)
     while True:
         if index == frame_num and args.online_flag == False:
             break
@@ -96,7 +107,10 @@ if __name__ == '__main__':
                 print('Nobody is detected.')
             continue
         if infer.errorCode != 0:
+            empty_flag = 1
             print("GetResult error. errorCode=%d, errorMsg=%s" % (infer.errorCode, infer.errorMsg))
+            print("Please check the format of the video or if the rtspUrl of the video is correct or if the video exists.")
+            break
         nobody_num = 0
         # Obtain the PFLD post-processing plugin results
         infer_result_3 = infer.metadataVec[3]
@@ -159,9 +173,10 @@ if __name__ == '__main__':
     # Output result
     if nobody_flag == 1:
         print('No one was detected for some time.')
-    if isFatigue == 0:
-        print('Normal')
-    else:
-        print('Fatigue!!!')
+    if empty_flag == 0:
+        if isFatigue == 0:
+            print('Normal')
+        else:
+            print('Fatigue!!!')
     # destroy streams
     streamManagerApi.DestroyAllStreams()
