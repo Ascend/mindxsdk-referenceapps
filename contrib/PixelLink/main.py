@@ -67,7 +67,9 @@ if __name__ == '__main__':
     key_vec.push_back(b"pixelLink_process")
     # get inference result
     infer = stream_manager_api.GetResult(stream_name, b'appsink0', key_vec)
-
+    if(infer.metadataVec.size() <= 0):
+        print("The image does not meet the input requirements!\n")
+        exit()
     infer_result = infer.metadataVec[0]
     if infer_result.errorCode != 0:
         print("GetResult error. errorCode=%d ,errorMsg=%s" % (
