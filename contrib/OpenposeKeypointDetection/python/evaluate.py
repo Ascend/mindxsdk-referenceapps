@@ -124,11 +124,13 @@ if __name__ == '__main__':
     for image_idx, image_info in enumerate(image_list):
         image_path = os.path.join(image_folder, image_info['file_name'])
         image_id = image_info['id']
-        print('Detect image: ', image_idx, ': ', image_info['file_name'], ', image id: ', image_id)
-        if os.path.exists(image_path) != 1:
-            print("The test image does not exist.")
-        with open(image_path, 'rb') as f:
-            data_input.data = f.read()
+        print('Detect image: ', image_idx, ': ', image_info['file_name'], ', image id: ', image_id)        
+        try:
+            with open(image_path, 'rb') as f:
+                data_input.data = f.read()
+        except FileNotFoundError:
+            print("Image", image_path, "doesn't exist. Exit")
+            exit()
         unique_id = stream_manager_api.SendData(stream_name, in_plugin_id, data_input)
         if unique_id < 0:
             print("Failed to send data to stream.")

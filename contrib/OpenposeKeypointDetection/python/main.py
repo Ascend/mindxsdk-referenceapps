@@ -102,10 +102,12 @@ if __name__ == '__main__':
     in_plugin_id = 0
     data_input = MxDataInput()
     file_name = "test.jpg"
-    if os.path.exists(file_name) != 1:
-        print("The test image does not exist.")
-    with open(file_name, 'rb') as f:
-        data_input.data = f.read()
+    try:
+        with open(file_name, 'rb') as f:
+            data_input.data = f.read()
+    except FileNotFoundError:
+        print("Test image", file_name, "doesn't exist. Exit.")
+        exit()
     unique_id = stream_manager_api.SendData(stream_name, in_plugin_id, data_input)
     if unique_id < 0:
         print("Failed to send data to stream.")
