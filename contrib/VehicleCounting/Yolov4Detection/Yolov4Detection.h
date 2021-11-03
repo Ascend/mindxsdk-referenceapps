@@ -64,4 +64,4 @@ private:
     std::map<int, std::string> labelMap = {};
     uint32_t deviceId = 0;
 };
-#endif //STREAM_PULL_SAMPLE_YOLOV4DETECTION_H
+#endif // STREAM_PULL_SAMPLE_YOLOV4DETECTION_H
