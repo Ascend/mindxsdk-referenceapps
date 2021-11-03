@@ -22,6 +22,7 @@ import cv2
 import process
 import get_version
 import sys
+from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../../proto")
 
@@ -51,6 +52,12 @@ if __name__ == '__main__':
         f2 = open('./test.jpg', 'rb')
     except FileNotFoundError as reason:
         print('Can not find the image!\n')
+        exit()
+
+    img = Image.open('./test.jpg')
+    if img.mode != 'RGB':
+        print("The image you entered is not in RGB format!\n")
+        print('Your image formate is ', img.mode, '\n')
         exit()
     data_input.data = f2.read()
 
