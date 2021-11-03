@@ -8,8 +8,6 @@ from data import cfg_mnet
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--weights', type=str, default='./weights/mnet_plate.pth', help='weights path')
-#parser.add_argument('--img-size', nargs='+', type=int, default=[640, 640], help='image size')
-#parser.add_argument('--batch-size', type=int, default=1, help='batch size')
 opt = parser.parse_args()
 
 # 载入所需进行转换的PyTorch模型
