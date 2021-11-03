@@ -83,7 +83,7 @@ void RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w, int
     //          step=32时，640÷8=20
     std::vector<std::vector<int> > feature_map(3);   
     for (int i = 0; i < int(feature_map.size()); ++i) {
-        feature_map[i].push_back(ceil(h/steps_[i])); //ceil是向上取整函数
+        feature_map[i].push_back(ceil(h/steps_[i])); // ceil是向上取整函数
         feature_map[i].push_back(ceil(w/steps_[i]));
     }
 

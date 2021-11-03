@@ -18,9 +18,9 @@
 #include "carplate_recognition.h"
 
 
-/*@brief: 初始化结构体参数
-* @param：initParam：模型参数结构体
-* @retval:none
+/* @brief: 初始化结构体参数
+   @param：initParam：模型参数结构体
+   @retval:none
 */
 void InitCarPlateRecognitionParam(InitParam &initParam)
 {  
@@ -39,9 +39,9 @@ void InitCarPlateRecognitionParam(InitParam &initParam)
 }
 
 
-/*@brief: 主函数
-* @param：argc：参数的个数（本程序的argc=2）
-* @param：argv：参数向量，其中argv[0]是程序的路径，argv[1]是待检测图片的存放路径
+/* @brief: 主函数
+   @param：argc：参数的个数（本程序的argc=2）
+   @param：argv：参数向量，其中argv[0]是程序的路径，argv[1]是待检测图片的存放路径
 */
 int main(int argc, char* argv[])
 {

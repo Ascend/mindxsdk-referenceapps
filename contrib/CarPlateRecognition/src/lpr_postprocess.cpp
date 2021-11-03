@@ -19,9 +19,9 @@
 using namespace std;
 
 
-/*@brief: 后处理初始化
-* @param：initParam：初始化所需的结构体参数
-* @retval:APP_ERROR型变量
+/* @brief: 后处理初始化
+   @param：initParam：初始化所需的结构体参数
+   @retval:APP_ERROR型变量
 */
 APP_ERROR LPR_PostProcess::Init(const InitParam &initParam)
 {
@@ -29,9 +29,9 @@ APP_ERROR LPR_PostProcess::Init(const InitParam &initParam)
 }
 
 
-/*@brief: 释放各类资源
-* @param：none
-* @retval:none
+/* @brief: 释放各类资源
+   @param：none
+   @retval:none
 */
 APP_ERROR LPR_PostProcess::DeInit()
 {
@@ -39,10 +39,10 @@ APP_ERROR LPR_PostProcess::DeInit()
 }
 
 
-/*@brief: 后处理主程序
-* @param：recog_outputs：车牌识别模型的推理输出Tensor
-* @param：objectInfo：目标检测类任务的信息框变量，将车牌号存入其className成员中
-* @retval:none
+/* @brief: 后处理主程序
+   @param：recog_outputs：车牌识别模型的推理输出Tensor
+   @param：objectInfo：目标检测类任务的信息框变量，将车牌号存入其className成员中
+   @retval:none
 */
 APP_ERROR LPR_PostProcess::Process(std::vector<MxBase::TensorBase> recog_outputs, MxBase::ObjectInfo& objectInfo)
 {

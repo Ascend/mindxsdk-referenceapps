@@ -25,9 +25,9 @@
 #include "CvxText.h"
 
 
-/*@brief: 打开字库
-* @param：freeType：字体ttl文件
-* @retval:none
+/* @brief: 打开字库
+   @param：freeType：字体ttl文件
+   @retval:none
 */
 CvxText::CvxText(const char* freeType)
 {
@@ -45,9 +45,9 @@ CvxText::CvxText(const char* freeType)
 }
 
 
-/*@brief: 释放FreeType资源
-* @param：none
-* @retval:none
+/* @brief: 释放FreeType资源
+   @param：none
+   @retval:none
 */
 CvxText::~CvxText()
 {
@@ -56,12 +56,12 @@ CvxText::~CvxText()
 }
 
 
-/*@brief: 获取字体.目前有些参数尚不支持
-* @param：font：字体类型, 目前不支持
-* @param：size：字体大小/空白比例/间隔比例/旋转角度
-* @param：underline：下画线
-* @param：diaphaneity：透明度
-* @retval:none
+/* @brief: 获取字体.目前有些参数尚不支持
+   @param：font：字体类型, 目前不支持
+   @param：size：字体大小/空白比例/间隔比例/旋转角度
+   @param：underline：下画线
+   @param：diaphaneity：透明度
+   @retval:none
 */
 void CvxText::getFont(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
 {
@@ -72,12 +72,12 @@ void CvxText::getFont(int* type, cv::Scalar* size, bool* underline, float* diaph
 }
 
 
-/*@brief: 设置字体.目前有些参数尚不支持.
-* @param：font：字体类型, 目前不支持
-* @param：size：字体大小/空白比例/间隔比例/旋转角度
-* @param：underline：下画线
-* @param：diaphaneity：透明度
-* @retval:none
+/* @brief: 设置字体.目前有些参数尚不支持.
+   @param：font：字体类型, 目前不支持
+   @param：size：字体大小/空白比例/间隔比例/旋转角度
+   @param：underline：下画线
+   @param：diaphaneity：透明度
+   @retval:none
 */
 void CvxText::setFont(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
 {
@@ -102,9 +102,9 @@ void CvxText::setFont(int* type, cv::Scalar* size, bool* underline, float* diaph
 }
 
 
-/*@brief: 恢复原始的字体设置
-* @param：none
-* @retval:none
+/* @brief: 恢复原始的字体设置
+   @param：none
+   @retval:none
 */
 void CvxText::restoreFont()
 {
@@ -124,11 +124,11 @@ void CvxText::restoreFont()
 }
 
 
-/*@brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
-* @param：img：输出的影象
-* @param：text：文本内容
-* @param：pos：文本位置
-* @retval:返回成功输出的字符长度，失败返回-1.
+/* @brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
+   @param：img：输出的影象
+   @param：text：文本内容
+   @param：pos：文本位置
+   @retval:返回成功输出的字符长度，失败返回-1.
 */
 int CvxText::putText(cv::Mat& img, char* text, cv::Point pos)
 {
@@ -136,11 +136,11 @@ int CvxText::putText(cv::Mat& img, char* text, cv::Point pos)
 }
 
 
-/*@brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
-* @param：img：输出的影象
-* @param：text：文本内容
-* @param：pos：文本位置
-* @retval:返回成功输出的字符长度，失败返回-1.
+/* @brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
+   @param：img：输出的影象
+   @param：text：文本内容
+   @param：pos：文本位置
+   @retval:返回成功输出的字符长度，失败返回-1.
 */
 int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos)
 {
@@ -148,12 +148,12 @@ int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos)
 }
 
 
-/*@brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
-* @param：img：输出的影象
-* @param：text：文本内容
-* @param：pos：文本位置
-* @param：color：文本颜色
-* @retval:返回成功输出的字符长度，失败返回-1.
+/* @brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
+   @param：img：输出的影象
+   @param：text：文本内容
+   @param：pos：文本位置
+   @param：color：文本颜色
+   @retval:返回成功输出的字符长度，失败返回-1.
 */
 int CvxText::putText(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar color)
 {
@@ -175,12 +175,12 @@ int CvxText::putText(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar c
 }
 
 
-/*@brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
-* @param：img：输出的影象
-* @param：text：文本内容
-* @param：pos：文本位置
-* @param：color：文本颜色
-* @retval:返回成功输出的字符长度，失败返回-1.
+/* @brief: 输出汉字(颜色默认为黑色).遇到不能输出的字符将停止.
+   @param：img：输出的影象
+   @param：text：文本内容
+   @param：pos：文本位置
+   @param：color：文本颜色
+   @retval:返回成功输出的字符长度，失败返回-1.
 */
 int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scalar color)
 {
@@ -197,12 +197,12 @@ int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scala
 }
 
 
-/*@brief: 输出当前字符, 更新m_pos位置
-* @param：img：输出的影象
-* @param：wc：文本内容
-* @param：pos：文本位置
-* @param：color：文本颜色
-* @retval:none
+/* @brief: 输出当前字符, 更新m_pos位置
+   @param：img：输出的影象
+   @param：wc：文本内容
+   @param：pos：文本位置
+   @param：color：文本颜色
+   @retval:none
 */
 void CvxText::putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color)
 {
@@ -251,11 +251,11 @@ void CvxText::putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar colo
 }
 
 
-/*@brief: 将char*转为wchar*
-* @param：src：
-* @param：dest：
-* @param：locale：
-* @retval:成功返回0，失败返回-1.
+/* @brief: 将char*转为wchar*
+   @param：src：
+   @param：dest：
+   @param：locale：
+   @retval:成功返回0，失败返回-1.
 */
 int CvxText::ToWchar(char* src, wchar_t* &dest, const char *locale )
 {
