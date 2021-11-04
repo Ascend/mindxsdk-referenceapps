@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef STREAM_PULL_SAMPLE_VIDEOPROCESS_H
+#define STREAM_PULL_SAMPLE_VIDEOPROCESS_H
 
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
@@ -58,3 +60,4 @@ public:
     static bool stopFlag;
     static const uint32_t DEVICE_ID = 0;
 };
+#endif //STREAM_PULL_SAMPLE_VIDEOPROCESS_H
