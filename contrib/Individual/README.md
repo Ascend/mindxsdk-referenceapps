@@ -111,7 +111,7 @@ yolov4模型提供在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com
 
 face_quality_0605_b1.om模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Individual/model.zip
 
-resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html。
+resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
 
 ```
@@ -130,7 +130,8 @@ atc --input_shape="data:1,3,224,224" --weight="single.caffemodel" --input_format
 ## 4 编译与运行
 
 **步骤1**
-下载项目文件，以及数据集。数据集链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Individual/data.zip。
+下载项目文件，以及数据集。数据集链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Individual/data.zip
+
 项目运行数据集为Img下img_celeba.7z，运行评测代码所需数据集为Img下img_align_celeba
 
 **步骤2**
