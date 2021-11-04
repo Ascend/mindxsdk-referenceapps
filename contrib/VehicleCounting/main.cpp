@@ -36,7 +36,7 @@ namespace {
     const uint32_t MAX_QUEUE_LENGHT = 2000;
 }
 
-static void SigHandler(int signal)
+void SigHandler(int signal)
 {
     if (signal == SIGINT) {
         VideoProcess::stopFlag = true;
