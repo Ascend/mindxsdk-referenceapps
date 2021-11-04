@@ -61,4 +61,4 @@ private:
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
     const uint32_t CHANNEL_ID = 0;
 };
-#endif //STREAM_PULL_SAMPLE_VIDEOPROCESS_H
+#endif // STREAM_PULL_SAMPLE_VIDEOPROCESS_H
