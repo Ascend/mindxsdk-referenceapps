@@ -89,8 +89,8 @@ PYTHONPATH: python环境路径
 ## 3. 模型转换
 ### 3.1 yolov3模型转换
 本项目中适用的第一个模型是 yolov3 模型，参考实现代码：https://codechina.csdn.net/EricLee/yolo_v3， 选用的模型是该 pytorch 项目中提供的模型。
-下载onnx模型，下载链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/yolov3_hand.onnx。
-使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+下载onnx模型，下载链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/yolov3_hand.onnx
+使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand`` 文件夹下，文件名为：yolov3_hand.onnx 。
 2. 进入 ``model/hand`` 文件夹下执行命令：
@@ -107,7 +107,7 @@ ATC run success, welcome to the next use.
 ### 3.2 resnet50模型转换
 
 第二个模型是 resnet50 模型，参考实现代码：https://codechina.csdn.net/EricLee/handpose_x。
-下载onnx模型，下载链接为https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/resnet_50_size-256.onnx,使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
+下载onnx模型，下载链接为https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/GestureKeypointDetection/resnet_50_size-256.onnx ，使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
 
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand_keypoint`` 文件夹下，文件名为：resnet_50_size-256.onnx 。
