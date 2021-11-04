@@ -32,13 +32,6 @@ struct center{
 };
 
 class VideoProcess {
-private:
-    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, 
-	                                    MxBase::DvppDataInfo &inputDataInfo, void *userData);
-    APP_ERROR VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, 
-	                    const uint32_t &width, void *userData);
-    APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData> resulInfo, const uint32_t frameId,
-                         std::vector<MxBase::ObjectInfo> &objInfos_);
 public:
     VideoProcess();
     std::queue<cv::Mat> Getframes();
@@ -52,12 +45,19 @@ public:
 	                       std::shared_ptr<Yolov4Detection> yolov4Detection,
 	                       std::shared_ptr<VideoProcess> videoProcess, std::shared_ptr<ascendVehicleTracking::MOTConnection> tracker);
 private:
+    static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, 
+	                                    MxBase::DvppDataInfo &inputDataInfo, void *userData);
+    APP_ERROR VideoDecode(MxBase::MemoryData &streamData, const uint32_t &height, 
+	                    const uint32_t &width, void *userData);
+    APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData> resulInfo, const uint32_t frameId,
+                         std::vector<MxBase::ObjectInfo> &objInfos_);
+public:
+    static bool stopFlag;
+    static const uint32_t DEVICE_ID = 0;
+private:
     std::queue<cv::Mat> frameIf;
     int color_num[200][3]; // 随机颜色存储
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
     const uint32_t CHANNEL_ID = 0;
-public:
-    static bool stopFlag;
-    static const uint32_t DEVICE_ID = 0;
 };
 #endif //STREAM_PULL_SAMPLE_VIDEOPROCESS_H
