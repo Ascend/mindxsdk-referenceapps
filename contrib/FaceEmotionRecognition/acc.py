@@ -40,27 +40,24 @@ if __name__ == '__main__':
         exit()
 
     count = 0
-    file_name ='label.txt'
+    file_name = 'label.txt'
     ima_name = []
     labels = []
     with open(file_name, 'r') as f:
-        data=f.readlines()
+        data = f.readlines()
     for index in range(len(data)):
-        # if(index%2==0):
         line = data[index]
         temp = line.split(' ')
         ima_name.append(temp[0].split('.')[0]+'_aligned.jpg')
         labels.append(int(temp[1]))
     nums = 0
-    for index in range(len(ima_name)):
+    for index in enumerate(ima_name):
         nums += 1
         streamName = b"detection"
         inPluginId = 0
         dataInput = MxDataInput()
         with open('aligned/' + ima_name[index], 'rb') as f:
             dataInput.data = f.read()
-        # with open('aligned/'+ima_name[index].split('.')[0]+'_aligned'+'.jpg', 'rb') as f:
-        #     dataInput.data = f.read()
         ret = streamManagerApi.SendData(streamName, inPluginId, dataInput)
         if ret < 0:
             print("Failed to send data to stream")
@@ -80,9 +77,8 @@ if __name__ == '__main__':
         res1 = np.frombuffer(tensorList3.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         maxindex = np.argmax(res1)
         if(int(maxindex) + 1 == int(labels[index])):
-            count=count + 1
+            count = count + 1
         print(int(maxindex) + 1, "***********************", int(labels[index]))
-        # streamManagerApi.DestroyAllStreams()
     print("***********************", count / nums, nums)
     
     # destroy streams
