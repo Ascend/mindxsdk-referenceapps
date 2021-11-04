@@ -280,3 +280,8 @@ python3.7 main.py --queryFilePath='data/querySet' --galleryFilePath='data/galler
 
 ## 7 参考链接
 > 特定行人检索：[Person Search Demo](https://github.com/songwsx/person_search_demo)  
+
+
+## 8 Q&A
+· 在运行main.py时出现"Vpc cropping failed"，或者"The image height zoom ratio is out of range [1/32, 16]"  
+> 这里的错误是因为yolov3模型检测到的目标过小，抠图后放大的比例超过系统给定的阈值[1/32, 16]，更新“项目所在目录/models/yolov3.cfg”文件，将OBJECTNESS_THRESH适度调大可解决该问题
