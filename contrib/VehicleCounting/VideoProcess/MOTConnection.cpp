@@ -65,6 +65,9 @@ float CalDistSimilarity(DetectInfo detect1, DetectInfo detect2)
     float yDistance = cy1 - cy2;
     float minWidth = std::min(detect1.width, detect2.width);
     float minHeight = std::min(detect1.height, detect2.height);
+    if(minWidth == 0 || minHeight == 0){
+        return APP_ERR_STREAM_NOT_EXIST;
+    }
     float value = (1.f - xDistance / minWidth) * (1.f - yDistance / minHeight);
     return value;
 }
