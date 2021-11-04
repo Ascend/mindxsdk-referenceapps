@@ -280,8 +280,8 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
                     cv::FONT_HERSHEY_SIMPLEX, fontScale, color, thickness, lineType);
         // 绘制矩形
         cv::rectangle(imgBgr,cv::Rect(objInfos[i].x0, objInfos[i].y0, 
-                      objInfos[i].x1 - objInfos[i].x0, objInfos[i].y1 - objInfos[i].y0),
-                      color, thickness);
+            objInfos[i].x1 - objInfos[i].x0, objInfos[i].y1 - objInfos[i].y0),
+            color, thickness);
         // 获取bounding box的中心位置
         center boxs = {(objInfos[i].x0+objInfos[i].x1)/2.0, (objInfos[i].y0+objInfos[i].y1)/2.0};
         // 保存每个车辆轨迹最新的20个bbox
