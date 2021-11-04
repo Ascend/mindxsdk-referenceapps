@@ -19,9 +19,9 @@ aipp_op {
     input_bias_0 : 0
     input_bias_1 : 128
     input_bias_2 : 128
-
-
-    
+    var_reci_chn_0 : 0.00392156
+    var_reci_chn_1 : 0.00392156
+    var_reci_chn_2 : 0.00392156
     padding : true
     left_padding_size :0
     right_padding_size :4
