@@ -24,10 +24,12 @@
 #include "opencv2/opencv.hpp"
 #include "VideoProcess.h"
 
-#include "libavformat/avformat.h"
-#include "libavcodec/avcodec.h"
-#include "libavutil/avutil.h"
-#include "libswscale/swscale.h"
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/avutil.h>
+#include <libswscale/swscale.h>
+}
 
 namespace {
     static std::vector<std::queue<center>> pts(10000); // 保存每个车辆轨迹的最新的20个bbox的中心点
