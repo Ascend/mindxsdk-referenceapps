@@ -142,7 +142,7 @@ if __name__ == '__main__':
     pic_width = len(img[0])
 
     mxpiObjectList = MxpiDataType.MxpiObjectList()
-    mxpiObjectList.ParseFromString(infer_result[keypointDetectResultIndex].messageBuf)
+    mxpiObjectList.ParseFromString(infer_result[handDetectResultIndex].messageBuf)
     print("len of hand size that were detected:", len(mxpiObjectList.objectVec))
 
     if len(tensorList.tensorPackageVec) != len(mxpiObjectList.objectVec):
