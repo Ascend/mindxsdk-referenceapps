@@ -44,6 +44,10 @@ public:
     static void GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> blockingQueue, 
 	                       std::shared_ptr<Yolov4Detection> yolov4Detection,
 	                       std::shared_ptr<VideoProcess> videoProcess, std::shared_ptr<ascendVehicleTracking::MOTConnection> tracker);
+
+public:
+    static bool stopFlag;
+    static const uint32_t DEVICE_ID = 0;
 private:
     static APP_ERROR VideoDecodeCallback(std::shared_ptr<void> buffer, 
 	                                    MxBase::DvppDataInfo &inputDataInfo, void *userData);
@@ -51,9 +55,6 @@ private:
 	                    const uint32_t &width, void *userData);
     APP_ERROR SaveResult(const std::shared_ptr<MxBase::MemoryData> resulInfo, const uint32_t frameId,
                          std::vector<MxBase::ObjectInfo> &objInfos_);
-public:
-    static bool stopFlag;
-    static const uint32_t DEVICE_ID = 0;
 private:
     std::queue<cv::Mat> frameIf;
     int color_num[200][3]; // 随机颜色存储
