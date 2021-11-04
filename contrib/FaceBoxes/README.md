@@ -188,7 +188,7 @@ export MX_SDK_HOME=${CUR_PATH}/../../..
 chmod +x run.sh
 ./run.sh
 ```
-##7 精度验证
+## 7 精度验证
 
 在运行完main.py后开始进行精度验证，所需代码文件放在script目录下。首先将所依赖的python包安装好（bbox除外），bbox函数直接在终端运行python3.7 setup.py install即可。之后分别运行script目录下的convert.py，split.py和evaluate.py，FDDB集的精度结果在运行完evaluate.py后会打印出来。
 
