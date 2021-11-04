@@ -88,6 +88,7 @@ if __name__ == '__main__':
         result2 = np.zeros((1, img_height, img_width, 8), dtype=float)
         for i in range(img_height):
             for j in range(img_width):
+                # 16是最后一维的大小，每两个值做一个softmax，最后一维的尺寸折半到8
                 for k in range(0, 16, 2):
                     num1 = np.exp(ids2[0][i][j][k])
                     num2 = np.exp(ids2[0][i][j][k + 1])
