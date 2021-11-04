@@ -45,9 +45,6 @@ struct InitParam {
 };
 
 class Yolov4Detection {
-protected:
-    APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
-    void SetYolov4PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 public:
     APP_ERROR FrameInit(const InitParam &initParam);
     APP_ERROR FrameDeInit();
@@ -56,6 +53,9 @@ public:
     APP_ERROR Inference(const std::vector<MxBase::TensorBase> &inputs, std::vector<MxBase::TensorBase> &outputs);
     APP_ERROR PostProcess(const std::vector<MxBase::TensorBase> &outputs,const uint32_t &height,
                           const uint32_t &width, std::vector<std::vector<MxBase::ObjectInfo>> &objInfos);
+protected:
+    APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
+    void SetYolov4PostProcessConfig(const InitParam &initParam, std::map<std::string, std::shared_ptr<void>> &config);
 private:
     std::shared_ptr<MxBase::DvppWrapper> yDvppWrapper;
     std::shared_ptr<MxBase::ModelInferenceProcessor> model;
