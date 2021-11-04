@@ -106,7 +106,7 @@ int main() {
     auto blockingQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(MAX_QUEUE_LENGHT);
     std::thread getFrame(videoProcess->GetFrames, blockingQueue, videoProcess);
     std::thread getResult(videoProcess->GetResults, blockingQueue, yolov4, videoProcess, tracker);
-    if (signal(SIGINT, SigHandler) == SIG_ERR) {
+    if (signal(SIGINT, SigHandler)) {
         LogError << "can not catch SIGINT";
         return APP_ERR_COMM_FAILURE;
     }
