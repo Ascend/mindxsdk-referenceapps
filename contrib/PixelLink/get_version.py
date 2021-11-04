@@ -41,6 +41,7 @@ def img_version():
             for i in range(0, len(line), 2):
                 rect.append((int(line[i]), int(line[i + 1])))
             draw.polygon(rect, outline = (255, 0, 0))
+            # 数字8用以控制txt文件的读取，每次读取到一个点对
             left += 8
             right += 8
             line = f.readline()
