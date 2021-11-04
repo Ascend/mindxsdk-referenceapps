@@ -111,6 +111,8 @@ mindxsdk-referenceapps/contrib/参考设计名称(英文)
 
 **参考Fork+Pull Requests 模式**：https://gitee.com/help/articles/4128#article-header0
 
+> pr提交后请不要再关闭pr，一切操作都已不关pr的条件进行操作
+
 2、PR标题模板
 
 ```
@@ -137,7 +139,7 @@ mindxsdk-referenceapps/contrib/参考设计名称(英文)
 
 2、Python代码遵循PEP8规范：Python PEP 8 Coding Style；单元测试遵循规范： pytest
 
-- 规范备注
+- 规范备注（前4条规则C++适用）
 
 1、优先使用string类型，避免使用char*；
 

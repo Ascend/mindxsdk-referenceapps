@@ -1,0 +1,51 @@
+{
+    "segmentation": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "256",
+                "resizeWidth": "256"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "models/DANet.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_tensorinfer1"
+        },
+        "mxpi_tensorinfer1": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "models/Deeplabv3.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}

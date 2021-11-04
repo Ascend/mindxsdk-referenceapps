@@ -76,8 +76,8 @@ apt-get install liblzma-dev
 
 1. 获取om模型
 > 由于gitee对于文件大小的限制，om模型超过100M无法上传，可以从以下链接获取并放到项目的 model 目录下：<br/>
-> [om模型下载链接](https://pan.baidu.com/s/1AvJ1m_olBqvIOKoxKbt3aA) 提取码：4s4e
-> [pb模型下载链接](https://pan.baidu.com/s/1lUquThnwRv7zGcyIz2x_ww) 提取码：0wam
+>
+> [模型下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ASR%26KWR/AutoSpeechRecognition/model.zip)
 2. run.sh脚本中LD_LIBRARY_PATH设置了ACL动态库链接路径为/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64，如果实际环境中路径不一致，需要替换为实际的目录。
 3. 如果环境变量中没有MX_SDK_HOME变量，则需要在run.sh脚本中设置MX_SDK_HOME变量为你实际的MX_SDK安装目录。
 4. 执行以下脚本
@@ -87,5 +87,5 @@ bash run.sh
 
 ## 6 其它说明
 
-1. 此模型使用的数据集为[AISHELL数据集](http://www.aishelltech.com/kysjcp)。<kbd>data/BAC009S0009W0133.wav</kbd>为其中一条语音，其对应的文字是：宝龙地产的收入较二零一三年增加约百分之三十三点一。
+1. 此模型使用的数据集为[AISHELL数据集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ASR%26KWR/AutoSpeechRecognition/data.zip)。<kbd>data/BAC009S0009W0133.wav</kbd>为其中一条语音，其对应的文字是：宝龙地产的收入较二零一三年增加约百分之三十三点一。
 2. 由于模型输入的限制，推理时wav语音的时长应控制在10s及其以下，超过10s的部分会被截断。

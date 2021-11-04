@@ -144,7 +144,7 @@ make -j
 
 ### 4.1部署
 
-**步骤1**：将```bert```模型放到```models/bert```文件夹内，将```ctpn```模型放到```models/ctpn```文件夹内，将```crnn```模型放到```models/paddlecrnn```文件夹内，具体的模型转换方法见当前目录下的MODEL.md。
+**步骤1**：[bert模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_bert.om)，将```bert```模型放到```models/bert```文件夹内，[cptn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_cptn.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内，具体的模型转换方法见当前目录下的MODEL.md。
 
 **步骤2**：配置环境变量，根据自己的环境变量不同，需要配置不同的环境变量，下面给出参考示例：
 
@@ -226,4 +226,6 @@ make -j8
 ## 7. 测试数据来源
 
 ICDAR2013数据集
+
+[测试数据](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/data/en_text.rar)
 

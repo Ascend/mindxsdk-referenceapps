@@ -8,6 +8,8 @@
   **二、 说话人注册（提取说话人embedding，保存到声纹库中）** <br/>
   **三、 说话人识别（提取说话人embedding, 与声纹库中的声纹作相似度判别）** <br/>
 
+  [模型下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SpeakerRecog/model.zip)
+
   声纹模型采用论文《X-vectors: Robust DNN Embeddings for Speaker Recognition》提出的x-vector。<br/>
   模型搭建参考 https://github.com/manojpamk/pytorch_xvectors/blob/master/models.py <br/>
   在本样例中，注册、识别流程如下：声纹库为空时，直接对当前说话人进行注册（注册名使用当前文件名）。声纹库不为空时 <br/>
@@ -95,5 +97,5 @@ bash run.sh
 
 ## 6 其它说明
 
-1. 此模型使用的数据集为[AISHELL数据集](http://www.aishelltech.com/kysjcp) 。
+1. 此模型使用的数据集为[AISHELL数据集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SpeakerRecog/data.zip) 。
 2. 由于模型输入的限制，wav语音的时长应控制在10s及其以下，超过10s的部分会被截断。
