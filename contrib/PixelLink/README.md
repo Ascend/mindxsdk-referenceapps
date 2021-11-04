@@ -40,7 +40,7 @@
 ```
 .
 ├── model
-│   └── convert.cfg  // 模型后处理配置文件
+│   └── convert.cfg  // 模型转化文件
 ├── pipeline
 │   └── Pixel.pipeline
 ├── get_version.py
@@ -135,12 +135,12 @@ python3.7 main.py
 
 运行评测代码：
 
-  将解压后的icdar2015数据集中的测试集部分解压到ch4_test_images文件夹中。ch4_test_images与main_get_groundtruth.py同目录，在main_get_groundtruth.py同目录下创建test文件夹，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到./test/image_txt/目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip（可以根据需要命名为其他名称，但是后续运行评测代码时需要名称对应），压缩后将zip文件和groundtruth的zip文件（gt.zip）放到script.py路径下，gt.zip是原模型的groundtruth，用以作为评测的基准。该zip文件可以在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip 获取。最后，运行script.py，得到评测结果。运行评测代码文件路径要求如下图所示：
+  将解压后的icdar2015数据集中的测试集部分解压到ch4_test_images文件夹中。ch4_test_images与main_get_groundtruth.py同目录，人工在main_get_groundtruth.py同目录下创建test文件夹，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到./test/image_txt/目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip（可以根据需要命名为其他名称，但是后续运行评测代码时需要名称对应），压缩后将zip文件和groundtruth的zip文件（gt.zip）放到script.py路径下，gt.zip是原模型的groundtruth，用以作为评测的基准。该zip文件可以在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip 获取。最后，运行script.py，得到评测结果。运行评测代码文件路径要求如下图所示：
 
 ```
 .
 ├── model
-│   └── convert.cfg  // 模型后处理配置文件
+│   └── convert.cfg  // 模型转化文件
 ├── pipeline
 │   └── Pixel.pipeline
 ├── get_version.py
@@ -153,7 +153,7 @@ python3.7 main.py
 │   ├── img_2.jpg
 │   └── ......(other images)
 ├── gt.zip
-├── om_result.zip
+├── om_result.zip（人工运行main_get_groundtruth.py后生成的txt文件压缩为zip，命名为om_result.zip）
 ├── test
 │   └── image_txt
 └── script.py
