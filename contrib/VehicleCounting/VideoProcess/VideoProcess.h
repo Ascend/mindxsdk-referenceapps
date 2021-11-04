@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef STREAM_PULL_SAMPLE_VIDEOPROCESS_H
-#define STREAM_PULL_SAMPLE_VIDEOPROCESS_H
-
+#ifdef __cplusplus
 extern "C"{
+#endif
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/avutil.h"
 #include "libswscale/swscale.h"
+#ifdef __cplusplus
 }
+#endif
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
@@ -67,5 +68,3 @@ public:
     static bool stopFlag;
     static const uint32_t DEVICE_ID = 0;
 };
-
-#endif // STREAM_PULL_SAMPLE_VIDEOPROCESS_H
