@@ -45,7 +45,7 @@ if __name__ == '__main__':
     labels = []
     with open(file_name, 'r') as f:
         data = f.readlines()
-    for index in range(len(data)):
+    for index in enumerate(data):
         line = data[index]
         temp = line.split(' ')
         ima_name.append(temp[0].split('.')[0]+'_aligned.jpg')
