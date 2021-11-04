@@ -115,9 +115,11 @@ def decode_image(pixel_scores, link_scores,
 def decode_batch(pixel_cls_scores, pixel_link_scores,
                  pixel_conf_threshold=None, link_conf_threshold=None):
     if pixel_conf_threshold is None:
+        # 0.8是筛选像素点的阈值，来源于原模型的约束
         pixel_conf_threshold = 0.8
 
     if link_conf_threshold is None:
+        # 0.8是筛选像素点的阈值，来源于原模型的约束
         link_conf_threshold = 0.8
 
     batch_size = 1
@@ -195,6 +197,7 @@ def rect_to_xys(rect, image_shape):
 def mask_to_bboxes(mask, image_shape=None, min_area=None,
                   min_height=None):
     image_h, image_w = image_shape[0: 2]
+    # 300和10是图片最小的面积和高度，来源于原模型的约束
     if min_area is None:
         min_area = 300
     if min_height is None:
