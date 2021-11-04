@@ -38,7 +38,7 @@ if __name__ == '__main__':
     try:
         f = open("./pipeline/Pixel.pipeline", 'rb')
         pipeline_str = f.read()
-    except:
+    except FileNotFoundError:
         print('pipeline not find!\n')
         exit()
     ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
