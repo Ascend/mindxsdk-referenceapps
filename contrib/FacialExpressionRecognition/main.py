@@ -58,7 +58,6 @@ if __name__ == '__main__':
 
     if infer_result.size() == 0:
         print("infer_result is null")
-        print(111111)
         exit()
 
     tensorList3 = MxpiDataType.MxpiTensorPackageList()
