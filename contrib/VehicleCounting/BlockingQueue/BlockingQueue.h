@@ -25,7 +25,7 @@ const int DEFAULT_MAX_QUEUE_SIZE = 256;
 
 template<typename T> class BlockingQueue {
 public:
-    BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stoped_(false) {}
+    explicit BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stoped_(false) {}
 
     ~BlockingQueue() {}
 
