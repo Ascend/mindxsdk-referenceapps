@@ -101,7 +101,9 @@ namespace ascendVehicleTracking {
             detectInfo.classId = 0;
             return detectInfo;
         }
-
+        if(w == 0){
+            return MxBase::ObjectInfo{};
+        }
         float h = (*(pData + OFFSET)) / w;
         float x = (*pData) - w / MULTIPLE;
         float y = (*(pData + 1)) - h / MULTIPLE;
