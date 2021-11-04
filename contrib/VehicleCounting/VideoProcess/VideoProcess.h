@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-#include "libavformat/avformat.h"
-#include "libavcodec/avcodec.h"
-#include "libavutil/avutil.h"
-#include "libswscale/swscale.h"
-#ifdef __cplusplus
-}
-#endif
 #include "MxBase/ErrorCode/ErrorCodes.h"
 #include "MxBase/DvppWrapper/DvppWrapper.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
