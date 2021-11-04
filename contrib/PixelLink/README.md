@@ -67,6 +67,7 @@
 | cmake    | 3.5+   |
 | mxVision | 2.0.2  |
 | python   | 3.7.5  |
+| CANN     | 3.3.0  |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -95,13 +96,11 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 ## 3 模型转换
 本项目中用到的模型有：基于tensorflow转化出的pb形式的pixelLink模型。
 
-pb模型提供在链接链接：https://pan.baidu.com/s/1Avrjhc_J6va3YrGm91GXdQ  提取码：fy4j;
-
-已经转化完成的pixellink.om模型下载链接：链接：https://pan.baidu.com/s/1YhrPKZzh_sZQCUfqY9Xxqw  提取码：xhyf;
+pb模型提供在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/pixellink_tf.pb;
 
 转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 
-首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录models下。使用命令
+首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录model下。使用命令
 
 ```
 atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 --soc_version=Ascend310 --input_shape="Placeholder:1,768,1280,3"
@@ -110,12 +109,14 @@ atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 
 转化项目模型。
 
 
-注意：转化时，可根据需要修改输出的模型名称。转化成功的om模型也同时附有下载链接。注意模型以及转化所需文件的路径，防止atc命令找不到相关文件。
+注意：转化时，可根据需要修改输出的模型名称。注意模型以及转化所需文件的路径，防止atc命令找不到相关文件。
 
 
 ## 4 编译与运行
 **步骤1**
-下载项目文件，以及数据集，其中项目文件链接在模型转换部分已经给出。数据集链接：链接：https://pan.baidu.com/s/107gUYlJP0v4_KlKksJy5pw   提取码：b59b
+下载项目文件，以及icdar2015数据集，其中项目文件链接在模型转换部分已经给出。数据集链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip
+
+zip文件中下载数据集ch4_test_image。
 
 **步骤2**
   在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，这些路径需要根据用户实际情况配置，例如SDK安装路径需要与用户本身安装路径一致，不一致将导致环境错误。同理，lib路径与python路径，都需要与实际情况一致。将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与模型文件一致。需要按照代码中的路径去创建文件路径，也可以根据实际需要修改代码中的路径变量。
@@ -134,7 +135,7 @@ python3.7 main.py
 
 运行评测代码：
 
-  将解压后的icdar2015数据集中的测试集部分解压到ch4_test_images文件夹中。ch4_test_images与main_get_groundtruth.py同目录，在main_get_groundtruth.py同目录下创建test文件夹，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到./test/image_txt/目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip（可以根据需要命名为其他名称，但是后续运行评测代码时需要名称对应），压缩后将zip文件和groundtruth的zip文件（gt.zip）放到script.py路径下，gt.zip是原模型的groundtruth，用以作为评测的基准。该zip文件可以在链接：https://pan.baidu.com/s/1bo9-ooew4DaOqj-QlAQ_kw  提取码：guea获取。最后，运行script.py，得到评测结果。运行评测代码文件路径要求如下图所示：
+  将解压后的icdar2015数据集中的测试集部分解压到ch4_test_images文件夹中。ch4_test_images与main_get_groundtruth.py同目录，在main_get_groundtruth.py同目录下创建test文件夹，运行main_get_groundtruth.py，会生成数据集中每张图像的检测结果，检测结果会存放到./test/image_txt/目标路径下。需要人工将结果压缩为zip文件，命名为om_result.zip（可以根据需要命名为其他名称，但是后续运行评测代码时需要名称对应），压缩后将zip文件和groundtruth的zip文件（gt.zip）放到script.py路径下，gt.zip是原模型的groundtruth，用以作为评测的基准。该zip文件可以在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip 获取。最后，运行script.py，得到评测结果。运行评测代码文件路径要求如下图所示：
 
 ```
 .
