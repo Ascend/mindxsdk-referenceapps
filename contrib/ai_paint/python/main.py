@@ -64,20 +64,30 @@ def gen_coarse_layout(objs, boxes, attributes, obj_valid_inds, layout_size=LAYOU
 
 def preprocess(net_param):
     # input param
-    objects_str = net_param.get("net_param", "objects")
-    objects = json.loads(objects_str)
+    try:
+        objects_str = net_param.get("net_param", "objects")
+        print(objects_str)
+        objects = json.loads(objects_str)
+
+        boxes_str = net_param.get("net_param", "boxes")
+        boxes = json.loads(boxes_str)
+
+        size_att_str = net_param.get("net_param", "size_att")
+        size_att = json.loads(size_att_str)
+    except:
+        print("Input param format error, check ini file!")
+        exit()
+        
     objects_num = len(objects)
     print("input object number:", objects_num)
     if objects_num > 9:
         print("objects limit ! max 9 input %d" % objects_num)
         exit()
-    boxes_str = net_param.get("net_param", "boxes")
-    boxes = json.loads(boxes_str)
+
     if len(boxes) != objects_num:
         print("boxes not pair object! input: %d" % len(boxes))
         exit()
-    size_att_str = net_param.get("net_param", "size_att")
-    size_att = json.loads(size_att_str)
+
     if len(size_att) != objects_num:
         print("size_att not pair object! input: %d" % len(size_att))
         exit()
@@ -127,6 +137,13 @@ def read_config(config_fname):
     return conf
 
 if __name__ == '__main__':
+    # set stream name and device
+    stream_name = b'ai_paint'
+    in_plugin_id = 0
+    config_file = 'net_config.ini'
+    net_config = read_config(config_file)
+    tensor_pack_list = preprocess(net_config)
+
     # init stream manager
     stream_manager = StreamManagerApi()
     ret = stream_manager.InitManager()
@@ -142,15 +159,9 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    # set stream name and device
-    stream_name = b'ai_paint'
-    in_plugin_id = 0
-    config_file = 'net_config.ini'
+
 
     # send data to stream
-    net_config = read_config(config_file)
-    tensor_pack_list = preprocess(net_config)
-
     protobuf_in = MxProtobufIn()
     protobuf_in.key = b'appsrc0'
     protobuf_in.type = b'MxTools.MxpiTensorPackageList'
