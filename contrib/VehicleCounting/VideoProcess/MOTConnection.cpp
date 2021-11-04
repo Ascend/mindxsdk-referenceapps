@@ -184,7 +184,7 @@ void MOTConnection::TrackObjectUpdate(const std::vector<std::vector<MxBase::Obje
         for (unsigned int j = 0; j < objInfos[0].size(); ++j) {
             for (unsigned int i = 0; i < traceList_.size(); ++i) {
                 // 计算交并比
-                float sim = CalSimilarity(traceList_[i], objInfos[0][j], method_, kIOU_); //method_=1, kIOU_=1.0
+                float sim = CalSimilarity(traceList_[i], objInfos[0][j], method_, kIOU_); // method_=1, kIOU_=1.0
                 disMatrix[i][j] = (int)(sim * FLOAT_TO_INT);
             }
         }
@@ -217,7 +217,7 @@ APP_ERROR MOTConnection::ProcessSort(std::vector<std::vector<MxBase::ObjectInfo>
     if (traceList_.size() > 0) {
         // every traceLet should do kalman predict
         TrackObjectPredict();   // 卡尔曼滤波预测
-        TrackObjectUpdate(objInfos, matchedTracedDetected, unmatchedVehicleObjectQueue);  //选出matched track、unmatched detection
+        TrackObjectUpdate(objInfos, matchedTracedDetected, unmatchedVehicleObjectQueue);  // 选出matched track、unmatched detection
     } else {
         // traceList is empty, all the vehicle detected in the new frame are unmatched.
         if (objInfos[0].size() > 0) {
