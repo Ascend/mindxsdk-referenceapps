@@ -34,7 +34,7 @@ namespace{
    @param：initParam：初始化参数
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Init(const InitParam &initParam) {
+APP_ERROR CarPlateRecognition::init(const InitParam &initParam) {
    
     deviceId_ = initParam.deviceId; // 初始化设备ID
 	
@@ -72,17 +72,17 @@ APP_ERROR CarPlate_Recognition::Init(const InitParam &initParam) {
         return ret;
     }
 	// STEP6:初始化车牌检测模型的后处理对象
-    detection_post_ = std::make_shared<RetinaFace_PostProcess>();
-    ret = detection_post_->Init(initParam);
+    detection_post_ = std::make_shared<RetinaFacePostProcess>();
+    ret = detection_post_->init(initParam);
     if (ret != APP_ERR_OK) {
-        LogError << "RetinaFace_PostProcess init failed, ret=" << ret << ".";
+        LogError << "RetinaFacePostProcess init failed, ret=" << ret << ".";
         return ret;
     }
     // STEP7:初始化车牌识别模型的后处理对象
-    recognition_post_ = std::make_shared<LPR_PostProcess>();
-    ret = recognition_post_->Init(initParam);
+    recognition_post_ = std::make_shared<LPRPostProcess>();
+    ret = recognition_post_->init(initParam);
     if (ret != APP_ERR_OK) {
-        LogError << "LPR_PostProcess init failed, ret=" << ret << ".";
+        LogError << "LPRPostProcess init failed, ret=" << ret << ".";
         return ret;
     }
 
@@ -94,12 +94,12 @@ APP_ERROR CarPlate_Recognition::Init(const InitParam &initParam) {
    @param：none
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::DeInit() {
+APP_ERROR CarPlateRecognition::deinit() {
     dvppWrapper_->DeInit();
     detection_model_->DeInit();
-    detection_post_->DeInit();
+    detection_post_->deinit();
     recognition_model_->DeInit();
-    recognition_post_->DeInit();
+    recognition_post_->deinit();
     MxBase::DeviceManager::GetInstance()->DestroyDevices();
     return APP_ERR_OK;
 }
@@ -110,10 +110,10 @@ APP_ERROR CarPlate_Recognition::DeInit() {
    @param：tensor：存储读取到的图片
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::ReadImage(const std::string &imgPath, MxBase::TensorBase &tensor) {
+APP_ERROR CarPlateRecognition::readimage(const std::string &imgPath, MxBase::TensorBase &tensor) {
 
     // STEP1:对JPEG图像解码后存入DvppDataInfo中
-	MxBase::DvppDataInfo output = {};   
+    MxBase::DvppDataInfo output = {};   
     APP_ERROR ret = dvppWrapper_->DvppJpegDecode(imgPath, output);
     if (ret != APP_ERR_OK) {
         LogError << "DvppWrapper DvppJpegDecode failed, ret=" << ret << ".";
@@ -140,20 +140,20 @@ APP_ERROR CarPlate_Recognition::ReadImage(const std::string &imgPath, MxBase::Te
    @param：outputTensor:缩放后的图像数据
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
+APP_ERROR CarPlateRecognition::resize(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
 
     // STEP1:将图像还原为原始尺寸(在ReadImage的STEP4中图像进行了尺度变换)
 	auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};    
-    input.height= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
-    input.heightStride= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
 	// STEP2:进行图像缩放
-    MxBase::ResizeConfig resize= {};
-    resize.height= 640;
+    MxBase::ResizeConfig resize = {};
+    resize.height = 640;
     resize.width = 640;
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
@@ -182,19 +182,19 @@ APP_ERROR CarPlate_Recognition::Resize(const MxBase::TensorBase &inputTensor, Mx
    @param：outputTensor:缩放后的图像数据
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Resize1(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
+APP_ERROR CarPlateRecognition::resize1(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor) {
     // STEP1:将图像还原为原始尺寸(在ReadImage的STEP4中图像进行了尺度变换)
 	auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
-    input.height= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
-    input.heightStride= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
-	// STEP2:进行图像缩放
-    MxBase::ResizeConfig resize= {};
-    resize.height= 72;
+    // STEP2:进行图像缩放
+    MxBase::ResizeConfig resize = {};
+    resize.height = 72;
     resize.width = 272;
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
@@ -224,30 +224,30 @@ APP_ERROR CarPlate_Recognition::Resize1(const MxBase::TensorBase &inputTensor, M
    @param: objInfos:目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Crop(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor, MxBase::ObjectInfo objInfo) {
+APP_ERROR CarPlateRecognition::crop(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor, MxBase::ObjectInfo objInfo) {
 
     // STEP1:将图像还原为原始尺寸(在ReadImage的STEP4中图像进行了尺度变换)
 	auto shape = inputTensor.GetShape();
     MxBase::DvppDataInfo input = {};
-    input.height= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.height = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.width = shape[1];
-    input.heightStride= (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    input.heightStride = (uint32_t)shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
-	// STEP2:进行抠图
-    MxBase::CropRoiConfig croproiconfig= {}; // 抠图配置参数
-	croproiconfig.x0 = objInfo.x0;
-	croproiconfig.x1 = objInfo.x1;
-	croproiconfig.y0 = objInfo.y0;
-	croproiconfig.y1 = objInfo.y1;
+    // STEP2:进行抠图
+    MxBase::CropRoiConfig croproiconfig = {}; // 抠图配置参数
+    croproiconfig.x0 = objInfo.x0;
+    croproiconfig.x1 = objInfo.x1;
+    croproiconfig.y0 = objInfo.y0;
+    croproiconfig.y1 = objInfo.y1;
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->VpcCrop(input, output, croproiconfig);
     if (ret != APP_ERR_OK) {
-        LogError << "Crop failed, ret=" << ret << ".";
+        LogError << "crop failed, ret=" << ret << ".";
         return ret;
     }
-	// STEP3:将数据转为到DEVICE侧
+    // STEP3:将数据转为到DEVICE侧
     MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     // STEP4:对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
@@ -255,7 +255,7 @@ APP_ERROR CarPlate_Recognition::Crop(const MxBase::TensorBase &inputTensor, MxBa
         MxBase::MemoryHelper::MxbsFree(memoryData);
         return APP_ERR_COMM_INVALID_PARAM;
     }
-	// STEP5:将缩放后的图片存入tensor
+    // STEP5:将缩放后的图片存入tensor
     shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
     outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
 
@@ -269,21 +269,21 @@ APP_ERROR CarPlate_Recognition::Crop(const MxBase::TensorBase &inputTensor, MxBa
    @param：objInfos:目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Crop_Resize1(MxBase::TensorBase inputTensor, std::vector<MxBase::TensorBase> &cropresize_Tensors, std::vector<MxBase::ObjectInfo> objInfos)
+APP_ERROR CarPlateRecognition::crop_resize1(MxBase::TensorBase inputTensor, std::vector<MxBase::TensorBase> &cropresize_Tensors, std::vector<MxBase::ObjectInfo> objInfos)
 {
     MxBase::TensorBase crop_Tensor;
     MxBase::TensorBase resize_Tensor;
 
-    for(int i=0; i<int(objInfos.size()); i++) // 遍历检测出来的所有目标框信息(因为在一幅图中可能检测出多个车牌)
+    for(int i = 0; i<int(objInfos.size()); i++) // 遍历检测出来的所有目标框信息(因为在一幅图中可能检测出多个车牌)
     {
-        APP_ERROR ret = Crop(inputTensor, crop_Tensor, objInfos[i]);
+        APP_ERROR ret = crop(inputTensor, crop_Tensor, objInfos[i]);
         if (ret != APP_ERR_OK) {
-            LogError << "Crop failed, ret=" << ret << ".";
+            LogError << "crop failed, ret=" << ret << ".";
             return ret;
         }
-        ret = Resize1(crop_Tensor, resize_Tensor);
+        ret = resize1(crop_Tensor, resize_Tensor);
         if (ret != APP_ERR_OK) {
-            LogError << "Resize1 failed, ret=" << ret << ".";
+            LogError << "resize1 failed, ret=" << ret << ".";
             return ret;
         }
         cropresize_Tensors.push_back(resize_Tensor);
@@ -298,10 +298,10 @@ APP_ERROR CarPlate_Recognition::Crop_Resize1(MxBase::TensorBase inputTensor, std
    @param：outputs:模型推理的输出数据
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Detection_Inference(const std::vector<MxBase::TensorBase> inputs,std::vector<MxBase::TensorBase> &outputs) {
+APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::TensorBase> inputs,std::vector<MxBase::TensorBase> &outputs) {
 
     // STEP1:根据模型的输出创建空的TensorBase变量
-	auto dtypes = detection_model_->GetOutputDataType();
+    auto dtypes = detection_model_->GetOutputDataType();
     for (size_t i = 0; i < detection_modelDesc_.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
         for (size_t j = 0; j < detection_modelDesc_.outputTensors[i].tensorDims.size(); ++j) {
@@ -334,26 +334,26 @@ APP_ERROR CarPlate_Recognition::Detection_Inference(const std::vector<MxBase::Te
    @param：objInfos:目标检测类任务的目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Detection_PostProcess(const MxBase::TensorBase orign_Tensor, std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
+APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase orign_Tensor, std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
 
     // STEP1:获取图像的缩放方式，用于后处理中的坐标还原使用
     auto shape = orign_Tensor.GetShape();
     MxBase::ResizedImageInfo resizedImageInfo;
     resizedImageInfo.widthOriginal = shape[1];
-    resizedImageInfo.heightOriginal= shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
+    resizedImageInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     resizedImageInfo.widthResize = 640;
-    resizedImageInfo.heightResize= 640;
+    resizedImageInfo.heightResize = 640;
     resizedImageInfo.resizeType  = MxBase::RESIZER_STRETCHING;
     // STEP2:进行模型后处理
-    APP_ERROR ret = detection_post_->Process(detect_outputs, objectInfos, resizedImageInfo);
+    APP_ERROR ret = detection_post_->process(detect_outputs, objectInfos, resizedImageInfo);
     if (ret != APP_ERR_OK) {
-        LogError << "RetinaFace_PostProcess failed, ret=" << ret << ".";
+        LogError << "RetinaFacePostProcess failed, ret=" << ret << ".";
         return ret;
     }
 	// STEP3:后处理完成，将资源释放
-    ret = detection_post_->DeInit();
+    ret = detection_post_->deinit();
     if (ret != APP_ERR_OK) {
-        LogError << "RetinaFace_PostProcess DeInit failed";
+        LogError << "RetinaFacePostProcess DeInit failed";
         return ret;
     }
     return APP_ERR_OK;
@@ -365,7 +365,7 @@ APP_ERROR CarPlate_Recognition::Detection_PostProcess(const MxBase::TensorBase o
 *  @param：outputs:模型推理的输出数据
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Recognition_Inference(const std::vector<MxBase::TensorBase> inputs, std::vector<std::vector<MxBase::TensorBase>> &outputs) {
+APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs, std::vector<std::vector<MxBase::TensorBase>> &outputs) {
 
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH; // 设置类型为静态batch
@@ -373,7 +373,7 @@ APP_ERROR CarPlate_Recognition::Recognition_Inference(const std::vector<MxBase::
     std::vector<MxBase::TensorBase> k_inputs;
     std::vector<MxBase::TensorBase> k_outputs;
     auto dtypes = recognition_model_->GetOutputDataType();
-    for(int k=0; k<int(inputs.size()); k++)
+    for(int k = 0; k<int(inputs.size()); k++)
     {
         // STEP1:根据模型的输出创建空的TensorBase变量
         for (size_t i = 0; i < recognition_modelDesc_.outputTensors.size(); ++i) {
@@ -411,20 +411,20 @@ APP_ERROR CarPlate_Recognition::Recognition_Inference(const std::vector<MxBase::
 *  @param：objInfos:其成员className用于存放所识别出来的车牌字符
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Recognition_PostProcess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
+APP_ERROR CarPlateRecognition::recognition_postprocess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
 
-    for(int i=0; i<int(objectInfos.size()); i++)
+    for(int i = 0; i<int(objectInfos.size()); i++)
     {
          // STEP1:进行模型后处理
-        APP_ERROR ret = recognition_post_->Process(recog_outputs[i], objectInfos[i]);
+        APP_ERROR ret = recognition_post_->process(recog_outputs[i], objectInfos[i]);
         if (ret != APP_ERR_OK) {
-            LogError << "LPR_PostProcess failed, ret=" << ret << ".";
+            LogError << "LPRPostProcess failed, ret=" << ret << ".";
             return ret;
         }
 	    // STEP2:后处理完成，将资源释放
-        ret = recognition_post_->DeInit();
+        ret = recognition_post_->deinit();
         if (ret != APP_ERR_OK) {
-            LogError << "LPR_PostProcess DeInit failed";
+            LogError << "LPRPostProcess DeInit failed";
             return ret;
         }
     }
@@ -439,33 +439,33 @@ APP_ERROR CarPlate_Recognition::Recognition_PostProcess(std::vector<std::vector<
 *					因为可能检测到多个对象，每个对象又会产生多个目标框，所以objInfos是元素为ObjectInfo型容器的容器对象
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::WriteResult(MxBase::TensorBase &tensor, std::vector<MxBase::ObjectInfo> objectInfos) {
+APP_ERROR CarPlateRecognition::write_result(MxBase::TensorBase &tensor, std::vector<MxBase::ObjectInfo> objectInfos) {
 
     // STEP1:数据从DEVICE侧转到HOST侧（ReadImage的STEP2和Resize的STEP3将数据转到了DEVICE侧）
-	APP_ERROR ret = tensor.ToHost();
-	if (ret != APP_ERR_OK) {
+    APP_ERROR ret = tensor.ToHost();
+    if (ret != APP_ERR_OK) {
         LogError << "ToHost faile";
         return ret;
     }
-	// STEP2:初始化OpenCV图像信息矩阵,并进行颜色空间转换:YUV->BGR
-	auto shape = tensor.GetShape();
+    // STEP2:初始化OpenCV图像信息矩阵,并进行颜色空间转换:YUV->BGR
+    auto shape = tensor.GetShape();
     cv::Mat imgYuv = cv::Mat(shape[0], shape[1], CV_8UC1, tensor.GetBuffer());
     cv::Mat imgBgr = cv::Mat(shape[0] * YUV_BYTE_DE / YUV_BYTE_NU, shape[1], CV_8UC3);
     cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
     // STEP3:对识别结果进行画框
-    int baseline; // 使用cv::getTextSize所必须传入的参数，但实际上未用到
+    int baseline = 0; // 使用cv::getTextSize所必须传入的参数，但实际上未用到
     CvxText text("./simhei.ttf"); // 指定字体
     cv::Scalar size1{ 40, 0.5, 0.1, 0 }; // (字体大小, 无效的, 字符间距, 无效的 }
-    text.setFont(nullptr, &size1, nullptr, 0);
+    text.set_font(nullptr, &size1, nullptr, 0);
     for (int j = 0; j < int(objectInfos.size()); ++j) {
         const char* str1 = objectInfos[j].className.data(); // 将std::string转为const char*
         char* str = (char*)(str1); // 将const char*转为char*（因为ToWchar只支持将char*转为wchar_t*）
-        wchar_t *w_str;
-        text.ToWchar(str,w_str);
+        wchar_t *w_str = nullptr;
+        text.to_wchar(str,w_str);
 
         // 写车牌号
 	    cv::Size text_size = cv::getTextSize(objectInfos[j].className, cv::FONT_HERSHEY_SIMPLEX, 1, 2, &baseline);
-        text.putText(imgBgr, w_str, cv::Point(objectInfos[j].x0+(objectInfos[j].x1-objectInfos[j].x0)/2-text_size.width/2+5, objectInfos[j].y0-5), cv::Scalar(0, 0, 255));
+        text.put_text(imgBgr, w_str, cv::Point(objectInfos[j].x0+(objectInfos[j].x1-objectInfos[j].x0)/2-text_size.width/2+5, objectInfos[j].y0-5), cv::Scalar(0, 0, 255));
         // 画目标框
         cv::Rect rect(objectInfos[j].x0, objectInfos[j].y0, objectInfos[j].x1 - objectInfos[j].x0, objectInfos[j].y1 - objectInfos[j].y0);
         cv::rectangle(imgBgr, rect, cv::Scalar(0, 0, 255), 1, 8, 0);
@@ -481,70 +481,70 @@ APP_ERROR CarPlate_Recognition::WriteResult(MxBase::TensorBase &tensor, std::vec
 *  @param：imgPath：图片路径
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlate_Recognition::Process(const std::string &imgPath) {
+APP_ERROR CarPlateRecognition::process(const std::string &imgPath) {
 
 	// STEP1:读取图片
     MxBase::TensorBase orign_Tensor;
-    APP_ERROR ret = ReadImage(imgPath, orign_Tensor);
+    APP_ERROR ret = readimage(imgPath, orign_Tensor);
     if (ret != APP_ERR_OK) {
-        LogError << "ReadImage failed, ret=" << ret << ".";
+        LogError << "readimage failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP2:图片缩放为640*640
     MxBase::TensorBase resize_Tensor;
-    ret = Resize(orign_Tensor, resize_Tensor);
+    ret = resize(orign_Tensor, resize_Tensor);
     if (ret != APP_ERR_OK) {
-        LogError << "Resize failed, ret=" << ret << ".";
+        LogError << "resize failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP3:车牌检测模型推理
     std::vector<MxBase::TensorBase> detect_inputs = {};
-    std::vector<MxBase::TensorBase> detect_outputs= {};
+    std::vector<MxBase::TensorBase> detect_outputs = {};
     detect_inputs.push_back(resize_Tensor);
-    ret = Detection_Inference(detect_inputs, detect_outputs);
+    ret = detection_inference(detect_inputs, detect_outputs);
     if (ret != APP_ERR_OK) {
-        LogError << "Detection_Inference failed, ret=" << ret << ".";
+        LogError << "detection_inference failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP4:车牌检测模型后处理
     std::vector<MxBase::ObjectInfo> objInfos;
-    ret = Detection_PostProcess(orign_Tensor, detect_outputs, objInfos);
+    ret = detection_postprocess(orign_Tensor, detect_outputs, objInfos);
     if (ret != APP_ERR_OK) {
-        LogError << "Detection_PostProcess failed, ret=" << ret << ".";
+        LogError << "detection_postprocess failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP5:将检测到的车牌抠图，并缩放至72*272
     std::vector<MxBase::TensorBase> cropresize_Tensors = {};
-    ret = Crop_Resize1(orign_Tensor, cropresize_Tensors, objInfos);
+    ret = crop_resize1(orign_Tensor, cropresize_Tensors, objInfos);
     if (ret != APP_ERR_OK) {
-        LogError << "Resize1 failed, ret=" << ret << ".";
+        LogError << "resize1 failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP6:车牌识别模型推理
-    std::vector<MxBase::TensorBase> recog_inputs= {};
-    std::vector<std::vector<MxBase::TensorBase>> recog_outputs= {};
+    std::vector<MxBase::TensorBase> recog_inputs = {};
+    std::vector<std::vector<MxBase::TensorBase>> recog_outputs = {};
     recog_inputs = cropresize_Tensors;
-    ret = Recognition_Inference(recog_inputs, recog_outputs);
+    ret = recognition_inference(recog_inputs, recog_outputs);
     if (ret != APP_ERR_OK) {
-        LogError << "Recognition_Inference failed, ret=" << ret << ".";
+        LogError << "recognition_inference failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP7:车牌识别模型后处理
-    ret = Recognition_PostProcess(recog_outputs, objInfos);
+    ret = recognition_postprocess(recog_outputs, objInfos);
     if (ret != APP_ERR_OK) {
-        LogError << "Recognition_PostProcess failed, ret=" << ret << ".";
+        LogError << "recognition_postprocess failed, ret=" << ret << ".";
         return ret;
     }
 
 	// STEP8:结果可视化
-	WriteResult(orign_Tensor, objInfos);
+    write_result(orign_Tensor, objInfos);
 
-	return APP_ERR_OK;
+    return APP_ERR_OK;
 }
 

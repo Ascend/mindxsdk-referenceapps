@@ -28,18 +28,18 @@ class CvxText {
 public:
     CvxText(const char* freeType);
     virtual ~CvxText();
-    void getFont(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
-    void setFont(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
-    void restoreFont();
-    int putText(cv::Mat& img, char* text, cv::Point pos);
-    int putText(cv::Mat& img, const wchar_t* text, cv::Point pos);
-    int putText(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar color);
-    int putText(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scalar color);
-    int ToWchar(char* src, wchar_t* &dest, const char *locale = "zh_CN.utf8");
+    void get_font(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
+    void set_font(int* type, cv::Scalar* size = nullptr, bool* underline = nullptr, float* diaphaneity = nullptr);
+    void restore_font();
+    int put_text(cv::Mat& img, char* text, cv::Point pos);
+    int put_text(cv::Mat& img, const wchar_t* text, cv::Point pos);
+    int put_text(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar color);
+    int put_text(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scalar color);
+    int to_wchar(char* src, wchar_t* &dest, const char *locale = "zh_CN.utf8");
 
 private:
     CvxText& operator = (const CvxText&);
-    void putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color);
+    void put_wchar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color);
     FT_Library   m_library;   // 字库
     FT_Face      m_face;      // 字体
     int         m_fontType;

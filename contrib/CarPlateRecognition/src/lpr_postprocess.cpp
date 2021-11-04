@@ -23,7 +23,7 @@ using namespace std;
    @param：initParam：初始化所需的结构体参数
    @retval:APP_ERROR型变量
 */
-APP_ERROR LPR_PostProcess::Init(const InitParam &initParam)
+APP_ERROR LPRPostProcess::init(const InitParam &initParam)
 {
     return APP_ERR_OK;
 }
@@ -33,7 +33,7 @@ APP_ERROR LPR_PostProcess::Init(const InitParam &initParam)
    @param：none
    @retval:none
 */
-APP_ERROR LPR_PostProcess::DeInit()
+APP_ERROR LPRPostProcess::deinit()
 {
     return APP_ERR_OK;
 }
@@ -44,7 +44,7 @@ APP_ERROR LPR_PostProcess::DeInit()
    @param：objectInfo：目标检测类任务的信息框变量，将车牌号存入其className成员中
    @retval:none
 */
-APP_ERROR LPR_PostProcess::Process(std::vector<MxBase::TensorBase> recog_outputs, MxBase::ObjectInfo& objectInfo)
+APP_ERROR LPRPostProcess::process(std::vector<MxBase::TensorBase> recog_outputs, MxBase::ObjectInfo& objectInfo)
 {
     // 车牌号码的字符映射关系
     std::map<int, std::string> char_map = {

@@ -55,23 +55,23 @@ int main(int argc, char* argv[])
 	std::string imgPath = argv[1];
 	
 	// 创建一个车牌识别对象并初始化
-	auto car_plate_recognition = std::make_shared<CarPlate_Recognition>();
-	APP_ERROR ret = car_plate_recognition->Init(initParam);
+	auto car_plate_recognition = std::make_shared<CarPlateRecognition>();
+	APP_ERROR ret = car_plate_recognition->init(initParam);
     if (ret != APP_ERR_OK) {
-        LogError << "CarPlate_Recognition init failed, ret=" << ret << ".";
+        LogError << "CarPlateRecognition init failed, ret=" << ret << ".";
         return ret;
     }
 
 	// 进行车牌识别流程
-    ret = car_plate_recognition->Process(imgPath);
+    ret = car_plate_recognition->process(imgPath);
     if (ret != APP_ERR_OK) {
-        LogError << "CarPlate_Recognition process failed, ret=" << ret << ".";
-        car_plate_recognition->DeInit();
+        LogError << "CarPlateRecognition process failed, ret=" << ret << ".";
+        car_plate_recognition->deinit();
         return ret;
     }
 
 	// 识别完成，将资源释放
-    car_plate_recognition->DeInit();
+    car_plate_recognition->deinit();
 
     return APP_ERR_OK;
 }

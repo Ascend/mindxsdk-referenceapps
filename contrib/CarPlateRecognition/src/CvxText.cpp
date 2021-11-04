@@ -34,11 +34,17 @@ CvxText::CvxText(const char* freeType)
     assert(freeType != NULL);
 
     // 打开字库文件, 创建一个字体
-    if(FT_Init_FreeType(&m_library)) throw;
-    if(FT_New_Face(m_library, freeType, 0, &m_face)) throw;
+    if(FT_Init_FreeType(&m_library))
+    {
+        throw;
+    }
+    if(FT_New_Face(m_library, freeType, 0, &m_face))
+    {
+        throw;
+    }
 
     // 设置字体输出参数
-    restoreFont();
+    restore_font();
 
     // 设置C语言的字符集环境
     setlocale(LC_ALL, "");
@@ -63,12 +69,24 @@ CvxText::~CvxText()
    @param：diaphaneity：透明度
    @retval:none
 */
-void CvxText::getFont(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
+void CvxText::get_font(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
 {
-    if (type) *type = m_fontType;
-    if (size) *size = m_fontSize;
-    if (underline) *underline = m_fontUnderline;
-    if (diaphaneity) *diaphaneity = m_fontDiaphaneity;
+    if (type) 
+    {
+        *type = m_fontType;
+    }
+    if (size)
+    {
+        *size = m_fontSize;
+    }
+    if (underline)
+    {
+        *underline = m_fontUnderline;
+    }
+    if (diaphaneity)
+    {
+        *diaphaneity = m_fontDiaphaneity;
+    }
 }
 
 
@@ -79,7 +97,7 @@ void CvxText::getFont(int* type, cv::Scalar* size, bool* underline, float* diaph
    @param：diaphaneity：透明度
    @retval:none
 */
-void CvxText::setFont(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
+void CvxText::set_font(int* type, cv::Scalar* size, bool* underline, float* diaphaneity)
 {
     // 参数合法性检查
     if (type) {
@@ -106,7 +124,7 @@ void CvxText::setFont(int* type, cv::Scalar* size, bool* underline, float* diaph
    @param：none
    @retval:none
 */
-void CvxText::restoreFont()
+void CvxText::restore_font()
 {
     m_fontType = 0;            // 字体类型(不支持)
 
@@ -130,9 +148,9 @@ void CvxText::restoreFont()
    @param：pos：文本位置
    @retval:返回成功输出的字符长度，失败返回-1.
 */
-int CvxText::putText(cv::Mat& img, char* text, cv::Point pos)
+int CvxText::put_text(cv::Mat& img, char* text, cv::Point pos)
 {
-    return putText(img, text, pos, CV_RGB(255, 255, 255));
+    return put_text(img, text, pos, CV_RGB(255, 255, 255));
 }
 
 
@@ -142,9 +160,9 @@ int CvxText::putText(cv::Mat& img, char* text, cv::Point pos)
    @param：pos：文本位置
    @retval:返回成功输出的字符长度，失败返回-1.
 */
-int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos)
+int CvxText::put_text(cv::Mat& img, const wchar_t* text, cv::Point pos)
 {
-    return putText(img, text, pos, CV_RGB(255,255,255));
+    return put_text(img, text, pos, CV_RGB(255,255,255));
 }
 
 
@@ -155,20 +173,26 @@ int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos)
    @param：color：文本颜色
    @retval:返回成功输出的字符长度，失败返回-1.
 */
-int CvxText::putText(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar color)
+int CvxText::put_text(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar color)
 {
-    if (img.data == nullptr) return -1;
-    if (text == nullptr) return -1;
+    if (img.data == nullptr) {
+        return -1;
+    }
+    if (text == nullptr) {
+        return -1;
+    }
 
-    int i;
+    int i = 0;
     for (i = 0; text[i] != '\0'; ++i) {
         wchar_t wc = text[i];
 
         // 解析双字节符号
-        if(!isascii(wc)) mbtowc(&wc, &text[i++], 2);
+        if(!isascii(wc)) {
+            mbtowc(&wc, &text[i++], 2);
+        }
 
         // 输出当前的字符
-        putWChar(img, wc, pos, color);
+        put_wchar(img, wc, pos, color);
     }
 
     return i;
@@ -182,15 +206,19 @@ int CvxText::putText(cv::Mat& img, const char* text, cv::Point pos, cv::Scalar c
    @param：color：文本颜色
    @retval:返回成功输出的字符长度，失败返回-1.
 */
-int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scalar color)
+int CvxText::put_text(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scalar color)
 {
-    if (img.data == nullptr) return -1;
-    if (text == nullptr) return -1;
+    if (img.data == nullptr) {
+        return -1;
+    }
+    if (text == nullptr) {
+        return -1;
+    }
 
-    int i;
+    int i = 0;
     for(i = 0; text[i] != '\0'; ++i) {
         // 输出当前的字符
-        putWChar(img, text[i], pos, color);
+        put_wchar(img, text[i], pos, color);
     }
 
     return i;
@@ -204,7 +232,7 @@ int CvxText::putText(cv::Mat& img, const wchar_t* text, cv::Point pos, cv::Scala
    @param：color：文本颜色
    @retval:none
 */
-void CvxText::putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color)
+void CvxText::put_wchar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar color)
 {
     // 根据unicode生成字体的二值位图
     FT_UInt glyph_index = FT_Get_Char_Index(m_face, wc);
@@ -219,9 +247,9 @@ void CvxText::putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar colo
 
     for (int i = 0; i < rows; ++i) {
         for(int j = 0; j < cols; ++j) {
-            int off  = i * slot->bitmap.pitch + j/8;
+            int off  = i * slot -> bitmap.pitch + j/8;
 
-            if (slot->bitmap.buffer[off] & (0xC0 >> (j%8))) {
+            if (slot -> bitmap.buffer[off] & (0xC0 >> (j%8))) {
                 int r = pos.y - (rows-1-i);
                 int c = pos.x + j;
 
@@ -257,7 +285,7 @@ void CvxText::putWChar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar colo
    @param：locale：
    @retval:成功返回0，失败返回-1.
 */
-int CvxText::ToWchar(char* src, wchar_t* &dest, const char *locale )
+int CvxText::to_wchar(char* src, wchar_t* &dest, const char *locale)
 {
     if (src == NULL) {
         dest = NULL;

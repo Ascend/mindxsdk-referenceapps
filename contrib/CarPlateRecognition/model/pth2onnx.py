@@ -7,7 +7,7 @@ from models.retina import Retina
 from data import cfg_mnet
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--weights', type=str, default='./weights/mnet_plate.pth', help='weights path')
+parser.add_argument('--weights', type=str, default='./weights/mnet_plate.pth', help='''weights path''')
 opt = parser.parse_args()
 
 cfg = cfg_mnet

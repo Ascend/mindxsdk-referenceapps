@@ -23,9 +23,9 @@
    @param:initParam：后处理所需参数的结构体变量
    @retval:APP_ERROR型变量
 */
-APP_ERROR RetinaFace_PostProcess::Init(const InitParam &initParam)
+APP_ERROR RetinaFacePostProcess::init(const InitParam &initParam)
 {
-    SetDefaultParams();
+    set_defaultparams();
 
     nmsThreshold_ = initParam.nmsThreshold;
     scoreThreshold_ = initParam.scoreThreshold;
@@ -44,7 +44,7 @@ APP_ERROR RetinaFace_PostProcess::Init(const InitParam &initParam)
    @param:none
    @retval:APP_ERROR型变量
 */
-APP_ERROR RetinaFace_PostProcess::DeInit()
+APP_ERROR RetinaFacePostProcess::deinit()
 {
     return APP_ERR_OK;
 }
@@ -54,7 +54,7 @@ APP_ERROR RetinaFace_PostProcess::DeInit()
    @param:none
    @retval:none
 */
-void RetinaFace_PostProcess::SetDefaultParams(){
+void RetinaFacePostProcess::set_defaultparams(){
     nmsThreshold_ = 0.4;
     scoreThreshold_ = 0.6;
     width_ = 640;
@@ -73,7 +73,7 @@ void RetinaFace_PostProcess::SetDefaultParams(){
    @retval:none
    @notice:图像输入前会被resize成640×640
 */
-APP_ERROR RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w, int h)
+APP_ERROR RetinaFacePostProcess::generate_anchor(std::vector<box> &anchor, int w, int h)
 {
     anchor.clear();
 
@@ -119,7 +119,7 @@ APP_ERROR RetinaFace_PostProcess::GenerateAnchor(std::vector<box> &anchor, int w
    @param:b：ObjectInfo型变量
    @retval:bool
 */
-inline bool RetinaFace_PostProcess::cmp(MxBase::ObjectInfo a, MxBase::ObjectInfo b) {
+inline bool RetinaFacePostProcess::cmp(MxBase::ObjectInfo a, MxBase::ObjectInfo b) {
     if (a.confidence > b.confidence)
         return true;
     return false;
@@ -131,7 +131,7 @@ inline bool RetinaFace_PostProcess::cmp(MxBase::ObjectInfo a, MxBase::ObjectInfo
    @param:NMS_THRESH-nms阈值
    @retval:none
 */
-void RetinaFace_PostProcess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, float NMS_THRESH)
+void RetinaFacePostProcess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, float NMS_THRESH)
 {
     // 计算每个boundingbox框(即bbox)的面积
     std::vector<float>vArea(input_boxes.size());
@@ -178,7 +178,7 @@ void RetinaFace_PostProcess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, f
    @param:resizedImageInfo：图像的缩放方式，用于坐标还原
    @retval:none
 */
-APP_ERROR RetinaFace_PostProcess::Process(std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos, const MxBase::ResizedImageInfo resizedImageInfo)
+APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos, const MxBase::ResizedImageInfo resizedImageInfo)
 {
      // 将数据从Device侧转移到Host侧
     detect_outputs[0].ToHost();
@@ -191,9 +191,9 @@ APP_ERROR RetinaFace_PostProcess::Process(std::vector<MxBase::TensorBase> detect
 
     // 生成锚框anchor
     std::vector<box> anchor;
-    APP_ERROR ret = GenerateAnchor(anchor, width_, height_);
+    APP_ERROR ret = generate_anchor(anchor, width_, height_);
     if (ret != APP_ERR_OK) {
-        LogError << "RetinaFace_PostProcess GenerateAnchor failed, ret=" << ret << ".";
+        LogError << "RetinaFacePostProcess generate_anchor failed, ret=" << ret << ".";
         return ret;
     }
 

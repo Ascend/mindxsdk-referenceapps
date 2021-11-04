@@ -23,14 +23,14 @@
 
 
 // 车牌识别模型的后处理类
-class LPR_PostProcess
+class LPRPostProcess
 {
 public:
-    LPR_PostProcess() = default; // 构造函数
-    ~LPR_PostProcess()= default; // 析构函数
-    APP_ERROR Init(const InitParam &initParam); // 后处理初始化函数
-    APP_ERROR DeInit(); // 后处理解初始化函数
-    APP_ERROR Process(std::vector<MxBase::TensorBase> recog_outputs, MxBase::ObjectInfo& objectInfo); // 后处理主流程函数
+    LPRPostProcess() = default; // 构造函数
+    ~LPRPostProcess() = default; // 析构函数
+    APP_ERROR init(const InitParam &initParam); // 后处理初始化函数
+    APP_ERROR deinit(); // 后处理解初始化函数
+    APP_ERROR process(std::vector<MxBase::TensorBase> recog_outputs, MxBase::ObjectInfo& objectInfo); // 后处理主流程函数
 protected:
 
 private:
