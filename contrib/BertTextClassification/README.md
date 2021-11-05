@@ -146,7 +146,7 @@ atc --model=bert_text_classification.pb --framework=3 --input_format="ND" --outp
 
 ```
 cp ./bert_text_classification.om $HOME/sdk/model/
-cp ./bert_text_classification.om $HOME/pipeline/model/
+cp ./bert_text_classification.om $HOME/mxBase/model/
 ```
 
 **步骤4** 执行成功后终端输出为：
