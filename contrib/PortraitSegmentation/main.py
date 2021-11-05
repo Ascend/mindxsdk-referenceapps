@@ -20,10 +20,12 @@ Portrait Segmentation and Background Replacement
 # limitations under the License.
 
 
-import os
 import sys
-import numpy as np
+import os
+import io
 import cv2
+import numpy as np
+from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
@@ -36,20 +38,55 @@ MODEL_OUTPUT_WIDTH = 224
 MODEL_OUTPUT_HEIGHT = 224
 MODEL_OUTPUT_DIMENSION = 2
 
+BACKGROUND_IMAGE_PATH = sys.argv[1]
+PORTRAIT_IMAGE_PATH = sys.argv[2]
+
 DEFAULT_THRESHOLD = 1
 EXPECTED_PARAMETERS = 4
 
 REPEAT_AXIS = 3
 REPEAT_TIMES = 2
 
-if __name__ == '__main__':
+MIN_IMAGE_SIZE = 32
+MAX_IMAGE_SIZE = 8192
 
+if __name__ == '__main__':
+    #  check input image
+    input_path = [BACKGROUND_IMAGE_PATH, PORTRAIT_IMAGE_PATH]
+    input_image_data = []
+    for i in input_path:
+        # check input image
+        input_valid = False
+        if os.path.exists(i) != 1:
+            error_message = 'The {} does not exist'.format(i)
+            print(error_message)
+        else:
+            try:
+                image = Image.open(i)
+                if image.format != 'JPEG':
+                    print('input image only support jpg, curr format is {}'.format(image.format))
+                elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
+                    print('input image width must in range [32, 8192], curr is {}'.format(image.width))
+                elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
+                    print('input image height must in range [32, 8192], curr is {}'.format(image.height))
+                else:
+                    input_valid = True
+                    # read input image bytes
+                    image_bytes = io.BytesIO()
+                    image.save(image_bytes, format='JPEG')
+                    input_image_data.append(image_bytes.getvalue())
+            except IOError:
+                print('an IOError occurred while opening {}, maybe your input is not a picture'.format(i))
+        if not input_valid:
+            print('The input image {} is invalid.'.format(i))
+            exit()
+            
     # initialize the stream manager
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
     if stream_state != 0:
-        error_message = "Failed to init Stream manager, streamState=%s" % str(stream_state)
-        raise AssertionError(error_message)
+        print("Failed to init Stream manager, ret=%s" % str(stream_state))
+        exit()
 
     # create streams by the pipeline config
     with open("pipeline/segment.pipeline", 'rb') as f:
@@ -58,30 +95,22 @@ if __name__ == '__main__':
 
     stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
     if stream_state != 0:
-        error_message = "Failed to create Stream, streamState=%s" % str(stream_state)
-        raise AssertionError(error_message)
+        print("Failed to create Stream, ret=%s" % str(stream_state))
+        exit()
 
     # prepare the input of the stream #begin
 
     # check the background img
     data_input = MxDataInput()
-    if os.path.exists(sys.argv[1]) != 1:
-        error_message = 'The background image does not exist.'
-        raise AssertionError(error_message)
-    # check the portrait img
-    if os.path.exists(sys.argv[2]) != 1:
-        error_message = 'The portrait image does not exist.'
-        raise AssertionError(error_message)
-    with open(sys.argv[2], 'rb') as f:
-        data_input.data = f.read()
+    data_input.data = input_image_data[1]
     # prepare the input of the stream #end
 
     # send the prepared data to the stream
     unique_id = stream_manager.SendData(STREAM_NAME, IN_PLUGIN_ID, data_input)
 
     if unique_id < 0:
-        error_message = 'Failed to send data to stream.'
-        raise AssertionError(error_message)
+        print("Failed to send data to stream.")
+        exit()
 
     # construct the resulted streamStateurned by the stream
     plugin_names = [b"mxpi_tensorinfer0"]
@@ -94,11 +123,13 @@ if __name__ == '__main__':
     # check whether the inferred results is valid or not
     if len(infer_result) == 0:
         error_message = 'unable to get effective infer results, please check the stream log for details'
-        raise IndexError(error_message)
+        print(error_message)
+        exit()
     if infer_result[0].errorCode != 0:
         error_message = "GetProtobuf error. errorCode=%d, errorMessage=%s" % (
         infer_result[0].errorCode, infer_result[0].messageName)
-        raise AssertionError(error_message)
+        print(error_message)
+        exit()
 
     # change output tensors into numpy array based on the model's output shape.
     tensor_package = MxpiDataType.MxpiTensorPackageList()
