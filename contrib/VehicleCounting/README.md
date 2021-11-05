@@ -107,7 +107,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4/YOLOv3 om模型：链接
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4/YOLOv3 om模型：[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleCounting/modle.rar)
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
