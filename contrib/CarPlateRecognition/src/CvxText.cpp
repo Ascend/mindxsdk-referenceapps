@@ -101,7 +101,9 @@ void CvxText::set_font(int* type, cv::Scalar* size, bool* underline, float* diap
 {
     // 参数合法性检查
     if (type) {
-        if(type >= 0) m_fontType = *type;
+        if(type >= 0) {
+            m_fontType = *type;
+        }
     }
     if (size) {
         m_fontSize.val[0] = std::fabs(size->val[0]);
@@ -247,10 +249,10 @@ void CvxText::put_wchar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar col
 
     for (int i = 0; i < rows; ++i) {
         for(int j = 0; j < cols; ++j) {
-            int off  = i * slot -> bitmap.pitch + j/8;
+            int off  = i * slot->bitmap.pitch + j / 8;
 
-            if (slot -> bitmap.buffer[off] & (0xC0 >> (j%8))) {
-                int r = pos.y - (rows-1-i);
+            if (slot->bitmap.buffer[off] & (0xC0 >> (j % 8))) {
+                int r = pos.y - (rows - 1 - i);
                 int c = pos.x + j;
 
                 if(r >= 0 && r < img.rows && c >= 0 && c < img.cols) {
@@ -260,7 +262,7 @@ void CvxText::put_wchar(cv::Mat& img, wchar_t wc, cv::Point& pos, cv::Scalar col
                     // 进行色彩融合
                     float p = m_fontDiaphaneity;
                     for (int k = 0; k < 4; ++k) {
-                        scalar.val[k] = scalar.val[k]*(1-p) + color.val[k]*p;
+                        scalar.val[k] = scalar.val[k] * (1 - p) + color.val[k] * p;
                     }
 
                     img.at<cv::Vec3b>(cv::Point(c, r))[0] = (unsigned char)(scalar.val[0]);
