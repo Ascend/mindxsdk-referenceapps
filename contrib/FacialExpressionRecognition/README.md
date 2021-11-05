@@ -126,7 +126,7 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 export PYTHONPATH=${MX_SDK_HOME}/python
 python3.7 main.py
 ```
-命令执行成功后项目目录下生成两张图片：crop_result.jpg 和 my_result.jpg 。crop_result.jpg 是裁剪出的人脸区域图片，my_result.jpg 是生成了人脸框和情绪推理结果的测试图片。
+命令执行成功后项目目录下生成人脸框和情绪推理结果的测试图片：my_result.jpg。
 
 ## 5 精度测试
 
