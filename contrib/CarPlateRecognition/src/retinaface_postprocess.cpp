@@ -30,7 +30,7 @@ APP_ERROR RetinaFacePostProcess::init(const InitParam &initParam)
     nmsThreshold_ = initParam.nmsThreshold;
     scoreThreshold_ = initParam.scoreThreshold;
     width_ = initParam.width;
-    height_= initParam.height;
+    height_ = initParam.height;
     steps_ = initParam.steps;
     min_sizes_ = initParam.min_sizes;
     variances_ = initParam.variances;
@@ -58,8 +58,8 @@ void RetinaFacePostProcess::set_defaultparams(){
     nmsThreshold_ = 0.4;
     scoreThreshold_ = 0.6;
     width_ = 640;
-    height_= 640;
-    steps_= {8, 16, 32};
+    height_ = 640;
+    steps_ = {8, 16, 32};
     min_sizes_ = {{24, 48}, {96, 192}, {384, 768}};
     variances_ = {0.1, 0.2};
     scale_ = {640, 640, 640, 640};
@@ -77,8 +77,9 @@ APP_ERROR RetinaFacePostProcess::generate_anchor(std::vector<box> &anchor, int w
 {
     anchor.clear();
 
-    if(w == 0 || h == 0)
+    if(w == 0 || h == 0) {
         return APP_ERR_COMM_INVALID_PARAM;
+    }
 
     // feature_map= [[80,80], [40,40], [20,20]]
     // 计算原理：step=8时， 640÷8=80，即将输入的图像划分为 80×80个方格
@@ -86,8 +87,8 @@ APP_ERROR RetinaFacePostProcess::generate_anchor(std::vector<box> &anchor, int w
     //          step=32时，640÷8=20
     std::vector<std::vector<int> > feature_map(3);   
     for (int i = 0; i < int(feature_map.size()); ++i) {
-        feature_map[i].push_back(ceil(h/steps_[i])); // ceil是向上取整函数
-        feature_map[i].push_back(ceil(w/steps_[i]));
+        feature_map[i].push_back(ceil(h / steps_[i])); // ceil是向上取整函数
+        feature_map[i].push_back(ceil(w / steps_[i]));
     }
 
     // 生成锚框anchor
@@ -100,10 +101,10 @@ APP_ERROR RetinaFacePostProcess::generate_anchor(std::vector<box> &anchor, int w
             {
                 for (int l = 0; l < int(min_size.size()); ++l)
                 {
-                    float s_kx = min_size[l]*1.0/w;
-                    float s_ky = min_size[l]*1.0/h;
-                    float cx = (j + 0.5) * steps_[k]/w; // 计算feature_map中每个方格的中心点的x坐标
-                    float cy = (i + 0.5) * steps_[k]/h; // 计算feature_map中每个方格的中心点的y坐标
+                    float s_kx = min_size[l] * 1.0 / w;
+                    float s_ky = min_size[l] * 1.0 / h;
+                    float cx = (j + 0.5) * steps_[k] / w; // 计算feature_map中每个方格的中心点的x坐标
+                    float cy = (i + 0.5) * steps_[k] / h; // 计算feature_map中每个方格的中心点的y坐标
                     box axil = {cx, cy, s_kx, s_ky};
                     anchor.push_back(axil);
                 }
@@ -120,8 +121,9 @@ APP_ERROR RetinaFacePostProcess::generate_anchor(std::vector<box> &anchor, int w
    @retval:bool
 */
 inline bool RetinaFacePostProcess::cmp(MxBase::ObjectInfo a, MxBase::ObjectInfo b) {
-    if (a.confidence > b.confidence)
+    if (a.confidence > b.confidence) {
         return true;
+    }
     return false;
 }
 
@@ -178,7 +180,9 @@ void RetinaFacePostProcess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, fl
    @param:resizedImageInfo：图像的缩放方式，用于坐标还原
    @retval:none
 */
-APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos, const MxBase::ResizedImageInfo resizedImageInfo)
+APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_outputs, 
+                                        std::vector<MxBase::ObjectInfo>& objectInfos, 
+                                        const MxBase::ResizedImageInfo resizedImageInfo)
 {
      // 将数据从Device侧转移到Host侧
     detect_outputs[0].ToHost();
@@ -212,10 +216,10 @@ APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_
             tmp1.cy = tmp.cy + *(loc+1) * variances_[0] * tmp.sy;
             tmp1.sx = tmp.sx * exp(*(loc+2) * variances_[1]);
             tmp1.sy = tmp.sy * exp(*(loc+3) * variances_[1]);
-            result.x0 = (tmp1.cx - tmp1.sx/2) * scale_[0];
-            result.y0 = (tmp1.cy - tmp1.sy/2) * scale_[1];
-            result.x1 = (tmp1.cx + tmp1.sx/2) * scale_[2];
-            result.y1 = (tmp1.cy + tmp1.sy/2) * scale_[3];
+            result.x0 = (tmp1.cx - tmp1.sx / 2) * scale_[0];
+            result.y0 = (tmp1.cy - tmp1.sy / 2) * scale_[1];
+            result.x1 = (tmp1.cx + tmp1.sx / 2) * scale_[2];
+            result.y1 = (tmp1.cy + tmp1.sy / 2) * scale_[3];
 
             // score
             result.confidence = *(conf + 1);
@@ -229,15 +233,16 @@ APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_
             total_boxs.push_back(result);
         }
         loc += 4; // loc代表坐标点，其shape为16800*4，但因为ptr相当于将loc展平为1*67200，所以当某个loc低于阈值时，直接跳过剩下的四个数，
-        conf+= 2; // conf代表置信度，其shape为16800*2
+        conf += 2; // conf代表置信度，其shape为16800*2
         landms += 8; // landms代表特征点，其shape为16800*8，但该维度没用到
     }
 
     std::sort(total_boxs.begin(), total_boxs.end(), cmp); // 将total_boxs中的元素按置信度confidence大小降序排列
     nms(total_boxs, nmsThreshold_); // 进行非极大值抑制
 
-    for (int j = 0; j < int(total_boxs.size()); ++j)
+    for (int j = 0; j < int(total_boxs.size()); ++j) {
         objectInfos.push_back(total_boxs[j]);
+    }
 
     // 根据提供的图像缩放方式进行坐标还原
     CoordinatesReduction(0, resizedImageInfo, objectInfos, false);

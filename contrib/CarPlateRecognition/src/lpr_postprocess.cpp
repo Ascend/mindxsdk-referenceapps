@@ -86,7 +86,9 @@ APP_ERROR LPRPostProcess::process(std::vector<MxBase::TensorBase> recog_outputs,
         max_index = 0;
      }
 
-    fmt << carplate_chrs[0] << carplate_chrs[1] << carplate_chrs[2] << carplate_chrs[3] << carplate_chrs[4] << carplate_chrs[5] << carplate_chrs[6];
+    fmt << carplate_chrs[0] << carplate_chrs[1] << carplate_chrs[2] << carplate_chrs[3] << carplate_chrs[4] 
+        << carplate_chrs[5] << carplate_chrs[6];
+
     objectInfo.className = fmt.str();
 
     return APP_ERR_OK;

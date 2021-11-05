@@ -31,8 +31,8 @@ void InitCarPlateRecognitionParam(InitParam &initParam)
     initParam.nmsThreshold = 0.4;
     initParam.scoreThreshold = 0.6;
     initParam.width = 640;
-    initParam.height= 640;
-    initParam.steps= {8, 16, 32};
+    initParam.height = 640;
+    initParam.steps = {8, 16, 32};
     initParam.min_sizes = {{24, 48}, {96, 192}, {384, 768}};
     initParam.variances = {0.1, 0.2};
     initParam.scale = {640, 640, 640, 640};
@@ -52,11 +52,11 @@ int main(int argc, char* argv[])
 
     InitParam initParam;
     InitCarPlateRecognitionParam(initParam); 
-	std::string imgPath = argv[1];
+    std::string imgPath = argv[1];
 	
 	// 创建一个车牌识别对象并初始化
-	auto car_plate_recognition = std::make_shared<CarPlateRecognition>();
-	APP_ERROR ret = car_plate_recognition->init(initParam);
+    auto car_plate_recognition = std::make_shared<CarPlateRecognition>();
+    APP_ERROR ret = car_plate_recognition->init(initParam);
     if (ret != APP_ERR_OK) {
         LogError << "CarPlateRecognition init failed, ret=" << ret << ".";
         return ret;

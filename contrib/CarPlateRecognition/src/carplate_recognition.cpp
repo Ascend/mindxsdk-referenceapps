@@ -120,7 +120,9 @@ APP_ERROR CarPlateRecognition::readimage(const std::string &imgPath, MxBase::Ten
         return ret;
     }
     // STEP2:将数据从HOST侧转移到DEVICE侧，以便后续处理
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                    MxBase::MemoryData::MemoryType::MEMORY_DEVICE,
+                                    deviceId_);
     // STEP3:对解码后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
@@ -162,7 +164,8 @@ APP_ERROR CarPlateRecognition::resize(const MxBase::TensorBase &inputTensor, MxB
         return ret;
     }
 	// STEP3:将数据从HOST侧转移到DEVICE侧
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                    MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     // STEP4:对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
@@ -203,7 +206,8 @@ APP_ERROR CarPlateRecognition::resize1(const MxBase::TensorBase &inputTensor, Mx
         return ret;
     }
 	// STEP3:将数据转为到DEVICE侧
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
+                                    MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     // STEP4:对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
@@ -224,7 +228,9 @@ APP_ERROR CarPlateRecognition::resize1(const MxBase::TensorBase &inputTensor, Mx
    @param: objInfos:目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::crop(const MxBase::TensorBase &inputTensor, MxBase::TensorBase &outputTensor, MxBase::ObjectInfo objInfo) {
+APP_ERROR CarPlateRecognition::crop(const MxBase::TensorBase &inputTensor,
+                                    MxBase::TensorBase &outputTensor,
+                                    MxBase::ObjectInfo objInfo) {
 
     // STEP1:将图像还原为原始尺寸(在ReadImage的STEP4中图像进行了尺度变换)
 	auto shape = inputTensor.GetShape();
@@ -248,7 +254,9 @@ APP_ERROR CarPlateRecognition::crop(const MxBase::TensorBase &inputTensor, MxBas
         return ret;
     }
     // STEP3:将数据转为到DEVICE侧
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+                                MxBase::MemoryData::MemoryType::MEMORY_DEVICE,
+                                deviceId_);
     // STEP4:对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
         LogError << "Output data height(" << output.heightStride << ") can't be divided by " << VPC_H_ALIGN << ".";
@@ -269,7 +277,9 @@ APP_ERROR CarPlateRecognition::crop(const MxBase::TensorBase &inputTensor, MxBas
    @param：objInfos:目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::crop_resize1(MxBase::TensorBase inputTensor, std::vector<MxBase::TensorBase> &cropresize_Tensors, std::vector<MxBase::ObjectInfo> objInfos)
+APP_ERROR CarPlateRecognition::crop_resize1(MxBase::TensorBase inputTensor,
+                                            std::vector<MxBase::TensorBase> &cropresize_Tensors,
+                                            std::vector<MxBase::ObjectInfo> objInfos)
 {
     MxBase::TensorBase crop_Tensor;
     MxBase::TensorBase resize_Tensor;
@@ -298,7 +308,8 @@ APP_ERROR CarPlateRecognition::crop_resize1(MxBase::TensorBase inputTensor, std:
    @param：outputs:模型推理的输出数据
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::TensorBase> inputs,std::vector<MxBase::TensorBase> &outputs) {
+APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::TensorBase> inputs,
+                                                    std::vector<MxBase::TensorBase> &outputs) {
 
     // STEP1:根据模型的输出创建空的TensorBase变量
     auto dtypes = detection_model_->GetOutputDataType();
@@ -334,7 +345,9 @@ APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::Ten
    @param：objInfos:目标检测类任务的目标框信息
    @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase orign_Tensor, std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
+APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase orign_Tensor,
+                                                    std::vector<MxBase::TensorBase> detect_outputs,
+                                                    std::vector<MxBase::ObjectInfo>& objectInfos) {
 
     // STEP1:获取图像的缩放方式，用于后处理中的坐标还原使用
     auto shape = orign_Tensor.GetShape();
@@ -343,7 +356,7 @@ APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase or
     resizedImageInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
     resizedImageInfo.widthResize = 640;
     resizedImageInfo.heightResize = 640;
-    resizedImageInfo.resizeType  = MxBase::RESIZER_STRETCHING;
+    resizedImageInfo.resizeType = MxBase::RESIZER_STRETCHING;
     // STEP2:进行模型后处理
     APP_ERROR ret = detection_post_->process(detect_outputs, objectInfos, resizedImageInfo);
     if (ret != APP_ERR_OK) {
@@ -365,7 +378,8 @@ APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase or
 *  @param：outputs:模型推理的输出数据
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs, std::vector<std::vector<MxBase::TensorBase>> &outputs) {
+APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs,
+                                                    std::vector<std::vector<MxBase::TensorBase>> &outputs) {
 
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH; // 设置类型为静态batch
@@ -411,7 +425,8 @@ APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::T
 *  @param：objInfos:其成员className用于存放所识别出来的车牌字符
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::recognition_postprocess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs, std::vector<MxBase::ObjectInfo>& objectInfos) {
+APP_ERROR CarPlateRecognition::recognition_postprocess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs,
+                                                        std::vector<MxBase::ObjectInfo>& objectInfos) {
 
     for(int i = 0; i<int(objectInfos.size()); i++)
     {
@@ -439,7 +454,8 @@ APP_ERROR CarPlateRecognition::recognition_postprocess(std::vector<std::vector<M
 *					因为可能检测到多个对象，每个对象又会产生多个目标框，所以objInfos是元素为ObjectInfo型容器的容器对象
 *  @retval:APP_ERROR型变量
 */
-APP_ERROR CarPlateRecognition::write_result(MxBase::TensorBase &tensor, std::vector<MxBase::ObjectInfo> objectInfos) {
+APP_ERROR CarPlateRecognition::write_result(MxBase::TensorBase &tensor,
+                                            std::vector<MxBase::ObjectInfo> objectInfos) {
 
     // STEP1:数据从DEVICE侧转到HOST侧（ReadImage的STEP2和Resize的STEP3将数据转到了DEVICE侧）
     APP_ERROR ret = tensor.ToHost();
@@ -465,7 +481,8 @@ APP_ERROR CarPlateRecognition::write_result(MxBase::TensorBase &tensor, std::vec
 
         // 写车牌号
 	    cv::Size text_size = cv::getTextSize(objectInfos[j].className, cv::FONT_HERSHEY_SIMPLEX, 1, 2, &baseline);
-        text.put_text(imgBgr, w_str, cv::Point(objectInfos[j].x0+(objectInfos[j].x1-objectInfos[j].x0)/2-text_size.width/2+5, objectInfos[j].y0-5), cv::Scalar(0, 0, 255));
+        text.put_text(imgBgr, w_str, cv::Point(objectInfos[j].x0 + (objectInfos[j].x1 - objectInfos[j].x0) / 2 - text_size.width / 2 + 5,
+                        objectInfos[j].y0 - 5), cv::Scalar(0, 0, 255));
         // 画目标框
         cv::Rect rect(objectInfos[j].x0, objectInfos[j].y0, objectInfos[j].x1 - objectInfos[j].x0, objectInfos[j].y1 - objectInfos[j].y0);
         cv::rectangle(imgBgr, rect, cv::Scalar(0, 0, 255), 1, 8, 0);
