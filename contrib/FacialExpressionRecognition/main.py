@@ -103,8 +103,6 @@ if __name__ == '__main__':
     width = x1 - x0
     cv2.rectangle(img, (int(x0), int(y0)), (int(x1), int(y1)), (255, 0, 0), 2)
     cv2.putText(img, emotions[maxindex], (int(x0), int(y0)-1), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0), 2)
-    expand_width = 1.4 * width
-    x0 = x0 - 0.2 * width
     cv2.imwrite("./my_result.jpg", img)
     
     # destroy streams
