@@ -24,11 +24,6 @@
 #include "opencv2/opencv.hpp"
 #include "VideoProcess.h"
 
-#include "libavformat/avformat.h"
-#include "libavcodec/avcodec.h"
-#include "libavutil/avutil.h"
-#include "libswscale/swscale.h"
-
 namespace {
     static std::vector<std::queue<center>> pts(10000); // 保存每个车辆轨迹的最新的20个bbox的中心点
     static std::vector<center> line = {center{0,100}, center{1280, 100}}; // 计数所用的线段
