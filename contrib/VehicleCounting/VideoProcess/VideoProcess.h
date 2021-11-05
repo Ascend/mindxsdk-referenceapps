@@ -25,6 +25,12 @@
 #include "../BlockingQueue/BlockingQueue.h"
 #include "../Yolov4Detection/Yolov4Detection.h"
 #include "MOTConnection.h"
+extern "C" {
+#include "libavformat/avformat.h"
+#include "libavcodec/avcodec.h"
+#include "libavutil/avutil.h"
+#include "libswscale/swscale.h"
+}
 
 struct center{
     double x;
