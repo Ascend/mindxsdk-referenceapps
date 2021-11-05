@@ -137,6 +137,6 @@ python3.7 main.py
 export PYTHONPATH=${MX_SDK_HOME}/python
 python3.7 test.py
 ```
-命令执行成功后会输入测试精度与测试图片的个数。测试精度如下图所示：
+命令执行成功后会输出测试精度与测试图片的个数。测试精度如下图所示：
 
 ![Image text](image/acc.png)
