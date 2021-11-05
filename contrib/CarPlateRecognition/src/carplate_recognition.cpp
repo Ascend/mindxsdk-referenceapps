@@ -380,7 +380,6 @@ APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase or
 */
 APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs,
                                                     std::vector<std::vector<MxBase::TensorBase>> &outputs) {
-
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH; // 设置类型为静态batch
 
