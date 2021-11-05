@@ -15,9 +15,11 @@
 
 ### 1.3 软件方案介绍
 
-基于MindX SDK的情绪识别业务流程为：待识别的图片通过open函数和read函数组成字符串，将字符串通过 appsrc 插件输入，
-接着由媒体数据处理插件mxpi_imagedecoder和mxpi_imageresize对输入的图片进行解码和缩放操作，然后由推理模型插件mxpi_tensorinfer和mxpi_objectpostprocessor推理每张图片的人脸区域，
-再通过媒体数据处理插件mxpi_imagecrop和mxpi_imageresize对输入的图片进行裁剪和缩放操作，最后通过推理模型插件mxpi_tensorinfer得到每种类别的得分。本系统的各模块及功能描述如表1所示：
+基于MindX SDK的情绪识别业务流程为：待识别的图片通过open函数和read函数组成字符串，将字符串通过 appsrc 插件输入， 
+接着由媒体数据处理插件mxpi_imagedecoder和mxpi_imageresize对输入的图片进行解码和缩放操作，
+然后由推理模型插件mxpi_tensorinfer、mxpi_objectpostprocessor和mxpi_distributor推理每张图片的人脸区域，
+再通过媒体数据处理插件mxpi_imagecrop对输入的图片进行裁剪和缩放操作得到人脸图片，最后将人脸图片喂入推理模型插件mxpi_tensorinfer得到每种情绪类别的得分。
+本系统的各模块及功能描述如表1所示：
 
 
 表1.1 系统方案各子系统功能描述：
