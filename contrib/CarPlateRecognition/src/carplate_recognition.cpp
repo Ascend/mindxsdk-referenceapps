@@ -309,7 +309,7 @@ APP_ERROR CarPlateRecognition::crop_resize1(MxBase::TensorBase inputTensor,
    @retval:APP_ERROR型变量
 */
 APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::TensorBase> inputs,
-                                                    std::vector<MxBase::TensorBase> &outputs) {
+                                                   std::vector<MxBase::TensorBase> &outputs) {
 
     // STEP1:根据模型的输出创建空的TensorBase变量
     auto dtypes = detection_model_->GetOutputDataType();
@@ -346,8 +346,8 @@ APP_ERROR CarPlateRecognition::detection_inference(const std::vector<MxBase::Ten
    @retval:APP_ERROR型变量
 */
 APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase orign_Tensor,
-                                                    std::vector<MxBase::TensorBase> detect_outputs,
-                                                    std::vector<MxBase::ObjectInfo>& objectInfos) {
+                                                     std::vector<MxBase::TensorBase> detect_outputs,
+                                                     std::vector<MxBase::ObjectInfo>& objectInfos) {
 
     // STEP1:获取图像的缩放方式，用于后处理中的坐标还原使用
     auto shape = orign_Tensor.GetShape();
@@ -379,7 +379,7 @@ APP_ERROR CarPlateRecognition::detection_postprocess(const MxBase::TensorBase or
 *  @retval:APP_ERROR型变量
 */
 APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs,
-                                                    std::vector<std::vector<MxBase::TensorBase>> &outputs) {
+                                                     std::vector<std::vector<MxBase::TensorBase>> &outputs) {
     MxBase::DynamicInfo dynamicInfo = {};
     dynamicInfo.dynamicType = MxBase::DynamicType::STATIC_BATCH; // 设置类型为静态batch
 
@@ -425,7 +425,7 @@ APP_ERROR CarPlateRecognition::recognition_inference(const std::vector<MxBase::T
 *  @retval:APP_ERROR型变量
 */
 APP_ERROR CarPlateRecognition::recognition_postprocess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs,
-                                                        std::vector<MxBase::ObjectInfo>& objectInfos) {
+                                                       std::vector<MxBase::ObjectInfo>& objectInfos) {
 
     for(int i = 0; i<int(objectInfos.size()); i++)
     {
@@ -481,7 +481,7 @@ APP_ERROR CarPlateRecognition::write_result(MxBase::TensorBase &tensor,
         // 写车牌号
         cv::Size text_size = cv::getTextSize(objectInfos[j].className, cv::FONT_HERSHEY_SIMPLEX, 1, 2, &baseline);
         text.put_text(imgBgr, w_str, cv::Point(objectInfos[j].x0 + (objectInfos[j].x1 - objectInfos[j].x0) / 2 
-                        - text_size.width / 2 + 5,objectInfos[j].y0 - 5), cv::Scalar(0, 0, 255));
+            - text_size.width / 2 + 5,objectInfos[j].y0 - 5), cv::Scalar(0, 0, 255));
         // 画目标框
         cv::Rect rect(objectInfos[j].x0, objectInfos[j].y0, objectInfos[j].x1 - objectInfos[j].x0,
                         objectInfos[j].y1 - objectInfos[j].y0);

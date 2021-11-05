@@ -181,8 +181,8 @@ void RetinaFacePostProcess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, fl
    @retval:none
 */
 APP_ERROR RetinaFacePostProcess::process(std::vector<MxBase::TensorBase> detect_outputs, 
-                                        std::vector<MxBase::ObjectInfo>& objectInfos, 
-                                        const MxBase::ResizedImageInfo resizedImageInfo)
+                                         std::vector<MxBase::ObjectInfo>& objectInfos, 
+                                         const MxBase::ResizedImageInfo resizedImageInfo)
 {
      // 将数据从Device侧转移到Host侧
     detect_outputs[0].ToHost();
