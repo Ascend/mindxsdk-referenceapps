@@ -1,5 +1,3 @@
-import os
-import sys
 import torch
 import onnx
 from models.retina import Retina 
