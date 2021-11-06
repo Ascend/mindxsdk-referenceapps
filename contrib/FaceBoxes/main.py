@@ -62,8 +62,8 @@ if __name__ == '__main__':
             img_names.append(img_name)
             img_addresses.append(os.path.join(args.image_folder,img_name[0:4],img_name[5:7],img_name[8:10],'big','img_'+img_name[19:]+'.jpg'))
 
-    for i, j in enumerate(img_addresses):
-        with open( j,'rb')as f:
+    for i, name_img in enumerate(img_addresses):
+        with open(name_img,'rb')as f:
             dataInput.data = f.read()              
         # Inputs data to a specified stream based on streamName.
         streamName = b'Faceboxes'

@@ -217,7 +217,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
         num_boxes += len(gt_box_dict[i+1])
     event = list(pred.keys())
     event = [int(e) for e in event]
-    event.sort()  #event = [1]
+    event.sort()
     thresh_num = 1000
     aps = []
 
@@ -225,13 +225,13 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     for setting_id in pbar:
         pbar.set_description('Predicting ... ')
         # different setting
-        for id in range(1,11):
+        for fold_id in range(1,11):
             count_face = 0
             pr_curve = np.zeros((thresh_num, 2)).astype('float')
-            gt = gt_box_dict[id]
+            gt = gt_box_dict[fold_id]
             pred_list = pred[str(event[setting_id])]
             gt_list = list(gt.keys())
-            for j in range(len(gt_list)):
+            for j, _ in enumerate(gt_list):
                 gt_boxes = gt[gt_list[j]].astype('float')  # from image name get gt boxes
                 pred_info = pred_list[gt_list[j]]
                 keep_index = np.array(range(1, len(gt_boxes) + 1))
@@ -255,7 +255,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
 
     print("==================== Results ====================")
     fw = open('results.txt', 'w')
-    for i in range(len(aps)):
+    for i, _ in enumerate(aps):
         print("FDDB-fold-{} Val AP: {}".format(int(i+1), aps[i]))
         fw.write("FDDB-fold-{} Val AP: {}\n".format(int(i+1), aps[i]))
     print("FDDB Dataset Average AP: {}".format(sum(aps)/len(aps)))

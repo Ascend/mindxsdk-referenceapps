@@ -73,7 +73,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
 
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
-        GeneratePriorBox(PriorBox); //generate prior boxes
+        GeneratePriorBox(PriorBox); 
         
         float width_resize = resizedImageInfos[0].widthResize;
         float height_resize = resizedImageInfos[0].heightResize;
@@ -88,14 +88,13 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         else{
           resize_scale_factor = width_resize_scale;        
         }        
-        cv::Mat res = decode(location, PriorBox, resize_scale_factor); //using biases and prior boxes to generate detection boxes
+        cv::Mat res = decode(location, PriorBox, resize_scale_factor); 
 
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
         for (uint32_t i = 0; i < batchSize; i++){
             std::vector <ObjectInfo> objectInfo;
-            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize; //ptr of confidence
-            for (uint32_t j = 0; j < VectorNum; j++) {
+            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
                 float* begin_Conf = dataPtr_Conf + j*2; 
                 if(*(begin_Conf + 1)> confThresh_ ) {
                     ObjectInfo objInfo;

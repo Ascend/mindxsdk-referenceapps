@@ -15,7 +15,6 @@
 from __future__ import print_function
 import argparse
 import torch
-#from utils.nms.py_cpu_nms import py_cpu_nms
 from models.faceboxes import FaceBoxes
 
 parser = argparse.ArgumentParser(description='FaceBoxes')

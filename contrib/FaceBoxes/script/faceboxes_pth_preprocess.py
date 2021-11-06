@@ -46,7 +46,7 @@ if __name__ == '__main__':
     
     # testing begin
     for i, img_name in enumerate(test_dataset):
-        if i<3000:   
+        if i < 3000:
             image_path = testset_folder + img_name + '.jpg'
             img_raw = cv2.imread(image_path, cv2.IMREAD_COLOR)
             img = np.float32(img_raw)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
             width_pad = target_size - img.shape[1]
             left = 0 
             right = width_pad
-            height_pad = target_size -img.shape[0]
+            height_pad = target_size - img.shape[0]
             top = 0
             bottom = height_pad
             img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0,0,0))
@@ -72,7 +72,7 @@ if __name__ == '__main__':
             img = img.transpose(2, 0, 1)
             img = torch.from_numpy(img).unsqueeze(0)
             
-            img_name1='_'.join(img_name.split('/')) 
+            img_name1 = '_'.join(img_name.split('/'))
             print('begin: {0}, {1}'.format(img_name,img.shape))
             fw.write('{:s} {:.3f} {:.3f} {:.3f}\n'.format(img_name1,im_height, im_width, resize))
             

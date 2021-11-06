@@ -23,17 +23,15 @@
 #define DEFAULT_OBJECT_INFO_TENSOR  0
 #define DEFAULT_IOU_THRESH  0.3
 #define DEFAULT_CONFIDENCE_THRESH  0.5
-}
 
 
-namespace MxBase
-{   
+
+namespace MxBase {   
     bool operator<(const ObjectInfo &a ,const ObjectInfo &b){
         return a.confidence < b.confidence;
     }
         
-    class FaceboxesPostProcess : public ObjectPostProcessBase
-    {
+    class FaceboxesPostProcess : public ObjectPostProcessBase {
     public:
         FaceboxesPostProcess() = default;
 
@@ -41,7 +39,7 @@ namespace MxBase
 
         FaceboxesPostProcess(const FaceboxesPostProcess& other) = default;
 
-        FaceboxesPostProcess& operator=(const FaceboxesPostProcess& other);
+        FaceboxesPostProcess& operator=(const FaceboxesPostProcess& other) = delete;
 
         APP_ERROR Init(const std::map <std::string, std::shared_ptr<void>>& postConfig) override;
 
@@ -55,8 +53,8 @@ namespace MxBase
         void GeneratePriorBox(cv::Mat &anchors);
         cv::Mat decode(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor);
         void ObjectDetectionOutput(const std::vector <MxBase::TensorBase>& tensors,
-            std::vector <std::vector<MxBase::ObjectInfo>>& objectInfos,
-            const std::vector <MxBase::ResizedImageInfo>& resizedImageInfos = {});
+                                   std::vector <std::vector<MxBase::ObjectInfo>>& objectInfos,
+                                   const std::vector <MxBase::ResizedImageInfo>& resizedImageInfos = {});
     private:
         uint32_t objectConfTensor_ = DEFAULT_OBJECT_CONF_TENSOR;
         uint32_t objectInfoTensor_ = DEFAULT_OBJECT_INFO_TENSOR;
