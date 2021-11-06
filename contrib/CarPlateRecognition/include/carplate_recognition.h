@@ -28,7 +28,7 @@
 
 
 // 车牌识别大类，其中调用了车牌检测模型后处理类RetinaFace_PostProcess和车牌识别模型后处理类LPR_PostProcess
-class CarPlateRecognition{
+class car_plate_recognition{
 public:
     APP_ERROR init(const InitParam &initParam); // 初始化函数
     APP_ERROR deinit(); // 解初始化函数
@@ -48,8 +48,8 @@ private:
     std::shared_ptr<MxBase::DvppWrapper> dvppWrapper_; // DvppWrapper对象，封装了图像解码、缩放、扣图等功能
     std::shared_ptr<MxBase::ModelInferenceProcessor> detection_model_;   // 车牌检测模型对象
     std::shared_ptr<MxBase::ModelInferenceProcessor> recognition_model_; // 车牌识别模型对象
-    std::shared_ptr<RetinaFacePostProcess> detection_post_; // 车牌检测模型后处理对象
-    std::shared_ptr<LPRPostProcess> recognition_post_;	 // 车牌识别模型后处理对象
+    std::shared_ptr<retinaface_postprocess> detection_post_; // 车牌检测模型后处理对象
+    std::shared_ptr<lpr_postprocess> recognition_post_;	 // 车牌识别模型后处理对象
     MxBase::ModelDesc detection_modelDesc_   = {}; // 车牌检测模型描述信息
     MxBase::ModelDesc recognition_modelDesc_ = {}; // 车牌识别模型描述信息
     uint32_t deviceId_ = 0; // 设备ID

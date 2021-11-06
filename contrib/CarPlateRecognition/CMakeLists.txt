@@ -7,7 +7,7 @@ add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
 #设置SDK的安装路径
-set(MX_SDK_HOME "/home/zhongzhi3/MindX_SDK/mxVision")
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
 #添加.h文件的搜索路径
 include_directories(

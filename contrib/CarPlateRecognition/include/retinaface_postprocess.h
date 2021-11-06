@@ -33,11 +33,11 @@ struct box{
 
 
 // 车牌检测模型RetinaFace的后处理类
-class RetinaFacePostProcess : public MxBase::ObjectPostProcessBase
+class retinaface_postprocess : public MxBase::ObjectPostProcessBase
 {
 public:
-    RetinaFacePostProcess() = default; // 构造函数
-    ~RetinaFacePostProcess() = default; // 析构函数
+    retinaface_postprocess() = default; // 构造函数
+    ~retinaface_postprocess() = default; // 析构函数
     APP_ERROR init(const InitParam &initParam); // 后处理初始化函数
     APP_ERROR deinit(); // 后处理解初始化函数
     APP_ERROR process(std::vector<MxBase::TensorBase> detect_outputs, std::vector<MxBase::ObjectInfo>& objectInfos, const MxBase::ResizedImageInfo resizedImageInfo); // 后处理主流程函数

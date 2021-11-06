@@ -116,6 +116,8 @@ python pth2onnx.py
 
 *onnx = 1.10.1*
 
+注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)模型。
+
 **步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的CarPlateRecognition/model/目录下，执行如下命令：
 
 ```shell
@@ -124,21 +126,21 @@ atc --model=./mnet_plate.onnx --output=./retinaface --framework=5 --soc_version=
 
 ### 3.2 车牌识别模型的转换
 
-**步骤1** **模型获取** 下载车牌识别预训练模型的[car_plate_recognition.prototxt](https://gitee.com/HuaweiAscend/models/tree/master/computer_vision/classification/car_plate_recognition)文件和[car_plate_recognition.caffemodel](https://obs-model-ascend.obs.cn-east-2.myhuaweicloud.com/car_plate_recognition/car_plate_recognition.caffemodel)文件 。
+**步骤1** **模型获取** 下载车牌识别预训练模型的[lpr.prototxt](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件和[lpr.caffemodel](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件 。
 
 **步骤2** **模型存放** 将获取到的.prototxt文件和.caffemodel文件存放至**服务器端**的CarPlateRecognition/model/目录下。
 
 **步骤3** **caffe转om** 进入model文件夹，执行如下的ATC命令进行模型转换：
 
 ```shell
-atc --model=./car_plate_recognition.prototxt --weight=./car_plate_recognition.caffemodel --output=./lpr --framework=0 --soc_version=Ascend310 --input_format=NCHW --input_shape="data:1,3,72,272" --output_type=FP32 --insert_op_conf=./lpr.aippconfig 
+atc --model=./lpr.prototxt --weight=./lpr.caffemodel --output=./lpr --framework=0 --soc_version=Ascend310 --input_format=NCHW --input_shape="data:1,3,72,272" --output_type=FP32 --insert_op_conf=./lpr.aippconfig 
 ```
 
 ## 4. 编译与运行
 
 **步骤1** **修改CMakeLists.txt文件** 
 
-第**10**行 **set(MX_SDK_HOME "/home/zhongzhi3/MindX_SDK/mxVision")** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
+第**10**行 **set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")** 语句是设置SDK的安装路径，需将**$ENV{MX_SDK_HOME}**替换为用户实际的SDK安装路径。
 
 第**18**行 **/home/zhongzhi3/freetype-2.10.0/include** 语句是设置FreeType库中头文件的搜索路径，需根据自己的FreeType安装路径进行替换。
 
