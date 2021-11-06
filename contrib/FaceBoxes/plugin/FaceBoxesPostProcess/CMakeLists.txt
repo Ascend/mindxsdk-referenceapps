@@ -6,16 +6,17 @@ add_definitions(-Dgoogle=mindxsdk_private)
 
 set(PLUGIN_NAME "faceboxespostprocess")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/opensource/include)
-include_directories(${PROJECT_SOURCE_DIR}/opensource/include/gstreamer-1.0)
-include_directories(${PROJECT_SOURCE_DIR}/opensource/include/glib-2.0)
-include_directories(${PROJECT_SOURCE_DIR}/opensource/lib/glib-2.0/include)
-include_directories(${PROJECT_SOURCE_DIR}/opensource/include/opencv4)
+include_directories(${MX_SDK_HOME}/include)
+include_directories(${MX_SDK_HOME}/opensource/include)
+include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
+include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
+include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
+include_directories(${MX_SDK_HOME}/opensource/include/opencv4)
 
-link_directories(${PROJECT_SOURCE_DIR}/opensource/lib/)
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+link_directories(${MX_SDK_HOME}/opensource/lib/)
+link_directories(${MX_SDK_HOME}/lib)
 
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")
@@ -27,4 +28,4 @@ target_link_libraries(${TARGET_LIBRARY} glib-2.0 gstreamer-1.0 gobject-2.0 gstba
 target_link_libraries(${TARGET_LIBRARY} plugintoolkit mxpidatatype mxbase opencv_world)
 target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
 
-install(TARGETS ${TARGET_LIBRARY} LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/lib/modelpostprocessors)
+install(TARGETS ${TARGET_LIBRARY} LIBRARY DESTINATION ${MX_SDK_HOME}/lib/modelpostprocessors)
