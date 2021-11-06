@@ -3,7 +3,7 @@
 ## 1. 介绍
 
 文本分类插件基于 MindXSDK 开发，在晟腾芯片上进行情绪识别，将分类结果在图片上显示。输入一张人脸图片，可以判断属于哪个情绪类别。
-该模型支持7个类别：anger, fear, disgust, happy, sad, surprised, normal。
+该模型支持7个类别：surprised, fear, disgust, happy, sad, anger, normal。
 
 ### 1.1 支持的产品
 
