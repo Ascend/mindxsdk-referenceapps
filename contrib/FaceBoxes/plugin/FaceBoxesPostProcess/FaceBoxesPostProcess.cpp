@@ -95,6 +95,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         for (uint32_t i = 0; i < batchSize; i++){
             std::vector <ObjectInfo> objectInfo;
             auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
+            for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j*2; 
                 if(*(begin_Conf + 1)> confThresh_ ) {
                     ObjectInfo objInfo;
