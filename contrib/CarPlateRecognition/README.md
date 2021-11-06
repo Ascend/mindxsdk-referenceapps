@@ -31,9 +31,7 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
   ├── initparam.h # 定义了包含程序所需参数的结构体
   ├── CvxText.h 
 ├── model #模型目录
-  ├── lpr.om #车牌识别模型
   ├── lpr.aippconfig #转om模型所使用的aipp配置文件
-  ├── retinaface.om #车牌检测模型
   ├── retinaface.aippconfig 
   ├── pth2onnx.py #pth模型转onnx模型脚本
 ├── src #源文件目录
