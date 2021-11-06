@@ -37,9 +37,9 @@ namespace MxBase {
 
         ~FaceboxesPostProcess() = default;
 
-        FaceboxesPostProcess(const FaceboxesPostProcess& other) = default;
+        FaceboxesPostProcess(const FaceboxesPostProcess& other);
 
-        FaceboxesPostProcess& operator=(const FaceboxesPostProcess& other) = default;
+        FaceboxesPostProcess& operator=(const FaceboxesPostProcess& other);
 
         APP_ERROR Init(const std::map <std::string, std::shared_ptr<void>>& postConfig) override;
 
