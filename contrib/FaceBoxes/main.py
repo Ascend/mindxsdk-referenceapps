@@ -17,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
@@ -58,14 +58,12 @@ if __name__ == '__main__':
     prepinfo_list = os.path.join(args.prep_info, 'FDDB.txt')
     with open(prepinfo_list, 'r') as fr:
         for prep_info in fr:
-            num_images= num_images+1
-            img_name,im_height,im_width,resize=prep_info.split(' ')
+            img_name, _, _, _ = prep_info.split(' ')
             img_names.append(img_name)
             img_addresses.append(os.path.join(args.image_folder,img_name[0:4],img_name[5:7],img_name[8:10],'big','img_'+img_name[19:]+'.jpg'))
-    num_infer_null = 0
-    infer_null_names = []        
-    for i in range(len(img_addresses)):
-        with open(img_addresses[i],'rb')as f:
+
+    for i, j in enumerate(img_addresses):
+        with open( j,'rb')as f:
             dataInput.data = f.read()              
         # Inputs data to a specified stream based on streamName.
         streamName = b'Faceboxes'
@@ -80,14 +78,13 @@ if __name__ == '__main__':
         keyVec.push_back(b"mxpi_objectpostprocessor0")
         inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
         fw.write('{:s}\n'.format(img_names[i]))
-        num_infer_null +=1
+
         if inferResult.size() == 0:
             print("infer_result is null")
             num_infer_null += 1
             img = cv2.imread(img_addresses[i])
             cv2.imwrite('./data/results/test_%s.jpg'%(img_names[i]),img)
             fw.write('{:.1f}\n'.format(0))
-            infer_null_names.append(img_names[i])          
             continue
     
         # print the infer result

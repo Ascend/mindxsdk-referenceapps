@@ -28,7 +28,9 @@
   | cmake    | 3.5.+ |
   | mxVision | 2.0.2 |
   | Python   | 3.7.5 |
-  | OpenCV   | 3.4.0 |
+  | Pytorch   | 1.9.0 |
+  | CANN   | 3.3.0 |
+  | OpenCV   | 4.5.3 |
   | gcc      | 7.5.0 |
   | ffmpeg   | 3.4.8 |
 
@@ -55,8 +57,11 @@
 │   │   ├── 1
 │   │   │	 ├── ...
 │   └── 1
-├── model
+├── weitghts
+│   ├── FaceBoxesProd.pth
+├── models
 │   ├── faceboxes-b0_bs1.om
+│   ├── faceboxes-b0_bs1.onnx
 ├── pipeline
 │   ├── Faceboxes.pipeline
 ├── plugins
@@ -65,14 +70,15 @@
 │   │   ├── FaceBoxesPostProcess.cpp
 │   │   ├── FaceBoxesPostProcess.h
 ├── script
+│   ├── faceboxes_pth_preprocess.py
 │   ├── convert.py
 │   ├── split.py
 │   ├── evaluate.py
 │   ├── setup.py
 │   ├── box_overlaps.pyx
-│   ├── box_overlaps.c
 ├── main.py
 ├── README.md
+├── build.sh
 └── run.sh
 ```
 
@@ -172,8 +178,49 @@ streamName = b'Faceboxes'
 ## 想要获取结果的插件名称
 key = b'mxpi_objectpostprocessor0'
 ```
+## 6 模型转换
 
-## 6 运行
+本项目中用到的模型有：Faceboxes
+
+Faceboxes模型转换及下载参考华为昇腾社区[ModelZoo](https://gitee.com/ascend/modelzoo/tree/72f91ab319625776ddb0451dfb035309dd9ef88e/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes#https://drive.google.com/open?id=17t4WULUDgZgiSy5kpCax4aooyPaz3GQH)；
+
+### 6.1 pth转onnx模型
+
+1.FaceBoxes模型代码下载
+```
+cd ./FaceBoxes
+git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
+```
+2.预训练模型获取。
+```
+到以下链接下载预训练模型，并放在/weights 目录下：
+(https://drive.google.com/file/d/1tRVwOlu0QtjvADQ2H7vqrRwsWEmaqioI) 
+```
+3.在script目录下，执行faceboxes_pth2onnx.py脚本，生成onnx模型文件
+```
+#将FaceBoxesProd.pth模型转为faceboxes-b0_bs1.onnx模型，放在models目录下.
+python3.7 faceboxes_pth2onnx.py  --trained_model ../weights/FaceBoxesProd.pth --save_folder ../models/faceboxes-b0_bs1.onnx       
+```
+
+### 6.2 onnx转om模型
+
+1.设置环境变量
+```
+export install_path=/usr/local/Ascend/ascend-toolkit/latest
+
+export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+
+export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
+
+export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
+
+export ASCEND_OPP_PATH=${install_path}/opp
+```
+2.在models目录下，使用atc将onnx模型转换为om模型文件，加入--insert_op_conf参数使用AIPP，放到models目录下，工具使用方法可以参考CANN 5.0.2 开发辅助工具指南 (推理) 01
+```
+atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf = ../config/FaceBoxes.aippconfig
+
+## 7 运行
 
 修改 run.sh 文件中的环境路径和项目路径。
 
@@ -181,20 +228,34 @@ key = b'mxpi_objectpostprocessor0'
 export MX_SDK_HOME=${CUR_PATH}/../../..
 ## 注意当前目录CUR_PATH与MX_SDK_HOME环境目录的相对位置
 ```
-
-直接运行
-
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
-## 7 精度验证
+直接运行
 
+## 8 数据集预处理
+### 8.1 数据集获取
+该模型使用[FDDB官网](https://drive.google.com/open?id=17t4WULUDgZgiSy5kpCax4aooyPaz3GQH)的2845张验证集进行测试，图片与标签分别存放在./data/FDDB/images与./data/FDDB/img_list.txt
+
+### 8.2 数据集预处理
+1.预处理脚本faceboxes_pth_preprocess.py
+
+2.执行预处理脚本，生成数据集预处理后的bin文件
+```
+python3.7 faceboxes_pth_preprocess.py --dataset /root/datasets/FDDB --save-folder prep/
+
+## 9 精度验证
+
+### 9.1 准备
+FDDB数据集注释：http://vis-www.cs.umass.edu/fddb/index.html#download，将注释放在data/ground_truth下面
+
+### 9.2 验证流程
 在运行完main.py后开始进行精度验证，所需代码文件放在script目录下。首先将所依赖的python包安装好（bbox除外），bbox函数直接在终端运行python3.7 setup.py install即可。之后分别运行script目录下的convert.py，split.py和evaluate.py，FDDB集的精度结果在运行完evaluate.py后会打印出来。
 
 
-## 8 常见问题
-### 8.1 模型路径配置
+## 10 常见问题
+### 10.1 模型路径配置
 
 #### 问题描述：
 
@@ -213,14 +274,5 @@ chmod +x run.sh
         "next": "mxpi_dataserialize0"
         }
 ```
-### 8.2 数据下载
 
-FDDB数据集（2845张未注释的原图以及注释）：http://vis-www.cs.umass.edu/fddb/index.html#download，将下载的FDDB数据集的2845张原图放在data目录下，文件夹名称为FDDB，将注释放在data/ground_truth下面
-
-
-## 9 模型转换
-
-本项目中用到的模型有：Faceboxes
-
-Faceboxes模型转换及下载参考华为昇腾社区[ModelZoo](https://gitee.com/ascend/modelzoo/tree/72f91ab319625776ddb0451dfb035309dd9ef88e/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes#https://drive.google.com/open?id=17t4WULUDgZgiSy5kpCax4aooyPaz3GQH)；
 

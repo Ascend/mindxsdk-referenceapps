@@ -73,7 +73,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
 
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
-        GeneratePriorBox(PriorBox);  //generate prior boxes
+        GeneratePriorBox(PriorBox); //generate prior boxes
         
         float width_resize = resizedImageInfos[0].widthResize;
         float height_resize = resizedImageInfos[0].heightResize;
@@ -83,7 +83,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         float height_resize_scale = height_resize / height_original;
         float resize_scale_factor;
         if (width_resize_scale >= height_resize_scale) {
-          resize_scale_factor = height_resize_scale;;
+          resize_scale_factor = height_resize_scale;
         }
         else{
           resize_scale_factor = width_resize_scale;        
@@ -94,7 +94,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         uint32_t VectorNum = shape[1];
         for (uint32_t i = 0; i < batchSize; i++){
             std::vector <ObjectInfo> objectInfo;
-            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;   //ptr of confidence
+            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize; //ptr of confidence
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j*2; 
                 if(*(begin_Conf + 1)> confThresh_ ) {
@@ -113,9 +113,9 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         LogInfo << "FaceboxesPostProcess write results successed.";
 }
 APP_ERROR FaceboxesPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                     std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                     const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                     const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                        const std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     LogInfo << "Start to Process FaceboxesPostProcess.";
     APP_ERROR ret = APP_ERR_OK;
@@ -202,11 +202,9 @@ void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
  }
 /*
  * @description: Generate prior boxes for detection boxes decoding
- * Inputs:
  * @param loc:  The matrix which contains box biases, shape[21824, 4]
  * @param prior: The matrix which contains prior box coordinates, shape[21824,4]
  * @param resize_scale_factor: The factor of min(WidthOriginal/WidthResize, HeightOriginal/HeightResize)
- * Outputs:
  * @param boxes: The matrix which contains detection box coordinates(x0,y0,x1,y1), shape[21824,4]
  */
 cv::Mat FaceboxesPostProcess::decode(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor){
@@ -223,6 +221,9 @@ cv::Mat FaceboxesPostProcess::decode(cv::Mat &loc, cv::Mat &prior, float resize_
 
     cv::Mat boxes;
     cv::hconcat(boxes1, boxes2, boxes);
+    if (resize_scale_factor == 0) {
+        LogError << "resize_scale_factor is 0.";
+    }
     boxes = boxes * IMAGE_SIZE / resize_scale_factor;
     return boxes;
 

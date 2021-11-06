@@ -19,12 +19,10 @@
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
 #include "opencv2/opencv.hpp"
-namespace
-{
-    const int DEFAULT_OBJECT_CONF_TENSOR = 1;
-    const int DEFAULT_OBJECT_INFO_TENSOR = 0;
-    const float DEFAULT_IOU_THRESH = 0.3;
-    const float DEFAULT_CONFIDENCE_THRESH = 0.5;
+#define DEFAULT_OBJECT_CONF_TENSOR  1
+#define DEFAULT_OBJECT_INFO_TENSOR  0
+#define DEFAULT_IOU_THRESH  0.3
+#define DEFAULT_CONFIDENCE_THRESH  0.5
 }
 
 
@@ -50,8 +48,8 @@ namespace MxBase
         APP_ERROR DeInit() override;
 
         APP_ERROR Process(const std::vector<TensorBase> &tensors, std::vector<std::vector<ObjectInfo>> &objectInfos,
-                      const std::vector<ResizedImageInfo> &resizedImageInfos = {},
-                      const std::map<std::string, std::shared_ptr<void>> &configParamMap = {}) override;
+                          const std::vector<ResizedImageInfo> &resizedImageInfos = {},
+                          const std::map<std::string, std::shared_ptr<void>> &configParamMap = {}) override;
 
     protected:
         void GeneratePriorBox(cv::Mat &anchors);

@@ -79,18 +79,13 @@ def read_pred_file(filepath):
         img_file = lines[0].rstrip('\n\r')
         lines = lines[2:]
 
-    # b = lines[0].rstrip('\r\n').split(' ')[:-1]
-    # c = float(b)
-    # a = map(lambda x: [[float(a[0]), float(a[1]), float(a[2]), float(a[3]), float(a[4])] for a in x.rstrip('\r\n').split(' ')], lines)
     boxes = []
     for line in lines:
         line = line.rstrip('\r\n').split(' ')
         if line[0] == '':
             continue
-        # a = float(line[4])
         boxes.append([float(line[0]), float(line[1]), float(line[2]), float(line[3]), float(line[4])])
     boxes = np.array(boxes)
-    # boxes = np.array(list(map(lambda x: [float(a) for a in x.rstrip('\r\n').split(' ')], lines))).astype('float')
     return img_file.split('/')[-1], boxes
 
 
