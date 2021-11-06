@@ -24,7 +24,7 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':
-    emotions = ["anger", "disgust", "fear", "happy", "sad", "surprised", "normal"]
+    emotions = ["surprised", "fear", "disgust", "happy", "sad", "anger", "normal"]
     streamManagerApi = StreamManagerApi()
     # init stream manager
     ret = streamManagerApi.InitManager()
