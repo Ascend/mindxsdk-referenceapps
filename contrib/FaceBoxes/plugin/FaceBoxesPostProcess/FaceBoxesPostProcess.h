@@ -37,7 +37,7 @@ namespace MxBase {
 
         ~FaceboxesPostProcess() = default;
 
-        FaceboxesPostProcess(const FaceboxesPostProcess& other) = default;
+        FaceboxesPostProcess(const FaceboxesPostProcess& other);
 
         FaceboxesPostProcess& operator=(const FaceboxesPostProcess& other) = delete;
 

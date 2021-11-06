@@ -57,7 +57,7 @@ APP_ERROR FaceboxesPostProcess::Init(const std::map <std::string, std::shared_pt
     }
 
 void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
-        std::vector <std::vector<ObjectInfo>>& objectInfos, const std::vector <ResizedImageInfo>& resizedImageInfos)
+                                                 std::vector <std::vector<ObjectInfo>>& objectInfos, const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
         LogInfo << "FaceboxesPostProcess start to write results.";
                 
