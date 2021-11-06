@@ -45,6 +45,10 @@ public:
 protected:
     void nms(std::vector<MxBase::ObjectInfo> &input_boxes, float NMS_THRESH); // 极大值抑制函数
     APP_ERROR generate_anchor(std::vector<box> &anchor, int w, int h); // 锚框生成函数
+    APP_ERROR assign_feature_map(std::vector<box> &anchor, // feature_map复制函数
+                                 std::vector<std::vector<int>> &feature_map, 
+                                 int feature_map_index, 
+                                 int w, int h); 
     void set_defaultparams(); // 将后处理所需的参数设置为默认值
     static inline bool cmp(MxBase::ObjectInfo a, MxBase::ObjectInfo b); // 比较两个ObjectInfo类型变量的置信度大小
 

@@ -66,6 +66,45 @@ void retinaface_postprocess::set_defaultparams(){
 }
 
 
+/* @brief:给特征图feature_map赋值
+   @param:anchor-自定义的box型容器，用于存放所生成的anchor
+   @param:feature_map-自定义的空的输出特征图
+   @param:feature_map_index-特征图的索引
+   @param:w-图像的宽(经resize后)
+   @param:h-图像的高(经resize后)
+   @retval:none
+*/
+APP_ERROR retinaface_postprocess::assign_feature_map(std::vector<box> &anchor,
+                                                     std::vector<std::vector<int>> &feature_map,
+                                                     int feature_map_index, 
+                                                     int w, int h)
+{
+    if(w == 0 || h == 0) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+
+    std::vector<int> min_size = min_sizes_[feature_map_index];
+    for (int i = 0; i < feature_map[feature_map_index][0]; ++i)
+    {
+        for (int j = 0; j < feature_map[feature_map_index][1]; ++j)
+        {
+            float s_kx_0 = min_size[0] * 1.0 / w;
+            float s_ky_0 = min_size[0] * 1.0 / h;
+            float s_kx_1 = min_size[1] * 1.0 / w;
+            float s_ky_1 = min_size[1] * 1.0 / h;
+            float cx = (j + 0.5) * steps_[feature_map_index] / w; // 计算feature_map中每个方格的中心点的x坐标
+            float cy = (i + 0.5) * steps_[feature_map_index] / h; // 计算feature_map中每个方格的中心点的y坐标
+            box axil_0 = {cx, cy, s_kx_0, s_ky_0};
+            box axil_1 = {cx, cy, s_kx_1, s_ky_1};
+            anchor.push_back(axil_0);
+            anchor.push_back(axil_1);
+        }
+    }
+
+    return APP_ERR_OK;
+}
+
+
 /* @brief:生成锚框anchor
    @param:anchor-自定义的box型容器，用于存放所生成的anchor
    @param:w-图像的宽(经resize后)
@@ -92,28 +131,12 @@ APP_ERROR retinaface_postprocess::generate_anchor(std::vector<box> &anchor, int 
     }
 
     // 生成锚框anchor
-    for (int k = 0; k < int(feature_map.size()); ++k)
-    {
-        std::vector<int> min_size = min_sizes_[k];
-        for (int i = 0; i < feature_map[k][0]; ++i)
-        {
-            for (int j = 0; j < feature_map[k][1]; ++j)
-            {
-                for (int l = 0; l < int(min_size.size()); ++l)
-                {
-                    float s_kx = min_size[l] * 1.0 / w;
-                    float s_ky = min_size[l] * 1.0 / h;
-                    float cx = (j + 0.5) * steps_[k] / w; // 计算feature_map中每个方格的中心点的x坐标
-                    float cy = (i + 0.5) * steps_[k] / h; // 计算feature_map中每个方格的中心点的y坐标
-                    box axil = {cx, cy, s_kx, s_ky};
-                    anchor.push_back(axil);
-                }
-            }
-        }
-    }
+    assign_feature_map(anchor, feature_map, 0, w, h); // 给feature_map[0]赋值
+    assign_feature_map(anchor, feature_map, 1, w, h); // 给feature_map[1]赋值
+    assign_feature_map(anchor, feature_map, 2, w, h); // 给feature_map[2]赋值
+
     return APP_ERR_OK;
 }
-
 
 /* @brief:提供给sort函数，用于将容器内的ObjectInfo元素按置信度confidence的大小降序排列
    @param:a：ObjectInfo型变量
@@ -181,8 +204,8 @@ void retinaface_postprocess::nms(std::vector<MxBase::ObjectInfo> &input_boxes, f
    @retval:none
 */
 APP_ERROR retinaface_postprocess::process(std::vector<MxBase::TensorBase> detect_outputs, 
-                                         std::vector<MxBase::ObjectInfo>& objectInfos, 
-                                         const MxBase::ResizedImageInfo resizedImageInfo)
+                                          std::vector<MxBase::ObjectInfo>& objectInfos, 
+                                          const MxBase::ResizedImageInfo resizedImageInfo)
 {
      // 将数据从Device侧转移到Host侧
     detect_outputs[0].ToHost();
