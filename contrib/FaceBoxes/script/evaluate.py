@@ -1,3 +1,4 @@
+"""
 # Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+
 
 import os
 import tqdm
@@ -19,7 +22,6 @@ import argparse
 import numpy as np
 import cv2
 from bbox import bbox_overlaps
-import pickle
 
 def get_gt_boxes(gt_dir):
     """ gt dir: (wider_face_val.mat, wider_easy_val.mat, wider_medium_val.mat, wider_hard_val.mat)"""
@@ -212,9 +214,6 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     pred = get_preds(pred)
     norm_score(pred)
     gt_box_dict = get_gt_boxes(gt_path)
-    num_boxes = 0
-    for i in range(10):
-        num_boxes += len(gt_box_dict[i+1])
     event = list(pred.keys())
     event = [int(e) for e in event]
     event.sort()
@@ -225,7 +224,7 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     for setting_id in pbar:
         pbar.set_description('Predicting ... ')
         # different setting
-        for fold_id in range(1,11):
+        for fold_id in range(1, 11):
             count_face = 0
             pr_curve = np.zeros((thresh_num, 2)).astype('float')
             gt = gt_box_dict[fold_id]
@@ -256,10 +255,10 @@ def evaluation(pred, gt_path, iou_thresh=0.5):
     print("==================== Results ====================")
     fw = open('results.txt', 'w')
     for i, _ in enumerate(aps):
-        print("FDDB-fold-{} Val AP: {}".format(int(i+1), aps[i]))
-        fw.write("FDDB-fold-{} Val AP: {}\n".format(int(i+1), aps[i]))
-    print("FDDB Dataset Average AP: {}".format(sum(aps)/len(aps)))
-    fw.write("FDDB Dataset Average AP: {}\n".format(sum(aps)/len(aps)))
+        print("FDDB-fold-{} Val AP: {}".format(int(i + 1), aps[i]))
+        fw.write("FDDB-fold-{} Val AP: {}\n".format(int(i + 1), aps[i]))
+    print("FDDB Dataset Average AP: {}".format(sum(aps) / len(aps)))
+    fw.write("FDDB Dataset Average AP: {}\n".format(sum(aps) / len(aps)))
     print("=================================================")
 
 

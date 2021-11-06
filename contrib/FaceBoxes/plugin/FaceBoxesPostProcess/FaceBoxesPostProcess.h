@@ -24,8 +24,6 @@
 #define DEFAULT_IOU_THRESH  0.3
 #define DEFAULT_CONFIDENCE_THRESH  0.5
 
-
-
 namespace MxBase {   
     bool operator<(const ObjectInfo &a ,const ObjectInfo &b){
         return a.confidence < b.confidence;

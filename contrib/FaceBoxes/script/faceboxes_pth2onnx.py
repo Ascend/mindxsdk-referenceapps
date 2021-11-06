@@ -1,3 +1,4 @@
+"""
 # Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+
 
 from __future__ import print_function
 import argparse
@@ -24,7 +27,7 @@ parser.add_argument('-m', '--trained_model', default='../weights/FaceBoxesProd.p
 parser.add_argument('--save_folder', default='../models/faceboxes-b0_bs1.onnx', type=str, help='Dir to save results')
 parser.add_argument('--cpu', action="store_true", default=True, help='Use cpu inference')
 parser.add_argument('--dataset', default='PASCAL', type=str, choices=['AFW', 'PASCAL', 'FDDB'], help='dataset')
-parser.add_argument('--confidence_threshold', default=0.05, type=float, help='confidence_threshold')
+parser.add_argument('--confidence_threshold', default=0.5, type=float, help='confidence_threshold')
 parser.add_argument('--top_k', default=5000, type=int, help='top_k')
 parser.add_argument('--nms_threshold', default=0.3, type=float, help='nms_threshold')
 parser.add_argument('--keep_top_k', default=750, type=int, help='keep_top_k')
@@ -77,10 +80,11 @@ if __name__ == '__main__':
     net = load_model(net, args.trained_model, args.cpu)
     net.eval()
     input_names = ["image"]
-    output_names = ["class","loc"]
+    output_names = ["class", "loc"]
     dynamic_axes = {'image': {0: '-1'}, 'class': {0: '-1'}, 'loc': {0: '-1'}}
     dummy_input = torch.randn(1, 3, 1024, 1024)
-    torch.onnx.export(net, dummy_input, args.save_folder, input_names = input_names, dynamic_axes = dynamic_axes, output_names = output_names, opset_version=11, verbose=True)
+    torch.onnx.export(net, dummy_input, args.save_folder, input_names = input_names, dynamic_axes = dynamic_axes,
+                      output_names = output_names, opset_version=11, verbose=True)
 
 
 

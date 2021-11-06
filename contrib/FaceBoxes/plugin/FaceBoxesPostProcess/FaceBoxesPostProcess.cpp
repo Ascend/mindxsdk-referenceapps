@@ -27,6 +27,8 @@ namespace {
     const float IMAGE_SIZE = 1024.0;
     const float STEPS[3] = {32.0, 64.0, 128.0};
     const float VARIANCE[2] = {0.1, 0.2};
+
+    const float EPSILON = 0.00001;
 }
 namespace MxBase {
 
@@ -81,12 +83,12 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
         float height_original = resizedImageInfos[0].heightOriginal;
         float width_resize_scale = width_resize / width_original;
         float height_resize_scale = height_resize / height_original;
-        float resize_scale_factor;
+        float resize_scale_factor = 1.0;
         if (width_resize_scale >= height_resize_scale) {
-          resize_scale_factor = height_resize_scale;
+            resize_scale_factor = height_resize_scale;
         }
         else{
-          resize_scale_factor = width_resize_scale;        
+            resize_scale_factor = width_resize_scale;        
         }        
         cv::Mat res = decode(location, PriorBox, resize_scale_factor); 
 
@@ -97,7 +99,7 @@ void FaceboxesPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>&
             auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j*2; 
-                if(*(begin_Conf + 1)> confThresh_ ) {
+                if(*(begin_Conf + 1)> confThresh_){
                     ObjectInfo objInfo;
                     objInfo.confidence = *(begin_Conf + 1);
                     objInfo.x0 = res.at<float>(j,LEFTTOPX);
@@ -144,10 +146,10 @@ void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
     min_sizes[1].emplace_back(256);
     min_sizes[2].emplace_back(512);
     std::vector<std::vector<int>>feature_maps(3, std::vector<int>(2));
-    int imagesize = 1024;
+
     for (int i = 0; i < feature_maps.size(); i++) {
-        feature_maps[i][0] = imagesize/STEPS[i];
-        feature_maps[i][1] = imagesize/STEPS[i];
+        feature_maps[i][0] = IMAGE_SIZE / STEPS[i];
+        feature_maps[i][1] = IMAGE_SIZE / STEPS[i];
     }
     for (int k = 0; k < feature_maps.size(); k++){
         auto f = feature_maps[k];
@@ -157,17 +159,17 @@ void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
             for (int j = 0; j < f[1] ; j++) {
                 for (auto min_size : _min_sizes) {
                     cv::Mat anchor(1, 4, CV_32F);
-                    anchor.at<float>(0,2) = (float)min_size / (float)imagesize;
-                    anchor.at<float>(0,3) = (float)min_size / (float)imagesize;
+                    anchor.at<float>(0,2) = (float)min_size / IMAGE_SIZE;
+                    anchor.at<float>(0,3) = (float)min_size / IMAGE_SIZE;
                     if (min_size == 32){
                         float dense_cx[4];
                         float dense_cy[4];
                         for (int x = 0; x < 4; x++){
-                            dense_cx[x] = ((float)j + 0.25*((float)x))*step/((float)imagesize);
-                            dense_cy[x] = ((float)i + 0.25*((float)x))*step/((float)imagesize);
+                            dense_cx[x] = ((float)j + 0.25 * ((float)x)) * step / IMAGE_SIZE;
+                            dense_cy[x] = ((float)i + 0.25 * ((float)x)) * step / IMAGE_SIZE;
                         }
-                        for (int m = 0; m < sizeof(dense_cy)/sizeof(dense_cy[0]); m++){
-                            for (int n = 0; n < sizeof(dense_cx)/sizeof(dense_cx[0]); n++){
+                        for (int m = 0; m < sizeof(dense_cy) / sizeof(dense_cy[0]); m++){
+                            for (int n = 0; n < sizeof(dense_cx) / sizeof(dense_cx[0]); n++){
                                 anchor.at<float>(0,0) = dense_cx[n];
                                 anchor.at<float>(0,1) = dense_cy[m];
                                 anchors.push_back(anchor);
@@ -178,19 +180,19 @@ void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
                         float dense_cx[2];
                         float dense_cy[2];
                         for (int x = 0; x < 2; x++){
-                            dense_cx[x] = ((float)j + 0.5*((float)x))*step/((float)imagesize);
-                            dense_cy[x] = ((float)i + 0.5*((float)x))*step/((float)imagesize);
+                            dense_cx[x] = ((float)j + 0.5 * ((float)x)) * step / IMAGE_SIZE;
+                            dense_cy[x] = ((float)i + 0.5 * ((float)x)) * step / IMAGE_SIZE;
                         }
-                        for (int m = 0; m < sizeof(dense_cy)/sizeof(dense_cy[0]); m++){
-                            for (int n = 0; n < sizeof(dense_cx)/sizeof(dense_cx[0]); n++){
+                        for (int m = 0; m < sizeof(dense_cy) / sizeof(dense_cy[0]); m++){
+                            for (int n = 0; n < sizeof(dense_cx) / sizeof(dense_cx[0]); n++){
                                 anchor.at<float>(0,0) = dense_cx[n];
                                 anchor.at<float>(0,1) = dense_cy[m];
                                 anchors.push_back(anchor);
                             }
                         }
                     } else{
-                        float cx = (((float)j + 0.5) * step) / ((float)imagesize);
-                        float cy = (((float)i + 0.5) * step) / ((float)imagesize);
+                        float cx = (((float)j + 0.5) * step) / IMAGE_SIZE;
+                        float cy = (((float)i + 0.5) * step) / IMAGE_SIZE;
                         anchor.at<float>(0,0) = cx;
                         anchor.at<float>(0,1) = cy;
                         anchors.push_back(anchor);
@@ -214,14 +216,14 @@ cv::Mat FaceboxesPostProcess::decode(cv::Mat &loc, cv::Mat &prior, float resize_
     cv::Mat prior_last = prior.colRange(2,4);
     cv::Mat boxes1 = prior_first + (loc_first*VARIANCE[0]).mul(prior_last);
     cv::Mat boxes2;
-    cv::exp(loc_last*VARIANCE[1], boxes2);
+    cv::exp(loc_last * VARIANCE[1], boxes2);
     boxes2 = boxes2.mul(prior_last);
-    boxes1 = boxes1 - boxes2/2;
+    boxes1 = boxes1 - boxes2 / 2;
     boxes2 = boxes2 + boxes1;
 
     cv::Mat boxes;
     cv::hconcat(boxes1, boxes2, boxes);
-    if (resize_scale_factor == 0) {
+    if ((resize_scale_factor >= -EPSINON) && (resize_scale_factor <= EPSINON)) {
         LogError << "resize_scale_factor is 0.";
     }
     boxes = boxes * IMAGE_SIZE / resize_scale_factor;
