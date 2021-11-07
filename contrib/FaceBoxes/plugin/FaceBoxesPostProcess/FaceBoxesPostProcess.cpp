@@ -28,7 +28,7 @@ namespace {
     const float STEPS[3] = {32.0, 64.0, 128.0};
     const float VARIANCE[2] = {0.1, 0.2};
 
-    const float EPSILON = 0.00001;
+    const float EPSINON = 0.00001;
 }
 namespace MxBase {
 
