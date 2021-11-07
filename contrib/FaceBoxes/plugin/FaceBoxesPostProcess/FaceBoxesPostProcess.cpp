@@ -27,8 +27,6 @@ namespace {
     const float IMAGE_SIZE = 1024.0;
     const float STEPS[3] = {32.0, 64.0, 128.0};
     const float VARIANCE[2] = {0.1, 0.2};
-
-    const float EPSINON = 0.00001;
 }
 namespace MxBase {
 
@@ -223,7 +221,7 @@ cv::Mat FaceboxesPostProcess::decode(cv::Mat &loc, cv::Mat &prior, float resize_
 
     cv::Mat boxes;
     cv::hconcat(boxes1, boxes2, boxes);
-    if ((resize_scale_factor >= -EPSINON) && (resize_scale_factor <= EPSINON)) {
+    if (resize_scale_factor == 0){
         LogError << "resize_scale_factor is 0.";
     }
     boxes = boxes * IMAGE_SIZE / resize_scale_factor;
