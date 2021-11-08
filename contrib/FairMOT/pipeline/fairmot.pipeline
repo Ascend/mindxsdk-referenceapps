@@ -1,0 +1,162 @@
+{
+    "encoder": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "factory": "mxpi_rtspsrc",
+            "props": {
+                "rtspUrl":"rtsp://192.168.88.107:8554/test1.264",
+                "channelId": "0"
+            },
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "factory": "mxpi_videodecoder",
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV12",
+                "vdecChannelId": "0"
+            },
+            "next": "tee0"
+        },
+        "tee0": {
+            "factory": "tee",
+            "next": [
+                "queue1",
+                "queue2"
+            ]
+        },
+        "queue1": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_imageresize0"
+        },
+        "queue2": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_opencvosd0:0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "resizeHeight": "608",
+                "resizeWidth": "1088",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "queue3"
+        },
+        "queue3": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_tensorinfer0"
+        },
+
+
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "outputHasBatchDim":"0",
+                "modelPath": "/home/zhongzhi9/MindX_SDK/mxVision-2.0.2/samples/mxVision/FairMOT/model/mot_v2.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessLibPath": "/home/zhongzhi9/MindX_SDK/mxVision-2.0.2/samples/mxVision/lib/plugins/libmxpi_fairmotpostprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_motsimplesortV20"
+        },
+
+        "mxpi_motsimplesortV20": {
+            "props": {
+                "dataSourceDetection": "mxpi_objectpostprocessor0"
+            },
+            "factory": "mxpi_motsimplesortV2",
+            "next": "mxpi_trackidreplaceclassname0"
+        },
+
+        "mxpi_trackidreplaceclassname0": {
+            "props": {
+                
+            },
+            "factory": "mxpi_trackidreplaceclassname",
+            "next": "queue4"
+        },
+
+
+
+        "queue4": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_object2osdinstances0"
+        },
+        "mxpi_object2osdinstances0": {
+            "props": {
+                "dataSource": "mxpi_trackidreplaceclassname0",
+                "colorMap": "255,100,100|100,255,100|100,100,255|255,128,0",
+                "fontFace": "1",
+                "fontScale": "1",
+                "fontThickness": "1",
+                "fontLineType": "8",
+                "rectThickness": "3",
+                "rectLineType": "8"
+            },
+            "factory": "mxpi_object2osdinstances",
+            "next": "queue5"
+        },
+        "queue5": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_opencvosd0:1"
+        },
+        "mxpi_opencvosd0": {
+            "factory": "mxpi_opencvosd",
+            "next": "queue6"
+        },
+        "queue6": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "mxpi_videoencoder0"
+        },
+        "mxpi_videoencoder0": {
+            "props": {
+                "imageHeight": "720",
+                "imageWidth": "1280",
+                "inputFormat": "YUV420SP_NV12",
+                "outputFormat": "H264",
+                "fps": "1",
+                "iFrameInterval": "50"
+            },
+            "factory": "mxpi_videoencoder",
+            "next": "queue7"
+        },
+        "queue7": {
+            "props": {
+                "max-size-buffers": "100"
+            },
+            "factory": "queue",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "factory": "appsink",
+            "former": "mxpi_videoencoder0"
+        }
+    }
+}
