@@ -68,6 +68,10 @@
 | mxVision | 2.0.2  |
 | python   | 3.7.5  |
 | CANN     | 3.3.0  |
+| Polygon3 | 3.0.9.1|
+
+
+注意：在运行评测代码时，可能出现没有Polygon包的报错，可以pip install Polygon3导入。
 
 在编译运行项目前，需要设置环境变量：
 
@@ -92,7 +96,6 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 - LD_LIBRARY_PATH为lib库路径
 - PYTHONPATH为python环境路径
 
-注意：在运行评测代码时，可能出现没有Polygon包的报错，可以pip install Polygon3导入。
 
 ## 3 模型转换
 本项目中用到的模型有：基于tensorflow转化出的pb形式的pixelLink模型。
