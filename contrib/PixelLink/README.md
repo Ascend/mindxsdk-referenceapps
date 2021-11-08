@@ -120,7 +120,9 @@ atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 
 **步骤1**
 下载项目文件，以及icdar2015数据集，其中项目文件链接在模型转换部分已经给出。数据集链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip
 
-zip文件中下载数据集ch4_test_image。
+zip文件中数据集为ch4_test_image，gt.zip是评测代码需要的groundtruth。评测代码可以在官网：https://rrc.cvc.uab.es/?ch=4&com=downloads进行下载，注意在官网中需要先进行登录。然后选择Incidental Scene Text,再选择My Methods,从offline evaluation部分进行下载（下载Evaluation Scripts）。由于需要注册和下载会给用户带来不便，所以提供了链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/script_test_ch4_t1_e1-1577983151.zip 下载评测代码。
+
+
 
 **步骤2**
   在安装mxVision SDK后，配置SDK安装路径、lib路径以及python路径，这些路径需要根据用户实际情况配置，例如SDK安装路径需要与用户本身安装路径一致，不一致将导致环境错误。同理，lib路径与python路径，都需要与实际情况一致。将下载的模型文件以及其他配置文件放到项目路径中，与pipeline内路径对应。修改pipeline内路径与模型文件一致。需要按照代码中的路径去创建文件路径，也可以根据实际需要修改代码中的路径变量。
