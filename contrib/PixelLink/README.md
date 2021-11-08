@@ -46,9 +46,9 @@
 ├── get_version.py
 ├── main.py
 ├── README.md
-├── main_get_groundtruth.py
-├── rrc_evaluation_funcs_1_1.py
-└── script.py
+├── process.py
+├── process2.py
+└── main_get_groundtruth.py
 ```
 
 
