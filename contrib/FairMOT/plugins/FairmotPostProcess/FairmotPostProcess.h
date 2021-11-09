@@ -29,6 +29,8 @@ namespace MxBase {
 
         FairmotPostProcess(const FairmotPostProcess &other) = default;
 
+        FairmotPostProcess &operator=(const FairmotPostProcess &other);
+
         APP_ERROR Init(const std::map <std::string, std::shared_ptr<void>> &postConfig) override;
 
         APP_ERROR DeInit() override;
