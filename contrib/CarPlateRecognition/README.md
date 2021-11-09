@@ -119,7 +119,7 @@ python pth2onnx.py
 
 *onnx = 1.10.1*
 
-注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)模型。
+注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)模型。
 
 **步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的CarPlateRecognition/model/目录下，执行如下命令：
 
@@ -129,7 +129,7 @@ atc --model=./mnet_plate.onnx --output=./retinaface --framework=5 --soc_version=
 
 ### 3.2 车牌识别模型的转换
 
-**步骤1** **模型获取** 下载车牌识别预训练模型的[lpr.prototxt](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件和[lpr.caffemodel](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件 。
+**步骤1** **模型获取** 下载车牌识别预训练模型的[lpr.prototxt](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)文件和[lpr.caffemodel](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)文件 。
 
 **步骤2** **模型存放** 将获取到的.prototxt文件和.caffemodel文件存放至**服务器端**的CarPlateRecognition/model/目录下。
 
