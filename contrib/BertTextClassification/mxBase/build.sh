@@ -45,10 +45,9 @@ function build_bert_text_classification()
     make
     ret=$?
     if [ ${ret} -ne 0 ]; then
-        echo "Failed to build BertTextClassification."
+        echo "Failed to build mxBase_text_classification."
         exit ${ret}
     fi
-    make install
 }
 
 check_env
