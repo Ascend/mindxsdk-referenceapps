@@ -26,6 +26,13 @@ const float CONF_THRES = 0.35;
 auto uint8Deleter = [] (uint8_t* p) { };
 }
 namespace MxBase {
+    FairmotPostProcess &FairmotPostProcess::operator=(const FairmotPostProcess &other) {
+        if (this == &other) {
+            return *this;
+        }
+        ObjectPostProcessBase::operator=(other);
+        return *this;
+    }
 
     APP_ERROR FairmotPostProcess::Init(const std::map <std::string, std::shared_ptr<void>> &postConfig) {  
         LogDebug << "Start to Init FairmotPostProcess.";    
