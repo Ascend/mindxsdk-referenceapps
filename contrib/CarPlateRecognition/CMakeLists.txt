@@ -6,8 +6,10 @@ set(TARGET car_plate_recognition)
 add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z,now,-z,noexecstack -s -pie -Wall) #添加编译选项
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-#设置SDK的安装路径
+#设置MindX_SDK的安装路径
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
+#设置FreeType的安装路径
+set(FREETYPE_HOME "$ENV{FREETYPE_HOME}")
 
 #添加.h文件的搜索路径
 include_directories(
@@ -15,7 +17,7 @@ include_directories(
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
         ${PROJECT_SOURCE_DIR}/include
-        $ENV{FREETYPE_HOME} #该语句是设置FreeType库的搜索路径，需按实际情况更改，例如：/home/zhongzhi3/freetype-2.10.0/include
+        ${FREETYPE_HOME}
 )
 
 #添加lib的搜索路径

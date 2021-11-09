@@ -87,7 +87,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 export FREETYPE_HOME=${FREETYPE_HOME}
 ```
 
-注：**${MX_SDK_HOME}** 替换为用户自己的SDK安装路径（例如："/home/zhongzhi3/MindX_SDK/mxVision"）；
+注：**${MX_SDK_HOME}** 替换为用户自己的MindX_SDK安装路径（例如："/home/zhongzhi3/MindX_SDK/mxVision"）；
 
 ​       **${install_path}** 替换为开发套件包所在路径（例如：/usr/local/Ascend/ascend-toolkit/latest）。
 
@@ -143,9 +143,9 @@ atc --model=./lpr.prototxt --weight=./lpr.caffemodel --output=./lpr --framework=
 
 **步骤1** **修改CMakeLists.txt文件** 
 
-第**10**行 **set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")** 语句是设置SDK的安装路径，需将**$ENV{MX_SDK_HOME}**替换为用户实际的SDK安装路径。
+第**10**行 **set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")** 语句是设置MindX_SDK的安装路径，需将**$ENV{MX_SDK_HOME}**替换为用户实际的MindX_SDK安装路径。
 
-第**18**行 **$ENV{FREETYPE_HOME}** 语句是设置FreeType库中头文件的搜索路径，需根据自己的FreeType安装路径进行替换（例如：**/home/zhongzhi3/freetype-2.10.0/include**）
+第**12**行 **set(FREETYPE_HOME"$ENV{FREETYPE_HOME}")** 语句是设置FreeType库的安装路径，需将**$ENV{FREETYPE_HOME}**替换为用户实际的FreeType库安装路径。
 
 第**39**行 **freetype** 语句是链接到FreeType库，该名称一般是不用修改的，若命名不同则看情况修改。
 
