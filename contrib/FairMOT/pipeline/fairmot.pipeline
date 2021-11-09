@@ -63,7 +63,7 @@
             "props": {
                 "dataSource": "mxpi_imageresize0",
                 "outputHasBatchDim":"0",
-                "modelPath": "/home/zhongzhi9/MindX_SDK/mxVision-2.0.2/samples/mxVision/FairMOT/model/mot_v2.om"
+                "modelPath": "./models/mot_v2.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_objectpostprocessor0"
@@ -72,7 +72,7 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessLibPath": "/home/zhongzhi9/MindX_SDK/mxVision-2.0.2/samples/mxVision/lib/plugins/libmxpi_fairmotpostprocess.so"
+                "postProcessLibPath": "./lib/plugins/libmxpi_fairmotpostprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_motsimplesortV20"
