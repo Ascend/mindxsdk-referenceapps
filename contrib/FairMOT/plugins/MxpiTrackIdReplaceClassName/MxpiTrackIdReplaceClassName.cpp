@@ -86,7 +86,6 @@ APP_ERROR MxpiTrackIdReplaceClassName::GenerateSampleOutput(const MxpiObjectList
                 // 得到输入srcMxpiTrackLetList的trackletvec的headervec
                 MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);  
                 if(srcMxpiHeader.memberid() == i){
-                    // dstMxpiClass->set_classid(srcMxpiTrackLet.trackid());
                     dstMxpiClass->set_classid(0);
                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                     continue;
