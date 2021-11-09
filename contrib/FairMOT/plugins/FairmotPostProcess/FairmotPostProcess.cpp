@@ -49,10 +49,14 @@ namespace MxBase {
         auto shape1 = tensors[1].GetShape();
         auto shape2 = tensors[2].GetShape();
         auto shape3 = tensors[3].GetShape();        
-        int s0 = (shape0.size() == 4) && (shape0[0] == 1) && (shape0[1] == 152) && (shape0[2] == 272) && (shape0[3] == 128);
-        int s1 = (shape1.size() == 4) && (shape1[0] == 1) && (shape1[1] == 152) && (shape1[2] == 272) && (shape1[3] == 2);
-        int s2 = (shape2.size() == 4) && (shape2[0] == 1) && (shape2[1] == 152) && (shape2[2] == 272) && (shape2[3] == 4);
-        int s3 = (shape3.size() == 3) && (shape3[0] == 1) && (shape3[1] == 152) && (shape3[2] == 272);
+        int s0 = (shape0.size() == 4) && (shape0[0] == 1) && (shape0[1] == 152) && 
+            (shape0[2] == 272) && (shape0[3] == 128);
+        int s1 = (shape1.size() == 4) && (shape1[0] == 1) && (shape1[1] == 152) && 
+            (shape1[2] == 272) && (shape1[3] == 2);
+        int s2 = (shape2.size() == 4) && (shape2[0] == 1) && (shape2[1] == 152) && 
+            (shape2[2] == 272) && (shape2[3] == 4);
+        int s3 = (shape3.size() == 3) && (shape3[0] == 1) && (shape3[1] == 152) && 
+            (shape3[2] == 272);
         if(s0 && s1 && s2 && s3 == 1)
         {
             return true;
@@ -97,7 +101,7 @@ namespace MxBase {
 
         std::shared_ptr<void> hm_addr = featLayerData[3];
         std::vector<std::vector<int>> XY;
-        for(uint32_t i = 0;i < 152*272 ; i++ ){
+        for(uint32_t i = 0;i < 152*272 ; i++){
             if(static_cast<float *>(hm_addr.get())[i] > CONF_THRES)
             {
                 std::vector<int>xy;                
@@ -124,7 +128,7 @@ namespace MxBase {
         std::vector<std::vector<float>>WH;
         for(int i = 0; i < XY.size();i++){
             std::vector<float>wh;
-            for(int j=0;j<4;j++){
+            for(int j = 0;j < 4;j++){
                 wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 4 + j]);
             }
             WH.push_back(wh);
@@ -134,7 +138,7 @@ namespace MxBase {
         std::vector<std::vector<float>>REG;
         for(int i = 0; i < XY.size();i++){
             std::vector<float>reg;
-            for(int j=0;j<2;j++){
+            for(int j = 0;j < 2;j++){
                 reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 2 + j]);
             }
             REG.push_back(reg);
@@ -161,7 +165,7 @@ namespace MxBase {
         }
 
         // XY = [ys , xs] ;  XY_f = [ys , xs]     
-        for(int i=0;i<XY_f.size();i++){                
+        for(int i = 0;i < XY_f.size();i++){                
             XY_f[i][1] = XY_f[i][1] + REG[i][0];
             XY_f[i][0] = XY_f[i][0] + REG[i][1];
         }
@@ -302,7 +306,7 @@ namespace MxBase {
         }
 
         std::vector <ObjectInfo> objectInfo;        
-        for(int i =0;i < dets.size();i++){
+        for(int i = 0;i < dets.size();i++){
             ObjectInfo objInfo;
             objInfo.classId = 0;
             objInfo.confidence = dets[i][4];
