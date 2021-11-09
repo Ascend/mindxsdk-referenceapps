@@ -60,7 +60,7 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 | 软件                | 版本                                                         | 说明                                               |
 | ------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
 | mxVision            | [mxVision 2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) | mxVision软件包                                     |
-| Ascend-CANN-toolkit | [CANN 3.3.0](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
+| Ascend-CANN-toolkit | [CANN 1.77.22.6.220](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
 | 操作系统            | [Ubuntu 18.04](https://ubuntu.com/)                          | Linux操作系统                                      |
 | OpenCV              | 4.3.0                                                        | 用于结果可视化                                     |
 | FreeType            | [2.10.0](https://download.savannah.gnu.org/releases/freetype/) | 用于在图片上写中文(opencv只支持在图片上写英文字符) |
@@ -69,7 +69,7 @@ FreeType2.10.0的[安装教程](https://blog.csdn.net/u014337397/article/details
 
 ```
 STEP1:从上面的FreeType版本链接中获取安装包freetype-2.10.0.tar.gz，保存到服务器
-STEP2:进入freetype的安装目录：cd /home/zhongzhi3/freetype-2.10.0 # 该路径需用户根据实际情况自行替换
+STEP2:进入freetype的安装目录：cd /home/xxx/freetype-2.10.0 # 该路径需用户根据实际情况自行替换
 STEP3:执行配置命令：./configure --without-zlib
 STEP4:执行编译命令：make
 STEP5:执行安装命令：make install # 该步骤需要root权限，否则会提示安装失败
@@ -87,11 +87,11 @@ export ASCEND_OPP_PATH=${install_path}/opp
 export FREETYPE_HOME=${FREETYPE_HOME}
 ```
 
-注：**${MX_SDK_HOME}** 替换为用户自己的MindX_SDK安装路径（例如："/home/zhongzhi3/MindX_SDK/mxVision"）；
+注：**${MX_SDK_HOME}** 替换为用户自己的MindX_SDK安装路径（例如："/home/xxx/MindX_SDK/mxVision"）；
 
 ​       **${install_path}** 替换为开发套件包所在路径（例如：/usr/local/Ascend/ascend-toolkit/latest）。
 
-​       **${FREETYPE_HOME}** 需设置为用户自己的FreeType库的安装路径（例如：/home/zhongzhi3/freetype-2.10.0/include）。
+​       **${FREETYPE_HOME}** 需设置为用户自己的FreeType库的安装路径（例如：/home/xxx/freetype-2.10.0/include）。
 
 ### 3. 模型转换
 
