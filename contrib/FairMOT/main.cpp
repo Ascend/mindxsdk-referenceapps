@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
             return ret;
         }
 
-        //write to file first frame must IDR frame
+        // write to file first frame must IDR frame
         bIsIDR = (output->dataSize > 1);
         if(!m_bFoundFirstIDR)
         {
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        //write frame to file
+        // write frame to file
         if (fwrite(output->dataPtr, output->dataSize, 1, fp) != 1) {
             LogInfo << "write frame to file fail";
         }
