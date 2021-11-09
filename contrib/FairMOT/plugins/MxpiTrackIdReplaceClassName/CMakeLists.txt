@@ -6,7 +6,6 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
 set(PLUGIN_NAME "mxpi_trackidreplaceclassname")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
 
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
