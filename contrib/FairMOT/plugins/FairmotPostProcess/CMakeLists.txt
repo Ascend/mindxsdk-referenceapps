@@ -6,7 +6,8 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 set(PLUGIN_NAME "mxpi_fairmotpostprocess")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
-set(MX_SDK_HOME /home/zhongzhi9/MindX_SDK/mxVision)
+
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
 include_directories(${MX_SDK_HOME}/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
