@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5.0)
 # project information
 project(MindX_SDK_Sample)   
 
-set(MX_SDK_HOME $ENV{MX_SDK_HOME})      
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")   
 
 if (NOT DEFINED ENV{MX_SDK_HOME})      
     string(REGEX REPLACE "(.*)/(.*)/(.*)/(.*)" "\\1" MX_SDK_HOME  ${CMAKE_CURRENT_SOURCE_DIR})
