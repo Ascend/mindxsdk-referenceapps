@@ -134,7 +134,6 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
 
-
     // check whether the proto struct name is MxpiObjectList
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
@@ -157,8 +156,6 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
-
-
 
     // Generate sample output
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
