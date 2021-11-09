@@ -74,4 +74,4 @@ private:
     std::ostringstream ErrorInfo_;
 };
 }
-#endif //SDKMEMORY_MXPITRACKIDREPLACECLASSNAME_H
+#endif // SDKMEMORY_MXPITRACKIDREPLACECLASSNAME_H
