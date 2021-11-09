@@ -197,8 +197,8 @@ APP_ERROR car_plate_recognition::resize1(const MxBase::TensorBase &inputTensor, 
     input.data = (uint8_t*)inputTensor.GetBuffer();
     // STEP2:进行图像缩放
     MxBase::ResizeConfig resize = {};
-    resize.height = 72;
-    resize.width = 272;
+    resize.height = 72; // 将输入图像的高缩放为模型所要求的输入大小，即72
+    resize.width = 272; // 将输入图像的宽缩放为模型所要求的输入大小，即272
     MxBase::DvppDataInfo output = {};
     APP_ERROR ret = dvppWrapper_->VpcResize(input, output, resize);
     if (ret != APP_ERR_OK) {
