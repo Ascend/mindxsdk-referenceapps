@@ -136,9 +136,9 @@ APP_ERROR FaceboxesPostProcess::Process(const std::vector<TensorBase> &tensors,
  */
 void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
  {
- 
+    //'min_sizes': [[32, 64, 128], [256], [512]], this parameter is used for generating prior box
     std::vector<int> min_sizes[3];
-    min_sizes[0].emplace_back(32);
+    min_sizes[0].emplace_back(32);  
     min_sizes[0].emplace_back(64);
     min_sizes[0].emplace_back(128);
     min_sizes[1].emplace_back(256);

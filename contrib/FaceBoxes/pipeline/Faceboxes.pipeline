@@ -26,7 +26,7 @@
         },
         "mxpi_tensorinfer0": {
             "props": {
-            "modelPath": "/home/uestc_luo1/models/faceboxes-b0_bs1.om"
+            "modelPath": "../models/faceboxes-b0_bs1.om"
         },
         "factory": "mxpi_tensorinfer",
         "next": "mxpi_objectpostprocessor0"
@@ -34,8 +34,8 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "/home/uestc_luo1/models/faceboxes-b0_bs1.cfg",
-                "postProcessLibPath": "/home/uestc_luo1/MindXSDK/mxVision-2.0.2/lib/modelpostprocessors/libfaceboxespostprocess.so"
+                "postProcessConfigPath": "../models/faceboxes-b0_bs1.cfg",
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libfaceboxespostprocess.so"
         },
         "factory": "mxpi_objectpostprocessor",
         "next": "mxpi_dataserialize0"

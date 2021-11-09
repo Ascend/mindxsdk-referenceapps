@@ -149,7 +149,7 @@ make install
    ## /*Faceboxes*/
         "mxpi_tensorinfer0": {
             "props": {
-            "modelPath": "/home/uestc_luo1/models/faceboxes-b0_bs1.om"
+            "modelPath": "./models/faceboxes-b0_bs1.om"
         },
         "factory": "mxpi_tensorinfer",
         "next": "mxpi_objectpostprocessor0"
@@ -157,8 +157,8 @@ make install
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "/home/uestc_luo1/models/faceboxes-b0_bs1.cfg",
-                "postProcessLibPath": "/home/uestc_luo1/MindXSDK/mxVision-2.0.2/lib/modelpostprocessors/libfaceboxespostprocess.so"
+                "postProcessConfigPath": "./config/faceboxes-b0_bs1.cfg",
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libfaceboxespostprocess.so"
         },
         "factory": "mxpi_objectpostprocessor",
         "next": "mxpi_dataserialize0"
@@ -182,8 +182,6 @@ key = b'mxpi_objectpostprocessor0'
 
 本项目中用到的模型有：Faceboxes
 
-Faceboxes模型转换及下载参考华为昇腾社区[ModelZoo](https://gitee.com/ascend/modelzoo/tree/72f91ab319625776ddb0451dfb035309dd9ef88e/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes#https://drive.google.com/open?id=17t4WULUDgZgiSy5kpCax4aooyPaz3GQH)；
-
 ### 6.1 pth转onnx模型
 
 1.FaceBoxes模型代码下载
@@ -193,14 +191,8 @@ git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
 ```
 2.预训练模型获取。
 ```
-到以下链接下载预训练模型，并放在/weights 目录下：
-(https://drive.google.com/file/d/1tRVwOlu0QtjvADQ2H7vqrRwsWEmaqioI) 
-```
-3.在script目录下，执行faceboxes_pth2onnx.py脚本，生成onnx模型文件
-```
-#将FaceBoxesProd.pth模型转为faceboxes-b0_bs1.onnx模型，放在models目录下.
-python3.7 faceboxes_pth2onnx.py  --trained_model ../weights/FaceBoxesProd.pth --save_folder ../models/faceboxes-b0_bs1.onnx       
-```
+到以下链接下载原预训练模型和onnx模型文件，分别放在/weights和/models 目录下：
+(https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/model.zipI) 
 
 ### 6.2 onnx转om模型
 
@@ -236,10 +228,10 @@ chmod +x run.sh
 
 ## 8 数据集预处理
 ### 8.1 数据集获取
-该模型使用[FDDB官网](https://drive.google.com/open?id=17t4WULUDgZgiSy5kpCax4aooyPaz3GQH)的2845张验证集进行测试，图片与标签分别存放在./data/FDDB/images与./data/FDDB/img_list.txt
+该模型使用[FDDB官网]的2845张验证集进行测试，图片与标签分别存放在/data/FDDB/images与/data/FDDB/img_list.txt，链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/data.zip
 
 ### 8.2 数据集预处理
-1.预处理脚本faceboxes_pth_preprocess.py
+1.下载预处理脚本faceboxes_pth_preprocess.py，链接为：https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes/FDDB_Evaluation
 
 2.执行预处理脚本，生成数据集预处理后的bin文件
 ```
@@ -248,7 +240,25 @@ python3.7 faceboxes_pth_preprocess.py --dataset /root/datasets/FDDB --save-folde
 ## 9 精度验证
 
 ### 9.1 准备
-FDDB数据集注释：http://vis-www.cs.umass.edu/fddb/index.html#download，将注释放在data/ground_truth下面
+1.下载FDDB数据集注释，链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/data.zip，将注释放在data/ground_truth下面
+
+2.下载所需脚本box_overlaps.pyx、setup.py、convert.py、split.py、evaluate.py，放到script目录下，下载链接为：https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes/FDDB_Evaluation
+
+3.将split.py与evaluate.py的代码进行修改：
+（1）split.py: 
+在第22行代码后添加：
+cur_path_dir = os.path.join(cur_path, '1')
+if not os.path.exists(cur_path_dir):
+    os.makedirs(cur_path_dir)
+（2）evaluate.py: 
+在第229行与第230行之间添加：for fold_id in range(1, 11)，添加后代码如下：
+# different setting
+for fold_id in range(1, 11):
+            count_face = 0
+            ...
+
+在第233行代码上进行修改：
+gt = gt_box_dict[event[setting_id]] → gt = gt_box_dict[fold_id]
 
 ### 9.2 验证流程
 在运行完main.py后开始进行精度验证，所需代码文件放在script目录下。首先将所依赖的python包安装好（bbox除外），bbox函数直接在终端运行python3.7 setup.py install即可。之后分别运行script目录下的convert.py，split.py和evaluate.py，FDDB集的精度结果在运行完evaluate.py后会打印出来。
@@ -267,8 +277,8 @@ FDDB数据集注释：http://vis-www.cs.umass.edu/fddb/index.html#download，将
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "/home/uestc_luo1/models/faceboxes-b0_bs1.cfg",
-                "postProcessLibPath": "/home/uestc_luo1/MindXSDK/mxVision-2.0.2/lib/modelpostprocessors/libfaceboxespostprocess.so"
+                "postProcessConfigPath": "./config/faceboxes-b0_bs1.cfg",
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libfaceboxespostprocess.so"
         },
         "factory": "mxpi_objectpostprocessor",
         "next": "mxpi_dataserialize0"

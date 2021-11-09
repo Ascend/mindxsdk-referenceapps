@@ -60,6 +60,7 @@ if __name__ == '__main__':
         for prep_info in fr:
             img_name, _, _, _ = prep_info.split(' ')
             img_names.append(img_name)
+            #year: img_name[0:4]; folder number: img_name[5:7], img_name[8:10]; image number: img_name[19:], e.g. 2002_08_11_big_img_591.jpg
             img_addresses.append(os.path.join(args.image_folder,img_name[0:4],img_name[5:7],img_name[8:10],'big','img_'+img_name[19:]+'.jpg'))
 
     for i, name_img in enumerate(img_addresses):
