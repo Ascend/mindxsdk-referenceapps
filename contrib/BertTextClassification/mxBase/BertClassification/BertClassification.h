@@ -11,7 +11,6 @@ struct InitParam {
     std::string vocabTextPath;
     uint32_t maxLength;
     uint32_t labelNumber;
-
 };
 
 class BertClassification {
