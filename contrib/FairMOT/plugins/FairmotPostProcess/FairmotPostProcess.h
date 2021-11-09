@@ -20,7 +20,7 @@
 #include "opencv2/opencv.hpp"
 
 namespace MxBase {
-    class FairmotPostProcess:public ObjectPostProcessBase
+    class FairmotPostProcess : public ObjectPostProcessBase
     {
     public:
         FairmotPostProcess() = default;
