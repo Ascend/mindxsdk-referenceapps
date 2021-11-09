@@ -84,11 +84,14 @@ export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${i
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:${MX_SDK_HOME}/python:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
+export FREETYPE_HOME=${FREETYPE_HOME}
 ```
 
 注：**${MX_SDK_HOME}** 替换为用户自己的SDK安装路径（例如："/home/zhongzhi3/MindX_SDK/mxVision"）；
 
 ​       **${install_path}** 替换为开发套件包所在路径（例如：/usr/local/Ascend/ascend-toolkit/latest）。
+
+​       **${FREETYPE_HOME}** 需设置为用户自己的FreeType库的安装路径（例如：/home/zhongzhi3/freetype-2.10.0/include）。
 
 ### 3. 模型转换
 
@@ -142,7 +145,7 @@ atc --model=./lpr.prototxt --weight=./lpr.caffemodel --output=./lpr --framework=
 
 第**10**行 **set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")** 语句是设置SDK的安装路径，需将**$ENV{MX_SDK_HOME}**替换为用户实际的SDK安装路径。
 
-第**18**行 **/home/zhongzhi3/freetype-2.10.0/include** 语句是设置FreeType库中头文件的搜索路径，需根据自己的FreeType安装路径进行替换。
+第**18**行 **$ENV{FREETYPE_HOME}** 语句是设置FreeType库中头文件的搜索路径，需根据自己的FreeType安装路径进行替换（例如：**/home/zhongzhi3/freetype-2.10.0/include**）
 
 第**39**行 **freetype** 语句是链接到FreeType库，该名称一般是不用修改的，若命名不同则看情况修改。
 

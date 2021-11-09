@@ -15,7 +15,7 @@ include_directories(
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
         ${PROJECT_SOURCE_DIR}/include
-        /home/zhongzhi3/freetype-2.10.0/include
+        $ENV{FREETYPE_HOME} #该语句是设置FreeType库的搜索路径，需按实际情况更改，例如：/home/zhongzhi3/freetype-2.10.0/include
 )
 
 #添加lib的搜索路径
@@ -23,8 +23,6 @@ link_directories(
         ${MX_SDK_HOME}/lib
         ${MX_SDK_HOME}/opensource/lib
         ${MX_SDK_HOME}/lib/modelpostprocessors
-        /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
-        /usr/local/Ascend/driver/lib64/
         )
 
 #生成可执行文件car_plate_recognition.exe
@@ -32,10 +30,10 @@ add_executable(car_plate_recognition ${SRC_FILES})
 
 #将target链接到lib
 target_link_libraries(car_plate_recognition
-        glog #${MX_SDK_HOME}/opensource/lib下有个libglog.so
-        mxbase #${MX_SDK_HOME}/lib下有个libmaxbase.so
-        cpprest #${MX_SDK_HOME}/opensource/lib下有个libcpprest.so
-        opencv_world #${MX_SDK_HOME}/opensource/lib下有个libopencv_world.so
+        glog
+        mxbase
+        cpprest
+        opencv_world
         freetype
         )
 
