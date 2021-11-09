@@ -45,8 +45,6 @@
 │   │   ├── images
 │   │   │	 ├── ...
 │   │   └── img_list
-│   └── prep
-│   │   ├── FDDB.txt
 │   └── FDDB_Evaluation
 │   │   ├── FDDB_dets.txt
 │   └── results
@@ -70,7 +68,6 @@
 │   │   ├── FaceBoxesPostProcess.cpp
 │   │   ├── FaceBoxesPostProcess.h
 ├── script
-│   ├── faceboxes_pth_preprocess.py
 │   ├── convert.py
 │   ├── split.py
 │   ├── evaluate.py
@@ -226,16 +223,9 @@ chmod +x run.sh
 ```
 直接运行
 
-## 8 数据集预处理
-### 8.1 数据集获取
+## 8 数据集获取
+
 该模型使用[FDDB官网]的2845张验证集进行测试，图片与标签分别存放在/data/FDDB/images与/data/FDDB/img_list.txt，链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/data.zip
-
-### 8.2 数据集预处理
-1.下载预处理脚本faceboxes_pth_preprocess.py，链接为：https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes/FDDB_Evaluation
-
-2.执行预处理脚本，生成数据集预处理后的bin文件
-```
-python3.7 faceboxes_pth_preprocess.py --dataset /root/datasets/FDDB --save-folder prep/
 
 ## 9 精度验证
 

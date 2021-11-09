@@ -26,7 +26,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='FaceBoxes')
 parser.add_argument('--save_folder', default='./data/FDDB_Evaluation/', type=str, help='Dir to save results')
-parser.add_argument('--prep_info', default='./data/prep/')
+parser.add_argument('--img_info', default='./data/FDDB/img_list.txt')
 parser.add_argument('--image_folder', default = './data/FDDB/images/')
 parser.add_argument('--cpu', action="store_true", default=False, help='Use cpu inference')
 args = parser.parse_args()
@@ -55,13 +55,10 @@ if __name__ == '__main__':
         os.makedirs(args.save_folder)
     fw = open(os.path.join(args.save_folder, 'FDDB_dets.txt'), 'w')
 
-    prepinfo_list = os.path.join(args.prep_info, 'FDDB.txt')
-    with open(prepinfo_list, 'r') as fr:
-        for prep_info in fr:
-            img_name, _, _, _ = prep_info.split(' ')
-            img_names.append(img_name)
-            #year: img_name[0:4]; folder number: img_name[5:7], img_name[8:10]; image number: img_name[19:], e.g. 2002_08_11_big_img_591.jpg
-            img_addresses.append(os.path.join(args.image_folder,img_name[0:4],img_name[5:7],img_name[8:10],'big','img_'+img_name[19:]+'.jpg'))
+    with open(args.img_info, 'r') as fr:
+        for img_address in fr:
+            #img_address  e.g. 2002/08/11/big/img_591
+            img_addresses.append(os.path.join(args.image_folder,img_address +'.jpg'))
 
     for i, name_img in enumerate(img_addresses):
         with open(name_img,'rb')as f:
