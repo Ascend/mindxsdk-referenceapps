@@ -27,7 +27,7 @@
 * @brief Definition of TrackIdReplaceClassName class.
 */
 namespace MxPlugins {
-class MxpiTrackIdReplaceClassName : public MxTools::MxPluginBase {
+class MxpiTrackIdReplaceClassName:public MxTools::MxPluginBase {
 public:
     /**
      * @api
