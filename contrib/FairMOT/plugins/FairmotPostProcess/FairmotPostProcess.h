@@ -14,8 +14,8 @@
  * limitations under the License.
  */
  
-#ifndef YOLOV3_POST_PROCESS_H
-#define YOLOV3_POST_PROCESS_H
+#ifndef FAIRMOT_POST_PROCESS_H
+#define FAIRMOT_POST_PROCESS_H
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 #include "opencv2/opencv.hpp"
 
