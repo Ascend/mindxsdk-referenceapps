@@ -7,7 +7,8 @@ add_definitions(-Dgoogle=mindxsdk_private)
 set(PLUGIN_NAME "mxpi_trackidreplaceclassname")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
-set(MX_SDK_HOME /home/zhongzhi9/MindX_SDK/mxVision)
+
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MX_SDK_HOME}/include)
