@@ -1,18 +1,18 @@
 /*
-* Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include "MxpiTrackIdReplaceClassName.h"
 #include "MxBase/Log/Log.h"
@@ -61,29 +61,26 @@ APP_ERROR MxpiTrackIdReplaceClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, cons
     return ret;
 }
 
+/*
+ * @description: Replace className with trackId 
+ */
 APP_ERROR MxpiTrackIdReplaceClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, 
                                                             const MxpiTrackLetList srcMxpiTrackLetList, 
                                                             MxpiObjectList& dstMxpiObjectList)
 {
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++){
-        // 得到输入srcMxpiObjectList的objectvec
-        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
-        // 得到输入srcMxpiObjectList的objectvec的classvec   
-        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
-        // 给输出添加objectvec        
+        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);  
+        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);      
         MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
         dstMxpiObject->set_x0(srcMxpiObject.x0());
         dstMxpiObject->set_y0(srcMxpiObject.y0());
         dstMxpiObject->set_x1(srcMxpiObject.x1());
         dstMxpiObject->set_y1(srcMxpiObject.y1());
-        // 给输出添加objectvec
         MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
         for(int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++){
-            // 得到输入srcMxpiTrackLetList的trackletvec
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);  
             if(srcMxpiTrackLet.trackflag() != 2){
-                // 得到输入srcMxpiTrackLetList的trackletvec的headervec
                 MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);  
                 if(srcMxpiHeader.memberid() == i){
                     dstMxpiClass->set_classid(0);
@@ -199,7 +196,7 @@ std::vector<std::shared_ptr<void>> MxpiTrackIdReplaceClassName::DefineProperties
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
 
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiTrackIdReplaceClassName", "NULL", "NULL"});
+        STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiTrackIdReplaceClassName", "NULL", "NULL"});
 
     properties.push_back(parentNameProSptr);
     properties.push_back(motNameProSptr);
