@@ -374,9 +374,9 @@ APP_ERROR car_plate_recognition::detection_postprocess(const MxBase::TensorBase 
 
 
 /* @brief: 进行车牌识别推理
-*  @param：inputs：输入数据
-*  @param：outputs:模型推理的输出数据
-*  @retval:APP_ERROR型变量
+   @param：inputs：输入数据
+   @param：outputs:模型推理的输出数据
+   @retval:APP_ERROR型变量
 */
 APP_ERROR car_plate_recognition::recognition_inference(const std::vector<MxBase::TensorBase> inputs,
                                                        std::vector<std::vector<MxBase::TensorBase>> &outputs) {
@@ -419,10 +419,10 @@ APP_ERROR car_plate_recognition::recognition_inference(const std::vector<MxBase:
 
 
 /* @brief: 车牌识别模型后处理
-*  @param：tensor：原始图像数据
-*  @param：outputs:模型的推理输出
-*  @param：objInfos:其成员className用于存放所识别出来的车牌字符
-*  @retval:APP_ERROR型变量
+   @param：tensor：原始图像数据
+   @param：outputs:模型的推理输出
+   @param：objInfos:其成员className用于存放所识别出来的车牌字符
+   @retval:APP_ERROR型变量
 */
 APP_ERROR car_plate_recognition::recognition_postprocess(std::vector<std::vector<MxBase::TensorBase>> recog_outputs,
                                                          std::vector<MxBase::ObjectInfo>& objectInfos) {
@@ -448,10 +448,10 @@ APP_ERROR car_plate_recognition::recognition_postprocess(std::vector<std::vector
 
 
 /* @brief: 车牌检测结果可视化
-*  @param：tensor：未经Resize的原始图像数据
-*  @param：objInfos：经模型后处理获得的目标框信息
-*					因为可能检测到多个对象，每个对象又会产生多个目标框，所以objInfos是元素为ObjectInfo型容器的容器对象
-*  @retval:APP_ERROR型变量
+   @param：tensor：未经Resize的原始图像数据
+   @param：objInfos：经模型后处理获得的目标框信息
+ 					因为可能检测到多个对象，每个对象又会产生多个目标框，所以objInfos是元素为ObjectInfo型容器的容器对象
+   @retval:APP_ERROR型变量
 */
 APP_ERROR car_plate_recognition::write_result(MxBase::TensorBase &tensor,
                                               std::vector<MxBase::ObjectInfo> objectInfos) {
@@ -495,8 +495,8 @@ APP_ERROR car_plate_recognition::write_result(MxBase::TensorBase &tensor,
 
 
 /* @brief: 串联整体流程
-*  @param：imgPath：图片路径
-*  @retval:APP_ERROR型变量
+   @param：imgPath：图片路径
+   @retval:APP_ERROR型变量
 */
 APP_ERROR car_plate_recognition::process(const std::string &imgPath) {
 
