@@ -18,7 +18,7 @@ opt.img_size *= 2 if len(opt.img_size) == 1 else 1  # expand
 
 # Input
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-img = torch.zeros(size=(opt.batch_size, 3, *opt.img_size), device=device)
+img = torch.zeros(size=[opt.batch_size, 3, 1024, 1024], device=device)
 
 # Load PyTorch model
 model = torch.load(opt.weights, map_location=device)['model'].float()
