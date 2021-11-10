@@ -2,10 +2,11 @@ import argparse
 import torch
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 import onnx
-import models
 from utils.activations import Hardswish
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
+import models
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--weights', type=str,  
