@@ -22,22 +22,24 @@
 using namespace cv;
 
 namespace {
+// confidence thresh for tracking     
 const float CONF_THRES = 0.35;
 auto uint8Deleter = [] (uint8_t* p) { };
 }
-namespace MxBase {
 
+namespace MxBase {
+    // initialization
     APP_ERROR FairmotPostProcess::Init(const std::map <std::string, std::shared_ptr<void>> &postConfig) {  
         LogDebug << "Start to Init FairmotPostProcess.";    
         LogDebug << "End to Init FairmotPostProcess.";
         return APP_ERR_OK;
     }
-    // 该接口仅调用一次，用于实现去初始化任务（例如内存释放）。
+    // This interface is called only once to implement de initialization tasks (such as memory release).
     APP_ERROR FairmotPostProcess::DeInit() {          
         return APP_ERR_OK;
     }
 
-    // 判断tensor输出是否有效
+    // Judge whether the input from tensorinfer is valid
     bool FairmotPostProcess::IsValidTensors(const std::vector <TensorBase> &tensors) const {
         int fairmotType_ = 4;
         if (tensors.size() != (size_t) fairmotType_) {               
@@ -45,7 +47,11 @@ namespace MxBase {
                      << fairmotType_ << ")";
             return false;
         }    
-        auto shape0 = tensors[0].GetShape();
+        // shape0 shoud be equal to 1*152*272*128
+        // shape1 shoud be equal to 1*152*272*2
+        // shape2 shoud be equal to 1*152*272*4
+        // shape3 shoud be equal to 1*152*272
+        auto shape0 = tensors[0].GetShape();        
         auto shape1 = tensors[1].GetShape();
         auto shape2 = tensors[2].GetShape();
         auto shape3 = tensors[3].GetShape();        
@@ -67,19 +73,23 @@ namespace MxBase {
         }
         return true;
     }
-
+    
+/*
+ * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
+ */
     void FairmotPostProcess::ObjectDetectionOutput(const std::vector <TensorBase> &tensors,
                                                    std::vector <std::vector<ObjectInfo>> &objectInfos,
                                                    const std::vector <ResizedImageInfo> &resizedImageInfos) {
-        LogDebug << "FairmotPostProcess start to write results.";   //
-        if (tensors.size() == 0) {              // 仍在判断tensor是否有效
+        LogDebug << "FairmotPostProcess start to write results.";
+        // Judge whether the input from tensorinfer is empty
+        if (tensors.size() == 0) {              
             return;
         }
-        auto shape = tensors[0].GetShape();     // 仍在判断tensor是否有效
+        auto shape = tensors[0].GetShape();     
         if (shape.size() == 0) {
             return;
-        }       
-        uint32_t batchSize = shape[0];
+        }     
+
         // @param featLayerData  Vector of 4 output feature data        
         std::vector <std::shared_ptr<void>> featLayerData = {};             
         std::vector <std::vector<size_t>> featLayerShapes = {}; 
@@ -87,7 +97,7 @@ namespace MxBase {
             auto dataPtr = (uint8_t *) GetBuffer(tensors[j], 0); 
             std::shared_ptr<void> tmpPointer;
             tmpPointer.reset(dataPtr, uint8Deleter);
-            // featLayerData存储首地址指针
+            // featLayerData stores the head address of 4 output feature data
             featLayerData.push_back(tmpPointer);                                
             shape = tensors[j].GetShape();
 
@@ -95,13 +105,20 @@ namespace MxBase {
             for (auto s : shape) {
                 featLayerShape.push_back((size_t) s);
             }
-            // featLayerShapes存储形状
+            // featLayerShapes stores the shapes of 4 output feature data
             featLayerShapes.push_back(featLayerShape);             
         }
 
+        // tensors[0] matchs id_feature, id_feature is not used in postprocess
+        // tensors[1] matchs reg
+        // tensors[2] matchs wh
+        // tensors[3] matchs hm
+        // Get the head address of hm
         std::shared_ptr<void> hm_addr = featLayerData[3];
+        // Create a vector container XY to store coordinate information
         std::vector<std::vector<int>> XY;
         for(uint32_t i = 0;i < 152*272 ; i++){
+            // Compared with the threshold CONF_THRES to obtain coordinate information
             if(static_cast<float *>(hm_addr.get())[i] > CONF_THRES)
             {
                 std::vector<int>xy;                
@@ -109,20 +126,18 @@ namespace MxBase {
                 int y = i - 272 * x;
                 xy.push_back(x);
                 xy.push_back(y); 
-                XY.push_back(xy);  // [ ys,xs ]
+                XY.push_back(xy);  
             }
         }
+        // Create a vector container scores to store the information in the corresponding coordinate XY in hm
         std::vector<float>scores;
         for(uint32_t i = 0;i < XY.size();i++){
             scores.push_back(static_cast<float *>(hm_addr.get())[XY[i][0] * 272 + XY[i][1]]);
         }
-        // tensors[0]对应id_feature
-        // tensors[1]对应reg
-        // tensors[2]对应wh
-        // tensors[3]对应hm
+        // Get the head address of wh and reg
         std::shared_ptr<void> wh_addr = featLayerData[2];
         std::shared_ptr<void> reg_addr = featLayerData[1];
-        std::shared_ptr<void> id_feature_addr = featLayerData[0];
+        // std::shared_ptr<void> id_feature_addr = featLayerData[0];
 
         // WH: n*4
         std::vector<std::vector<float>>WH;
@@ -142,20 +157,9 @@ namespace MxBase {
                 reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 2 + j]);
             }
             REG.push_back(reg);
-        }
+        }         
 
-        // ID_feature: n*128
-        std::vector<std::vector<float>>ID_feature;
-        for(int i = 0; i < XY.size();i++){
-            std::vector<float>id_feature;
-            for(int j = 0;j < 128;j++){
-                id_feature.push_back(static_cast<float *>
-                (id_feature_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 128 + j]);
-            }
-            ID_feature.push_back(id_feature);
-        }            
-
-        // XY_f拷贝XY并将数据类型从整形变成浮点型
+        // XY_f changes the data in XY from int to float
         std::vector<std::vector<float>> XY_f;
         for(int i = 0;i < XY.size();i++){
             std::vector<float>xy_f;
@@ -163,13 +167,12 @@ namespace MxBase {
             xy_f.push_back(XY[i][1]);
             XY_f.push_back(xy_f);
         }
-
-        // XY = [ys , xs] ;  XY_f = [ys , xs]     
+  
         for(int i = 0;i < XY_f.size();i++){                
             XY_f[i][1] = XY_f[i][1] + REG[i][0];
             XY_f[i][0] = XY_f[i][0] + REG[i][1];
         }
-        
+        // dets: n*6
         std::vector<std::vector<float>>dets;
         for(int i = 0;i < XY.size();i++){
             std::vector<float>det;
@@ -182,59 +185,56 @@ namespace MxBase {
             dets.push_back(det);
         }
 
-        // 原图大小
+        // Width and height of initial video
         int width = resizedImageInfos[0].widthOriginal;          
         int height = resizedImageInfos[0].heightOriginal; 
-        // 缩放之后的大小            
+        // Scaled width and height           
         int inp_height = resizedImageInfos[0].heightResize;      
         int inp_width = resizedImageInfos[0].widthResize;   
-
-        int down_ratio = 4;
-
+        // Create a vector container center to store the center point of the original picture
         std::vector<float>c;
         c.push_back(width / 2);
         c.push_back(height / 2);
-
-        float s = 0;
-        s = std::max(float(inp_width) / float(inp_height) * height, float(width)) * 1.0 ;
-
-        int h = inp_height / down_ratio ;
-        int w = inp_width / down_ratio ;            
-        int num_classes = 1;
-            
         std::vector<float>center(c);
-        float scale = s;
-        int rot = 0;
-        std::vector<int>output_size;
-        output_size.push_back(w);
-        output_size.push_back(h);
-        std::vector<float>shift(2,0);
-        
-        int inv = 1;
-        
+         
+        float scale = 0;
+        scale = std::max(float(inp_width) / float(inp_height) * height, float(width)) * 1.0 ;
         std::vector<float>Scale;
         Scale.push_back(scale);
         Scale.push_back(scale);
+        
+        int down_ratio = 4;
+        int h = inp_height / down_ratio ;
+        int w = inp_width / down_ratio ;
+        std::vector<int>output_size;
+        output_size.push_back(w);
+        output_size.push_back(h);
 
+        // int num_classes = 1;
+        int rot = 0;
+
+        std::vector<float>shift(2,0);
+        
+        int inv = 1;
+
+        // get_affine_transform
         std::vector<float>scale_tmp(Scale);
-
         float src_w = scale_tmp[0];
         int dst_w = output_size[0];
         int dst_h = output_size[1];
 
-        float rot_rad = 0;
+        float rot_rad = 3.1415926 * rot / 180;
 
         std::vector<float>src_point;
         src_point.push_back(0);
         src_point.push_back(src_w * (-0.5));
 
-        float sn = 0;
-        float cs = 1;
-
-        std::vector<float>src_result(2,0);
-        src_result[0] = src_point[0] * cs - src_point[1] * sn ;
-        src_result[1] = src_point[0] * sn + src_point[1] * cs ;  
-        std::vector<float>src_dir(src_result);
+        float sn = sin(rot_rad);
+        float cs = cos(rot_rad);
+        // get_dir
+        std::vector<float>src_dir(2,0);
+        src_dir[0] = src_point[0] * cs - src_point[1] * sn ;
+        src_dir[1] = src_point[0] * sn + src_point[1] * cs ;  
 
         std::vector<float>dst_dir;
         dst_dir.push_back(0);
@@ -242,7 +242,6 @@ namespace MxBase {
 
         float src[3][2] = {0};
         float dst[3][2] = {0};
-
         src[0][0] = center[0];
         src[0][1] = center[1];
         src[1][0] = center[0] + src_dir[0];
@@ -251,21 +250,20 @@ namespace MxBase {
         dst[0][1] = dst_h * 0.5;
         dst[1][0] = dst_w * 0.5 + dst_dir[0];
         dst[1][1] = dst_h * 0.5 + dst_dir[1];
-
+        
+        // get_3rd_point
         std::vector<float>direct;
         direct.push_back(src[0][0]-src[1][0]);
         direct.push_back(src[0][1]-src[1][1]);
-
         src[2][0] = src[1][0] - direct[1];
         src[2][1] = src[1][1] + direct[0];
-
+        // get_3rd_point
         direct[0] = dst[0][0] - dst[1][0];
         direct[1] = dst[0][1] - dst[1][1];
-
         dst[2][0] = dst[1][0] - direct[1];
         dst[2][1] = dst[1][1] + direct[0];
 
-        // 转格式
+        // change data in src and dst to point2f format  
         Point2f SRC[3];
         Point2f DST[3];
         SRC[0] = Point2f(src[0][0],src[0][1]);
@@ -277,23 +275,20 @@ namespace MxBase {
         DST[2] = Point2f(dst[2][0],dst[2][1]);
 
         Mat trans(2, 3, CV_64FC1);
-
-        trans = cv::getAffineTransform(DST,SRC);
-
-        // 从MAT型数据trans中把数据拿到矩阵Trans中
+        if(inv == 1){
+            trans = cv::getAffineTransform(DST,SRC);
+        }
+        else{
+            trans = cv::getAffineTransform(SRC,DST);
+        }
+        // Get data from mat type trans to array Trans
         float Trans[2][3];
         for(int i = 0;i < 2;i++){
             for(int j = 0;j < 3;j++){
                 Trans[i][j] = trans.at<double>(i,j);
             }
         }
-
-        std::vector<std::vector<float>>target_coords; 
-        for(int i = 0;i < dets.size();i++){
-            std::vector<float>target(2,0);
-            target_coords.push_back(target);
-        }
-        
+        // affine_transform
         for(int i = 0;i < dets.size();i++){
             float new_pt[3] = {dets[i][0], dets[i][1], 1 };
             dets[i][0] = Trans[0][0]* new_pt[0] + Trans[0][1]* new_pt[1] + Trans[0][2]* new_pt[2]; 
@@ -304,13 +299,14 @@ namespace MxBase {
             dets[i][2] = Trans[0][0]* new_pt[0] + Trans[0][1]* new_pt[1] + Trans[0][2]* new_pt[2]; 
             dets[i][3] = Trans[1][0]* new_pt[0] + Trans[1][1]* new_pt[1] + Trans[1][2]* new_pt[2]; 
         }
-
+        // output
         std::vector <ObjectInfo> objectInfo;        
         for(int i = 0;i < dets.size();i++){
             ObjectInfo objInfo;
             objInfo.classId = 0;
             objInfo.confidence = dets[i][4];
-            objInfo.className = " ";
+            objInfo.className = "human";
+            // Normalization
             objInfo.x0 = dets[i][0] / resizedImageInfos[0].widthOriginal;
             objInfo.y0 = dets[i][1] / resizedImageInfos[0].heightOriginal;
             objInfo.x1 = dets[i][2] / resizedImageInfos[0].widthOriginal;
