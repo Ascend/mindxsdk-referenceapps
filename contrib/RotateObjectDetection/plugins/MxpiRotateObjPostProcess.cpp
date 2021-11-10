@@ -641,13 +641,13 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
 
             // Get the actual prediction of x, y, longside, shortside
             float x = (col + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx])) 
-                    * 2 - 0.5) * (info.netWidth / layer.width);
+                * 2 - 0.5) * (info.netWidth / layer.width);
             float y = (row + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETY])) 
-                    * 2 - 0.5) * (info.netHeight / layer.height);
+                * 2 - 0.5) * (info.netHeight / layer.height);
             float longside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETWIDTH]) 
-                    * 2, 2) * layer.anchors[BIASESDIM * j];
+                * 2, 2) * layer.anchors[BIASESDIM * j];
             float shortside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETHEIGHT]) 
-                    * 2, 2) * layer.anchors[BIASESDIM * j + OFFSETBIASES];
+                * 2, 2) * layer.anchors[BIASESDIM * j + OFFSETBIASES];
 
             // Assign to rObjInfo center point, classID, confidence
             RotatedObjectInfo rObjInfo;
@@ -818,7 +818,7 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
 
     std::string rotateObjProtoName = "mxpi_rotateobjproto";
     APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(rotateObjProtoName, 
-                                                        static_pointer_cast<void>(mxpiRotateobjListptr));
+                                                         static_pointer_cast<void>(mxpiRotateobjListptr));
     if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, rotateObjProtoName) << "MxpiRotateObjPostProcess add metadata failed.";
         mxpiErrorInfo.ret = ret;
