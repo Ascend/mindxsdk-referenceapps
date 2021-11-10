@@ -113,11 +113,26 @@ git clone https://github.com/zeusees/License-Plate-Detector.git
 python pth2onnx.py
 ```
 
-*注：Python = 3.8.3*
+若在模型转换过程中报错 “ **ValueError:Expected a cuda device,but got:cpu** ”，则说明是因为电脑上未安装cuda(cuda只适用于英伟达显卡)，可以将设备替换成CPU，方法如下：
+
+```
+将pth2onnx.py中的第10，11行代码：
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+pretrained_dict = torch.load(weights, map_location=lambda storage, loc: storage.cuda(device))
+替换为：
+device = torch.device("cpu")
+pretrained_dict = torch.load(weights, map_location=torch.device('cpu'))
+```
+
+*版本要求：*
+
+*Python = 3.8.3*
 
 *Pytorch = 1.7.0*
 
 *onnx = 1.10.1*
+
+*cuda = 10.2.120*
 
 注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)模型。
 
