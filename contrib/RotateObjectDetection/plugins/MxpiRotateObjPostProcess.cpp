@@ -768,13 +768,15 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
-    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
+    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = 
+        static_pointer_cast<MxpiTensorPackageList>(metadata);
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(*srcMxpiTensorPackageListSptr, tensors);
 
     // Get image resize information
     shared_ptr<void> ir_metadata = mxpiMetadataManager.GetMetadata(imageResizeName_);
-    shared_ptr<MxpiVisionList> imageResizeVisionListSptr = static_pointer_cast<MxpiVisionList>(ir_metadata);
+    shared_ptr<MxpiVisionList> imageResizeVisionListSptr = 
+        static_pointer_cast<MxpiVisionList>(ir_metadata);
     std::vector<float> visionInfos = {};
     GetImageResizeInfo(*imageResizeVisionListSptr, visionInfos); 
 
