@@ -781,7 +781,8 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
-    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
+    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = 
+        static_pointer_cast<MxpiTensorPackageList>(metadata);
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(*srcMxpiTensorPackageListSptr, tensors);
 
