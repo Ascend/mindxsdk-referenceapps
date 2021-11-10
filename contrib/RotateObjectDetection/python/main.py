@@ -25,8 +25,6 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../proto")
 import mxpiRotateobjProto_pb2 as mxpiRotateObjProto
 
-
-
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     # Create a new StreamManager object and initialize it.
