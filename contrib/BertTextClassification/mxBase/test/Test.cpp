@@ -31,6 +31,7 @@ APP_ERROR Test::test_accuracy() {
   APP_ERROR ret = bert->Init(initParam);
   if (ret != APP_ERR_OK) {
     LogError << "BertClassification init failed, ret=" << ret << ".";
+    bert->DeInit();
     return ret;
   }
 
@@ -118,6 +119,7 @@ APP_ERROR Test::test_input() {
   APP_ERROR ret = bert->Init(initParam);
   if (ret != APP_ERR_OK) {
     LogError << "BertClassification init failed, ret=" << ret << ".";
+    bert->DeInit();
     return ret;
   }
   std::string text;
@@ -127,6 +129,7 @@ APP_ERROR Test::test_input() {
   // Check text file validity.
   if (infile.fail()) {
     LogError << "Failed to open textPath file: test.txt.";
+    bert->DeInit();
     return APP_ERR_COMM_OPEN_FAIL;
   }
   while (std::getline(infile, text)) {

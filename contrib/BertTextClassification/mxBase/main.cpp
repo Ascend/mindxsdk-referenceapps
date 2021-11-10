@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
   APP_ERROR ret = bert->Init(initParam);
   if (ret != APP_ERR_OK) {
     LogError << "BertClassification init failed, ret=" << ret << ".";
+    bert->DeInit();
     return ret;
   }
 
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
   std::string aa = textPath.substr(textPath.find_last_of("."));
   if (textPath.substr(textPath.find_last_of(".")) != ".txt") {
     LogError << "please input the txt file!";
+    bert->DeInit();
     return APP_ERR_COMM_FAILURE;
   }
   std::string text;
@@ -64,13 +66,11 @@ int main(int argc, char* argv[]) {
   // Check text file validity.
   if (infile.fail()) {
     LogError << "Failed to open textPath file: " << textPath << ".";
+    bert->DeInit();
     return APP_ERR_COMM_OPEN_FAIL;
   }
+
   while (std::getline(infile, text)) {
-    if (text == "") {
-      LogError << "The sample.txt text is null, please input right text!";
-      return APP_ERR_COMM_FAILURE;
-    }
     std::string label;
     // Inference begin.
     ret = bert->Process(text, label);
@@ -81,6 +81,12 @@ int main(int argc, char* argv[]) {
       bert->DeInit();
       return ret;
     }
+  }
+
+  if (text == "") {
+    LogError << "The sample.txt text is null, please input right text!";
+    bert->DeInit();
+    return APP_ERR_COMM_FAILURE;
   }
   // Destroy.
   bert->DeInit();

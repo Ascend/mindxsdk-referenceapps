@@ -110,13 +110,11 @@ if __name__ == '__main__':
     if os.path.exists("data/sample.txt") != True:
         print("The sample.txt does not exist, please input the right path!")
         exit()
+    if os.path.getsize("data/sample.txt") == 0:
+        print("The sample.txt content is null, please input the right text!")
+        exit()
     sample_text = open("data/sample.txt", "r")
     for text in sample_text:
-        # the content is empty, execute exit()
-        if text == "":
-            print("The sample.txt content is null, please input the right text!")
-            exit()
-
         # preprocess the data
         X1, X2 = preprocess(text)
 

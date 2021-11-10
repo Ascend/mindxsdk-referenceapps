@@ -34,7 +34,6 @@ float32_bytes = 4
 sample_number = 99
 all_sample_number = 495
 token_dict = {}
-output_dir = "out/"
 label = ["体育", "健康", "军事", "教育", "汽车"]
 
 class OurTokenizer(Tokenizer):
