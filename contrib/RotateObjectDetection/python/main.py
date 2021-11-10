@@ -123,11 +123,11 @@ if __name__ == '__main__':
         values = [0, 0, 0, 0, 0, 0, 0, 0]
         classNames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 
                         'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-                        'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 
+                        'basketball-court', 'storage-tank', 'soccer-ball-field', 'roundabout', 
                         'harbor', 'swimming-pool', 'helicopter', 'container-crane']
         s = ' '
         tl = 1
-        tf = tl-1 if (tl-1>1) else 1
+        tf = tl - 1 if (tl - 1 > 1) else 1
         
         for i in range(len(result_protovec)):
             rbox = dict(zip(keys, values))
@@ -172,7 +172,7 @@ if __name__ == '__main__':
             poly = cv2.boxPoints(rect)
             poly = np.int0(poly)
             cv2.drawContours(image=img, contours=[poly], contourIdx=-1, 
-                            color=colors[int(rboxes[i]["classID"])], thickness=2*tl)
+                            color=colors[int(rboxes[i]["classID"])], thickness=2 * tl)
             if labels:
                 label = '%s %.2f' % (rboxes[i]["className"], rboxes[i]["confidence"])
             else:
