@@ -28,25 +28,38 @@ using namespace std;
 using namespace cv;
 
 namespace {
+
+    auto uint8Deleter = [](uint8_t* p) {};
     std::string strBiases = "10,13,16,30,33,23,30,61,62,45,59,119,116,90,156,198,373,326";
-    std::string className[16] = {"plane", "baseball-diamond", "bridge", "ground-track-field", 
+    const std::string className[16] = {"plane", "baseball-diamond", "bridge", "ground-track-field", 
                                 "small-vehicle", "large-vehicle", "ship", "tennis-court",
                                 "basketball-court", "storage-tank",  "soccer-ball-field", "roundabout", 
                                 "harbor", "swimming-pool", "helicopter", "container-crane"};
+    std::vector<float> biases_ = {};
     const double ZERO = 1E-8;
     const int MAXN = 51;
-    const int MAX_DET = 1000;
-    std::vector<float> biases_ = {};
-    float confidenceThresh_ = CONFIDENCE_THRESH; 
-    float iouThresh_ = IOU_THRESH;
-    int anchorDim_ = ANCHOR_DIM;
-    int biasesNum_ = BIASES_NUM; 
-    int yoloOutputSize_ = YOLO_OUTPUT_SIZE;
-    int classNum_ = CLASS_NUM;
-    int angleNum_ = ANGLE_NUM;
-    int netWidth_ = NET_WIDTH;
-    int netHeight_ = NET_HEIGHT;
-    int max_wh = MAX_WH;
+    const int MAX_DET = 1000; 
+    const float CONFIDENCE_THRESH = 0.25;
+    const float IOU_THRESH = 0.4;
+    const int ANCHOR_DIM = 3;
+    const int YOLO_OUTPUT_SIZE = 3;
+    const int WIDTHINDEX = 2;
+    const int HEIGHTINDEX = 3;
+    const int CLASS_NUM = 16;
+    const int ANGLE_NUM = 180;
+    const int BOX_DIM = 4;
+    const int NET_WIDTH = 1024;
+    const int NET_HEIGHT = 1024;
+    const int BIASES_NUM = 18;
+    const int OFFSETY = 1;
+    const int SCALE = 32;
+    const int BIASESDIM = 2;
+    const int OFFSETWIDTH = 2;
+    const int OFFSETHEIGHT = 3;
+    const int OFFSETBIASES = 1;
+    const int OFFSETOBJECTNESS = 1;
+    const int MAX_WH = 4096;
+
 }
 
 namespace Rnms{
@@ -338,7 +351,7 @@ namespace MxPlugins{
  * @param tensors - Target TensorBase data
  */
 static void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
-                std::vector<MxBase::TensorBase> &tensors) {
+                       std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
@@ -445,8 +458,9 @@ APP_ERROR MxpiRotateObjPostProcess::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiRotateObjPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
-    const MxpiErrorInfo mxpiErrorInfo)
+APP_ERROR MxpiRotateObjPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, 
+                                                     const std::string pluginName,
+                                                     const MxpiErrorInfo mxpiErrorInfo)
 {
     APP_ERROR ret = APP_ERR_OK;
     // Define an object of MxpiMetadataManager
@@ -521,8 +535,8 @@ void MxpiRotateObjPostProcess::longsideformat2cvminAreaRect(RotatedObjectInfo& r
 * @param results - Vector that holds the information of rotated boxes after RNMS
 */
 void MxpiRotateObjPostProcess::ObjectDetectionOutput(const std::vector <MxBase::TensorBase>& tensors,
-        std::vector<RotatedObjectInfo>& rObjInfos,
-        std::vector<RotatedObjectInfo>& results) {
+                                                     std::vector<RotatedObjectInfo>& rObjInfos,
+                                                     std::vector<RotatedObjectInfo>& results) {
     LogDebug << "RotateObjectPostProcess start to write results.";
     if (tensors.size() == 0) {
         return;
@@ -553,7 +567,7 @@ void MxpiRotateObjPostProcess::ObjectDetectionOutput(const std::vector <MxBase::
         // Generate bboxes from feature layer data.
         MxpiRotateObjPostProcess::GenerateBbox(featLayerData, rObjInfos, featLayerShapes);
         // RNMS
-        results = Rnms::Rnms(rObjInfos, iouThresh_); 
+        results = Rnms::Rnms(rObjInfos, IOU_THRESH); 
     }
     LogDebug << "RotateObjectPostProcess write results successed.";
 }
@@ -574,8 +588,8 @@ void MxpiRotateObjPostProcess::ObjectDetectionOutput(const std::vector <MxBase::
             - including output height, output width and sizes of anchor box
 */
 void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout, NetInfo info, 
-                                                std::vector<RotatedObjectInfo>& rObjInfos,
-                                                int stride, OutputLayer layer) {
+                                                   std::vector<RotatedObjectInfo>& rObjInfos,
+                                                   int stride, OutputLayer layer) {
     for (int j = 0; j < info.anchorDim; ++j) {
         for (int k = 0; k < stride; ++k) {
             
@@ -600,7 +614,7 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             if (classID < 0){
                 continue;
             }                
-            if (maxClassProb <= confidenceThresh_) {
+            if (maxClassProb <= CONFIDENCE_THRESH) {
                 continue;
             }
 
@@ -645,7 +659,7 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             longsideformat2cvminAreaRect(rObjInfo, longside, shortside, angleID - 179.9);
 
             // Calculate polygon coordinates, and assign to rObjInfo poly
-            cv::RotatedRect box(cv::Point(rObjInfo.x_c + classID * max_wh, rObjInfo.y_c + classID * max_wh), 
+            cv::RotatedRect box(cv::Point(rObjInfo.x_c + classID * MAX_WH, rObjInfo.y_c + classID * MAX_WH), 
                                 cv::Size(rObjInfo.width, rObjInfo.height), rObjInfo.angle);
             cv::Mat rObjPoly;
             boxPoints(box, rObjPoly);
@@ -667,23 +681,23 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
 * @param featLayerShapes - Vector that holds the shapes of every feature layer
 */
 void MxpiRotateObjPostProcess::GenerateBbox(std::vector <std::shared_ptr<void>> featLayerData,
-    std::vector <RotatedObjectInfo>& rObjInfos,
-    const std::vector <std::vector<size_t>>& featLayerShapes) {
+                                            std::vector <RotatedObjectInfo>& rObjInfos,
+                                            const std::vector <std::vector<size_t>>& featLayerShapes) {
 
     NetInfo netInfo;
-    netInfo.anchorDim = anchorDim_;
+    netInfo.anchorDim = ANCHOR_DIM;
     netInfo.bboxDim = BOX_DIM; 
-    netInfo.classNum = classNum_;
-    netInfo.angleNum = angleNum_; 
-    netInfo.netWidth = netWidth_; 
-    netInfo.netHeight = netHeight_;
+    netInfo.classNum = CLASS_NUM;
+    netInfo.angleNum = ANGLE_NUM; 
+    netInfo.netWidth = NET_WIDTH; 
+    netInfo.netHeight = NET_HEIGHT;
 
-    for (int i = 0; i < yoloOutputSize_; ++i) { 
+    for (int i = 0; i < YOLO_OUTPUT_SIZE; ++i) { 
         int widthIndex_ = WIDTHINDEX;
         int heightIndex_ = HEIGHTINDEX;
         OutputLayer layer = { featLayerShapes[i][widthIndex_], featLayerShapes[i][heightIndex_] };
-        int logOrder = log(featLayerShapes[i][widthIndex_] * SCALE / netWidth_) / log(BIASESDIM); 
-        int startIdx = (yoloOutputSize_ - 1 - logOrder) * netInfo.anchorDim * BIASESDIM;  
+        int logOrder = log(featLayerShapes[i][widthIndex_] * SCALE / NET_WIDTH) / log(BIASESDIM); 
+        int startIdx = (YOLO_OUTPUT_SIZE - 1 - logOrder) * netInfo.anchorDim * BIASESDIM;  
         int endIdx = startIdx + netInfo.anchorDim * BIASESDIM;
         int idx = 0;
         for (int j = startIdx; j < endIdx; ++j) {
@@ -701,14 +715,14 @@ void MxpiRotateObjPostProcess::GenerateBbox(std::vector <std::shared_ptr<void>> 
 * @return APP_ERROR
 */
 APP_ERROR MxpiRotateObjPostProcess::GetBiases(std::string& strBiases) {
-    if (biasesNum_ <= 0) {
-        LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "Failed to get biasesNum (" << biasesNum_ << ").";
+    if (BIASES_NUM <= 0) {
+        LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "Failed to get biasesNum (" << BIASES_NUM << ").";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     biases_.clear();
     int i = 0;
     int num = strBiases.find(",");
-    while (num >= 0 && i < biasesNum_) {
+    while (num >= 0 && i < BIASES_NUM) {
         std::string tmp = strBiases.substr(0, num);
         num++;
         strBiases = strBiases.substr(num, strBiases.size());
@@ -716,8 +730,8 @@ APP_ERROR MxpiRotateObjPostProcess::GetBiases(std::string& strBiases) {
         i++;
         num = strBiases.find(",");
     }
-    if (i != biasesNum_ - 1 || strBiases.size() <= 0) {
-        LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "biasesNum (" << biasesNum_
+    if (i != BIASES_NUM - 1 || strBiases.size() <= 0) {
+        LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "biasesNum (" << BIASES_NUM
             << ") is not equal to total number of biases (" << strBiases << ").";
         return APP_ERR_COMM_INVALID_PARAM;
     }
@@ -730,8 +744,7 @@ APP_ERROR MxpiRotateObjPostProcess::GetBiases(std::string& strBiases) {
 * @param mxpiBuffer
 * @return APP_ERROR
 */
-APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
-{
+APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
     LogInfo << "MxpiRotateObjPostProcess::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
@@ -768,15 +781,13 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
-    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = 
-        static_pointer_cast<MxpiTensorPackageList>(metadata);
+    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(*srcMxpiTensorPackageListSptr, tensors);
 
     // Get image resize information
     shared_ptr<void> ir_metadata = mxpiMetadataManager.GetMetadata(imageResizeName_);
-    shared_ptr<MxpiVisionList> imageResizeVisionListSptr = 
-        static_pointer_cast<MxpiVisionList>(ir_metadata);
+    shared_ptr<MxpiVisionList> imageResizeVisionListSptr = static_pointer_cast<MxpiVisionList>(ir_metadata);
     std::vector<float> visionInfos = {};
     GetImageResizeInfo(*imageResizeVisionListSptr, visionInfos); 
 
@@ -825,8 +836,7 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
 * @brief Definition the parameter of configure properties.
 * @return std::vector<std::shared_ptr<void>>
 */
-std::vector<std::shared_ptr<void>> MxpiRotateObjPostProcess::DefineProperties()
-{
+std::vector<std::shared_ptr<void>> MxpiRotateObjPostProcess::DefineProperties(){
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
