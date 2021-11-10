@@ -75,7 +75,7 @@ namespace MxBase {
     }
     
 /*
- * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
+ * @description: Post-process the network output and calculate coordinates: bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
  */
     void FairmotPostProcess::ObjectDetectionOutput(const std::vector <TensorBase> &tensors,
                                                    std::vector <std::vector<ObjectInfo>> &objectInfos,
