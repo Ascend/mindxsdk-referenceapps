@@ -42,7 +42,6 @@ namespace MxBase {
         void ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
                                    std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
                                    const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
-
     };
     extern "C" {
     std::shared_ptr<MxBase::FairmotPostProcess> GetObjectInstance();
