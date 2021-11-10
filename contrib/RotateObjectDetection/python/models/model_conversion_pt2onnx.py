@@ -1,10 +1,10 @@
 import argparse
+import torch
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 import onnx
 import models
-from models.common import *
 from utils.activations import Hardswish
 
 parser = argparse.ArgumentParser()
@@ -18,7 +18,7 @@ opt.img_size *= 2 if len(opt.img_size) == 1 else 1  # expand
 
 # Input
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-img = torch.zeros(size=[opt.batch_size, 3, 1024, 1024], device=device)
+img = torch.zeros(size=(opt.batch_size, 3, *opt.img_size), device=device)
 
 # Load PyTorch model
 model = torch.load(opt.weights, map_location=device)['model'].float()
