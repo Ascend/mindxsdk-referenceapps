@@ -109,7 +109,7 @@ namespace MxBase {
             featLayerShapes.push_back(featLayerShape);             
         }
 
-        // tensors[0] matchs id_feature, id_feature is not used in postprocess
+        // tensors[0] matchs id_feature,id_feature is not used in postprocess
         // tensors[1] matchs reg
         // tensors[2] matchs wh
         // tensors[3] matchs hm
