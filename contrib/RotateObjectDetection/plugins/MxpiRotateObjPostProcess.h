@@ -139,7 +139,7 @@ protected:
     void CompareAngleProb(int& angleID, float& maxAngleProb, float angleProb, int angleNum);
 
      /**
-     * @brief Trans longside format(x_c, y_c, longside, shortside, ¦È) to minAreaRect(x_c, y_c, width, height, ¦È).
+     * @brief Trans longside format(x_c, y_c, longside, shortside, Â¦Ãˆ) to minAreaRect(x_c, y_c, width, height, Â¦Ãˆ).
      * @param rObjInfo - A struct that is used to save information of one rotated box
      * @param longside - The longside value of one rotated box
      * @param shortside - The shortside value of one rotated box
@@ -187,7 +187,6 @@ private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
                             const MxTools::MxpiErrorInfo mxpiErrorInfo);
     std::string parentName_;
-    std::string descriptionMessage_;
     std::string imageResizeName_;
     std::ostringstream ErrorInfo_;
 };
