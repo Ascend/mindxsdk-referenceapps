@@ -43,7 +43,7 @@ if __name__ == '__main__':
         exit()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input-path', type=str,  default='../image', help='input image path')
+    parser.add_argument('--input-path', type=str, default='../image', help='input image path')
     parser.add_argument('--output-path', type=str, default='../detection', help='detection output path')
     parser.add_argument('--labels', action='store_true', default=False, help='whether to print labels')
     
@@ -60,8 +60,8 @@ if __name__ == '__main__':
 
     for item in os.listdir(input_path):
         img_path = os.path.join(input_path, item)
-        print("Detect the order of the image: {}". format(cont))
-        print("detect_file_path:",img_path)
+        print("Detect the order of the image: {}".format(cont))
+        print("detect_file_path:", img_path)
     
         # 构建流的输入对象--检测目标
         dataInput = MxDataInput()
@@ -103,23 +103,15 @@ if __name__ == '__main__':
         YUV_BYTES_DE = 2
         visionList = MxpiDataType.MxpiVisionList()
         visionList.ParseFromString(infer_result[0].messageBuf)
-
         vision_data = visionList.visionVec[0].visionData.dataStr
         visionInfo = visionList.visionVec[0].visionInfo
-        # print(visionInfo)
 
         # 用输出原件信息初始化OpenCV图像信息矩阵
         img_yuv = np.frombuffer(vision_data, np.uint8)
-
-        img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
+        img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, 
+                                    visionInfo.widthAligned)
         img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
         
-
-
-        # 打印后处理输出信息
-        # print("GetProtobuf errorCode= %d" % (infer_result[0].errorCode))
-        # print("KEY: {}".format(str(infer_result[0].messageName)))
-
         result_protolist = mxpiRotateObjProto.MxpiRotateobjProtoList()
         result_protolist.ParseFromString(infer_result[1].messageBuf)
 
@@ -129,9 +121,11 @@ if __name__ == '__main__':
         classID_list = []
         keys = ["x_c", "y_c", "width", "height", "angle", "confidence", "classID", "className"]
         values = [0, 0, 0, 0, 0, 0, 0, 0]
-        classNames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-                'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
-        s = ''
+        classNames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 
+                        'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
+                        'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 
+                        'harbor', 'swimming-pool', 'helicopter', 'container-crane']
+        s = ' '
         tl = 1
         tf = tl-1 if (tl-1>1) else 1
         
@@ -161,7 +155,8 @@ if __name__ == '__main__':
             rect = ((rbox["x_c"], rbox["y_c"]), (rbox["width"], rbox["height"]), rbox["angle"])
             poly = np.float32(cv2.boxPoints(rect))
             poly = np.int0(poly).reshape(8)
-            lines = item.split('.')[0] + ' ' + str(round(rbox["confidence"], 3)) + ' ' + ' '.join(list(map(str, poly))) + ' ' + rbox["className"]
+            lines = item.split('.')[0] + ' ' + str(round(rbox["confidence"], 3)) + ' ' \
+                    + ' '.join(list(map(str, poly))) + ' ' + rbox["className"]
             if not os.path.exists(text_out_path):
                 os.makedirs(text_out_path)
             with open(str(text_out_path + oriname) + '.txt', 'a') as f:
@@ -172,22 +167,22 @@ if __name__ == '__main__':
         colors = [[np.random.randint(0, 255) for _ in range(3)] for _ in range(classNum)]
 
         for i in range(len(rboxes)):
-            rect = [(rboxes[i]["x_c"], rboxes[i]["y_c"]), (rboxes[i]["width"], rboxes[i]["height"]), rboxes[i]["angle"]]
+            rect = [(rboxes[i]["x_c"], rboxes[i]["y_c"]), (rboxes[i]["width"], 
+                        rboxes[i]["height"]), rboxes[i]["angle"]]
             poly = cv2.boxPoints(rect)
-            # print(poly)
             poly = np.int0(poly)
-            # print(poly)
-            cv2.drawContours(image=img, contours=[poly], contourIdx=-1, color=colors[int(rboxes[i]["classID"])], thickness=2*tl)
+            cv2.drawContours(image=img, contours=[poly], contourIdx=-1, 
+                            color=colors[int(rboxes[i]["classID"])], thickness=2*tl)
             if labels:
                 label = '%s %.2f' % (rboxes[i]["className"], rboxes[i]["confidence"])
-                # print(label)
             else:
                 label = '%s' % rboxes[i]["classID"]
             c1 = (int(rboxes[i]["x_c"]), int(rboxes[i]["y_c"]))
             t_size = cv2.getTextSize(label, 0, fontScale=tl / 4, thickness=tf)[0]
             c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
-            cv2.rectangle(img, c1, c2, colors[int(rboxes[i]["classID"])], -1, cv2.LINE_AA)  # filled
-            cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 4, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+            cv2.rectangle(img, c1, c2, colors[int(rboxes[i]["classID"])], -1, cv2.LINE_AA)  
+            cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 4, [225, 255, 255], 
+                        thickness=tf, lineType=cv2.LINE_AA)
             
         save_path = out_path + '/' + item
         cv2.imwrite(save_path, img)
