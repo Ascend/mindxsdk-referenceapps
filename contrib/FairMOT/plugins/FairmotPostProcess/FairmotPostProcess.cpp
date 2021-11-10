@@ -210,7 +210,6 @@ namespace MxBase {
         output_size.push_back(w);
         output_size.push_back(h);
 
-        // int num_classes = 1;
         int rot = 0;
 
         std::vector<float>shift(2,0);
