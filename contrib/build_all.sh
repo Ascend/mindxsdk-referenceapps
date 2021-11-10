@@ -31,6 +31,7 @@ SAMPLE_FOLDER=(
 	CartoonGANPicture/
 	HeadPoseEstimation/
 	BertTextClassification/
+	SentimentAnalysis/
 )
 
 
