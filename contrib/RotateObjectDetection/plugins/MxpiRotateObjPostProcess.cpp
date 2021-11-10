@@ -805,7 +805,8 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
     }
 
     std::string rotateObjProtoName = "mxpi_rotateobjproto";
-    APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(rotateObjProtoName, static_pointer_cast<void>(mxpiRotateobjListptr));
+    APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(rotateObjProtoName, 
+                                                        static_pointer_cast<void>(mxpiRotateobjListptr));
     if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, rotateObjProtoName) << "MxpiRotateObjPostProcess add metadata failed.";
         mxpiErrorInfo.ret = ret;
