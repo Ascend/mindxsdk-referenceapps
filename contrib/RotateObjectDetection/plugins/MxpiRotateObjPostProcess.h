@@ -25,7 +25,6 @@
 #include "opencv2/opencv.hpp"
 #include "mxpiRotateobjProto.pb.h"
 
-
 namespace MxPlugins {
    
     struct RotatedObjectInfo {
