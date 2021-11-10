@@ -58,7 +58,7 @@ namespace Rnms{
  *         1, if the date is greater than 1E-8
  *        -1, if the data is smaller than -1E-8 
  */
-static int sign(double s) {
+static int Sign(double s) {
     if (s > ZERO){
         return 1;
     }
@@ -72,14 +72,14 @@ static int sign(double s) {
 
 /**
  * @brief Calculate the cross product of two vectors oa and ob.
- * Since the cross product computation formula is |a||b|sin(¦È), 
+ * Since the cross product computation formula is |a||b|sin(Â¦Ãˆ), 
  * the cross product represents the area of signed triangle oab.
  * @param o - cv::Point2d 
  * @param a - cv::Point2d
  * @param b - cv::Point2d
  * @return Cross product of vector oa and vector ob
  */
-static double cross(cv::Point2d o, cv::Point2d a, cv::Point2d b) {
+static double Cross(cv::Point2d o, cv::Point2d a, cv::Point2d b) {
     double crossValue = (a.x - o.x) * (b.y - o.y) - (b.x - o.x) * (a.y - o.y);
     return crossValue;
 }
@@ -90,7 +90,7 @@ static double cross(cv::Point2d o, cv::Point2d a, cv::Point2d b) {
  * @param n - The length of array poly, i.e. the number of sides of a polygon
  * @return Area of a polygon
  */
-static double polygonArea(cv::Point2d* poly, int n) {
+static double PolygonArea(cv::Point2d* poly, int n) {
     poly[n] = poly[0];
     double area = 0;
     for (int i = 0; i < n; i++) {
@@ -111,14 +111,17 @@ static double polygonArea(cv::Point2d* poly, int n) {
  *         1, if line ab is parallel to cd
  *         2, if line ab intersects cd, and the intersection coordinates are stored in point p 
  */
-static int calcLineIntersect(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Point2d d, cv::Point2d& p) {
-    double s1, s2;
-    s1 = cross(a, b, c);
-    s2 = cross(a, b, d);
-    if ((sign(s1) == 0) && (sign(s2) == 0)) 
+static int CalcLineIntersect(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Point2d d, cv::Point2d& p) {
+    double s1 = 0;
+    double s2 = 0;
+    s1 = Cross(a, b, c);
+    s2 = Cross(a, b, d);
+    if (Sign(s1) == 0 && Sign(s2) == 0){
         return 0;
-    if ((sign(s2 - s1) == 0)) 
+    }        
+    if (Sign(s2 - s1) == 0){
         return 1;
+    }        
     p.x = (c.x * s2 - d.x * s1) / (s2 - s1);
     p.y = (c.y * s2 - d.y * s1) / (s2 - s1);
     return 2;
@@ -136,22 +139,26 @@ static int calcLineIntersect(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Po
  * @param a - cv::Point2d
  * @param pp - An array of type cv::Point2d that save the cut points temporarily
  */
-static void polygonCut(cv::Point2d* poly, int& n, cv::Point2d a, cv::Point2d b, cv::Point2d* pp) {
+static void PolygonCut(cv::Point2d* poly, int& n, cv::Point2d a, cv::Point2d b, cv::Point2d* pp) {
     int m = 0;
     poly[n] = poly[0];
     for (int i = 0; i < n; i++) {
-        if (sign(cross(a, b, poly[i])) > 0) 
+        if (Sign(Cross(a, b, poly[i])) > 0){
             pp[m++] = poly[i];
-        if (sign(cross(a, b, poly[i])) != sign(cross(a, b, poly[i + 1])))
-            calcLineIntersect(a, b, poly[i], poly[i+1], pp[m++]);
+        }             
+        if (Sign(Cross(a, b, poly[i])) != Sign(Cross(a, b, poly[i + 1]))){
+            CalcLineIntersect(a, b, poly[i], poly[i+1], pp[m++]);
+        }         
     }
     n = 0;
     for (int i = 0; i < m; i++){
-        if (!i || !(pp[i] == pp[i-1]))
+        if (!i || !(pp[i] == pp[i-1])){
             poly[n++] = pp[i];
+        }        
     }
-    while (n > 1 && poly[n-1] == poly[0])
+    while (n > 1 && poly[n-1] == poly[0]){
         n--;
+    }        
 }
 
 /**
@@ -162,30 +169,34 @@ static void polygonCut(cv::Point2d* poly, int& n, cv::Point2d a, cv::Point2d b, 
  * @param d - cv::Point2d
  * @return The value of intersection area of two triangles
  */
-static double intersectArea(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Point2d d) {
+static double IntersectArea(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Point2d d) {
     cv::Point2d o(0, 0);
-    int s1 = sign(cross(o, a, b));
-    int s2 = sign(cross(o, c, d));
+    int s1 = Sign(Cross(o, a, b));
+    int s2 = Sign(Cross(o, c, d));
     // The signed area of triangle oab or of triangle ocd is equal to 0, return 0.
-    if ((s1 == 0) || (s2 == 0))
+    if ((s1 == 0) || (s2 == 0)){
         return 0.0;
+    }
     // The signed area of triangle oab is negative, swap a, b.
-    if (s1 == -1) 
+    if (s1 == -1){
         swap(a, b);
+    }   
     // The signed area of triangle ocd is negative, swap c, d.
-    if (s2 == -1) 
+    if (s2 == -1){
         swap(c, d);
+    }    
     cv::Point2d p[10] = {o, a, b};
     int n = 3;
     cv::Point2d pp[MAXN];
     // Cut the triangle oab with line oc, cd, do respectively.
-    polygonCut(p, n, o, c, pp);
-    polygonCut(p, n, c, d, pp);
-    polygonCut(p, n, d, o, pp);
+    PolygonCut(p, n, o, c, pp);
+    PolygonCut(p, n, c, d, pp);
+    PolygonCut(p, n, d, o, pp);
     // Calculate the overlap area.
-    double interAreaValue = fabs(polygonArea(p, n));
-    if ((s1 * s2 == -1)) 
+    double interAreaValue = fabs(PolygonArea(p, n));
+    if (s1 * s2 == -1){
         interAreaValue = -interAreaValue;
+    }        
     return interAreaValue;
 }
 
@@ -197,17 +208,19 @@ static double intersectArea(cv::Point2d a, cv::Point2d b, cv::Point2d c, cv::Poi
  * @param n2 - The length of array poly2, i.e. the number of sides of a polygon2
  * @return The value of intersection area of two polygons
  */
-static double intersectArea(cv::Point2d* poly1, int n1, cv::Point2d* poly2, int n2) {
-    if (polygonArea(poly1, n1) < 0) 
+static double IntersectArea(cv::Point2d* poly1, int n1, cv::Point2d* poly2, int n2) {
+    if (PolygonArea(poly1, n1) < 0){
         reverse(poly1, poly1 + n1);
-    if (polygonArea(poly2, n2) < 0) 
+    }     
+    if (PolygonArea(poly2, n2) < 0){
         reverse(poly2, poly2 + n2);
+    }       
     poly1[n1] = poly1[0];
     poly2[n2] = poly2[0];
     double interAreaValue = 0;
     for (int i = 0; i < n1; i++) {
         for (int j = 0; j < n2; j++) {
-            interAreaValue += intersectArea(poly1[i], poly1[i+1], poly2[j], poly2[j+1]);
+            interAreaValue += IntersectArea(poly1[i], poly1[i+1], poly2[j], poly2[j+1]);
         }
     }
     return interAreaValue;
@@ -218,7 +231,7 @@ static double intersectArea(cv::Point2d* poly1, int n1, cv::Point2d* poly2, int 
  * @param m - A matrix that holds coordinates of polygon
  * @param p - An array of type cv::Point2d that holds coordinates of polygon 
  */
-static void mat2point(cv::Mat M, cv::Point2d p[]) {
+static void Mat2Point(cv::Mat M, cv::Point2d p[]) {
     cv::Mat tmp;
     int index = 0;
     M.convertTo(tmp, CV_64FC1);
@@ -241,14 +254,14 @@ static void mat2point(cv::Mat M, cv::Point2d p[]) {
  * @param M2 - A matrix that holds coordinates of polygon2 
  * @return IOU value of polygon1 and polygon2
  */
-static double calcPolyIou(cv::Mat M1, cv::Mat M2) {
+static double CalcPolyIou(cv::Mat M1, cv::Mat M2) {
     cv::Point2d poly1[MAXN], poly2[MAXN];
     int n1 = 4;
     int n2 = 4;
-    mat2point(M1, poly1);
-    mat2point(M2, poly2);
-    double interArea = intersectArea(poly1, n1, poly2, n2);
-    double unionArea = fabs(polygonArea(poly1, n1)) + fabs(polygonArea(poly2, n2)) - interArea;
+    Mat2Point(M1, poly1);
+    Mat2Point(M2, poly2);
+    double interArea = IntersectArea(poly1, n1, poly2, n2);
+    double unionArea = fabs(PolygonArea(poly1, n1)) + fabs(PolygonArea(poly2, n2)) - interArea;
     double iou = interArea / unionArea;
     return iou;
 }
@@ -259,7 +272,7 @@ static double calcPolyIou(cv::Mat M1, cv::Mat M2) {
  * @param rObjInfo2 - RotatedObjectInfo rObjInfo2
  * @return True if the confidence of rObjInfo1 is greater than that of rObjInfo2
  */
-static bool sortConfidence(RotatedObjectInfo rObjInfo1, RotatedObjectInfo rObjInfo2) {
+static bool SortConfidence(RotatedObjectInfo rObjInfo1, RotatedObjectInfo rObjInfo2) {
     if (rObjInfo1.confidence > rObjInfo2.confidence){
         return true;
     }
@@ -281,13 +294,13 @@ static std::vector<RotatedObjectInfo> Rnms(std::vector<RotatedObjectInfo>& rObjI
     std::vector<RotatedObjectInfo> results;
     results.reserve(MAX_DET);
     // Sort the vector rObjInfos in descending order of confidence
-    std::sort(rObjInfos.begin(), rObjInfos.end(), sortConfidence);
+    std::sort(rObjInfos.begin(), rObjInfos.end(), SortConfidence);
     // Init a multimap, and place box and corresponding ordinal number
     std::multimap<int, RotatedObjectInfo> boxes;
     int num_boxes = rObjInfos.size();
     for (int i = 0; i < num_boxes; i++){
-		boxes.insert(make_pair(i, rObjInfos[i]));
-	}
+        boxes.insert(make_pair(i, rObjInfos[i]));
+    }
     while(boxes.size() > 1){
         // Place the box with maximum confidence into vector results
         results.push_back(boxes.begin()->second);
@@ -298,7 +311,7 @@ static std::vector<RotatedObjectInfo> Rnms(std::vector<RotatedObjectInfo>& rObjI
         // Iterate through boxes from the second iterator, and calculates the IOU value with the first box
         for (std::multimap<int, RotatedObjectInfo>::iterator it = it_second; it != boxes.end();){           
             int itIdx = it->first;
-            double iou_value = calcPolyIou(rObjInfos[firstIdx].poly, rObjInfos[itIdx].poly);
+            double iou_value = CalcPolyIou(rObjInfos[firstIdx].poly, rObjInfos[itIdx].poly);
             // If IOU value is greater than threshold, erase this box and iterator point to the next box
             if(iou_value > threshold){
                 it = boxes.erase(it);
@@ -309,8 +322,9 @@ static std::vector<RotatedObjectInfo> Rnms(std::vector<RotatedObjectInfo>& rObjI
         // erase the first box
         boxes.erase(boxes.begin());
     }
-    if(boxes.size() == 1)
+    if(boxes.size() == 1){
         results.push_back(boxes.begin()->second);
+    }       
     return results;
 }
 
@@ -479,7 +493,7 @@ void MxpiRotateObjPostProcess::CompareAngleProb(int& angleID, float& maxAnglePro
 }
 
 /**
-* @brief Trans longside format(x_c, y_c, longside, shortside, ¦È) to minAreaRect(x_c, y_c, width, height, ¦È).
+* @brief Trans longside format(x_c, y_c, longside, shortside, Â¦Ãˆ) to minAreaRect(x_c, y_c, width, height, Â¦Ãˆ).
 * @param rObjInfo - A struct that is used to save information of one rotated box
 * @param longside - The longside value of one rotated box
 * @param shortside - The shortside value of one rotated box
@@ -579,14 +593,15 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             // Get classID
             int classID = -1;
             float maxClassProb = 0;
-            float classProb;
+            float classProb = 0;
             for (int c = 0; c < info.classNum; ++c) {
                 classProb = fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + 
                             (info.bboxDim + OFFSETOBJECTNESS + c)]) * objectness; 
                 CompareClassProb(classID, maxClassProb, classProb, c);
             }
-            if (classID < 0) 
+            if (classID < 0){
                 continue;
+            }                
             if (maxClassProb <= confidenceThresh_) {
                 continue;
             }
@@ -594,14 +609,16 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             // Get angleID
             int angleID = -1;
             float maxAngleProb = 0;
-            float angleProb;
+            float angleProb = 0;
             for (int a = 0; a < info.angleNum; ++a) {
                 angleProb = fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + 
                             (info.bboxDim + OFFSETOBJECTNESS + info.classNum + a)]); 
                 CompareAngleProb(angleID, maxAngleProb, angleProb, a);
             }
-            if (angleID < 0) 
+            if (angleID < 0){
                 continue;
+            } 
+                
  
             // k is the number of grids
             // layer.width 128 64 32
@@ -611,14 +628,14 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             int col = k % layer.width;
 
             // Get the actual prediction of x, y, longside, shortside
-            float x = (col + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx])) * 2 - 0.5) 
-                    * (info.netWidth / layer.width);
-            float y = (row + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETY])) * 2 - 0.5) 
-                    * (info.netHeight / layer.height);
-            float longside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETWIDTH]) * 2, 2) 
-                    * layer.anchors[BIASESDIM * j];
-            float shortside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETHEIGHT]) * 2, 2) 
-                    * layer.anchors[BIASESDIM * j + OFFSETBIASES];
+            float x = (col + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx])) 
+                    * 2 - 0.5) * (info.netWidth / layer.width);
+            float y = (row + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETY])) 
+                    * 2 - 0.5) * (info.netHeight / layer.height);
+            float longside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETWIDTH]) 
+                    * 2, 2) * layer.anchors[BIASESDIM * j];
+            float shortside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETHEIGHT]) 
+                    * 2, 2) * layer.anchors[BIASESDIM * j + OFFSETBIASES];
 
             // Assign to rObjInfo center point, classID, confidence
             RotatedObjectInfo rObjInfo;
@@ -695,7 +712,6 @@ APP_ERROR MxpiRotateObjPostProcess::GetBiases(std::string& strBiases) {
     int num = strBiases.find(",");
     while (num >= 0 && i < biasesNum_) {
         std::string tmp = strBiases.substr(0, num);
-        //std::cout << "tmp:" << tmp << std::endl;
         num++;
         strBiases = strBiases.substr(num, strBiases.size());
         biases_.push_back(stof(tmp));
