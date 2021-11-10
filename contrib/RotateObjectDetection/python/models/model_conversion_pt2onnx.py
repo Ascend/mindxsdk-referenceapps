@@ -5,7 +5,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../")
 import onnx
 import models
 from models.common import *
-from utils import google_utils
 from utils.activations import Hardswish
 
 parser = argparse.ArgumentParser()
@@ -18,11 +17,11 @@ opt = parser.parse_args()
 opt.img_size *= 2 if len(opt.img_size) == 1 else 1  # expand
 
 # Input
-img = torch.zeros((opt.batch_size, 3, *opt.img_size)).to(device='cuda')  # image size(1,3,320,192) iDetection
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+img = torch.zeros((opt.batch_size, 3, *opt.img_size)).to(device)
 
 # Load PyTorch model
-google_utils.attempt_download(opt.weights)
-model = torch.load(opt.weights, map_location=torch.device('cuda'))['model'].float()
+model = torch.load(opt.weights, map_location=device)['model'].float()
 model.eval()
 model.model[-1].export = True  # set Detect() layer export=True
 y = model(img)  # try run
