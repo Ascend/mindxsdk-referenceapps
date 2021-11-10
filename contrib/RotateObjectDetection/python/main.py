@@ -20,7 +20,6 @@ import numpy as np
 import sys
 import argparse
 import MxpiDataType_pb2 as MxpiDataType
-
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../proto")
 import mxpiRotateobjProto_pb2 as mxpiRotateObjProto
