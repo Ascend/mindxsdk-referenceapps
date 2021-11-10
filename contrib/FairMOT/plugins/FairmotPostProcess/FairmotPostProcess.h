@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// 详情能打开了吗 
+ 
 #ifndef FAIRMOT_POST_PROCESS_H
 #define FAIRMOT_POST_PROCESS_H
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
