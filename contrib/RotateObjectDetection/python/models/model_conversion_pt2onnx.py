@@ -36,9 +36,7 @@ f = './YOLOv5_DOTAv1.5_OBB_1024_1024.onnx'
 for k, m in model.named_modules():
     m._non_persistent_buffers_set = set()  # pytorch 1.6.0 compatability
     if isinstance(m, models.common.Conv):
-        # print(m)
         m.act = Hardswish()  # assign activation
-
 
 model.fuse()  # only for ONNX
 torch.onnx.export(model, img, f, export_params=True, opset_version=11, input_names=['images'],
