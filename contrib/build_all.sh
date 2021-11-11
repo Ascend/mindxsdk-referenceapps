@@ -30,6 +30,7 @@ SAMPLE_FOLDER=(
 	FatigueDrivingRecognition/
 	CartoonGANPicture/
 	HeadPoseEstimation/
+    Ultra-Fast-Lane-Detection/
 )
 
 
