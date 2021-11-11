@@ -258,7 +258,7 @@ def deal(pixel_pos_scores, link_pos_scores, i):
     ZIPFolder = './test'
     if not os.path.exists(outputFolder):
         os.mkdir(outputFolder)
-    image_data_shape = (768, 1280, 3)
+    image_data_shape = (720, 1280, 3)
     test(outputFolder, i, image_data_shape, pixel_pos_scores, link_pos_scores)
 
 
