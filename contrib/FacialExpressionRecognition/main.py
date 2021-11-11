@@ -42,8 +42,12 @@ if __name__ == '__main__':
     streamName = b"detection"
     inPluginId = 0
     dataInput = MxDataInput()
-    with open(img_path, 'rb') as f:
-        dataInput.data = f.read()
+    try:
+        with open(img_path, 'rb') as f:
+            dataInput.data = f.read()
+    except:
+        print("No such image")
+        exit()
     ret = streamManagerApi.SendData(streamName, inPluginId, dataInput)
     if ret < 0:
         print("Failed to send data to stream")
