@@ -18,23 +18,18 @@
 """
 
 import codecs
-import csv
 import os
-import time
-
 import numpy as np
 from tokenizer import Tokenizer
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, StringVector, MxProtobufIn, InProtobufVector
 
-maxlen = 298
-tensor_length = 300
+maxlen = 498
+tensor_length = 500
 float32_bytes = 4
-sample_number = 99
-all_sample_number = 495
 token_dict = {}
-label = ["体育", "健康", "军事", "教育", "汽车"]
+output_dir = "out/"
 
 class OurTokenizer(Tokenizer):
     """
@@ -70,7 +65,7 @@ def preprocess(input_text):
     input_text = input_text[:maxlen]
     x1, x2 = tokenizer.encode(first=input_text)
 
-    # if the length of the text is less than maxLen, padding 0
+    # if the length of the text is less than tensor_length, padding 0
     x1 = x1 + [0] * (tensor_length - len(x1)) if len(x1) < tensor_length else x1
     x2 = x2 + [0] * (tensor_length - len(x2)) if len(x2) < tensor_length else x2
 
@@ -91,41 +86,42 @@ if __name__ == '__main__':
         exit()
 
     # creat streams by pipeline file
-    if os.path.exists("pipeline/BertTextClassification.pipeline") != True:
-        print("The BertTextClassification.pipeline does not exist, please input the right path!")
+    if os.path.exists("pipeline/sentiment_analysis.pipeline") != 1:
+        print("pipeline file does not exist")
         exit()
-    with open("pipeline/BertTextClassification.pipeline", 'rb') as f:
+    with open("pipeline/sentiment_analysis.pipeline", 'rb') as f:
         pipelineStr = f.read()
+
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # read the vocab text
-    if os.path.exists("data/vocab.txt") != True:
-        print("The vocab.txt does not exist, please input the right path!")
+    if os.path.exists("data/vocab.txt") != 1:
+        print("The vocab.txt does not exist")
         exit()
     with codecs.open("data/vocab.txt", 'r', 'utf-8') as reader:
         for line in reader:
             token = line.strip()
             token_dict[token] = len(token_dict)
 
-    # read the input text
-    if os.path.exists("data/test.csv") != True:
-        print("The test.csv does not exist, please input the right path!")
+    if os.path.exists("data/sample.txt") != 1:
+        print("sample.txt does not exist")
         exit()
-    csv_reader = csv.reader(open("data/test.csv"))
-    result_list = [[], [], [], [], []]
-    index = 0
-    count = 0
-    time_start = time.time()
-    for line in csv_reader:
-        real_label = line[0]
-        text = line[1]
+    # read the input text
+    sample_text = open("data/sample.txt", "r")
+    # the content is empty, execute exit()
+    if os.path.getsize("data/sample.txt") == 0:
+        print("The sample.txt content is null, please input the right text!")
+        exit()
+
+    for text in sample_text:
+
         # preprocess the data
         X1, X2 = preprocess(text)
 
-        streamName = b'classification'
+        streamName = b'sentiment_analysis'
         inPluginId = 0
         protobuf_vec = InProtobufVector()
 
@@ -159,61 +155,30 @@ if __name__ == '__main__':
         protobuf_vec.push_back(protobuf)
         # send data into the stream according to the stream name
         uniqueId = streamManagerApi.SendProtobuf(streamName, inPluginId, protobuf_vec)
-
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
 
-        keys = [b"mxpi_classpostprocessor0"]
-        keyVec = StringVector()
-        for key in keys:
-            keyVec.push_back(key)
+        key_vec = StringVector()
+        key_vec.push_back(b'mxpi_classpostprocessor0')
 
-        # take out the output data of the corresponding plug
-        infer_result = streamManagerApi.GetProtobuf(streamName, inPluginId, keyVec)
-        if infer_result.size() == 0:
-            print("infer_result is null")
-            exit()
-        if infer_result[0].errorCode != 0:
-            print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-                infer_result[0].errorCode, infer_result[0].data.decode()))
+        # get inference result
+        infer = streamManagerApi.GetResult(streamName, b'appsink0', key_vec)
+        infer_result = infer.metadataVec[0]
+
+        if infer_result.errorCode != 0:
+            print("GetResult error. errorCode=%d ,errorMsg=%s" % (
+                infer_result.errorCode, infer_result.errorMsg))
             exit()
 
         # get data from infer_result
         result = MxpiDataType.MxpiClassList()
-        result.ParseFromString(infer_result[0].messageBuf)
-        result_label = result.classVec[0].className
+        result.ParseFromString(infer_result.serializedMetadata)
+        label = result.classVec[0].className
 
-        if count != 0 and count % sample_number == 0:
-            index += 1
-        if result_label == real_label:
-            result_list[index].append("true")
-        else:
-            result_list[index].append("false")
-
-        count += 1
-
+        # save result
+        save_to_file(output_dir + 'prediction_label.txt', label)
+        print("Original text: %s" % text)
+        print("Prediction label: %s" % label)
     # destroy streams
     streamManagerApi.DestroyAllStreams()
-    time_end = time.time()
-    time_average_cost = (time_end - time_start) / all_sample_number
-    print('time cost:', str(format(time_average_cost, '.4f')), 's')
-    # save and print accuracy
-    f = open("out/accuracy.txt", "w")
-    all_count = 0
-    i = 0
-    for result in result_list:
-        count = 0
-        for line in result:
-            if line == "true":
-                count += 1
-                all_count += 1
-        accuracy = count / sample_number
-        f.write(label[i] + "类的精确度：" + str(format(accuracy, '.4f')) + "\n")
-        print(label[i] + "类的精确度：" + str(format(accuracy, '.4f')))
-        i += 1
-
-    accuracy = all_count / all_sample_number
-    f.write("全部类别的精确度：" + str(format(accuracy, '.4f')) + "\n")
-    print("全部类别的精确度：" + str(format(accuracy, '.4f')))
-    f.close()
