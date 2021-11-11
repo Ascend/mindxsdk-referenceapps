@@ -17,6 +17,8 @@ path_cur=$(dirname $0)
 function build_carplaterecognition()
 {
     cd $path_cur
+    rm -rf bin
+    mkdir -p bin
     rm -rf build
     mkdir -p build
     cd build
