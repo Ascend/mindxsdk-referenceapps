@@ -120,22 +120,24 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_distributor0_0")
     keyVec.push_back(b"mxpi_tensorinfer1")
     keyVec.push_back(b"mxpi_imagecrop0")
-    infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    infer_result = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
 
-    if infer_result.size() == 0:
-        print("infer_result is null")
+    if infer_result.errorCode != 0:
+        print("GetResult error. errorCode=%d, errorMsg=%s" % (
+            infer_result.errorCode, infer_result.bufferOutput.data.decode()))
+
+    if infer_result.metadataVec.size() < 2:
+        print("No pedestrians detected")
         exit()
 
-    if infer_result[0].errorCode != 0:
-        print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            infer_result[0].errorCode, infer_result[0].data.decode()))
-        exit()
+    # receive data
+    infer_result1 = infer_result.metadataVec[2]
+    infer_result2 = infer_result.metadataVec[3]
+    infer_result3 = json.loads(infer_result.bufferOutput.data.decode())
 
-    # Receive results
-    visionList = MxpiDataType.MxpiVisionList()
-    visionList.ParseFromString(infer_result[0].messageBuf)
-    visionData = visionList.visionVec[0].visionData.dataStr
-    visionInfo = visionList.visionVec[0].visionInfo
+    tensorList = MxpiDataType.MxpiTensorPackageList()
+    tensorList.ParseFromString(infer_result1.serializedMetadata)
+    print(tensorList)
 
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
@@ -143,27 +145,6 @@ if __name__ == '__main__':
     img_yuv = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
     img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
     cv2.imwrite("./source.jpg", img)
-
-    if len(infer_result) < 2 and len(infer_result) != 0:
-        print("No pedestrians detected")
-        exit()
-
-    mxpiObjectList = MxpiDataType.MxpiObjectList()
-    mxpiObjectList.ParseFromString(infer_result[1].messageBuf)
-    print(mxpiObjectList)
-
-    tensorList = MxpiDataType.MxpiTensorPackageList()
-    tensorList.ParseFromString(infer_result[2].messageBuf)
-
-    visionListCrop = MxpiDataType.MxpiVisionList()
-    visionListCrop.ParseFromString(infer_result[3].messageBuf)
-    visionDataCrop = visionListCrop.visionVec[0].visionData.dataStr
-    visionInfoCrop = visionListCrop.visionVec[0].visionInfo
-
-    img_yuv_crop = np.frombuffer(visionDataCrop, dtype=np.uint8)
-    img_yuv_crop = img_yuv_crop.reshape(visionInfoCrop.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE,
-                                        visionInfoCrop.widthAligned)
-    img_crop = cv2.cvtColor(img_yuv_crop, cv2.COLOR_YUV2BGR_NV12)
 
     name_dict = {
         "personalLess30": ['less 30'],
@@ -278,14 +259,14 @@ if __name__ == '__main__':
         text_foot = "foot:" + text_foot[:-1]
         line = line + text_carrying + "\n" + text_upper + "\n" + \
                text_lower + "\n" + text_accessory + "\n" + text_foot + "\n" + "confidence: " + str(
-            round(mxpiObjectList.objectVec[key_meta].classVec[0].confidence, 4)) + "\n"
+            round(infer_result3['MxpiObject'][key_meta]['classVec'][0]['confidence'], 4)) + "\n"
 
     img2 = cv2.imread(img_path)
-    for i, _ in enumerate(mxpiObjectList.objectVec):
-        y0 = mxpiObjectList.objectVec[i].y0
-        x0 = mxpiObjectList.objectVec[i].x0
-        y1 = mxpiObjectList.objectVec[i].y1
-        x1 = mxpiObjectList.objectVec[i].x1
+    for i, _ in enumerate(infer_result3['MxpiObject']):
+        y0 = infer_result3['MxpiObject'][i]['y0']
+        x0 = infer_result3['MxpiObject'][i]['x0']
+        y1 = infer_result3['MxpiObject'][i]['y1']
+        x1 = infer_result3['MxpiObject'][i]['x1']
 
         # Draw detection bounding box
         bboxes = []
@@ -293,8 +274,8 @@ if __name__ == '__main__':
                 'x1': int(x1),
                 'y0': int(y0),
                 'y1': int(y1),
-                'confidence': round(mxpiObjectList.objectVec[i].classVec[0].confidence, 4),
-                'text': mxpiObjectList.objectVec[i].classVec[0].className}
+                'confidence': round(infer_result3['MxpiObject'][i]['classVec'][0]['confidence'], 4),
+                'text': infer_result3['MxpiObject'][i]['classVec'][0]['className']}
 
         text = "{}{}".format(str(bboxes['confidence']), " ")
         for item in bboxes['text']:
