@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
 # project information
-project(MindX_SDK_Sample)   
+project(FairMOT)   
 
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")   
 
