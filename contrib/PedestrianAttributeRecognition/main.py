@@ -140,13 +140,6 @@ if __name__ == '__main__':
     tensorList.ParseFromString(infer_result1.serializedMetadata)
     print(tensorList)
 
-    YUV_BYTES_NU = 3
-    YUV_BYTES_DE = 2
-    img_yuv = np.frombuffer(visionData, dtype=np.uint8)
-    img_yuv = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
-    img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR_NV12)
-    cv2.imwrite("./source.jpg", img)
-
     name_dict = {
         "personalLess30": ['less 30'],
         "personalLess45": ['less 45'],
