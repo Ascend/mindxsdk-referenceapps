@@ -118,7 +118,7 @@ namespace MxBase {
         std::shared_ptr<void> hm_addr = featLayerData[3];
         // Create a vector container XY to store coordinate information
         std::vector<std::vector<int>> XY;
-        for(uint32_t i = 0;i < featLayerShapes[3][1] * featLayerShapes[3][2] ; i++){
+        for(uint32_t i = 0;i < featLayerShapes[3][1] * featLayerShapes[3][2];i++){
             // Compared with the threshold CONF_THRES to obtain coordinate information
             if(static_cast<float *>(hm_addr.get())[i] > CONF_THRES)
             {
