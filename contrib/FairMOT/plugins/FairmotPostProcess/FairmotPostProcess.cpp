@@ -28,6 +28,7 @@ auto uint8Deleter = [] (uint8_t* p) { };
 }
 
 namespace MxBase {
+
     // initialization
     APP_ERROR FairmotPostProcess::Init(const std::map <std::string, std::shared_ptr<void>> &postConfig) {  
         LogDebug << "Start to Init FairmotPostProcess.";    
@@ -75,7 +76,7 @@ namespace MxBase {
     }
     
 /*
- * @description: Post-process the network output and calculate coordinates: bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
+ * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
  */
     void FairmotPostProcess::ObjectDetectionOutput(const std::vector <TensorBase> &tensors,
                                                    std::vector <std::vector<ObjectInfo>> &objectInfos,
@@ -109,7 +110,7 @@ namespace MxBase {
             featLayerShapes.push_back(featLayerShape);             
         }
 
-        // tensors[0] matchs id_feature,id_feature is not used in postprocess
+        // tensors[0] matchs id_feature, id_feature is not used in post-process
         // tensors[1] matchs reg
         // tensors[2] matchs wh
         // tensors[3] matchs hm
@@ -117,13 +118,13 @@ namespace MxBase {
         std::shared_ptr<void> hm_addr = featLayerData[3];
         // Create a vector container XY to store coordinate information
         std::vector<std::vector<int>> XY;
-        for(uint32_t i = 0;i < 152*272 ; i++){
+        for(uint32_t i = 0;i < featLayerShapes[3][1] * featLayerShapes[3][2] ; i++){
             // Compared with the threshold CONF_THRES to obtain coordinate information
             if(static_cast<float *>(hm_addr.get())[i] > CONF_THRES)
             {
                 std::vector<int>xy;                
-                int x = i / 272;
-                int y = i - 272 * x;
+                int x = i / featLayerShapes[3][2];
+                int y = i - featLayerShapes[3][2] * x;
                 xy.push_back(x);
                 xy.push_back(y); 
                 XY.push_back(xy);  
@@ -132,19 +133,18 @@ namespace MxBase {
         // Create a vector container scores to store the information in the corresponding coordinate XY in hm
         std::vector<float>scores;
         for(uint32_t i = 0;i < XY.size();i++){
-            scores.push_back(static_cast<float *>(hm_addr.get())[XY[i][0] * 272 + XY[i][1]]);
+            scores.push_back(static_cast<float *>(hm_addr.get())[XY[i][0] * featLayerShapes[3][2] + XY[i][1]]);
         }
         // Get the head address of wh and reg
         std::shared_ptr<void> wh_addr = featLayerData[2];
         std::shared_ptr<void> reg_addr = featLayerData[1];
-        // std::shared_ptr<void> id_feature_addr = featLayerData[0];
 
         // WH: n*4
         std::vector<std::vector<float>>WH;
         for(int i = 0; i < XY.size();i++){
             std::vector<float>wh;
-            for(int j = 0;j < 4;j++){
-                wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 4 + j]);
+            for(int j = 0;j < featLayerShapes[2][3];j++){
+                wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[2][3] + j]);
             }
             WH.push_back(wh);
         }
@@ -153,12 +153,12 @@ namespace MxBase {
         std::vector<std::vector<float>>REG;
         for(int i = 0; i < XY.size();i++){
             std::vector<float>reg;
-            for(int j = 0;j < 2;j++){
-                reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * 272 + XY[i][1]) * 2 + j]);
+            for(int j = 0;j < featLayerShapes[1][3];j++){
+                reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[1][3] + j]);
             }
             REG.push_back(reg);
-        }         
-
+        }
+      
         // XY_f changes the data in XY from int to float
         std::vector<std::vector<float>> XY_f;
         for(int i = 0;i < XY.size();i++){
@@ -190,19 +190,20 @@ namespace MxBase {
         int height = resizedImageInfos[0].heightOriginal; 
         // Scaled width and height           
         int inp_height = resizedImageInfos[0].heightResize;      
-        int inp_width = resizedImageInfos[0].widthResize;   
+        int inp_width = resizedImageInfos[0].widthResize; 
+
         // Create a vector container center to store the center point of the original picture
         std::vector<float>c;
         c.push_back(width / 2);
         c.push_back(height / 2);
         std::vector<float>center(c);
-         
+        // max_dets 
         float scale = 0;
         scale = std::max(float(inp_width) / float(inp_height) * height, float(width)) * 1.0 ;
         std::vector<float>Scale;
         Scale.push_back(scale);
         Scale.push_back(scale);
-        
+        // output_size
         int down_ratio = 4;
         int h = inp_height / down_ratio ;
         int w = inp_width / down_ratio ;
@@ -211,11 +212,9 @@ namespace MxBase {
         output_size.push_back(h);
 
         int rot = 0;
-
-        std::vector<float>shift(2,0);
-        
+        std::vector<float>shift(2,0);        
         int inv = 1;
-
+        // Input of get_affine_transform used to calculate trans: center, scale, rot, output_size, shift, inv
         // get_affine_transform
         std::vector<float>scale_tmp(Scale);
         float src_w = scale_tmp[0];
@@ -231,25 +230,24 @@ namespace MxBase {
         float sn = sin(rot_rad);
         float cs = cos(rot_rad);
         // get_dir
+        // src_dir and dst_dir are used to calculate trans
         std::vector<float>src_dir(2,0);
         src_dir[0] = src_point[0] * cs - src_point[1] * sn ;
         src_dir[1] = src_point[0] * sn + src_point[1] * cs ;  
-
         std::vector<float>dst_dir;
         dst_dir.push_back(0);
         dst_dir.push_back(dst_w * (-0.5));
-
+        // src and dst are calculated to calculate trans
         float src[3][2] = {0};
         float dst[3][2] = {0};
-        src[0][0] = center[0];
-        src[0][1] = center[1];
-        src[1][0] = center[0] + src_dir[0];
-        src[1][1] = center[1] + src_dir[1];
+        src[0][0] = center[0] + scale_tmp[0] * shift[0];
+        src[0][1] = center[1] + scale_tmp[1] * shift[1];
+        src[1][0] = center[0] + src_dir[0] + scale_tmp[0] * shift[0];
+        src[1][1] = center[1] + src_dir[1] + scale_tmp[1] * shift[1];
         dst[0][0] = dst_w * 0.5;
         dst[0][1] = dst_h * 0.5;
         dst[1][0] = dst_w * 0.5 + dst_dir[0];
-        dst[1][1] = dst_h * 0.5 + dst_dir[1];
-        
+        dst[1][1] = dst_h * 0.5 + dst_dir[1];        
         // get_3rd_point
         std::vector<float>direct;
         direct.push_back(src[0][0]-src[1][0]);
@@ -268,11 +266,10 @@ namespace MxBase {
         SRC[0] = Point2f(src[0][0],src[0][1]);
         SRC[1] = Point2f(src[1][0],src[1][1]);
         SRC[2] = Point2f(src[2][0],src[2][1]);
-
         DST[0] = Point2f(dst[0][0],dst[0][1]);
         DST[1] = Point2f(dst[1][0],dst[1][1]);
         DST[2] = Point2f(dst[2][0],dst[2][1]);
-
+        // Calculate trans
         Mat trans(2, 3, CV_64FC1);
         if(inv == 1){
             trans = cv::getAffineTransform(DST,SRC);
@@ -288,11 +285,13 @@ namespace MxBase {
             }
         }
         // affine_transform
+        // Calculate the coordinates of bbox_top_left x, y
         for(int i = 0;i < dets.size();i++){
             float new_pt[3] = {dets[i][0], dets[i][1], 1 };
             dets[i][0] = Trans[0][0]* new_pt[0] + Trans[0][1]* new_pt[1] + Trans[0][2]* new_pt[2]; 
             dets[i][1] = Trans[1][0]* new_pt[0] + Trans[1][1]* new_pt[1] + Trans[1][2]* new_pt[2]; 
         }
+        // Calculate the coordinates of bbox_bottom_right x, y
         for(int i = 0;i < dets.size();i++){
             float new_pt[3] = {dets[i][2], dets[i][3], 1 };
             dets[i][2] = Trans[0][0]* new_pt[0] + Trans[0][1]* new_pt[1] + Trans[0][2]* new_pt[2]; 
@@ -304,7 +303,7 @@ namespace MxBase {
             ObjectInfo objInfo;
             objInfo.classId = 0;
             objInfo.confidence = dets[i][4];
-            objInfo.className = "human";
+            objInfo.className = " ";
             // Normalization
             objInfo.x0 = dets[i][0] / resizedImageInfos[0].widthOriginal;
             objInfo.y0 = dets[i][1] / resizedImageInfos[0].heightOriginal;
