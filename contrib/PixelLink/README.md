@@ -120,7 +120,7 @@ atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 
 **步骤1**
 下载项目文件，以及icdar2015数据集，其中项目文件链接在模型转换部分已经给出。数据集链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip
 
-zip文件中数据集为ch4_test_image，gt.zip是评测代码需要的groundtruth。评测代码可以在官网：https://rrc.cvc.uab.es/?ch=4&com=downloads进行下载，注意在官网中需要先进行登录。然后选择Incidental Scene Text,再选择My Methods,从offline evaluation部分进行下载（下载Evaluation Scripts）。由于需要注册和下载会给用户带来不便，所以提供了链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/script_test_ch4_t1_e1-1577983151.zip 下载评测代码。
+zip文件中数据集为ch4_test_image，gt.zip是评测代码需要的groundtruth。评测代码可以在官网：https://rrc.cvc.uab.es/?ch=4&com=downloads进行下载，注意在官网中需要先进行登录。然后选择Incidental Scene Text,再选择My Methods,从offline evaluation部分进行下载（下载Evaluation Scripts）。由于需要注册和下载会给用户带来不便，所以提供了链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PixelLink/data.zip 下载评测代码。
 
 
 
