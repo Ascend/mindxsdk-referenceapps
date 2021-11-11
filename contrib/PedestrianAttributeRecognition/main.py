@@ -20,6 +20,7 @@ import os
 import copy
 import cv2
 import numpy as np
+import json
 from PIL import Image, ImageDraw, ImageFont
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
