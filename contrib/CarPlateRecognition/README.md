@@ -4,7 +4,7 @@
 
 本样例是基于mxBase开发的端到端推理的C++应用程序，使用车牌检测模型和车牌识别模型在昇腾芯片上对图像中的车牌进行检测，并对检测到的图像中的每一个车牌进行识别，最后将可视化结果保存为图片形式。
 
-对于车牌检测模型，在绝大多数情况下都能将车牌正确框选出来，车牌检测准确率较高；但受限于车牌识别模型的性能，只能识别蓝底车牌，对于黄底车牌和绿底新能源车牌很难正确识别，且模型对中文字符的识别准确率偏低。
+对于车牌检测模型，在绝大多数情况下都能将车牌正确框选出来，车牌检测准确率较高；但受限于车牌识别模型的性能，只能识别蓝底车牌，对于黄底车牌和绿底新能源车牌很难正确识别，且模型对中文字符的识别准确率偏低，对于大角度车牌的识别准确率偏低。
 
 本样例的主要处理流程为： Init > ReadImage > Resize > Detection_Inference > Detection_PostProcess > Crop_Resize1 >
 
@@ -25,7 +25,6 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 本样例工程名称为CarPlateRecognition，工程目录如下图所示：
 
 ```
-├── bin #C++应用程序目录  
 ├── include #头文件目录
   ├── carplate_recognition.h 
   ├── retinaface_postprocess.h 
@@ -169,6 +168,8 @@ atc --model=./lpr.prototxt --weight=./lpr.caffemodel --output=./lpr --framework=
 ```shell
 bash build.sh
 或
+rm -r bin # 删除原先的bin目录(如果有的话)
+mkdir bin # 创建一个新的bin目录
 rm -r build # 删除原先的build目录(如果有的话)
 mkdir build # 创建一个新的build目录
 cd build # 进入build目录
