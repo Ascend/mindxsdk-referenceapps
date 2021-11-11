@@ -230,7 +230,7 @@ namespace MxBase {
         float sn = sin(rot_rad);
         float cs = cos(rot_rad);
         // get_dir
-        // src_dir and dst_dir are used to calculate trans
+        // src_dir and dst_dir are used to calculate src and dst
         std::vector<float>src_dir(2,0);
         src_dir[0] = src_point[0] * cs - src_point[1] * sn ;
         src_dir[1] = src_point[0] * sn + src_point[1] * cs ;  
