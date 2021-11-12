@@ -8,7 +8,7 @@
 
 本样例的主要处理流程为： Init > ReadImage > Resize > Detection_Inference > Detection_PostProcess > Crop_Resize1 >
 
-Recognition_Inference > Recognition_PostProcess > WriteResult > DeInit
+Recognition_Inference > Recognition_PostProcess > WriteResult > DeInit。
 
 ### 1.1 支持产品
 
