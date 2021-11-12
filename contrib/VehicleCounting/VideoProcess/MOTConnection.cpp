@@ -55,22 +55,6 @@ float CalIOU(MxBase::ObjectInfo detect1, MxBase::ObjectInfo detect2)
     return (intersectionArea / unionArea);
 }
 
-float CalDistSimilarity(DetectInfo detect1, DetectInfo detect2)
-{
-    float cx1 = detect1.minx + detect1.width / 2.f;
-    float cy1 = detect1.miny + detect1.height / 2.f;
-    float cx2 = detect2.minx + detect2.width / 2.f;
-    float cy2 = detect2.miny + detect2.height / 2.f;
-    float xDistance = cx1 - cx2;
-    float yDistance = cy1 - cy2;
-    float minWidth = std::min(detect1.width, detect2.width);
-    float minHeight = std::min(detect1.height, detect2.height);
-    if(minWidth == 0 || minHeight == 0){
-        return 0;
-    }
-    float value = (1.f - xDistance / minWidth) * (1.f - yDistance / minHeight);
-    return value;
-}
 // 计算前后两帧的两个bounding box是同一辆车的相似度
 float CalSimilarity(const TraceLet &traceLet, const MxBase::ObjectInfo &objectInfo, const int &method, const double &kIOU)
 {
