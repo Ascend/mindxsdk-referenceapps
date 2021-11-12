@@ -47,11 +47,6 @@ def parse_gt(filename):
                 if (len(splitlines) < 9):
                     continue
                 object_struct['name'] = splitlines[8]
-
-                # if (len(splitlines) == 9):
-                #     object_struct['difficult'] = 0
-                # elif (len(splitlines) == 10):
-                #     object_struct['difficult'] = int(splitlines[9])
                 object_struct['difficult'] = 0
                 object_struct['bbox'] = [float(splitlines[0]),
                                          float(splitlines[1]),
@@ -131,20 +126,12 @@ def voc_eval(detpath,
     # assumes imagesetfile is a text file with each line an image name
     # cachedir caches the annotations in a pickle file
 
-    # first load gt
-    #if not os.path.isdir(cachedir):
-     #   os.mkdir(cachedir)
-    #cachefile = os.path.join(cachedir, 'annots.pkl')
     # read list of images
     with open(imagesetfile, 'r') as f:
         lines = f.readlines()
     imagenames = [x.strip() for x in lines]
-    #print('imagenames: ', imagenames)
-    #if not os.path.isfile(cachefile):
-        # load annots
     recs = {}
     for i, imagename in enumerate(imagenames):
-        #print('parse_files name: ', annopath.format(imagename))
         recs[imagename] = parse_gt(annopath.format(imagename))
 
     # extract gt objects for this class
@@ -169,7 +156,6 @@ def voc_eval(detpath,
     image_ids = [x[0] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
 
-    #print('check confidence: ', confidence)
 
     BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
 
@@ -177,14 +163,10 @@ def voc_eval(detpath,
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
 
-    #print('check sorted_scores: ', sorted_scores)
-    #print('check sorted_ind: ', sorted_ind)
-
     ## note the usage only in numpy not for list
     BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
-    #print('check imge_ids: ', image_ids)
-    #print('imge_ids len:', len(image_ids))
+
     # go down dets and mark TPs and FPs
     nd = len(image_ids)
     tp = np.zeros(nd)
@@ -196,13 +178,11 @@ def voc_eval(detpath,
         BBGT = R['bbox'].astype(float)
 
         ## compute det bb with each BBGT
-
         if BBGT.size > 0:
             # compute overlaps
             # intersection
 
             # 1. calculate the overlaps between hbbs, if the iou between hbbs are 0, the iou between obbs are 0, too.
-            # pdb.set_trace()
             BBGT_xmin =  np.min(BBGT[:, 0::2], axis=1)
             BBGT_ymin = np.min(BBGT[:, 1::2], axis=1)
             BBGT_xmax = np.max(BBGT[:, 0::2], axis=1)
@@ -230,7 +210,6 @@ def voc_eval(detpath,
             BBGT_keep_mask = overlaps > 0
             BBGT_keep = BBGT[BBGT_keep_mask, :]
             BBGT_keep_index = np.where(overlaps > 0)[0]
-            # pdb.set_trace()
             def calcoverlaps(BBGT_keep, bb):
                 overlaps = []
                 for index, GT in enumerate(BBGT_keep):
@@ -243,7 +222,6 @@ def voc_eval(detpath,
 
                 ovmax = np.max(overlaps)
                 jmax = np.argmax(overlaps)
-                # pdb.set_trace()
                 jmax = BBGT_keep_index[jmax]
         if ovmax > ovthresh:
             if not R['difficult'][jmax]:
@@ -277,14 +255,19 @@ def py_cpu_nms_poly(dets, thresh):
     """
     scores = dets[:, 8]
     polys = []
-    areas = []
-    for i in range(len(dets)):
-        tm_polygon = [dets[i][0], dets[i][1],
-                      dets[i][2], dets[i][3],
-                      dets[i][4], dets[i][5],
-                      dets[i][6], dets[i][7]]
-        polys.append(tm_polygon)
+    # for i in range(len(dets)):
+    #     tm_polygon = [dets[i][0], dets[i][1],
+    #                   dets[i][2], dets[i][3],
+    #                   dets[i][4], dets[i][5],
+    #                   dets[i][6], dets[i][7]]
+    #     polys.append(tm_polygon)
 
+    for det in dets:
+        tm_polygon = [det[0], det[1],
+                      det[2], det[3],
+                      det[4], det[5],
+                      det[6], det[7]]
+        polys.append(tm_polygon)
     # argsort将元素小到大排列 返回索引值 [::-1]即从后向前取元素
     order = scores.argsort()[::-1]  # 取出元素的索引值 顺序为从大到小
     keep = []
@@ -344,18 +327,18 @@ def poly2origpoly(poly, x, y, rate):
 def custombasename(fullname):
     return os.path.basename(os.path.splitext(fullname)[0])
 
-def GetFileFromThisRootDir(dir, ext=None):
-  allfiles = []
-  needExtFilter = (ext != None)
-  for root, dirs, files in os.walk(dir):
-    for filespath in files:
-      filepath = os.path.join(root, filespath)
-      extension = os.path.splitext(filepath)[1][1:]
-      if needExtFilter and extension in ext:
-        allfiles.append(filepath)
-      elif not needExtFilter:
-        allfiles.append(filepath)
-  return allfiles
+def getfilefromthisrootdir(dir, ext=None):
+    allfiles = []
+    needExtFilter = (ext != None)
+    for root, dirs, files in os.walk(dir):
+        for filespath in files:
+            filepath = os.path.join(root, filespath)
+            extension = os.path.splitext(filepath)[1][1:]
+            if needExtFilter and extension in ext:
+                allfiles.append(filepath)
+            elif not needExtFilter:
+                allfiles.append(filepath)
+    return allfiles
 
 def mergebase(srcpath, dstpath, nms):
     """
@@ -364,7 +347,7 @@ def mergebase(srcpath, dstpath, nms):
     @param dstpath: 合并后信息保存的txt目标路径
     @param nms: NMS函数
     """
-    filelist = GetFileFromThisRootDir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
+    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
     for fullname in filelist:  # 'example_split/../P0001.txt'
         name = custombasename(fullname)  # 只留下文件名 eg:P0001
         dstname = os.path.join(dstpath, name + '.txt')  # eg: example_merge/..P0001.txt
@@ -376,7 +359,7 @@ def mergebase(srcpath, dstpath, nms):
             lines = f_in.readlines()  # 读取txt中所有行,每行作为一个元素存于list中
             splitlines = [x.strip().split(' ') for x in lines]  # 再次分割list中的每行元素 shape:n行 * m个元素
             for splitline in splitlines:  # splitline:每行中的m个元素
-                # splitline = [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4, classname]
+                # [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4, classname]
                 subname = splitline[0]  # 每行的第一个元素 是被分割的图片的图片名 eg:P0706__1__0___0
                 splitname = subname.split('__')  # 分割待merge的图像的名称 eg:['P0706','1','0','_0']
                 oriname = splitname[0]  # 获得待merge图像的原图像名称 eg:P706
@@ -410,7 +393,6 @@ def mergebase(srcpath, dstpath, nms):
             with open(dstname, 'w') as f_out:
                 for imgname in nameboxnmsdict:  # 'P706'
                     for det in nameboxnmsdict[imgname]:  # 取出对应图片的nms后的目标信息
-                        # det:[poly1, confidence1, 'classname']
                         confidence = det[-2]
                         bbox = det[0:-2]
                         outline = imgname + ' ' + str(confidence) + ' ' + ' '.join(map(str, bbox)) + ' ' + det[-1]
@@ -422,9 +404,6 @@ def mergebypoly(srcpath, dstpath):
     @param srcpath: result files before merge and nms.txt的信息格式为:[P0770__1__0___0 confidence poly 'classname']
     @param dstpath: result files after merge and nms.保存的txt信息格式为:[P0770 confidence poly 'classname']
     """
-    # srcpath = r'/home/dingjian/evaluation_task1/result/faster-rcnn-59/comp4_test_results'
-    # dstpath = r'/home/dingjian/evaluation_task1/result/faster-rcnn-59/testtime'
-
     mergebase(srcpath,
               dstpath,
               py_cpu_nms_poly)
@@ -435,7 +414,7 @@ def image2txt(srcpath, dstpath):
     @param srcpath: imageset
     @param dstpath: imgnamefile.txt的存放路径
     """
-    filelist = GetFileFromThisRootDir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
+    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
     for fullname in filelist:  # 'example_split/../P0001.txt'
         name = custombasename(fullname)  # 只留下文件名 eg:P0001
         dstname = os.path.join(dstpath, 'imgnamefile.txt')  # eg: result/imgnamefile.txt
@@ -453,7 +432,7 @@ def evaluation_trans(srcpath, dstpath):
     @param dstpath: 存放图片的目标检测结果(文件夹, 内含多个Task1_类别名.txt )
                     txt中的内容格式:  目标所属原始图片名称 置信度 poly
     """
-    filelist = GetFileFromThisRootDir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['result_merged/P0001.txt', ..., '?.txt']
+    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['result_merged/P0001.txt', ..., '?.txt']
     for fullname in filelist:  # 'result_merged/P0001.txt'
         if not os.path.exists(dstpath):
             os.makedirs(dstpath)
@@ -461,7 +440,7 @@ def evaluation_trans(srcpath, dstpath):
             lines = f_in.readlines()  # 读取txt中所有行,每行作为一个元素存于list中
             splitlines = [x.strip().split(' ') for x in lines]  # 再次分割list中的每行元素 shape:n行 * m个元素
             for splitline in splitlines:  # splitline:每行中的m个元素
-                # splitline = [目标所属图片名称, confidence, x1, y1, x2, y2, x3, y3, x4, y4, 'classname']
+                # [目标所属图片名称, confidence, x1, y1, x2, y2, x3, y3, x4, y4, 'classname']
                 classname = splitline[-1]  # 每行的最后一个元素 是被分割的图片的种类名
                 dstname = os.path.join(dstpath, 'Task1_' + classname + '.txt')  # eg: result/Task1_plane.txt
                 lines_ = ' '.join(list(splitline[:-1]))
@@ -479,13 +458,9 @@ def evaluation(detoutput, imageset, annopath, classnames):
     """
     result_before_merge_path = str(detoutput + '/result_txt/result_before_merge')
     result_merged_path = str(detoutput + '/result_txt/result_merged')
-    # result_merged_path = str(detoutput + '/result_txt/result_before_merge')
     result_classname_path = str(detoutput + '/result_txt/result_classname')
     imageset_name_file_path = str(detoutput + '/result_txt')
-
-    # see demo for example
-
-    
+  
     mergebypoly(
         result_before_merge_path,
         result_merged_path
@@ -506,18 +481,11 @@ def evaluation(detoutput, imageset, annopath, classnames):
     annopath = annopath
     imagesetfile = str(imageset_name_file_path + '/imgnamefile.txt')  # 'r/.../imgnamefile.txt'  测试集图片名称txt
 
-    # detpath = r'PATH_TO_BE_CONFIGURED/Task1_{:s}.txt'
-    # annopath = r'PATH_TO_BE_CONFIGURED/{:s}.txt' # change the directory to the path of val/labelTxt, if you want to do evaluation on the valset
-    # imagesetfile = r'PATH_TO_BE_CONFIGURED/valset.txt'
-
     # For DOTA-v1.5
     #classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
     #            'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
-    # For DOTA-v1.0
-    # classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-    #             'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', ']
     classaps = []
-    map = 0
+    mAP = 0
     skippedClassCount = 0
     for classname in classnames:
         print('classname:', classname)
@@ -532,12 +500,12 @@ def evaluation(detoutput, imageset, annopath, classnames):
              classname,
              ovthresh=0.5,
              use_07_metric=True)
-        map = map + ap
+        mAP = mAP + ap
         print('ap: ', ap)
         classaps.append(ap)
 
-    map = map / (len(classnames) - skippedClassCount)
-    print('map:', map)
+    mAP = mAP / (len(classnames) - skippedClassCount)
+    print('map:', mAP)
     classaps = 100 * np.array(classaps)
     print('classaps: ', classaps)
 
@@ -550,7 +518,6 @@ if __name__ == '__main__':
                   'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 
                   'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
-    #
     evaluation(
         detoutput='/home/zhongzhi8/RotatedObjectDetection/detection_plugin',
         imageset=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
