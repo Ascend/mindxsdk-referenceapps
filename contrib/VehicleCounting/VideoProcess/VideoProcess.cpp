@@ -65,8 +65,12 @@ VideoProcess::VideoProcess() {
 APP_ERROR VideoProcess::StreamInit(const std::string &rtspUrl)
 {
     LogInfo<<"StreamInit";
+    std::string str=rtspUrl.substr(rtspUrl.find_last_of('.') + 1);
+    if(str!="264"){
+        LogError << "Couldn't decode "<<str<<" file";
+        return APP_ERR_STREAM_NOT_EXIST;
+    }
     avformat_network_init();
-
     AVDictionary *options = nullptr;
     av_dict_set(&options, "rtsp_transport", "tcp", 0);
     av_dict_set(&options, "stimeout", "3000000", 0);
@@ -362,6 +366,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         // 推理
         ret = yolov4Detection->Inference(inputs, outputs);
         if (ret != APP_ERR_OK) {
+            stopFlag = true;
             LogError << "Inference failed, ret=" << ret << ".";
             return;
         }
@@ -369,6 +374,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         // 后处理
         ret = yolov4Detection->PostProcess(outputs, VIDEO_HEIGHT, VIDEO_WIDTH, objInfos);
         if (ret != APP_ERR_OK) {
+            stopFlag = true;
             LogError << "PostProcess failed, ret=" << ret << ".";
             return;
         }
