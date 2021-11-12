@@ -22,6 +22,8 @@ namespace {
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
+    const float det_threshold = 0.4;
+    const float nms_iouthreshold = 0.6;
 }
 
 // 加载标签文件
@@ -226,14 +228,14 @@ void nms(std::vector<MxBase::ObjectInfo> &vec_boxs){
     std::vector<MxBase::ObjectInfo> results;
     std::sort(vec_boxs.begin(),vec_boxs.end(),sort_score);
     for (uint32_t i = 0; i < vec_boxs.size(); i++){
-        if (vec_boxs[i].confidence < 0.4){
+        if (vec_boxs[i].confidence < det_threshold){
             vec_boxs.erase(vec_boxs.begin()+i);
             i--;
             continue;
         }
         for (uint32_t j = i + 1; j < vec_boxs.size(); j++){
             float iou = get_iou(vec_boxs[i], vec_boxs[j]);
-            if (iou > 0.6){
+            if (iou > nms_iouthreshold){
                 vec_boxs.erase(vec_boxs.begin() + j);
                 j--;
             }
