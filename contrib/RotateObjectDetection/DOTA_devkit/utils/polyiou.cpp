@@ -92,7 +92,7 @@ double intersectArea(Point a, Point b, Point c, Point d){
     polygon_cut(p, n, d, o, pp);
     double res = fabs(area(p, n));
     if(s1 * s2 == -1) {
-        res=-res;
+        res = -res;
     }   
     return res;
 }
