@@ -34,6 +34,9 @@ bool VideoProcess::stopFlag = false;
 std::vector<double> g_inferCost;
 namespace {
     const uint32_t MAX_QUEUE_LENGHT = 2000;
+    const uint32_t VIDEO_WIDTH = 1280;
+    const uint32_t VIDEO_HEIGHT = 720;
+    const uint32_t frame_rate = 15;
 }
 
 void SigHandler(int signal)
@@ -117,7 +120,8 @@ int main() {
     // 生成视频
     LogInfo << "Creating video...";
     std::queue<cv::Mat> video_frames=videoProcess->Getframes();
-    cv::VideoWriter writer("./result1/test01.avi", cv::VideoWriter::fourcc('M','J','P','G'), 15, cv::Size(1280,720), true);
+    cv::VideoWriter writer("./result1/test01.avi", cv::VideoWriter::fourcc('M','J','P','G'), 
+                           frame_rate, cv::Size(VIDEO_WIDTH,VIDEO_HEIGHT), true);
     uint32_t frame_count = video_frames.size();
     for(uint32_t i = 0; i<frame_count; i++){
         writer.write(video_frames.front());
