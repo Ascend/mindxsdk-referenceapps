@@ -110,10 +110,10 @@ def poly2origpoly(poly, x, y, rate):
         origpoly.append(tmp_y)
     return origpoly
 
-def GetFileFromThisRootDir(dir,ext = None):
+def GetFileFromThisRootDir(dir, ext=None):
     allfiles = []
-    needExtFilter = (ext != None)
-    for root,dirs,files in os.walk(dir):
+    needExtFilter = (ext is not None)
+    for root, dirs, files in os.walk(dir):
         for filespath in files:
             filepath = os.path.join(root, filespath)
             extension = os.path.splitext(filepath)[1][1:]
@@ -200,19 +200,6 @@ def mergebypoly(srcpath, dstpath):
               dstpath,
               py_cpu_nms_poly)
 
-def GetFileFromThisRootDir(dir,ext = None):
-  allfiles = []
-  needExtFilter = (ext != None)
-  for root,dirs,files in os.walk(dir):
-    for filespath in files:
-      filepath = os.path.join(root, filespath)
-      extension = os.path.splitext(filepath)[1][1:]
-      if needExtFilter and extension in ext:
-        allfiles.append(filepath)
-      elif not needExtFilter:
-        allfiles.append(filepath)
-  return allfiles
-
 def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickness):
     """
     绘制工具merge后的目标/DOTA GT图像
@@ -256,7 +243,7 @@ def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
         img = cv2.imread(img_fullname)  # 读取图像像素
 
         tl = 1
-        tf = tl-1 if (tl-1>1) else 1
+        tf = tl - 1 if (tl - 1 > 1) else 1
 
         for i, obj in enumerate(objects):
             # obj = [poly ,'classname']
@@ -286,7 +273,7 @@ def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
 if __name__ == '__main__':
     classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 
                   'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-                  'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 
+                  'basketball-court', 'storage-tank', 'soccer-ball-field', 'roundabout', 
                   'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
     mergebypoly(r'/home/zhongzhi8/RotatedObjectDetection/testdetection/result_txt/result_before_merge', 
