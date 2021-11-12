@@ -40,12 +40,18 @@ def py_cpu_nms_poly(dets, thresh):
     """  
     scores = dets[:, 8]
     polys = []
-    areas = []
-    for i in range(len(dets)):
-        tm_polygon = [dets[i][0], dets[i][1],
-                      dets[i][2], dets[i][3],
-                      dets[i][4], dets[i][5],
-                      dets[i][6], dets[i][7]]
+    # for i in range(len(dets)):
+    #     tm_polygon = [dets[i][0], dets[i][1],
+    #                   dets[i][2], dets[i][3],
+    #                   dets[i][4], dets[i][5],
+    #                   dets[i][6], dets[i][7]]
+    #     polys.append(tm_polygon)
+
+    for det in dets:
+        tm_polygon = [det[0], det[1],
+                      det[2], det[3],
+                      det[4], det[5],
+                      det[6], dets[7]]
         polys.append(tm_polygon)
 
     # argsort将元素小到大排列 返回索引值 [::-1]即从后向前取元素
@@ -110,7 +116,7 @@ def poly2origpoly(poly, x, y, rate):
         origpoly.append(tmp_y)
     return origpoly
 
-def GetFileFromThisRootDir(dir, ext=None):
+def getfilefromthisrootdir(dir, ext=None):
     allfiles = []
     needExtFilter = (ext is not None)
     for root, dirs, files in os.walk(dir):
@@ -134,7 +140,7 @@ def mergebase(srcpath, dstpath, nms):
     @param nms: NMS函数
     """
     # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
-    filelist = GetFileFromThisRootDir(srcpath)  
+    filelist = getfilefromthisrootdir(srcpath)  
     for fullname in filelist:  # 'example_split/../P0001.txt'
         name = custombasename(fullname)  # 只留下文件名 eg:P0001
         dstname = os.path.join(dstpath, name + '.txt')  # eg: example_merge/..P0001.txt
@@ -148,7 +154,7 @@ def mergebase(srcpath, dstpath, nms):
              # 再次分割list中的每行元素 shape:n行 * m个元素
             splitlines = [x.strip().split(' ') for x in lines] 
             for splitline in splitlines:  # splitline:每行中的m个元素
-                # splitline = [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4]
+                # [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4]
                 subname = splitline[0]  # 每行的第一个元素 是被分割的图片的图片名 eg:P0706__1__0___0
                 splitname = subname.split('__')  # 分割待merge的图像的名称 eg:['P0706','1','0','_0']
                 oriname = splitname[0]  # 获得待merge图像的原图像名称 eg:P706
@@ -183,11 +189,9 @@ def mergebase(srcpath, dstpath, nms):
             with open(dstname, 'w') as f_out:
                 for imgname in nameboxnmsdict:
                     for det in nameboxnmsdict[imgname]:  # 取出对应图片的nms后的目标信息
-                        #print('det:', det)
                         confidence = det[-2]
                         bbox = det[0:-2]
                         outline = imgname + ' ' + str(confidence) + ' ' + ' '.join(map(str, bbox)) + ' ' + det[-1]
-                        #print('outline:', outline)
                         f_out.write(outline + '\n')
             print(fullname + " merge down!")
 
@@ -200,7 +204,7 @@ def mergebypoly(srcpath, dstpath):
               dstpath,
               py_cpu_nms_poly)
 
-def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickness):
+def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickness):
     """
     绘制工具merge后的目标/DOTA GT图像
         @param imgsrcpath: merged后的图像路径(原始图像路径)
@@ -214,7 +218,7 @@ def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
     # colors = [[178, 63, 143], [25, 184, 176], [238, 152, 129],....,[235, 137, 120]]随机设置RGB颜色
     np.random.seed(666)
     colors = [[np.random.randint(0, 255) for _ in range(3)] for _ in range(len(extractclassname))]
-    filelist = GetFileFromThisRootDir(imglabelspath)  # fileist=['/.../P0005.txt', ..., /.../P000?.txt]
+    filelist = getfilefromthisrootdir(imglabelspath)  # fileist=['/.../P0005.txt', ..., /.../P000?.txt]
     for fullname in filelist:  # fullname='/.../P000?.txt'
         objects = []
         with open(fullname, 'r') as f_in:  # 打开merge后/原始的DOTA图像的gt.txt
@@ -229,10 +233,8 @@ def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
             else:
                 # P0003 0.911 660.0 309.0 639.0 209.0 661.0 204.0 682.0 304.0 large-vehicle
                 confidences = [float(x[1]) for x in splitlines]
-                # print(confidences)
                 objects = [x[2:-1] for x in splitlines]
                 classnames = [x[-1] for x in splitlines]
-                # print(classnames)
 
         '''
         objects[i] = str[poly, classname]
@@ -246,9 +248,7 @@ def draw_DOTA_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
         tf = tl - 1 if (tl - 1 > 1) else 1
 
         for i, obj in enumerate(objects):
-            # obj = [poly ,'classname']
             classname = classnames[i]
-            # poly = [(x1,y1),(x2,y2),(x3,y3),(x4,y4)]
             poly = np.array(list(map(float, obj)))
             poly = poly.reshape(4, 2)  # 返回rect对应的四个点的值 normalized
             poly = np.int0(poly)
@@ -279,7 +279,7 @@ if __name__ == '__main__':
     mergebypoly(r'/home/zhongzhi8/RotatedObjectDetection/testdetection/result_txt/result_before_merge', 
                 r'/home/zhongzhi8/RotatedObjectDetection/testdetection/result_txt/result_merged')
 
-    draw_DOTA_image(imgsrcpath=r'/home/zhongzhi8/RotatedObjectDetection/testImage',
+    draw_dota_image(imgsrcpath=r'/home/zhongzhi8/RotatedObjectDetection/testImage',
                     imglabelspath=r'/home/zhongzhi8/RotatedObjectDetection/testdetection/result_txt/result_merged',
                     dstpath=r'/home/zhongzhi8/RotatedObjectDetection/testdetection/merged_drawed',
                     extractclassname=classnames,
