@@ -17,10 +17,10 @@ import numpy as np
 import cv2
 import copy
 
-def GetFileFromThisRootDir(dir,ext = None):
+def GetFileFromThisRootDir(dir, ext=None):
     allfiles = []
     needExtFilter = (ext != None)
-    for root,dirs,files in os.walk(dir):
+    for root, dirs, files in os.walk(dir):
         for filespath in files:
             filepath = os.path.join(root, filespath)
             extension = os.path.splitext(filepath)[1][1:]
