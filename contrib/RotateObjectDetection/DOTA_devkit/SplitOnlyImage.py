@@ -17,7 +17,7 @@ import numpy as np
 import cv2
 import copy
 
-def GetFileFromThisRootDir(dir, ext=None):
+def getfilefromthisrootdir(dir, ext=None): 
     allfiles = []
     needExtFilter = (ext != None)
     for root, dirs, files in os.walk(dir):
@@ -33,7 +33,7 @@ def GetFileFromThisRootDir(dir, ext=None):
 def custombasename(fullname):
     return os.path.basename(os.path.splitext(fullname)[0])
     
-class splitbase():
+class SplitBase():
     def __init__(self,
                  srcpath,
                  dstpath,
@@ -56,7 +56,7 @@ class splitbase():
         outdir = os.path.join(self.dstpath, subimgname + ext)
         cv2.imwrite(outdir, subimg)
 
-    def SplitSingle(self, name, rate, extent):
+    def splitsingle(self, name, rate, extent):
         img = cv2.imread(os.path.join(self.srcpath, name + extent))
         assert np.shape(img) != ()
 
@@ -90,13 +90,13 @@ class splitbase():
             
 
     def splitdata(self, rate):     
-        imagelist = GetFileFromThisRootDir(self.srcpath)
+        imagelist = getfilefromthisrootdir(self.srcpath)
         imagenames = [custombasename(x) for x in imagelist if (custombasename(x) != 'Thumbs')]
         for name in imagenames:
-            self.SplitSingle(name, rate, self.ext)
+            self.splitsingle(name, rate, self.ext)
             print(name, "split down!")
 
 if __name__ == '__main__':
-    split = splitbase(r'/home/zhongzhi8/RotatedObjectDetection/testImage',
-                      r'/home/zhongzhi8/RotatedObjectDetection/testImage_split')
+    split = SplitBase(r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
+                      r'../image')
     split.splitdata(1)
