@@ -19,22 +19,21 @@
 
 import codecs
 import csv
-import os
 import time
-
+import os
 import numpy as np
+
 from tokenizer import Tokenizer
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, StringVector, MxProtobufIn, InProtobufVector
 
-maxlen = 298
-tensor_length = 300
+maxlen = 498
+tensor_length = 500
 float32_bytes = 4
-sample_number = 99
-all_sample_number = 495
+all_sample_number = 2000
 token_dict = {}
-label = ["体育", "健康", "军事", "教育", "汽车"]
+label = ["消极", "积极", "中性"]
 
 class OurTokenizer(Tokenizer):
     """
@@ -90,33 +89,35 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    # creat streams by pipeline file
-    if os.path.exists("pipeline/BertTextClassification.pipeline") != True:
-        print("The BertTextClassification.pipeline does not exist, please input the right path!")
+     # creat streams by pipeline file
+    if os.path.exists("pipeline/sentiment_analysis.pipeline") != 1:
+        print("pipeline file does not exist")
         exit()
-    with open("pipeline/BertTextClassification.pipeline", 'rb') as f:
+    with open("pipeline/sentiment_analysis.pipeline", 'rb') as f:
         pipelineStr = f.read()
+
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # read the vocab text
-    if os.path.exists("data/vocab.txt") != True:
-        print("The vocab.txt does not exist, please input the right path!")
+    if os.path.exists("data/vocab.txt") != 1:
+        print("The vocab.txt does not exist")
         exit()
     with codecs.open("data/vocab.txt", 'r', 'utf-8') as reader:
         for line in reader:
             token = line.strip()
             token_dict[token] = len(token_dict)
 
-    # read the input text
-    if os.path.exists("data/test.csv") != True:
-        print("The test.csv does not exist, please input the right path!")
+    if os.path.exists("data/test.csv") != 1:
+        print("test.csv does not exist")
         exit()
+
+    # read the input text
     csv_reader = csv.reader(open("data/test.csv"))
-    result_list = [[], [], [], [], []]
-    index = 0
+    result_list = [0, 0, 0]
+    real_list = [0, 0, 0]
     count = 0
     time_start = time.time()
     for line in csv_reader:
@@ -125,7 +126,7 @@ if __name__ == '__main__':
         # preprocess the data
         X1, X2 = preprocess(text)
 
-        streamName = b'classification'
+        streamName = b'sentiment_analysis'
         inPluginId = 0
         protobuf_vec = InProtobufVector()
 
@@ -164,33 +165,29 @@ if __name__ == '__main__':
             print("Failed to send data to stream.")
             exit()
 
-        keys = [b"mxpi_classpostprocessor0"]
-        keyVec = StringVector()
-        for key in keys:
-            keyVec.push_back(key)
+        key_vec = StringVector()
+        key_vec.push_back(b'mxpi_classpostprocessor0')
 
-        # take out the output data of the corresponding plug
-        infer_result = streamManagerApi.GetProtobuf(streamName, inPluginId, keyVec)
-        if infer_result.size() == 0:
-            print("infer_result is null")
-            exit()
-        if infer_result[0].errorCode != 0:
-            print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-                infer_result[0].errorCode, infer_result[0].data.decode()))
+        # get inference result
+        infer = streamManagerApi.GetResult(streamName, b'appsink0', key_vec)
+        infer_result = infer.metadataVec[0]
+
+        if infer_result.errorCode != 0:
+            print("GetResult error. errorCode=%d ,errorMsg=%s" % (
+                infer_result.errorCode, infer_result.errorMsg))
             exit()
 
         # get data from infer_result
         result = MxpiDataType.MxpiClassList()
-        result.ParseFromString(infer_result[0].messageBuf)
+        result.ParseFromString(infer_result.serializedMetadata)
         result_label = result.classVec[0].className
 
-        if count != 0 and count % sample_number == 0:
-            index += 1
+        print("第"+str(count + 1)+"个样本")
         if result_label == real_label:
-            result_list[index].append("true")
-        else:
-            result_list[index].append("false")
-
+            result_index = label.index(result_label)
+            result_list[result_index] += 1
+        real_index = label.index(real_label)
+        real_list[real_index] += 1
         count += 1
 
     # destroy streams
@@ -200,20 +197,15 @@ if __name__ == '__main__':
     print('time cost:', str(format(time_average_cost, '.4f')), 's')
     # save and print accuracy
     f = open("out/accuracy.txt", "w")
-    all_count = 0
+
     i = 0
-    for result in result_list:
-        count = 0
-        for line in result:
-            if line == "true":
-                count += 1
-                all_count += 1
-        accuracy = count / sample_number
+    for result, real in zip(result_list, real_list):
+        accuracy = result / real
         f.write(label[i] + "类的精确度：" + str(format(accuracy, '.4f')) + "\n")
         print(label[i] + "类的精确度：" + str(format(accuracy, '.4f')))
         i += 1
 
-    accuracy = all_count / all_sample_number
-    f.write("全部类别的精确度：" + str(format(accuracy, '.4f')) + "\n")
-    print("全部类别的精确度：" + str(format(accuracy, '.4f')))
+    all_accuracy = sum(result_list) / sum(real_list)
+    f.write("全部类别的精确度：" + str(format(all_accuracy, '.4f')) + "\n")
+    print("全部类别的精确度：" + str(format(all_accuracy, '.4f')))
     f.close()

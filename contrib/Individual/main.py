@@ -36,9 +36,13 @@ if __name__ == '__main__':
     data_input = MxDataInput()
 
     # example
-    with open("./test.jpg", 'rb') as f:
-        data_input.data = f.read()
-
+    try:
+        f2 = open('./test.jpg', 'rb')
+    except FileNotFoundError as reason:
+        print('Can not find the image!\n')
+        exit()
+    data_input.data = f2.read()
+    
     # Inputs data to a specified stream based on streamName.
     stream_name = b'classification+detection'
     inplugin_id = 0

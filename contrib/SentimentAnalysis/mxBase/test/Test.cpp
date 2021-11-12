@@ -1,23 +1,19 @@
-//
-// Created by 13352 on 2021/10/19.
-//
-
 #include "Test.h"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 
 namespace {
-    const uint32_t MAX_LENGTH = 300;
-    const uint32_t LABEL_NUMBER = 5;
-    const uint32_t SAMPLE_NUMBER = 99;
-    const std::string LABEL_LIST[LABEL_NUMBER] = {"体育", "健康", "军事", "教育", "汽车"};
+  const uint32_t MAX_LENGTH = 500;
+  const uint32_t LABEL_NUMBER = 3;
+  const std::string LABEL_LIST[LABEL_NUMBER] = {"消极", "积极", "中性"};
 }
 
 void Test::InitBertParam(InitParam &initParam) {
   initParam.deviceId = 0;
-  initParam.labelPath = "./model/bert_text_classification_labels.names";
-  initParam.modelPath = "./model/bert_text_classification.om";
-  initParam.vocabTextPath = "data/vocab.txt";
+  initParam.labelPath = "./model/sentiment_analysis_label.names";
+  initParam.modelPath = "./model/sentiment_analysis.om";
+  initParam.vocabTextPath = "./data/vocab.txt";
   initParam.maxLength = MAX_LENGTH;
   initParam.labelNumber = LABEL_NUMBER;
 }
@@ -25,18 +21,23 @@ void Test::InitBertParam(InitParam &initParam) {
 APP_ERROR Test::test_accuracy() {
   InitParam initParam;
   InitBertParam(initParam);
-  auto bert = std::make_shared<BertClassification>();
+  auto sentiment_analysis = std::make_shared<SentimentAnalysis>();
 
   // Initialize the configuration information required for model inference.
-  APP_ERROR ret = bert->Init(initParam);
+  APP_ERROR ret = sentiment_analysis->Init(initParam);
   if (ret != APP_ERR_OK) {
-    LogError << "BertClassification init failed, ret=" << ret << ".";
-    bert->DeInit();
+    LogError << "SentimentAnalysis init failed, ret=" << ret << ".";
+    sentiment_analysis->DeInit();
     return ret;
   }
 
   // Open test file.
   std::ifstream fin("data/test.csv");
+  if (fin.fail()) {
+    LogError << "Failed to open csvPath file: test.csv.";
+    sentiment_analysis->DeInit();
+    return APP_ERR_COMM_OPEN_FAIL;
+  }
   std::string line, prediction_label;
   std::vector<std::vector<std::string>> prediction_label_lists;
 
@@ -45,7 +46,7 @@ APP_ERROR Test::test_accuracy() {
     std::vector<std::string> temp;
     prediction_label_lists.push_back(temp);
   }
-  int index = 0, count = 0;
+  int index = 0, all_num = 0;
   clock_t startTime,endTime;
   startTime = clock();
   while (getline(fin, line)) {
@@ -62,12 +63,12 @@ APP_ERROR Test::test_accuracy() {
       text = text.replace(text.find("\""),1,"");
       text = text.replace(text.find_last_of("\""),1,"");
     }
+	  // Remove the end \r.
+    text = text.replace(text.find("\r"),1,"");
     // Start inference.
-    ret = bert->Process(text, prediction_label);
+    ret = sentiment_analysis->Process(text, prediction_label);
 
-    if (count != 0 && count % SAMPLE_NUMBER == 0) {
-      index++;
-    }
+    index = std::find(LABEL_LIST, LABEL_LIST + LABEL_NUMBER, label) - LABEL_LIST;
 
     // Determine whether the prediction result is correct.
     if (prediction_label == label){
@@ -77,20 +78,20 @@ APP_ERROR Test::test_accuracy() {
       prediction_label_lists[index].push_back("false");
     }
 
-    count++;
+    all_num++;
     if (ret != APP_ERR_OK) {
-      LogError << "BertClassification process failed, ret=" << ret << ".";
-      bert->DeInit();
+      LogError << "SentimentAnalysis process failed, ret=" << ret << ".";
+      sentiment_analysis->DeInit();
       return ret;
     }
   }
   endTime = clock();
-  std::cout << "The average time is: " <<(double)(endTime - startTime) / CLOCKS_PER_SEC /  SAMPLE_NUMBER / LABEL_NUMBER
+  std::cout << "The average time is: " <<(double)(endTime - startTime) / CLOCKS_PER_SEC /  all_num
             << "s" << std::endl;
-  bert->DeInit();
+  sentiment_analysis->DeInit();
 
   // Calculate accuracy.
-  int all_count = 0;
+  int all_count = 0, count = 0;
   index = 0;
   double accuracy;
   for (auto label_list : prediction_label_lists) {
@@ -101,25 +102,25 @@ APP_ERROR Test::test_accuracy() {
         all_count++;
       }
     }
-    accuracy = static_cast<double>(count) / SAMPLE_NUMBER;
+    accuracy = static_cast<double>(count) / label_list.size();
     std::cout << LABEL_LIST[index] << "类的精确度为：" << accuracy << std::endl;
     index++;
   }
-  accuracy = static_cast<double>(all_count) / SAMPLE_NUMBER / LABEL_NUMBER;
+  accuracy = static_cast<double>(all_count) / all_num;
   std::cout << "全部类的精确度为：" << accuracy << std::endl;
   return APP_ERR_OK;
 }
 
 APP_ERROR Test::test_input() {
-  std::vector<std::string> input_text;
+  std::vector<std::string> input_text = {};
   InitParam initParam;
   InitBertParam(initParam);
-  auto bert = std::make_shared<BertClassification>();
+  auto sentiment_analysis = std::make_shared<SentimentAnalysis>();
   // Initialize the configuration information required for model inference.
-  APP_ERROR ret = bert->Init(initParam);
+  APP_ERROR ret = sentiment_analysis->Init(initParam);
   if (ret != APP_ERR_OK) {
-    LogError << "BertClassification init failed, ret=" << ret << ".";
-    bert->DeInit();
+    LogError << "SentimentAnalysis init failed, ret=" << ret << ".";
+    sentiment_analysis->DeInit();
     return ret;
   }
   std::string text;
@@ -129,23 +130,25 @@ APP_ERROR Test::test_input() {
   // Check text file validity.
   if (infile.fail()) {
     LogError << "Failed to open textPath file: test.txt.";
-    bert->DeInit();
+    sentiment_analysis->DeInit();
     return APP_ERR_COMM_OPEN_FAIL;
   }
   while (std::getline(infile, text)) {
-    std::string label;
-    // Inference begin.
-    ret = bert->Process(text, label);
-    std::cout << "origin text:" << text <<std::endl;
-    std::cout << "label:" << label <<std::endl;
-    if (ret != APP_ERR_OK) {
-      LogError << "BertClassification process failed, ret=" << ret << ".";
-      bert->DeInit();
-      return ret;
+    for (uint32_t i = 0;i < input_text.size();i++) {
+      std::string label;
+      // Inference begin.
+      ret = sentiment_analysis->Process(text, label);
+      std::cout << "origin text:" << text <<std::endl;
+      std::cout << "label:" << label <<std::endl;
+      if (ret != APP_ERR_OK) {
+        LogError << "SentimentAnalysis process failed, ret=" << ret << ".";
+        sentiment_analysis->DeInit();
+        return ret;
+      }
     }
   }
 
   // Destroy.
-  bert->DeInit();
+  sentiment_analysis->DeInit();
   return APP_ERR_OK;
 }

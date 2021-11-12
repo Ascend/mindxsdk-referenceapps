@@ -1,5 +1,5 @@
-#ifndef MXBASE_TEXT_CLASSIFICATION_BERTCLASSIFICATION_H
-#define MXBASE_TEXT_CLASSIFICATION_BERTCLASSIFICATION_H
+#ifndef MXBASE_SENTIMENT_ANALYSIS_H
+#define MXBASE_SENTIMENT_ANALYSIS_H
 
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
@@ -11,9 +11,10 @@ struct InitParam {
     std::string vocabTextPath;
     uint32_t maxLength;
     uint32_t labelNumber;
+
 };
 
-class BertClassification {
+class SentimentAnalysis {
 public:
     APP_ERROR InitTokenMap(const std::string &vocabTextPath, std::map<std::string, int> &tokenMap);
     APP_ERROR LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap);
@@ -31,10 +32,10 @@ private:
     std::map<std::string, int> tokenMap_ = {};
     uint32_t deviceId_ = 0;
     // Maximum length of input sentence.
-    uint32_t maxLength_ = 300;
+    uint32_t maxLength_ = 500;
     // Number of tags for inference results.
-    uint32_t labelNumber_ = 5;
+    uint32_t labelNumber_ = 3;
 };
 
 
-#endif // MXBASE_TEXT_CLASSIFICATION_BERTCLASSIFICATION_H
+#endif // MXBASE_SENTIMENT_ANALYSIS_H
