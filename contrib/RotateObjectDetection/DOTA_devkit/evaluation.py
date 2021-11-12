@@ -344,10 +344,10 @@ def poly2origpoly(poly, x, y, rate):
 def custombasename(fullname):
     return os.path.basename(os.path.splitext(fullname)[0])
 
-def GetFileFromThisRootDir(dir,ext = None):
+def GetFileFromThisRootDir(dir, ext=None):
   allfiles = []
   needExtFilter = (ext != None)
-  for root,dirs,files in os.walk(dir):
+  for root, dirs, files in os.walk(dir):
     for filespath in files:
       filepath = os.path.join(root, filespath)
       extension = os.path.splitext(filepath)[1][1:]
@@ -504,7 +504,7 @@ def evaluation(detoutput, imageset, annopath, classnames):
 
     detpath = str(result_classname_path + '/Task1_{:s}.txt')  # 'r/.../Task1_{:s}.txt'  存放各类别结果文件txt的路径
     annopath = annopath
-    imagesetfile = str(imageset_name_file_path +'/imgnamefile.txt')  # 'r/.../imgnamefile.txt'  测试集图片名称txt
+    imagesetfile = str(imageset_name_file_path + '/imgnamefile.txt')  # 'r/.../imgnamefile.txt'  测试集图片名称txt
 
     # detpath = r'PATH_TO_BE_CONFIGURED/Task1_{:s}.txt'
     # annopath = r'PATH_TO_BE_CONFIGURED/{:s}.txt' # change the directory to the path of val/labelTxt, if you want to do evaluation on the valset
@@ -536,9 +536,9 @@ def evaluation(detoutput, imageset, annopath, classnames):
         print('ap: ', ap)
         classaps.append(ap)
 
-    map = map/(len(classnames)-skippedClassCount)
+    map = map / (len(classnames) - skippedClassCount)
     print('map:', map)
-    classaps = 100*np.array(classaps)
+    classaps = 100 * np.array(classaps)
     print('classaps: ', classaps)
 
 
