@@ -123,10 +123,6 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_imagecrop0")
     infer_result = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
 
-    if infer_result.errorCode != 0:
-        print("GetResult error. errorCode=%d, errorMsg=%s" % (
-            infer_result.errorCode, infer_result.bufferOutput.data.decode()))
-
     if infer_result.metadataVec.size() < 2:
         print("No pedestrians detected")
         exit()
