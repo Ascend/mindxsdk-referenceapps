@@ -16,23 +16,8 @@ import os
 import numpy as np
 import cv2
 import copy
+from utils import general_utils
 
-def getfilefromthisrootdir(dir, ext=None): 
-    allfiles = []
-    needExtFilter = (ext != None)
-    for root, dirs, files in os.walk(dir):
-        for filespath in files:
-            filepath = os.path.join(root, filespath)
-            extension = os.path.splitext(filepath)[1][1:]
-            if needExtFilter and extension in ext:
-                allfiles.append(filepath)
-            elif not needExtFilter:
-                allfiles.append(filepath)
-    return allfiles     
-
-def custombasename(fullname):
-    return os.path.basename(os.path.splitext(fullname)[0])
-    
 class SplitBase():
     def __init__(self,
                  srcpath,
@@ -90,8 +75,9 @@ class SplitBase():
             
 
     def splitdata(self, rate):     
-        imagelist = getfilefromthisrootdir(self.srcpath)
-        imagenames = [custombasename(x) for x in imagelist if (custombasename(x) != 'Thumbs')]
+        imagelist = general_utils.getfilefromthisrootdir(self.srcpath)
+        imagenames = [general_utils.custombasename(x) for x in imagelist \
+                      if (general_utils.custombasename(x) != 'Thumbs')]
         for name in imagenames:
             self.splitsingle(name, rate, self.ext)
             print(name, "split down!")
