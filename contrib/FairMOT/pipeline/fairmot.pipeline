@@ -69,7 +69,7 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessLibPath": "./lib/plugins/libmxpi_fairmotpostprocess.so"
+                "postProcessLibPath": "./plugins/FairmotPostProcess/build/libmxpi_fairmotpostprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_motsimplesortV20"
