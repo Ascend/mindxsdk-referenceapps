@@ -18,7 +18,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 """
     To use the code, users should to config detpath, annopath and imagesetfile
     detpath is the path for 15 result files, for the format, you can refer to "http://captain.whu.edu.cn/DOTAweb/tasks.html"
@@ -31,6 +30,8 @@ import numpy as np
 import re
 import copy
 from utils import polyiou
+from utils import general_utils
+from ResultMergeDraw import mergebase 
 
 def parse_gt(filename):
     """
@@ -213,7 +214,6 @@ def voc_eval(detpath,
             def calcoverlaps(BBGT_keep, bb):
                 overlaps = []
                 for index, GT in enumerate(BBGT_keep):
-
                     overlap = polyiou.iou_poly(BBGT_keep[index], bb)
                     overlaps.append(overlap)
                 return overlaps
@@ -245,159 +245,6 @@ def voc_eval(detpath,
     ap = voc_ap(rec, prec, use_07_metric)
 
     return rec, prec, ap
-def py_cpu_nms_poly(dets, thresh):
-    """
-    任意四点poly nms.取出nms后的边框的索引
-    @param dets: shape(detection_num, [poly, confidence1]) 原始图像中的检测出的目标数量
-    @param thresh:
-    @return:
-            keep: 经nms后的目标边框的索引
-    """
-    scores = dets[:, 8]
-    polys = []
-    # for i in range(len(dets)):
-    #     tm_polygon = [dets[i][0], dets[i][1],
-    #                   dets[i][2], dets[i][3],
-    #                   dets[i][4], dets[i][5],
-    #                   dets[i][6], dets[i][7]]
-    #     polys.append(tm_polygon)
-
-    for det in dets:
-        tm_polygon = [det[0], det[1],
-                      det[2], det[3],
-                      det[4], det[5],
-                      det[6], det[7]]
-        polys.append(tm_polygon)
-    # argsort将元素小到大排列 返回索引值 [::-1]即从后向前取元素
-    order = scores.argsort()[::-1]  # 取出元素的索引值 顺序为从大到小
-    keep = []
-    while order.size > 0:
-        ovr = []
-        i = order[0]  # 取出当前剩余置信度最大的目标边框的索引
-        keep.append(i)
-        for j in range(order.size - 1):  # 求出置信度最大poly与其他所有poly的IoU
-            iou = polyiou.iou_poly(polys[i], polys[order[j + 1]])
-            ovr.append(iou)
-        ovr = np.array(ovr)
-        inds = np.where(ovr <= thresh)[0]  # 找出iou小于阈值的索引
-        order = order[inds + 1]
-    return keep
-
-def nmsbynamedict(nameboxdict, nameboxdict_classname, nms, thresh):
-    """
-    对namedict中的目标信息进行nms.不改变输入的数据形式
-    @param nameboxdict: eg:{
-                           'P706':[[poly1, confidence1], ..., [poly9, confidence9]],
-                           ...
-                           'P700':[[poly1, confidence1], ..., [poly9, confidence9]]
-                            }
-    @param nameboxdict_classname: eg:{
-                           'P706':[[poly1, confidence1,'classname'], ..., [poly9, confidence9, 'classname']],
-                           ...
-                           'P700':[[poly1, confidence1, 'classname'], ..., [poly9, confidence9, 'classname']]
-                            }
-    @param nms:
-    @param thresh: nms阈值, IoU阈值
-    @return:
-            nameboxnmsdict: eg:{
-                                'P706':[[poly1, confidence1, 'classname'], ..., [poly_nms, confidence9, 'classname']],
-                                 ...
-                                'P700':[[poly1, confidence1, 'classname'], ..., [poly_nms, confidence9, 'classname']]
-                               }
-    """
-    # 初始化字典
-    nameboxnmsdict = {x: [] for x in nameboxdict}  # eg: nameboxnmsdict={'P0770': [], 'P1888': []}
-    for imgname in nameboxdict:  # 提取nameboxdict中的key eg:P0770   P1888
-        keep = nms(np.array(nameboxdict[imgname]), thresh)  # rotated_nms索引值列表
-        outdets = []
-        for index in keep:
-            outdets.append(nameboxdict_classname[imgname][index])
-        nameboxnmsdict[imgname] = outdets
-    return nameboxnmsdict
-
-def poly2origpoly(poly, x, y, rate):
-    origpoly = []
-    for i in range(int(len(poly)/2)):
-        tmp_x = float(poly[i * 2] + x) / float(rate)
-        tmp_y = float(poly[i * 2 + 1] + y) / float(rate)
-        origpoly.append(tmp_x)
-        origpoly.append(tmp_y)
-    return origpoly
-
-def custombasename(fullname):
-    return os.path.basename(os.path.splitext(fullname)[0])
-
-def getfilefromthisrootdir(dir, ext=None):
-    allfiles = []
-    needExtFilter = (ext != None)
-    for root, dirs, files in os.walk(dir):
-        for filespath in files:
-            filepath = os.path.join(root, filespath)
-            extension = os.path.splitext(filepath)[1][1:]
-            if needExtFilter and extension in ext:
-                allfiles.append(filepath)
-            elif not needExtFilter:
-                allfiles.append(filepath)
-    return allfiles
-
-def mergebase(srcpath, dstpath, nms):
-    """
-    将源路径中所有的txt目标信息,经nms后存入目标路径中的同名txt
-    @param srcpath: 合并前信息保存的txt源路径
-    @param dstpath: 合并后信息保存的txt目标路径
-    @param nms: NMS函数
-    """
-    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
-    for fullname in filelist:  # 'example_split/../P0001.txt'
-        name = custombasename(fullname)  # 只留下文件名 eg:P0001
-        dstname = os.path.join(dstpath, name + '.txt')  # eg: example_merge/..P0001.txt
-        if not os.path.exists(dstpath):
-            os.makedirs(dstpath)
-        with open(fullname, 'r') as f_in:
-            nameboxdict = {}
-            nameboxdict_classname = {}
-            lines = f_in.readlines()  # 读取txt中所有行,每行作为一个元素存于list中
-            splitlines = [x.strip().split(' ') for x in lines]  # 再次分割list中的每行元素 shape:n行 * m个元素
-            for splitline in splitlines:  # splitline:每行中的m个元素
-                # [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4, classname]
-                subname = splitline[0]  # 每行的第一个元素 是被分割的图片的图片名 eg:P0706__1__0___0
-                splitname = subname.split('__')  # 分割待merge的图像的名称 eg:['P0706','1','0','_0']
-                oriname = splitname[0]  # 获得待merge图像的原图像名称 eg:P706
-                pattern1 = re.compile(r'__\d+___\d+')  # 预先编译好r'__\d+___\d+' 提高重复使用效率 \d表示数字
-
-                x_y = re.findall(pattern1, subname)  # 匹配subname中的字符串 eg: x_y=['__0___0']
-                x_y_2 = re.findall(r'\d+', x_y[0])  # 匹配subname中的字符串 eg: x_y_2= ['0','0']
-                x, y = int(x_y_2[0]), int(x_y_2[1])  # 找到当前subname图片在原图中的分割位置
-
-                pattern2 = re.compile(r'__([\d+\.]+)__\d+___')  # \.表示一切字符
-
-                rate = re.findall(pattern2, subname)[0]  # 找到该subname分割图片时的分割rate (resize rate before cut)
-
-                confidence = splitline[1]
-                classname = splitline[-1]
-                poly = list(map(float, splitline[2:10]))  # 每个元素映射为浮点数 再放入列表中
-                origpoly = poly2origpoly(poly, x, y, rate)  # 将目标位置信息resize 恢复成原图的poly坐标
-                det = origpoly  # shape(8)
-                det.append(confidence)  # [poly, 'confidence']
-                det = list(map(float, det))  # [poly, confidence]
-
-                det_classname = copy.deepcopy(det)
-                det_classname.append(classname)  # [poly, 'confidence','classname']
-                if (oriname not in nameboxdict):
-                    nameboxdict[oriname] = []   # 弄个元组,汇集原图目标信息 eg: 'P706':[[poly1, confidence1], ..., ]
-                    nameboxdict_classname[oriname] = []   # 弄个元组,汇集原图目标信息 eg: 'P706':[[poly1, confidence1,'classname'], ..., ]
-                nameboxdict[oriname].append(det)
-                nameboxdict_classname[oriname].append(det_classname)
-
-            nameboxnmsdict = nmsbynamedict(nameboxdict, nameboxdict_classname, nms, thresh=0.3)  # 对nameboxdict元组进行nms
-            with open(dstname, 'w') as f_out:
-                for imgname in nameboxnmsdict:  # 'P706'
-                    for det in nameboxnmsdict[imgname]:  # 取出对应图片的nms后的目标信息
-                        confidence = det[-2]
-                        bbox = det[0:-2]
-                        outline = imgname + ' ' + str(confidence) + ' ' + ' '.join(map(str, bbox)) + ' ' + det[-1]
-                        f_out.write(outline + '\n')
-            print(name, "merge down!")
 
 def mergebypoly(srcpath, dstpath):
     """
@@ -406,7 +253,7 @@ def mergebypoly(srcpath, dstpath):
     """
     mergebase(srcpath,
               dstpath,
-              py_cpu_nms_poly)
+              general_utils.py_cpu_nms_poly)
 
 def image2txt(srcpath, dstpath):
     """
@@ -414,9 +261,9 @@ def image2txt(srcpath, dstpath):
     @param srcpath: imageset
     @param dstpath: imgnamefile.txt的存放路径
     """
-    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
+    filelist = general_utils.getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['example_split/../P0001.txt', ..., '?.txt']
     for fullname in filelist:  # 'example_split/../P0001.txt'
-        name = custombasename(fullname)  # 只留下文件名 eg:P0001
+        name = general_utils.custombasename(fullname)  # 只留下文件名 eg:P0001
         dstname = os.path.join(dstpath, 'imgnamefile.txt')  # eg: result/imgnamefile.txt
         if not os.path.exists(dstpath):
             os.makedirs(dstpath)
@@ -432,7 +279,7 @@ def evaluation_trans(srcpath, dstpath):
     @param dstpath: 存放图片的目标检测结果(文件夹, 内含多个Task1_类别名.txt )
                     txt中的内容格式:  目标所属原始图片名称 置信度 poly
     """
-    filelist = getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['result_merged/P0001.txt', ..., '?.txt']
+    filelist = general_utils.getfilefromthisrootdir(srcpath)  # srcpath文件夹下的所有文件相对路径 eg:['result_merged/P0001.txt', ..., '?.txt']
     for fullname in filelist:  # 'result_merged/P0001.txt'
         if not os.path.exists(dstpath):
             os.makedirs(dstpath)
@@ -519,7 +366,7 @@ if __name__ == '__main__':
                   'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
     evaluation(
-        detoutput='/home/zhongzhi8/RotatedObjectDetection/detection_plugin',
+        detoutput='../detection',
         imageset=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
         annopath=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/labelTxt/{:s}.txt',
         classnames=classnames
