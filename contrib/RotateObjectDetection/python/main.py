@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # coding=utf-8
-
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +13,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os
 import cv2
 import numpy as np
 import sys
 import argparse
+import time
 import MxpiDataType_pb2 as MxpiDataType
+
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../proto")
 import mxpiRotateobjProto_pb2 as mxpiRotateObjProto
+
+
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -63,9 +67,12 @@ if __name__ == '__main__':
 
     # Walk through each image in the image folder
     for item in os.listdir(input_path):
+        cont += 1
+        # Record the start time.
+        start = time.time()
         img_path = os.path.join(input_path, item)
         print("Detect the order of the image: {}".format(cont))
-        print("detect_file_path:", img_path)
+        print("detect_file_name:", item)
     
         # Build the input object for the stream.
         dataInput = MxDataInput()
@@ -149,7 +156,7 @@ if __name__ == '__main__':
             n = (np.array(classID_list) == c).sum()
             s += '%d %s, ' % (n, classNames[int(c)])
         s = s[:-2] if s else "No object is detectde"
-        print("detect result: ", s)
+        print("Detect result: ", s)
         
         # Output the information about the bbox to .txt files.
         text_out_path = out_path + '/' + 'result_txt/result_before_merge/'
@@ -190,7 +197,11 @@ if __name__ == '__main__':
                         thickness=tf, lineType=cv2.LINE_AA)
             
         save_path = out_path + '/' + item
+        # Save image.
         cv2.imwrite(save_path, img)
+        end = time.time()
+        # Calculate the cost time of detection.
+        print("Detection time: {} s".format(end - start))
     
     # destroy streams
     streamManagerApi.DestroyAllStreams()
