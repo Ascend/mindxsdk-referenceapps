@@ -31,7 +31,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "/home/zhongzhi8/RotatedObjectDetection/models/YOLOv5_DOTAv1.5_OBB_1024_1024.om"
+                "modelPath": "./models/YOLOv5_DOTAv1.5_OBB_1024_1024.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_rotateobjpostprocess0"
