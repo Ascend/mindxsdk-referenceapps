@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--input-path', type=str, default='../image', help='input image path')
     parser.add_argument('--output-path', type=str, default='../detection', help='detection output path')
-    parser.add_argument('--labels', action='store_true', default=False, help='whether to print labels')
+    parser.add_argument('--labels_print', action='store_true', default=False, help='whether to print labels')
     
     opt = parser.parse_args()
     print(opt)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     # Test results are placed in this folder.
     out_path = opt.output_path
     # Whether to print labels for image.
-    labels = opt.labels 
+    labels = opt.labels_print 
     # Record the current image detection order.
     cont = 0 
 
