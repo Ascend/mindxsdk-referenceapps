@@ -87,7 +87,7 @@
 
 本项目整体流程如图1所示。
 
-![整体流程图](.\Readme_image\flow chart.png)
+![整体流程图](https://gitee.com/xiang-cui/mindxsdk-referenceapps/raw/master/contrib/RotateObjectDetection/Readme_image/flow%20chart.png)
 
 ​                                                                                                         图1 无人机遥感旋转目标检测流程图
 
@@ -95,7 +95,7 @@
 
  本项目开发的旋转目标检测插件的输入是YOLOv5变体模型输出，模型从输入到输出的映射由图2所示。模型输入为固定分辨率1024×1024的图片，输出形状大小分别为1×3×128×128×201、1×3×64×64×201、1×3×32×32×201的特征矩阵，其中3为先验框anchor的数量；128×128、64×64、32×32为特征图的宽高，是YOLO网络在进行目标检测时划分的grid数量；201为网络预测一个bounding box所需的参数数量，参数所代表的具体含义如图2中单个预测目标所示。`tx, ty, tl, ts`为预测目标相对于anchor的偏移量，o为objectness值，模型训练所用`DOTAv1.5`数据集包含16个类别，`c1,c2,...,c16`对应16个类别的概率得分，模型在进行角度预测时，将该问题作为分类问题，`p1,p2,...,p180`为1到180度的角度概率。
 
-<img src=".\Readme_image\model structure.png" alt="模型输入输出映射" style="zoom:50%;" />
+<img src="https://gitee.com/xiang-cui/mindxsdk-referenceapps/raw/master/contrib/RotateObjectDetection/Readme_image/model%20structure.png" alt="模型输入输出映射" style="zoom:50%;" />
 
 ​                                                                                                     图2 YOLOv5模型输入输出映射图
 
@@ -109,7 +109,7 @@
 
 旋转检测框与水平检测框的IOU计算方式不同。两个水平检测框的重叠区域为矩形，如图3中第一幅图所示，只需要比较两个检测框的左上和右下两个角点坐标就可得到重叠矩形的角点坐标，再通过坐标相减得到重叠矩形的尺寸即可计算重叠面积。而两个旋转框的重叠区域是不规则的多边形，图3中第2、3、4幅图仅展示了重叠区域为三角形、四边形、五边形的情况，计算两个旋转框的IOU值则需要计算多边形面积。
 
-<img src=".\Readme_image\overlapping area.png" alt="重叠区域示意图" style="zoom: 80%;" />
+<img src="https://gitee.com/xiang-cui/mindxsdk-referenceapps/raw/master/contrib/RotateObjectDetection/Readme_image/overlapping%20area.png" alt="重叠区域示意图" style="zoom: 80%;" />
 
 ​                                                                                                                  图3 检测框重叠区域示意图
 
@@ -119,7 +119,7 @@ S=S_ΔOCB+S_ΔOBA+ S_ΔOAD+ S_ΔODC
 $$
 上式中*S*为有向三角形面积，三角形`OCB`、`OBA`、`OAD`为正三角形，`ODC`为负三角形，将四个三角形面积相加即可得到四边形`ABCD`的面积。
 
-<img src=".\Readme_image\polygon area.png" alt="多边形面积" style="zoom:50%;" />
+<img src="https://gitee.com/xiang-cui/mindxsdk-referenceapps/raw/master/contrib/RotateObjectDetection/Readme_image/polygon%20area.png" alt="多边形面积" style="zoom:50%;" />
 
 ​                                                                                                             图4 计算多边形面积示意图
 
