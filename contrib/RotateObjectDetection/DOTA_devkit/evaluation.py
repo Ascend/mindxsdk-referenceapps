@@ -18,6 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 """
     To use the code, users should to config detpath, annopath and imagesetfile
     detpath is the path for 15 result files, for the format, you can refer to "http://captain.whu.edu.cn/DOTAweb/tasks.html"
@@ -287,7 +288,6 @@ def evaluation_trans(srcpath, dstpath):
             lines = f_in.readlines()  # 读取txt中所有行,每行作为一个元素存于list中
             splitlines = [x.strip().split(' ') for x in lines]  # 再次分割list中的每行元素 shape:n行 * m个元素
             for splitline in splitlines:  # splitline:每行中的m个元素
-                # [目标所属图片名称, confidence, x1, y1, x2, y2, x3, y3, x4, y4, 'classname']
                 classname = splitline[-1]  # 每行的最后一个元素 是被分割的图片的种类名
                 dstname = os.path.join(dstpath, 'Task1_' + classname + '.txt')  # eg: result/Task1_plane.txt
                 lines_ = ' '.join(list(splitline[:-1]))
@@ -295,7 +295,7 @@ def evaluation_trans(srcpath, dstpath):
                     f.writelines(lines_ + '\n')
 
 
-def evaluation(detoutput, imageset, annopath, classnames):
+def evaluation(detoutput, imageset, annopath, classnamelist):
     """
     评估程序
     @param detoutput: detect.py函数的结果存放输出路径
@@ -328,13 +328,10 @@ def evaluation(detoutput, imageset, annopath, classnames):
     annopath = annopath
     imagesetfile = str(imageset_name_file_path + '/imgnamefile.txt')  # 'r/.../imgnamefile.txt'  测试集图片名称txt
 
-    # For DOTA-v1.5
-    #classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
-    #            'basketball-court', 'storage-tank',  'soccer-ball-field', 'roundabout', 'harbor', 'swimming-pool', 'helicopter', 'container-crane']
     classaps = []
     mAP = 0
     skippedClassCount = 0
-    for classname in classnames:
+    for classname in classnamelist:
         print('classname:', classname)
         detfile = detpath.format(classname)
         if not (os.path.exists(detfile)):
@@ -366,9 +363,9 @@ if __name__ == '__main__':
                   'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
     evaluation(
-        detoutput='../detection',
-        imageset=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
-        annopath=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/labelTxt/{:s}.txt',
-        classnames=classnames
+        detoutput=r'../detection_evaluation',
+        imageset=r'../dataset/images',
+        annopath=r'../dataset/labelTxt/{:s}.txt',
+        classnamelist=classnames
     )
 
