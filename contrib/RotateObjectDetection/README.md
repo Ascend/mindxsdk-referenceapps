@@ -476,7 +476,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
    python3.7 main.py --input-path ../datasetSplit --output-path ../detection_evaluation
    ```
 
-   验证集共458张图片，切分后生成5298张图片，检测完成大概需要1个小时50分钟
+   验证集共459张图片，切分后生成5298张图片，检测完成大概需要1个小时50分钟
 
 5. 对检测结果进行评估
 
