@@ -17,7 +17,6 @@ import os
 import numpy as np
 from utils import polyiou
 
-
 def getfilefromthisrootdir(directory, ext=None): 
     allfiles = []
     needExtFilter = (ext != None)
