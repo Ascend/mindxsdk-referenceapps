@@ -53,7 +53,6 @@ def mergebase(srcpath, dstpath, nms):
              # 再次分割list中的每行元素 shape:n行 * m个元素
             splitlines = [x.strip().split(' ') for x in lines] 
             for splitline in splitlines:  # splitline:每行中的m个元素
-                # [待merge图片名(该目标所处图片名称), confidence, x1, y1, x2, y2, x3, y3, x4, y4]
                 subname = splitline[0]  # 每行的第一个元素 是被分割的图片的图片名 eg:P0706__1__0___0
                 splitname = subname.split('__')  # 分割待merge的图像的名称 eg:['P0706','1','0','_0']
                 oriname = splitname[0]  # 获得待merge图像的原图像名称 eg:P706
@@ -116,20 +115,18 @@ def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
     # 设置画框的颜色    
     np.random.seed(666)
     colors = [[np.random.randint(0, 255) for _ in range(3)] for _ in range(len(extractclassname))]
-    filelist = general_utils.getfilefromthisrootdir(imglabelspath)  # fileist=['/.../P0005.txt', ..., /.../P000?.txt]
-    for fullname in filelist:  # fullname='/.../P000?.txt'
+    filelist = general_utils.getfilefromthisrootdir(imglabelspath)  
+    for fullname in filelist: 
         objects = []
         with open(fullname, 'r') as f_in:  # 打开merge后/原始的DOTA图像的gt.txt
             lines = f_in.readlines()  # 读取txt中所有行,每行作为一个元素存于list中
             splitlines = [x.strip().split(' ') for x in lines]  # 再次分割list中的每行元素 shape:n行 * m个元素
             if len(splitlines[0]) == 1:  # 首行为"imagesource:GoogleEarth",说明为DOTA原始labels
-                # DOTA labels:[polys classname 1/0]
                 del splitlines[0]
                 del splitlines[0]   # 删除前两个无用信息
                 objects = [x[0:-2] for x in splitlines]
                 class_names = [x[-2] for x in splitlines]
             else:
-                # P0003 0.911 660.0 309.0 639.0 209.0 661.0 204.0 682.0 304.0 large-vehicle
                 confidences = [float(x[1]) for x in splitlines]
                 objects = [x[2:-1] for x in splitlines]
                 class_names = [x[-1] for x in splitlines]
@@ -158,7 +155,7 @@ def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
                              color=colors[int(extractclassname.index(classname))],
                              thickness=thickness)
             if labels:
-                label = '%s %.2f' % (classnames[i], confidences[i])
+                label = '%s %.2f' % (class_names[i], confidences[i])
             else:
                 label = '%s' % int(extractclassname.index(classname))
             rec = cv2.minAreaRect(poly)
@@ -173,19 +170,19 @@ def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickn
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--labels', action='store_true', default=False, help='whether to print labels')    
+    parser.add_argument('--labels_print', action='store_true', default=False, help='whether to print labels')    
     opt = parser.parse_args()
-    labels = opt.labels
+    labels = opt.labels_print
 
     classnames = ['plane', 'baseball-diamond', 'bridge', 'ground-track-field', 
                   'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
                   'basketball-court', 'storage-tank', 'soccer-ball-field', 'roundabout', 
                   'harbor', 'swimming-pool', 'helicopter', 'container-crane']
 
-    mergebypoly(r'../detection/result_txt/result_before_merge', 
-                r'../detection/result_txt/result_merged')
+    mergebypoly(srcpath=r'../detection/result_txt/result_before_merge', 
+                dstpath=r'../detection/result_txt/result_merged')
 
-    draw_dota_image(imgsrcpath=r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
+    draw_dota_image(imgsrcpath=r'../image',
                     imglabelspath=r'../detection/result_txt/result_merged',
                     dstpath=r'../detection/merged_drawed',
                     extractclassname=classnames,
