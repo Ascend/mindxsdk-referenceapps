@@ -29,9 +29,4 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 # export DUMP_GE_GRAPH=1
 
-
-# 执行，转换YOLOv3模型
-# Execute, transform YOLOv3 model.
-
 atc --model=./YOLOv5_DOTAv1.5_OBB_1024_1024.onnx --framework=5 --output=./YOLOv5_DOTAv1.5_OBB_1024_1024 --input_format=NCHW --log=info --soc_version=Ascend310 --insert_op_conf=./aipp_yolov5_1024_1024.aippconfig --input_shape="images:1,3,1024,1024"
-# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
