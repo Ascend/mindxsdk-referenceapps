@@ -83,6 +83,6 @@ class SplitBase():
             print(name, "split down!")
 
 if __name__ == '__main__':
-    split = SplitBase(r'/home/zhongzhi8/RotatedObjectDetection/dataSet/images',
-                      r'../image')
+    split = SplitBase(r'../image',
+                      r'../imageSplit')
     split.splitdata(1)
