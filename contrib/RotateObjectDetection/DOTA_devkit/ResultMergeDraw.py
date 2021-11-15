@@ -102,7 +102,7 @@ def mergebypoly(srcpath, dstpath):
               dstpath,
               general_utils.py_cpu_nms_poly)
 
-def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickness, labels):
+def draw_dota_image(imgsrcpath, imglabelspath, dstpath, extractclassname, thickness, label):
     """
     绘制工具merge后的目标/DOTA GT图像
         @param imgsrcpath: merged后的图像路径(原始图像路径)
@@ -187,5 +187,5 @@ if __name__ == '__main__':
                     dstpath=r'../detection/merged_drawed',
                     extractclassname=classnames,
                     thickness=2,
-                    labels=labels
+                    label=labels
                     )
