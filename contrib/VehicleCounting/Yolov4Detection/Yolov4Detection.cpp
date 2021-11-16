@@ -227,7 +227,12 @@ static bool sort_score(MxBase::ObjectInfo box1,MxBase::ObjectInfo box2){
 void nms(std::vector<MxBase::ObjectInfo> &vec_boxs){
     std::vector<MxBase::ObjectInfo> results;
     std::sort(vec_boxs.begin(),vec_boxs.end(),sort_score);
+    bool flag;
     for (uint32_t i = 0; i < vec_boxs.size(); i++){
+        flag=true;
+        if(vec_boxs[i].className!="car"&&vec_boxs[i].className!="bus"&&vec_boxs[i].className!="truck"){
+            flag=false;
+        }
         if (vec_boxs[i].confidence < det_threshold){
             vec_boxs.erase(vec_boxs.begin()+i);
             i--;
