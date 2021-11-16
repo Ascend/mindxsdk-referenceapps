@@ -31,6 +31,10 @@ extern "C" {
 #include "libavutil/avutil.h"
 #include "libswscale/swscale.h"
 }
+namespace {
+    const int colors=200;
+    const int color_layer=3;
+}
 
 struct center{
     double x;
@@ -63,7 +67,7 @@ private:
                          std::vector<MxBase::ObjectInfo> &objInfos_);
 private:
     std::queue<cv::Mat> frameIf;
-    int color_num[200][3]; // 随机颜色存储
+    int color_num[colors][color_layer]; // 随机颜色存储
     std::shared_ptr<MxBase::DvppWrapper> vDvppWrapper;
     const uint32_t CHANNEL_ID = 0;
 };
