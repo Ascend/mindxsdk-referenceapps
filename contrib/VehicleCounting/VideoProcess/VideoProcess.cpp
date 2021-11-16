@@ -41,6 +41,7 @@ namespace {
     const uint32_t QUEUE_POP_WAIT_TIME = 10;
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
+    const float count_center =2.0;
 }
 
 bool ccw(center A, center B, center C){
@@ -284,7 +285,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
             objInfos[i].x1 - objInfos[i].x0, objInfos[i].y1 - objInfos[i].y0),
             color, thickness);
         // 获取bounding box的中心位置
-        center boxs = {(objInfos[i].x0+objInfos[i].x1)/2.0, (objInfos[i].y0+objInfos[i].y1)/2.0};
+        center boxs = {(objInfos[i].x0+objInfos[i].x1)/count_center, (objInfos[i].y0+objInfos[i].y1)/count_center};
         // 保存每个车辆轨迹最新的20个bbox
         if(pts[index].size()>=20){
             pts[index].pop();
