@@ -58,6 +58,7 @@ if __name__ == '__main__':
     labels = opt.labels_print 
     # Record the current image detection order.
     cont = 0 
+    
     # Check whether the input path exits.
     if not os.path.exists(input_path):
         print("The image folder does not exit!")
