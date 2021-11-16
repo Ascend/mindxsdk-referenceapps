@@ -1,7 +1,7 @@
 # 口罩识别参考设计
 
 ## 1 介绍
-实时监测视频中的人是否佩戴口罩。图片数据经过 抽帧、解码后，送给口罩检测模型推理，检测图片中的人是否佩戴口罩。如果 检测结果佩戴了口罩，就不用跟踪去重，否则对检测结果跟踪去重，从实时视 频流中挑选一帧，标注出来没有佩戴口罩的对象及置信度，将图片保存下来以 便管理人员使用，并将其显示在监控界面上。
+识别图片中的人是否佩戴口罩。图片数据经过 抽帧、解码后，送给口罩检测模型推理。
 
 ### 1.1 支持的产品
 
@@ -62,7 +62,7 @@ CANN版本为1.77.22.6.220。
 ```
 export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin
+export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python
 export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
 
