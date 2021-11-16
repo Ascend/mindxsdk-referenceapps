@@ -26,8 +26,6 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 sys.path.append("../proto")
 import mxpiRotateobjProto_pb2 as mxpiRotateObjProto
 
-
-
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     # Create a new StreamManager object and initialize it.
@@ -60,6 +58,10 @@ if __name__ == '__main__':
     labels = opt.labels_print 
     # Record the current image detection order.
     cont = 0 
+    # Check whether the input path exits.
+    if not os.path.exists(input_path):
+        print("The image folder does not exit!")
+        exit()
 
     # Check whether the input path is empty.
     if len(os.listdir(input_path)) == 0:
