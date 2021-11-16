@@ -126,7 +126,16 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 set(MX_SDK_HOME {SDK实际安装路径})
 set(FFMPEG_PATH {ffmpeg安装路径})
 ```
-**步骤3** 设置环境变量，
+**步骤3** 参数设置，VideoProcess.cpp文件中，设置视频的宽高值和计数标志位的位置
+```
+# 视频的宽高值
+const uint32_t VIDEO_WIDTH = {视频宽度};
+const uint32_t VIDEO_HEIGHT = {视频高度};
+
+# 计数标志位的位置,(x1,y1)和(x2,y2)分别为计数标志位的两个端点
+line = {center{x1,y1}, center{x2, y2}}
+```
+**步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
 LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
 ```
@@ -134,7 +143,7 @@ LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
 MX_SDK_HOME=${SDK安装路径}
-FFMPEG_PATH=${FFMPEG安装路径} 
+FFMPEG_HOME=${FFMPEG安装路径} 
 # 若环境中没有安装ffmpeg，请联系支撑人员
 
 LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/python3.7.5/lib:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
@@ -145,7 +154,7 @@ source ~/.bashrc
 #查看环境变量
 env
 ```
-**步骤4** 编译项目文件
+**步骤5** 编译项目文件
 
 新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
 
@@ -167,20 +176,20 @@ Scanning dependencies of target stream_pull_test
 # stream_pull_test就是CMakeLists文件中指定生成的可执行文件。
 ```
 
-**步骤5** 运行
+**步骤6** 运行
 将**步骤1**转换的视频文件test1.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
 ```
 chmod +x run.sh
 bash run.sh
 ```
-**步骤6** 查看结果
+**步骤7** 查看结果
 
 执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
 
 ## 5 常见问题
 ### 模型更换问题
 **问题描述** 在用YOLOv4模型替换YOLOv3模型的时候，由于模型的输入的图片resize大小不一样以及模型输出的通道顺序也不一样，会导致模型无法正常推理和后处理
-**解决方案** 将YolovDetection.cpp中的图片resize大小由416*416改为608*608，并将main.cpp文件里的modelType由0改为1
+**解决方案** 将YolovDetection.cpp中的图片resize大小由416x416改为608x608，并将main.cpp文件里的modelType由0改为1
 
 ### 更换视频样例问题
 在测试更换视频样例时需要在VideoProcess.cpp文件中，设置视频的宽高值为样例的实际宽高值。并且车辆计数所用的标志位要根据视频实际情况和自己所想要计数的位置来重新规划
