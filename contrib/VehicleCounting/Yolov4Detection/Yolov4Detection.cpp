@@ -126,7 +126,6 @@ APP_ERROR Yolov4Detection::FrameDeInit()
     yDvppWrapper->DeInit();
     model->DeInit();
     post->DeInit();
-    MxBase::DeviceManager::GetInstance()->DestroyDevices();
     return APP_ERR_OK;
 }
 
