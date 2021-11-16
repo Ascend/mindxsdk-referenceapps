@@ -207,7 +207,7 @@ python3.7 -m pip install opencv-python
 
 本项目中使用的模型是YOLOv5变体模型，参考实现代码：https://github.com/hukaixuan19970627/YOLOv5_DOTA_OBB
 
-pytorch模型百度网盘下载链接：https://pan.baidu.com/share/init?surl=WSJFwwM5nyWgPLzAV6rp8Q，提取码：6666
+pytorch模型下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RotateObjectDetection/model.zip
 
 ###  3.2 pt模型转onnx模型
 
@@ -225,7 +225,7 @@ python model_convert_pt2onnx.py
 
 执行成功后会在当前目录下生成转换得到的onnx模型，默认文件名为`YOLOv5_DOTAv1.5_OBB_1024_1024.onnx`
 
-您也可以直接下载已经转换好的onnx模型，下载链接：
+您也可以直接下载已经转换好的onnx模型，下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RotateObjectDetection/model.zip
 
 ###  3.3 onnx模型转om模型
 
@@ -255,8 +255,6 @@ python model_convert_pt2onnx.py
   ```
 
   表示命令执行成功，在当前目录下生成`YOLOv5_DOTAv1.5_OBB_1024_1024.om`模型文件。
-
-您可以直接下载转换好的om模型，下载链接：
 
 ## 4 编译与运行
 示例步骤如下：
@@ -476,7 +474,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
    python3.7 main.py --input-path ../datasetSplit --output-path ../detection_evaluation
    ```
 
-   验证集共459张图片，切分后生成5298张图片，检测完成大概需要1个小时50分钟
+   验证集共458张图片，切分后生成5298张图片，检测完成大概需要1个小时50分钟
 
 5. 对检测结果进行评估
 
