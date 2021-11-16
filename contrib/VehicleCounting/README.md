@@ -132,7 +132,7 @@ set(FFMPEG_PATH {ffmpeg安装路径})
 const uint32_t VIDEO_WIDTH = {视频宽度};
 const uint32_t VIDEO_HEIGHT = {视频高度};
 
-# 计数标志位的位置,(x1,y1)和(x2,y2)分别为计数标志位的两个端点
+# 计数标志位的位置,(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标
 line = {center{x1,y1}, center{x2, y2}}
 ```
 **步骤4** 设置环境变量，
