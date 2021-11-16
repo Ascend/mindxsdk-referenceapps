@@ -433,7 +433,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
 ## 5 精度测试
 
-1. 下载`DOTA`数据集，下载链接：
+1. 下载`DOTA`数据集，下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RotateObjectDetection/data.zip
 
 2. 在项目目录下创建dataset文件夹，将数据集压缩文件解压到`./dataset`目录下，确保下载完的数据集和标注文件后的项目目录为：
 
