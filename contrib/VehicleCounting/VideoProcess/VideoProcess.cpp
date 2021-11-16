@@ -30,6 +30,9 @@ namespace {
     static int counter = 0;
     static int counter_down = 0;
     static int counter_up = 0;
+    const center point={430,80};
+    const center point1={650,125};
+    const center point2={900,190};
     static AVFormatContext *formatContext = nullptr; // 视频流信息
     static uint32_t cnt = 0;
     const uint32_t VIDEO_WIDTH = 1280;
@@ -311,9 +314,9 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
         }
     }
     cv::line(imgBgr, cv::Point(line[0].x,line[0].y),cv::Point(line[1].x,line[1].y),  cv::Scalar(0, 255, 0),2);
-    cv::putText(imgBgr,std::to_string(counter),cv::Point(20,90),0,0.8,cv::Scalar(0, 0, 255),2);
-    cv::putText(imgBgr,std::to_string(counter_up),cv::Point(200,90),0,0.8,cv::Scalar(0, 255, 0),2);
-    cv::putText(imgBgr,std::to_string(counter_down),cv::Point(450,90),0,0.8,cv::Scalar(255, 0, 0),2);
+    cv::putText(imgBgr,std::to_string(counter),cv::Point(point.x,point.y),0,0.8,cv::Scalar(0, 0, 255),2);
+    cv::putText(imgBgr,std::to_string(counter_up),cv::Point(point1.x,point1.y),0,0.8,cv::Scalar(0, 255, 0),2);
+    cv::putText(imgBgr,std::to_string(counter_down),cv::Point(point2.x,point2.y),0,0.8,cv::Scalar(255, 0, 0),2);
     frameIf.push(imgBgr);
     // 把Mat类型的图像矩阵保存为图像到指定位置。
     std::string fileName = "./result/result" + std::to_string(frameId+1) + ".jpg";
