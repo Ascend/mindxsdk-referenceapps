@@ -59,6 +59,10 @@ namespace {
     const int OFFSETBIASES = 1;
     const int OFFSETOBJECTNESS = 1;
     const int MAX_WH = 4096;
+    const int ZERODEGREEANGLE = 0;
+    const int RIGHTANGLE = 90;
+    const int FLATANGLE = 180;
+    const float MAPPINGANGLE = 179.9;
 
 }
 
@@ -513,17 +517,17 @@ void MxpiRotateObjPostProcess::CompareAngleProb(int& angleID, float& maxAnglePro
 */
 void MxpiRotateObjPostProcess::longsideformat2cvminAreaRect(RotatedObjectInfo& rObjInfo, 
                                                             float longside, float shortside, float angle) {
-    if ((angle >= -180) && (angle < -90)) {
+    if ((angle >= -FLATANGLE) && (angle < -RIGHTANGLE)) {
         rObjInfo.width = shortside;
         rObjInfo.height = longside;
-        rObjInfo.angle = angle + 90;
+        rObjInfo.angle = angle + RIGHTANGLE;
     }
     else {
         rObjInfo.width = longside;
         rObjInfo.height = shortside;
         rObjInfo.angle = angle;
     }
-    if ((rObjInfo.angle < -90) || (rObjInfo.angle >= 0)) {
+    if ((rObjInfo.angle < -RIGHTANGLE) || (rObjInfo.angle >= ZERODEGREEANGLE)) {
         std::cout << "The current Angle is outside the scope defined by OpenCV!" << std::endl;
     }
 }
@@ -641,13 +645,13 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
 
             // Get the actual prediction of x, y, longside, shortside
             float x = (col + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx])) 
-                * 2 - 0.5) * (info.netWidth / layer.width);
+                    * 2 - 0.5) * (info.netWidth / layer.width);
             float y = (row + (fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETY])) 
-                * 2 - 0.5) * (info.netHeight / layer.height);
+                    * 2 - 0.5) * (info.netHeight / layer.height);
             float longside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETWIDTH]) 
-                * 2, 2) * layer.anchors[BIASESDIM * j];
+                    * 2, 2) * layer.anchors[BIASESDIM * j];
             float shortside = std::pow(fastmath::sigmoid(static_cast<float*>(netout.get())[bIdx + OFFSETHEIGHT]) 
-                * 2, 2) * layer.anchors[BIASESDIM * j + OFFSETBIASES];
+                    * 2, 2) * layer.anchors[BIASESDIM * j + OFFSETBIASES];
 
             // Assign to rObjInfo center point, classID, confidence
             RotatedObjectInfo rObjInfo;
@@ -656,7 +660,7 @@ void MxpiRotateObjPostProcess::SelectRotateObjInfo(std::shared_ptr<void> netout,
             rObjInfo.classID = classID;
             rObjInfo.confidence = maxClassProb;
             // Assign to rObjInfo w, h, angle
-            longsideformat2cvminAreaRect(rObjInfo, longside, shortside, angleID - 179.9);
+            longsideformat2cvminAreaRect(rObjInfo, longside, shortside, angleID - MAPPINGANGLE);
 
             // Calculate polygon coordinates, and assign to rObjInfo poly
             cv::RotatedRect box(cv::Point(rObjInfo.x_c + classID * MAX_WH, rObjInfo.y_c + classID * MAX_WH), 
@@ -740,6 +744,50 @@ APP_ERROR MxpiRotateObjPostProcess::GetBiases(std::string& strBiases) {
 }
 
 /**
+* @brief Generate MxpiRotateobjList.
+* @param rObjInfos - Vector that holds the information of rotated boxes
+* @param results - Vector that holds the information of rotated boxes after RNMS
+* @param visionInfos - A vector that holds the image resize information
+* @param tensorPackageList - Source tensorPackageList
+* @param mxpiRotateobjList - Target MxpiRotateobjList that holds detection result list        
+*/
+void MxpiRotateObjPostProcess::GenerateMxpiRotateobjList(std::vector <RotatedObjectInfo> rObjInfos,
+    std::vector <RotatedObjectInfo> results,
+    std::vector<float> visionInfos,
+    const MxTools::MxpiTensorPackageList tensorPackageList,
+    mxpirotateobjproto::MxpiRotateobjProtoList &mxpiRotateobjList){
+    
+    // Decode tensorPackageList to get the input.
+    std::vector<MxBase::TensorBase> tensors = {};
+    GetTensors(tensorPackageList, tensors);
+    auto inputs = tensors;
+    
+    // Get the output results.
+    ObjectDetectionOutput(inputs, rObjInfos, results);
+
+    // Map the coordinates to the original size.
+    CoordinateMapping(results, visionInfos);
+    
+    // Assign to mxpiRotateobjList
+    for (int i = 0; i < results.size(); i++) {
+
+        auto mxpiRotateobjProtoptr = mxpiRotateobjList.add_rotateobjprotovec();
+        mxpirotateobjproto::MxpiMetaHeader* dstMxpiMetaHeaderList = mxpiRotateobjProtoptr->add_headervec();
+        dstMxpiMetaHeaderList->set_datasource(parentName_);
+        dstMxpiMetaHeaderList->set_memberid(0);    
+        
+        mxpiRotateobjProtoptr->set_x_c(results[i].x_c);
+        mxpiRotateobjProtoptr->set_y_c(results[i].y_c);
+        mxpiRotateobjProtoptr->set_width(results[i].width);
+        mxpiRotateobjProtoptr->set_height(results[i].height);
+        mxpiRotateobjProtoptr->set_angle(results[i].angle);
+        mxpiRotateobjProtoptr->set_confidence(results[i].confidence);
+        mxpiRotateobjProtoptr->set_classid(results[i].classID);
+        mxpiRotateobjProtoptr->set_classname(results[i].className);  
+    }
+}
+
+/**
 * @brief Process the data of MxpiBuffer.
 * @param mxpiBuffer
 * @return APP_ERROR
@@ -770,21 +818,6 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-    // Check the proto struct name
-    google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
-    const google::protobuf::Descriptor* desc = msg->GetDescriptor();
-    if (desc->name() != "MxpiTensorPackageList") {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
-        << "Proto struct name is not MxpiTensorPackageList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
-    }
-    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = 
-        static_pointer_cast<MxpiTensorPackageList>(metadata);
-    std::vector<MxBase::TensorBase> tensors = {};
-    GetTensors(*srcMxpiTensorPackageListSptr, tensors);
 
     // Get image resize information
     shared_ptr<void> ir_metadata = mxpiMetadataManager.GetMetadata(imageResizeName_);
@@ -792,33 +825,18 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
     std::vector<float> visionInfos = {};
     GetImageResizeInfo(*imageResizeVisionListSptr, visionInfos); 
 
-    auto inputs = tensors;
+    shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     std::vector <RotatedObjectInfo> rObjInfos;
     std::vector <RotatedObjectInfo> results;
-    ObjectDetectionOutput(inputs, rObjInfos, results);
-    CoordinateMapping(results, visionInfos);
-
     auto mxpiRotateobjListptr = std::make_shared<mxpirotateobjproto::MxpiRotateobjProtoList>();
-    for (int i = 0; i < results.size(); i++) {
 
-        auto mxpiRotateobjProtoptr = mxpiRotateobjListptr->add_rotateobjprotovec();
-        mxpirotateobjproto::MxpiMetaHeader* dstMxpiMetaHeaderList = mxpiRotateobjProtoptr->add_headervec();
-        dstMxpiMetaHeaderList->set_datasource(parentName_);
-        dstMxpiMetaHeaderList->set_memberid(0);    
-        
-        mxpiRotateobjProtoptr->set_x_c(results[i].x_c);
-        mxpiRotateobjProtoptr->set_y_c(results[i].y_c);
-        mxpiRotateobjProtoptr->set_width(results[i].width);
-        mxpiRotateobjProtoptr->set_height(results[i].height);
-        mxpiRotateobjProtoptr->set_angle(results[i].angle);
-        mxpiRotateobjProtoptr->set_confidence(results[i].confidence);
-        mxpiRotateobjProtoptr->set_classid(results[i].classID);
-        mxpiRotateobjProtoptr->set_classname(results[i].className);  
-    }
-
+    // Get MxpiRotateobjList
+    GenerateMxpiRotateobjList(rObjInfos, results, visionInfos, 
+                              *srcMxpiTensorPackageListSptr, *mxpiRotateobjListptr);
+    
     std::string rotateObjProtoName = "mxpi_rotateobjproto";
     APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(rotateObjProtoName, 
-                                                         static_pointer_cast<void>(mxpiRotateobjListptr));
+                                                        static_pointer_cast<void>(mxpiRotateobjListptr));
     if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, rotateObjProtoName) << "MxpiRotateObjPostProcess add metadata failed.";
         mxpiErrorInfo.ret = ret;
