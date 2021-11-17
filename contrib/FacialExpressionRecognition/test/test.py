@@ -73,6 +73,9 @@ if __name__ == '__main__':
         if infer_result.size() == 0:
             print("infer_result is null")
             exit()
+        if infer_result.size() < 4:
+            print("No area of the face was detected in the picture")
+            exit()
 
         tensorList3 = MxpiDataType.MxpiTensorPackageList()
         tensorList3.ParseFromString(infer_result[0].messageBuf)
