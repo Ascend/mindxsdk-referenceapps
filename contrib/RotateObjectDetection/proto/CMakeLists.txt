@@ -35,7 +35,7 @@ EXECUTE_PROCESS(
 file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cc)
 add_library(${TARGET_LIBRARY} SHARED ${SOURCE_FILES})
 target_link_libraries(${TARGET_LIBRARY} mindxsdk_protobuf)
-#target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
+target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
 
 if (ENABLE_TEST)
     target_link_libraries(${TARGET_LIBRARY} gcov)
