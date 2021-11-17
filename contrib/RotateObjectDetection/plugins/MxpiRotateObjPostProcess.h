@@ -25,6 +25,7 @@
 #include "opencv2/opencv.hpp"
 #include "mxpiRotateobjProto.pb.h"
 
+
 namespace MxPlugins {
    
     struct RotatedObjectInfo {
@@ -156,6 +157,20 @@ namespace MxPlugins {
         void GenerateBbox(std::vector <std::shared_ptr<void>> featLayerData,
                           std::vector <RotatedObjectInfo>& rObjInfos,
                           const std::vector <std::vector<size_t>>& featLayerShapes);
+
+        /**
+        * @brief Generate MxpiRotateobjList.
+        * @param rObjInfos - Vector that holds the information of rotated boxes
+        * @param results - Vector that holds the information of rotated boxes after RNMS
+        * @param visionInfos - A vector that holds the image resize information
+        * @param tensorPackageList - Source tensorPackageList
+        * @param mxpiRotateobjList - Target MxpiRotateobjList that holds detection result list        
+        */
+        void GenerateMxpiRotateobjList(std::vector <RotatedObjectInfo> rObjInfos,
+                                       std::vector <RotatedObjectInfo> results,
+                                       std::vector<float> visionInfos,
+                                       const MxTools::MxpiTensorPackageList tensorPackageList,
+                                       mxpirotateobjproto::MxpiRotateobjProtoList &MxpiRotateobjList);
 
     private:
         APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
