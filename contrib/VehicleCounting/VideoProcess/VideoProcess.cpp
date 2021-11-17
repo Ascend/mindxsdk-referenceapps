@@ -80,7 +80,6 @@ APP_ERROR VideoProcess::StreamInit(const std::string &rtspUrl)
     av_dict_set(&options, "stimeout", "3000000", 0);
     // ffmpeg打开流媒体-视频流
     APP_ERROR ret = avformat_open_input(&formatContext, rtspUrl.c_str(), nullptr, &options);
-    LogInfo<<formatContext->packet_size;
     if (options != nullptr) {
         av_dict_free(&options);
     }
@@ -88,6 +87,7 @@ APP_ERROR VideoProcess::StreamInit(const std::string &rtspUrl)
         LogError << "Couldn't open input stream " << rtspUrl.c_str() <<  " ret = " << ret;
         return APP_ERR_STREAM_NOT_EXIST;
     }
+    LogInfo<<formatContext->packet_size;
     // 获取视频的相关信息
     ret = avformat_find_stream_info(formatContext, nullptr);
     if(ret != APP_ERR_OK){
