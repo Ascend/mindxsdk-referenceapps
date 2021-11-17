@@ -808,7 +808,6 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         LogError << "MxpiRotateObjPostProcess process is not implemented";
         return APP_ERR_COMM_FAILURE;
     }
-
     // Get the data from buffer
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     if (metadata == nullptr) {
@@ -818,22 +817,18 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-
     // Get image resize information
     shared_ptr<void> ir_metadata = mxpiMetadataManager.GetMetadata(imageResizeName_);
     shared_ptr<MxpiVisionList> imageResizeVisionListSptr = static_pointer_cast<MxpiVisionList>(ir_metadata);
     std::vector<float> visionInfos = {};
     GetImageResizeInfo(*imageResizeVisionListSptr, visionInfos); 
-
+    // Get MxpiRotateobjList
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     std::vector <RotatedObjectInfo> rObjInfos;
     std::vector <RotatedObjectInfo> results;
-    auto mxpiRotateobjListptr = std::make_shared<mxpirotateobjproto::MxpiRotateobjProtoList>();
-
-    // Get MxpiRotateobjList
+    auto mxpiRotateobjListptr = std::make_shared<mxpirotateobjproto::MxpiRotateobjProtoList>();   
     GenerateMxpiRotateobjList(rObjInfos, results, visionInfos, 
-                              *srcMxpiTensorPackageListSptr, *mxpiRotateobjListptr);
-    
+                              *srcMxpiTensorPackageListSptr, *mxpiRotateobjListptr);   
     std::string rotateObjProtoName = "mxpi_rotateobjproto";
     APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(rotateObjProtoName, 
                                                         static_pointer_cast<void>(mxpiRotateobjListptr));
@@ -844,11 +839,9 @@ APP_ERROR MxpiRotateObjPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer
         SetMxpiErrorInfo(*buffer, rotateObjProtoName, mxpiErrorInfo);
         return ret;
     }
-
     SendData(0, *buffer);
     LogInfo << "MxpiRotateObjPostProcess::Process end";
-    return APP_ERR_OK;
-    
+    return APP_ERR_OK;   
 }
 
 /**
