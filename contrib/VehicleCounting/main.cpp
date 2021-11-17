@@ -83,7 +83,11 @@ int main() {
     InitParam initParam;
     InitYolov4Param(initParam, videoProcess->DEVICE_ID);
     // 初始化模型推理所需的配置信息
-    yolov4->FrameInit(initParam);
+    ret = yolov4->FrameInit(initParam);
+    if (ret != APP_ERR_OK) {
+        LogError << "FrameInit failed";
+        return ret;
+    }
     MxBase::DeviceContext device;
     device.devId = videoProcess->DEVICE_ID;
     ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
