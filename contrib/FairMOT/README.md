@@ -174,7 +174,5 @@ bash run.sh
 
 命令执行成功后会在当前目录下生成检测结果视频文件out.h264,查看文件验证目标跟踪结果。
 
-注：当视频中没有检测到行人时会输出警告信息，但是由于错误信息透传的缘故，LogError定义的报错信息不能正常输出。这里使用cout直接将错误信息打印出来的方式处理。
 
-![](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image2.png)
 
