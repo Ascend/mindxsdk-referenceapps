@@ -30,5 +30,7 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 #to set PYTHONPATH, import the StreamManagerApi.py
 export PYTHONPATH=$PYTHONPATH:${MX_SDK_HOME}/python
 
-python3.7 evaluate.py
+python3.7 evaluate.py  #精度测试脚本
+#python3.7  main.py    #测试图片脚本
+
 exit 0
