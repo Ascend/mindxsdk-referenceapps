@@ -232,7 +232,7 @@ void nms(std::vector<MxBase::ObjectInfo> &vec_boxs){
         if(vec_boxs[i].className!="car"&&vec_boxs[i].className!="bus"&&vec_boxs[i].className!="truck"){
             flag=false;
         }
-        if (vec_boxs[i].confidence < det_threshold){
+        if (vec_boxs[i].confidence < det_threshold || flag==false){
             vec_boxs.erase(vec_boxs.begin()+i);
             i--;
             continue;
