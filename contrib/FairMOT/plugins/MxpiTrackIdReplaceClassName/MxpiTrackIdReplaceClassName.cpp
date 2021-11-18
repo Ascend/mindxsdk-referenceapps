@@ -69,8 +69,8 @@ APP_ERROR MxpiTrackIdReplaceClassName::GenerateSampleOutput(const MxpiObjectList
                                                             MxpiObjectList& dstMxpiObjectList)
 {
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++){
-        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);  
-        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);      
+        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);       
+        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);  
         MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
         dstMxpiObject->set_x0(srcMxpiObject.x0());
         dstMxpiObject->set_y0(srcMxpiObject.y0());
@@ -115,12 +115,28 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
     shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
     if (metadata == nullptr) {
         std::cout << "mxpi_trackidreplaceclassname: Metadata is NULL, no data input from mxpi_objectpostprocessor, failed" << std::endl;
-        ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata is NULL, failed";
-        mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_METADATA_IS_NULL; // self define the error code
-    }    
+        shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>(); 
+        MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();   
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();    
+        APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
+        if (ret != APP_ERR_OK) {
+            std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName add metadata failed." << std::endl; 
+            ErrorInfo_ << GetError(ret, pluginName_) << "MxpiTrackIdReplaceClassName add metadata failed.";
+            mxpiErrorInfo.ret = ret;
+            mxpiErrorInfo.errorInfo = ErrorInfo_.str();
+            SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+            return ret;
+        }
+        else{
+            std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName add metadata succeed." << std::endl; 
+        }
+
+        // Send the data to downstream plugin
+        SendData(0, *buffer);
+        LogInfo << "MxpiTrackIdReplaceClassName::Process end";
+        return APP_ERR_OK;
+    }
+    
     if (metadata2 == nullptr) {
         std::cout << "mxpi_trackidreplaceclassname: Metadata is NULL, no data input from mxpi_motsimplesortV2, failed" << std::endl;
         ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata is NULL, failed";
@@ -128,6 +144,7 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
+        return 0;
     }
 
     // check whether the proto struct name is MxpiObjectList
@@ -158,7 +175,6 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
     APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*dstMxpiObjectListSptr);
-
     if (ret != APP_ERR_OK) {
         std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName gets inference information failed." << std::endl;   
         LogError << GetError(ret, pluginName_) << "MxpiTrackIdReplaceClassName gets inference information failed.";
