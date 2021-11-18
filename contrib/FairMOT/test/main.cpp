@@ -19,9 +19,12 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <sys/time.h>
+#include <ctime>
+#include <stdio.h> 
+#include <chrono> 
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
-
 #include <sys/time.h>
 #include <ctime>
 #include <stdio.h> 
@@ -123,7 +126,7 @@ int main(int argc, char* argv[])
         auto end = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
         double average = (double)(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den / frameCount;
-        std::cout << "fps:" << 1/average << std::endl;
+        std::cout << "fps: " << 1 / average << std::endl;
 
     }
 
