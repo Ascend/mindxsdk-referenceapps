@@ -43,8 +43,8 @@
         },
         "mxpi_imageresize0": {
             "props": {
-                "resizeHeight": "608",
-                "resizeWidth": "1088",
+                "resizeHeight": "480",
+                "resizeWidth": "864",
                 "resizeType": "Resizer_KeepAspectRatio_Fit"
             },
             "factory": "mxpi_imageresize",
