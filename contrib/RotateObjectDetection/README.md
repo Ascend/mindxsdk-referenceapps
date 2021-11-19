@@ -273,7 +273,7 @@ python model_convert_pt2onnx.py
 
 执行成功后会在当前目录下生成转换得到的onnx模型，默认文件名为`YOLOv5_DOTAv1.5_OBB_1024_1024.onnx`
 
-您也可以直接下载已经转换好的onnx模型，下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RotateObjectDetection/model.zip
+转换生成的onnx模型下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RotateObjectDetection/model.zip
 
 ###  3.3 onnx模型转om模型
 
@@ -305,7 +305,7 @@ python model_convert_pt2onnx.py
   表示命令执行成功，在当前目录下生成`YOLOv5_DOTAv1.5_OBB_1024_1024.om`模型文件。
 
 ## 4 编译与运行
-示例步骤如下：
+
 **步骤1**  按照第2小节**环境依赖**中的步骤设置环境变量。
 
 **步骤2**  按照第3小节**模型转换**的步骤获得om模型文件。
