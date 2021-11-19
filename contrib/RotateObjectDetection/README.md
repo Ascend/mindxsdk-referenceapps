@@ -328,7 +328,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
 * **将待检测遥感图像进行裁剪**
 
-  * 在**项目路径**下创建**`image`**文件夹，将待检测图像`test.jpg`放于该目录下。
+  * 在**项目路径**下创建`image`文件夹，将待检测图像`test.jpg`放于该目录下。
   * 修改`SplitOnlyImage.py`脚本文件中第69,70行的`splitbase`函数参数图片源路径为`'../image'`，裁剪后的目标路径为`'../imageSplit'`。
 
   ```
