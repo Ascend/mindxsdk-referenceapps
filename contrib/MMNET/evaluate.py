@@ -40,7 +40,7 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-    with open("../pipeline/MMNET.pipeline", 'rb') as f:
+    with open("./pipeline/MMNET.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
