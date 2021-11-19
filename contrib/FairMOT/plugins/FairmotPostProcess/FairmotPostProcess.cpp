@@ -47,32 +47,10 @@ namespace MxBase {
             LogError << "number of tensors (" << tensors.size() << ") " << "is unequal to fairmotType_("
                      << fairmotType_ << ")";
             return false;
-        }    
-        // shape0 shoud be equal to 1*152*272*128
-        // shape1 shoud be equal to 1*152*272*2
-        // shape2 shoud be equal to 1*152*272*4
-        // shape3 shoud be equal to 1*152*272
-        auto shape0 = tensors[0].GetShape();        
-        auto shape1 = tensors[1].GetShape();
-        auto shape2 = tensors[2].GetShape();
-        auto shape3 = tensors[3].GetShape();        
-        int s0 = (shape0.size() == 4) && (shape0[0] == 1) && (shape0[1] == 152) && 
-            (shape0[2] == 272) && (shape0[3] == 128);
-        int s1 = (shape1.size() == 4) && (shape1[0] == 1) && (shape1[1] == 152) && 
-            (shape1[2] == 272) && (shape1[3] == 2);
-        int s2 = (shape2.size() == 4) && (shape2[0] == 1) && (shape2[1] == 152) && 
-            (shape2[2] == 272) && (shape2[3] == 4);
-        int s3 = (shape3.size() == 3) && (shape3[0] == 1) && (shape3[1] == 152) && 
-            (shape3[2] == 272);
-        if(s0 && s1 && s2 && s3 == 1)
-        {
+        } 
+        else{
             return true;
-        }  
-        else
-        {
-            return false;
-        }
-        return true;
+        }   
     }
     
 /*
