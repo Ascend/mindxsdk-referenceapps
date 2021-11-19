@@ -182,6 +182,8 @@ bash run.sh
 
 ![](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image2.png)
 
+注：输入视频帧率应高于25，否则无法发挥全部性能。
+
 ## 8 常见问题
 
 7.1 视频编码参数配置错误
