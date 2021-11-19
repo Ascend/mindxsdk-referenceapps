@@ -417,23 +417,18 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   ```python
   mergebypoly(r'../detection/result_txt/result_before_merge', 
               r'../detection/result_txt/result_merged')
-  
-draw_merged_img(srcimgpath=r'../image', 
+  draw_merged_img(srcimgpath=r'../image', 
                   dstimgpath=r'../detection/merged_drawed',
-                mergedlabelpath=r'../detection/result_txt/result_merged',
+                  mergedlabelpath=r'../detection/result_txt/result_merged',
                   labels=labels_print
                  )
   ```
   
-`mergebypoly`函数中`srcpath`：需要进行融合的文件的源路径，即未经融合的result文件，
-  
-​									`dstpath`：融合后结果存放的目标路径。
-  
+  `mergebypoly`函数中`srcpath`：需要进行融合的文件的源路径，即未经融合的result文件，
+                     `dstpath`：融合后结果存放的目标路径。
   `draw_merged_img`函数中，`imgsrcpath` ：原图片路径，
-  
-  ​												`dstpath` ：保存绘制图片的目标路径，
-  
-  ​												`mergedlabelpath `：融合结果存放路径。
+                          `dstpath` ：保存绘制图片的目标路径，
+                          `mergedlabelpath `：融合结果存放路径。
   
   执行以下命令：
   
@@ -448,9 +443,9 @@ draw_merged_img(srcimgpath=r'../image',
   test merge down！
   test draw down！
   ```
-
+  
   表示图片融合完成，在`detection`路径下会生成`merged_drawed`文件夹，其中存放融合后的图片。在`/detection/result_txt`路径下生成`result_merged`文件夹，存放融合后的目标检测框信息的txt文件。目录结构如下：
-
+  
   ```
   .
   ├── image
@@ -463,17 +458,17 @@ draw_merged_img(srcimgpath=r'../image',
   │   │    │   └── test.txt
   │   │    └── result_merged
   │   │        └── test.txt
-│   ├── test_x__xxx___xxx.jpg
   │   ├── test_x__xxx___xxx.jpg
-│	└── 其它检测生成的图片
+  │   ├── test_x__xxx___xxx.jpg
+  │	└── 其它检测生成的图片
   └──其它文件											
-```
-  
-如果希望融合后的图片显示标签信息，请执行指令：
-  
-```shell
+  ```
+
+  如果希望融合后的图片显示标签信息，请执行指令：
+
+  ```shell
   python3.7 ResultMergeDraw.py --draw_img --labels_print
-```
+  ```
 
 ## 5 精度测试
 
