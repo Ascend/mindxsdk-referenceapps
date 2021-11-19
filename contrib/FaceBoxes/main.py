@@ -24,6 +24,7 @@ import cv2
 import os
 import argparse
 
+
 parser = argparse.ArgumentParser(description='FaceBoxes')
 parser.add_argument('--save_folder', default='./data/FDDB_Evaluation/', type=str, help='Dir to save results')
 parser.add_argument('--img_info', default='./data/FDDB/img_list.txt')
@@ -58,10 +59,10 @@ if __name__ == '__main__':
     with open(args.img_info, 'r') as fr:
         for img_address in fr:
             #img_address  e.g. 2002/08/11/big/img_591
-            img_addresses.append(os.path.join(args.image_folder,img_address +'.jpg'))
+            img_addresses.append(os.path.join(args.image_folder, img_address + '.jpg'))
 
     for i, name_img in enumerate(img_addresses):
-        with open(name_img,'rb')as f:
+        with open(name_img, 'rb')as f:
             dataInput.data = f.read()              
         # Inputs data to a specified stream based on streamName.
         streamName = b'Faceboxes'
