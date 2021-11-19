@@ -19,7 +19,7 @@ limitations under the License.
 
 
 
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
