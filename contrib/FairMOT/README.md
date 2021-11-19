@@ -119,7 +119,7 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 2. 进入 `FairMOT/models` 文件夹下执行命令：
 
 ```
-atc --input_shape="input.1:1,3,608,1088" --check_report=./network_analysis.report --input_format=NCHW --output=./mot_v2 --soc_version=Ascend310 --insert_op_conf=./aipp_FairMOT.config --framework=5 --model=./mot_v2.onnx
+atc --input_shape="input.1:1,3,480,864" --check_report=./network_analysis.report --input_format=NCHW --output=./mot_v2 --soc_version=Ascend310 --insert_op_conf=./aipp_FairMOT.config --framework=5 --model=./mot_v2.onnx
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 mot_v2.om。执行后终端输出为：
