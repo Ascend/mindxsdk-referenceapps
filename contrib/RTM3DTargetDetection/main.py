@@ -31,6 +31,9 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input-image', type=str, default='test.jpg', help='input image')
+    args = parser.parse_args()
     streamManagerApi = StreamManagerApi()
     # 新建一个流管理StreamManager对象并初始化
     ret = streamManagerApi.InitManager()
@@ -48,11 +51,11 @@ if __name__ == '__main__':
 
     # 构建流的输入对象--检测目标
     dataInput = MxDataInput()
-    if os.path.exists('test.jpg') != 1:
+    if os.path.exists(args.input_image) != 1:
         print("The test image does not exist.")
 
     try:
-        with open("test.jpg", 'rb') as f:
+        with open(args.input_image, 'rb') as f:
             dataInput.data = f.read()
     except FileNotFoundError:
         print("Test image", "test.jpg", "doesn't exist. Exit.")
@@ -94,8 +97,6 @@ if __name__ == '__main__':
     print(objectList)  # 打印出所有objectinfo
 
 
-
-
     vision_list0 = MxpiDataType.MxpiVisionList()
     try:
         vision_list0.ParseFromString(infer_result[1].messageBuf)
@@ -135,7 +136,6 @@ if __name__ == '__main__':
     clses = np.array(clses)
     m_scores = np.array(m_scores)
     v_projs_regress = np.array(v_projs_regress).reshape(-1, 8, 2)
-
 
 
     if clses[0] is not None:
