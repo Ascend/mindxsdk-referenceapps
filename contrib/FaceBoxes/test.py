@@ -69,12 +69,6 @@ if __name__ == '__main__':
             elif image.height < min_image_size or image.height > max_image_size:
                 print('input image height must in range [{}, {}], curr height is {}.'.format(
                     min_image_size, max_image_size, image.height))
-            else:
-                input_valid = True
-                # read input image bytes
-                image_bytes = io.BytesIO()
-                image.save(image_bytes, format='JPEG')
-                input_image_data = image_bytes.getvalue()
         except IOError:
             print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(args.image_path))
 

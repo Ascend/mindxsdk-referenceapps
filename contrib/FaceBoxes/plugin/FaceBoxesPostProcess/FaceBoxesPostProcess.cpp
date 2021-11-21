@@ -17,7 +17,6 @@
 #include "FaceBoxesPostProcess.h"
 #include "MxBase/Log/Log.h"     
 
-
 namespace {
     const uint32_t LEFTTOPX = 0;
     const uint32_t LEFTTOPY = 1;
@@ -154,7 +153,7 @@ void FaceboxesPostProcess::GeneratePriorBox(cv::Mat &anchors)
         auto _min_sizes = min_sizes[k];
         float step = (float)STEPS[k];
         for (int i = 0; i < f[0]; i++){
-            for (int j = 0; j < f[1] ; j++) {
+            for (int j = 0; j < f[1]; j++) {
                 for (auto min_size : _min_sizes) {
                     cv::Mat anchor(1, 4, CV_32F);
                     anchor.at<float>(0,2) = (float)min_size / IMAGE_SIZE;

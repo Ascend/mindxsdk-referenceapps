@@ -75,6 +75,7 @@
 │   ├── setup.py
 │   ├── box_overlaps.pyx
 ├── main.py
+├── test.py
 ├── README.md
 ├── build.sh
 └── run.sh
@@ -210,19 +211,21 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```
 atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf = ../config/FaceBoxes.aippconfig
 
-## 7 运行
+## 7 测试
 
-修改 run.sh 文件中的环境路径和项目路径。
+准备好要测试的图片，在test.py中修改好测试图片读取路径以及结果存放路径，并修改 run.sh 文件中的环境路径和项目路径以及要运行的python文件名test.py。
 
 ```bash
 export MX_SDK_HOME=${CUR_PATH}/../../..
 ## 注意当前目录CUR_PATH与MX_SDK_HOME环境目录的相对位置
 ```
+直接运行
+
 ```bash
 chmod +x run.sh
 ./run.sh
 ```
-直接运行
+
 
 ## 8 数据集获取
 
