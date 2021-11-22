@@ -96,7 +96,7 @@ export PYTHONPATH=${MX_SDK_HOME}/python
 
 此处提供未进行模型转换的3D目标检测模型的onnx文件以及转换好的om文件：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RTM3DTargetDetection/model.zip)
 
-此处提供项目的数据集（ left color images of object data set (12 GB)）：[下载地址](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d)
+此处提供项目的数据集（ left color images of object data set (12 GB)），其压缩包中包含testing和training两个数据集：[下载地址](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d)
 
 注：下载后请将模型放置于models目录下
 
