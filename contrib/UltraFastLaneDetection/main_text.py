@@ -48,7 +48,7 @@ if __name__ == '__main__':
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imageresize0",
-                    "modelPath": "../model/culane_18_2.om"
+                    "modelPath": "./model/culane_18_2.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "mxpi_objectpostprocessor0"
@@ -56,9 +56,9 @@ if __name__ == '__main__':
             "mxpi_objectpostprocessor0": {
                 "props": {
                     "dataSource": "mxpi_tensorinfer0",
-                    "postProcessConfigPath": "../model/yolov3_tf_bs1_fp16.cfg",
-                    "labelPath": "../model/coco.names",
-                    "postProcessLibPath": "../libLanepostprocess.so"
+                    "postProcessConfigPath": "./model/yolov3_tf_bs1_fp16.cfg",
+                    "labelPath": "./model/coco.names",
+                    "postProcessLibPath": "./libLanepostprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "appsink0"
