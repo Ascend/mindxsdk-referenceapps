@@ -47,10 +47,8 @@ namespace MxBase {
             LogError << "number of tensors (" << tensors.size() << ") " << "is unequal to fairmotType_("
                      << fairmotType_ << ")";
             return false;
-        } 
-        else{
-            return true;
-        }   
+        }
+        return true;
     }
     
 /*
