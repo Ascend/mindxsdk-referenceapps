@@ -58,7 +58,7 @@ if __name__ == '__main__':
                     "dataSource": "mxpi_tensorinfer0",
                     "postProcessConfigPath": "../model/yolov3_tf_bs1_fp16.cfg",
                     "labelPath": "../model/coco.names",
-                    "postProcessLibPath": "../SamplePostProcess/libyolov3postprocess.so"
+                    "postProcessLibPath": "../libLanepostprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "appsink0"
@@ -79,7 +79,6 @@ if __name__ == '__main__':
         exit()
 
     # 构建流的输入对象--检测目标
-    dataInput = MxDataInput()
     dataInput = MxDataInput()
     if os.path.exists(img) != 1:
         print("The test image does not exist.")
