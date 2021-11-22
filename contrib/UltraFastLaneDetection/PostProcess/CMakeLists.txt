@@ -8,7 +8,7 @@ project(Lanepostprocess)
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 set(PLUGIN_NAME "Lanepostprocess")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
-set(LIBRARY_OUTPUT_PATH ../../SamplePostProcess)    #输出路径
+set(LIBRARY_OUTPUT_PATH ../../PostProcess)    #输出路径
 
 #链接库函数指令,链接项目所需头文件路径
 include_directories(${MX_SDK_HOME}/include)
