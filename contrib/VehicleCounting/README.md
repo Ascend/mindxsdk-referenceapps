@@ -135,8 +135,8 @@ const uint32_t VIDEO_HEIGHT = {视频高度};
 # 计数标志位的位置,(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标
 line = {center{x1,y1}, center{x2, y2}}
 
-# 计数方法改变，如果计数标志位是南北方向，需要将第310行的：last_point[0].y>last_point[1].y
-改为last_point[0].x>last_point[1].x，因为此时车流方向为东西方向，用x轴坐标计算更为准确
+# 计数方法修改，如果计数标志位是南北方向，需要将第310行的：last_point[0].y>last_point[1].y
+  改为last_point[0].x>last_point[1].x，因为此时车流方向为东西方向，用x轴坐标计算更为准确
 ```
 **步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
