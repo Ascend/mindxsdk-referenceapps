@@ -86,6 +86,7 @@ int main() {
     ret = yolov4->FrameInit(initParam);
     if (ret != APP_ERR_OK) {
         LogError << "FrameInit failed";
+        MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
     MxBase::DeviceContext device;
@@ -93,12 +94,16 @@ int main() {
     ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
     if (ret != APP_ERR_OK) {
         LogError << "SetDevice failed";
+        yolov4->FrameDeInit();
+        MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
     // 视频流处理
     ret = videoProcess->StreamInit(streamName);
     if (ret != APP_ERR_OK) {
         LogError << "StreamInit failed";
+        yolov4->FrameDeInit();
+        MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
 
@@ -106,6 +111,8 @@ int main() {
     ret = videoProcess->VideoDecodeInit();
     if (ret != APP_ERR_OK) {
         LogError << "VideoDecodeInit failed";
+        yolov4->FrameDeInit();
+        videoProcess->StreamDeInit();
         MxBase::DeviceManager::GetInstance()->DestroyDevices();
         return ret;
     }
