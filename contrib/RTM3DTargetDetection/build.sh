@@ -16,37 +16,22 @@
 set -e 
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
-
 SAMPLE_FOLDER=(
-    ActionRecognition/
-	CrowdCounting/
-    mxBase_wheatDetection/
-	EdgeDetectionPicture/
-    HelmetIdentification/
-    Individual/
-    human_segmentation/
-	OpenposeKeypointDetection/
-	PersonCount/
-	FatigueDrivingRecognition/
-	CartoonGANPicture/
-	HeadPoseEstimation/
-	BertTextClassification/
-	SentimentAnalysis/
-    RTM3DTargetDetection/
+    /plugins/
 )
 
 
 err_flag=0
 for sample in ${SAMPLE_FOLDER[@]};do
     cd ${current_folder}/${sample}
-    bash build.sh || {
-        echo -e "Failed to build ${sample}"
-		err_flag=1
-    }
+		bash build.sh || {
+		    echo -e "Failed to build ${sample}"
+				err_flag=1
+		}
 done
 
 
 if [ ${err_flag} -eq 1 ]; then
-	exit 1
+    exit 1
 fi
 exit 0
