@@ -61,9 +61,10 @@ void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,
     }
 }
 void FairmotPostProcess::CoordinatesReduction(const uint32_t index, 
-                        const ResizedImageInfo &resizedImageInfo,
-                        vector<ObjectInfo> &objInfos,
-                        bool normalizedFlag) {
+                                              const ResizedImageInfo &resizedImageInfo,
+                                              vector<ObjectInfo> &objInfos,
+                                              bool normalizedFlag)
+{
     if (!normalizedFlag)
     {
         LogError << "Error CoordinatesReduction type in this example.";
@@ -139,8 +140,8 @@ APP_ERROR FairmotPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::st
 }
 
 APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpiBuffer,
-                                    const MxpiTensorPackageList srcMxpiTensorPackage,
-                                    vector <ResizedImageInfo> &resizedImageInfos)
+                                                        const MxpiTensorPackageList srcMxpiTensorPackage,
+                                                        vector <ResizedImageInfo> &resizedImageInfos)
 {
     auto dataSourceResize = srcMxpiTensorPackage.tensorpackagevec(0).headervec(0).datasource();
     MxTools::MxpiMetadataManager mxpiMxpiMetadataManager(*mxpiBuffer[0]);
@@ -180,9 +181,10 @@ APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpi
  * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
  */
 void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors,
-                                                vector <vector<ObjectInfo>> &objectInfos,
-                                                vector<vector<float>> &ID_feature,
-                                                const vector <ResizedImageInfo> &resizedImageInfos) {
+                                               vector <vector<ObjectInfo>> &objectInfos,
+                                               vector<vector<float>> &ID_feature,
+                                               const vector <ResizedImageInfo> &resizedImageInfos) 
+{
     LogDebug << "FairmotPostProcess start to write results.";
     // Judge whether the input from tensorinfer is empty
     if (tensors.size() == 0) {              
@@ -431,15 +433,15 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
 }
 
 APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
-                                            std::vector <ResizedImageInfo> &resizedImageInfos,
-                                            MxTools::MxpiObjectList& dstMxpiObjectList, 
-                                            MxpiFeatureVectorList& dstMxpiFeatureVectorList)
+                                             std::vector <ResizedImageInfo> &resizedImageInfos,
+                                             MxTools::MxpiObjectList& dstMxpiObjectList, 
+                                             MxpiFeatureVectorList& dstMxpiFeatureVectorList)
 {
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
-    //LogWarn << "source Tensor number:" << tensors.size() << endl;
-    //LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
+    // LogWarn << "source Tensor number:" << tensors.size() << endl;
+    // LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
 
     // Check Tensor
     bool isValid = IsValidTensors(tensors);
@@ -459,8 +461,8 @@ APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageLis
     }
     if (objectInfos[0].size() != ID_feature[0].size())
     {
-        //LogWarn << "objects not match feature" ;
-        //return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
+        // LogWarn << "objects not match feature" ;
+        // return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
     }
     
     // Generate ObjectList
