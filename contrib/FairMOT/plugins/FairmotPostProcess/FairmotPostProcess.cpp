@@ -21,7 +21,6 @@
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxTools/PluginToolkit/buffer/MxpiBufferManager.h"
 
-
 using namespace MxBase;
 using namespace MxPlugins;
 using namespace MxTools;
@@ -545,12 +544,12 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     std::vector <ResizedImageInfo> resizedImageInfos;
     // Get resizedImageInfos
     APP_ERROR ret = GenerateresizedImageInfos(mxpiBuffer, *srcMxpiTensorPackageListSptr, resizedImageInfos);
-    if (ret != APP_ERR_OK ) {
+    if (ret != APP_ERR_OK) {
         LogError << GetError(ret, pluginName_) << "Generate resizedImageInfos failed";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-       return ret;
+        return ret;
     }
     // Generate sample output
     ret = GenerateOutput(*srcMxpiTensorPackageListSptr, resizedImageInfos, *dstMxpiObjectList, *dstMxpiFeatureVectorList);
@@ -563,7 +562,7 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     }
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_OBJ, static_pointer_cast<void>(dstMxpiObjectList));
-    if (ret != APP_ERR_OK ) {
+    if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, pluginName_) << "FairmotPostProcess add MxpiObjectList metadata failed.";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -571,7 +570,7 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         return ret;
     }
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_FEA, static_pointer_cast<void>(dstMxpiFeatureVectorList));
-    if (ret != APP_ERR_OK ) {
+    if (ret != APP_ERR_OK) {
         ErrorInfo_ << GetError(ret, pluginName_) << "FairmotPostProcess add MxpiFeatureVectorList metadata failed.";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
