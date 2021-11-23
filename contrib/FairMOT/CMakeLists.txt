@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.5.0)
 
 # project information
-project(MX_SDK_HOME)   
+project(FairMOT)   
 
 set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")   
 
