@@ -248,6 +248,12 @@ python3.7 setup.py build_ext --inplace
 ```shell
 python3.7 -m pip install opencv-python
 ```
+3.安装shapely，执行以下指令
+
+```bash
+apt-get install libgeos-dev
+python3.7 -m pip install shapely
+```
 
 ## 3 模型转换
 
