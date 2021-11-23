@@ -248,6 +248,7 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
     std::vector<std::vector<float>>WH;
     for(int i = 0; i < XY.size();i++){
         std::vector<float>wh;
+        // featLayerShapes[2][3]: the third dimension of tensor[2]
         for(int j = 0;j < featLayerShapes[2][3];j++){
             wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[2][3] + j]);
         }
@@ -258,6 +259,7 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
     std::vector<std::vector<float>>REG;
     for(int i = 0; i < XY.size();i++){
         std::vector<float>reg;
+        // featLayerShapes[1][3]: the third dimension of tensor[1]
         for(int j = 0;j < featLayerShapes[1][3];j++){
             reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[1][3] + j]);
         }
@@ -267,6 +269,7 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
     // ID_feature: n*128
     std::shared_ptr<void> id_addr = featLayerData[0];
     for(int i = 0; i < XY.size();i++){
+        // featLayerShapes[0][3]: the third dimension of tensor[0]
         std::vector<float>id_feature;
         for(int j = 0;j < featLayerShapes[0][3];j++){
             id_feature.push_back(static_cast<float *>(id_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[0][3] + j]);
@@ -309,8 +312,9 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
 
     // Create a vector container center to store the center point of the original picture
     std::vector<float>c;
-    c.push_back(width / 2);
-    c.push_back(height / 2);
+    int half = 2;
+    c.push_back(width / half);
+    c.push_back(height / half);
     std::vector<float>center(c);
     // max_dets 
     float scale = 0;
@@ -336,7 +340,9 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
     int dst_w = output_size[0];
     int dst_h = output_size[1];
 
-    float rot_rad = 3.1415926 * rot / 180;
+    float pi = 3.1415926;
+    int dir = 180;
+    float rot_rad = pi * rot / dir;
 
     std::vector<float>src_point;
     src_point.push_back(0);
@@ -440,8 +446,6 @@ APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageLis
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackage, tensors);
-    // LogWarn << "source Tensor number:" << tensors.size() << endl;
-    // LogWarn << "Tensor[0] ByteSize in .cpp:" << tensors[0].GetByteSize() << endl;
 
     // Check Tensor
     bool isValid = IsValidTensors(tensors);
@@ -451,18 +455,12 @@ APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageLis
         return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
     }
 
-
     // Compute objects
     std::vector<std::vector<ObjectInfo>> objectInfos;
     std::vector<std::vector<float>> ID_feature;
     ObjectDetectionOutput(tensors, objectInfos, ID_feature, resizedImageInfos);
     for (uint32_t i = 0; i < resizedImageInfos.size(); i++) {
         CoordinatesReduction(i, resizedImageInfos[i], objectInfos[i]);
-    }
-    if (objectInfos[0].size() != ID_feature[0].size())
-    {
-        // LogWarn << "objects not match feature" ;
-        // return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
     }
     
     // Generate ObjectList
