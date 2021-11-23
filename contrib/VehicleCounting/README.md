@@ -127,6 +127,7 @@ set(MX_SDK_HOME {SDK实际安装路径})
 set(FFMPEG_PATH {ffmpeg安装路径})
 ```
 **步骤3** 参数设置
+
 VideoProcess.cpp文件中：
 ```
 # 视频的宽高值
@@ -149,7 +150,7 @@ line = {center{x1,y1}, center{x2, y2}}
 ```
 Yolov4Detection.cpp文件中：
 ```
-# 阈值修改，
+# 阈值修改，可通过修改检测置信度阈值det_threshold和非最大值抑制阈值nms_iouthreshold来调整检测效果。
 ```
 **步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
