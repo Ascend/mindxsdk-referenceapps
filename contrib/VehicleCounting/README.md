@@ -126,17 +126,30 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 set(MX_SDK_HOME {SDK实际安装路径})
 set(FFMPEG_PATH {ffmpeg安装路径})
 ```
-**步骤3** 参数设置，VideoProcess.cpp文件中，设置视频的宽高值和计数标志位的位置
+**步骤3** 参数设置
+VideoProcess.cpp文件中：
 ```
 # 视频的宽高值
 const uint32_t VIDEO_WIDTH = {视频宽度};
 const uint32_t VIDEO_HEIGHT = {视频高度};
 
-# 计数标志位的位置,(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标
+# 计数标志位的位置，(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标（计数标志位最好与车流方向垂直，计数效果更好）
 line = {center{x1,y1}, center{x2, y2}}
+
+# 计数数字的显示，计数数字显示在视频的左上角，如下图的样例视频中，共3个参数：total、lane_up、lane_down
+  lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头行驶的车流统计数量，total表示总共的车流统计数量
+（1）若想计数单车道的车流，可在代码310-320行只保留想要进行车流统计车道的 **计数参数** 计算和显示，例如只保留counter_up或counter_down。
+（2）若想计数更多车道的车流，可增加额外类似于line = {center{x1,y1},center{x2, y2}}的 **计数标志位** 和类似于counter_up和
+     counter_down的 **计数参数** 以及参数的位置pointn={x,y}（x,y为计数参数的位置）;新的 **计数参数** 的计算需要再添加307-316行
+     的代码逻辑，其中intersect函数的后两个参数为新的 **计数标志位** 。新的 **计数参数** 和 **计数标志位** 的显示需要再添加317-320行的
+     cv::line和cv::putText函数。
 
 # 计数方法修改，如果计数标志位是南北方向，需要将第310行的：last_point[0].y>last_point[1].y
   改为last_point[0].x>last_point[1].x，因为此时车流方向为东西方向，用x轴坐标计算更为准确
+```
+Yolov4Detection.cpp文件中：
+```
+# 阈值修改，
 ```
 **步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
@@ -188,6 +201,7 @@ bash run.sh
 **步骤7** 查看结果
 
 执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
+![Image text](https://gitee.com/wu-jindge/mindxsdk-referenceapps/raw/master/contrib/VehicleCounting/img/result.png)
 
 ## 5 常见问题
 ### 模型更换问题
