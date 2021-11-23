@@ -6,9 +6,16 @@
         "mxpi_rtspsrc0": {
             "factory": "mxpi_rtspsrc",
             "props": {
-                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:8554/xxx.264",
+                "rtspUrl":"rtsp://192.168.88.107:8554/test1.264",
                 "channelId": "0"
             },
+            "next": "queue0"
+        },
+        "queue0": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
             "next": "mxpi_videodecoder0"
         },
         "mxpi_videodecoder0": {
@@ -29,14 +36,14 @@
         },
         "queue1": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_imageresize0"
         },
         "queue2": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_opencvosd0:0"
@@ -52,7 +59,7 @@
         },
         "queue3": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_tensorinfer0"
@@ -64,33 +71,37 @@
                 "modelPath": "./models/mot_v2.om"
             },
             "factory": "mxpi_tensorinfer",
-            "next": "mxpi_objectpostprocessor0"
+            "next": "fairmotpostprocess0"
         },
-        "mxpi_objectpostprocessor0": {
+
+        "fairmotpostprocess0": {
             "props": {
-                "dataSource": "mxpi_tensorinfer0",
-                "postProcessLibPath": "./plugins/FairmotPostProcess/build/libmxpi_fairmotpostprocess.so"
+                "dataSource": "mxpi_tensorinfer0"
             },
-            "factory": "mxpi_objectpostprocessor",
+            "factory": "fairmotpostprocess",
             "next": "mxpi_motsimplesortV20"
         },
+
         "mxpi_motsimplesortV20": {
             "props": {
-                "dataSourceDetection": "mxpi_objectpostprocessor0"
+                "dataSourceDetection": "mxpi_fairmot_obj",
+                "dataSourceFeature": "mxpi_fairmot_fea"
             },
             "factory": "mxpi_motsimplesortV2",
             "next": "mxpi_trackidreplaceclassname0"
         },
+
         "mxpi_trackidreplaceclassname0": {
             "props": {
-                
+                    "dataSource": "mxpi_fairmot_obj",
+                    "motSource": "mxpi_motsimplesortV20"
             },
             "factory": "mxpi_trackidreplaceclassname",
             "next": "queue4"
         },
         "queue4": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_object2osdinstances0"
@@ -111,7 +122,7 @@
         },
         "queue5": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_opencvosd0:1"
@@ -122,7 +133,7 @@
         },
         "queue6": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "mxpi_videoencoder0"
@@ -141,7 +152,7 @@
         },
         "queue7": {
             "props": {
-                "max-size-buffers": "100"
+                "max-size-buffers": "200"
             },
             "factory": "queue",
             "next": "appsink0"
