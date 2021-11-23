@@ -13,38 +13,86 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-#ifndef FAIRMOT_POST_PROCESS_H
-#define FAIRMOT_POST_PROCESS_H
-#include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
+
+#ifndef SDKMEMORY_FairmotPostProcess_H
+#define SDKMEMORY_FairmotPostProcess_H
+#include "MxTools/PluginToolkit/base/MxPluginGenerator.h"
+#include "MxTools/PluginToolkit/base/MxPluginBase.h"
+#include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
+#include "MxTools/Proto/MxpiDataType.pb.h"
+#include "MxBase/ErrorCode/ErrorCode.h"
+#include "MxBase/Tensor/TensorBase/TensorBase.h"
 #include "opencv2/opencv.hpp"
 
-namespace MxBase {
-    class FairmotPostProcess : public ObjectPostProcessBase
-    {
-    public:
-        FairmotPostProcess() = default;
+#include "MxTools/PluginToolkit/PostProcessPluginBases/MxImagePostProcessorBase.h"
 
-        ~FairmotPostProcess() = default;
+/**
+* @api
+* @brief Definition of FairmotPostProcess class.
+*/
+namespace MxPlugins {
+class FairmotPostProcess : public MxTools::MxPluginBase {
+public:
+    /**
+     * @api
+     * @brief Initialize configure parameter.
+     * @param configParamMap
+     * @return APP_ERROR
+     */
+    APP_ERROR Init(std::map<std::string, std::shared_ptr<void>>& configParamMap) override;
+    /**
+     * @api
+     * @brief DeInitialize configure parameter.
+     * @return APP_ERROR
+     */
+    APP_ERROR DeInit() override;
+    /**
+     * @api
+     * @brief Process the data of MxpiBuffer.
+     * @param mxpiBuffer
+     * @return APP_ERROR
+     */
+    APP_ERROR Process(std::vector<MxTools::MxpiBuffer*>& mxpiBuffer) override;
+    /**
+     * @api
+     * @brief Definition the parameter of configure properties.
+     * @return std::vector<std::shared_ptr<void>>
+     */
+    static std::vector<std::shared_ptr<void>> DefineProperties();
+    /**
+     * @api
+     * @brief Get the number of class id and confidence from model inference.
+     * @param key
+     * @param buffer
+     * @return APP_ERROR
+     */
+    
+protected:        
+    bool IsValidTensors(const std::vector <MxBase::TensorBase> &tensors);
 
-        APP_ERROR Init(const std::map <std::string, std::shared_ptr<void>> &postConfig) override;
+    APP_ERROR GenerateresizedImageInfos(std::vector<MxTools::MxpiBuffer*> mxpiBuffer,
+                            const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+                            std::vector <MxBase::ResizedImageInfo> &resizedImageInfos); 
 
-        APP_ERROR DeInit() override;
+    APP_ERROR GenerateOutput(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+                            std::vector <MxBase::ResizedImageInfo> &resizedImageInfos,
+                            MxTools::MxpiObjectList& dstMxpiObjectList, 
+                            MxTools::MxpiFeatureVectorList& dstMxpiFeatureVectorList);
 
-        APP_ERROR Process(const std::vector <MxBase::TensorBase> &tensors,
-                          std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
-                          const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {},
-                          const std::map <std::string, std::shared_ptr<void>> &paramMap = {}) override;
-
-    protected:        
-        bool IsValidTensors(const std::vector <MxBase::TensorBase> &tensors) const override;
-
-        void ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
-                                   std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
-                                   const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
-    };
-    extern "C" {
-    std::shared_ptr<MxBase::FairmotPostProcess> GetObjectInstance();
-    }
+    void ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
+                                std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
+                                std::vector<std::vector<float>> &ID_feature,
+                                const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
+    void CoordinatesReduction(const uint32_t index,
+                                const MxBase::ResizedImageInfo &resizedImageInfo,
+                                std::vector<MxBase::ObjectInfo> &objInfos,
+                                bool normalizedFlag = true);
+private:
+    APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
+    const MxTools::MxpiErrorInfo mxpiErrorInfo);
+    std::string parentName_;
+    std::string descriptionMessage_;
+    std::ostringstream ErrorInfo_;
+};
 }
-#endif
+#endif //SDKMEMORY_FairmotPostProcess_H
