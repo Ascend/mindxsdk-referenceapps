@@ -469,7 +469,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   如果希望融合后的图片显示标签信息，请执行指令：
 
   ```shell
-  python3.7 ResultMergeDraw.py --draw_img --labels_print
+  python3.7 ResultMerge.py --draw_img --labels_print
   ```
 
 ## 5 精度测试
