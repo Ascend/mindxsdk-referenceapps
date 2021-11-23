@@ -71,22 +71,22 @@ protected:
     bool IsValidTensors(const std::vector <MxBase::TensorBase> &tensors);
 
     APP_ERROR GenerateresizedImageInfos(std::vector<MxTools::MxpiBuffer*> mxpiBuffer,
-                            const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
-                            std::vector <MxBase::ResizedImageInfo> &resizedImageInfos); 
+                                        const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
+                                        std::vector <MxBase::ResizedImageInfo> &resizedImageInfos); 
 
     APP_ERROR GenerateOutput(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
-                            std::vector <MxBase::ResizedImageInfo> &resizedImageInfos,
-                            MxTools::MxpiObjectList& dstMxpiObjectList, 
-                            MxTools::MxpiFeatureVectorList& dstMxpiFeatureVectorList);
+                             std::vector <MxBase::ResizedImageInfo> &resizedImageInfos,
+                             MxTools::MxpiObjectList& dstMxpiObjectList, 
+                             MxTools::MxpiFeatureVectorList& dstMxpiFeatureVectorList);
 
     void ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
-                                std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
-                                std::vector<std::vector<float>> &ID_feature,
-                                const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
+                               std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
+                               std::vector<std::vector<float>> &ID_feature,
+                               const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
     void CoordinatesReduction(const uint32_t index,
-                                const MxBase::ResizedImageInfo &resizedImageInfo,
-                                std::vector<MxBase::ObjectInfo> &objInfos,
-                                bool normalizedFlag = true);
+                              const MxBase::ResizedImageInfo &resizedImageInfo,
+                              std::vector<MxBase::ObjectInfo> &objInfos,
+                              bool normalizedFlag = true);
 private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);
@@ -95,4 +95,4 @@ private:
     std::ostringstream ErrorInfo_;
 };
 }
-#endif //SDKMEMORY_FairmotPostProcess_H
+#endif // SDKMEMORY_FairmotPostProcess_H
