@@ -146,7 +146,7 @@ line = {center{x1,y1}, center{x2, y2}}
      的代码逻辑，其中intersect函数的后两个参数为新的计数标志位的两个端点。新的计数参数和计数标志位的显示需要再添加
      317-320行的cv::line和cv::putText函数。
 
-# 计数方法修改，如果计数标志位是南北方向，需要将第310行的：last_point[0].y>last_point[1].y
+# 计数方法修改，如果计数标志位是垂直方向，需要将第310行的：last_point[0].y>last_point[1].y
   改为last_point[0].x>last_point[1].x，因为此时车流方向为东西方向，用x轴坐标计算更为准确
 ```
 Yolov4Detection.cpp文件中：
