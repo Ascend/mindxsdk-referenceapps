@@ -259,6 +259,8 @@ pytorch模型下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-ref
 
 ###  3.2 pt模型转onnx模型
 
+注意：由于模型结构中归一化层使用SyncBatchNorm层，onnx模型导出只适用于GPU设备。
+
 1.从3.1中提供的参考实现代码链接中下载参考项目文件，得到`YOLOv5_DOTA_OBB-master`文件夹。
 
 2.按照参考项目`YOLOv5_DOTA_OBB-master`文件夹中`requirement.txt`文件配置pytorch环境。
@@ -329,7 +331,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 * **将待检测遥感图像进行裁剪**
 
   * 在**项目路径**下创建`image`文件夹，将待检测图像`test.jpg`放于该目录下。
-  * 修改`SplitOnlyImage.py`脚本文件中第69,70行的`splitbase`函数参数图片源路径为`'../image'`，裁剪后的目标路径为`'../imageSplit'`。
+  * 修改`DOTA_devkit/SplitOnlyImage.py`脚本文件中第69行的`splitbase`函数参数图片源路径为`'../image'`，裁剪后的目标路径为`'../imageSplit'`。
 
   ```
   split = splitbase(r'../image',
@@ -389,7 +391,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
   `main.py`脚本文件中默认输入路径为`../imageSplit` ，默认输出路径为`../detection`，请根据需要修改。
 
-  命令执行完毕后，会在项目路径下生成**`detection`**文件夹，存放检测生成的图片以及存放目标检测框信息的txt文件，目录结构如下
+  命令执行完毕后，会在项目路径下生成`detection`文件夹，存放检测生成的图片以及存放目标检测框信息的txt文件，目录结构如下
 
   ```
   .
@@ -412,7 +414,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   
 * **对检测结果进行融合**
 
-  修改`ResultMerge.py`脚本中269行，273行`mergebypoly`,`draw_merged_img`函数的路径为：
+  修改`DOTA_devkit/ResultMerge.py`脚本中269行，273行`mergebypoly`,`draw_merged_img`函数的路径为：
 
   ```python
   mergebypoly(r'../detection/result_txt/result_before_merge', 
@@ -548,7 +550,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
 5. 对检测结果进行融合
 
-   修改269行，273行`mergebypoly`函数的路径为：
+   修改269行`mergebypoly`函数的路径为：
 
    ```python
    mergebypoly(r'../detection_evaluation/result_txt/result_before_merge', 
