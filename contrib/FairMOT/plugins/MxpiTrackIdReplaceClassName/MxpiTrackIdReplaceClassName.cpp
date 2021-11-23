@@ -207,7 +207,7 @@ std::vector<std::shared_ptr<void>> MxpiTrackIdReplaceClassName::DefineProperties
     // Set the type and related information of the properties, and the key is the name
    
     auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "dataSource", "inputName", "the name of objectpostprocessor", "mxpi_objectpostprocessor0", "NULL", "NULL"});
+        STRING, "dataSource", "inputName", "the name of fairmotpostprocessor", "mxpi_fairmot_obj", "NULL", "NULL"});
     auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
 
