@@ -1,0 +1,58 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0",
+                "cvProcessor": "opencv",
+                "outputDataFormat": "RGB"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeType": "Resizer_KeepAspectRatio_Fit",
+                "resizeHeight": "512",
+                "resizeWidth": "512",
+                "cvProcessor": "opencv"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "models/efficient-det-d0-mindxsdk-order-no-color-1.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "models/efficient-det.cfg",
+                "labelPath": "models/coco.names",
+                "postProcessLibPath": "/home/nku_wang1/MindX_SDK_Update/mxVision/lib/modelpostprocessors/libefficientdetpostprocess_02_02.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
