@@ -137,8 +137,9 @@ const uint32_t VIDEO_HEIGHT = {视频高度};
 # 计数标志位的位置，(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标（计数标志位最好与车流方向垂直，计数效果更好）
 line = {center{x1,y1}, center{x2, y2}}
 
-# 计数参数的显示，计数参数显示在视频的左上角，如下图的样例视频中，共3个参数：total、lane_up、lane_down
-  lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头行驶的车流统计数量，total表示总共的车流统计数量
+# 计数参数的显示，计数参数显示在视频的左上角，如下图的样例视频中，后台共3个参数：counter_up、counter_down、counter
+  视频结果中分别显示为lane_up、lane_down、total。lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头
+  行驶的车流统计数量，total表示总共的车流统计数量
 （1）若想计数单车道的车流，可在代码310-320行只保留想要进行车流统计车道的计数参数的计算和显示，例如只保留counter_up或counter_down。
 （2）若想计数更多车道的车流，可增加额外类似于line={center{x1,y1},center{x2, y2}}的计数标志位和类似于counter_up和
      counter_down的计数参数以及参数的位置point={x,y}（x,y为计数参数的位置）;新的计数参数的计算需要再添加307-316行
