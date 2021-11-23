@@ -306,12 +306,12 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
         // 不少于2个bbox的车辆轨迹可用于计数运算
         if(last_point.size()==2){
             if(intersect(last_point[1], last_point[0], line[0],line[1])){
-                counter++;
                 if(last_point[0].y>last_point[1].y)
                     counter_down++;
                 else
                     counter_up++;
             }
+            counter=counter_up+counter_down;
         }
     }
     cv::line(imgBgr, cv::Point(line[0].x,line[0].y),cv::Point(line[1].x,line[1].y),  cv::Scalar(0, 255, 0),2);
