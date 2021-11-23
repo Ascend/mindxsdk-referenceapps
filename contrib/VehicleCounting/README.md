@@ -202,6 +202,7 @@ bash run.sh
 **步骤7** 查看结果
 
 执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
+
 样例视频来源：[链接](https://github.com/jjw-DL/YOLOV3-SORT/tree/master/input)
 ![Image text](https://gitee.com/wu-jindge/mindxsdk-referenceapps/raw/master/contrib/VehicleCounting/img/result.png)
 
