@@ -550,7 +550,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
 5. 对检测结果进行融合
 
-   修改269行`mergebypoly`函数的路径为：
+   修改`DOTA_devkit/ResultMerge.py`中第269行`mergebypoly`函数的路径为：
 
    ```python
    mergebypoly(r'../detection_evaluation/result_txt/result_before_merge', 
