@@ -141,7 +141,7 @@ ATC run success, welcome to the next use.
         "mxpi_rtspsrc0": {
             "factory": "mxpi_rtspsrc",
             "props": {
-                "rtspUrl":"rtsp://192.168.88.107:8554/test1.264",     // 修改为自己所使用的的服务器和文件名
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",   // 修改为自己所使用的的服务器和文件名
                 "channelId": "0"
             },
             "next": "mxpi_videodecoder0"
@@ -164,7 +164,7 @@ ATC run success, welcome to the next use.
 bash build.sh
 ```
 
-命令执行成功后会在`FairMOT/plugins/FairmotPostProcess`和`FairMOT/plugins/MxpiTrackIdReplaceClassName`目录下分别生成build文件夹。将`FairMOT/plugins/MxpiTrackIdReplaceClassName/build`目录下生成的的libmxpi_trackidreplaceclassname.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下，同时将`FairMOT/plugins/FairmotPostProcess/build`目录下生成的libfairmotpostprocess.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下。
+命令执行成功后会在`FairMOT/plugins/FairmotPostProcess`和`FairMOT/plugins/MxpiTrackIdReplaceClassName`目录下分别生成build文件夹。将`FairMOT/plugins/MxpiTrackIdReplaceClassName/build`目录下生成的的libmxpi_trackidreplaceclassname.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下。
 
 **步骤5** 运行。回到FairMOT目录下，在FairMOT目录下执行命令：
 
