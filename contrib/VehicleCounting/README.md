@@ -128,8 +128,35 @@ set(FFMPEG_PATH {ffmpeg安装路径})
 ```
 **步骤3** 参数设置
 
-VideoProcess.cpp文件中：
+params.config文件中：
 ```
+# 视频的宽高值
+video_width: 1280
+video_height: 720
+# 输出视频的帧率
+frame_rate: 15
+# 是否只计数单车道
+is_singlelane: 1
+# 如果单车道，选择一个车道1或2
+lane_num: 2
+# 计数标志位两个端点坐标
+line_s_x: 0
+line_s_y: 100
+line_e_x: 1280
+line_e_y: 100
+# 计数标志位是否为垂直或接近垂直
+is_vertical: 0
+# 三个计数参数的显示位置
+point_x: 0
+point_y: 20
+point1_x: 0
+point1_y: 50
+point2_x: 0
+point2_y: 80
+# 检测置信度阈值
+det_threshold: 0.55
+# 非最大值抑制阈值
+nms_iouthreshold: 0.6
 # 视频的宽高值
 const uint32_t VIDEO_WIDTH = {视频宽度};
 const uint32_t VIDEO_HEIGHT = {视频高度};
