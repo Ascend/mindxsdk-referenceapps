@@ -33,6 +33,7 @@ SAMPLE_FOLDER=(
 	BertTextClassification/
 	SentimentAnalysis/
     RTM3DTargetDetection/
+    EfficientDet/
 )
 
 
