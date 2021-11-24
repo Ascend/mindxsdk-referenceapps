@@ -327,6 +327,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
         // 不少于2个bbox的车辆轨迹可用于计数运算
         if(last_point.size()==2){
             int p1,p2;
+            // 如果计数标志位是垂直的，使用x坐标来判断
             if(is_vertical){
                 p1=last_point[0].x;
                 p2=last_point[1].x;
@@ -341,6 +342,7 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
                 else
                     counter_up++;
             }
+            // 只计数单车道
             if(is_singlelane&&lane_num==1){
                 counter_down=0;
             }
