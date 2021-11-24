@@ -79,7 +79,7 @@ protected:
                              MxTools::MxpiObjectList& dstMxpiObjectList, 
                              MxTools::MxpiFeatureVectorList& dstMxpiFeatureVectorList);
 
-    void ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
+    int ObjectDetectionOutput(const std::vector <MxBase::TensorBase> &tensors,
                                std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
                                std::vector<std::vector<float>> &ID_feature,
                                const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
@@ -90,6 +90,8 @@ protected:
 private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);
+    APP_ERROR PrintMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
+    const MxTools::MxpiErrorInfo mxpiErrorInfo, APP_ERROR app_error, std::string errorName);
     std::string parentName_;
     std::string descriptionMessage_;
     std::ostringstream ErrorInfo_;
