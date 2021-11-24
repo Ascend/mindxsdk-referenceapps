@@ -25,7 +25,11 @@ namespace {
     const float det_threshold = 0.55;
     const float nms_iouthreshold = 0.6;
 }
-
+// 初始化阈值参数
+void setThreshold(std::map<std::string, std::string> & m){
+    det_threshold = std::stof(m["det_threshold"]);
+    nms_iouthreshold = std::stof(m["nms_iouthreshold"]);
+}
 // 加载标签文件
 APP_ERROR Yolov4Detection::LoadLabels(const std::string &labelPath, std::map<int, std::string> &labelMap)
 {
