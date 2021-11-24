@@ -25,23 +25,44 @@
 #include "VideoProcess.h"
 
 namespace {
-    static std::vector<std::queue<center>> pts(10000); // 保存每个车辆轨迹的最新的20个bbox的中心点
-    static std::vector<center> line = {center{0,100}, center{1280, 100}}; // 计数所用的线段
+    static std::vector<std::queue<center>> pts(10000);  //保存每个车辆轨迹的最新的20个bbox的中心点
+    std::vector<center> line = {center{0,100}, center{1280, 100}};  // 计数所用的线段
+    center point={0,20};
+    center point1={0,50};
+    center point2={0,80};
+    uint32_t VIDEO_WIDTH = 1280;
+    uint32_t VIDEO_HEIGHT = 720;
+    int lane_num=1;
+    bool is_vertical = 0;
+    bool is_singlelane = 0;
     static int counter = 0;
     static int counter_down = 0;
     static int counter_up = 0;
-    const center point={0,20};
-    const center point1={0,50};
-    const center point2={0,80}; 
     static AVFormatContext *formatContext = nullptr; // 视频流信息
     static uint32_t cnt = 0;
-    const uint32_t VIDEO_WIDTH = 1280;
-    const uint32_t VIDEO_HEIGHT = 720;
     const uint32_t MAX_QUEUE_LENGHT = 1000;
     const uint32_t QUEUE_POP_WAIT_TIME = 10;
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const float count_center =2.0;
+}
+// 初始化参数
+void setParams(std::map<std::string, std::string> & m){
+    line[0].x=std::stoi(m["line_s_x"]);
+    line[0].y=std::stoi(m["line_s_y"]);
+    line[1].x=std::stoi(m["line_e_x"]);
+    line[1].y=std::stoi(m["line_e_y"]);
+    VIDEO_WIDTH=uint32_t(std::stoi(m["video_width"]));
+    VIDEO_HEIGHT=uint32_t(std::stoi(m["video_height"]));
+    point.x = std::stoi(m["point_x"]);
+    point.y = std::stoi(m["point_y"]);
+    point1.x = std::stoi(m["point1_x"]);
+    point1.y = std::stoi(m["point1_y"]);
+    point2.x = std::stoi(m["point2_x"]);
+    point2.y = std::stoi(m["point2_y"]);
+    is_vertical = bool(std::stoi(m["is_vertical"]));
+    is_singlelane = bool(std::stoi(m["is_singlelane"]));
+    lane_num = std::stoi(m["is_singlelane"]);
 }
 
 bool ccw(center A, center B, center C){
@@ -305,11 +326,26 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
         }
         // 不少于2个bbox的车辆轨迹可用于计数运算
         if(last_point.size()==2){
+            int p1,p2;
+            if(is_vertical){
+                p1=last_point[0].x;
+                p2=last_point[1].x;
+            }
+            else{
+                p1=last_point[0].y;
+                p2=last_point[1].y;
+            }
             if(intersect(last_point[1], last_point[0], line[0],line[1])){
-                if(last_point[0].y>last_point[1].y)
+                if(p1>p2)
                     counter_down++;
                 else
                     counter_up++;
+            }
+            if(is_singlelane&&lane_num==1){
+                counter_down=0;
+            }
+            else if(is_singlelane&&lane_num==2){
+                counter_up=0;
             }
             counter=counter_up+counter_down;
         }
