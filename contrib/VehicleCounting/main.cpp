@@ -76,7 +76,11 @@ int main() {
     // read config file
     std::string m_sPath="./params.config";
     std::map<string,string> m_mapConfig;
-    ReadConfig(m_sPath,m_mapConfig);
+    bool isfile=ReadConfig(m_sPath,m_mapConfig);
+    if(!isfile){
+        LogError << "Read config file failed";
+        return 0;
+    }
     setParams(m_mapConfig);
     setThreshold(m_mapConfig);
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
