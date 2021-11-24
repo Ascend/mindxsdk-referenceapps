@@ -331,13 +331,17 @@ python model_convert_pt2onnx.py
 bash build.sh
 ```
 
-注意：如果shell脚本执行时报错：`line: XXX "$'\r': command not found" `，请执行以下指令修改脚本格式，没有报错请忽略此处。
+注意：如果shell脚本执行时报错：`line: XXX "$'\r': command not found" `，**项目路径**下请执行以下指令修改脚本格式，没有报错请忽略此处。
 
 ```bash
 dos2unix build.sh
+cd ./proto
+dos2unix build.sh
+cd ../plugins
+dos2unix build.sh
 ```
 
-将生成的动态链接库拷贝到SDK插件目录下，执行指令：
+将生成的动态链接库拷贝到SDK插件目录下，**项目路径**下执行指令：
 
 ```bash
 cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
