@@ -265,7 +265,7 @@ pytorch模型下载链接：https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-ref
 
 ###  3.2 pt模型转onnx模型
 
-注意：由于模型结构中归一化层使用SyncBatchNorm层，onnx模型导出只适用于GPU设备。
+注意：由于模型结构中归一化层使用SyncBatchNorm层，onnx模型导出只适用于GPU设备。如果您没有GPU设备，请跳过此步骤，直接下载onnx模型。
 
 1.从3.1中提供的参考实现代码链接中下载参考项目文件，得到`YOLOv5_DOTA_OBB-master`文件夹。
 
@@ -293,6 +293,11 @@ python model_convert_pt2onnx.py
 
   ```bash
   bash model_conversion.sh
+  ```
+  注意：如果shell脚本执行时报错：`line: XXX "$'\r': command not found" `，请执行以下指令修改脚本格式，没有报错请忽略此处。
+
+  ```bash
+  dos2unix model_conversion.sh
   ```
 
   `model_conversion.sh`脚本中包含atc命令
@@ -325,6 +330,14 @@ python model_convert_pt2onnx.py
 ```bash
 bash build.sh
 ```
+
+注意：如果shell脚本执行时报错：`line: XXX "$'\r': command not found" `，请执行以下指令修改脚本格式，没有报错请忽略此处。
+
+```bash
+dos2unix build.sh
+```
+
+将生成的动态链接库拷贝到SDK插件目录下，执行指令：
 
 ```bash
 cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
