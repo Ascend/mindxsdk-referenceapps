@@ -29,6 +29,7 @@
 #include "BlockingQueue/BlockingQueue.h"
 #include "VideoProcess/VideoProcess.h"
 #include "Yolov4Detection/Yolov4Detection.h"
+#include "ReadConfig/GetConfig.h"
 
 bool VideoProcess::stopFlag = false;
 std::vector<double> g_inferCost;
@@ -72,6 +73,12 @@ int main() {
     configData.SetFileValue<int>("global_level", 1);
     MxBase::Log::SetLogParameters(configData);
     std::string streamName = "./data/test1.264";
+    // read config file
+    std::string m_sPath="./params.config";
+    std::map<string,string> m_mapConfig;
+    ReadConfig(m_sPath,m_mapConfig);
+    setParams(m_mapConfig);
+    setThreshold(m_mapConfig);
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
     if (ret != APP_ERR_OK) {
         LogError << "InitDevices failed";
