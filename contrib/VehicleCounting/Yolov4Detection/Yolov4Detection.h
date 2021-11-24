@@ -43,7 +43,7 @@ struct InitParam {
     uint32_t inputType;
     uint32_t anchorDim;
 };
-
+void setThreshold(std::map<std::string, std::string> & m);
 class Yolov4Detection {
 public:
     APP_ERROR FrameInit(const InitParam &initParam);
