@@ -20,6 +20,7 @@
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxTools/PluginToolkit/buffer/MxpiBufferManager.h"
+#include <typeinfo>
 
 using namespace MxBase;
 using namespace MxPlugins;
@@ -139,6 +140,18 @@ APP_ERROR FairmotPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::st
     return ret;
 }
 
+APP_ERROR FairmotPostProcess::PrintMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
+    MxpiErrorInfo mxpiErrorInfo, APP_ERROR app_error, std::string errorName)
+{
+    ErrorInfo_ << GetError(app_error, pluginName_) << errorName;
+    LogError << errorName;
+    mxpiErrorInfo.ret = app_error;
+    mxpiErrorInfo.errorInfo = ErrorInfo_.str();
+    SetMxpiErrorInfo(buffer, pluginName_, mxpiErrorInfo);
+    return app_error;
+}
+
+
 APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpiBuffer,
                                                         const MxpiTensorPackageList srcMxpiTensorPackage,
                                                         vector <ResizedImageInfo> &resizedImageInfos)
@@ -180,7 +193,7 @@ APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpi
 /*
  * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
  */
-void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors,
+int FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors,
                                                vector <vector<ObjectInfo>> &objectInfos,
                                                vector<vector<float>> &ID_feature,
                                                const vector <ResizedImageInfo> &resizedImageInfos) 
@@ -188,11 +201,11 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
     LogDebug << "FairmotPostProcess start to write results.";
     // Judge whether the input from tensorinfer is empty
     if (tensors.size() == 0) {              
-        return;
+        return 0;
     }
     auto shape = tensors[0].GetShape();     
     if (shape.size() == 0) {
-        return;
+        return 0;
     }     
 
     // @param featLayerData  Vector of 4 output feature data        
@@ -234,6 +247,10 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
             xy.push_back(y); 
             XY.push_back(xy);  
         }
+    }
+    // Output 1 when no pedestrian is detected
+    if(XY.size() == 0){
+        return 1;
     }
     // Create a vector container scores to store the information in the corresponding coordinate XY in hm
     std::vector<float>scores;
@@ -435,7 +452,9 @@ void FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensor
 
     objectInfos.push_back(objectInfo);
     
-    LogDebug << "FairmotPostProcess write results successed.";   
+    LogDebug << "FairmotPostProcess write results successed."; 
+    // Output 2 when pedestrian is detected  
+    return 2;
 }
 
 APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageList srcMxpiTensorPackage,
@@ -451,54 +470,70 @@ APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageLis
     bool isValid = IsValidTensors(tensors);
     if (!isValid)
     {
-        LogError << "Is unValid Tensors" ;
+        LogError << "Is unValid Tensors";
         return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
     }
 
     // Compute objects
     std::vector<std::vector<ObjectInfo>> objectInfos;
     std::vector<std::vector<float>> ID_feature;
-    ObjectDetectionOutput(tensors, objectInfos, ID_feature, resizedImageInfos);
-    for (uint32_t i = 0; i < resizedImageInfos.size(); i++) {
-        CoordinatesReduction(i, resizedImageInfos[i], objectInfos[i]);
-    }
-    
-    // Generate ObjectList
-    for (size_t i = 0; i < objectInfos[0].size(); i++)
-    {
-        auto objInfo = objectInfos[0][i];
-        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
-        MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiObject->add_headervec();
-        dstMxpiMetaHeaderList->set_datasource(parentName_);
-        dstMxpiMetaHeaderList->set_memberid(0);
-
-        dstMxpiObject->set_x0(objInfo.x0);
-        dstMxpiObject->set_y0(objInfo.y0);
-        dstMxpiObject->set_x1(objInfo.x1);
-        dstMxpiObject->set_y1(objInfo.y1);
-
-        // Generate ClassList
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
-        MxpiMetaHeader* dstMxpiMetaHeaderList_c = dstMxpiClass->add_headervec();
-        dstMxpiMetaHeaderList_c->set_datasource(parentName_);
-        dstMxpiMetaHeaderList_c->set_memberid(0);
-        dstMxpiClass->set_classid(objInfo.classId);
-        dstMxpiClass->set_confidence(objInfo.confidence);
-        dstMxpiClass->set_classname(objInfo.className);
-    }
-
-    // Generate FeatureVectorList
-    for (size_t i = 0; i < ID_feature[0].size(); i++)
-    {
-        float feaInfo = ID_feature[0][i];
+    int flag = ObjectDetectionOutput(tensors, objectInfos, ID_feature, resizedImageInfos);
+    if(flag == 1){
+        // flag: 1 represents no pedestrians are detected
+        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();   
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();  
         MxpiFeatureVector* mxpiFeature = dstMxpiFeatureVectorList.add_featurevec();
         MxpiMetaHeader* dstMxpiMetaHeaderList = mxpiFeature->add_headervec();
-        dstMxpiMetaHeaderList->set_datasource(parentName_);
-        dstMxpiMetaHeaderList->set_memberid(0);
-
-        mxpiFeature->add_featurevalues(feaInfo);
+        return APP_ERR_OK;
     }
-    return APP_ERR_OK;
+    else if(flag == 2){
+        // flag: 2 represents pedestrian detected
+        for (uint32_t i = 0; i < resizedImageInfos.size(); i++) {
+            CoordinatesReduction(i, resizedImageInfos[i], objectInfos[i]);
+        }
+        
+        // Generate ObjectList
+        for (size_t i = 0; i < objectInfos[0].size(); i++)
+        {
+            auto objInfo = objectInfos[0][i];
+            MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
+            MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiObject->add_headervec();
+            dstMxpiMetaHeaderList->set_datasource(parentName_);
+            dstMxpiMetaHeaderList->set_memberid(0);
+
+            dstMxpiObject->set_x0(objInfo.x0);
+            dstMxpiObject->set_y0(objInfo.y0);
+            dstMxpiObject->set_x1(objInfo.x1);
+            dstMxpiObject->set_y1(objInfo.y1);
+
+            // Generate ClassList
+            MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+            MxpiMetaHeader* dstMxpiMetaHeaderList_c = dstMxpiClass->add_headervec();
+            dstMxpiMetaHeaderList_c->set_datasource(parentName_);
+            dstMxpiMetaHeaderList_c->set_memberid(0);
+            dstMxpiClass->set_classid(objInfo.classId);
+            dstMxpiClass->set_confidence(objInfo.confidence);
+            dstMxpiClass->set_classname(objInfo.className);
+        }
+
+        // Generate FeatureVectorList
+        for (size_t i = 0; i < ID_feature[0].size(); i++)
+        {
+            float feaInfo = ID_feature[0][i];
+            MxpiFeatureVector* mxpiFeature = dstMxpiFeatureVectorList.add_featurevec();
+            MxpiMetaHeader* dstMxpiMetaHeaderList = mxpiFeature->add_headervec();
+            dstMxpiMetaHeaderList->set_datasource(parentName_);
+            dstMxpiMetaHeaderList->set_memberid(0);
+
+            mxpiFeature->add_featurevalues(feaInfo);
+        }
+        return APP_ERR_OK;
+    }
+    else{
+        // flag: 0 represents the input from tensorinfer is empty
+        LogError << "Is unValid Tensors";
+        return APP_ERR_ACL_OP_INPUT_NOT_MATCH;
+    }
 }
 
 APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
@@ -510,34 +545,19 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "FairmotPostProcess process is not implemented";
-        mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        LogError << "FairmotPostProcess process is not implemented";
-        return APP_ERR_COMM_FAILURE;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "FairmotPostProcess process is not implemented");
     }
     // Get the data from buffer
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     if (metadata == nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata is NULL, failed";
-        mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_METADATA_IS_NULL; // self define the error code
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_METADATA_IS_NULL, "Metadata is NULL, failed");
     }
     // check the proto struct name
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != INPUT_SHAPE_TYPE) {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
-        << "Proto struct name is not MxpiTensorPackageList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTensorPackageList, failed");
     }
-
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<MxpiObjectList> dstMxpiObjectList = make_shared<MxpiObjectList>();
     shared_ptr<MxpiFeatureVectorList> dstMxpiFeatureVectorList = make_shared<MxpiFeatureVectorList>();
@@ -545,37 +565,21 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     // Get resizedImageInfos
     APP_ERROR ret = GenerateresizedImageInfos(mxpiBuffer, *srcMxpiTensorPackageListSptr, resizedImageInfos);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret, pluginName_) << "Generate resizedImageInfos failed";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "Generate resizedImageInfos failed");
     }
     // Generate sample output
     ret = GenerateOutput(*srcMxpiTensorPackageListSptr, resizedImageInfos, *dstMxpiObjectList, *dstMxpiFeatureVectorList);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret, pluginName_) << "FairmotPostProcess gets inference information failed. Checkc tensor value!";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess gets inference information failed. Checkc tensor value!");
     }
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_OBJ, static_pointer_cast<void>(dstMxpiObjectList));
     if (ret != APP_ERR_OK) {
-        ErrorInfo_ << GetError(ret, pluginName_) << "FairmotPostProcess add MxpiObjectList metadata failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiObjectList metadata failed.");
     }
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_FEA, static_pointer_cast<void>(dstMxpiFeatureVectorList));
     if (ret != APP_ERR_OK) {
-        ErrorInfo_ << GetError(ret, pluginName_) << "FairmotPostProcess add MxpiFeatureVectorList metadata failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiFeatureVectorList metadata failed.");
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
