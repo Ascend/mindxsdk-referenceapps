@@ -7,8 +7,8 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 set(OUTPUT_NAME "stream_pull_test")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
-set(FFMPEG_PATH {ffmpeg实际安装路径})
+set(MX_SDK_HOME /home/cqu_liu1/MindXSDK/mxVision)
+set(FFMPEG_PATH /home/cqu_liyong1/local/ffmpeg)
 
 include_directories(
         ${MX_SDK_HOME}/include
@@ -27,7 +27,7 @@ link_directories(
 )
 
 add_executable(${OUTPUT_NAME} main.cpp VideoProcess/VideoProcess.cpp VideoProcess/VideoProcess.h
-        Yolov4Detection/Yolov4Detection.cpp Yolov4Detection/Yolov4Detection.h VideoProcess/KalmanTracker.h VideoProcess/KalmanTracker.cpp VideoProcess/Hungarian.h VideoProcess/Hungarian.cpp VideoProcess/MOTConnection.h VideoProcess/MOTConnection.cpp VideoProcess/DataType.h)
+        Yolov4Detection/Yolov4Detection.cpp Yolov4Detection/Yolov4Detection.h VideoProcess/KalmanTracker.h VideoProcess/KalmanTracker.cpp VideoProcess/Hungarian.h VideoProcess/Hungarian.cpp VideoProcess/MOTConnection.h VideoProcess/MOTConnection.cpp VideoProcess/DataType.h ReadConfig/GetConfig.h ReadConfig/GetConfig.cpp)
 target_link_libraries(${OUTPUT_NAME}
         avcodec
         avdevice
