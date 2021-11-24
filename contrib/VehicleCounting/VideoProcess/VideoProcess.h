@@ -40,7 +40,7 @@ struct center{
     double x;
     double y;
 };
-
+void setParams(std::map<std::string, std::string> & m);
 class VideoProcess {
 public:
     VideoProcess();
