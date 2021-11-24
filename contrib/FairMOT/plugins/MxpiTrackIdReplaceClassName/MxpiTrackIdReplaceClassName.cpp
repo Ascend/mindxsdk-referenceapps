@@ -61,6 +61,19 @@ APP_ERROR MxpiTrackIdReplaceClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, cons
     return ret;
 }
 
+APP_ERROR MxpiTrackIdReplaceClassName::PrintMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
+    MxpiErrorInfo mxpiErrorInfo, APP_ERROR app_error, std::string errorName)
+{
+    ErrorInfo_ << GetError(app_error, pluginName_) << errorName;
+    LogError << errorName;
+    mxpiErrorInfo.ret = app_error;
+    mxpiErrorInfo.errorInfo = ErrorInfo_.str();
+    SetMxpiErrorInfo(buffer, pluginName_, mxpiErrorInfo);
+    return app_error;
+}
+
+
+
 /*
  * @description: Replace className with trackId 
  */
@@ -101,98 +114,51 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName process is not implemented" << std::endl;
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiTrackIdReplaceClassName process is not implemented";
-        mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        LogError << "MxpiTrackIdReplaceClassName process is not implemented";
-        return APP_ERR_COMM_FAILURE;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "MxpiTrackIdReplaceClassName process is not implemented");
     }
-
     // Get the data from buffer
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
     if (metadata == nullptr) {
-        std::cout << "mxpi_trackidreplaceclassname: Metadata is NULL, no data input from mxpi_objectpostprocessor, failed" << std::endl;
         shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>(); 
         MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();   
         MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();    
         APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
         if (ret != APP_ERR_OK) {
-            std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName add metadata failed." << std::endl; 
-            ErrorInfo_ << GetError(ret, pluginName_) << "MxpiTrackIdReplaceClassName add metadata failed.";
-            mxpiErrorInfo.ret = ret;
-            mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-            SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-            return ret;
+            PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName add metadata failed.");
         }
-        else{
-            std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName add metadata succeed." << std::endl; 
-        }
-
         // Send the data to downstream plugin
         SendData(0, *buffer);
         LogInfo << "MxpiTrackIdReplaceClassName::Process end";
         return APP_ERR_OK;
     }
-    
     if (metadata2 == nullptr) {
-        std::cout << "mxpi_trackidreplaceclassname: Metadata is NULL, no data input from mxpi_motsimplesortV2, failed" << std::endl;
-        ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata is NULL, failed";
-        mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_METADATA_IS_NULL; // self define the error code
-        return 0;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_METADATA_IS_NULL, "Metadata is NULL, failed");
     }
-
     // check whether the proto struct name is MxpiObjectList
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) { 
-        std::cout << "mxpi_trackidreplaceclassname: Proto struct name is not MxpiObjectList, failed" << std::endl;
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) << "Proto struct name is not MxpiObjectList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiObjectList, failed");
     }
     // check whether the proto struct name is MxpiTrackList
     google::protobuf::Message* msg2 = (google::protobuf::Message*)metadata2.get();
     const google::protobuf::Descriptor* desc2 = msg2->GetDescriptor();
     if (desc2->name() != SAMPLE_KEY2) {  
-        std::cout << "mxpi_trackidreplaceclassname: Proto struct name is not MxpiTrackLetList, failed" << std::endl;      
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) << "Proto struct name is not MxpiTrackLetList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTrackLetList, failed");
     }
-
     // Generate sample output
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
     APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*dstMxpiObjectListSptr);
     if (ret != APP_ERR_OK) {
-        std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName gets inference information failed." << std::endl;   
-        LogError << GetError(ret, pluginName_) << "MxpiTrackIdReplaceClassName gets inference information failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName gets inference information failed.");
     }
-
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
     if (ret != APP_ERR_OK) {
-        std::cout << "mxpi_trackidreplaceclassname: MxpiTrackIdReplaceClassName add metadata failed." << std::endl; 
-        ErrorInfo_ << GetError(ret, pluginName_) << "MxpiTrackIdReplaceClassName add metadata failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
+        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName add metadata failed.");
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
