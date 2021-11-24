@@ -136,8 +136,8 @@ video_height: 720
 # 输出视频的帧率
 frame_rate: 15
 # 是否只计数单车道
-is_singlelane: 1
-# 如果单车道，选择一个车道1或2
+is_singlelane: 0
+# 如果单车道，选择一个车道1或2表示line_up或line_down
 lane_num: 2
 # 计数标志位两个端点坐标
 line_s_x: 0
@@ -157,27 +157,14 @@ point2_y: 80
 det_threshold: 0.55
 # 非最大值抑制阈值
 nms_iouthreshold: 0.6
-# 视频的宽高值
-const uint32_t VIDEO_WIDTH = {视频宽度};
-const uint32_t VIDEO_HEIGHT = {视频高度};
 
-# 计数标志位的位置，(x1,y1)和(x2,y2)分别为计数标志位两个端点的像素坐标（计数标志位最好与车流方向垂直，计数效果更好）
-line = {center{x1,y1}, center{x2, y2}}
-
-# 计数参数的显示，计数参数显示在视频的左上角，如下图的样例视频中，后台共3个参数：counter_up、counter_down、counter
+# 计数参数显示在视频的左上角，如下图的样例视频中，后台共3个参数：counter_up、counter_down、counter
   视频结果中分别显示为lane_up、lane_down、total。lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头
-  行驶的车流统计数量，total表示总共的车流统计数量
-（1）若想计数单车道的车流，可在代码310-320行只保留想要进行车流统计车道的计数参数的计算和显示，例如只保留counter_up或counter_down。
-（2）若想计数更多车道的车流，可增加额外类似于line={center{x1,y1},center{x2, y2}}的计数标志位和类似于counter_up和
-     counter_down的计数参数以及参数的位置point={x,y}（x,y为计数参数的显示位置）;新的计数参数的计算需要再添加307-316行
-     的计算逻辑代码，其中intersect函数的后两个参数为新的计数标志位的两个端点。新的计数参数和计数标志位的显示需要再添加
-     317-320行的cv::line和cv::putText函数。
+  行驶的车流统计数量，total表示总共的车流统计数量。若想计数单车道的车流，is_singlelane设置位1，lane_num设置位1或2
+  表示只计数line_up或line_down。
 
-# 计数方法修改，如果计数标志位是垂直方向，需要将第310行的：last_point[0].y>last_point[1].y
-  改为last_point[0].x>last_point[1].x，因为此时车流方向为东西方向，用x轴坐标计算更为准确
-```
-Yolov4Detection.cpp文件中：
-```
+# 如果计数标志位是垂直方向或接近垂直，is_vertical设置为1，因为此时车流方向为东西方向，用x坐标计算更为准确
+
 # 阈值修改，可通过修改检测置信度阈值det_threshold和非最大值抑制阈值nms_iouthreshold来调整检测效果。
 ```
 **步骤4** 设置环境变量，
