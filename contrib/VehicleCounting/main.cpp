@@ -73,7 +73,7 @@ int main() {
     configData.SetFileValue<int>("global_level", 1);
     MxBase::Log::SetLogParameters(configData);
     std::string streamName = "./data/test1.264";
-    // read config file
+    // read config file and set params
     std::string m_sPath="./params.config";
     std::map<string,string> m_mapConfig;
     bool isfile=ReadConfig(m_sPath,m_mapConfig);
@@ -81,6 +81,9 @@ int main() {
         LogError << "Read config file failed";
         return 0;
     }
+    VIDEO_WIDTH=uint32_t(std::stoi(m_mapConfig["video_width"]));
+    VIDEO_HEIGHT=uint32_t(std::stoi(m_mapConfig["video_height"]));
+    frame_rate=uint32_t(std::stoi(m_mapConfig["frame_rate"]));
     setParams(m_mapConfig);
     setThreshold(m_mapConfig);
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->InitDevices();
