@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020.Huawei Technologies Co., Ltd. All rights reserved.
+ * Copyright (c) 2021.Huawei Technologies Co., Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,10 +79,11 @@ int main(int argc, char* argv[])
 
     std::string streamName = "encoder";
     int inPluginId = 0;
+    int msTimeOut = 200000;
 
     while (1) {
         // get stream output
-        MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, 200000);
+        MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, msTimeOut);
         if (output == nullptr) {
             LogError << "Failed to get pipeline output.";
             return ret;
