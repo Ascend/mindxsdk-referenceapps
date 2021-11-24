@@ -194,9 +194,9 @@ APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpi
  * @description: Post-process the network output and calculate coordinates:bbox_top_left x, y; bbox_bottom_right x, y; conf_score;class (all zeros [only human])
  */
 int FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors,
-                                               vector <vector<ObjectInfo>> &objectInfos,
-                                               vector<vector<float>> &ID_feature,
-                                               const vector <ResizedImageInfo> &resizedImageInfos) 
+                                              vector <vector<ObjectInfo>> &objectInfos,
+                                              vector<vector<float>> &ID_feature,
+                                              const vector <ResizedImageInfo> &resizedImageInfos) 
 {
     LogDebug << "FairmotPostProcess start to write results.";
     // Judge whether the input from tensorinfer is empty
