@@ -94,7 +94,7 @@ static APP_ERROR SendDataAndGetResult(std::shared_ptr<MxStream::MxStreamManager>
     mxstBufferInput.dataSize = buffer.size();
     mxstBufferInput.dataPtr = (uint32_t *) &buffer[0];
 
-    std::shared_ptr<MxTools::MxpiTextsInfo> mxpiTextsInfo = std::make_unique<MxTools::MxpiTextsInfo>();
+    std::shared_ptr<MxTools::MxpiTextsInfo> mxpiTextsInfo = std::make_shared<MxTools::MxpiTextsInfo>();
     mxpiTextsInfo->add_text("hello");
     // Stream接收的元数据结构体
     std::vector<MxStream::MxstMetadataInput> mxstMetadataInputVec;
@@ -201,7 +201,7 @@ static APP_ERROR SendDataWithUniqueIdAndGetResultWithUniqueId(
 static APP_ERROR sendProtobufferAndGetProtobuffer(std::shared_ptr<MxStream::MxStreamManager> mxStreamManager,
                                                   const std::string &streamName, const std::uint32_t &inPluginId,
                                                   const uint32_t &outPluginId) {
-    std::shared_ptr<MxTools::MxpiTextsInfo> mxpiTextsInfo = std::make_unique<MxTools::MxpiTextsInfo>();
+    std::shared_ptr<MxTools::MxpiTextsInfo> mxpiTextsInfo = std::make_shared<MxTools::MxpiTextsInfo>();
     mxpiTextsInfo->add_text("hello");
 
     std::vector<MxStream::MxstProtobufIn> mxstProtobufInVec;
