@@ -40,7 +40,11 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-    with open("./pipeline/MMNET.pipeline", 'rb') as f:
+    pipeline_path = "./pipeline/MMNET.pipeline"
+    if os.path.exists(pipeline_path) != 1:
+        print("Failed to get the pipeline correctly. Please check it!")
+        exit()
+    with open(pipeline_path, 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
@@ -53,7 +57,13 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_tensorinfer0")
 
     filepath = "./test/"
+    if os.path.isdir(filepath) != 1:
+        print("Failed to get the input folder. Please check it!")
+        exit()
     gt_dir = './mask'
+    if os.path.isdir(gt_dir) != 1:
+        print("Failed to get the mask input folder. Please check it!")
+        exit()
     
     output_shape = [1, 256, 256, 2]
     gt_shape = [1, 256, 256, 1]
@@ -65,7 +75,13 @@ if __name__ == '__main__':
 
     for i, j in zip(names_input, names_gt):
         filename_input = os.path.join(filepath, i)
+        if os.path.exists(filename_input) != 1:
+            print("Failed to get the input picture. Please check it!")
+            exit()
         filename_gt = os.path.join(gt_dir, j)
+        if os.path.exists(filename_gt) != 1:
+            print("Failed to get the input picture mask. Please check it!")
+            exit()
         with open(filename_input, 'rb') as f:
             dataInput.data = f.read()
 

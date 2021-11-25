@@ -45,20 +45,24 @@ if __name__ == '__main__':
     filepath = "test.jpg"
     if os.path.exists(filepath) != 1:
         print("Failed to get the input picture. Please check it!")
+        streamManagerApi.DestroyAllStreams()
         exit()
     else:
         try:
             image = Image.open(filepath)
             if image.format != 'JPEG':
                 print('input image only support jpg, curr format is {}.'.format(image.format))
+                streamManagerApi.DestroyAllStreams()
                 exit()
             elif image.width < min_image_size or image.width > max_image_size:
                 print('input image width must in range [{}, {}], curr width is {}.'.format(
                     min_image_size, max_image_size, image.width))
+                streamManagerApi.DestroyAllStreams()
                 exit()
             elif image.height < min_image_size or image.height > max_image_size:
                 print('input image height must in range [{}, {}], curr height is {}.'.format(
                     min_image_size, max_image_size, image.height))
+                streamManagerApi.DestroyAllStreams()
                 exit()
             else:
                 input_valid = True
@@ -67,6 +71,7 @@ if __name__ == '__main__':
                     dataInput.data = f.read()
         except IOError:
             print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(filepath))
+            streamManagerApi.DestroyAllStreams()
             exit()
 
     # Inputs data to a specified stream based on streamName.
@@ -108,4 +113,4 @@ if __name__ == '__main__':
     cv2.imwrite(filepath_out, out_1)
 
     # destroy streams
-streamManagerApi.DestroyAllStreams()
+    streamManagerApi.DestroyAllStreams()
