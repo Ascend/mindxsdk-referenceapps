@@ -68,6 +68,7 @@
 │   │   ├── CMakeLists.txt
 │   │   ├── FaceBoxesPostProcess.cpp
 │   │   ├── FaceBoxesPostProcess.h
+│   │   └── build.sh
 ├── script
 │   ├── convert.py
 │   ├── split.py
@@ -105,7 +106,7 @@
 
 注：本例中mxVision SDK安装路径为 /home/uestc_luo1/MindX_SDK/mxVision。
 
-**步骤3：** 推荐在${MX_SDK_HOME}/samples/mxVision下创建FaceBoxes根目录，在项目根目录下创建目录model `mkdir model`，将离线模型faceboxes-b0_bs1.om文件放入文件夹下。
+**步骤3：** 推荐在${MX_SDK_HOME}/samples/mxVision下创建FaceBoxes根目录，在项目根目录下创建目录models `mkdir models`，将离线模型faceboxes-b0_bs1.om文件放入文件夹下。
 
 **步骤4：** 编译程序前提需要先交叉编译好第三方依赖库。
 
@@ -191,7 +192,7 @@ git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
 2.预训练模型获取。
 ```
 到以下链接下载原预训练模型和onnx模型文件，分别放在/weights和/models 目录下：
-(https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/model.zipI) 
+(https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/model.zip) 
 
 ### 6.2 onnx转om模型
 
@@ -209,7 +210,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```
 2.在models目录下，使用atc将onnx模型转换为om模型文件，加入--insert_op_conf参数使用AIPP，放到models目录下，工具使用方法可以参考CANN 5.0.2 开发辅助工具指南 (推理) 01
 ```
-atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf = ../config/FaceBoxes.aippconfig
+atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/FaceBoxes.aippconfig
 
 ## 7 测试
 

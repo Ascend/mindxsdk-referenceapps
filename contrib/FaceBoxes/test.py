@@ -72,7 +72,7 @@ if __name__ == '__main__':
         except IOError:
             print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(args.image_path))
 
-    with open('test.jpg', 'rb') as f:
+    with open(args.image_path, 'rb') as f:
         dataInput.data = f.read()
         # Inputs data to a specified stream based on streamName.
     streamName = b'Faceboxes'
