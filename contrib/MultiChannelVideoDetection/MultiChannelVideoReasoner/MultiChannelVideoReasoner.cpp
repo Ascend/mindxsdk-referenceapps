@@ -820,8 +820,8 @@ void MultiChannelVideoReasoner::StartWorkThreads(std::vector<std::thread> &workT
     }
 
     // start performance monitor thread
-    std::thread monitorPerformance(performanceMonitor->PrintStatistics,
-                                   performanceMonitor, intervalPerformanceMonitorPrint);
+    auto printFlag = performanceMonitor->PrintStatistics;
+    std::thread monitorPerformance(printFlag, performanceMonitor, intervalPerformanceMonitorPrint);
     workThreads.push_back(std::move(monitorPerformance));
     LogInfo << "performance monitor thread start.";
 }
