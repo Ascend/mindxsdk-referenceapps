@@ -137,7 +137,7 @@ video_height: 720
 frame_rate: 15
 # 是否只计数单车道，1和0表示是或否
 is_singlelane: 0
-# 如果单车道，选择一个车道1或2表示line_up或line_down
+# 如果单车道，选择一个车道0或1表示line_up或line_down
 lane_num: 2
 # 计数标志位两个端点坐标
 line_s_x: 0
