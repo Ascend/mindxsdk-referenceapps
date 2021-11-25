@@ -151,7 +151,6 @@ APP_ERROR FairmotPostProcess::PrintMxpiErrorInfo(MxpiBuffer& buffer, const std::
     return app_error;
 }
 
-
 APP_ERROR FairmotPostProcess::GenerateresizedImageInfos(vector<MxpiBuffer*> mxpiBuffer,
                                                         const MxpiTensorPackageList srcMxpiTensorPackage,
                                                         vector <ResizedImageInfo> &resizedImageInfos)
