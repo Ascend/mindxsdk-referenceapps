@@ -36,6 +36,9 @@
 │   ├── yolov4_bs.om
 ├── BlockingQueue
 │   ├── BlockingQueue.h
+├── ReadConfig
+│   ├── GetConfig.h
+│   ├── GetConfig.cpp
 ├── VideoProcess
 │   ├── DataType.h
 │   ├── Hungarian.h
@@ -51,6 +54,7 @@
 │   ├── Yolov4Detection.cpp
 ├── CMakeLists.txt
 ├── main.cpp
+├── params.config
 ├── README.md
 └── run.sh
 ```
