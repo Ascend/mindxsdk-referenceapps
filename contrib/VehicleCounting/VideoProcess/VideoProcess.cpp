@@ -354,8 +354,8 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
     }
     cv::line(imgBgr, cv::Point(line[0].x,line[0].y),cv::Point(line[1].x,line[1].y),  cv::Scalar(0, 255, 0),2);
     cv::putText(imgBgr,"total:"+std::to_string(counter),cv::Point(point.x,point.y),0,0.8,cv::Scalar(0, 0, 255),2);
-    cv::putText(imgBgr,"lane1:"+std::to_string(counter_up),cv::Point(point1.x,point1.y),0,0.8,cv::Scalar(0, 255, 0),2);
-    cv::putText(imgBgr,"lane2:"+std::to_string(counter_down),cv::Point(point2.x,point2.y),0,0.8,cv::Scalar(255, 0, 0),2);
+    cv::putText(imgBgr,"lane_up:"+std::to_string(counter_up),cv::Point(point1.x,point1.y),0,0.8,cv::Scalar(0, 255, 0),2);
+    cv::putText(imgBgr,"lane_down:"+std::to_string(counter_down),cv::Point(point2.x,point2.y),0,0.8,cv::Scalar(255, 0, 0),2);
     frameIf.push(imgBgr);
     // 把Mat类型的图像矩阵保存为图像到指定位置。
     std::string fileName = "./result/result" + std::to_string(frameId+1) + ".jpg";
