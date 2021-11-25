@@ -158,7 +158,7 @@ det_threshold: 0.55
 # 非最大值抑制阈值
 nms_iouthreshold: 0.6
 
-# 计数参数显示在视频的左上角，使用样例视频，后台共3个参数：counter_up、counter_down、counter
+# 计数参数显示在视频的左上角，使用样例视频双车道计数，后台共3个参数：counter_up、counter_down、counter
   视频结果中分别显示为lane_up、lane_down、total。lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头
   行驶的车流统计数量，total表示总共的车流统计数量。若想计数单车道的车流，is_singlelane设置位1，lane_num设置位1或2
   表示只计数line_up或line_down。
