@@ -158,14 +158,14 @@ det_threshold: 0.55
 # 非最大值抑制阈值
 nms_iouthreshold: 0.6
 
-1、计数参数显示在视频的左上角，使用[样例视频](https://github.com/jjw-DL/YOLOV3-SORT/tree/master/input)，后台共3个参数：counter_up、counter_down、counter
+# 计数参数显示在视频的左上角，使用样例视频，后台共3个参数：counter_up、counter_down、counter
   视频结果中分别显示为lane_up、lane_down、total。lane_up表示朝向摄像头行驶的车流统计数量，lane_down表示原理摄像头
   行驶的车流统计数量，total表示总共的车流统计数量。若想计数单车道的车流，is_singlelane设置位1，lane_num设置位1或2
   表示只计数line_up或line_down。
 
-2、如果计数标志位是垂直方向或接近垂直，is_vertical设置为1，因为此时车流方向为东西方向，用x坐标计算更为准确
+# 如果计数标志位是垂直方向或接近垂直，is_vertical设置为1，因为此时车流方向为东西方向，用x坐标计算更为准确
 
-3、阈值修改，可通过修改检测置信度阈值det_threshold和非最大值抑制阈值nms_iouthreshold来调整检测效果。
+# 阈值修改，可通过修改检测置信度阈值det_threshold和非最大值抑制阈值nms_iouthreshold来调整检测效果。
 ```
 **步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
@@ -216,7 +216,7 @@ bash run.sh
 ```
 **步骤7** 查看结果
 
-执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
+使用[样例视频](https://github.com/jjw-DL/YOLOV3-SORT/tree/master/input)，执行run.sh完毕后，图片可视化结果会被保存在工程目录下result文件夹中，视频可视化结果会被保存在工程目录下result1文件夹中
 
 
 ## 5 常见问题
