@@ -378,6 +378,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
     device.devId = DEVICE_ID;
     APP_ERROR ret = MxBase::DeviceManager::GetInstance()->SetDevice(device);
     if (ret != APP_ERR_OK) {
+        stopFlag = true;
         LogError << "SetDevice failed";
         return;
     }
@@ -386,6 +387,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         // 从队列中去出解码后的帧数据
         APP_ERROR ret = blockingQueue->Pop(data, QUEUE_POP_WAIT_TIME);
         if (ret != APP_ERR_OK) {
+            stopFlag = true;
             LogError << "Pop failed";
             return;
         }
@@ -398,6 +400,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         // 图像缩放
         ret = yolov4Detection->ResizeFrame(result, VIDEO_HEIGHT, VIDEO_WIDTH,resizeFrame);
         if (ret != APP_ERR_OK) {
+            stopFlag = true;
             LogError << "Resize failed";
             return;
         }
@@ -433,13 +436,14 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         // 结果可视化
         ret = videoProcess->SaveResult(result, frameId, objInfos_);
         if (ret != APP_ERR_OK) {
+            stopFlag = true;
             LogError << "Save result failed, ret=" << ret << ".";
             return;
         }
         frameId++;
         if(cnt == frameId){
             stopFlag = true;
-            }
+        }
     }
 }
 // 获取每帧的可视化结果用于生成视频
