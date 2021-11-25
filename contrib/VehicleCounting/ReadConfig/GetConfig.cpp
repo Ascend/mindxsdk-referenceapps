@@ -104,8 +104,10 @@ bool ReadConfig(const string & filename, map<string, string> & m)
         return false;
     }
     string line, key, value;
+    bool is_null = true;
     while (getline(infile, line)) {
         if (AnalyseLine(line, key, value)) {
+            is_null = true;
             // 判断参数是否不为空
             if(value.empty()){
                 cout << "parameter "<<key<<" is empty!" << endl;
@@ -118,6 +120,10 @@ bool ReadConfig(const string & filename, map<string, string> & m)
             }
             m[key] = value;
         }
+    }
+    if(is_null){
+        cout << "config file is null!" << endl;
+        return false;
     }
     // 判断is_singlelane,lane_num,is_vertical取值的合法性
     for(uint32_t i=0;i<v1.size();i++){
