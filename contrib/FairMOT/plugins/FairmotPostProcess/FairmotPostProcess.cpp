@@ -545,18 +545,18 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "FairmotPostProcess process is not implemented");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "FairmotPostProcess process is not implemented");
     }
     // Get the data from buffer
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     if (metadata == nullptr) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_METADATA_IS_NULL, "Metadata is NULL, failed");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_METADATA_IS_NULL, "Metadata is NULL, failed");
     }
     // check the proto struct name
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != INPUT_SHAPE_TYPE) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTensorPackageList, failed");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTensorPackageList, failed");
     }
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<MxpiObjectList> dstMxpiObjectList = make_shared<MxpiObjectList>();
@@ -565,21 +565,21 @@ APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     // Get resizedImageInfos
     APP_ERROR ret = GenerateresizedImageInfos(mxpiBuffer, *srcMxpiTensorPackageListSptr, resizedImageInfos);
     if (ret != APP_ERR_OK) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "Generate resizedImageInfos failed");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "Generate resizedImageInfos failed");
     }
     // Generate sample output
     ret = GenerateOutput(*srcMxpiTensorPackageListSptr, resizedImageInfos, *dstMxpiObjectList, *dstMxpiFeatureVectorList);
     if (ret != APP_ERR_OK) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess gets inference information failed. Checkc tensor value!");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess gets inference information failed. Checkc tensor value!");
     }
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_OBJ, static_pointer_cast<void>(dstMxpiObjectList));
     if (ret != APP_ERR_OK) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiObjectList metadata failed.");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiObjectList metadata failed.");
     }
     ret = mxpiMetadataManager.AddProtoMetadata(METADATA_KEY_FEA, static_pointer_cast<void>(dstMxpiFeatureVectorList));
     if (ret != APP_ERR_OK) {
-        PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiFeatureVectorList metadata failed.");
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "FairmotPostProcess add MxpiFeatureVectorList metadata failed.");
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
