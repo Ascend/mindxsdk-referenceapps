@@ -135,7 +135,7 @@ video_width: 1280
 video_height: 720
 # 输出视频的帧率
 frame_rate: 15
-# 是否只计数单车道
+# 是否只计数单车道，1和0表示是或否
 is_singlelane: 0
 # 如果单车道，选择一个车道1或2表示line_up或line_down
 lane_num: 2
@@ -144,7 +144,7 @@ line_s_x: 0
 line_s_y: 100
 line_e_x: 1280
 line_e_y: 100
-# 计数标志位是否为垂直或接近垂直
+# 计数标志位是否为垂直或接近垂直，1和0表示是或否
 is_vertical: 0
 # 三个计数参数的显示位置
 point_x: 0
