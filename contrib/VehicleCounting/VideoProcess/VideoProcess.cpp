@@ -343,10 +343,10 @@ APP_ERROR VideoProcess::SaveResult(const std::shared_ptr<MxBase::MemoryData> res
                     counter_up++;
             }
             // 只计数单车道
-            if(is_singlelane&&lane_num==1){
+            if(is_singlelane&&lane_num==0){
                 counter_down=0;
             }
-            else if(is_singlelane&&lane_num==2){
+            else if(is_singlelane&&lane_num==1){
                 counter_up=0;
             }
             counter=counter_up+counter_down;
