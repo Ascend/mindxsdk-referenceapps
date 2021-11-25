@@ -30,9 +30,8 @@
 ├── data
 │   └── test1.264
 ├── model
-│   ├── aipp_yolov3_416_416.aippconfig
+│   ├── aipp_yolov4_608_608.config
 │   ├── coco.names
-│   ├── yolov3_tf_bs1_fp16.om
 │   ├── yolov4_bs.om
 ├── BlockingQueue
 │   ├── BlockingQueue.h
