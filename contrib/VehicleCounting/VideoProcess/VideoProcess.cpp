@@ -429,7 +429,6 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
         ret = tracker->GettrackResult(objInfos_);
         if (ret != APP_ERR_OK) {
             LogError << "No tracker";
-            return;
         }
         // 结果可视化
         ret = videoProcess->SaveResult(result, frameId, objInfos_);
