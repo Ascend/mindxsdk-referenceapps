@@ -1,9 +1,29 @@
 #include "GetConfig.h"
 #include <fstream>
 #include <iostream>
- 
+#include <sstream>
+#include <vector>
 using namespace std;
- 
+
+vector<string> v={"video_width","video_height","frame_rate","is_singlelane","lane_num","line_s_x",
+                  "line_s_y","line_e_x","line_e_y","is_vertical","point_x","point_y","point1_x",
+                  "point1_y","point2_x","point2_y","det_threshold","nms_iouthreshold"};
+bool isnum(string s)
+{
+    stringstream sin(s);
+    double t;
+    char p;
+    if(!(sin >> t)){
+        return false;
+    }
+    if(sin >> p){
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
 bool IsSpace(char c)
 {
     if (' ' == c || '\t' == c)
@@ -79,13 +99,27 @@ bool ReadConfig(const string & filename, map<string, string> & m)
     m.clear();
     ifstream infile(filename.c_str());
     if (!infile) {
-        cout << "file open error" << endl;
+        cout << "file open error!" << endl;
         return false;
     }
     string line, key, value;
     while (getline(infile, line)) {
         if (AnalyseLine(line, key, value)) {
+            if(value.empty()){
+                cout << "parameter "<<key<<" is empty!" << endl;
+                return false;
+            }
+            if(!isnum(value)){
+                cout << "parameter "<<key<<" is illegal!" << endl;
+                return false;
+            }
             m[key] = value;
+        }
+    }
+    for(uint32_t i=0;i<v.size();i++){
+        if(m.find(v[i])==m.end()){
+            cout << "parameter "<<key<<" do not exist!" << endl;
+            return false;
         }
     }
     infile.close();
