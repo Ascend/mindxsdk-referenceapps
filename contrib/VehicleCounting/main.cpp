@@ -34,10 +34,10 @@
 bool VideoProcess::stopFlag = false;
 std::vector<double> g_inferCost;
 namespace {
-    const uint32_t MAX_QUEUE_LENGHT = 2000;
-    const uint32_t VIDEO_WIDTH = 1280;
-    const uint32_t VIDEO_HEIGHT = 720;
-    const uint32_t frame_rate = 15;
+    uint32_t MAX_QUEUE_LENGHT = 2000;
+    uint32_t VIDEO_WIDTH = 1280;
+    uint32_t VIDEO_HEIGHT = 720;
+    uint32_t frame_rate = 15;
 }
 
 void SigHandler(int signal)
