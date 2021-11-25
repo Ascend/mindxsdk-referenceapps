@@ -107,7 +107,7 @@ bool ReadConfig(const string & filename, map<string, string> & m)
     bool is_null = true;
     while (getline(infile, line)) {
         if (AnalyseLine(line, key, value)) {
-            is_null = true;
+            is_null = false;
             // 判断参数是否不为空
             if(value.empty()){
                 cout << "parameter "<<key<<" is empty!" << endl;
