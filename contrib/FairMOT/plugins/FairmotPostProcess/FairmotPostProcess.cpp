@@ -535,8 +535,7 @@ APP_ERROR FairmotPostProcess::GenerateOutput(const MxTools::MxpiTensorPackageLis
     }
 }
 
-APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
-{
+APP_ERROR FairmotPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer) {
     LogInfo << "FairmotPostProcess::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
