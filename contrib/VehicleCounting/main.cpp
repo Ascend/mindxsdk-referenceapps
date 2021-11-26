@@ -75,7 +75,7 @@ int main() {
     std::string streamName = "./data/test1.264";
     // read config file and set params
     std::string m_sPath="./params.config";
-    std::map<string,string> m_mapConfig;
+    std::map<std::string,std::string> m_mapConfig;
     bool isfile=ReadConfig(m_sPath,m_mapConfig);
     if(!isfile){
         LogError << "Read config file failed";
