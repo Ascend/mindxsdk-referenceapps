@@ -87,12 +87,13 @@ int main(int argc, char* argv[])
 
     std::string streamName = "encoder";
     int inPluginId = 0;
+    int msTimeOut = 200000;
 
     auto start = std::chrono::system_clock::now();
 
     while (1) {
         // get stream output
-        MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, 200000);
+        MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, msTimeOut);
         if (output == nullptr) {
             LogError << "Failed to get pipeline output.";
             return ret;
