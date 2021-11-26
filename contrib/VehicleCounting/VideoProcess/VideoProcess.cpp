@@ -25,7 +25,7 @@
 #include "VideoProcess.h"
 
 namespace {
-    static std::vector<std::queue<center>> pts(10000);  //保存每个车辆轨迹的最新的20个bbox的中心点
+    static std::vector<std::queue<center>> pts(10000);  // 保存每个车辆轨迹的最新的20个bbox的中心点
     std::vector<center> line = {center{0,100}, center{1280, 100}};  // 计数所用的线段
     center point={0,20};
     center point1={0,50};
