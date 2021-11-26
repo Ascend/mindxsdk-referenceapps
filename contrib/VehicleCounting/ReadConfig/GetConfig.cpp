@@ -27,8 +27,9 @@ bool isnum(string s)
 
 bool IsSpace(char c)
 {
-    if (' ' == c || '\t' == c)
+    if (' ' == c || '\t' == c){
         return true;
+    }
     return false;
 }
  
@@ -69,8 +70,9 @@ void Trim(string & str)
  
 bool AnalyseLine(const string & line, string & key, string & value)
 {
-    if (line.empty())
+    if (line.empty()){
         return false;
+    }
     int start_pos = 0, end_pos = line.size() - 1, pos;
     if ((pos = line.find(COMMENT_CHAR)) != -1) {
         if (0 == pos) {  // 行的第一个字符就是注释字符
@@ -80,8 +82,9 @@ bool AnalyseLine(const string & line, string & key, string & value)
     }
     string new_line = line.substr(start_pos, start_pos + 1 - end_pos);  // 预处理，删除注释部分
  
-    if ((pos = new_line.find(':')) == -1)
+    if ((pos = new_line.find(':')) == -1){
         return false;  // 没有:号
+    }
 
     key = new_line.substr(0, pos);
     value = new_line.substr(pos + 1, end_pos + 1- (pos + 1));
