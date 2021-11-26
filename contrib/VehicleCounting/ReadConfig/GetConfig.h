@@ -10,4 +10,4 @@
 
 bool ReadConfig(const std::string & filename, std::map<std::string, std::string> & m);
 
-#endif //STREAM_PULL_SAMPLE_GETCONFIG_H
+#endif // STREAM_PULL_SAMPLE_GETCONFIG_H
