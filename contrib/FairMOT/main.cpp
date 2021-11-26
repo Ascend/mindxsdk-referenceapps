@@ -19,16 +19,8 @@
 #include <string>
 #include <vector>
 #include <cstring>
-#include <sys/time.h>
-#include <ctime>
-#include <stdio.h> 
-#include <chrono> 
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
-#include <sys/time.h>
-#include <ctime>
-#include <stdio.h> 
-#include <chrono> 
 
 namespace {
 std::string ReadPipelineConfig(const std::string& pipelineConfigPath)
@@ -89,8 +81,6 @@ int main(int argc, char* argv[])
     int inPluginId = 0;
     int msTimeOut = 200000;
 
-    auto start = std::chrono::system_clock::now();
-
     while (1) {
         // get stream output
         MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, msTimeOut);
@@ -124,11 +114,6 @@ int main(int argc, char* argv[])
 
         delete output;
 
-        auto end = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        double average = (double)(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den / frameCount;
-        std::cout << "fps: " << 1 / average << std::endl;
-
     }
 
     fclose(fp);
@@ -137,4 +122,3 @@ int main(int argc, char* argv[])
     mxStreamManager.DestroyAllStreams();
     return 0;
 }
-
