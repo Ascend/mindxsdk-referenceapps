@@ -106,8 +106,7 @@ APP_ERROR MxpiTrackIdReplaceClassName::GenerateSampleOutput(const MxpiObjectList
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
-{
+APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
     LogInfo << "MxpiTrackIdReplaceClassName::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
@@ -117,8 +116,7 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
     if (errorInfoPtr != nullptr) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "MxpiTrackIdReplaceClassName process is not implemented");
     }
-    // Get the data from buffer
-    shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
+    shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);  // Get the data from buffer
     shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
     if (metadata == nullptr) {
         shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>(); 
@@ -128,41 +126,32 @@ APP_ERROR MxpiTrackIdReplaceClassName::Process(std::vector<MxpiBuffer*>& mxpiBuf
         if (ret != APP_ERR_OK) {
             return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName add metadata failed.");
         }
-        // Send the data to downstream plugin
-        SendData(0, *buffer);
+        SendData(0, *buffer); // Send the data to downstream plugin
         LogInfo << "MxpiTrackIdReplaceClassName::Process end";
         return APP_ERR_OK;
     }
-    if (metadata2 == nullptr) {
-        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_METADATA_IS_NULL, "Metadata is NULL, failed");
-    }
-    // check whether the proto struct name is MxpiObjectList
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
-    if (desc->name() != SAMPLE_KEY) { 
-        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiObjectList, failed");
-    }
-    // check whether the proto struct name is MxpiTrackList
     google::protobuf::Message* msg2 = (google::protobuf::Message*)metadata2.get();
     const google::protobuf::Descriptor* desc2 = msg2->GetDescriptor();
-    if (desc2->name() != SAMPLE_KEY2) {  
+    if (desc->name() != SAMPLE_KEY) {    // check whether the proto struct name is MxpiObjectList
+        return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiObjectList, failed");
+    }
+    if (desc2->name() != SAMPLE_KEY2) {   // check whether the proto struct name is MxpiTrackList
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTrackLetList, failed");
     }
-    // Generate sample output
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
-    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*dstMxpiObjectListSptr);
+    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*dstMxpiObjectListSptr); // Generate sample output
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName gets inference information failed.");
     }
-    // Add Generated data to metedata
-    ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
+    ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr)); // Add Generated data to metedata
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackIdReplaceClassName add metadata failed.");
     }
-    // Send the data to downstream plugin
-    SendData(0, *buffer);
+    SendData(0, *buffer);  // Send the data to downstream plugin
     LogInfo << "MxpiTrackIdReplaceClassName::Process end";
     return APP_ERR_OK;
 }
