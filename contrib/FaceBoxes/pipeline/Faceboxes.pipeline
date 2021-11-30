@@ -1,0 +1,59 @@
+{
+    "Faceboxes": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                            "imageFormat": "jpg"
+                        },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                            "resizeType": "Resizer_KeepAspectRatio_Fit",
+                            "resizeHeight": "1024",
+                            "resizeWidth": "1024",
+                            "interpolation": "0",
+                            "paddingType": "Padding_RightDown",
+                            "paddingHeight":  "1024",
+                            "paddingWidth":  "1024",
+            	            "dataSource": "mxpi_imagedecoder0"
+                        },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+            "modelPath": "../models/faceboxes-b0_bs1.om"
+        },
+        "factory": "mxpi_tensorinfer",
+        "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "../models/faceboxes-b0_bs1.cfg",
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libfaceboxespostprocess.so"
+        },
+        "factory": "mxpi_objectpostprocessor",
+        "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                 "outputDataKeys": "mxpi_objectpostprocessor0"
+              },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsrc0": {
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "appsink0": {
+            "factory": "appsink"
+        }
+
+    }
+}

@@ -1,0 +1,28 @@
+{
+	"mmnet": {
+		"appsrc0": {
+			"factory": "appsrc",
+			"next": "mxpi_imagedecoder0"
+			
+		},
+		"appsink0": {
+			"factory": "appsink"
+		},
+		"mxpi_imagedecoder0": {
+			"factory": "mxpi_imagedecoder",
+			"next": "mxpi_imageresize0"
+		},
+		"mxpi_imageresize0": {
+			"factory": "mxpi_imageresize",
+			"next": "mxpi_tensorinfer0"
+		},
+		"mxpi_tensorinfer0": {
+			"props": {
+				"modelPath": "./model/mmnet.om"
+			},
+			"factory": "mxpi_tensorinfer",
+			"next":"appsink0"
+		}
+
+	}
+}
