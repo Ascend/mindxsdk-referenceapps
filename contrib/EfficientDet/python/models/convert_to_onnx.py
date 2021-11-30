@@ -56,7 +56,7 @@ def get_args():
 
 
 def convert_to_onnx(net, output_name, input_size):
-    f'''
+    '''
     Convert pytorch model to onnx model.
 
     Args:
