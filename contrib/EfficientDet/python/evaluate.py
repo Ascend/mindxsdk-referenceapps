@@ -27,18 +27,20 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 ap = argparse.ArgumentParser()
-ap.add_argument('-p', '--pipeline', type=str, default='pipeline/EfficientDet-d0.pipeline', help='pipeline of different models used to evaluate')
-ap.add_argument('-o', '--output', type=str, default='val2017_detection_result.json', help='name of detection result json file')
+ap.add_argument('-p', '--pipeline', type=str, default='pipeline/EfficientDet-d0.pipeline',
+                help='pipeline of different models used to evaluate')
+ap.add_argument('-o', '--output', type=str, default='val2017_detection_result.json',
+                help='name of detection result json file')
 args = ap.parse_args()
 
 
-def run_coco_eval(coco_gt, image_ids, dt_file_path):
+def run_coco_eval(coco_gt_obj, image_id_list, dt_file_path):
     """
     run coco evaluation process using COCO official evaluation tool, it will print evaluation result after execution
 
     Args:
-        coco_gt: path of ground truth json file
-        image_ids: image id list
+        coco_gt_obj: path of ground truth json file
+        image_id_list: image id list
         dt_file_path: path of detected result json file
 
     Returns:
@@ -47,9 +49,9 @@ def run_coco_eval(coco_gt, image_ids, dt_file_path):
     """
     annotation_type = 'bbox'
     print('Running test for {} results.'.format(annotation_type))
-    coco_dt = coco_gt.loadRes(dt_file_path)
-    coco_eval = COCOeval(coco_gt, coco_dt, annotation_type)
-    coco_eval.params.imgIds = image_ids
+    coco_dt = coco_gt_obj.loadRes(dt_file_path)
+    coco_eval = COCOeval(coco_gt_obj, coco_dt, annotation_type)
+    coco_eval.params.imgIds = image_id_list
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()

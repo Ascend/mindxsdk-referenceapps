@@ -1,7 +1,7 @@
+import os
 import argparse
 import yaml
 import torch
-import os
 
 from backbone import EfficientDetBackbone
 import onnx
@@ -67,21 +67,19 @@ def convert_to_onnx(net, output_name, input_size):
     Returns: None
 
     '''
-    input = Variable(torch.randn(1, 3, input_size, input_size))
+    model_input = Variable(torch.randn(1, 3, input_size, input_size))
     input_names = ['input']
     output_names = ['p3_out', 'p4_out', 'p5_out', 'p6_out', 'p7_out', 'regression', 'classification', 'anchors']
     output_path = 'onnx_models/' + output_name
-    torch.onnx.export(net, input, output_path, verbose=True, opset_version=11, input_names=input_names,
+    torch.onnx.export(net, model_input, output_path, verbose=True, opset_version=11, input_names=input_names,
                       output_names=output_names)
     
     print("====> check onnx model...")
-    import onnx
-    model = onnx.load(output_path)
-    onnx.checker.check_model(model)
+    onnx_model = onnx.load(output_path)
+    onnx.checker.check_model(onnx_model)
 
     print("====> Simplifying...")
     model_opt, check = onnxsim.simplify(output_path)
-    # print("model_opt", model_opt)
     simplified_output_path = os.path.join('onnx_models', 'simplified-' + output_name)
     onnx.save(model_opt, simplified_output_path)
     print("onnx model simplify Ok!")
