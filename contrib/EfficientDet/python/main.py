@@ -139,7 +139,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    fileName = '000000001650.jpg'
+    fileName = 'img.jpg'
     if os.path.exists(fileName) != 1:
         print("The test image does not exist. Exit.")
         exit()

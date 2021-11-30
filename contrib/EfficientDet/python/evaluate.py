@@ -16,6 +16,7 @@
 # limitations under the License.
 import sys
 import os
+import argparse
 import json
 import cv2
 import numpy as np
@@ -24,6 +25,11 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
+ap = argparse.ArgumentParser()
+ap.add_argument('-p', '--pipeline', type=str, default='pipeline/EfficientDet-d0.pipeline', help='pipeline of different models used to evaluate')
+ap.add_argument('-o', '--output', type=str, default='val2017_detection_result.json', help='name of detection result json file')
+args = ap.parse_args()
 
 
 def run_coco_eval(coco_gt, image_ids, dt_file_path):
@@ -58,7 +64,9 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    with open("pipeline/EfficientDet-d0.pipeline", "rb") as f:
+    pipeline_path = args.pipeline
+    print('pipeline path: ', pipeline_path)
+    with open(pipeline_path, "rb") as f:
         pipeline_str = f.read()
     ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
@@ -69,7 +77,8 @@ if __name__ == '__main__':
     data_input = MxDataInput()
     image_folder = 'dataset/val2017'
     annotation_file = 'dataset/annotations/instances_val2017.json'
-    detect_file = 'val2017_detection_result_update.json'
+    detect_file = args.output
+    print('output detection json file path: ', detect_file)
     coco_gt = COCO(annotation_file)
     image_ids = coco_gt.getImgIds()
     print('Test on coco2017 test-dev dataset, ', len(image_ids), ' images in total.')

@@ -31,7 +31,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换 Openpose 模型
 # Execute, transform Openpose model.
 
-atc --model=./onnx-models/simplified-efficient-det-d0-mindxsdk-order.onnx --framework=5 --output=efficient-det-d0-mindxsdk-order --soc_version=Ascend310 --input_shape="input:1, 3, 512, 512" --input_format=NCHW --output_type=FP32 --out_nodes='Concat_10954:0;Sigmoid_13291:0' --log=error --insert_op_conf=./insert_op.cfg
+atc --model=../onnx-models/simplified-efficient-det-d2-mindxsdk-order.onnx --framework=5 --output=../om-models/efficient-det-d2-mindxsdk-order --soc_version=Ascend310 --input_shape="input:1, 3, 768, 768" --input_format=NCHW --output_type=FP32 --out_nodes='Concat_15356:0;Sigmoid_17693:0' --log=error --insert_op_conf=./insert_op_d2.cfg
 
 # 删除除 om 模型外额外生成的文件
 # Remove miscellaneous
