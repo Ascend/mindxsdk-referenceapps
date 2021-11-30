@@ -14,7 +14,7 @@ EfficientDet 目标检测后处理插件基于 MindXSDK 开发，对图片中的
 
 ### 1.3 软件方案介绍
 
-基于MindX SDK的目标检测业务流程为：待检测图片通过 appsrc 插件输入，然后使用图像解码插件 mxpi_imagedecoder 对图片进行解码，再通过图像缩放插件 mxpi_imageresize 将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件 mxpi_tensorinfer 得到推理结果，推理结果输入 mxpi_objectpostprocessor 插件进行后处理，得到输入图片中所有的目标框位置和对应的置信度。最后通过输出插件 appsink 获取检测结果，0并在外部进行可视化，将检测结果标记到原图上，本系统的各模块及功能描述如表1所示：
+基于MindX SDK的目标检测业务流程为：待检测图片通过 appsrc 插件输入，然后使用图像解码插件 mxpi_imagedecoder 对图片进行解码，再通过图像缩放插件 mxpi_imageresize 将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件 mxpi_tensorinfer 得到推理结果，推理结果输入 mxpi_objectpostprocessor 插件进行后处理，得到输入图片中所有的目标框位置和对应的置信度。最后通过输出插件 appsink 获取检测结果，并在外部进行可视化，将检测结果标记到原图上，本系统的各模块及功能描述如表1所示：
 
 表1 系统方案各模块功能描述：
 
@@ -86,21 +86,17 @@ EfficientDet 目标检测后处理插件基于 MindXSDK 开发，对图片中的
 ### 1.5 技术实现流程图
 
 EfficientDet 的后处理插件接收模型推理插件输出的两个特征图，位置回归特征图 R 和分类特征图 C，其中 R 的形状大小为 1 x n x 4, n 表示模型在输入图片上预设的 anchors 个数，4 分别表示检测结果矩形框左上角点坐标 x, y 相对预设 anchor 的位移，以及检测框的宽、高相对预设 anchor 的比例，C 的形状大小为 1 x n x 90，90 表示每个检测框属于每个类的置信度值，该值位于 0-1 之间。后处理插件继承自 MindXSDK 的目标检测后处理插件基类，后处理插件中可以获得图片缩放插件传递的图像尺寸缩放信息 ResizedImageInfo，包括缩放前图片宽、高和缩放后图片宽、高。
-后处理插件从模型推理输出 R、C 和图像尺寸缩放信息 ResizedImageInfo 计算检测结果的整体流程如图 1 所示：
+后处理插件从模型推理输出 R、C 和图像尺寸缩放信息 ResizedImageInfo 计算检测结果的整体流程如下图所示：
 <center>
     <img src="./images/DetectionPipeline.png">
     <br>
-    <div style="color:orange;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">图1. 检测流程图 </div>
 </center>
 
-1. **计算预设 anchors** 根据 ResizedImageInfo 计算不同宽高比、不同大小、在原图上不同位置的预设 anchors，anchors 的形状为 n x 4, 4 表示每个 anchor 的左上角坐标和宽、高。
+1. **计算预设 anchors。** 根据 ResizedImageInfo 计算不同宽高比、不同大小、在原图上不同位置的预设 anchors，anchors 的形状为 n x 4, 4 表示每个 anchor 的左上角坐标和宽、高。
 
-2. **根据 R、anchors、ResizedImageInfo 计算每个检测框的位置和宽高** R 中的每个 4 元向量和 anchors 中每个 4 元向量是对应的，根据坐标位移和宽高比例计算得到真实的检测框位置和宽、高，同时去除置信度小于指定阈值 CT 的检测跨框。
+2. **根据 R、anchors、ResizedImageInfo 计算每个检测框的位置和宽高。** R 中的每个 4 元向量和 anchors 中每个 4 元向量是对应的，根据坐标位移和宽高比例计算得到真实的检测框位置和宽、高，同时去除置信度小于指定阈值 CT 的检测跨框。
 
-3. **NMS 去除冗余检测框** 对步骤 2 中剩余的检测框进行筛选，首先按照置信度对保留的检测框排序，从置信度高的检测框开始，去除于其 IOU 值超过指定阈值 IT 的检测框，得到最终的检测结果。
+3. **NMS 去除冗余检测框。** 对步骤 2 中剩余的检测框进行筛选，首先按照置信度对保留的检测框排序，从置信度高的检测框开始，去除于其 IOU 值超过指定阈值 IT 的检测框，得到最终的检测结果。
 
 
 ## 2 环境依赖
@@ -136,12 +132,11 @@ PYTHONPATH: python环境路径
 
 ## 3. 模型转换
 
-本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，pytorch 模型和 onnx 模型下载链接：https://pan.baidu.com/s/1NY73gUDMxQOhu7AMbsIDZQ 
-提取码：f3n8。
+本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，pytorch 模型和 onnx 模型下载链接：https://pan.baidu.com/s/1NY73gUDMxQOhu7AMbsIDZQ 提取码：f3n8。
 
 然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
-自行转换模型，步骤如下：
+自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models/onnx-models`` 文件夹下，文件名为：simplified-efficient-det-d0-mindxsdk-order.onnx。
 2. 进入 ``python/models`` 文件夹下执行命令：
 ```
@@ -267,10 +262,6 @@ python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2
 <center>
     <img src="./images/EvaluateInfo.png">
     <br>
-    <div style="color:orange;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">图2. 模型精度测试输出结果 </div>
 </center>
 其中圈出来的部分为模型在 COCO VAL 2017 数据集上，IOU 阈值为 0.50:0.05:0.95 时的精度值。
 
@@ -281,14 +272,10 @@ python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2
 
 **问题描述：**
 
-要求 MindXSDK 的版本至少为 2.0.2.1，否则出现 ImageResize 插件不能设置 "cvProcessor": "opencv" 属性问题：
+要求 MindXSDK 的版本至少为 2.0.2.1，否则出现 ImageResize 插件不能设置 "cvProcessor": "opencv" 属性问题，如下图所示：
 <center>
     <img src="./images/VersionError.png">
     <br>
-    <div style="color:orange;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">图3. MindXSDK 版本报错截图 </div>
 </center>
 
 **解决方案：**
