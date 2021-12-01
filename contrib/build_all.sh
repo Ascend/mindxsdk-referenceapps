@@ -34,7 +34,6 @@ SAMPLE_FOLDER=(
 	BertTextClassification/
 	SentimentAnalysis/
     RotateObjectDetection/
-    UltraFastLaneDetection/
 )
 
 
