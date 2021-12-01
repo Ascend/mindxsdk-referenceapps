@@ -58,9 +58,10 @@ namespace MxBase {
 
     bool EfficientdetPostProcess::IsValidTensors(const std::vector<TensorBase> &tensors) const {
         int channel_index = 2;
+        int regression_channel_num = 4;
         auto regression_shape = tensors[0].GetShape();
-        if (regression_shape[channel_index] != REGRESSION_CHANNEL_NUM) {
-            LogError << "last dimension of regression tensor is not " << REGRESSION_CHANNEL_NUM << ".";
+        if (regression_shape[channel_index] != regression_channel_num) {
+            LogError << "last dimension of regression tensor is not " << regression_channel_num << ".";
             return false;
         }
         auto classification_shape = tensors[1].GetShape();
@@ -255,11 +256,13 @@ namespace MxBase {
         int widthResizeBeforePadding, heightResizeBeforePadding;
         if (widthOriginal > heightOriginal) {
             widthResizeBeforePadding = widthResize;
-            heightResizeBeforePadding = static_cast<int>(static_cast<float>(widthResize) / widthOriginal * heightOriginal);
+            heightResizeBeforePadding = static_cast<int>(static_cast<float>(widthResize) /
+                    widthOriginal * heightOriginal);
         }
         else {
             heightResizeBeforePadding = heightResize;
-            widthResizeBeforePadding = static_cast<int>(static_cast<float>(heightResize) / heightOriginal * widthOriginal);
+            widthResizeBeforePadding = static_cast<int>(static_cast<float>(heightResize) /
+                    heightOriginal * widthOriginal);
         }
         std::vector<std::vector<float> > transformedAnchors {};
         // Generate bounding boxes from regression heatmap according to anchors
@@ -335,7 +338,8 @@ namespace MxBase {
         APP_ERROR ret = APP_ERR_OK;
         if (resizedImageInfos.size() == 0) {
             ret = APP_ERR_INPUT_NOT_MATCH;
-            LogError << GetError(ret) << "resizedImageInfos is not provided which is necessary for EfficientdetPostProcess.";
+            LogError << GetError(ret) << "resizedImageInfos is not provided which is necessary "
+                                         "for EfficientdetPostProcess.";
             return ret;
         }
         auto inputs = tensors;

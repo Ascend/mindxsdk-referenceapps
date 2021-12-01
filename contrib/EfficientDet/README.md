@@ -94,7 +94,7 @@ EfficientDet 的后处理插件接收模型推理插件输出的两个特征图�
 
 1. **计算预设 anchors。** 根据 ResizedImageInfo 计算不同宽高比、不同大小、在原图上不同位置的预设 anchors，anchors 的形状为 n x 4, 4 表示每个 anchor 的左上角坐标和宽、高。
 
-2. **根据 R、anchors、ResizedImageInfo 计算每个检测框的位置和宽高。** R 中的每个 4 元向量和 anchors 中每个 4 元向量是对应的，根据坐标位移和宽高比例计算得到真实的检测框位置和宽、高，同时去除置信度小于指定阈值 CT 的检测跨框。
+2. **根据 R、anchors、ResizedImageInfo、C 计算每个检测框的位置、宽高、类别以及类别置信度。** R 中的每个 4 元向量和 anchors 中每个 4 元向量是对应的，根据坐标位移和宽高比例计算得到真实的检测框位置和宽、高，同时去除置信度小于指定阈值 CT 的检测跨框。
 
 3. **NMS 去除冗余检测框。** 对步骤 2 中剩余的检测框进行筛选，首先按照置信度对保留的检测框排序，从置信度高的检测框开始，去除于其 IOU 值超过指定阈值 IT 的检测框，得到最终的检测结果。
 
@@ -168,7 +168,7 @@ git clone https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch.git
 ```
 python3.7 convert_to_onnx.py --compound_coef={compound_coef} --load_weights=weights/efficientdet-d{compound_coef}.pth --output-name=efficient-det-d{compound_coef}-mindxsdk-order.onnx
 ```
-将命令中 {compound_coef} 替换成具体值，取值范围为 [0, 8]，例如想要转换 efficientdet-d0.pth 为 onnx 模型时，执行命令：
+将命令中 {compound_coef} 替换成具体值，取值范围为 [0, 6]，例如想要转换 efficientdet-d0.pth 为 onnx 模型时，执行命令：
 ```
 python3.7 convert_to_onnx.py --compound_coef=0 --load_weights=weights/efficientdet-d0.pth --output-name=efficient-det-d0-mindxsdk-order.onnx
 ```
@@ -194,7 +194,7 @@ bash build.sh
 cp postprocess/build/libefficientdetpostprocess.so ${MX_SDK_HOME}/lib/modelpostprocessors/
 ```
 
-**步骤4** 图片检测。将一张图片放在项目目录下，命名为 img.jpg。在该图片上进行检测，从 ```main.py``` 中找到使用的 pipeline 文件路径，将其中的 ```${MX_SDK_HOME}```替换为实际路径，然后执行命令：
+**步骤4** 图片检测。将一张图片放在项目目录下，命名为 img.jpg，在该图片上进行检测，**从 ```main.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值**，然后执行命令：
 ```
 cd python
 python3.7 main.py
@@ -253,7 +253,7 @@ pip3.7 install pycocotools
 
 ```
 
-3. 执行命令：
+3. **从 ```evaluate.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，** 然后执行命令：
 ```
 cd python
 python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2017_detection_result_d0.json
@@ -281,3 +281,14 @@ python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2
 **解决方案：**
 
 确保 MindXSDK 版本至少为 2.0.2.1。
+
+### 5.2 未修改 pipeline 文件中的 ${MX_SDK_HOME} 值为具体值
+运行检测 demo 和评测时都需要将对应 pipeline 文件中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，否则会报错，如下图所示：
+<center>
+    <img src="./images/MindXSDKValueError.png">
+    <br>
+</center>
+
+**解决方案：**
+
+检测 main.py 和 evaluate.py 里所用的 pipeline 文件, 将文件中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值。

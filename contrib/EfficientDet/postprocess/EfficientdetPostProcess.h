@@ -20,19 +20,19 @@
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 #include <math.h>
 
-namespace {
-const int REGRESSION_CHANNEL_NUM = 4;
-const int DEFAULT_CLASS_NUM = 90;
-const int DEFAULT_ANCHOR_SCALE = 4;
-const float DEFAULT_SCORE_THRESH = 0.2;
-const float DEFAULT_IOU_THRESH = 0.2;
-const std::vector<float> DEFAULT_SCALES = {pow(2, 0), pow(2, 1.0 / 3.0), pow(2, 2.0 / 3.0)};
-const std::vector<int> DEFAULT_STRIDES = {int(pow(2, 3)), int(pow(2, 4)), int(pow(2, 5)), int(pow(2, 6)), int(pow(2, 7))};
-const std::vector<std::vector<float>> DEFAULT_RATIOS = {{1.0, 1.0}, {1.4, 0.7}, {0.7, 1.4}};
+namespace DefaultValues {
+    const int DEFAULT_CLASS_NUM = 90;
+    const int DEFAULT_ANCHOR_SCALE = 4;
+    const float DEFAULT_SCORE_THRESH = 0.2;
+    const float DEFAULT_IOU_THRESH = 0.2;
+    const std::vector<float> DEFAULT_SCALES = {pow(2, 0), pow(2, 1.0 / 3.0), pow(2, 2.0 / 3.0)};
+    const std::vector<int> DEFAULT_STRIDES = {int(pow(2, 3)), int(pow(2, 4)), int(pow(2, 5)), int(pow(2, 6)),
+                                              int(pow(2, 7))};
+    const std::vector<std::vector<float>> DEFAULT_RATIOS = {{1.0, 1.0}, {1.4, 0.7}, {0.7, 1.4}};
 }
 
 namespace MxBase {
-    class EfficientdetPostProcess: public ObjectPostProcessBase{
+    class EfficientdetPostProcess: public ObjectPostProcessBase {
 
     public:
         EfficientdetPostProcess() = default;
@@ -124,13 +124,13 @@ namespace MxBase {
 
 
     protected:
-        int anchorScale_ = DEFAULT_ANCHOR_SCALE;
-        int classNum_ = DEFAULT_CLASS_NUM;
-        float scoreThresh_ = DEFAULT_SCORE_THRESH; // Confidence threhold
-        float iouThresh_ = DEFAULT_IOU_THRESH; // Non-Maximum Suppression threshold
-        std::vector<int> strides_ = DEFAULT_STRIDES;
-        std::vector<float> scales_ = DEFAULT_SCALES;
-        std::vector<std::vector<float>> ratios_ = DEFAULT_RATIOS;
+        int anchorScale_ = DefaultValues::DEFAULT_ANCHOR_SCALE;
+        int classNum_ = DefaultValues::DEFAULT_CLASS_NUM;
+        float scoreThresh_ = DefaultValues::DEFAULT_SCORE_THRESH; // Confidence threhold
+        float iouThresh_ = DefaultValues::DEFAULT_IOU_THRESH; // Non-Maximum Suppression threshold
+        std::vector<int> strides_ = DefaultValues::DEFAULT_STRIDES;
+        std::vector<float> scales_ = DefaultValues::DEFAULT_SCALES;
+        std::vector<std::vector<float>> ratios_ = DefaultValues::DEFAULT_RATIOS;
 
     };
     extern "C" {

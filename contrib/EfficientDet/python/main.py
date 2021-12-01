@@ -132,14 +132,14 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    with open("pipeline/EfficientDet-d0.pipeline", "rb") as f:
+    with open("pipeline/EfficientDet-d6.pipeline", "rb") as f:
         pipeline_str = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    fileName = 'img.jpg'
+    fileName = 'birdlie.png'
     if os.path.exists(fileName) != 1:
         print("The test image does not exist. Exit.")
         exit()
@@ -157,7 +157,9 @@ if __name__ == '__main__':
         keyVec.push_back(key)
     infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
     if infer_result.size() == 0:
-        print("infer_result is null")
+        print("No object detected")
+        img = cv2.imread(fileName)
+        cv2.imwrite(fileName.split('.')[0] + "_detect_result.jpg", img)
         exit()
     if infer_result[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
@@ -184,7 +186,7 @@ if __name__ == '__main__':
         score = box['confidence']
         plot_one_box(img, [box['x0'], box['y0'], box['x1'], box['y1']], label=class_name, box_score=score,
                      color=color_list[class_id])
-    cv2.imwrite(fileName.split('.')[0] + "_detect_result.jpg", img)
+    cv2.imwrite(fileName.split('.')[0] + "_detect_result_d6.jpg", img)
 
     # destroy streams
     streamManagerApi.DestroyAllStreams()
