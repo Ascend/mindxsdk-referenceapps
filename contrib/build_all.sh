@@ -32,6 +32,8 @@ SAMPLE_FOLDER=(
 	HeadPoseEstimation/
 	FaceBoxes/
 	BertTextClassification/
+    SentimentAnalysis/
+    RotateObjectDetection/
     FairMOT/
 )
 
