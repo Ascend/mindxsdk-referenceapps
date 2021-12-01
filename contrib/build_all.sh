@@ -32,7 +32,7 @@ SAMPLE_FOLDER=(
 	HeadPoseEstimation/
 	BertTextClassification/
 	SentimentAnalysis/
-    UltraFastLaneDetection
+    UltraFastLaneDetection/
 )
 
 
