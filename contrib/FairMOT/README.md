@@ -90,7 +90,7 @@ export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${i
 export ASCEND_OPP_PATH=${install_path}/opp
 export ASCEND_AICPU_PATH=${install_path}
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
+export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
 ```
 
