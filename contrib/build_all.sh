@@ -30,8 +30,10 @@ SAMPLE_FOLDER=(
 	FatigueDrivingRecognition/
 	CartoonGANPicture/
 	HeadPoseEstimation/
+	FaceBoxes/
 	BertTextClassification/
 	SentimentAnalysis/
+    RotateObjectDetection/
     UltraFastLaneDetection/
 )
 
