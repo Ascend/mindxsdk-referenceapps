@@ -39,6 +39,7 @@ if __name__ == '__main__':
             "mxpi_imageresize0": {
                 "props": {
                     "dataSource": "mxpi_imagedecoder0",
+                    "resizeType": "Resizer_KeepAspectRatio_Fit",
                     "resizeHeight": "288",
                     "resizeWidth": "800"
                 },
