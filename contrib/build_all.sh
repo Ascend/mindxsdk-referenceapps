@@ -35,7 +35,6 @@ SAMPLE_FOLDER=(
     SentimentAnalysis/
     RotateObjectDetection/
     FairMOT/
-    UltraFastLaneDetection/
 )
 
 
