@@ -132,18 +132,19 @@ PYTHONPATH: python环境路径
 
 ## 3. 模型转换
 
-本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，pytorch 模型和 onnx 模型下载链接：https://pan.baidu.com/s/1NY73gUDMxQOhu7AMbsIDZQ 提取码：f3n8。
-
-然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。本项目中使用的 onnx 模型和 om 模型链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/models.zip。
 
 自行转换模型步骤如下：
-1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models/onnx-models`` 文件夹下，文件名为：simplified-efficient-det-d0-mindxsdk-order.onnx。
+1. 从上述 onnx 模型下载链接中下载 onnx 模型 simplified-efficient-det-d0-mindxsdk-order.onnx 和 simplified-efficient-det-d6-mindxsdk-order.onnx 至 ``python/models/onnx-models`` 文件夹下。
 2. 进入 ``python/models`` 文件夹下执行命令：
 ```
 bash model_convertion.sh
 ```
-执行该命令后会在当前文件夹下生成项目需要的模型文件 efficient-det-d0-mindxsdk-order.om。执行后终端输出为：
+执行该命令后会在当前文件夹下生成项目需要的模型文件 efficient-det-d0-mindxsdk-order.om 和 efficient-det-d6-mindxsdk-order.om，执行后终端输出为：
 ```
+ATC start working now, please wait for a moment.
+ATC run success, welcome to the next use.
+
 ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
@@ -208,7 +209,7 @@ python3.7 main.py
 pip3.7 install pycocotools
 ```
 
-2. 下载 COCO VAL 2017 数据集，下载链接：链接：https://pan.baidu.com/s/1Fa1DJTBMBEpEp-YkgqYTiw 提取码：ascr，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：链接：https://pan.baidu.com/s/1xbHtlR3WtJeGh3lSA0ThCg 提取码：nsi6，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：
+2. 下载 COCO VAL 2017 数据集和标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/data.zip，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件和标注数据压缩文件都解压至 ``python/dataset`` 目录下。确保解压后的 python 目录结构为：
 ```
 .
 ├── dataset
