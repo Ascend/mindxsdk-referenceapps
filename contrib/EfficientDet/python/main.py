@@ -111,6 +111,8 @@ def plot_one_box(origin_img, coord, label=None, box_score=None, color=None, line
 
     """
     tl = line_thickness or int(round(0.001 * max(origin_img.shape[0:2])))  # line thickness
+    if tl < 1:
+        tl = 1
     c1, c2 = (int(coord[0]), int(coord[1])), (int(coord[2]), int(coord[3]))
     cv2.rectangle(origin_img, c1, c2, color=color, thickness=tl)
     if label:
@@ -139,7 +141,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    fileName = 'birdlie.png'
+    fileName = 'img.jpg'
     if os.path.exists(fileName) != 1:
         print("The test image does not exist. Exit.")
         exit()
@@ -186,7 +188,7 @@ if __name__ == '__main__':
         score = box['confidence']
         plot_one_box(img, [box['x0'], box['y0'], box['x1'], box['y1']], label=class_name, box_score=score,
                      color=color_list[class_id])
-    cv2.imwrite(fileName.split('.')[0] + "_detect_result_d6.jpg", img)
+    cv2.imwrite(fileName.split('.')[0] + "_detect_result.jpg", img)
 
     # destroy streams
     streamManagerApi.DestroyAllStreams()
