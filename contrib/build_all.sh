@@ -18,7 +18,7 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-    ActionRecognition/
+	ActionRecognition/
 	CrowdCounting/
     mxBase_wheatDetection/
 	EdgeDetectionPicture/
@@ -32,8 +32,10 @@ SAMPLE_FOLDER=(
 	HeadPoseEstimation/
 	FaceBoxes/
 	BertTextClassification/
-	SentimentAnalysis/
+    SentimentAnalysis/
     RotateObjectDetection/
+    FairMOT/
+    UltraFastLaneDetection/
 )
 
 
