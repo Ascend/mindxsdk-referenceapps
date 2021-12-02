@@ -41,7 +41,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "models/efficient-det-eval.cfg",
                 "labelPath": "models/coco.names",
-                "postProcessLibPath": "/home/nku_wang1/MindX_SDK_Update/mxVision/lib/modelpostprocessors/libefficientdetpostprocess.so"
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libefficientdetpostprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "appsink0"
