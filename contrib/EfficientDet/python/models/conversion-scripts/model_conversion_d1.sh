@@ -15,8 +15,8 @@
 # limitations under the License.
 
 
-# 该脚本用来将 pth 模型文件转换成.om模型文件
-# This is used to convert pth model file to .om model file.
+# 该脚本用来将 onnx 模型文件转换成.om模型文件
+# This is used to convert onnx model file to .om model file.
 
 
 # 设置环境变量（请确认install_path路径是否正确）
@@ -28,10 +28,10 @@ export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/p
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
-# 执行，转换 Openpose 模型
-# Execute, transform Openpose model.
+# 执行，转换 EfficientDet-d1 模型
+# Execute, transform EfficientDet-d1 model.
 
-atc --model=../onnx-models/simplified-efficient-det-d6-mindxsdk-order.onnx --framework=5 --output=../om-models/efficient-det-d6-mindxsdk-order --soc_version=Ascend310 --input_shape="input:1, 3, 1280, 1280" --input_format=NCHW --output_type=FP32 --out_nodes='Concat_25609:0;Sigmoid_29066:0' --log=error --insert_op_conf=./insert_op_d6.cfg
+atc --model=../onnx-models/simplified-efficient-det-d1-mindxsdk-order.onnx --framework=5 --output=../efficient-det-d1-mindxsdk-order --soc_version=Ascend310 --input_shape="input:1, 3, 640, 640" --input_format=NCHW --output_type=FP32 --out_nodes='Concat_14124:0;Sigmoid_16461:0' --log=error --insert_op_conf=../aipp-configs/insert_op_d1.cfg
 
 # 删除除 om 模型外额外生成的文件
 # Remove miscellaneous

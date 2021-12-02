@@ -39,6 +39,7 @@ EfficientDet 目标检测后处理插件基于 MindXSDK 开发，对图片中的
 ├── images
 │   ├── DetectionPipeline.png
 │   ├── EvaluateInfo.png
+│   ├── EvaluateInfoPrevious.png
 │   └── VersionError.png
 ├── postprocess
 │   ├── build.sh
@@ -49,29 +50,31 @@ EfficientDet 目标检测后处理插件基于 MindXSDK 开发，对图片中的
 │   ├── evaluate.py
 │   ├── main.py
 │   ├── models
+│   │   ├── aipp-configs
+│   │   │   ├── insert_op_d0.cfg
+│   │   │   ├── insert_op_d0_previous_version.cfg
+│   │   │   ├── insert_op_d1.cfg
+│   │   │   ├── insert_op_d2.cfg
+│   │   │   ├── insert_op_d3.cfg
+│   │   │   ├── insert_op_d4.cfg
+│   │   │   ├── insert_op_d5.cfg
+│   │   │   └── insert_op_d6.cfg
 │   │   ├── coco.names
+│   │   ├── conversion-scripts
+│   │   │   ├── model_conversion_d0_previous_version.sh
+│   │   │   ├── model_conversion_d0.sh
+│   │   │   ├── model_conversion_d1.sh
+│   │   │   ├── model_conversion_d2.sh
+│   │   │   ├── model_conversion_d3.sh
+│   │   │   ├── model_conversion_d4.sh
+│   │   │   ├── model_conversion_d5.sh
+│   │   │   └── model_conversion_d6.sh
 │   │   ├── efficient-det.cfg
 │   │   ├── efficient-det-eval.cfg
-│   │   ├── insert_op.cfg
-│   │   ├── model_conversion.sh
-│   │   ├── onnx-models
-│   │   └── other-conversion-scripts
-│   │       ├── insert_op_d0.cfg
-│   │       ├── insert_op_d1.cfg
-│   │       ├── insert_op_d2.cfg
-│   │       ├── insert_op_d3.cfg
-│   │       ├── insert_op_d4.cfg
-│   │       ├── insert_op_d5.cfg
-│   │       ├── insert_op_d6.cfg
-│   │       ├── model_conversion_d0.sh
-│   │       ├── model_conversion_d1.sh
-│   │       ├── model_conversion_d2.sh
-│   │       ├── model_conversion_d3.sh
-│   │       ├── model_conversion_d4.sh
-│   │       ├── model_conversion_d5.sh
-│   │       └── model_conversion_d6.sh
+│   │   └── onnx-models
 │   └── pipeline
 │       ├── EfficientDet-d0.pipeline
+│       ├── EfficientDet-d0-previous-version.pipeline
 │       ├── EfficientDet-d1.pipeline
 │       ├── EfficientDet-d2.pipeline
 │       ├── EfficientDet-d3.pipeline
@@ -136,17 +139,16 @@ PYTHONPATH: python环境路径
 
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型 simplified-efficient-det-d0-mindxsdk-order.onnx 和 simplified-efficient-det-d6-mindxsdk-order.onnx 至 ``python/models/onnx-models`` 文件夹下。
-2. 进入 ``python/models`` 文件夹下执行命令：
+2. 进入 ``python/models/conversion-scripts`` 文件夹下依次执行命令：
 ```
-bash model_convertion.sh
+bash model_convertion_d0.sh
+bash model_convertion_d6.sh
 ```
-执行该命令后会在当前文件夹下生成项目需要的模型文件 efficient-det-d0-mindxsdk-order.om 和 efficient-det-d6-mindxsdk-order.om，执行后终端输出为：
+执行后会在当前文件夹下生成项目需要的模型文件 efficient-det-d0-mindxsdk-order.om 和 efficient-det-d6-mindxsdk-order.om，转换成功的终端输出为：
 ```
 ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 
-ATC start working now, please wait for a moment.
-ATC run success, welcome to the next use.
 ```
 表示命令执行成功。
 
@@ -176,7 +178,7 @@ python3.7 convert_to_onnx.py --compound_coef=0 --load_weights=weights/efficientd
 执行成功后会 ```onnx-models``` 目录下生成从 pytorch 模型转化得到的 onnx 模型，simplified-efficient-det-d{compound_coef}-mindxsdk-order.onnx 
 
 7. 成功转换得到 onnx 文件后，将 onnx 文件拷贝到**本项目目录下** 的``python/models/onnx-models`` 目录下，然后将其转换为 om 模型，转换步骤如下：
-- 进入 ``python/models/other-conversion-scripts`` 目录；
+- 进入 ``python/models/conversion-scripts`` 目录；
 - 执行命令：
 ```
 bash model_convertion_d{compound_coef}.sh
@@ -209,7 +211,7 @@ python3.7 main.py
 pip3.7 install pycocotools
 ```
 
-2. 下载 COCO VAL 2017 数据集和标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/data.zip，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件和标注数据压缩文件都解压至 ``python/dataset`` 目录下。确保解压后的 python 目录结构为：
+2. 下载 COCO VAL 2017 数据集和标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/data.zip，  在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件和标注数据压缩文件都解压至 ``python/dataset`` 目录下。确保解压后的 python 目录结构为：
 ```
 .
 ├── dataset
@@ -222,29 +224,31 @@ pip3.7 install pycocotools
 ├── evaluate.py
 ├── main.py
 ├── models
+│   ├── aipp-configs
+│   │   ├── insert_op_d0.cfg
+│   │   ├── insert_op_d0_previous_version.cfg
+│   │   ├── insert_op_d1.cfg
+│   │   ├── insert_op_d2.cfg
+│   │   ├── insert_op_d3.cfg
+│   │   ├── insert_op_d4.cfg
+│   │   ├── insert_op_d5.cfg
+│   │   └── insert_op_d6.cfg
 │   ├── coco.names
+│   ├── conversion-scripts
+│   │   ├── model_conversion_d0_previous_version.sh
+│   │   ├── model_conversion_d0.sh
+│   │   ├── model_conversion_d1.sh
+│   │   ├── model_conversion_d2.sh
+│   │   ├── model_conversion_d3.sh
+│   │   ├── model_conversion_d4.sh
+│   │   ├── model_conversion_d5.sh
+│   │   └── model_conversion_d6.sh
 │   ├── efficient-det.cfg
 │   ├── efficient-det-eval.cfg
-│   ├── insert_op.cfg
-│   ├── model_conversion.sh
-│   ├── onnx-models
-│   └── other-conversion-scripts
-│       ├── insert_op_d0.cfg
-│       ├── insert_op_d1.cfg
-│       ├── insert_op_d2.cfg
-│       ├── insert_op_d3.cfg
-│       ├── insert_op_d4.cfg
-│       ├── insert_op_d5.cfg
-│       ├── insert_op_d6.cfg
-│       ├── model_conversion_d0.sh
-│       ├── model_conversion_d1.sh
-│       ├── model_conversion_d2.sh
-│       ├── model_conversion_d3.sh
-│       ├── model_conversion_d4.sh
-│       ├── model_conversion_d5.sh
-│       └── model_conversion_d6.sh
+│   └── onnx-models
 └── pipeline
     ├── EfficientDet-d0.pipeline
+    ├── EfficientDet-d0-previous-version.pipeline
     ├── EfficientDet-d1.pipeline
     ├── EfficientDet-d2.pipeline
     ├── EfficientDet-d3.pipeline
@@ -264,7 +268,26 @@ python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2
     <img src="./images/EvaluateInfo.png">
     <br>
 </center>
-其中圈出来的部分为模型在 COCO VAL 2017 数据集上，IOU 阈值为 0.50:0.05:0.95 时的精度值。
+其中圈出来的部分为模型在 COCO VAL 2017 数据集上，IOU 阈值为 0.50:0.05:0.95 时的精度值为 0.325。
+
+该指标是基于 MindXSDK 2.0.2.1 版本的评测结果，此时 pipeline 的流程为将 ImageDecoder 插件的输出格式类型设置为 RGB，进入 ImageResize 插件，该插件要想接收 RGB 格式输入必须将 "cvProcessor" 属性设置为 "opencv"，该版本支持同时将 "resizeType" 属性设置为 "Resizer_KeepAspectRatio_Fit"，这样该插件可以实现接收 RGB 格式输入同时按照宽高比例缩放的功能，转换 om 模型时的 aippconfig 配置中 "input_format" 属性值设置为 "RGB888_U8" 即可。
+
+如果项目环境是基于 MindXSDK 2.0.2 版本时，该版本下将 ImageResize 插件的 "cvProcessor" 属性设置为 "opencv" 时，无法实现将 "resizeType" 属性设置为 "Resizer_KeepAspectRatio_Fit", 报错信息参考第 5 节常见问题中的 5.1，这种情形下无法在 pipeline 中配置模型输入为 RGB 格式同时按照宽高比例缩放，只能在转换 om 模型时设置色域转换模式为 YUV420SP_U8 to RGB，使得模型输入为 RGB 格式，同时在 pipeline 中不设置 ImageResize 插件的 "cvProcessor" 属性值，只设置 "resizeType" 属性为 "Resizer_KeepAspectRatio_Fit"，这样可以实现模型输入为 RGB 格式同时按照宽高比例缩放。这种情形下的模型转换和评测步骤为：
+1. 转换模型。进入 ``python/models/conversion-scripts`` 文件夹下执行命令：
+```
+bash model_convertion_d0_previous_version.sh
+```
+执行成功后在 ``python/models`` 文件夹下生成 efficient-det-d0-mindxsdk-order-previous-version.om 模型文件。
+2. 评测。将 ```python/pipeline/EfficientDet-d0-previous-version.pipeline``` 中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，然后执行命令：
+```
+python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0-previous-version.pipeline --output=val2017_detection_result_d0_previous_version.json
+```
+命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_detection_result_d0_previous_version.json 检测结果文件。输出结果如下图所示：
+<center>
+    <img src="./images/EvaluateInfoPrevious.png">
+    <br>
+</center>
+其中圈出来的部分为模型在 COCO VAL 2017 数据集上，IOU 阈值为 0.50:0.05:0.95 时的精度值为 0.310。采用这种 pipeline 配置和模型转换方式得到的 om 模型评测指标会稍有下降，但相应的模型性能会有所提升。
 
 ## 5 常见问题
 
