@@ -27,6 +27,12 @@ namespace {
 }
 
 namespace MxBase {
+    EfficientdetPostProcess::EfficientdetPostProcess(const EfficientdetPostProcess &other) {
+        classNum_ = other.classNum_;
+        iouThresh_ = other.iouThresh_;
+        scoreThresh_ = other.scoreThresh_;
+    }
+
     EfficientdetPostProcess &EfficientdetPostProcess::operator=(const EfficientdetPostProcess &other) {
         if (this == &other) {
             return *this;

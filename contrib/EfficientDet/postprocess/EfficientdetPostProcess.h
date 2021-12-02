@@ -39,7 +39,7 @@ namespace MxBase {
 
         ~EfficientdetPostProcess() = default;
 
-        EfficientdetPostProcess(const EfficientdetPostProcess &other) = default;
+        EfficientdetPostProcess(const EfficientdetPostProcess &other);
 
         EfficientdetPostProcess &operator=(const EfficientdetPostProcess &other);
 
