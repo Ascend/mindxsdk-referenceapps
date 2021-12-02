@@ -102,7 +102,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
 
 `pip3.7.5 install -r requirements.txt`
 
-**步骤9：** 请在昇腾社区下载特征检索源码包 https://www.hiascend.com/developer/mindx-sdk/applicationDetails/60172218 ，并根据readme来搭建特征检索库。如果不需要接入特征检索功能，此步骤可忽略。
+**步骤9：** 请在昇腾社区下载特征检索源码包https://www.hiascend.com/software/mindx-sdk/mxindex，并根据readme来搭建特征检索库。如果不需要接入特征检索功能，此步骤可忽略。
 
 注：当前版本特征检索库缺少本例中人脸检索所需部分算子（Flat，IVFSQ8），需自行生成，请参考特征检索readme 4.2.2：
 

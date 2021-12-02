@@ -1,0 +1,26 @@
+syntax = "proto3";
+package mxpirotateobjproto;
+message MxpiMetaHeader
+{
+    string parentName = 1;
+    int32 memberId = 2;
+    string dataSource = 3;
+}
+
+message MxpiRotateobjProto
+{
+    repeated MxpiMetaHeader headerVec = 1;
+    float x_c = 2;
+    float y_c = 3;
+    float width = 4;
+    float height = 5;
+    float angle = 6;
+    float confidence = 7;
+    int32 classID = 8;
+    string className = 9;
+}
+
+message MxpiRotateobjProtoList
+{
+    repeated MxpiRotateobjProto rotateobjProtoVec = 1;
+}
