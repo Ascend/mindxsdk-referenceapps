@@ -146,7 +146,7 @@ make -j# 执行make命令对代码进行编译
 ```shell
 python3.7 main_text.py # 自行替换图片名称
 ```
-注意：图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集（https://xingangpan.github.io/projects/CULane.html全部为车内视角）
+注意：图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集全部为车内视角（https://xingangpan.github.io/projects/CULane.html）
 
 
 
