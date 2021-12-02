@@ -82,9 +82,12 @@ if __name__ == '__main__':
     dataInput = MxDataInput()
     if os.path.exists(img) != 1:
         print("The test image does not exist.")
-
-    with open(img, 'rb') as f:
+    try :
+        with open(img, 'rb') as f:
         dataInput.data = f.read()
+    except FileNotFoundError:
+        print(img, "doesn't exist. Exit.")
+        exit()
     streamName = b'detection'
     inPluginId = 0
     # 根据流名将检测目标传入流中
