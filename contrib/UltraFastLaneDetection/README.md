@@ -18,50 +18,25 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 ###  1.3 代码目录结构与说明
 
-本样例工程名称为Ultra-Fast-Lane-Detection-master，工程目录如下图所示：
+本样例工程名称为UltraFastLaneDetection，工程目录如下图所示：
 
 ```
-├── config #两种模型数据集索引
-  ├── culane.py
-  ├── tusimple.py  
-├── cpp #C++语言运行
-  ├── src
-    ├── main.cpp
+├── PostProcess #后处理
   ├── CMakeLists.txt
-  ├── build.sh  
-├── data #模型运行所需函数
-  ├── constant.py
-  ├── dataloader.py
-  ├── dataset.py
-  ├── mytransforms.py
-├── evaluation 
-  ├── culane
-  ├── tusimple 
-  ├── eval_wrapper.py
-├── model #模型加载文件 
-  ├── backbone.py
-  ├── model.py 
-├── scripts
-  ├── convert_tusimple.py
-├── utils #运行函数
-  ├── common.py
-  ├── config.py 
-  ├── dist_utils.py 
-  ├── factory.py 
-  ├── loss.py
-  ├── metrics.py
-├── .gitattributes
-├── .gitignore
-├── culane_18.onnx
-├── culane_18.pth
-├── demo.py  #程序运行可视化命令
-├── export.py #模型转换命令
-├── INSTALL.md
-├── launch_training.sh
-├── LICENSE
-├── README.md
-├── requirements.txt
-```
+  ├── LanePostProcess.cpp 
+  ├── LanePostProcess.h
+  ├── build.sh 
+  ├── run.sh
+├── imgs # 流程图  
+├── model
+  ├── aipp_culane.config
+  ├── coco.names
+  ├── yolov3_tf_bs1_fp16.cfg
+├── README.md 
+├── build.sh 
+
+├── main_text.py
+├── Lane.pipeline
 
 ### 1.4 技术实现流程图
 
@@ -146,8 +121,9 @@ make -j# 执行make命令对代码进行编译
 ```shell
 python3.7 main_text.py # 自行替换图片名称
 ```
-注意：图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集全部为车内视角（https://xingangpan.github.io/projects/CULane.html）
-
+注意：
+训练图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集全部为车内视角（https://xingangpan.github.io/projects/CULane.html）
+测试图片尺寸无相关要求，建议车道线清晰且为车内行驶视角
 
 
 
