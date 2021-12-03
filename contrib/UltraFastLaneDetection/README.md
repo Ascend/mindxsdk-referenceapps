@@ -38,6 +38,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 ├── main_text.py
 ├── Lane.pipeline
 
+```
+
 ### 1.4 技术实现流程图
 
 ![技术流程图](.\imgs\技术流程图.jpg)
