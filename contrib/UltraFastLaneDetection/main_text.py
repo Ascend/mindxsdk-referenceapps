@@ -65,10 +65,10 @@ if __name__ == '__main__':
     # #后处理___________________________________________________________________________________________________________________
     vis = cv2.imread(img_path)
     img_size = vis.shape
-    img_w, img_h = 1640, 590
+    img_w, img_h = 1640, 590  # 模型训练需要输入图片分辨率
     vis_resize = cv2.resize(vis, (img_w,img_h), interpolation=cv2.INTER_CUBIC)
-    cls_num_per_lane = 18
-    row_anchor = [121, 131, 141, 150, 160, 170, 180, 189, 199, 209, 219, 228, 238, 248, 258, 267, 277, 287]
+    cls_num_per_lane = 18   # 车道线画点最大值
+    row_anchor = [121, 131, 141, 150, 160, 170, 180, 189, 199, 209, 219, 228, 238, 248, 258, 267, 277, 287]  # 模型训练锚点
     col_sample = np.linspace(0, 800 - 1, 200)
     col_sample_w = col_sample[1] - col_sample[0]
     res_path = img + '_r' + img_format
@@ -76,8 +76,7 @@ if __name__ == '__main__':
         if np.sum(out_j[:, i] != 0) > 2:
             for k in range(out_j.shape[0]):
                 if out_j[k, i] > 0:
-                    ppp = (int(out_j[k, i] * col_sample_w * img_w / 800) - 1,int(img_h * (row_anchor[cls_num_per_lane - 1 - k] / 288)) - 1)
+                    ppp = (int(out_j[k, i] * col_sample_w * img_w / 800) - 1,int(img_h * (row_anchor[cls_num_per_lane - 1 - k] / 288)) - 1)   # 坐标点计算
                     cv2.circle(vis, ppp, 5, (0, 255, 0), -1)
-
     vis_res = cv2.resize(vis_resize, (img_size[1], img_size[0]), interpolation=cv2.INTER_CUBIC)       
     cv2.imwrite(res_path, vis_res)
