@@ -1,0 +1,58 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0",
+                "cvProcessor": "opencv",
+                "outputDataFormat": "RGB"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeType": "Resizer_KeepAspectRatio_Fit",
+                "resizeHeight": "1024",
+                "resizeWidth": "1024",
+                "cvProcessor": "opencv"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "models/efficient-det-d4-mindxsdk-order.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "models/efficient-det.cfg",
+                "labelPath": "models/coco.names",
+                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libefficientdetpostprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}

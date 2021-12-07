@@ -12,31 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
-set -e 
+
+set -e
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-	ActionRecognition/
-	CrowdCounting/
-    mxBase_wheatDetection/
-	EdgeDetectionPicture/
-    HelmetIdentification/
-    Individual/
-    human_segmentation/
-	OpenposeKeypointDetection/
-	PersonCount/
-	FatigueDrivingRecognition/
-	CartoonGANPicture/
-	HeadPoseEstimation/
-	FaceBoxes/
-	BertTextClassification/
-    RTM3DTargetDetection/
-    EfficientDet/
-    SentimentAnalysis/
-    RotateObjectDetection/
-    FairMOT/
+	/postprocess/
 )
 
 
