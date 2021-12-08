@@ -20,12 +20,10 @@ torch.backends.cudnn.benchmark = True
 cls_num_per_lane = 18
 griding_num = 200
 backbone = 18
-
 net = parsingNet(pretrained = False,backbone='18', cls_dim = (griding_num+1,cls_num_per_lane,4),use_aux=False)
 
 # Change test_model where your model stored.
 test_model = r'./model/culane_18.pth'
-
 state_dict = torch.load(test_model, map_location='cpu')['model'] # CPU
 compatible_state_dict = {}
 for k, v in state_dict.items():
@@ -33,7 +31,6 @@ for k, v in state_dict.items():
         compatible_state_dict[k[7:]] = v
     else:
         compatible_state_dict[k] = v
-
 net.load_state_dict(compatible_state_dict, strict=False)
 net.eval()
 
