@@ -77,6 +77,6 @@ if __name__ == '__main__':
             for k in range(out_j.shape[0]):
                 if out_j[k, i] > 0:
                     ppp = (int(out_j[k, i] * col_sample_w * img_w / 800) - 1,int(img_h * (row_anchor[cls_num_per_lane - 1 - k] / 288)) - 1)   # 坐标点计算
-                    cv2.circle(vis, ppp, 5, (0, 255, 0), -1)
+                    cv2.circle(vis_resize, ppp, 5, (0, 255, 0), -1)
     vis_res = cv2.resize(vis_resize, (img_size[1], img_size[0]), interpolation=cv2.INTER_CUBIC)       
     cv2.imwrite(res_path, vis_res)
