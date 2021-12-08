@@ -1,9 +1,11 @@
-import torch, os, cv2
+import os
+import cv2
 from model.model import parsingNet
 from utils.common import merge_config
 from utils.dist_utils import dist_print
 import torch
-import scipy.special, tqdm
+import scipy.special 
+import tqdm
 import numpy as np
 import torchvision.transforms as transforms
 from data.dataset import LaneTestDataset
@@ -17,7 +19,7 @@ torch.backends.cudnn.benchmark = True
 # From cuLANE, Change this line if you are using TuSimple
 cls_num_per_lane = 18
 griding_num = 200
-backbone =18
+backbone = 18
 
 net = parsingNet(pretrained = False,backbone='18', cls_dim = (griding_num+1,cls_num_per_lane,4),use_aux=False)
 
@@ -25,7 +27,6 @@ net = parsingNet(pretrained = False,backbone='18', cls_dim = (griding_num+1,cls_
 test_model = r'./model/culane_18.pth'
 
 state_dict = torch.load(test_model, map_location='cpu')['model'] # CPU
-#state_dict = torch.load(test_model, map_location='cuda')['model'] # CUDA
 compatible_state_dict = {}
 for k, v in state_dict.items():
     if 'module.' in k:
@@ -40,11 +41,6 @@ net.eval()
 img = torch.zeros(1, 3, 288, 800)  # image size(1,3,320,192) iDetection
 y = net(img)  # dry run
 
-# ts = torch.jit.trace(net, img)
-#
-# #ts.save('UFLD.torchscript-cpu.pt') # CPU
-# ts.save('UFLD.torchscript-cuda.pt') # CUDA
-
 try:
     import onnx
 
@@ -55,7 +51,6 @@ try:
     # Checks
     onnx_model = onnx.load(f)  # load onnx model
     onnx.checker.check_model(onnx_model)  # check onnx model
-    # print(onnx.helper.printable_graph(onnx_model.graph))  # print a human readable model
     print('ONNX export success, saved as %s' % f)
 except Exception as e:
     print('ONNX export failure: %s' % e)
