@@ -42,7 +42,7 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 ### 1.4 技术实现流程图
 
-![技术流程图](https://gitee.com/lemon-wang/mindxsdk-referenceapps/tree/master/contrib/UltraFastLaneDetection/imgs/技术流程图.jpg)
+![技术流程图](https://gitee.com/lemon-wang/mindxsdk-referenceapps/raw/master/contrib/UltraFastLaneDetection/imgs/技术流程图.jpg)
 
 ## 2. 环境依赖
 
