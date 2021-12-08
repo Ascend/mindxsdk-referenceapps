@@ -15,11 +15,11 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-    img = '../img/7'   # 修改图片地址
+    img = './imgs/7'   # 修改图片地址
     img_format = '.jpg'
     # 构建pipeline
-    with open("../Lane.pipeline", 'rb') as f:
-    pipelineStr = f.read()
+    with open("./Lane.pipeline", 'rb') as f:
+        pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -32,7 +32,7 @@ if __name__ == '__main__':
         print("The test image does not exist.")
     try :
         with open(img_path, 'rb') as f:
-        dataInput.data = f.read()
+            dataInput.data = f.read()
     except FileNotFoundError:
         print(img_path, "doesn't exist. Exit.")
         exit()
