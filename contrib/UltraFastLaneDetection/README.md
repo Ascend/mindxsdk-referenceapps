@@ -99,7 +99,7 @@ atc --model=./model/path_to_culane_18.onnx --framework=5  --output=./module/out/
 
 ## 4. 编译与运行
 
-**步骤1** **修改CMakeLists.txt文件** 
+**步骤1** **修改CMakeLists.txt文件** (文件位于PostProcess文件夹)
 
 第**8**行 **set(MX_SDK_HOME ../MindX_SDK/mxVision-2.0.2)** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
 
