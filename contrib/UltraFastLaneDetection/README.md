@@ -68,7 +68,6 @@ export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
 export ASCEND_OPP_PATH=${install_path}/opp
-export FREETYPE_HOME=/home/zhongzhi3/freetype-2.10.0/include
 
 ```
 
