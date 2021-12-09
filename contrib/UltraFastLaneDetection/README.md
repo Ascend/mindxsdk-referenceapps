@@ -94,7 +94,7 @@ python export.py
 
 *onnx = 1.10.1*
 
-**步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的Ultra-Fast-Lane-Detection-master/model/目录下，执行如下命令：
+**步骤3** **onnx转om** 将步骤2中转换获得的[onnx模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/UltraFastLaneDetection/culane_18.onnx)存放至**服务器端**的Ultra-Fast-Lane-Detection-master/model/目录下，执行如下命令：
 
 ```shell
 atc --model=./model/path_to_culane_18.onnx --framework=5  --output=./module/out/culane_18_2 --soc_version=Ascend310  --insert_op_conf=./model/aipp_culane.config
