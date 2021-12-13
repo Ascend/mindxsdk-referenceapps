@@ -13,9 +13,9 @@
 
 import json
 import os
+import time
 import cv2
 import numpy as np
-import time
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -31,7 +31,7 @@ if ret != 0:
 start = time.time()
 # create streams by pipeline config file
 # load  pipline
-with open("fire_p.pipeline", 'rb') as f:
+with open("../pipeline/fire_p.pipeline", 'rb') as f:
     pipelineStr = f.read()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
@@ -40,7 +40,7 @@ if ret != 0:
     exit()
 
 # Input object of streams -- detection target
-PATH = "./val2017/"
+PATH = "./val/"
 for item in os.listdir(PATH):
     img_path = os.path.join(PATH,item)
     print("file_path:",img_path)

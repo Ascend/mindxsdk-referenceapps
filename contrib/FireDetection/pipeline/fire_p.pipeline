@@ -29,10 +29,10 @@
         },
         "mxpi_modelinfer0": {
             "props": {
-                "modelPath": "/home/zhongzhi5/fire-dectection/best_11s_t_GA.om",
-                "postProcessConfigPath": "/home/zhongzhi5/fire-dectection/yolov5.cfg",
-                "labelPath": "/home/zhongzhi5/fire-dectection/yolov5.names",
-                "postProcessLibPath": "libMpYOLOv5PostProcessor.so"
+                "modelPath": "../model/firedetection.om",
+                "postProcessConfigPath": "../model/yolov5.cfg",
+                "labelPath": "../model/yolov5.names",
+                "postProcessLibPath": "${SDK安装路径}/mxVision-2.0.2/lib/libMpYOLOv5PostProcessor.so"
                 },
             "factory": "mxpi_modelinfer",
            "next": "mxpi_dataserialize0"
