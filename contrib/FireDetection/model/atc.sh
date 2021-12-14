@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# atc环境变量
-source ../envs/atc_env.sh
+# atc environment
 source ../envs/env.sh
-# atc转换模型
+source ../envs/atc_env.sh
+
+# atc transform model
 atc \
   --model=./model/firedetection.onnx \
   --framework=5 \

@@ -40,12 +40,12 @@ if ret != 0:
     exit()
 
 # Input object of streams -- detection target
-PATH = "./val/"
+PATH = "./JPEGImages/"
 for item in os.listdir(PATH):
     img_path = os.path.join(PATH,item)
     print("file_path:",img_path)
     img_name = item.split(".")[0]
-    img_txt = "./detection-test-result/" + img_name + ".txt"
+    img_txt = "./test_result/" + img_name + ".txt"
     if os.path.exists(img_txt):
         os.remove(img_txt)
     dataInput = MxDataInput()

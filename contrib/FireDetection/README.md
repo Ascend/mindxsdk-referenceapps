@@ -31,7 +31,6 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 ├── model
 │   ├── aipp_yolov5.cfg          //atc转换时需要的aipp配置文件
 │   ├── atc.sh                   //atc运行脚本
-│   ├── export.py                //pt2onnx脚本
 │   ├── modify_yolov5s_slice.py  //slice算子处理脚本
 │   ├── yolov5.cfg               //om模型后处理配置文件
 │   └── yolov5.names             //om模型识别类别文件
@@ -39,9 +38,11 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 │   ├── fire_p.pipeline          //test使用的pipeline文件
 │   └── fire_v.pipeline          //视频流使用的pipeline文件
 ├── test
-│   └── testmain.py              //精度测试，性能测试识别主函数
+│   ├── map_calculate.py         //mAP计算(精度计算)
+│   ├── parse_COCO.py            //利用标记生成真实标签
+│   └── testmain.py              //识别，保存结果，并进行性能测试
 ├── result                       //运行结果图片保存位置
-├── main.py                      //streams脚本
+├── main.py                      //识别streams脚本
 ├── run.sh                       //运行脚本
 └── README.md
 ```
@@ -76,38 +77,27 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 注：其中`${SDK安装路径}`替换为用户的SDK安装路径;`install_path`替换为ascend-toolkit开发套件包所在路径。`LD_LIBRARY_PATH`用以加载开发套件包中lib库。
 
-##  3 软件依赖以及资源链接
+## 3 模型转换以及依赖安装
 
-推理中涉及到第三方软件依赖如下表所示。
+本项目使用的模型是火灾识别的模型。模型文件可以直接下载。
 
-| 依赖软件       | 版本       | 说明                                       | 使用教程                                                     |
-| -------------- | ---------- | ------------------------------------------ | ------------------------------------------------------------ |
-| live555        | 1.09       | 实现视频转rstp进行推流                     | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md) |
-| ffmpeg         | 2021-10-14 | 实现mp4格式视频转为264格式视频             | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
-| pytorch        | 1.7.1      | conda install pytorch                      | python 3.7.5                                                 |
-| torchvision    | 0.8.2      | conda install torchvision                  | python 3.7.5                                                 |
-| onnx           | 1.60       | conda install onnx                         | python 3.7.5                                                 |
-| onnx-simplifer | 0.3.6      | python3.7.5 -m pip install onnx-simplifier | [链接](https://github.com/daquexian/onnx-simplifier)         |
-| 模型文件       | -          | pt 模型文件，onnx模型文件，om模型文件      | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FireDetection/models.zip) |
-| 原项目链接     | -          | -                                          | [链接](https://github.com/gengyanlei/fire-smoke-detect-yolov4) |
+### 3.1 模型转换
 
-## 4 模型转换
+使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[CANN 社区版]([前言_昇腾CANN社区版(5.0.4.alpha002)(推理)_ATC模型转换_华为云 (huaweicloud.com)](https://support.huaweicloud.com/atctool-cann504alpha2infer/atlasatc_16_0001.html)) 。
 
-本项目使用的模型是火灾识别的模型。模型文件可以直接下载。使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[CANN 社区版]([前言_昇腾CANN社区版(5.0.4.alpha002)(推理)_ATC模型转换_华为云 (huaweicloud.com)](https://support.huaweicloud.com/atctool-cann504alpha2infer/atlasatc_16_0001.html)) 。
+步骤如下：
 
-模型转换，请在`FireDetection`目录下完成，步骤如下：
+- **步骤1** 下载原开源项目并在原项目中将`pt`文件转换成`onnx`模型，也可以下载`onnx`模型，请移动至`FireDetection/model`目录下，并跳至**步骤5**；若下载`om`模型文件，请跳过模型转换步骤。
 
-- **步骤1** 将`pt`文件移动至`FireDetection/model`目录下；也可以下载`onnx`模型，请移动至`FireDetection/model`目录下，并跳至**步骤5**；若下载`om`模型文件，请跳过模型转换步骤。
-
-- **步骤2** 将`pt`文件转换为`onnx`文件
+- **步骤2** 在原开源项目中将`pt`文件转换为`onnx`文件，在`fire-smoke-detect-yolov4\yolov5`目录下执行
 
   ```bash
-  python3.7.5 /model/export.py --weights /model/best.pt
+  python3.7.5 /model/export.py --weights ./best.pt
   ```
 
   运行结果：生成`best.onnx`文件。
 
--  **步骤3** `onnx`文件简化
+- **步骤3** `onnx`文件简化
 
   对导出的`onnx`图使用`onnx-simplifer`工具进行简化。运行如下命令：
 
@@ -117,9 +107,9 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
   运行结果：生成`best_s.onnx`文件。
 
-- **步骤4** 算子处理
+- **步骤4** Slice算子处理
 
-  附件脚本modify_yolov5s_slice.py修改模型Slice算子
+  利用`FireDetection\model`目录下的脚本`modify_yolov5s_slice.py`修改模型Slice算子
 
   ```bash
   python3.7.5 /model/modify_yolov5s_slice.py best_s.onnx
@@ -142,7 +132,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
   表示命令执行成功。
 
-##  5 准备
+###  3.2 准备
 
 按照第3小节**软件依赖**安装 live555 和 ffmpeg，按照 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md)将 mp4 视频转换为 H.264 格式。并将生成的 H.264 格式的视频上传到`live/mediaServer`目录下，然后修改`pipeline`目录下的`fire_v.pipeline`文件中`mxpi_rtspsrc0`的内容。
 
@@ -156,7 +146,9 @@ export ASCEND_OPP_PATH=${install_path}/opp
 }
 ```
 
-##  6 编译与运行
+##  4 运行与测试
+
+### 4.1 运行
 
 - **步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
@@ -165,8 +157,59 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 - **步骤4** 运行。进入 `FireDetection` 目录，在 `FireDetection` 目录下执行命令：
 
-```
+```bash
 bash run.sh
 ```
 
 运行结果会保存在`FireDetection/result`目录下
+
+### 4.2 性能与精度测试
+
+- **步骤1** 下载测试数据集，并将`JPEGImages`目录以及`test.json`放在`FireDetection/test`目录下，并在`FireDetection/test`目录下运行指令
+
+  ```bash
+  python3.7.5 parse_COCO.py
+  ```
+
+  运行脚本后会自动生成真实标签在`ground-truth`路径下以`.txt`格式保存。
+
+- **步骤2** 在`FireDetection/test`目录下运行`testmain.py`脚本，对`JPEGImages`目录下的图片进行识别并输出结果
+
+  ```bash
+  mkdir test_result
+  python3.7.5 testmain.py
+  ```
+
+  运行脚本后会生成经过 SDK 后的推理结果结果保留在`test-result`目录下以`.txt`格式保存。
+
+  运行结果中会有`Spend time：`是识别所有图片所用的时间，用数据集中图片个数可以得到帧数
+
+  ![fps](images/fps.png)
+
+  上图是测试的结果，由此可知$fps = 1945/51.17 = 38.01$
+
+- **步骤3** 在`FireDetection/test`目录下运行`map_calculate.py`脚本，计算精度。
+
+  ```bash
+  python3.7.5 map_calculate.py
+  ```
+
+  测试结果
+
+  ![ap](images/ap.png)
+
+  ##  5 软件依赖以及资源链接
+
+  推理中涉及到第三方软件依赖如下表所示。
+
+  | 依赖软件       | 版本       | 说明                                       | 使用教程                                                     |
+  | -------------- | ---------- | ------------------------------------------ | ------------------------------------------------------------ |
+  | live555        | 1.09       | 实现视频转 rstp 进行推流                   | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md) |
+  | ffmpeg         | 2021-10-14 | 实现 mp4 格式视频转为 H.264 格式视频       | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
+  | pytorch        | 1.7.1      | conda install pytorch                      | python 3.7.5                                                 |
+  | torchvision    | 0.8.2      | conda install torchvision                  | python 3.7.5                                                 |
+  | onnx           | 1.60       | conda install onnx                         | python 3.7.5                                                 |
+  | onnx-simplifer | 0.3.6      | python3.7.5 -m pip install onnx-simplifier | [链接](https://github.com/daquexian/onnx-simplifier)         |
+  | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FireDetection/models.zip) |
+  | 测试数据集     |            | 由1946张图片构成，COCO 格式                | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FireDetection/dataset.zip) |
+  | 原项目链接     | -          | -                                          | [链接](https://github.com/gengyanlei/fire-smoke-detect-yolov4) |
