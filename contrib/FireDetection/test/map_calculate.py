@@ -274,7 +274,6 @@ def calculate_PR(sum_AP, fp, tp, counter_per_class, class_name):
     
     ap, mrec, mprec = voc_ap(rec[:], prec[:])
     sum_AP += ap
-    # class_name + " AP = {0:.2f}%".format(ap * 100)
     text = "{0:.2f}%".format(ap * 100) + " = " + class_name + " AP "
     ret = dict()
     ret['sum_AP'] = sum_AP
@@ -376,6 +375,8 @@ if __name__ == '__main__':
     parser.add_argument('--npu_txt_path', default="./test_result", help='the path of the predict result')
     parser.add_argument('--output_file', default="./output.txt", help='save result file')
     parser.add_argument('--threshold', default=0, help='threshold of the object score')
+    global args, counter_per_class, ret, gt_classes, class_bbox
+
     args = parser.parse_args()
     args = check_args(args)
 
@@ -386,4 +387,3 @@ if __name__ == '__main__':
     counter_per_class = ret['counter_per_class']
     class_bbox = get_predict_list(args.npu_txt_path, gt_classes)
     calculate_AP(args.output_file, gt_classes, gt_file_bbox, class_bbox, counter_per_class)
-
