@@ -156,7 +156,7 @@ def parse_line(txt_file, lines_list, bounding_boxes, counter_per_class, already_
             error_msg += " Expected: <class_name> <l> <t> <r> <b>\n"
             error_msg += " Received: " + line
             error(error_msg)
-        if class_name in args.ignore:
+        if class_name in arg.ignore:
             continue
         bbox = left + " " + top + " " + right + " " + bottom
         bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False})
@@ -230,7 +230,7 @@ def get_predict_list(file_path, gt_classes):
                 try:
                     sl = line.split()
                     tmp_class_name, confidence, left, top, right, bottom = sl
-                    if float(confidence) < float(args.threshold):
+                    if float(confidence) < float(arg.threshold):
                         continue
                 except ValueError:
                     error_msg = "Error: File " + txt_file + " wrong format.\n"
@@ -375,15 +375,14 @@ if __name__ == '__main__':
     parser.add_argument('--npu_txt_path', default="./test_result", help='the path of the predict result')
     parser.add_argument('--output_file', default="./output.txt", help='save result file')
     parser.add_argument('--threshold', default=0, help='threshold of the object score')
-    global args, counter_per_class, ret, gt_classes, class_bbox
 
-    args = parser.parse_args()
-    args = check_args(args)
+    arg = parser.parse_args()
+    arg = check_args(arg)
 
-    ret = get_label_list(args.label_path)
-    gt_file_bbox = ret['file_bbox']
-    gt_classes = ret['classes']
-    gt_n_classes = ret['n_classes']
-    counter_per_class = ret['counter_per_class']
-    class_bbox = get_predict_list(args.npu_txt_path, gt_classes)
-    calculate_AP(args.output_file, gt_classes, gt_file_bbox, class_bbox, counter_per_class)
+    label_list = get_label_list(arg.label_path)
+    gt_file_bbox = label_list['file_bbox']
+    get_classes = label_list['classes']
+    gt_n_classes = label_list['n_classes']
+    count_per_class = label_list['counter_per_class']
+    predict_bbox = get_predict_list(arg.npu_txt_path, get_classes)
+    calculate_AP(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)
