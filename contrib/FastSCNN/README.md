@@ -39,35 +39,25 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 
 ### 1.4 代码目录结构与说明
 
-本工程名称为fastscnn_python，工程目录如下图所示：     
+本工程名称为FastSCNN，工程目录如下图所示：     
 
 ```
 ├── main.py  //运行工程项目的主函数
 ├── evaluate.py   //评测精度函数
 ├── label.py      //分类label函数
 ├── model   //存放模型文件
-|   ├──best_model.pth     //权重文件
 |   ├──aipp_FastSCnn.aippconfig     //预处理配置文件
-|   └──fast_scnn_bs1.om         //生成的om文件
-├── evaluation.png        //精度自测截图
+├── evaluation_50.png          //50
+├── evaluation_100.png        // 100
+├── evaluation_150.png        // 150
 ├── 流程.png          //流程图
 ├── pipeline.png          //pipeline流程图
-├──cityscapes             //数据集
-|  ├── gtFine
-|   |   ├──test
-|   |   ├──train
-|   |   └──val
-|   |
-|   └── leftImg8bit
-|       ├──test
-|       ├──train
-|       └──val
 └──README.md          
 ```
 
 ##    1.5 技术实现流程图
 
-            FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1\*19\*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成result.jpg。
+            FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1*19*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成result.jpg。
 
 实现流程图如下图所示：
 
@@ -138,7 +128,7 @@ pth权重文件和onnx文件的下载链接如下：
     
     步骤如下：
 
-1. 下载上述models压缩包，获取best_model.pth和fast_scnn_bs1.onnx模型文件放置fastscnn_python/model目录下。
+1. 下载上述models压缩包，获取best_model.pth和fast_scnn_bs1.onnx模型文件放置FastSCNN/model目录下。
 
 2. 设置环境变量用以使用atc工具：
 
@@ -152,7 +142,7 @@ pth权重文件和onnx文件的下载链接如下：
 
    
 
-3. 进入fastscnn_python/model文件夹下执行命令：
+3. 进入FastSCNN/model文件夹下执行命令：
 
    ```
    atc --framework=5 --model=fast_scnn_bs1.onnx --output=fast_scnn_bs1  --output_type=FP16 --input_format=NCHW --insert_op_conf=./aipp_FastSCnn.aippconfig.aippconfig --input_shape="image:1,3,1024,2048" --log=debug --soc_version=Ascend310 
@@ -172,10 +162,10 @@ pth权重文件和onnx文件的下载链接如下：
 ## 4.编译与运行
 
 当已有模型的om文件，存在./model/下
-**步骤1**  将任意一张jpg格式的图片存到当前目录下(/fastscnn_python)，命名为test.jpg。
+**步骤1**  将任意一张jpg格式的图片存到当前目录下(/FastSCNN)，命名为test.jpg。
 **步骤2**  设置环境变量，如第2小节**环境依赖**所述，设置MX_SDK_HOME，LD_LIBRARY_PATH，PYTHONPATH，GST_PLUGIN_SCANNER，GST_PLUGIN_PATH五个环境变量。
 
-**步骤3**   按照模型转换获取om模型，放置在fastscnn_python/models路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值(原尺寸为2048*1024)。
+**步骤3**   按照模型转换获取om模型，放置在FastSCNN/models路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值(原尺寸为2048*1024)。
 
 **步骤4**  在命令行输入 如下代码运行整个工程：
 
@@ -189,19 +179,33 @@ python3.7.5 main.py
 
 ##### 测试精度：
 
-**步骤1**安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip，将标注文件压缩文件解压至fastscnn_python/目录下。确保下载完数据集和标注文件后的目录结构为如下：
+**步骤1**安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
+将标注文件压缩文件解压至FastSCNN/目录下。确保下载完数据集和标注文件后的目录结构为如下：
 
 ```
-├── cityscapes
-    ├── gtFine
-    |   ├──test
-    |   ├──train
-    |   └──val
-    |
-    └── leftImg8bit
-        ├──test
-        ├──train
-        └──val
+├── main.py  //运行工程项目的主函数
+├── evaluate.py   //评测精度函数
+├── label.py      //分类label函数
+├── model   //存放模型文件
+|   ├──best_model.pth     //权重文件
+|   ├──aipp_FastSCnn.aippconfig     //预处理配置文件
+|   └──fast_scnn_bs1.om         //生成的om文件
+├── evaluation_50.png          //50
+├── evaluation_100.png        // 100
+├── evaluation_150.png        // 150
+├── 流程.png          //流程图
+├── pipeline.png          //pipeline流程图
+├──cityscapes             //数据集
+|  ├── gtFine
+|   |   ├──test
+|   |   ├──train
+|   |   └──val
+|   |
+|   └── leftImg8bit
+|       ├──test
+|       ├──train
+|       └──val
+└──README.md    
 ```
 
 **步骤2** 进入数据集的某个文件夹作为测试集（此处以cityscapes/leftImg8bit/val/frankfurt/为例），进入frankfurt文件夹，需要用户将png格式转成jpg格式保存在当前目录下。
@@ -213,7 +217,7 @@ cd cityscapes/leftImg8bit/val/frankfurt/
 **步骤3** 进入标签集gtFine相应的文件夹下。
 
 ```
-cd ${用户路径}/fastscnn_python/cityscapes/gtFine/val/frankfurt/
+cd ${用户路径}/FastSCNN/cityscapes/gtFine/val/frankfurt/
 ```
 
            在当前目录上传label.py用以挑选后缀为labelIds的文件。
@@ -229,7 +233,7 @@ python3.7.5 label.py
 **步骤5** 回到工程目录下
 
 ```
-cd ${用户路径}/fastscnn_python
+cd ${用户路径}/FastSCNN
 ```
 
            点进evaluate.py，修改路径如下：
@@ -243,5 +247,8 @@ for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
 **步骤6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
 
 ![50](./evaluation_50.png)
+        测试50张
 ![100](./evaluation_100.png)
+        测试100张
 ![150](./evaluation_150.png)
+        测试150张
