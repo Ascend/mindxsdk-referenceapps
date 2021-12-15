@@ -45,6 +45,7 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 ├── main.py  //运行工程项目的主函数
 ├── evaluate.py   //评测精度函数
 ├── label.py      //分类label函数
+├── text.pipeline      //pipeline
 ├── model   //存放模型文件
 |   ├──aipp_FastSCnn.aippconfig     //预处理配置文件
 ├── evaluation_50.png          //50
@@ -163,7 +164,7 @@ pth权重文件和onnx文件的下载链接如下：
 
 当已有模型的om文件，存在./model/下
 
-**步骤 1**  将任意一张jpg格式的图片存到当前目录下(/FastSCNN)，命名为test.jpg。
+**步骤 1**  将任意一张jpg格式的图片存到当前目录下(/FastSCNN)，命名为test.jpg。如果pipeline文件（或测试图片）不在当前目录下（/FastSCNN），需要修改main.py的pipeline（或测试图片）路径指向到所在目录。
 
 **步骤 2**  设置环境变量，如第2小节**环境依赖**所述，设置MX_SDK_HOME，LD_LIBRARY_PATH，PYTHONPATH，GST_PLUGIN_SCANNER，GST_PLUGIN_PATH五个环境变量。
 
@@ -188,6 +189,7 @@ python3.7.5 main.py
 ├── main.py  //运行工程项目的主函数
 ├── evaluate.py   //评测精度函数
 ├── label.py      //分类label函数
+├── text.pipeline      //pipeline
 ├── model   //存放模型文件
 |   ├──best_model.pth     //权重文件
 |   ├──aipp_FastSCnn.aippconfig     //预处理配置文件

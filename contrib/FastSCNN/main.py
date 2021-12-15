@@ -56,63 +56,13 @@ if __name__ == '__main__':
     ]
 
     # 构建pipeline
-    pipeline = {
-        "detection": {
-            "stream_config": {
-                "deviceId": "0"
-            },
-            "appsrc0": {
-                "props": {
-                    "blocksize": "409600"
-                },
-                "factory": "appsrc",
-                "next": "mxpi_imagedecoder0"
-            },
-            "mxpi_imagedecoder0": {
-                "props": {
-                    "deviceId": "0"
-                },
-                "factory": "mxpi_imagedecoder",
-                "next": "mxpi_imageresize0"
-            },
-            "mxpi_imageresize0": {
-                "props": {
-                    "dataSource": "mxpi_imagedecoder0",
-                    "resizeHeight": "1024",
-                    "resizeWidth": "2048"
-                },
-                "factory": "mxpi_imageresize",
-                "next": "mxpi_tensorinfer0"
-            },
-            "mxpi_tensorinfer0": {
-                "props": {
-                    "dataSource": "mxpi_imageresize0",
-                    "modelPath": "../FastScnn_python/models/fast255.om"
-                },
-                "factory": "mxpi_tensorinfer",
-                "next": "mxpi_dataserialize0"
-            },
-            "mxpi_dataserialize0": {
-                "props": {
-                    "outputDataKeys": "mxpi_tensorinfer0"
-                },
-                "factory": "mxpi_dataserialize",
-                "next": "appsink0"
-            },
-            "appsink0": {
-                "props": {
-                    "blocksize": "4096000"
-                },
-                "factory": "appsink"
-            }
-        }
-    }
-
-    pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
-    if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
-        exit()
+    with open("./text.pipeline", 'rb') as f:
+        pipelineStr = f.read()
+        #print(pipelineStr)
+        ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+        if ret != 0:
+            print("Failed to create Stream, ret=%s" % str(ret))
+            exit()
 
     # 构建流的输入对象
     dataInput = MxDataInput()
