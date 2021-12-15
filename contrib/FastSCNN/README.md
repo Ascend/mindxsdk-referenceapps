@@ -162,7 +162,9 @@ pth权重文件和onnx文件的下载链接如下：
 ## 4.编译与运行
 
 当已有模型的om文件，存在./model/下
+
 **步骤1**  将任意一张jpg格式的图片存到当前目录下(/FastSCNN)，命名为test.jpg。
+
 **步骤2**  设置环境变量，如第2小节**环境依赖**所述，设置MX_SDK_HOME，LD_LIBRARY_PATH，PYTHONPATH，GST_PLUGIN_SCANNER，GST_PLUGIN_PATH五个环境变量。
 
 **步骤3**   按照模型转换获取om模型，放置在FastSCNN/models路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值(原尺寸为2048*1024)。
@@ -179,7 +181,7 @@ python3.7.5 main.py
 
 ##### 测试精度：
 
-**步骤1**安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
+**步骤1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
 将标注文件压缩文件解压至FastSCNN/目录下。确保下载完数据集和标注文件后的目录结构为如下：
 
 ```
@@ -247,8 +249,13 @@ for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
 **步骤6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
 
 ![50](./evaluation_50.png)
-        测试50张
+
+测试50张
+
 ![100](./evaluation_100.png)
-        测试100张
+
+ 测试100张
+
 ![150](./evaluation_150.png)
-        测试150张
+
+测试150张
