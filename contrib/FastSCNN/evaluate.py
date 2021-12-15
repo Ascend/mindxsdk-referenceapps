@@ -80,7 +80,8 @@ if __name__ == '__main__':
     dataInput = MxDataInput()
     for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
         with open("./cityscapes/leftImg8bit/val/frankfurt/" + filename, 'rb') as f:
-            imgpath = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
+            imgpath = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] \
+           + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
             array_label = cv2.imread(imgpath, cv2.IMREAD_GRAYSCALE)
             dataInput.data = f.read()
             streamName = b'detection'
