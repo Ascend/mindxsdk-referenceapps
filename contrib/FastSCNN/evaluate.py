@@ -32,13 +32,15 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
+
+    IMAGE_NUM = 1000
     count = 0
     inters = np.zeros(19)
     labels = np.zeros(19)
     preds = np.zeros(19)
     unions = np.zeros(19)
-    correct = np.zeros(500)
-    labeled = np.zeros(500)
+    correct = np.zeros(IMAGE_NUM)
+    labeled = np.zeros(IMAGE_NUM)
     sum_correct = 0
     sum_labeled = 0
 
