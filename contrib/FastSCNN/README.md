@@ -73,7 +73,7 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 
 ![流程](./流程.png)
 
-![pipeline](./pipeline.PNG)
+![pipeline](./pipeline.png)
 
 ​            
 
