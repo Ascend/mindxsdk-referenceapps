@@ -34,11 +34,12 @@ if __name__ == '__main__':
         exit()
 
     IMAGE_NUM = 1000
+    CLASS = 19
     count = 0
-    inters = np.zeros(19)
-    labels = np.zeros(19)
-    preds = np.zeros(19)
-    unions = np.zeros(19)
+    inters = np.zeros(CLASS)
+    labels = np.zeros(CLASS)
+    preds = np.zeros(CLASS)
+    unions = np.zeros(CLASS)
     correct = np.zeros(IMAGE_NUM)
     labeled = np.zeros(IMAGE_NUM)
     sum_correct = 0
@@ -112,14 +113,13 @@ if __name__ == '__main__':
                           , dtype=np.float16)
         HEIGHT = 1024
         WIDTH = 2048
-        CLASS = 19
         pred.resize(CLASS, HEIGHT, WIDTH)
         pre = np.argmax(pred, 0)
         array_pred = np.array(pre, dtype=int)
     
     # 评估结果
         print("Segmentation Evaluation [", count + 1, "] Starts:")
-        sum_iou = 0.0
+        sum_iou = 0
 
         for i in range(HEIGHT):
             for j in range(WIDTH):
@@ -141,7 +141,7 @@ if __name__ == '__main__':
             unions[i] = preds[i] + labels[i] - inters[i]
             if unions[i] != 0:
                 print("Class(", i + 1, ") IoU : ", inters[i] * 1.0000 / unions[i])
-                sum_iou += inters[i] / unions[i]
+                sum_iou += inters[i] * 1.0000 / unions[i]
             sum_labeled += labeled[count]
             sum_correct += correct[count] 
         print("Model PA: ", sum_correct * 1.0000 / sum_labeled * 100, "%")
