@@ -181,7 +181,7 @@ python3.7.5 main.py
 
 ##### 测试精度：
 
-**步骤1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
+**步骤 1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
 将标注文件压缩文件解压至FastSCNN/目录下。确保下载完数据集和标注文件后的目录结构为如下：
 
 ```
@@ -210,13 +210,13 @@ python3.7.5 main.py
 └──README.md    
 ```
 
-**步骤2** 进入数据集的某个文件夹作为测试集（此处以cityscapes/leftImg8bit/val/frankfurt/为例），进入frankfurt文件夹，需要用户将png格式转成jpg格式保存在当前目录下。
+**步骤 2** 进入数据集的某个文件夹作为测试集（此处以cityscapes/leftImg8bit/val/frankfurt/为例），进入frankfurt文件夹，需要用户将png格式转成jpg格式保存在当前目录下。
 
 ```
 cd cityscapes/leftImg8bit/val/frankfurt/
 ```
 
-**步骤3** 进入标签集gtFine相应的文件夹下。
+**步骤 3** 进入标签集gtFine相应的文件夹下。
 
 ```
 cd ${用户路径}/FastSCNN/cityscapes/gtFine/val/frankfurt/
@@ -230,9 +230,9 @@ cd ${用户路径}/FastSCNN/cityscapes/gtFine/val/frankfurt/
 python3.7.5 label.py
 ```
 
-**步骤4** 运行结束会在当前目录下新生成四个文件夹，将labelIds.png命名的文件夹重命名为label。这里可以重新点击一下文件排序，确保leftImg8bit的frankfurt中的文件和gtFine下frankfurt/label中的文件排序一致，一一对应。
+**步骤 4** 运行结束会在当前目录下新生成四个文件夹，将labelIds.png命名的文件夹重命名为label。这里可以重新点击一下文件排序，确保leftImg8bit的frankfurt中的文件和gtFine下frankfurt/label中的文件排序一致，一一对应。
 
-**步骤5** 回到工程目录下
+**步骤 5** 回到工程目录下
 
 ```
 cd ${用户路径}/FastSCNN
@@ -246,16 +246,16 @@ for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
             imgpath = "./cityscapes/gtFine/val/frankfurt/label/" + filename.split('_')[0] + '_' + filename.split('_')[1] + '_' +filename.split('_')[2] + "_gtFine_labelIds.png"
 ```
 
-**步骤6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
+**步骤 6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
 
 ![50](./evaluation_50.png)
 
-测试50张
+               测试50张
 
 ![100](./evaluation_100.png)
 
- 测试100张
+               测试100张
 
 ![150](./evaluation_150.png)
 
-测试150张
+               测试150张
