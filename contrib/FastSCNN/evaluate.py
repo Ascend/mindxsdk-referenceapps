@@ -193,7 +193,7 @@ if __name__ == '__main__':
                 sum_iou += inters[i] / unions[i]
             sum_labeled += labeled[count]
             sum_correct += correct[count] 
-        print("Model PA: ", sum_correct * 1.0000 / sum_labeled * 100 , "%")
+        print("Model PA: ", sum_correct * 1.0000 / sum_labeled * 100, "%")
         print("Model MIoU: ", sum_iou / CLASS)
         count += 1
     streamManagerApi.DestroyAllStreams()

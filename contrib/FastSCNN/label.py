@@ -41,7 +41,7 @@ for file in files_list:
     # 获取当前路径
     path = os.getcwd()
     # 获取分类文件夹路径
-    subdir = os.path.join(path,'%s'%file_type)
+    subdir = os.path.join(path, ' % s' % file_type)
     # 进入分类文件夹
     os.chdir(subdir)
     if os.path.exists(file):
@@ -51,4 +51,4 @@ for file in files_list:
         # 返回之前文件夹进行归类
         os.chdir(path)
         # shutil.move(源文件，指定路径):递归移动一个文件
-        shutil.move(file,file_type)
+        shutil.move(file, file_type)
