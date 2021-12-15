@@ -131,7 +131,8 @@ if __name__ == '__main__':
     dataInput = MxDataInput()
     for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
         with open("./cityscapes/leftImg8bit/val/frankfurt/" + filename, 'rb') as f:
-            imgpath = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
+            imgpath = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] + '_' + 
+            filename.split('_')[2] + "_gtFine_labelIds.png"
             array_label = cv2.imread(imgpath, cv2.IMREAD_GRAYSCALE)
             dataInput.data = f.read()
             streamName = b'detection'
@@ -166,15 +167,15 @@ if __name__ == '__main__':
         array_pred = np.array(pre, dtype=int)
     
     # 评估结果
-        print("Segmentation Evaluation [" , count + 1 , "] Starts:")
+        print("Segmentation Evaluation [", count + 1, "] Starts:")
         sum_iou = 0.0
 
-        for i in range(1024):
-            for j in range(2048):
+        for i in range(HEIGHT):
+            for j in range(WIDTH):
                 if (array_label[i][j] in index_label):
                     a = array_pred[i][j]
                     temp = array_label[i][j]
-                    for k in range(18):
+                    for k in range(CLASS):
                         if(classMap[k] == temp):
                             b = k
                             break
@@ -187,7 +188,7 @@ if __name__ == '__main__':
               
         for i in range(CLASS):
             unions[i] = preds[i] + labels[i] - inters[i]
-            if unions[i] != 0 :
+            if unions[i] != 0:
                 print("Class(", i + 1, ") IoU : ", inters[i] * 1.0000 / unions[i])
                 sum_iou += inters[i] / unions[i]
             sum_labeled += labeled[count]
