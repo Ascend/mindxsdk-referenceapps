@@ -58,7 +58,6 @@ if __name__ == '__main__':
     # 构建pipeline
     with open("./text.pipeline", 'rb') as f:
         pipelineStr = f.read()
-        #print(pipelineStr)
         ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
         if ret != 0:
             print("Failed to create Stream, ret=%s" % str(ret))
