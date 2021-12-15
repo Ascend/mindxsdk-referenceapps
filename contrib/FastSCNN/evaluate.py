@@ -41,7 +41,33 @@ if __name__ == '__main__':
     labeled = np.zeros(500)
     sum_correct = 0
     sum_labeled = 0
+
+    # Id-trainId 索引
+    classMap = {
+        0: 7,
+        1: 8,
+        2: 11,
+        3: 12,
+        4: 13,
+        5: 17,
+        6: 19,
+        7: 20,
+        8: 21,
+        9: 22,
+        10: 23,
+        11: 24,
+        12: 25,
+        13: 26,
+        14: 27,
+        15: 28,
+        16: 31,
+        17: 32,
+        18: 33
+    }
     
+    # id
+    index_label = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33]
+
     # 构建pipeline
     pipeline = {
         "detection": {
@@ -145,7 +171,7 @@ if __name__ == '__main__':
 
         for i in range(1024):
             for j in range(2048):
-                if (array_label[i][j] in b_label):
+                if (array_label[i][j] in index_label):
                     a = array_pred[i][j]
                     temp = array_label[i][j]
                     for k in range(18):
