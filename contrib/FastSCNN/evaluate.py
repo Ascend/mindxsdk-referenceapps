@@ -72,7 +72,7 @@ if __name__ == '__main__':
     index_label = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33]
 
     # 构建pipeline
-    pipeline_path = "./text.txt"
+    pipeline_path = "./text.pipeline"
     if os.path.exists(pipeline_path) != 1:
         print("Pipeline does not exist !")
         exit()
@@ -88,8 +88,12 @@ if __name__ == '__main__':
 
     # 构建流的输入对象
     dataInput = MxDataInput()
-    for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
-        image_path = "./cityscapes/leftImg8bit/val/frankfurt/" + filename
+    filepath = "./cityscapes/leftImg8bit/val/frankfurt"
+    if os.path.exists(filepath) != 1:
+        print("The filepath does not exist !")
+        exit()
+    for filename in os.listdir(filepath):
+        image_path = filepath + filename
         if image_path.split('.')[-1] != 'jpg':
             continue
         with open(image_path, 'rb') as f:
