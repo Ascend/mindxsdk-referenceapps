@@ -72,7 +72,14 @@ if __name__ == '__main__':
     index_label = [7, 8, 11, 12, 13, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 31, 32, 33]
 
     # 构建pipeline
-    with open("./text.pipeline", 'rb') as f:
+    pipeline_path = "./text.txt"
+    if os.path.exists(pipeline_path) != 1:
+        print("Pipeline does not exist !")
+        exit()
+    if pipeline_path.split('.')[-1] != 'pipeline':
+        print("Pipeline File Error (end with .pipeline)")
+        exit()
+    with open(pipeline_path, 'rb') as f:
         pipelineStr = f.read()
         ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
         if ret != 0:
@@ -82,10 +89,16 @@ if __name__ == '__main__':
     # 构建流的输入对象
     dataInput = MxDataInput()
     for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
-        with open("./cityscapes/leftImg8bit/val/frankfurt/" + filename, 'rb') as f:
-            imgpath = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] \
+        image_path = "./cityscapes/leftImg8bit/val/frankfurt/" + filename
+        if image_path.split('.')[-1] != 'jpg':
+            continue
+        with open(image_path, 'rb') as f:
+            label_path = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] \
             + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
-            array_label = cv2.imread(imgpath, cv2.IMREAD_GRAYSCALE)
+            if os.path.exists(label_path) != 1:
+                print("The label image does not exist ！")
+                continue
+            array_label = cv2.imread(label_path, cv2.IMREAD_GRAYSCALE)
             dataInput.data = f.read()
             streamName = b'detection'
             inPluginId = 0
@@ -109,7 +122,7 @@ if __name__ == '__main__':
         result = MxpiDataType.MxpiTensorPackageList()
         result.ParseFromString(infer_result.serializedMetadata)
 
-        pred3 = np.frombuffer(result.tensorPackageVec[0].tensorVec[2].dataStr
+        pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[2].dataStr
                           , dtype=np.float16)
         HEIGHT = 1024
         WIDTH = 2048
@@ -147,4 +160,6 @@ if __name__ == '__main__':
         print("Model PA: ", sum_correct * 1.0000 / sum_labeled * 100, "%")
         print("Model MIoU: ", sum_iou / CLASS)
         count += 1
+    if count == 0:
+        print("Found 0 pictures in selected files")
     streamManagerApi.DestroyAllStreams()

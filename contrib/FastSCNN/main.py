@@ -56,7 +56,14 @@ if __name__ == '__main__':
     ]
 
     # 构建pipeline
-    with open("./text.pipeline", 'rb') as f:
+    pipeline_path = "./text.pipeline"
+    if os.path.exists(pipeline_path) != 1:
+        print("Pipeline does not exist !")
+        exit()
+    if pipeline_path.split('.')[-1] != 'pipeline':
+        print("Pipeline File Error (end with .pipeline)")
+        exit()
+    with open(pipeline_path, 'rb') as f:
         pipelineStr = f.read()
         ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
         if ret != 0:
@@ -65,9 +72,14 @@ if __name__ == '__main__':
 
     # 构建流的输入对象
     dataInput = MxDataInput()
-    if os.path.exists('./test.jpg') != 1:
-        print("The test image does not exist.")
-    with open("./test.jpg" , 'rb') as f:
+    image_path = "./test.png"
+    if os.path.exists(image_path) != 1:
+        print("The test image does not exist ！")
+        exit()
+    if image_path.split('.')[-1] != 'jpg':
+        print("DVPP only support jpg !")
+        exit()
+    with open(image_path , 'rb') as f:
         dataInput.data = f.read()
         streamName = b'detection'
         inPluginId = 0
