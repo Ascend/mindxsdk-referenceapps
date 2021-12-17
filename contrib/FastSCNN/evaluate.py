@@ -97,8 +97,8 @@ if __name__ == '__main__':
         if image_path.split('.')[-1] != 'jpg':
             continue
         with open(image_path, 'rb') as f:
-            label_path = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] \
-            + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
+            label_path = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' \
+            + filename.split('_')[1] + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
             if os.path.exists(label_path) != 1:
                 print("The label image does not exist ！")
                 continue
