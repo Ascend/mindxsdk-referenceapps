@@ -102,7 +102,12 @@ while True:
 
     # save picture
     Id = frameList.frameId
+    result_path = "./result/"
+    if os.path.exists(result_path) != 1:
+        os.makedirs("./result/")
     oringe_imgfile = './result/image' + '-' + str(Id) + '.jpg'
+    print("Warning! Fire or smoke detected")
+    print("Result save in ",oringe_imgfile)
     cv2.imwrite(oringe_imgfile, img)
 
 # Destroy All Streams

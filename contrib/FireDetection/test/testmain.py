@@ -39,8 +39,12 @@ if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
     exit()
 
+testImg_count = 0
 # Input object of streams -- detection target
 PATH = "./JPEGImages/"
+result_path = "./test_result/"
+if os.path.exists(result_path) != 1:
+    os.makedirs("./test_result/")
 for item in os.listdir(PATH):
     img_path = os.path.join(PATH,item)
     print("file_path:",img_path)
@@ -70,7 +74,7 @@ for item in os.listdir(PATH):
         print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
         infer_result.errorCode, infer_result.data.decode()))
         exit()
-
+    testImg_count = testImg_count + 1
     # get ObjectList
     results = json.loads(infer_result.data.decode())
     img = cv2.imread(img_path)
@@ -102,7 +106,8 @@ for item in os.listdir(PATH):
             f.write('\n')
 
 end = time.time()
+cost_time = end - start
 # Mark spend time
-print("Spend time: ", end - start)
+print("\nImage count:%d\nSpend time: %10.3f\nfps:%10.3f" %(testImg_count, cost_time, testImg_count/cost_time))
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()

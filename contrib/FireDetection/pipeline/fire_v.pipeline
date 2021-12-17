@@ -31,9 +31,9 @@
         },
         "mxpi_modelinfer0": {
             "props": {
-                "modelPath": "../model/firedetection.om",
-                "postProcessConfigPath": "../model/yolov5.cfg",
-                "labelPath": "../model/yolov5.names",
+                "modelPath": "./model/firedetection.om",
+                "postProcessConfigPath": "./model/yolov5.cfg",
+                "labelPath": "./model/yolov5.names",
                 "postProcessLibPath": "${SDK安装路径}/mxVision-2.0.2/lib/libMpYOLOv5PostProcessor.so"
                 },
             "factory": "mxpi_modelinfer",

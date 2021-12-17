@@ -167,6 +167,8 @@ bash run.sh
 
 - **步骤1** 下载测试数据集，并将`JPEGImages`目录以及`test.json`放在`FireDetection/test`目录下，并在`FireDetection/test`目录下运行指令
 
+  ![dataset](images/dataset.png)
+
   ```bash
   python3.7.5 parse_COCO.py
   ```
@@ -182,11 +184,9 @@ bash run.sh
 
   运行脚本后会生成经过 SDK 后的推理结果结果保留在`test-result`目录下以`.txt`格式保存。
 
-  运行结果中会有`Spend time：`是识别所有图片所用的时间，用数据集中图片个数可以得到帧数
+  运行结果中会有`Spend time：`是识别所有图片所用的时间，`fps：`计算得到的帧数
 
   ![fps](images/fps.png)
-
-  上图是测试的结果，由此可知$fps = 1945/51.17 = 38.01$
 
 - **步骤3** 在`FireDetection/test`目录下运行`map_calculate.py`脚本，计算精度。
 
