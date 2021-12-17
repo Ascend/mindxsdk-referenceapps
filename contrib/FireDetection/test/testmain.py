@@ -108,8 +108,8 @@ for item in os.listdir(PATH):
 end = time.time()
 cost_time = end - start
 # Mark spend time
-print("Image count:%d" %testImg_count)
-print("Spend time:%10.3f" %cost_time)
-print("fps:%10.3f" %(testImg_count/cost_time))
+print("Image count:%d" % testImg_count)
+print("Spend time:%10.3f" % cost_time)
+print("fps:%10.3f" % (testImg_count/cost_time))
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
