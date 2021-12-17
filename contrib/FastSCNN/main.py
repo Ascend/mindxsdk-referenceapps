@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     # 构建流的输入对象
     dataInput = MxDataInput()
-    image_path = "./test.png"
+    image_path = "./test.jpg"
     if os.path.exists(image_path) != 1:
         print("The test image does not exist ！")
         exit()
@@ -80,6 +80,9 @@ if __name__ == '__main__':
         print("DVPP only support jpg !")
         exit()
     with open(image_path , 'rb') as f:
+        orimg = cv2.imread(image_path)
+        orig_h = orimg.shape[0]
+        orig_w = orimg.shape[1]
         dataInput.data = f.read()
         streamName = b'detection'
         inPluginId = 0
@@ -95,6 +98,9 @@ if __name__ == '__main__':
 
     # 从流中取出对应插件的输出数据
     infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+    if(infer.metadataVec.size() == 0):
+        print("Get no data from stream !")
+        exit()
     print("result.metadata size: ", infer.metadataVec.size())
     infer_result = infer.metadataVec[0]
     if infer_result.errorCode != 0:
@@ -122,3 +128,6 @@ if __name__ == '__main__':
             img_show[i][j][1] = cityscapepallete[a*3+1]
             img_show[i][j][2] = cityscapepallete[a*3]
     cv2.imwrite("./mask.png" , img_show)
+    img_r = cv2.imread("./mask.png")
+    img_resize = cv2.resize(img_r, (orig_w, orig_h), interpolation = cv2.INTER_AREA)
+    cv2.imwrite("./mask.png" , img_resize)

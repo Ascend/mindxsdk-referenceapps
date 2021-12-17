@@ -159,8 +159,8 @@ if __name__ == '__main__':
             if unions[i] != 0:
                 print("Class(", i + 1, ") IoU : ", inters[i] * 1.0000 / unions[i])
                 sum_iou += inters[i] * 1.0000 / unions[i]
-            sum_labeled += labeled[count]
-            sum_correct += correct[count] 
+        sum_labeled += labeled[count]
+        sum_correct += correct[count]
         print("Model PA: ", sum_correct * 1.0000 / sum_labeled * 100, "%")
         print("Model MIoU: ", sum_iou / CLASS)
         count += 1

@@ -33,7 +33,7 @@ for file in files_list:
         continue
  
     # 取得当前文件名称的格式，（切分文件名，取最后的列表元素）
-    file_type = file.split('_')[5]
+    file_type = file.split('_')[4]
     # 如果没有某个格式的文件夹，则创建这个文件夹
     if not os.path.exists(file_type):
         os.mkdir(file_type)
@@ -41,7 +41,7 @@ for file in files_list:
     # 获取当前路径
     path = os.getcwd()
     # 获取分类文件夹路径
-    subdir = os.path.join(path, ' % s' % file_type)
+    subdir = os.path.join(path, '%s' % file_type)
     # 进入分类文件夹
     os.chdir(subdir)
     if os.path.exists(file):

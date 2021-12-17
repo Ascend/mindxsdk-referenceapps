@@ -102,7 +102,8 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 ```
 export MX_SDK_HOME=${自己的SDK安装包路径}  
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/python:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${CANN包安装路径}/acllib/lib64:/usr/local/Ascend/driver/lib64
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/python:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/5.0.2/acllib/lib64:/usr/local/Ascend/driver/lib64
+
 
 export PYTHONPATH=/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python:/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl
 
@@ -146,7 +147,7 @@ pth权重文件和onnx文件的下载链接如下：
 3. 进入FastSCNN/model文件夹下执行命令：
 
    ```
-   atc --framework=5 --model=fast_scnn_bs1.onnx --output=fast_scnn_bs1  --output_type=FP16 --input_format=NCHW --insert_op_conf=./aipp_FastSCnn.aippconfig.aippconfig --input_shape="image:1,3,1024,2048" --log=debug --soc_version=Ascend310 
+   atc --framework=5 --model=fast_scnn_bs1.onnx --output=fast_scnn_bs1  --output_type=FP16 --input_format=NCHW --insert_op_conf=./aipp_FastSCnn.aippconfig --input_shape="image:1,3,1024,2048"  --log=debug --soc_version=Ascend310 
    ```
 
 4. 执行该命令会在当前目录下生成项目需要的模型文件fast_scnn_bs1.om。执行后终端输出为：
@@ -176,7 +177,7 @@ pth权重文件和onnx文件的下载链接如下：
 python3.7.5 main.py
 ```
 
-**步骤 5** 图片检测。运行结束输出result.jpg实现语义分割功能（通过不同颜色区分不同事物）。
+**步骤 5** 图片检测。运行结束输出mask.png实现语义分割功能（通过不同颜色区分不同事物）。
 
 
 
@@ -243,9 +244,13 @@ cd ${用户路径}/FastSCNN
            点进evaluate.py，修改路径如下：
 
 ```
-for filename in os.listdir("./cityscapes/leftImg8bit/val/frankfurt"):
-        with open("./cityscapes/leftImg8bit/val/frankfurt/" + filename, 'rb') as f:
-            imgpath = "./cityscapes/gtFine/val/frankfurt/label/" + filename.split('_')[0] + '_' + filename.split('_')[1] + '_' +filename.split('_')[2] + "_gtFine_labelIds.png"
+filepath = "./cityscapes/leftImg8bit/val/frankfurt"
+
+
+
+with open(image_path, 'rb') as f:
+            label_path = "./cityscapes/gtFine/val/frankfurt/Label/" + filename.split('_')[0] + '_' + filename.split('_')[1] \
+            + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
 ```
 
 **步骤 6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
