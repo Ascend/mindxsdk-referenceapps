@@ -127,7 +127,5 @@ if __name__ == '__main__':
             img_show[i][j][0] = cityscapepallete[a*3+2]
             img_show[i][j][1] = cityscapepallete[a*3+1]
             img_show[i][j][2] = cityscapepallete[a*3]
-    cv2.imwrite("./mask.png" , img_show)
-    img_r = cv2.imread("./mask.png")
-    img_resize = cv2.resize(img_r, (orig_w, orig_h), interpolation = cv2.INTER_AREA)
+    img_resize = cv2.resize(img_show, (orig_w, orig_h), interpolation = cv2.INTER_NEAREST)
     cv2.imwrite("./mask.png" , img_resize)
