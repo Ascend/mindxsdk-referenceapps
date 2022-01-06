@@ -111,7 +111,7 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 
 ## 3 模型获取与准备工作
 
-**步骤1** 将所需[模型](https:///mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FacialExpressionRecognition/model.zip)下载并解压至model文件中；
+**步骤1** 将所需[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FacialExpressionRecognition/model.zip)下载并解压至model文件中；
 
 **步骤2** 修改pipeline文件夹中的facial_expression_recognition.pipeline，将mxpi_objectpostprocessor0中的postProcessLibPath修改为自己运行目录下的文件；
 
