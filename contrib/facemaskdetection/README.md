@@ -53,7 +53,6 @@ CANN版本为1.77.22.6.220。
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3.7 -m pip install opencv-python                       |
 
-请列出环境依赖软件和版本。
 
 在编译运行项目前，需要设置环境变量：
 
@@ -82,9 +81,11 @@ export GST_DEBUG=3
 | ---------------------- | ----- | ------------------------------------------------------------ | ---- | ---- | ---- |
 | face_mask_detection.pb | SSD   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/blob/master/models/face_mask_detection.pb) |      |      |      |
 | benchmark工具          | 1.0.0 | [软件获取](https://www.huaweicloud.com/ascend/cann-download) |      |      |      |
-| 测试数据集             |       | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip) |      |      |      |
+| 测试数据集             |       | https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip |      |      |      |
+| 后处理开源部分 | python   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/tree/master/utils) |      |      |      |
 
-
+- 开源代码部分的部署
+>下载开源代码中utils文件夹内的3个py文件(anchor_decode.py,anchor_generator.py,nms.py)并放置于项目根目录即可，最终的目录结构参见 [1.3 代码目录结构与说明]
 
 ##  推理
 
