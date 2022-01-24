@@ -1,0 +1,56 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+       "mxpi_rtspsrc0":{
+            "props":{
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+            },
+            "factory":"mxpi_rtspsrc",
+            "next":"mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0":{
+            "props":{
+                "deviceId":"0",
+                "inputVideoFormat":"H264",
+                "outputImageFormat":"YUV420SP_NV12"
+            },
+            "factory":"mxpi_videodecoder",
+            "next":"mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "640",
+                "resizeWidth": "640",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_modelinfer0"
+        },
+        "mxpi_modelinfer0": {
+            "props": {
+                "modelPath": "./model/firedetection.om",
+                "postProcessConfigPath": "./model/yolov5.cfg",
+                "labelPath": "./model/yolov5.names",
+                "postProcessLibPath": "${SDK安装路径}/mxVision-2.0.2/lib/libMpYOLOv5PostProcessor.so"
+                },
+            "factory": "mxpi_modelinfer",
+           "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_modelinfer0,ReservedFrameInfo"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
