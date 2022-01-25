@@ -81,7 +81,7 @@ export GST_DEBUG=3
 | ---------------------- | ----- | ------------------------------------------------------------ | ---- | ---- | ---- |
 | face_mask_detection.pb | SSD   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/blob/master/models/face_mask_detection.pb) |      |      |      |
 | benchmark工具          | 1.0.0 | [软件获取](https://www.huaweicloud.com/ascend/cann-download) |      |      |      |
-| 测试数据集             |       | https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip |      |      |      |
+| 测试数据集存档             |       | [测试数据obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip) [数据集obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip) |      |      |      |
 | 后处理开源部分 | python   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/tree/master/utils) |      |      |      |
 
 - 开源代码部分的部署
@@ -155,7 +155,7 @@ python3.7.5 image.py
 
 ###### 数据集说明
 
-- 数据集来源: [obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip)
+- 数据集来源: [Github](https://github.com/AIZOOTech/FaceMaskDetection)
 
 - 数据集结构
 
