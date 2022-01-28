@@ -81,7 +81,6 @@ export GST_DEBUG=3
 | ---------------------- | ----- | ------------------------------------------------------------ | ---- | ---- | ---- |
 | face_mask_detection.pb | SSD   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/blob/master/models/face_mask_detection.pb) |      |      |      |
 | benchmark工具          | 1.0.0 | [软件获取](https://www.huaweicloud.com/ascend/cann-download) |      |      |      |
-| 测试数据集存档             |       | [测试数据obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/faceMask_testimages.zip) [数据集obs链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/facemaskdetection/FaceMaskDataset1.zip) |      |      |      |
 | 后处理开源部分 | python   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/tree/master/utils) |      |      |      |
 
 - 开源代码部分的部署
@@ -148,52 +147,3 @@ python3.7.5 image.py
 ```
 
 即可得到输出结果，输出结果对原图像的人脸以及口罩进行识别画框并将结果保存至根目录下**my_result.jpg**
-
-#### 步骤3 测试精度
-
-##### 精度测试
-
-###### 数据集说明
-
-- 数据集来源: [Github](https://github.com/AIZOOTech/FaceMaskDetection)
-
-- 数据集结构
-
-  ```
-  .
-  ├── ground_truth
-  ├── label
-  ├── imgtest
-  └── result_txt
-  ```
-
-  其中ground_truth存放测试图像的真实预测框结果，label存放测试图像真实框信息xml文件，imgtest存放测试图像，result_txt存放推理结果。
-
-  测试数据集未上传，需要自行下载建立相应文件夹
-
-###### 推理运行
-
-依据编写的pipline业务流，对测试数据集进行推理，输出结果保存在**result_txt**文件夹中，该文件需要手动建立。程序**test_image.py**文件放在源码根目录中。
-
-运行命令：
-
-```
-python3.7.5 test_image.py
-```
-
-###### 精度计算
-
-推理完成后，依据图片真实标签和推理结果，计算精度。输出结果保存在同级目录**output**文件夹中，该文件需要手动建立。程序map_calculate.py文件在benchmark目录./scripts下。
-
-运行命令：
-
-```
-python3.7.5 map_calculate.py --label_path ~/facemask_project/newenv_mask/testimages/FaceMaskDataset/ground_truth/ --npu_txt_path ~/facemask_project/newenv_mask/testimages/FaceMaskDataset/result_txt/ -na -np
-```
-
-即可得到输出。其中precision、recall和map记录在**output/output.txt**文件中。
-
-注：建立测试数据集后可以按照路径更改精度计算指令，上述命令适用于原工程文件结构
-
-## 
-
