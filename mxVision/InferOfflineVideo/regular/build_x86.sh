@@ -16,13 +16,13 @@
 
 set -e
 
-export MX_SDK_HOME=${SDK安装路径}
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"${arm版本cann包安装路径}/acllib/lib64":${LD_LIBRARY_PATH}
+export MX_SDK_HOME=${SDk_install_path}
+export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"${arm瓴疥刀cann甏�臧涢檵歙岇摵}/acllib/lib64":${LD_LIBRARY_PATH}
 export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
 export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0":"${MX_SDK_HOME}/lib/plugins"
 
 # complie
-CC=${aarch64-linux-gnu-gcc安装路径} CXX=${aarch64-linux-gnu-g++安装路径} cmake -S . -Build
+CC=${aarch64-linux-gnu-gcc_install_path} CXX=${aarch64-linux-gnu-g++_install_path} cmake -S . -Build
 make -C ./uild -j
 
 exit 0
