@@ -1,3 +1,5 @@
+
+
 # InferOfflineVideo
 
 ## 1 简介
@@ -50,3 +52,107 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 正常启动后，控制台会输出检测到各类目标的对应信息，结果日志将保存到`${安装路径}/mxVision/logs`中
 
 手动执行ctrl + C结束程序
+
+## 5 交叉编译
+
+**步骤1：**在Ubuntu18.0.4 x86_64系统上安装ARM版本的CANN套件包
+
+**步骤2：**在Ubuntu18.0.4 x86_64系统上安装ARM版本的SDK套件包
+
+> 2.0.3及以下版本SDK不支持交叉编译，从2.0.4版本开始支持，安装的ARM版本的CANN包应与SDK版本适配，安装SDK套件包之前，确保环境中已安装x86版本的CANN包。
+
+**步骤3：**在开发环境执行如下命令检查是否安装，若已经安装则可以忽略
+
+```
+aarch64-linux-gnu-g++ --version
+```
+
+执行如下命令安装交叉编译工具链：
+
+```
+sudo apt-get install g++-aarch64-linux-gnu
+```
+
+**步骤4：**下载zlib源码并编译
+
+- 下载zlib tar.gz包：[下载地址](https://github.com/madler/zlib/releases/tag/v1.2.11)
+
+- 解压并编译zlib源码：
+
+  ```
+  tar zxvf zlib-1.2.11.tar.gz
+  ```
+
+- 将build_zlib.sh脚本拷贝到同级目录下并执行如下命令进行编译；
+
+  ```
+  bash build_zlib.sh
+  ```
+
+- 编译完成后，将生成文件拷贝至sdk的opensource
+
+  ```
+  cp -r zlib/* ${MX_SDK_HOME}/opensource
+  ```
+
+**步骤5：**交叉编译
+
+- 修改目录下的CMakeLists.txt文件
+
+  ```
+  set(MX_SDK_HOME ${SDK安装路径})
+  ...
+  link_directories(
+          ${MX_SDK_HOME}/lib
+          ${MX_SDK_HOME}/opensource/lib
+          ${MX_SDK_HOME}/lib/modelpostprocessors
+          #arm版本cann的链接库路径
+          /xxx/Ascend/ascend-toolkit/5.0.3/arm64-linux/runtime/lib64/stub
+  )
+  ```
+
+- 修改目录下的build_x86.sh脚本
+
+  ```
+  export MX_SDK_HOME=${SDK安装路径}
+  export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"${arm版本cann包安装路径}/acllib/lib64":${LD_LIBRARY_PATH}
+  ...
+  CC=${aarch64-linux-gnu-gcc安装路径} CXX=${aarch64-linux-gnu-g++安装路径} cmake -S . -Build
+  ```
+
+- 执行脚本进行交叉编译，若生成可执行文件main，则说明编译成功
+
+  ```
+  bash build_x86.sh
+  ```
+
+**步骤6：**运行
+
+- 将编译成功的参考用例程序与安装成功的SDK文件全部打包，上传至A500服务器
+
+- 解压上述两个压缩包
+
+- 设置环境变量
+
+  - 运行sdk目录下的set_env.sh脚本设置环境变量
+
+    ```
+    .  set_env.sh
+    ```
+
+  - A500环境中预安装有nnrt套件包，默认路径为/opt/ascend/nnrt，运行如下命令设置环境变量
+
+    ```
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ascend/nnrt/5.0.3/arm64-linux/runtime/lib64
+    ```
+
+- 进入参考样例目录下，执行 `./main` 运行程序
+
+## FAQ
+
+- 若在交叉编译或运行过程中，出现缺少gcc共享库的情况，可以从其他ARM框架下将该库拷贝至缺少的服务器中。
+
+> 若是编译时缺少库，将缺少的库拷贝aarch64-linux-gnu目录下；
+>
+> 若是运行时缺少库，拷贝路径可参考原服务器中改库的存放路径
+
