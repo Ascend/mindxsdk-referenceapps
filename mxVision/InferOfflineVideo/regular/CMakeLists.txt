@@ -7,7 +7,7 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 set(OUTPUT_NAME "main")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
-set(MX_SDK_HOME ${SDK°²×°Â·¾¶})
+set(MX_SDK_HOME ${SDKå®‰è£…è·¯å¾„})
 
 include_directories(
         ${MX_SDK_HOME}/include
