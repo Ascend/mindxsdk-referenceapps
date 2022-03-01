@@ -26,7 +26,8 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 parser = argparse.ArgumentParser(description="hello")
-parser.add_argument('--url_video', type = str, metavar = 'PATH', default = "rtsp://xxxx.xxx.xx.xxx:xxxx/1.264", help = 'video path.')
+parser.add_argument('--url_video', type = str, metavar = 'PATH', \
+    default = "rtsp://xxxx.xxx.xx.xxx:xxxx/1.264", help = 'video path.')
 parser.add_argument('--label', type = str, default = "0", help = 'ground truth.')
 parser.add_argument('--frame_num', type = str, default = "40", help = 'length of video.')
 parser.add_argument('--frame_threshold', type = int, default = 30, help = 'threshold of frame num.')
