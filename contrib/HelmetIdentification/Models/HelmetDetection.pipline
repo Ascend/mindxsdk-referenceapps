@@ -6,7 +6,7 @@
        "mxpi_rtspsrc0":{
             "factory":"mxpi_rtspsrc",
             "props":{
-                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:8554/xxx.264",
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                 "channelId":"0"
             },
             "next":"queuerstp0"
@@ -14,7 +14,7 @@
         "mxpi_rtspsrc1":{
             "factory":"mxpi_rtspsrc",
             "props":{
-                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:8554/xxx.264",
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                 "channelId":"1"
             },
             "next":"queuerstp1"
