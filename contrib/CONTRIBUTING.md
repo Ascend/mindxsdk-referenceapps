@@ -17,7 +17,7 @@ mindxsdk-referenceapps欢迎各位开发者的加入，希望各位开发者遵�
 | 文件         | 描述                                                         |
 | ------------ | ------------------------------------------------------------ |
 | **README**   | 包含第三方依赖安装、模型转换、编译、运行指导等内容，能指导端到端使用 |
-| 代码         | 包含插件的C++代码、CMakeLists.txt、python/C++推理运行代码    |
+| 代码         | 包含插件开发的C++代码、CMakeLists.txt、python/C++推理运行代码、精度与性能测试代码 |
 | 配置文件     | 运行时相关配置文件，用于加载相关运行参数的文件               |
 | pipeline文件 | MindX SDK的编排文件                                          |
 | 启动脚本     | 包括编译、运行、测试、模型转换等脚本                         |
@@ -45,7 +45,7 @@ mindxsdk-referenceapps欢迎各位开发者的加入，希望各位开发者遵�
 └── run.sh
 ```
 
-**注意**：相关输入的数据（图像、视频等）请不要上传到代码上，请在README注明如何获取
+**注意**：相关输入的数据（图像、视频等）请不要上传到代码仓，在README注明如何获取即可
 
 ### 二、源码
 
@@ -105,7 +105,9 @@ mindxsdk-referenceapps/contrib/参考设计名称(英文)
 
 - 规范标准
 
-  C++和Python代码均遵循华为编码规范
+  C++遵循Google编程规范，Python代码均遵循PEP 8编码规范
+
+  规范参考链接：[zh-cn/contribute/OpenHarmony-cpp-coding-style-guide.md · OpenHarmony/docs - Gitee.com](https://gitee.com/openharmony/docs/blob/master/zh-cn/contribute/OpenHarmony-cpp-coding-style-guide.md)
 
 - 规范备注（前4条规则C++适用）
 
