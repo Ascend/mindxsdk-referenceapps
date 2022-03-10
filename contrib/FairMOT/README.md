@@ -190,7 +190,8 @@ bash run.sh
 
 **问题描述：**
 
-`FairMOT/pipeline/fairmot.pipeline`中视频编码参数需要和使用的264输入视频大小相同，否则会包如下类型的错：
+`FairMOT/pipeline/fairmot.pipeline`中视频编码分辨率参数目前未配置，自适应分辨率编码输出。
+如手动指定imageHeight 和 imageWidth 属性，则需要和视频输入分配率相同，否则会包如下类型的错：
 
 ![](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image3.png)
 
