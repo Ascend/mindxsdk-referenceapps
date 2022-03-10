@@ -226,22 +226,21 @@ int FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors
         featLayerShapes.push_back(featLayerShape);             
     }
 
-    // tensors[0] matchs id_feature
-    // tensors[1] matchs reg
-    // tensors[2] matchs wh
-    // tensors[3] matchs hm
-    
+    // tensors[0] matchs hm
+    // tensors[1] matchs wh
+    // tensors[2] matchs reg
+    // tensors[3] matchs id_feature
     // Get the head address of hm
-    std::shared_ptr<void> hm_addr = featLayerData[3];
+    std::shared_ptr<void> hm_addr = featLayerData[0];
     // Create a vector container XY to store coordinate information
     std::vector<std::vector<int>> XY;
-    for(uint32_t i = 0;i < featLayerShapes[3][1] * featLayerShapes[3][2];i++){
+    for(uint32_t i = 0;i < featLayerShapes[0][1] * featLayerShapes[0][2];i++){
         // Compared with the threshold CONF_THRES to obtain coordinate information
         if(static_cast<float *>(hm_addr.get())[i] > CONF_THRES)
         {
             std::vector<int>xy;                
-            int x = i / featLayerShapes[3][2];
-            int y = i - featLayerShapes[3][2] * x;
+            int x = i / featLayerShapes[0][2];
+            int y = i - featLayerShapes[0][2] * x;
             xy.push_back(x);
             xy.push_back(y); 
             XY.push_back(xy);  
@@ -254,19 +253,19 @@ int FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors
     // Create a vector container scores to store the information in the corresponding coordinate XY in hm
     std::vector<float>scores;
     for(uint32_t i = 0;i < XY.size();i++){
-        scores.push_back(static_cast<float *>(hm_addr.get())[XY[i][0] * featLayerShapes[3][2] + XY[i][1]]);
+        scores.push_back(static_cast<float *>(hm_addr.get())[XY[i][0] * featLayerShapes[0][2] + XY[i][1]]);
     }
     // Get the head address of wh and reg
-    std::shared_ptr<void> wh_addr = featLayerData[2];
-    std::shared_ptr<void> reg_addr = featLayerData[1];
+    std::shared_ptr<void> wh_addr = featLayerData[1];
+    std::shared_ptr<void> reg_addr = featLayerData[2];
 
     // WH: n*4
     std::vector<std::vector<float>>WH;
     for(int i = 0; i < XY.size();i++){
         std::vector<float>wh;
-        // featLayerShapes[2][3]: the third dimension of tensor[2]
-        for(int j = 0;j < featLayerShapes[2][3];j++){
-            wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[2][3] + j]);
+        // featLayerShapes[1][3]: the third dimension of tensor[2]
+        for(int j = 0;j < featLayerShapes[1][3];j++){
+            wh.push_back(static_cast<float *>(wh_addr.get())[(XY[i][0] * featLayerShapes[0][2] + XY[i][1]) * featLayerShapes[1][3] + j]);
         }
         WH.push_back(wh);
     }
@@ -275,24 +274,23 @@ int FairmotPostProcess::ObjectDetectionOutput(const vector <TensorBase> &tensors
     std::vector<std::vector<float>>REG;
     for(int i = 0; i < XY.size();i++){
         std::vector<float>reg;
-        // featLayerShapes[1][3]: the third dimension of tensor[1]
-        for(int j = 0;j < featLayerShapes[1][3];j++){
-            reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[1][3] + j]);
+        // featLayerShapes[2][3]: the third dimension of tensor[1]
+        for(int j = 0;j < featLayerShapes[2][3];j++){
+            reg.push_back(static_cast<float *>(reg_addr.get())[(XY[i][0] * featLayerShapes[0][2] + XY[i][1]) * featLayerShapes[2][3] + j]);
         }
         REG.push_back(reg);
     }
 
     // ID_feature: n*128
-    std::shared_ptr<void> id_addr = featLayerData[0];
+    std::shared_ptr<void> id_addr = featLayerData[3];
     for(int i = 0; i < XY.size();i++){
-        // featLayerShapes[0][3]: the third dimension of tensor[0]
+        // featLayerShapes[3][3]: the third dimension of tensor[0]
         std::vector<float>id_feature;
-        for(int j = 0;j < featLayerShapes[0][3];j++){
-            id_feature.push_back(static_cast<float *>(id_addr.get())[(XY[i][0] * featLayerShapes[3][2] + XY[i][1]) * featLayerShapes[0][3] + j]);
+        for(int j = 0;j < featLayerShapes[3][3];j++){
+            id_feature.push_back(static_cast<float *>(id_addr.get())[(XY[i][0] * featLayerShapes[0][2] + XY[i][1]) * featLayerShapes[3][3] + j]);
         }
         ID_feature.push_back(id_feature);
     }
-
     // XY_f changes the data in XY from int to float
     std::vector<std::vector<float>> XY_f;
     for(int i = 0;i < XY.size();i++){

@@ -140,8 +140,6 @@
         },
         "mxpi_videoencoder0": {
             "props": {
-                "imageHeight": "720",
-                "imageWidth": "1280",
                 "inputFormat": "YUV420SP_NV12",
                 "outputFormat": "H264",
                 "fps": "1",
