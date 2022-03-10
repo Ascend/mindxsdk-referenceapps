@@ -32,7 +32,7 @@ cmake ..
 -- Detecting CXX compiler ABI info - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/matrim/workspace/cmake-examples/01-basic/C-static-library/build
+-- Build files have been written to: /home/workspace/cmake-examples/01-basic/C-static-library/build
 
 make
 [ 50%] Building CXX object CMakeFiles/main.dir/main.cpp.o
@@ -84,10 +84,10 @@ Cmake用”#”注释，"#"后面为注释的内容，从"#"字符开始到此�
   [CMake的常用变量](https://bbs.huaweicloud.com/forum/thread-117324-1-1.html)
   [CMake的常用命令](https://bbs.huaweicloud.com/forum/thread-117221-1-1.html)
   如果想对CMake有更进一步的了解的话，也可以阅读[CMake官方文档](https://cmake.org/cmake/help/v3.20/)进行深入学习。
-  
+
 ## 1.5 CMakeLists文件示例
   以图像检测样例的CMakeLists文件为例。
-  
+
   ## 
   **前提条件**：
   参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)章节，将本地IDE与远程环境连接起来，并同步好项目文件。
@@ -136,14 +136,13 @@ target_link_libraries(sample
         cpprest
         mindxsdk_protobuf
         opencv_world)
-```
+  ```
  ##
   修改好CMakeLists文件后，重新加载CMakeLists文件。  
   ![1.png](img/1622518642593.png '1.png')
-  
+
 ##
 至此，样例项目的CMakeLists文件配置完成，可以对项目进行运行调试。
-
 
 
 
