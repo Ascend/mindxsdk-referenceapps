@@ -243,3 +243,6 @@ bash run.sh
 ### 查看结果
 
 执行`run.sh`完毕后，如果配置了检测结果写文件，sample会将目标检测结果保存在工程目录下`result`中。
+
+## 疑难解惑
+本工程中需要使用cann下dvpp的相关组件，CMake中配置为指向默认安装的/usr/local/Ascend/ascend-toolkit/latest/include，如用户有变更应该更改为实际位置。

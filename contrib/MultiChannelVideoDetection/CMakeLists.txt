@@ -17,6 +17,8 @@ include_directories(
         ${MX_SDK_HOME}/opensource/include/opencv4
         ${MX_SDK_HOME}/include/MxBase/postprocess/include
         ${FFMPEG_HOME}/include
+        #该处为ascend-toolkit的实际安装位置，默认为/usr/local下指向对应架构include的软连接
+        /usr/local/Ascend/ascend-toolkit/latest/include
 )
 
 link_directories(
