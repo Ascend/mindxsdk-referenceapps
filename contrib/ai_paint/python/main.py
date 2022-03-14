@@ -17,7 +17,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 # USE LF FORMAT!
-from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 import json
 import os
 import time
@@ -25,6 +24,8 @@ import configparser
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
+
+from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 
 vocab = {"sky": 1, "sand": 2, "sea": 3, "mountain": 4, "rock": 5, "earth": 6, "tree": 7, "water": 8,
          "land": 9, "grass": 10, "path": 11, "dirt": 12, "river": 13, "hill": 14, "filed": 15, "lake": 16}
@@ -74,7 +75,7 @@ def preprocess(net_param):
 
         size_att_str = net_param.get("net_param", "size_att")
         size_att = json.loads(size_att_str)
-    except:
+    except Exception:
         print("Input param format error, check ini file!")
         exit()
         
@@ -94,11 +95,15 @@ def preprocess(net_param):
 
     # gen np array
     num_objs = len(objects)
-    objects = np.array([vocab[name] for name in objects])
+    try:
+        objects = np.array([vocab[name] for name in objects])
+    except KeyError:
+        print("vocab dict got error input object!")
+        exit()
     to_pad = MAX_OBJ_PER_IMG - num_objs
     objects = np.pad(objects, (0, to_pad), mode='constant').astype(np.int64)
     obj_valid_inds = np.array([1] * num_objs + [0] * to_pad)
-    layout = np.array(gen_coarse_layout(objects, boxes, size_att, obj_valid_inds, layout_size=LAYOUT_HW_LEN, num_classes=VOC_CLASS_NUM),
+    layout = np.array(gen_coarse_layout(objects, boxes, size_att, obj_valid_inds),
                     dtype=np.float32)
     
     # gen tensor data
@@ -119,7 +124,8 @@ def preprocess(net_param):
     tensorVec_lay = tensor_package_vec.tensorVec.add()
     tensorVec_lay.memType = 1
     tensorVec_lay.deviceId = 0
-    tensorVec_lay.tensorDataSize = int(layout.shape[1] * layout.shape[2] * IMG_CHN_NUM * 4) # H * W * C * sizeof(float32)
+    # H * W * C * sizeof(float32)
+    tensorVec_lay.tensorDataSize = int(layout.shape[1] * layout.shape[2] * IMG_CHN_NUM * 4)
     tensorVec_lay.tensorDataType = 0 # float32
     for i in layout.shape:
         tensorVec_lay.tensorShape.append(i)
