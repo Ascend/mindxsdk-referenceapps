@@ -27,10 +27,10 @@
   | 软件名称 | 版本  |
   | -------- | ----- |
   | cmake    | 3.5.+ |
-  | mxVision | 2.0.2 |
+  | mxVision | 2.0.4 |
   | Python   | 3.9.2 |
   | Pytorch   | 1.9.0 |
-  | CANN   | 3.3.0 |
+  | CANN   | 5.0.4 |
   | OpenCV   | 4.5.3 |
   | gcc      | 7.5.0 |
   | ffmpeg   | 3.4.8 |

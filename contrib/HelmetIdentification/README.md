@@ -10,7 +10,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[3.3.0](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -59,8 +59,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.2       | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
-| Ascend-CANN-toolkit | 3.3.0     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 2.0.4       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 5.0.4     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 

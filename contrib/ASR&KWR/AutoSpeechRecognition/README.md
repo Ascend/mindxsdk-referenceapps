@@ -57,7 +57,7 @@
 |-----------|----------|
 | python    | 3.9.2    |
 | numpy     | 1.18.2   |
-| MindX SDK | 2.0.2    |
+| MindX SDK | 2.0.4    |
 | librosa   | 0.8.0    |
 请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
 

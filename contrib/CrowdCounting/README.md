@@ -115,7 +115,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 
 | 依赖软件 | 版本  | 说明                                                         |
 | -------- | ----- | ------------------------------------------------------------ |
-| mxVision | 2.0.2 | 提供昇腾计算语言(AscendCL)的高级编程API，简化插件和推理应用开发。 |
+| mxVision | 2.0.4 | 提供昇腾计算语言(AscendCL)的高级编程API，简化插件和推理应用开发。 |
 
 
 

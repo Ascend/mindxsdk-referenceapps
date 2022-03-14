@@ -80,8 +80,8 @@
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK mxManufacture    |    2.0.2    |
-| ascend-toolkit             |    3.3.0    |
+| MindX SDK mxManufacture    |    2.0.4    |
+| ascend-toolkit             |    5.0.4    |
 
 在编译运行项目前，需要设置环境变量：
 MX_SDK_HOME="~/mxManufacture"  
@@ -116,8 +116,8 @@ export ASCEND_OPP_PATH=\\${install_path}/opp
 ## 依赖安装
 
 安装MindX SDK mxManufacture：
-chmod u+x Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64.run
-./Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64.run
+chmod u+x Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64.run
+./Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64.run
 
 ascend-toolkit:
 从/usr/local/Ascend/ascend-toolkit/latest/路径获取
@@ -161,4 +161,4 @@ ascend-toolkit:
 ![err information](https://gitee.com/superman418/mindxsdk-referenceapps/raw/master/contrib/PersonCount/img/err1.png)
 **解决方案：**
 
-新版Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64中的tensorinfer插件能够自动组batch然后进行batch模型的推理，可以解决该问题。
+新版Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64中的tensorinfer插件能够自动组batch然后进行batch模型的推理，可以解决该问题。

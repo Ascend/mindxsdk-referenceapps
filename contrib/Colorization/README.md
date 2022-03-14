@@ -41,7 +41,7 @@ Atlas300推理芯片
 |------------------|-------|
 |      CANN        | 20.2.rc1| 
 |     python       | 3.9.2 | 
-|    MindX_SDK     | 2.0.2 |
+|    MindX_SDK     | 2.0.4 |
 |   opencv-python  | 4.5.3 |
 |      numpy       | 1.21.2|  
 

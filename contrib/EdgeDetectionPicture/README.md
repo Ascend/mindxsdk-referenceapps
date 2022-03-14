@@ -9,7 +9,7 @@
 昇腾310(推理)
 
 #### 1.2 支持的版本
-本样例配套的CANN版本为3.3.0，MindX SDK版本为2.0.2
+本样例配套的CANN版本为5.0.4，MindX SDK版本为2.0.4
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1%E5%AE%89%E8%A3%85SDK%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6.md)
 
 #### 1.3 代码目录结构与说明
@@ -39,8 +39,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
-| Ascend-CANN-toolkit | 3.3.0        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 5.0.4        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 
 在编译运行项目前，需要设置环境变量：

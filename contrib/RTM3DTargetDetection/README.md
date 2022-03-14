@@ -11,7 +11,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -73,9 +73,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件名称  | 版本        |
 | --------- | ----------- |
-| MindX SDK | 2.0.2       |
+| MindX SDK | 2.0.4       |
 | ubantu    | 18.04.1 LTS |
-| CANN      | 3.3.0       |
+| CANN      | 5.0.4       |
 | Python    | 3.9.2       |
 
 在编译运行项目前，需要设置环境变量：

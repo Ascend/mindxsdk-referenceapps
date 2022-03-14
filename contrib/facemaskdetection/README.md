@@ -9,9 +9,9 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2。
+支持的SDK版本为2.0.4。
 
-CANN版本为1.77.22.6.220。
+CANN版本为5.0.4。
 
 ### 1.3 代码目录结构与说明
 
@@ -48,7 +48,7 @@ CANN版本为1.77.22.6.220。
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
+| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
 | Ascend-CANN-toolkit | 20.2.rc1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |

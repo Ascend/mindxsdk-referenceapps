@@ -21,7 +21,7 @@
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
-|MindX SDK|2.0.2|
+|MindX SDK|2.0.4|
 |Python| 3.9.2|
 |numpy | 1.18.2 |
 |opencv_python|3.4.0|

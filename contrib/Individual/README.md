@@ -12,7 +12,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2。
+支持的SDK版本为2.0.4。
 
 版本号查询方法，在Atlas产品环境下，运行命令：npu-smi info进行查看。
 
@@ -76,7 +76,7 @@
 | 软件名称     | 版本    |
 |----------|-------|
 | cmake    | 3.5.+ |
-| mxVision | 2.0.2 |
+| mxVision | 2.0.4 |
 | python   | 3.9.2 |
 
 模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html

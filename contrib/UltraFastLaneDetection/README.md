@@ -12,7 +12,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[1.77.22.6.220](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)。
 
@@ -50,8 +50,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 | 软件                | 版本                                                         | 说明                                               |
 | ------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
-| mxVision            | [mxVision 2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) | mxVision软件包                                     |
-| Ascend-CANN-toolkit | [CANN 3.3.0](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
+| mxVision            | [mxVision 2.0.4](https://www.hiascend.com/software/Mindx-sdk) | mxVision软件包                                     |
+| Ascend-CANN-toolkit | [CANN 5.0.4](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
 | 操作系统            | [Ubuntu 18.04](https://ubuntu.com/)                          | Linux操作系统                                      |
 | OpenCV              | 4.3.0                                                        | 用于结果可视化                                     |
 
@@ -105,7 +105,7 @@ atc --model=./model/path_to_culane_18.onnx --framework=5  --output=./module/out/
 
 **步骤1** **修改CMakeLists.txt文件** (文件位于PostProcess文件夹)
 
-第**8**行 **set(MX_SDK_HOME ../MindX_SDK/mxVision-2.0.2)** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
+第**8**行 **set(MX_SDK_HOME ../MindX_SDK/mxVision)** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
 
 第**11**行 **set(LIBRARY_OUTPUT_PATH ../MindX_SDK/mxVision/samples/mxVision/SamplePostProcess)** 语句是设置.so文件的输出路径，需将其替换为自定义输出路径进行替换。
 

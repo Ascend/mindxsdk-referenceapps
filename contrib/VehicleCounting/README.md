@@ -4,7 +4,7 @@
 ### 1.1 支持的产品
 支持昇腾310芯片
 ### 1.2 支持的版本
-本样例配套的CANN版本为3.3.0，MindX SDK版本为2.0.2
+本样例配套的CANN版本为5.0.4，MindX SDK版本为2.0.4
 ### 1.3 软件方案介绍
 车流统计项目实现：输入类型是视频数据（需要将视频转换为.264的视频格式），ffmpeg打开视频流获取视频帧信息，图像经过尺寸大小变换，满足模型的输入尺寸要求；将尺寸变换后的图像数据依次输入Yolov4检测模型进行推理，模型输出经过后处理后，使用SORT算法进行车辆追踪得到车辆轨迹，再设置标志对车辆进行计数，最后得到某时刻已经通过的车辆数。
 
@@ -71,8 +71,8 @@
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
-| Ascend-CANN-toolkit | 3.3.0        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 5.0.4        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | ffmpeg             | 4.2.1        | 视频转码解码组件              | [安装教程](https://bbs.huaweicloud.com/forum/thread-142431-1-1.html)|                                               
 | pc端ffmpeg         | 2021-09-01   | 将视频文件格式转换为.264      | [安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md)|

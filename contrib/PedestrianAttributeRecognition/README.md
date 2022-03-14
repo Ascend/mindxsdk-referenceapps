@@ -9,7 +9,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2.b011。 
+支持的SDK版本为2.0.4.b011。 
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -78,7 +78,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件名称    | 版本   |
 | ----------- | ------ |
 | python      | 3.9.2  |
-| mxVision    | 2.0.2  |
+| mxVision    | 2.0.4  |
 | pillow      | 8.0.1  |
 | pickle5     | 0.0.11 |
 
