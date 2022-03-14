@@ -103,8 +103,7 @@ def preprocess(net_param):
     to_pad = MAX_OBJ_PER_IMG - num_objs
     objects = np.pad(objects, (0, to_pad), mode='constant').astype(np.int64)
     obj_valid_inds = np.array([1] * num_objs + [0] * to_pad)
-    layout = np.array(gen_coarse_layout(objects, boxes, size_att, obj_valid_inds),
-                    dtype=np.float32)
+    layout = np.array(gen_coarse_layout(objects, boxes, size_att, obj_valid_inds), dtype=np.float32)
     
     # gen tensor data
     mxpi_tensor_pack_list = MxpiDataType.MxpiTensorPackageList()
@@ -124,8 +123,7 @@ def preprocess(net_param):
     tensorVec_lay = tensor_package_vec.tensorVec.add()
     tensorVec_lay.memType = 1
     tensorVec_lay.deviceId = 0
-    # H * W * C * sizeof(float32)
-    tensorVec_lay.tensorDataSize = int(layout.shape[1] * layout.shape[2] * IMG_CHN_NUM * 4)
+    tensorVec_lay.tensorDataSize = int(layout.shape[1] * layout.shape[2] * IMG_CHN_NUM * 4) # H*W*C*(float32)
     tensorVec_lay.tensorDataType = 0 # float32
     for i in layout.shape:
         tensorVec_lay.tensorShape.append(i)
