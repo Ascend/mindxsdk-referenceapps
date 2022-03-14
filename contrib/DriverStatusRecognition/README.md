@@ -37,7 +37,7 @@ def init_loss_scale():
 ```
  cd scripts
  
- bash run_standalone_train.sh /path/to/distracted_driver_detection/train /path/to/resnet50_distracted_driver_detection_Acc_config.yaml
+ bash run_standalone_train.sh /${实际PATH}/distracted_driver_detection/train /${实际PATH}/resnet50_distracted_driver_detection_Acc_config.yaml
 ```
 (3) .ckpt和.air模型下载
 
@@ -46,7 +46,7 @@ def init_loss_scale():
 (4) 转换模型
 
 ```
-python3 export.py --network_dataset resnet50_dirver_detection  --ckpt_file scripts/train/output/checkpoint/best_acc.ckpt  --file_name resnet50-dirver_detection-915-air --file_format AIR --config_path /path/to/resnet50_distracted_driver_detection_Acc_config.yaml
+python3 export.py --network_dataset resnet50_dirver_detection  --ckpt_file scripts/train/output/checkpoint/best_acc.ckpt  --file_name resnet50-dirver_detection-915-air --file_format AIR --config_path /${实际PATH}/resnet50_distracted_driver_detection_Acc_config.yaml
 ```
 
 ## SDK 运行
@@ -65,7 +65,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
  cd convert
- bash air2om.sh /path/to/*.air  /path/to/output_name_use_to_video_test.om  yuv_aipp.config
+ bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/output_name_use_to_video_test.om  yuv_aipp.config
 ```
 
 **步骤3**  启动rtsp服务
@@ -92,7 +92,7 @@ bash run.sh main.py 30
 
 ```
 cd convert
-bash mindir2om.sh /path/to/*.air  /path/to/output_name_use_to_percision_test.om  aipp.config
+bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/output_name_use_to_percision_test.om  aipp.config
 ```
 
 (2)  修改pipeline/dirver-detection-img.pipeline 中的相关选项，如om模型路径等
@@ -100,7 +100,7 @@ bash mindir2om.sh /path/to/*.air  /path/to/output_name_use_to_percision_test.om 
 (3) 测试精度
 
 ```
-bash run.sh percision.py /path/to/val_data  
+bash run.sh percision.py /${实际PATH}/val_data  
 ```
 
 ## 性能测试
