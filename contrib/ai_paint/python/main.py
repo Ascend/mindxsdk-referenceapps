@@ -141,6 +141,7 @@ if __name__ == '__main__':
     stream_name = b'ai_paint'
     in_plugin_id = 0
     config_file = 'net_config.ini'
+    out_dir = '../result'
     net_config = read_config(config_file)
     tensor_pack_list = preprocess(net_config)
 
@@ -213,8 +214,10 @@ if __name__ == '__main__':
     img1_bgr = cv2.cvtColor(img1_rgb, cv2.COLOR_RGB2BGR)
     img2_bgr = cv2.cvtColor(img2_rgb, cv2.COLOR_RGB2BGR)
 
-    cv2.imwrite("../result/layoutMap.jpg", img1_bgr)
-    cv2.imwrite("../result/resultImg.jpg", img2_bgr)
+    if not os.path.isdir(out_dir):
+        os.makedirs(out_dir)
+    cv2.imwrite(out_dir + "/layoutMap.jpg", img1_bgr)
+    cv2.imwrite(out_dir + "/resultImg.jpg", img2_bgr)
     
     # destroy streams
     stream_manager.DestroyAllStreams()
