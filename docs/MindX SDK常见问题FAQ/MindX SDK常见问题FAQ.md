@@ -6,6 +6,7 @@
 - [模型转换推理](#4-模型转换推理)
 - [SDK运行](#5-SDK运行)
 - [pr提交](#6-PR提交)
+- [python版本](#7-python版本)
 
 # 1 环境安装配置
 
@@ -377,3 +378,48 @@ PR与主仓存在冲突
 
 解决冲突后即可正常触发检查
 
+# 7 python版本
+
+## 7.1 运行时提示python版本过低
+
+### 现象描述
+
+运行时报错  
+`Exception: StreamManagerApi only support python3.7 or greater
+`
+
+### 可能原因
+
+SDK 2.0.2版本python要求版本为3.7.5+，使用低版本时会出现以上问题
+
+### 处理办法
+
+1. 手动修改run.sh中调用命令的python版本  
+`python3 -> python3.7`
+2. 修改系统python3的软链接版本
+```shell
+sudo rm -rf /usr/bin/python3
+sudo ln -s /usr/bin/python3.7.5  /usr/bin/python3
+```
+
+## 7.2 运行时提示缺失组件
+
+### 现象描述
+
+运行时报错  
+`undefined symbol: PyCMethod_New
+`
+
+### 可能原因
+
+SDK 2.0.4版本python要求版本为3.9.2+，使用低版本时会出现以上问题
+
+### 处理办法
+
+1. 手动修改run.sh中调用命令的python版本  
+`python3 -> python3.9`
+2. 修改系统python3的软链接版本
+```shell
+sudo rm -rf /usr/bin/python3
+sudo ln -s /usr/bin/python3.9.2  /usr/bin/python3
+```
