@@ -16,4 +16,4 @@
 source ./envs/env.sh
 
 # running inference process
-python3.7.5 main.py
+python3.9.2 main.py

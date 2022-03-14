@@ -73,7 +73,7 @@ npu-smi info
 | :--------: | :------: |
 |ubantu|18.04.1 LTS   |
 |MindX SDK|2.0.2|
-|Python|3.7.5|
+|Python|3.9.2|
 |CANN|3.3.0|
 
 在编译运行项目前，需要设置环境变量：
@@ -134,6 +134,6 @@ cp libmxpi_headposeplugin.so {自己的MindX_SDK目录}/mxVision-2.0.2/lib/plugi
 
 在测试集中input目录下选择一张jpg文件，重命名为test.jpg，放入项目根目录中，再执行
 ```
-python3.7 main.py
+python3 main.py
 ```
 

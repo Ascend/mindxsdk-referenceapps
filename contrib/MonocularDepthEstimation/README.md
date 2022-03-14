@@ -67,7 +67,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 # Set environment PATH (Please confirm that the install_path is correct).
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -165,11 +165,11 @@ env
 cd MonocularDepthEstimation
 
 # 图片深度估计
-python3.7 main.py ${测试图片路径} ${输出结果路径}
-ex: python3.7 main.py image/test.jpg result/result.jpg
+python3 main.py ${测试图片路径} ${输出结果路径}
+ex: python3 main.py image/test.jpg result/result.jpg
 
 # AdaBins_nyu 模型精度验证
-python3.7 evaluate.py
+python3 evaluate.py
 ```
 
 > ② 脚本运行请先赋予可执行权限

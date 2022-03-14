@@ -79,7 +79,7 @@ STEP5:执行安装命令：make install # 该步骤需要root权限，否则会�
 ```shell
 export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=${install_path}
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:${MX_SDK_HOME}/python:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp

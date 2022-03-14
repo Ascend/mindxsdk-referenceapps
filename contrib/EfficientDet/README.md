@@ -110,7 +110,7 @@ EfficientDet 的后处理插件接收模型推理插件输出的两个特征图�
 | -------- | ------ |
 | cmake    | 3.5+   |
 | mxVision | 2.0.2.1  |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
@@ -169,11 +169,11 @@ git clone https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch.git
 
 6. 在``Yet-Another-EfficientDet-Pytorch-master`` 目录下创建 ```onnx-models``` 目录，运行命令：
 ```
-python3.7 convert_to_onnx.py --compound_coef={compound_coef} --load_weights=weights/efficientdet-d{compound_coef}.pth --output-name=efficient-det-d{compound_coef}-mindxsdk-order.onnx
+python3 convert_to_onnx.py --compound_coef={compound_coef} --load_weights=weights/efficientdet-d{compound_coef}.pth --output-name=efficient-det-d{compound_coef}-mindxsdk-order.onnx
 ```
 将命令中 {compound_coef} 替换成具体值，取值范围为 [0, 6]，例如想要转换 efficientdet-d0.pth 为 onnx 模型时，执行命令：
 ```
-python3.7 convert_to_onnx.py --compound_coef=0 --load_weights=weights/efficientdet-d0.pth --output-name=efficient-det-d0-mindxsdk-order.onnx
+python3 convert_to_onnx.py --compound_coef=0 --load_weights=weights/efficientdet-d0.pth --output-name=efficient-det-d0-mindxsdk-order.onnx
 ```
 执行成功后会 ```onnx-models``` 目录下生成从 pytorch 模型转化得到的 onnx 模型，simplified-efficient-det-d{compound_coef}-mindxsdk-order.onnx 
 
@@ -200,7 +200,7 @@ cp postprocess/build/libefficientdetpostprocess.so ${MX_SDK_HOME}/lib/modelpostp
 **步骤4** 图片检测。将一张图片放在项目目录下，命名为 img.jpg，在该图片上进行检测，**从 ```main.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值**，然后执行命令：
 ```
 cd python
-python3.7 main.py
+python3 main.py
 ```
 命令执行成功后在当前目录下生成检测结果文件 img_detect_result.jpg，查看结果文件验证检测结果。
 
@@ -261,7 +261,7 @@ pip3.7 install pycocotools
 3. **从 ```evaluate.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，** 然后执行命令：
 ```
 cd python
-python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2017_detection_result_d0.json
+python3 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2017_detection_result_d0.json
 ```
 命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_detection_result_d0.json 检测结果文件。输出结果如下图所示：
 <center>
@@ -280,7 +280,7 @@ bash model_convertion_d0_previous_version.sh
 执行成功后在 ``python/models`` 文件夹下生成 efficient-det-d0-mindxsdk-order-previous-version.om 模型文件。
 2. 评测。将 ```python/pipeline/EfficientDet-d0-previous-version.pipeline``` 中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，然后执行命令：
 ```
-python3.7 evaluate.py --pipeline=pipeline/EfficientDet-d0-previous-version.pipeline --output=val2017_detection_result_d0_previous_version.json
+python3 evaluate.py --pipeline=pipeline/EfficientDet-d0-previous-version.pipeline --output=val2017_detection_result_d0_previous_version.json
 ```
 命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_detection_result_d0_previous_version.json 检测结果文件。输出结果如下图所示：
 <center>

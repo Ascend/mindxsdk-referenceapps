@@ -26,7 +26,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK
 #to set PYTHONPATH, import the StreamManagerApi.py
 export PYTHONPATH=$PYTHONPATH:${MX_SDK_HOME}/python
 
-python3.7 main.py
+python3 main.py
 exit 0
 
 

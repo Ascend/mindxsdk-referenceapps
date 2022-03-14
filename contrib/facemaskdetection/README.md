@@ -51,7 +51,7 @@ CANN版本为1.77.22.6.220。
 | mxVision            | 2.0.2        | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
 | Ascend-CANN-toolkit | 20.2.rc1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
-| opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3.7 -m pip install opencv-python                       |
+| opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 
 
 在编译运行项目前，需要设置环境变量：
@@ -61,8 +61,8 @@ CANN版本为1.77.22.6.220。
 ```
 export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python
+export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin:$PATH
+export PYTHONPATH=/usr/local/python3.9.2/bin:${MX_SDK_HOME}/python
 export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
 
 export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
@@ -97,7 +97,7 @@ pb文件转换为om文件
 ```
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 
@@ -143,7 +143,7 @@ pipline根据1.5节中技术实现流程图编写，该文件**main.pipeline**�
 在根目录下，运行命令：
 
 ```
-python3.7.5 image.py
+python3.9.2 image.py
 ```
 
 即可得到输出结果，输出结果对原图像的人脸以及口罩进行识别画框并将结果保存至根目录下**my_result.jpg**

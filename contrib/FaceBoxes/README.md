@@ -28,7 +28,7 @@
   | -------- | ----- |
   | cmake    | 3.5.+ |
   | mxVision | 2.0.2 |
-  | Python   | 3.7.5 |
+  | Python   | 3.9.2 |
   | Pytorch   | 1.9.0 |
   | CANN   | 3.3.0 |
   | OpenCV   | 4.5.3 |
@@ -200,7 +200,7 @@ git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
 ```
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 
 export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
 

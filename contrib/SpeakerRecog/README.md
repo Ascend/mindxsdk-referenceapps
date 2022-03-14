@@ -52,7 +52,7 @@ atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"
 
 |软件名称    | 版本     |
 |-----------|----------|
-| python    | 3.7.5   |
+| python    | 3.9.2   |
 | MindX SDK | 2.0.2    |
 | librosa   | 0.8.1    |
 | torch     | 1.9.0    |

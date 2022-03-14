@@ -64,7 +64,7 @@
 | -------- | ------ |
 | cmake    | 3.5+   |
 | mxVision | 2.0.2  |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
@@ -132,7 +132,7 @@ ATC run success, welcome to the next use.
 
 **步骤5** 图片检测。将关于人手手势的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
 ```
-python3.7 main.py test.jpg
+python3 main.py test.jpg
 ```
 命令执行成功后在当前目录下生成检测结果文件 result_test.jpg，查看结果文件验证检测结果。
 

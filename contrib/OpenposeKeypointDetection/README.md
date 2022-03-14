@@ -106,7 +106,7 @@
 | -------- | ------ |
 | cmake    | 3.5+   |
 | mxVision | 2.0.2  |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
@@ -202,7 +202,7 @@ cp plugins/build/libmxpi_openposepostprocess.so ~/MindX_SDK/mxVision/lib/plugins
 **步骤4** 图片检测。将一张包含人体的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
 ```
 cd python
-python3.7 main.py
+python3 main.py
 ```
 命令执行成功后在当前目录下生成检测结果文件 test_detect_result.jpg，查看结果文件验证检测结果。
 
@@ -236,7 +236,7 @@ pip3.7 install pycocotools
 3. 执行命令：
 ```
 cd python
-python3.7 evaluate.py
+python3 evaluate.py
 ```
 命令执行结束后输出 COCO 格式的评测结果，并生成 val2017_keypoint_detect_result.json 检测结果文件。输出结果如下图所示：
 <center>

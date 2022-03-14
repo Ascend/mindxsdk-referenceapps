@@ -77,7 +77,7 @@
 |----------|-------|
 | cmake    | 3.5.+ |
 | mxVision | 2.0.2 |
-| python   | 3.7.5 |
+| python   | 3.9.2 |
 
 模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html
 
@@ -172,7 +172,7 @@ Attr_part.pipeline：
 运行推理代码：
 
 ```
-python3.7 main.py
+python3 main.py
 ```
 输出结果：可以直接得到这张测试图像的推理结果
 
@@ -180,8 +180,8 @@ python3.7 main.py
 
 将解压后的img_align_celeba数据集放置在CelebA目录下，与attr_main.py同级，结合test_full.txt，运行attr_main.py，会生成img_result.txt。其中，test_full.txt是原模型的运行结果，用以作为评测的基准。img_result.txt是运行评测代码的结果。最后，运行cal_accuracy.py，得到评测结果。
 ```
-python3.7 attr_main.py
-python3.7 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
+python3 attr_main.py
+python3 cal_accuracy.py --gt-file=./test_full.txt --pred-file=./img_result.txt
 ```
 输出结果：首先得到本模型的推理结果，再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 

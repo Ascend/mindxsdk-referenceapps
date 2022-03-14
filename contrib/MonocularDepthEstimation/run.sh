@@ -79,9 +79,9 @@ function export_env() {
 
 function execute() {
   if [ "${mode}" == 'infer' ]; then
-    python3.7 main.py "${input}" "${output}"
+    python3 main.py "${input}" "${output}"
   elif [ "${mode}" == 'evaluate' ]; then
-    python3.7 evaluate.py
+    python3 evaluate.py
   fi
 }
 

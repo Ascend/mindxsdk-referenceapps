@@ -75,7 +75,7 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 | cv2      | 4.5.3  |
 | numpy    | 1.21.1 |
 
@@ -136,7 +136,7 @@ pth权重文件和onnx文件的下载链接如下：
 
    ```
    export install_path=/usr/local/Ascend/ascend-toolkit/latest
-   export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+   export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
    export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
    export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH:$LD_LIBRARY_PATH
    export ASCEND_OPP_PATH=${install_path}/opp
@@ -174,7 +174,7 @@ pth权重文件和onnx文件的下载链接如下：
 **步骤 4**  在命令行输入 如下代码运行整个工程：
 
 ```
-python3.7.5 main.py
+python3.9.2 main.py
 ```
 
 **步骤 5** 图片检测。运行结束输出mask.png实现语义分割功能（通过不同颜色区分不同事物）。
@@ -230,7 +230,7 @@ cd ${用户路径}/FastSCNN/cityscapes/gtFine/val/frankfurt/
             运行label.py。
 
 ```
-python3.7.5 label.py
+python3.9.2 label.py
 ```
 
 **步骤 4** 运行结束会在当前目录下新生成四个文件夹，将labelIds.png命名的文件夹重命名为label。这里可以重新点击一下文件排序，确保leftImg8bit的frankfurt中的文件和gtFine下frankfurt/label中的文件排序一致，一一对应。

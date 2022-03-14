@@ -104,7 +104,7 @@
 | -------- | ------ |
 | cmake    | 3.10.2   |
 | mxVision | 2.0.2  |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
@@ -116,7 +116,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 ```
@@ -177,7 +177,7 @@ sdk/pipeline目录下BertTextClassification.pipeline文件中的第26行：
 **步骤5** pipeline项目运行在sdk目录下执行命令：
 
 ```
-python3.7 main.py
+python3 main.py
 ```
 
 命令执行成功后在out目录下生成分类结果文件 prediction_label.txt，查看结果文件验证分类结果。
@@ -208,7 +208,7 @@ make
 **步骤3** pipeline项目中的精度测试文件为sdk/test目录下的test.py，将test.py移到sdk目录下，执行下面代码，得到pipeline的精度测试结果。
 
 ```
-python3.7 test.py
+python3 test.py
 ```
 
 **步骤4** mxBase项目中，将mxBase目录下main.cpp中main方法的代码注释，添加下面代码后执行，得到mxBase的精度测试结果。

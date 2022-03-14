@@ -97,7 +97,7 @@ aipp_op {
 # Set environment PATH (Please confirm that the install_path is correct).
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -159,8 +159,8 @@ env
 2) 进入工程目录，键入执行指令，发起推理性能测试：
 
 ```python
-python3.7 main.py ${测试图片路径}
-例如: python3.7 main.py image/head.jpg
+python3 main.py ${测试图片路径}
+例如: python3 main.py image/head.jpg
     
 # 或者在main.py中配置 input_image_path 
 input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
@@ -181,8 +181,8 @@ PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量�
 进入`testSet`目录，键入执行指令，图片格式转换：
 
 ```python
-python3.7 bmp2jpg.py ${测试图片集路径}
-例如: python3.7 bmp2jpg.py 91-images
+python3 bmp2jpg.py ${测试图片集路径}
+例如: python3 bmp2jpg.py 91-images
     
 # 或者在evaluate.py中配置 test_image_set_path 
 test_image_set_path = './${测试图片集路径}'
@@ -195,8 +195,8 @@ test_image_set_path = './${测试图片集路径}'
 键入执行指令，发起精度验证测试：
 
 ```python
-python3.7 evaluate.py ${验证图片集路径}
-例如: python3.7 evaluate.py testSet/91-images-jpg
+python3 evaluate.py ${验证图片集路径}
+例如: python3 evaluate.py testSet/91-images-jpg
     
 # 或者在evaluate.py中配置 test_image_set_path 
 test_image_set_path = './${验证图片集路径}'

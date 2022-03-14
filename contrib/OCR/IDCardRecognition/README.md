@@ -85,7 +85,7 @@ npu-smi info
 | 软件名称 | 版本          |
 | -------- | ------------- |
 | cmake    | 3.14+         |
-| Python   | 3.7.5         |
+| Python   | 3.9.2         |
 | protobuf | 3.11.2        |
 | g++      | 4.8.5 / 7.3.0 |
 | GLIBC    | 2.23          |
@@ -138,7 +138,7 @@ make -j
 export ASCEND_HOME=/usr/local/Ascend
 export LD_LIBRARY_PATH=$ASCEND_HOME/ascend-toolkit/latest/acllib/lib64:$LD_LIBRARY_PATH
 
-export PATH=/usr/local/python3.7.5/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=/usr/local/Ascend/ascend-toolkit/latest/opp
 export LD_LIBRARY_PATH=${XXX}/project/opencv/lib:$LD_LIBRARY_PATH

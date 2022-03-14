@@ -22,10 +22,10 @@ do
     label1=`echo ${str%% *}`
     frame=`echo ${line##* }`
     echo $sfile
-    python3.7 test.py \
+    python3 test.py \
         --url_video ${RTSP_URL}$sfile \
         --label $label1 \
         --frame_num  $frame
 done
 
-python3.7 evaluate.py
+python3 evaluate.py

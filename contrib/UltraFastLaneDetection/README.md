@@ -66,7 +66,7 @@ export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-pl
 export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
 export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
@@ -125,7 +125,7 @@ make -j# 执行make命令对代码进行编译
 **步骤3** **推理** 请自行准备**jpg/jpeg**格式图像保存在工程目录下并修改图片路径，执行如下命令：
 
 ```shell
-python3.7 main_text.py # 自行替换图片名称
+python3 main_text.py # 自行替换图片名称
 ```
 注意：训练图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集全部为车内视角（https://xingangpan.github.io/projects/CULane.html）
 测试图片尺寸无相关要求，建议车道线清晰且为车内行驶视角

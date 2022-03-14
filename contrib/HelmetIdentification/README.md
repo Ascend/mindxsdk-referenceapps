@@ -62,7 +62,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | mxVision            | 2.0.2       | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
 | Ascend-CANN-toolkit | 3.3.0     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
-| opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3.7 -m pip install opencv-python                       |
+| opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 
 
 
@@ -76,8 +76,8 @@ source main-env.sh
 ```bash
 export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin
-export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python
+export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin
+export PYTHONPATH=/usr/local/python3.9.2/bin:${MX_SDK_HOME}/python
 export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
 
 export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
@@ -116,7 +116,7 @@ export GST_DEBUG=3
 3. 通过上述1.1中链接获取模型文件helmet_head_person_s.pt，下载到本地后保存至原项目weights文件中。使用原项目中的export.py将pt文件转换为onnx格式文件。运行：
 
 ```shell
-python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 640 --batch 1
+python3 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 640 --batch 1
 ```
 
 其中onnx算子版本为opset_version=11。转换完成后权重文件helmet_head_person_s.onnx改名为YOLOv5_s.onnx上传至服务器任意目录下。
@@ -130,13 +130,13 @@ python3.7 ./models/export.py --weights ./weights/helmet_head_person_s.pt --img 6
 1. 利用附件脚本dy_resize.py修改模型resize算子。该模型含有动态Resize算子（上采样），通过计算维度变化，改为静态算子，不影响模型的精度，运行如下命令：
 
 ```shell
-python3.7 modify_yolov5s_slice.py YOLOv5_s.onnx
+python3 modify_yolov5s_slice.py YOLOv5_s.onnx
 ```
 
 2. 然后利用modify_yolov5s_slice.py脚本修改模型slice算子，运行如下命令：
 
 ```bash
-python3.7 modify_yolov5s_slice.py YOLOv5_s.onnx
+python3 modify_yolov5s_slice.py YOLOv5_s.onnx
 ```
 
 可以得到修改好后的YOLOv5_s.onnx模型
@@ -260,7 +260,7 @@ test.264可替换成任意上传至当前目录的[264格式文件](https://gite
 然后切换目录至main.py所在目录下，运行命令：
 
 ```shell
-python3.7.5 main.py
+python3.9.2 main.py
 ```
 
 即可得到输出结果，输出结果将原来的两路视频分为两个文件保存，utils.py中的oringe_imgfile用于设置图像输出路径,用户需手动建立输出文件output，文件路径可自定义设置。本项目文件放置规范如下：
@@ -285,7 +285,7 @@ python3.7.5 main.py
 性能测试使用脚本performance_test_main.py，该脚本与main.py大体相同，不同之处是在performance_test_main.py中添加了时间戳测试，测试数据为mxpi_rtspsrc拉取的视频流。两路视频尺寸分别取多组不同尺寸的视频做对比。推理三百帧图片后取平均时间值，设置如下环境变量：
 
 ```shell
-export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python:{path}
+export PYTHONPATH=/usr/local/python3.9.2/bin:${MX_SDK_HOME}/python:{path}
 ```
 
 注：{path}设置为根目录中Models所在路径
@@ -293,7 +293,7 @@ export PYTHONPATH=/usr/local/python3.7.5/bin:${MX_SDK_HOME}/python:{path}
 运行如下命令得到结果：
 
 ```shell
-python3.7 performance_test_main.py
+python3 performance_test_main.py
 ```
 
 注：1.与运行main.py时相同，运行performance_test_main.py时要先使用live555进行推流。**测试视频**上传至[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/HelmetIdentification/test_video.zip)，该视频为不同尺寸不同帧率的同一视频。如test64036830_158s.264为尺寸640×640，帧率30，时长158s的视频。
@@ -322,7 +322,7 @@ python3.7 performance_test_main.py
 
 依据数据集中ImageSets文件夹中test.txt文件，从原始数据集中筛选出测试数据集，该程序**select.py**放在源码根目录Test中，在同目录下创建文件夹TestImages用来存储筛选的数据。在该目录下运行命令：
 ```shell
-python3.7.5 select.py
+python3.9.2 select.py
 ```
 
 程序运行后在根目录Test中会存放筛选出的测试集图片共1517张。
@@ -334,7 +334,7 @@ python3.7.5 select.py
 运行命令：
 
 ```shell
-python3.7.5 parse_voc.py 
+python3.9.2 parse_voc.py 
 ```
 
 ###### 3.2.4 推理运行
@@ -352,7 +352,7 @@ cls conf x0 y0 x1 y1
 运行命令：
 
 ```shell
-python3.7.5 testmain.py
+python3.9.2 testmain.py
 ```
 
 注：testmain.py中直接写入了pipline，其中mxpi_modelinfer插件四个参数的配置与HelmetDetection.pipline完全相同。
@@ -366,7 +366,7 @@ python3.7.5 testmain.py
 运行命令：
 
 ```shell
-python3.7.5 map_calculate.py --label_path  ./ground-truth  --npu_txt_path ./detection-test-result/ -na -np
+python3.9.2 map_calculate.py --label_path  ./ground-truth  --npu_txt_path ./detection-test-result/ -na -np
 ```
 
 即可得到输出。其中precision、recall和map记录在**output/output.txt**文件中。

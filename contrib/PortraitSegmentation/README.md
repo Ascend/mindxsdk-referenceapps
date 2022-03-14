@@ -22,7 +22,7 @@
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
 |MindX SDK|2.0.2|
-|Python| 3.7.5|
+|Python| 3.9.2|
 |numpy | 1.18.2 |
 |opencv_python|3.4.0|
 
@@ -43,7 +43,7 @@
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest    
 
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH 
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH 
  
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg  
 
@@ -119,12 +119,12 @@ mkdir result
 
 6. 运行可执行文件
 
-切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3.7 main.py 背景图片路径 人像图片路径 阈值参数]  
+切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3 main.py 背景图片路径 人像图片路径 阈值参数]  
 其中阈值参数的范围是闭区间[0,1]，从0到1，随着阈值参数增加，人像的广度也越高，即会将所有的人像部分进行背景替换。  
 默认的阈值参数为1。
 
 ```
-例：python3.7 main.py data/background.jpg data/portrait.jpg 1
+例：python3 main.py data/background.jpg data/portrait.jpg 1
 ```
 
 7. 查看结果  

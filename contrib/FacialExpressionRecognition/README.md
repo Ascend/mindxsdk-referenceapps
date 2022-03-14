@@ -78,7 +78,7 @@
 | -------- | ------ |
 | cmake    | 3.10.2   |
 | mxVision | 2.0.2  |
-| python   | 3.7.5  |
+| python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
@@ -90,7 +90,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
@@ -127,7 +127,7 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 **步骤3** 在项目目录下执行命令：
 ```
 export PYTHONPATH=${MX_SDK_HOME}/python
-python3.7 main.py
+python3 main.py
 ```
 命令执行成功后项目目录下生成人脸框和情绪推理结果的测试图片：my_result.jpg。
 
@@ -140,7 +140,7 @@ python3.7 main.py
 **步骤3** 在test目录下执行命令：
 ```
 export PYTHONPATH=${MX_SDK_HOME}/python
-python3.7 test.py
+python3 test.py
 ```
 命令执行成功后会输出测试精度与测试图片的个数。测试精度如下图所示：
 

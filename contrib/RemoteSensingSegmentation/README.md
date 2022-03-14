@@ -44,7 +44,7 @@
 
 **步骤2.2** 安装`Anaconda`并创建一个虚拟环境,且`pip install -r requirements.txt`安装项目所需环境依赖, 并额外安装依赖`onnx == 1.8.0`
 ```bash
-conda create -n 虚拟环境名 python=3.7
+conda create -n 虚拟环境名 python=3.9.2
 conda activate 虚拟环境名
 cd 克隆项目的目录
 # 运行前修改requiremenst.txt版本:
@@ -115,8 +115,8 @@ env
 cd RemoteSensingSegmentation
 
 # 图片测试集在test_set目录下，一共15张遥感地图
-python3.7 main.py ${测试图片路径} ${是否开启对比图输出} ${输出结果路径}
-e.g.: python3.7 main.py test_set/test_1.jpg True result/final/result.jpg
+python3 main.py ${测试图片路径} ${是否开启对比图输出} ${输出结果路径}
+e.g.: python3 main.py test_set/test_1.jpg True result/final/result.jpg
 ```
 
 ### 3.3 查看结果

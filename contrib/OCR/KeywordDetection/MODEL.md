@@ -57,7 +57,7 @@ https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
 #### 用户环境配置
 
-	 python == 3.7.5
+	 python == 3.9.2
 	 静态图: paddlepaddle >= 1.8.0
 	 动态图: paddlepaddle >= 2.0.0
 	 onnx >= 1.7.0

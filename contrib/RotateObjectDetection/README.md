@@ -128,7 +128,7 @@ $$
 | cann          | 1.77.22.6.220 |
 | cmake         | 3.5+          |
 | mxVision      | 2.0.2         |
-| python        | 3.7.5         |
+| python        | 3.9.2         |
 | opencv-python | 4.5.3         |
 | swig          | 4.0.2         |
 
@@ -137,7 +137,7 @@ $$
 ```shell
 export MX_SDK_HOME={SDK安装路径}/mxVision
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 export ASCEND_AICPU_PATH=${install_path}
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH
@@ -238,7 +238,7 @@ export PATH={swig安装路径}/bin:$PATH
 ```bash
 cd DOTA_devkit
 swig -c++ -python polyiou.i
-python3.7 setup.py build_ext --inplace
+python3 setup.py build_ext --inplace
 ```
 
 以上指令成功执行后，会在当前路径下生成`polyiou.py`，`polyiou_wrap.cxx`，`_polyiou.cpython-37m-aarch64-linux-gnu.so`等文件。
@@ -246,13 +246,13 @@ python3.7 setup.py build_ext --inplace
 2.安装opencv-python，执行以下指令
 
 ```shell
-python3.7 -m pip install opencv-python
+python3 -m pip install opencv-python
 ```
 3.安装shapely，执行以下指令
 
 ```bash
 apt-get install libgeos-dev
-python3.7 -m pip install shapely
+python3 -m pip install shapely
 ```
 
 ## 3 模型转换
@@ -365,7 +365,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
   ```shell
   cd DOTA_devkit
-  python3.7 SplitOnlyImage.py
+  python3 SplitOnlyImage.py
   ```
 
   执行上述命令后，在终端显示：
@@ -395,7 +395,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
   ```bash
   cd python
-  python3.7 main.py --input-path ../imageSplit --output-path ../detection
+  python3 main.py --input-path ../imageSplit --output-path ../detection
   ```
 
   终端输出如下：
@@ -432,7 +432,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   由于检测图片中小目标多密集分布，打印类别标签会导致检测信息遮挡，默认不打印labels，如需打印，请执行指令：
   
   ```shell
-  python3.7 main.py --input-path ../imageSplit --output-path ../detection --labels_print
+  python3 main.py --input-path ../imageSplit --output-path ../detection --labels_print
   ```
   
 * **对检测结果进行融合**
@@ -459,7 +459,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   
   ```shell
   cd ../DOTA_devkit
-  python3.7 ResultMerge.py --draw_img
+  python3 ResultMerge.py --draw_img
   ```
   
   终端输出如下：
@@ -492,7 +492,7 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
   如果希望融合后的图片显示标签信息，请执行指令：
 
   ```shell
-  python3.7 ResultMerge.py --draw_img --labels_print
+  python3 ResultMerge.py --draw_img --labels_print
   ```
 
 ## 5 精度测试
@@ -559,14 +559,14 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
    ```shell
    cd DOTA_devkit
-   python3.7 SplitOnlyImage.py
+   python3 SplitOnlyImage.py
    ```
 
 4. 对切分后的数据集进行检测，执行指令：
 
    ```shell
    cd ../python
-   python3.7 main.py --input-path ../datasetSplit --output-path ../detection_evaluation
+   python3 main.py --input-path ../datasetSplit --output-path ../detection_evaluation
    ```
 
    验证集共458张图片，切分后生成5298张图片，检测完成大概需要1个小时50分钟
@@ -584,13 +584,13 @@ cp plugins/build/libmxpi_rotateobjpostprocess.so ${MX_SDK_HOME}/lib/plugins/
 
    ```
    cd ../DOTA_devkit
-   python3.7 ResultMerge.py
+   python3 ResultMerge.py
    ```
 
 6. 对融合生成的结果进行精度测试，执行指令
    ```shell
    cd ../DOTA_devkit
-   python3.7 dota-v1.5_evaluation_task1.py
+   python3 dota-v1.5_evaluation_task1.py
    ```
 
    测试脚本中的默认路径在298，299行，如下所示

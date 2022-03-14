@@ -86,7 +86,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ```
 export MX_SDK_HOME=${SDK安装路径}/mxVision
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 export ASCEND_AICPU_PATH=${install_path}
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH

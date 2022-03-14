@@ -69,7 +69,7 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 
 # ATC工具环境变量——atc_env.sh
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:$PATH
 export PYTHONPATH=${install_path}/arm64-linux/atc/python/site-packages:${install_path}/arm64-linux/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/arm64-linux/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/arm64-linux/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -92,7 +92,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 - **步骤2** 在原开源项目中将`pt`文件转换为`onnx`文件，在`fire-smoke-detect-yolov4\yolov5`目录下执行
 
   ```bash
-  python3.7.5 /model/export.py --weights ./best.pt
+  python3.9.2 /model/export.py --weights ./best.pt
   ```
 
   运行结果：生成`best.onnx`文件。
@@ -102,7 +102,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
   对导出的`onnx`图使用`onnx-simplifer`工具进行简化。运行如下命令：
 
   ```bash
-  python3.7.5 -m onnxsim --skip-optimization best.onnx best_s.onnx
+  python3.9.2 -m onnxsim --skip-optimization best.onnx best_s.onnx
   ```
 
   运行结果：生成`best_s.onnx`文件。
@@ -112,7 +112,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
   利用`FireDetection\model`目录下的脚本`modify_yolov5s_slice.py`修改模型Slice算子
 
   ```bash
-  python3.7.5 /model/modify_yolov5s_slice.py best_s.onnx
+  python3.9.2 /model/modify_yolov5s_slice.py best_s.onnx
   ```
 
   运行结果：生成`best_s_t.onnx`文件。
@@ -170,7 +170,7 @@ bash run.sh
   ![dataset](images/dataset.png)
 
   ```bash
-  python3.7.5 parse_COCO.py
+  python3.9.2 parse_COCO.py
   ```
 
   运行脚本后会自动生成真实标签在`ground-truth`路径下以`.txt`格式保存。
@@ -179,7 +179,7 @@ bash run.sh
 
   ```bash
   mkdir test_result
-  python3.7.5 testmain.py
+  python3.9.2 testmain.py
   ```
 
   运行脚本后会生成经过 SDK 后的推理结果结果保留在`test-result`目录下以`.txt`格式保存。
@@ -191,7 +191,7 @@ bash run.sh
 - **步骤3** 在`FireDetection/test`目录下运行`map_calculate.py`脚本，计算精度。
 
   ```bash
-  python3.7.5 map_calculate.py
+  python3.9.2 map_calculate.py
   ```
 
   测试结果
@@ -206,10 +206,10 @@ bash run.sh
   | -------------- | ---------- | ------------------------------------------ | ------------------------------------------------------------ |
   | live555        | 1.09       | 实现视频转 rstp 进行推流                   | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md) |
   | ffmpeg         | 2021-10-14 | 实现 mp4 格式视频转为 H.264 格式视频       | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
-  | pytorch        | 1.7.1      | conda install pytorch                      | python 3.7.5                                                 |
-  | torchvision    | 0.8.2      | conda install torchvision                  | python 3.7.5                                                 |
-  | onnx           | 1.60       | conda install onnx                         | python 3.7.5                                                 |
-  | onnx-simplifer | 0.3.6      | python3.7.5 -m pip install onnx-simplifier | [链接](https://github.com/daquexian/onnx-simplifier)         |
+  | pytorch        | 1.7.1      | conda install pytorch                      | python 3.9.2                                                 |
+  | torchvision    | 0.8.2      | conda install torchvision                  | python 3.9.2                                                 |
+  | onnx           | 1.60       | conda install onnx                         | python 3.9.2                                                 |
+  | onnx-simplifer | 0.3.6      | python3.9.2 -m pip install onnx-simplifier | [链接](https://github.com/daquexian/onnx-simplifier)         |
   | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FireDetection/models.zip) |
   | 测试数据集     |            | 由1946张图片构成，COCO 格式                | [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FireDetection/dataset.zip) |
   | 原项目链接     | -          | -                                          | [链接](https://github.com/gengyanlei/fire-smoke-detect-yolov4) |
