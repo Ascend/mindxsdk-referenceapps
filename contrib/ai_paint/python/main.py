@@ -64,7 +64,6 @@ def gen_coarse_layout(objs, boxes, attributes, obj_valid_inds, layout_size=LAYOU
     return layout
 
 def preprocess(net_param):
-    # input param
     try:
         objects_str = net_param.get("net_param", "objects")
         print(objects_str)
