@@ -16,7 +16,7 @@ Recognition_Inference > Recognition_PostProcess > WriteResult > DeInit。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[1.77.22.6.220](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)。
 
@@ -58,8 +58,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 | 软件                | 版本                                                         | 说明                                               |
 | ------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
-| mxVision            | [mxVision 2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) | mxVision软件包                                     |
-| Ascend-CANN-toolkit | [CANN 1.77.22.6.220](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
+| mxVision            | [mxVision 2.0.4](https://www.hiascend.com/software/Mindx-sdk) | mxVision软件包                                     |
+| Ascend-CANN-toolkit | [CANN 5.0.4](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
 | 操作系统            | [Ubuntu 18.04](https://ubuntu.com/)                          | Linux操作系统                                      |
 | OpenCV              | 4.3.0                                                        | 用于结果可视化                                     |
 | FreeType            | [2.10.0](https://download.savannah.gnu.org/releases/freetype/) | 用于在图片上写中文(opencv只支持在图片上写英文字符) |
@@ -79,7 +79,7 @@ STEP5:执行安装命令：make install # 该步骤需要root权限，否则会�
 ```shell
 export MX_SDK_HOME=${MX_SDK_HOME}
 export install_path=${install_path}
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:${MX_SDK_HOME}/python:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp

@@ -11,7 +11,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -73,10 +73,10 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件名称  | 版本        |
 | --------- | ----------- |
-| MindX SDK | 2.0.2       |
+| MindX SDK | 2.0.4       |
 | ubantu    | 18.04.1 LTS |
-| CANN      | 3.3.0       |
-| Python    | 3.7.5       |
+| CANN      | 5.0.4       |
+| Python    | 3.9.2       |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -109,7 +109,7 @@ export PYTHONPATH=${MX_SDK_HOME}/python
 
 # 设置环境变量（请确认install_path路径是否正确）
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp

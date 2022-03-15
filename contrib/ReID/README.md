@@ -33,9 +33,9 @@ ReID
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
-|CANN|3.3.0|
-|MindX SDK|2.0.2|
-|Python| 3.7.5|
+|CANN|5.0.4|
+|MindX SDK|2.0.4|
+|Python| 3.9.2|
 |numpy | 1.21.0 |
 |opencv_python|4.5.2|  
 请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库  
@@ -59,7 +59,7 @@ apt-get install libpython3.7
 ```
 export install_path=/usr/local/Ascend/ascend-toolkit/latest    
 
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -84,7 +84,7 @@ ATC run success, welcome to the next use.
 4.2.2 模型转换环境需求
 ```
 - 框架需求
-  CANN == 3.3.0
+  CANN == 5.0.4
   torch == 1.5.0
   torchvision == 0.6.0
   onnx == 1.7.0
@@ -115,7 +115,7 @@ git clone https://github.com/michuanhaohao/reid-strong-baseline
 ***3*** 获取ReID_pth2onnx.py：[获取链接](https://gitee.com/ascend/modelzoo/blob/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/ReID_pth2onnx.py)  
 &ensp; 将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
 ```
-python3.7 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_triplet_with_center.yml' MODEL.PRETRAIN_CHOICE "('self')" TEST.WEIGHT "('market_resnet50_model_120_rank1_945.pth')"
+python3 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_triplet_with_center.yml' MODEL.PRETRAIN_CHOICE "('self')" TEST.WEIGHT "('market_resnet50_model_120_rank1_945.pth')"
 ```
 > 注意目前ATC支持的onnx算子版本为11  
 
@@ -176,7 +176,7 @@ ATC run success, welcome to the next use.
 
 **步骤2** 调用makeYourOwnDataset.py将“项目所在目录/data/ownDataset”路径下场景图片中的所有行人提取出来，结果存放在“项目所在目录/data/cropOwnDataset”中
 ```
-python3.7 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
+python3 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
 ```
 **步骤3** 根据“项目所在目录/data/cropOwnDataset”中的结果，选择自己想要查询的行人，按照market1501的命名方式命名（请务必按照这种命名方式命名，否则行人的标识会出现问题）  
 > 将同一个行人的不同照片重命名成“xxxx_xx”，其中前4位是行人ID，后2位是该照片ID，例：第1个行人的第2张照片：0001_02  
@@ -266,7 +266,7 @@ env
 ```
 6.5 执行
 ```
-python3.7 main.py --queryFilePath='data/querySet' --galleryFilePath='data/gallerySet' --matchThreshold=0.3
+python3 main.py --queryFilePath='data/querySet' --galleryFilePath='data/gallerySet' --matchThreshold=0.3
 ```
 > matchThreshold是行人重定位的阈值，默认值是0.3，可根据行人底库的数量进行调整  
 > 请注意这个阈值单位是距离单位，并不是比例阈值  

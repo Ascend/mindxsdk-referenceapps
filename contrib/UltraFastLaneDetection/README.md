@@ -12,7 +12,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[1.77.22.6.220](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)。
 
@@ -50,8 +50,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 | 软件                | 版本                                                         | 说明                                               |
 | ------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
-| mxVision            | [mxVision 2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) | mxVision软件包                                     |
-| Ascend-CANN-toolkit | [CANN 3.3.0](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
+| mxVision            | [mxVision 2.0.4](https://www.hiascend.com/software/Mindx-sdk) | mxVision软件包                                     |
+| Ascend-CANN-toolkit | [CANN 5.0.4](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
 | 操作系统            | [Ubuntu 18.04](https://ubuntu.com/)                          | Linux操作系统                                      |
 | OpenCV              | 4.3.0                                                        | 用于结果可视化                                     |
 
@@ -66,7 +66,7 @@ export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-pl
 export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
 export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
@@ -105,7 +105,7 @@ atc --model=./model/path_to_culane_18.onnx --framework=5  --output=./module/out/
 
 **步骤1** **修改CMakeLists.txt文件** (文件位于PostProcess文件夹)
 
-第**8**行 **set(MX_SDK_HOME ../MindX_SDK/mxVision-2.0.2)** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
+第**8**行 **set(MX_SDK_HOME ../MindX_SDK/mxVision)** 语句是设置SDK的安装路径，需将其替换为用户实际的SDK安装路径。
 
 第**11**行 **set(LIBRARY_OUTPUT_PATH ../MindX_SDK/mxVision/samples/mxVision/SamplePostProcess)** 语句是设置.so文件的输出路径，需将其替换为自定义输出路径进行替换。
 
@@ -125,7 +125,7 @@ make -j# 执行make命令对代码进行编译
 **步骤3** **推理** 请自行准备**jpg/jpeg**格式图像保存在工程目录下并修改图片路径，执行如下命令：
 
 ```shell
-python3.7 main_text.py # 自行替换图片名称
+python3 main_text.py # 自行替换图片名称
 ```
 注意：训练图片尺寸大小默认设置为：**1640×590**图片来源于culane测试集全部为车内视角（https://xingangpan.github.io/projects/CULane.html）
 测试图片尺寸无相关要求，建议车道线清晰且为车内行驶视角

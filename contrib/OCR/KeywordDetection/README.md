@@ -99,7 +99,7 @@ npu-smi info
 | 软件名称 | 版本          |
 | -------- | ------------- |
 | cmake    | 3.14+         |
-| Python   | 3.7.5         |
+| Python   | 3.9.2         |
 | protobuf | 3.11.2        |
 | g++      | 4.8.5 / 7.3.0 |
 | GLIBC    | 2.23          |
@@ -128,7 +128,7 @@ export ARCH_PATTERN=x86_64-linux
 **步骤2**：修改代码目录中：```plugins/```下的各个插件中```CMakeLists.txt```文件中的路径为实际安装依赖包的路径。修改代码路径如下所示：
 
 ```cmake
-set(MX_SDK_HOME ${XXX}/MindX_SDK/mxVision-2.0.2/)						       # Host侧SDK 请修改为实际路径
+set(MX_SDK_HOME ${XXX}/MindX_SDK/mxVision/)						       # Host侧SDK 请修改为实际路径
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${XM_SDK_HOME}/lib/plugins) # Host侧插件 请修改为实际路径
 ```
 
@@ -152,7 +152,7 @@ make -j
 export ASCEND_HOME=/usr/local/Ascend
 export LD_LIBRARY_PATH=$ASCEND_HOME/ascend-toolkit/latest/acllib/lib64:$LD_LIBRARY_PATH
 
-export PATH=/usr/local/python3.7.5/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=/usr/local/Ascend/ascend-toolkit/latest/opp
 export LD_LIBRARY_PATH=${XXX}/project/opencv/lib:$LD_LIBRARY_PATH

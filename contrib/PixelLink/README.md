@@ -13,7 +13,7 @@
 
 支持的SDK版本，列出版本号查询方式。
 
-支持的SDK版本为2.0.2。
+支持的SDK版本为2.0.4。
 
 版本号查询方法，在Atlas产品环境下，运行命令：npu-smi info进行查看。
 
@@ -65,9 +65,9 @@
 | 软件名称  | 版本   |
 | -------- | ------ |
 | cmake    | 3.5+   |
-| mxVision | 2.0.2  |
-| python   | 3.7.5  |
-| CANN     | 3.3.0  |
+| mxVision | 2.0.4  |
+| python   | 3.9.2  |
+| CANN     | 5.0.4  |
 | Polygon3 | 3.0.9.1|
 
 
@@ -135,7 +135,7 @@ zip文件中数据集为ch4_test_image，gt.zip是评测代码需要的groundtru
 运行推理代码：
 
 ```
-python3.7 main.py
+python3 main.py
 ```
 输出结果：可以直接得到这张测试图像的推理结果，该结果会存到一个txt文件中，并在同目录下可视化test.jpg的检测结果。可视化结果命名为my_test.jpg。
 
@@ -172,8 +172,8 @@ python3.7 main.py
 
 
 ```
-python3.7 main_get_groundtruth.py
-python3.7 script.py -g=./gt.zip -s=./om_result.zip
+python3 main_get_groundtruth.py
+python3 script.py -g=./gt.zip -s=./om_result.zip
 ```
 输出结果：首先得到本模型在ICDAR2015测试集上的推理结果，结果生成在./test/image_txt/下。再通过运行脚本代码可以得到原模型输出结果与本模型的结果的对比，最后得到本模型的平均指标。
 

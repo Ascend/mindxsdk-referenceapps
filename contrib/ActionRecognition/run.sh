@@ -32,5 +32,5 @@ export GST_DEBUG=3
 #to set PYTHONPATH, import the StreamManagerApi.py
 export PYTHONPATH=$PYTHONPATH:${MX_SDK_HOME}/python
 
-python3.7 main.py
+python3 main.py
 exit 0

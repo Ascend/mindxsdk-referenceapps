@@ -12,7 +12,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2。
+支持的SDK版本为2.0.4。
 
 在Atlas产品环境下，可通过运行一下命令查询版本号：
 
@@ -75,8 +75,8 @@ npu-smi info
 | 软件名称       | 版本   |
 | -------------- | ------ |
 | cmake          | 3.10.2 |
-| mxVision       | 2.0.2  |
-| ascend-toolkit | 3.3.0  |
+| mxVision       | 2.0.4  |
+| ascend-toolkit | 5.0.4  |
 
 ## 3 模型转换
 
@@ -94,7 +94,7 @@ npu-smi info
 # 设置环境变量（请确认install_path路径是否正确）
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest #默认安装路径
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp

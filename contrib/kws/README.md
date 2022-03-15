@@ -46,8 +46,8 @@ atc --framework=5 --model={model_path} --input_shape="input:1,80,1464"
 
 |软件名称    | 版本     |
 |-----------|----------|
-| python    | 3.7.5    |
-| MindX SDK | 2.0.2    |
+| python    | 3.9.2    |
+| MindX SDK | 2.0.4    |
 | librosa   | 0.8.1    |
 | pypinyin  | 0.42.0   |
 | torch     | 1.9.0    |

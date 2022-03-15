@@ -176,7 +176,7 @@ mindxsdk-referenceapps/contrib/参考设计名称(英文)
 二、软件版本:
 -- CANN 版本 (e.g., CANN 3.0.x，5.x.x):  
 --Tensorflow/Pytorch/MindSpore 版本:
---Python 版本 (e.g., Python 3.7.5):
+--Python 版本 (e.g., Python 3.9.2):
 -- MindStudio版本 (e.g., MindStudio 2.0.0 (beta3)):
 --操作系统版本 (e.g., Ubuntu 18.04):
 

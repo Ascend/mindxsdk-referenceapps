@@ -31,9 +31,9 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 export PYTHONPATH=$PYTHONPATH:${MX_SDK_HOME}/python
 
 #精度测试脚本
-#python3.7 evaluate.py  
+#python3 evaluate.py  
 
 #测试图片输出掩膜脚本
-python3.7  main.py    
+python3  main.py    
 
 exit 0

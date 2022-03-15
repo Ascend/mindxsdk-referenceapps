@@ -10,7 +10,7 @@
 昇腾310(推理)
 
 ### 1.2 支持的版本
-本样例配套的CANN版本为 [3.3.0](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision) 。
+本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk) 。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -44,8 +44,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ### 2.1 软件版本
 | 软件                 | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.2       | mxVision软件包                  | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
-| Ascend-CANN-toolkit | 3.3.0       | Ascend-cann-toolkit开发套件包    | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 2.0.4       | mxVision软件包                  | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包    | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统             | Ubuntu 18.04 | 操作系统                        | Ubuntu官网获取                                               |
 
 
@@ -67,7 +67,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 # Set environment PATH (Please confirm that the install_path is correct).
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -165,11 +165,11 @@ env
 cd MonocularDepthEstimation
 
 # 图片深度估计
-python3.7 main.py ${测试图片路径} ${输出结果路径}
-ex: python3.7 main.py image/test.jpg result/result.jpg
+python3 main.py ${测试图片路径} ${输出结果路径}
+ex: python3 main.py image/test.jpg result/result.jpg
 
 # AdaBins_nyu 模型精度验证
-python3.7 evaluate.py
+python3 evaluate.py
 ```
 
 > ② 脚本运行请先赋予可执行权限

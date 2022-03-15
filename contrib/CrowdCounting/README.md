@@ -61,7 +61,7 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 ```
 export install_path={MX_INSTALL_PATH}
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -115,7 +115,7 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 
 | 依赖软件 | 版本  | 说明                                                         |
 | -------- | ----- | ------------------------------------------------------------ |
-| mxVision | 2.0.2 | 提供昇腾计算语言(AscendCL)的高级编程API，简化插件和推理应用开发。 |
+| mxVision | 2.0.4 | 提供昇腾计算语言(AscendCL)的高级编程API，简化插件和推理应用开发。 |
 
 
 

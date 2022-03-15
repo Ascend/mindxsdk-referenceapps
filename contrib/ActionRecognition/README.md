@@ -28,8 +28,8 @@
   | 软件名称 | 版本  |
   | -------- | ----- |
   | cmake    | 3.5.+ |
-  | mxVision | 2.0.2 |
-  | Python   | 3.7.5 |
+  | mxVision | 2.0.4 |
+  | Python   | 3.9.2 |
   | OpenCV   | 3.4.0 |
   | gcc      | 7.5.0 |
   | ffmpeg   | 4.3.2 |

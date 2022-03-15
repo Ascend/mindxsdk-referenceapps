@@ -10,7 +10,7 @@ FairMOT目标跟踪后处理插件基于MindXSDK开发，在晟腾芯片上进�
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[3.3.0](https://www.hiascend.com/software/cann/commercial)。支持的SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)。
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)。支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -77,16 +77,16 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.2       | mxVision软件包                | [链接](https://www.hiascend.com/software/mindx-sdk/mxvision) |
+| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
 | ubantu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 3.3.0       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 
 在编译运行项目前，需要设置环境变量：
 
 ```
 export MX_SDK_HOME=${SDK安装路径}/mxVision
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 export ASCEND_AICPU_PATH=${install_path}
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH

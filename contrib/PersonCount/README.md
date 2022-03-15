@@ -80,8 +80,8 @@
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK mxManufacture    |    2.0.2    |
-| ascend-toolkit             |    3.3.0    |
+| MindX SDK mxManufacture    |    2.0.4    |
+| ascend-toolkit             |    5.0.4    |
 
 在编译运行项目前，需要设置环境变量：
 MX_SDK_HOME="~/mxManufacture"  
@@ -89,7 +89,7 @@ LD_LIBRARY_PATH=\\${MX_SDK_HOME}/lib:\\${MX_SDK_HOME}/opensource/lib:\\${MX_SDK_
 PYTHONPATH=\\${MX_SDK_HOME}/python:\\${PYTHONPATH}  
 
 install_path=/usr/local/Ascend/ascend-toolkit/latest
-PATH=/usr/local/python3.7.5/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
+PATH=/usr/local/python3.9.2/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
 PYTHONPATH=\\${install_path}/atc/python/site-packages:\\${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:\\${install_path}/atc/python/site-packages/schedule_search.egg  
 LD_LIBRARY_PATH=\\${install_path}/atc/lib64:\\$LD_LIBRARY_PATH  
 ASCEND_OPP_PATH=\\${install_path}/opp   
@@ -107,7 +107,7 @@ export MX_SDK_HOME="~/mxManufacture"
 export LD_LIBRARY_PATH=\\${MX_SDK_HOME}/lib:\\${MX_SDK_HOME}/opensource/lib:\\${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit:\\${LD_LIBRARY_PATH}  
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest  
-export PATH=/usr/local/python3.7.5/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
+export PATH=/usr/local/python3.9.2/bin:\\${install_path}/atc/ccec_compiler/bin:\\${install_path}/atc/bin:\\$PATH  
 export PYTHONPATH=\\${install_path}/atc/python/site-packages:\\${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:\\${install_path}/atc/python/site-packages/schedule_search.egg  
 export LD_LIBRARY_PATH=\\${install_path}/atc/lib64:\\$LD_LIBRARY_PATH  
 export ASCEND_OPP_PATH=\\${install_path}/opp    
@@ -116,8 +116,8 @@ export ASCEND_OPP_PATH=\\${install_path}/opp
 ## 依赖安装
 
 安装MindX SDK mxManufacture：
-chmod u+x Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64.run
-./Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64.run
+chmod u+x Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64.run
+./Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64.run
 
 ascend-toolkit:
 从/usr/local/Ascend/ascend-toolkit/latest/路径获取
@@ -145,7 +145,7 @@ ascend-toolkit:
 | 依赖软件 | 版本  | 说明                     |
 | -------- | ----- | ------------------------ |
 | cmake     | 3.10.2 | 用于编译并生成后处理插件 |
-| python    | 3.7     |  用于编译用户程序如main.py   |
+| python    | 3.9.2     |  用于编译用户程序如main.py   |
 
 
 
@@ -161,4 +161,4 @@ ascend-toolkit:
 ![err information](https://gitee.com/superman418/mindxsdk-referenceapps/raw/master/contrib/PersonCount/img/err1.png)
 **解决方案：**
 
-新版Ascend-mindxsdk-mxmanufacture_2.0.2_linux-aarch64中的tensorinfer插件能够自动组batch然后进行batch模型的推理，可以解决该问题。
+新版Ascend-mindxsdk-mxmanufacture_2.0.4_linux-aarch64中的tensorinfer插件能够自动组batch然后进行batch模型的推理，可以解决该问题。

@@ -15,7 +15,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.2，版本号查询方法：在Atlas产品环境下，运行命令：
+支持的SDK版本为2.0.4，版本号查询方法：在Atlas产品环境下，运行命令：
 
 ```
 npu-smi info
@@ -92,8 +92,8 @@ npu-smi info
 | 软件名称 | 版本  |
 | -------- | ----- |
 | cmake    | 3.5+  |
-| mxVision | 2.0.2 |
-| python   | 3.7.5 |
+| mxVision | 2.0.4 |
+| python   | 3.9.2 |
 
 确保环境中正确安装mxVision SDK。
 
@@ -177,13 +177,13 @@ bash build.sh
 4. 如果为离线视频，将下面命令中frame_num替换为测试的视频的帧数，并执行命令：
 
 ```
-python3.7 test_video.py --frame_num ${frame_num}
+python3 test_video.py --frame_num ${frame_num}
 ```
 
 如果为在线视频，执行命令：
 
 ```
-python3.7 test_video.py --online_flag True
+python3 test_video.py --online_flag True
 ```
 
 执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶，输出`Fatigue!!!`为疲劳驾驶。可视化结果保存在`fatigue`文件夹中。
@@ -197,13 +197,13 @@ python3.7 test_video.py --online_flag True
 5. 如果为离线视频，将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
 
 ```
-python3.7 parallel_update.py  --limit_of_time ${time} --frame_num_1 ${frame_num1} --frame_num_2  ${frame_num2} 
+python3 parallel_update.py  --limit_of_time ${time} --frame_num_1 ${frame_num1} --frame_num_2  ${frame_num2} 
 ```
 
 如果为在线视频，将下面命令中的time替换为自己限制的测试时间，并执行命令：
 
 ```
-python3.7 parallel_update.py  --limit_of_time ${time} --online_flag True
+python3 parallel_update.py  --limit_of_time ${time} --online_flag True
 ```
 
 执行成功后终端会输出视频中是否存在疲劳驾驶，输出`Normal`为正常驾驶

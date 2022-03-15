@@ -14,8 +14,8 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[3.3.0](https://www.hiascend.com/software/cann/commercial)  
-支持的SDK版本为[2.0.2](https://www.hiascend.com/software/mindx-sdk/mxvision)  
+本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)  
+支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)  
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 ### 1.3  技术实现流程图<br/>
 本项目的主要工作流程为，初始输入目标图像和原图像，第一阶段采用yolov4模型进行人脸检测，接着利用后处理插件、抠图插件对检测结果进行处理，得到人脸区域部分；
@@ -47,8 +47,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件名称 | 版本   | 
 | :--------: | :------: |
 |操作系统|18.04.1   |
-|MindX SDK|2.0.2|
-|Python| 3.7.5|
+|MindX SDK|2.0.4|
+|Python| 3.9.2|
 |numpy | 1.21.0 |
 |opencv-python|4.5.2|
 
@@ -70,7 +70,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 # Set environment PATH (Please confirm that the install_path is correct).
 
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -148,9 +148,9 @@ mkdir result
 ```
 6. 运行可执行文件
 ```
-切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3.7 faceswap_main.py 源人脸图片路径 目标人脸图片路径]  
+切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3 faceswap_main.py 源人脸图片路径 目标人脸图片路径]  
 
-例：python3.7 faceswap_main.py data/face1.jpg data/face2.jpg
+例：python3 faceswap_main.py data/face1.jpg data/face2.jpg
 ```
 
 7. 查看结果  

@@ -49,9 +49,9 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 | 软件名称  | 版本  |
 | --------- | ----- |
-| MindX SDK | 2.0.2 |
-| python    | 3.7   |
-| CANN      | 1.77.22.6.220  |
+| MindX SDK | 2.0.4 |
+| python    | 3.9.2   |
+| CANN      | 5.0.4  |
 | opencv2   |       |
 | numpy     |       |
 
@@ -62,7 +62,7 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 ```
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
@@ -178,7 +178,7 @@ gt_dir = './mask'   #测试集掩膜mask图片存放路径
 **步骤3** 修改run.sh最后的执行文件名称：
 
 ```
-python3.7 evaluate.py
+python3 evaluate.py
 ```
 
 并执行：

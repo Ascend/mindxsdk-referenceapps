@@ -48,7 +48,7 @@ if __name__ == '__main__':
             output_result_path = sys.argv[2]
     else:
         print("Please enter at least image path, "
-              "such as 'python3.7 main.py image/test.jpg' or 'bash run.sh -m infer -i image/test.jpg'.")
+              "such as 'python3 main.py image/test.jpg' or 'bash run.sh -m infer -i image/test.jpg'.")
         print('no input image path and output result path, use default config.')
 
     print('input image path: {}.'.format(input_image_path))
