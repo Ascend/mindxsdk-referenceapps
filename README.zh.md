@@ -103,6 +103,58 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [车流量统计](contrib\VehicleCounting) | c++ | >=2.0.4 | 对视频中的车辆进行计数，实现对本地视频（H264）进行车辆追踪并计数，最后生成可视化结果 |
 | [视频手势识别运行](contrib\VideoGestureRecognition) | c++ | >=2.0.4 | 对本地视频（H264）进行手势识别并分类，生成可视化结果 |
 
+## 插件使用
+**以下表单描述了各插件在哪些样例中有使用，供用户查找参考**   
+|             插件名称             |                         参考设计位置                         |                         具体样例名称                         |
+| :------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|              appsrc              |                            run包                             |                             通用                             |
+|           mxpi_rtspsrc           |                            run包                             | SampleOsdVideo2Channels.pipeline<br>VideoObjectDetection.pipeline<br>SampleMotsimplesortv2.pipeline<br>SampleSkipframe.pipeline |
+|        mxpi_dataserialize        |                            run包                             |                             通用                             |
+|             appsink              |                            run包                             |                             通用                             |
+|             fakesink             |                            run包                             |                             通用                             |
+|             filesink             |                            run包                             |                      SampleOsd.pipeline                      |
+|       mxpi_parallel2serial       |                            run包                             | SampleNmsoverLapedroiv2.pipeline<br>SampleOsdVideo2Channels.pipeline |
+|         mxpi_distributor         |                            run包                             | SampleNmsoverLapedroiv2.pipeline<br/>SampleOsdVideo2Channels.pipeline |
+|         mxpi_synchronize         | [gitee-mxVision](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/mxVision/AllObjectsStructuring) |                    AllObjectsStructuring                     |
+|        mxpi_datatransfer         | [gitee-mxVision](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/mxVision/MultiThread) |                         MultiThread                          |
+|       mxpi_nmsoverlapedroi       |                             弃用                             |                                                              |
+|      mxpi_nmsoverlapedroiV2      |                            run包                             |               SampleNmsoverLapedroiv2.pipeline               |
+|        mxpi_roigenerator         |                            run包                             |              SemanticSegPostProcessor.pipeline               |
+|     mxpi_semanticsegstitcher     |                            run包                             |              SemanticSegPostProcessor.pipeline               |
+|       mxpi_objectselector        |                            run包                             |                SampleObjectSelector.pipeline                 |
+|          mxpi_skipframe          |                            run包                             |                   SampleSkipframe.pipeline                   |
+|        mxpi_imagedecoder         |                            run包                             |                             通用                             |
+|         mxpi_imageresize         |                            run包                             |                             通用                             |
+|          mxpi_imagecrop          |                            run包                             | Sample.pipeline<br>SampleNmsoverLapedroiv2.pipeline<br>SampleObjectSelector.pipeline<br>SampleOsdVideo2Channels.pipeline |
+|        mxpi_videodecoder         |                            run包                             |                             通用                             |
+|        mxpi_videoencoder         |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|        mxpi_imageencoder         |                            run包                             |                      SampleOsd.pipeline                      |
+|       mxpi_imagenormalize        |                            run包                             |                SampleImageNormalize.pipeline                 |
+|      mxpi_opencvcentercrop       |                            run包                             |               SampleOpencvCenterCrop.pipeline                |
+|       mxpi_warpperspective       |                    mindxsdk-referenceapps                    |                    GeneralTextRecognition                    |
+|          mxpi_rotation           |                    mindxsdk-referenceapps                    |                    GeneralTextRecognition                    |
+|         mxpi_modelinfer          |                             弃用                             |                                                              |
+|         mxpi_tensorinfer         |                            run包                             |                             通用                             |
+|     mxpi_objectpostprocessor     |                            run包                             |      SampleObjectSelector.pipeline<br/>Sample.pipeline       |
+|     mxpi_classpostprocessor      |                            run包                             | Sample.pipeline<br>SampleOsdVideo2Channels.pipeline<br>BertMultiPorts.pipeline |
+|  mxpi_semanticsegpostprocessor   |                            run包                             |              SemanticSegPostProcessor.pipeline               |
+| mxpi_textgenerationpostprocessor |                            run包                             |             TextGenerationPostProcessor.pipeline             |
+|   mxpi_textobjectpostprocessor   |                    mindxsdk-referenceapps                    |                    GeneralTextRecognition                    |
+|    mxpi_keypointpostprocessor    |                            run包                             |                KeyPointPostProcessor.pipeline                |
+|        mxpi_motsimplesort        |                             弃用                             |                                                              |
+|       mxpi_motsimplesortV2       |                            run包                             |                                                              |
+|        mxpi_facealignment        |                    mindxsdk-referenceapps                    |                    FaceFeatureExtraction                     |
+|      mxpi_qualitydetection       | [gitee-mxVision](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/mxVision/VideoQualityDetection) |                    VideoQualityDetection                     |
+|          mxpi_dumpdata           | [用户指南](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/ba172876) |                                                              |
+|          mxpi_loaddata           | [用户指南](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/ba172876) |                                                              |
+|          mxpi_opencvosd          |                            run包                             |                      SampleOsd.pipeline                      |
+|     mxpi_object2osdinstances     |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|     mxpi_class2osdinstances      |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|      mxpi_osdinstancemerger      |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|       mxpi_channelselector       |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|    mxpi_channelimagesstitcher    |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|  mxpi_channelosdcoordsconverter  |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
+|       mxpi-bufferstablizer       |                            run包                             |               SampleOsdVideo2Channels.pipeline               |
 
 
 
