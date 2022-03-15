@@ -79,7 +79,6 @@ def preprocess(net_param):
         exit()
         
     objects_num = len(objects)
-    print("input object number:", objects_num)
     if objects_num > 9:
         print("objects limit ! max 9 input %d" % objects_num)
         exit()
