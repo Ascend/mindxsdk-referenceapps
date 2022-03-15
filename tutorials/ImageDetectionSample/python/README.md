@@ -31,10 +31,10 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK
 ### 运行
 准备一张待检测图片，放到项目目录下命名为test.jpg
 命令行输入：
-python3.7 main.py
+python3 main.py
 
 ```
-python3.7 main.py
+python3 main.py
 ```
 
 ### 查看结果

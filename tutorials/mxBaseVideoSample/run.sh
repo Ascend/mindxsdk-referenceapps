@@ -17,6 +17,6 @@ CUR_PATH=$(cd "$(dirname "$0")" || exit ; pwd)
 
 echo "$CUR_PATH"
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.7.5/lib:/usr/local/ffmpeg/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:/usr/local/python3.9.2/lib:/usr/local/ffmpeg/lib:${LD_LIBRARY_PATH}
 
 ./stream_pull_test

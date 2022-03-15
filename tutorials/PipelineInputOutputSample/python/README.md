@@ -22,11 +22,11 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK
 
 ### 运行
 
-python3.7 main.py 参数
+python3 main.py 参数
 参数可以传入1-7 的数字 参数对应关系可以参考快速指导文档
 
 ```
-python3.7 main.py 1
+python3 main.py 1
 ```
 
 ### 查看结果

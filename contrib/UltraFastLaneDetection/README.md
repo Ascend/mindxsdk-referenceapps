@@ -2,7 +2,7 @@
 
 ## 1. 介绍
 
-本样例是基于mxBase开发的端到端推理的C++应用程序，可在昇腾芯片上对图像中的车道线进行检测，并对检测到的图像中的每一条车道线进行识别，最后将可视化结果保存为图片形式。
+本样例是基于mxBase开发的端到端推理的python应用程序，可在昇腾芯片上对图像中的车道线进行检测，并对检测到的图像中的每一条车道线进行识别，最后将可视化结果保存为图片形式。
 
 本样例的主要处理流程为： appsrc > mxpi_imagedecoder > mxpi_imageresize > mxpi_tensorinfer > mxpi_objectpostprocessor > appsink 
 
