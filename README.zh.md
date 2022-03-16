@@ -50,8 +50,9 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [模型后处理插件开发](./tutorials/SamplePostProcess) | [4-2](docs/quickStart/4-2模型后处理库(内置类型)开发调试指导.md)章节对应的演示代码 |
 | [自定义proto结构体](./tutorials/sampleCustomProto) | [4-3](docs/quickStart/4-3挂载自定义proto结构体.md)章节对应的演示代码 |
 | [自定义后处理插件开发](./tutorials/samplePluginPostProc) | [4-4](docs/quickStart/4-4模型Tensor数据处理&自定义模型后处理.md)章节对应的演示代码 |
-1. 根据任务类型，选择SDK已经支持的后处理基类([SDK2.0.4支持列表](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/51b8b606))去派生一个新的子类，这些后处理基类分别为目标检测，分类任务，语义分割，文本生成。此时使用**模型后处理插件开发**。
-2. 如果当前后处理基类所采用的数据结构无法满足需求，用户需要自行开发**自定义后处理插件开发**，或将tensor数据通过**元数据输出输出样例**输出至外部来处理
+1. SDK已支持的模型直接使用**mxpi_{类型}postprocessor**插件配置对应后处理so和参数即可([SDK2.0.4模型支持列表](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/8c42df9f))
+2. 未支持的模型根据任务类型，选择SDK已经支持的后处理基类(目标检测，分类任务，语义分割，文本生成)([SDK2.0.4后处理基类](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/51b8b606))去派生一个新的子类，参考**模型后处理插件开发**进行开发。
+3. 如果当前后处理基类所采用的数据结构无法满足需求，用户需要自行开发**自定义后处理插件开发**，或将tensor数据通过**元数据输出输出样例**输出至外部来处理
 
 ## 运行  
 **根据以下表单，选择需要运行的样例，并按照readme进行第三方依赖的安装及样例下载运行**      
