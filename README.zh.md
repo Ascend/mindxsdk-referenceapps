@@ -81,12 +81,13 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [安全帽识别](contrib\HelmetIdentification) | python | >=2.0.4 | 两路视频的安全帽去重识别，并对为佩戴行为告警 |
 | [人体语义分割](contrib\human_segmentation) | c++ | >=2.0.4 | 对输入图片中的人像进行语义分割操作，然后输出mask掩膜图，将其与原图结合，生成标注出人体部分的人体语义分割图片 |
 | [个体属性识别](contrib\Individual) | python | >=2.0.4 | 识别多种人脸属性信息，包括年龄、性别、颜值、情绪、脸型、胡须、发色、是否闭眼、是否配戴眼镜、人脸质量信息及类型等 |
-| [关键词检测](contrib\kws) | python | >=2.0.4 | 对语音进行关键词检测 |
+| [语音关键词检测](contrib\kws) | python | >=2.0.4 | 对语音进行关键词检测 |
 | [人像分割](contrib\MMNET) | python | >=2.0.4 | 基于MMNET解决移动设备上人像抠图的问题，旨在以最小的模型性能降级在移动设备上获得实时推断 |
 | [单目深度估计](contrib\MonocularDepthEstimation) | python | >=2.0.4 | 基于AdaBins室内模型的单目深度估计，输出目标图像的深度图 |
 | [多路视频检测](contrib\MultiChannelVideoDetection) | c++ | >=2.0.4 | 同时对两路本地视频或RTSP视频流(H264或H265)进行YOLOv3目标检测，生成可视化结果 |
 | [小麦检测](contrib\mxBase_wheatDetection) | c++ | >=2.0.4 | 使用yolov5对图像中的小麦进行识别检测 |
-| [身份证检测识别](contrib\IDCard_OCR) | python | >=2.0.4 | 身份证检测并证识相关信息 |
+| [OCR身份证检测识别](contrib\OCR\IDCardRecognition) | python | >=2.0.4 | 对身份证进行识别和检测 |
+| [OCR关键词检测](contrib\OCR\KeywordDetection) | python | >=2.0.4 | 对图片进行识别并检测是否包含指定关键词 |
 | [人体关键点检测](contrib\OpenposeKeypointDetection) | python | >=2.0.4 | 输入一幅图像，可以检测得到图像中所有行人的关键点并连接成人体骨架 |
 | [行人属性检测](contrib\PedestrianAttributeRecognition) | python | >=2.0.4 | 对检测图片中行人的定位和属性进行识别 |
 | [人群密度计数](contrib\PersonCount) | python | >=2.0.4 | 输入一幅人群图像，输出图像当中人的计数（估计）的结果 |
