@@ -52,8 +52,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |numpy | 1.21.0 |
 |opencv-python|4.5.2|
 
-请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库  
-`apt-get install libpython3.7`
+请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
+`apt-get install libpython3.9`
 
 ## 4 模型获取及转换
 ### 4.1 人脸检测模型转换

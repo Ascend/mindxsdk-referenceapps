@@ -326,6 +326,30 @@ modelinfer更多适配于老框架的模型推理与后处理
 
 尝试方法1失败，说明当前sdk中没有包含与使用模型适配的后处理插件，需要自己开发
 
+
+## 5.7 项目后处理插件so权限未正确配置，提示Check Owner permission failed
+
+### 现象描述
+
+```bash
+E20220321 16:33:43.630218 15524 FileUtils.cpp:361] Check Owner permission failed: Current permission is 7, but required no greater than 6.
+E20220321 16:33:43.630540 15524 MxStreamManagerDptr.cpp:361] file in GST_PLUGIN_PATH is invalid
+E20220321 16:33:43.630568 15524 MxStreamManagerDptr.cpp:380] check directories in GST_PLUGIN_PATH failed
+E20220321 16:33:43.630589 15524 MxStreamManagerDptr.cpp:461] check GST_PLUGIN_PATH failed
+E20220321 16:33:43.630609 15524 MxStreamManagerDptr.cpp:498] handle environment: GST_PLUGIN_PATH failed
+```
+
+### 可能原因
+
+使用的后处理插件so的权限配置错误。后处理插件开发后编译生成的so文件默认权限为750，SDK(>2.0.4)要求so文件权限为640.
+
+### 处理方法
+
+cd到权错误so文件所在位置，使用命令`
+```bash
+chmod 640 {NAME}.so 
+```
+
 # 6 PR提交
 
 ## 6.1 ci-pipeline-failed
@@ -385,21 +409,21 @@ PR与主仓存在冲突
 ### 现象描述
 
 运行时报错  
-`Exception: StreamManagerApi only support python3.7 or greater
+`Exception: StreamManagerApi only support python3.9 or greater
 `
 
 ### 可能原因
 
-SDK 2.0.2版本python要求版本为3.7.5+，使用低版本时会出现以上问题
+SDK 2.0.4版本python要求版本为3.9.2+，使用低版本时会出现以上问题。在旧版(<2.0.4)中要求版本为3.7.5，此处报错提示为python3.7
 
 ### 处理办法
 
 1. 手动修改run.sh中调用命令的python版本  
-`python3 -> python3.7`
+`python3 -> python3.9`
 2. 修改系统python3的软链接版本
 ```shell
 sudo rm -rf /usr/bin/python3
-sudo ln -s /usr/bin/python3.7.5  /usr/bin/python3
+sudo ln -s /usr/bin/python3.9.2  /usr/bin/python3
 ```
 
 ## 7.2 运行时提示缺失组件

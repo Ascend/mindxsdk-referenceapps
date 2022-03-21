@@ -10,7 +10,7 @@
 
 ### 2.2.1.1 模型转换
 
-在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
+在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/2/24a26134237f41a3974978d249451d19)
 下载后将模型上传至远程服务器。
 
 #### 模型转换入口
@@ -151,6 +151,6 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 命令行输入运行命令运行项目，结果保存在图片result.jpg中
 
 ```
-python3.7 main.py
+python3.9 main.py
 ```
 

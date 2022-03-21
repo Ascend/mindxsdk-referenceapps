@@ -461,7 +461,7 @@ sed -i 's/\r//g' xxx.sh
 
 本项目中用到的模型有：ECONet，yolov3
 
-yolov3模型转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)；
+yolov3模型转换及下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/2/24a26134237f41a3974978d249451d19)；
 
 ECONet离线模型转换参考 [昇腾Gitee](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/econet/ECONet_tf_paper99)：下载冻结pb模型ucf101_best.pb，编辑trans_pb2om.sh文件，将--model 配置为ECONet模型所在目录，--output配置为模型输出路径，--insert_op_conf配置为aipp文件路径，在命令行输入
 

@@ -11,7 +11,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的SDK安装路径
 ```
 ### 2.1.2.1 模型转换
-**步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)
+**步骤1** 在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/2/24a26134237f41a3974978d249451d19)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："项目目录中的models文件夹中"。
 
@@ -24,7 +24,7 @@ set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的
 ASCEND_HOME=/usr/local/Ascend
 ASCEND_VERSION=nnrt/latest
 ARCH_PATTERN=.
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.9.2/lib:
 ```
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。在Program arguments处填入输入参数./test.jpg
 ![1.png](img/20210712140926.png "1.png")

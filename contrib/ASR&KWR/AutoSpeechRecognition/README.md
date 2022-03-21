@@ -61,8 +61,8 @@
 | librosa   | 0.8.0    |
 请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
 
-请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库  
-`apt-get install libpython3.7`  
+请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
+`apt-get install libpython3.9`  
 librosa安装若无法编译相关依赖，可参考下述指令在root用户下安装对应的库
 ```shell
 apt-get install llvm-10 -y

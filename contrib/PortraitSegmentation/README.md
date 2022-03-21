@@ -26,8 +26,8 @@
 |numpy | 1.18.2 |
 |opencv_python|3.4.0|
 
-请注意MindX SDK使用python版本为3.7.5，如出现无法找到python对应lib库请在root下安装python3.7开发库  
-`apt-get install libpython3.7`
+请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
+`apt-get install libpython3.9`
 ## 4 模型转换
 人体语义分割采用提供的Portrait.pb模型。由于原模型是基于tensorflow的人像分割模型，因此我们需要借助于ATC工具将其转化为对应的om模型。  
 **步骤1**  下载Portrait原始模型与&ensp; 对应的cfg文件：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PortraitSegmentation/model.zip)      

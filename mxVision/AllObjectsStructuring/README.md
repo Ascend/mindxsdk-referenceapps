@@ -28,7 +28,7 @@
 | -------- | ------ |
 | cmake    | 3.5.1+ |
 | mxVision | 0.2    |
-| Python   | 3.7.5  |
+| Python   | 3.9.2  |
 
 
 
@@ -100,7 +100,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
 
 **步骤8：** 在当前目录下，安装必要python库：
 
-`pip3.7.5 install -r requirements.txt`
+`pip3.9.2 install -r requirements.txt`
 
 **步骤9：** 请在昇腾社区下载特征检索源码包https://www.hiascend.com/software/mindx-sdk/mxindex，并根据readme来搭建特征检索库。如果不需要接入特征检索功能，此步骤可忽略。
 
