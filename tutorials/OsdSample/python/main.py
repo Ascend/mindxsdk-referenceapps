@@ -19,13 +19,13 @@ limitations under the License.
 
 import json
 import time
-from stream_manager_api import *
+from StreamManagerApi import *
 import MxpiOSDType_pb2 as MxpiOSDType
 from google.protobuf.json_format import *
 
 if __name__ == '__main__':
     # init stream manager
-    stream_manager_api = stream_manager_api()
+    stream_manager_api = StreamManagerApi()
     ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
