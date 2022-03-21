@@ -70,7 +70,7 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [边缘检测](./contrib/EdgeDetectionPicture) | c++ | >=2.0.4 | 图像边缘提取，输出可视化结果 |
 | [EfficientDet](./contrib/EfficientDet) | python | >=2.0.4 | 使用 EfficientDet 模型进行目标检测 |
 | [人脸检测](./contrib/FaceBoxes) | python | >=2.0.4 | 对图像中的人脸进行画框并且标注置信度 |
-| [口罩识别](./contrib/FaceBoxes) | python | >=2.0.4 | 对原图像的人脸以及口罩进行识别画框 |
+| [口罩识别](./contrib/facemaskdetection) | python | >=2.0.4 | 对原图像的人脸以及口罩进行识别画框 |
 | [人脸替换](./contrib/faceswap) | python | >=2.0.4 | 进行人脸检测，脸部关键点推理以及人脸替换，将替换结果可视化并保存 |
 | [情绪识别](./contrib/FacialExpressionRecognition) | python | >=2.0.4 | 采集图片中的人脸图像，然后利用情绪识别模型推理情绪类别 |
 | [目标跟踪](./contrib/FairMOT) | python | >=2.0.4 | 视频目标检测和跟踪，对行人进行画框和编号 |
