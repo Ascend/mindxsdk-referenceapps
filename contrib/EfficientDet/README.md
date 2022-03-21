@@ -208,7 +208,7 @@ python3 main.py
 
 1. 安装 python COCO 评测工具。执行命令：
 ```
-pip3.7 install pycocotools
+pip3.9 install pycocotools
 ```
 
 2. 下载 COCO VAL 2017 数据集和标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/data.zip，  在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件和标注数据压缩文件都解压至 ``python/dataset`` 目录下。确保解压后的 python 目录结构为：

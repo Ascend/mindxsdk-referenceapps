@@ -24,7 +24,7 @@ set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的
 ASCEND_HOME=/usr/local/Ascend
 ASCEND_VERSION=nnrt/latest
 ARCH_PATTERN=.
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.7.5/lib:
+LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/:/usr/local/python3.9.2/lib:
 ```
 点击Clion任务栏 Run->Edit Configurations->Working directory 填写当前工程目录位置。在Program arguments处填入输入参数./test.jpg
 ![1.png](img/20210712140926.png "1.png")

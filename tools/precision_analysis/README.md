@@ -36,7 +36,7 @@
 | ----------- | ----- |
 | pycocotools | 2.0   |
 | MindX SDK   | 2.0.1 |
-| Python      | 3.7.5 |
+| Python      | 3.9.2 |
 
 
 

@@ -21,7 +21,7 @@
 | -------- | ------ |
 | cmake    | 3.5.1+ |
 | mxVision | 0.2    |
-| Python   | 3.7.5  |
+| Python   | 3.9.2  |
 | opencv-python   | 3.4+  |
 | mmcv   |  -  |
 ## 3.预准备
@@ -96,4 +96,4 @@ main_sendprotobuf.py运行结果格式如下：
 
 ### 6.2 运行程序时，mmcv报错
 
-执行`pip3.7.5 install mmcv`下载相关依赖库
+执行`pip3.9 install mmcv`下载相关依赖库

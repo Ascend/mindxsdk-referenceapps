@@ -47,8 +47,8 @@ params=$@
 check_index
 if [ "${run_with_index}" == true ]; then
     echo "run with index"
-    python3.7.5 main.py
+    python3 main.py
 else
     echo "run main pipeline"
-    python3.7.5 main.py -main-pipeline-only=True
+    python3 main.py -main-pipeline-only=True
 fi

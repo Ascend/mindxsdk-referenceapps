@@ -210,7 +210,7 @@ python3 main.py
 
 1. 安装 python COCO 评测工具。执行命令：
 ```
-pip3.7 install pycocotools
+pip3.9 install pycocotools
 ```
 
 2. 下载 COCO VAL 2017 数据集，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：

@@ -151,6 +151,6 @@ GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/p
 命令行输入运行命令运行项目，结果保存在图片result.jpg中
 
 ```
-python3.7 main.py
+python3.9 main.py
 ```
 

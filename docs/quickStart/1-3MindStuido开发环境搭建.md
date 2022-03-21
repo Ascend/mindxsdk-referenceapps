@@ -11,7 +11,7 @@ Windows 10 x86_64操作系统
 #### 本地安装依赖
 
 - JDK 11
-- Python3.7.5
+- Python3.9.2
 - MinGW
 - CMake
 
