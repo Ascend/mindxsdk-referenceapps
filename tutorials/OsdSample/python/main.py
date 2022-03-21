@@ -19,7 +19,8 @@ limitations under the License.
 
 import json
 import time
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, \
+    MxDataInput, MxProtobufIn, InProtobufVector
 import MxpiOSDType_pb2 as MxpiOSDType
 from google.protobuf.json_format import *
 
@@ -40,7 +41,7 @@ if __name__ == '__main__':
         exit()
 
     # Construct the input of the stream
-    data_input = Mxdata_input()
+    data_input = MxDataInput()
     with open("test.jpg", 'rb') as f:
         data_input.data = f.read()
 
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     osd_instances_list = MxpiOSDType.Mxpiosd_instances_list()
     osd_instances_list = ParseDict(message_json, osd_instances_list)
 
-    protobuf_vec = Inprotobuf_vector()
+    protobuf_vec = InProtobufVector()
     protobuf = MxProtobufIn()
     protobuf.key = b'appsrc1'
     protobuf.type = b'MxTools.Mxpiosd_instances_list'
