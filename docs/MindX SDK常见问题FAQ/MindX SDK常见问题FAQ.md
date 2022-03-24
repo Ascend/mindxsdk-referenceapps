@@ -10,7 +10,7 @@
 
 # 1 环境安装配置
 
-## 1.1 项目编译缺少acl头文件
+## 1.1 c++项目编译缺少acl头文件
 
 ### 现象描述
 
@@ -36,9 +36,24 @@
 export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
 ```
 
+## 1.2 c++项目编译缺少hi_dvpp头文件
+
+### 现象描述
+
+![hi_dvpp](img/hi_dvpp.png)
+
+### 可能原因
+
+缺少头文件所在库路径
+
+### 处理方法
+
+在CMakeLists.txt文件中的相应位置添加对应路径
+
+![hidvpp_fix](img/hidvpp_fix.png)
 
 
-## 1.2 python脚本缺少acl模块
+## 1.3 python脚本缺少acl模块
 
 ### 现象描述
 
@@ -58,7 +73,7 @@ export PYTHONPATH=/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-pack
 
 
 
-## 1.3 python脚本ImportError: libascendcl.so: cannot open shared object file: No such file  or directory
+## 1.4 python脚本ImportError: libascendcl.so: cannot open shared object file: No such file  or directory
 
 ### 现象描述
 
