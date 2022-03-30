@@ -1,7 +1,17 @@
 /*
- * Copyright (c) Huawei Technologies Co., Ltd. 2021-2021. All rights reserved.
- * Description: DPPostProcess plugin
- * Create: 2021-05-31
+ * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include <cmath>
@@ -183,6 +193,10 @@ void DBPostProcess::ConstructInfo(std::vector<TextObjectInfo> &textObjectInfo, s
     if (resizeType == RESIZER_STRETCHING) {
         ratioX = resizedW_ / originWidth;
         ratioY = resizedH_ / originHeight;
+    }
+    if (ratioX == 0 || ratioY == 0) {
+        LogError << GetError(APP_ERR_DIVIDE_ZERO) << "the ratio of width or height must not equal to 0!";
+        return;
     }
     TextObjectInfo info;
     info.x0 = NpClip(std::round(box[POINT1].x / ratioX), originWidth);
