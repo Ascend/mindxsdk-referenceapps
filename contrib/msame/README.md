@@ -5,8 +5,8 @@
 
 ### 1.1 支持的产品
 
-MindX SDK mxVision:2.0.4
-mxVision version:2.0.4.b096
+MindX SDK mxVision:2.0.4   
+mxVision version:2.0.4.b096   
 Plat: linux aarch64
 
 ### 1.2 支持的版本
