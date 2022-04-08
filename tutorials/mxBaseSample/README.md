@@ -9,7 +9,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 ## 模型转换
 
 **步骤1** 模型获取
-在ModelZoo上下载YOLOv3模型 ，选择“历史版本”中版本1.1下载。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/2/24a26134237f41a3974978d249451d19)
+在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 **步骤2** 模型存放
 将获取到的YOLOv3模型pb文件放至上一级的models文件夹中
 **步骤3** 执行模型转换命令
@@ -27,7 +27,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```
 (2) 转换模型
 ```
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
 
 ## 编译与运行

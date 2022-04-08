@@ -4,7 +4,7 @@
   本开发样例基于MindX SDK实现了从结构化描述生成对应风景照片的功能。
   参考以下链接说明：
   - https://www.hiascend.com/zh/developer/mindx-sdk/landscape?fromPage=1
-  - https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/painting/ATC_painting_tf_AE
+  - https://gitee.com/ascend/samples/tree/master/cplusplus/contrib/AI_painting
 
 ## 2 模型转换
   原模型为PB模型，通过atc工具可转换为对应OM模型。  
