@@ -189,6 +189,7 @@ if  __name__ == '__main__':
         times = infer(if_saves)
         if_saves = False
         total_times+=times
+        #print
         print("loop {0} : Inference time: {1:f} ms".format(m,times*1000))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(total_times/loop*1000))
