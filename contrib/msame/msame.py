@@ -141,13 +141,14 @@ def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
     if datatype == 'TXT':
         i_index=0
         for ik in nums:
-            with open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",'a+') as f:
-                output_desc = len(ik)
-                for j in range(int(output_desc/shape[i_index])):
-                    for k in range(j*shape[i_index],(j+1)*shape[i_index]):
-                        f.write(str(nums[i_index][k])+' ')
-                    f.write('\n')
-                i_index+=1
+            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_CREAT)
+            fd = os.fdopen(f,'a+')
+            output_desc = len(ik)
+            for j in range(int(output_desc/shape[i_index])):
+                for k in range(j*shape[i_index],(j+1)*shape[i_index]):
+                    fd.write(str(nums[i_index][k])+' ')
+                fd.write('\n')
+            i_index+=1
     else:
     #BIN
         i_index=0
@@ -183,12 +184,12 @@ def get_array(binfile,input_type):
 if  __name__ == '__main__':
     total_times = 0.0
     if_saves = True
-    for ms in range(loop):
+    for j in range(loop):
         now_times = time.time()
         times = infer(if_saves)
-        if_saves = False
+        saves = False
         total_times+=times
-        print("loop {0} : Inference time: {1:f} ms".format(ms,times*1000))
+        print("loop {0} : Inference time: {1:f} ms".format(j,times*1000))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(total_times/loop*1000))
 
