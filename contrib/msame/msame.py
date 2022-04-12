@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- 
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -141,7 +141,8 @@ def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
     if datatype == 'TXT':
         i_index=0
         for ik in nums:
-            f = open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",'a+')
+            fd = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_CREAT)
+            f = os.fdopen(fd,'a+')
             output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
                 for k in range(j*shape[i_index],(j+1)*shape[i_index]):
