@@ -183,12 +183,12 @@ def get_array(binfile,input_type):
 if  __name__ == '__main__':
     total_times = 0.0
     if_saves = True
-    for m in range(loop):
+    for ms in range(loop):
         now_times = time.time()
         times = infer(if_saves)
         if_saves = False
         total_times+=times
-        print("loop {0} : Inference time: {1:f} ms".format(m,times*1000))
+        print("loop {0} : Inference time: {1:f} ms".format(ms,times*1000))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(total_times/loop*1000))
 
