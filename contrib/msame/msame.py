@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- 
-# Copyright 2020 Huawei Technologies Co., Ltd
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,27 +30,24 @@ def parse_args():
     parser.add_argument('--loop',required=False,type=int,default=1)
     parser.add_argument('--device',required=False,type=int,default=0)
 
-    args = parser.parse_args()
-    return args
+    my_args = parser.parse_args()
+    return my_args
 
 
-def make_typemap():
-    type_map = {}
-    type_map['dtype.uint8'] = np.uint8
-    type_map['dtype.float32'] = np.float32
-    type_map['dtype.float16'] = np.float16
-    type_map['dtype.int8'] = np.int8
-    type_map['dtype.int32'] = np.int32
-    type_map['dtype.int16'] = np.int16
-    type_map['dtype.uint16'] = np.uint16
-    type_map['dtype.uint32'] = np.uint32
-    type_map['dtype.int64'] = np.int64
-    type_map['dtype.uint64'] = np.uint64
-    type_map['dtype.double'] = np.double
-    return type_map
+type_map = {}
+type_map['dtype.uint8'] = np.uint8
+type_map['dtype.float32'] = np.float32
+type_map['dtype.float16'] = np.float16
+type_map['dtype.int8'] = np.int8
+type_map['dtype.int32'] = np.int32
+type_map['dtype.int16'] = np.int16
+type_map['dtype.uint16'] = np.uint16
+type_map['dtype.uint32'] = np.uint32
+type_map['dtype.int64'] = np.int64
+type_map['dtype.uint64'] = np.uint64
+type_map['dtype.double'] = np.double
 
 args = parse_args()
-type_map = make_typemap()
 loop = args.loop
 
 
@@ -64,20 +61,14 @@ def infer(saves):
         os.makedirs(output)
 
     m = sdk.model(filepath, device_id)
-    print(m.input_dtype)
-    print(m.input_shape)
-    print(m.output_dtype)
     types_output = []
     index = 0
     for i in m.output_dtype:
         types_output.append([])
         types_output[index].append(str(i))
         index+=1
-    #types_output = str(m.output_dtype)
     types_input = str(m.input_dtype[0])
     t = get_input_num(m) 
-
-    print(t)
 
     for i in range(len(t)):
         t[i] = sdk.Tensor(t[i])
@@ -86,23 +77,22 @@ def infer(saves):
     outputs = m.infer(t)
 
     outputs[0].to_host()
-    print(np.array(outputs[0]))
 
 
     now_time = time.time()
-    times = now_time-last_time
+    one_times = now_time-last_time
     nums,shape = get_nums(outputs,types_output) 
     if saves:
-        save_files(filepath,outputs,output,datatype,nums,shape,types_output)
-                                                
-    return times
+        save_files(filepath,outputs,output,datatype,nums,shape,types_output)                                            
+    return one_times
+
 def get_input_num(m):
     inputsize=[]
     index = 0
     for j in m.input_shape:
         inputsize.append(1)
-        for i in j:
-            inputsize[index]*=i
+        for k in j:
+            inputsize[index]*=k
         index += 1
     types_input = str(m.input_dtype[0])
     t = []
@@ -118,18 +108,19 @@ def get_input_num(m):
         else:
             t.append(get_array(binfile,type_map[types_input]))
     return t
+
 def get_nums(outputs,types_output):
     index = 0
     num_list = []
     shape = []
     #get shape
 
-    for i in outputs:
-        i.to_host()
-        num = np.array(i).astype(type_map[types_output[index][0]])
+    for ij in outputs:
+        ij.to_host()
+        num = np.array(ij).astype(type_map[types_output[index][0]])
         num = num.flatten()
         num.dtype = type_map[types_output[index][0]]
-        shape.append(i.shape[-1])
+        shape.append(ij.shape[-1])
         num_list.append(num)
         index+=1
     #to list
@@ -149,9 +140,9 @@ def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
     #TXT
     if datatype == 'TXT':
         i_index=0
-        for i in nums:
+        for ik in nums:
             f = open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",'a+')
-            output_desc = len(i)
+            output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
                 for k in range(j*shape[i_index],(j+1)*shape[i_index]):
                     f.write(str(nums[i_index][k])+' ')
@@ -178,26 +169,26 @@ def get_array(binfile,input_type):
         files_bin.append(np.fromfile(binfile,dtype=input_type).flatten())
     new_files = []
     #make new bin
-    for i in range(len(files_bin)):
-        if i ==0:
+    for im in range(len(files_bin)):
+        if im ==0:
             new_files.append(files_bin[0])
             continue
         else:
-            a = files_bin[i]
-            b = new_files[i-1]
+            a = files_bin[im]
+            b = new_files[im-1]
             new_files.append(np.concatenate((a,b),axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
     return bins
 
 if  __name__ == '__main__':
     total_times = 0.0
-    saves = True
-    for i in range(loop):
+    if_saves = True
+    for j in range(loop):
         now_times = time.time()
-        times = infer(saves)
+        times = infer(if_saves)
         saves = False
         total_times+=times
-        print("loop {0} : Inference time: {1:f} ms".format(i,times*1000))
+        print("loop {0} : Inference time: {1:f} ms".format(j,times*1000))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(total_times/loop*1000))
 
