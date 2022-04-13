@@ -70,6 +70,17 @@
                 "modelPath": "./models/googlenet1.om"
             },
             "factory": "mxpi_tensorinfer",
+            "next": "mxpi_classpostprocessor0"
+        },
+        "mxpi_classpostprocessor0": {
+            "props": {
+				"dataSource": "mxpi_tensorinfer1",
+				"funcLanguage": "c++",
+				"postProcessConfigPath": "./models/vehiclepostprocess.cfg",
+				"labelPath": "./models/car.names",
+				"postProcessLibPath": "/home/zhangcheng1/MindX_SDK/mxVision-2.0.4/lib/modelpostprocessors/libvehiclepostprocess.so"
+            },
+            "factory": "mxpi_classpostprocessor", 
             "next": "appsink0"
         },
         "appsink0": {

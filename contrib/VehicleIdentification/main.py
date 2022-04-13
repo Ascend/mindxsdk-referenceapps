@@ -60,7 +60,7 @@ if __name__ == '__main__':
     uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
 
     # Get the result returned by the plugins
-    keys = [b"mxpi_imagedecoder0", b"mxpi_distributor0_0", b"mxpi_tensorinfer1"]
+    keys = [b"mxpi_imagedecoder0", b"mxpi_distributor0_0", b"mxpi_classpostprocessor0"]
     keyVec = StringVector()
     for key in keys:
         keyVec.push_back(key)
@@ -91,58 +91,61 @@ if __name__ == '__main__':
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[yolo_result_index].messageBuf)
     print(objectList)
-    results = objectList.objectVec
+    yolo_results = objectList.objectVec
 
     if infer_result[vehicle_result_index].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
             infer_result[vehicle_result_index].errorCode, infer_result[vehicle_result_index].messageName))
         exit()
 
-    tensorList = MxpiDataType.MxpiTensorPackageList()
-    tensorList.ParseFromString(infer_result[vehicle_result_index].messageBuf)
-
-    label = open("./models/make_model_names_cls.csv","r")
-    class_indict =label.readlines()
+    # Get vehicleIdentification result
+    classList = MxpiDataType.MxpiClassList()
+    classList.ParseFromString(infer_result[vehicle_result_index].messageBuf)
+    vehicle_results = classList.classVec
+    print(classList)
     
     YUV_BYTES_NU = 3
     YUV_BYTES_DE = 2
     
-    # mxpi_imagedecoder0 图像解码插件输出信息
+    # mxpi_imagedecoder0 image decoding output information
     visionList = MxpiDataType.MxpiVisionList()
     visionList.ParseFromString(infer_result[imgdecoder_result_index].messageBuf)
     
     vision_data = visionList.visionVec[0].visionData.dataStr
     visionInfo = visionList.visionVec[0].visionInfo
 
-    # 用输出原件信息初始化OpenCV图像信息矩阵
+    # Initialize the opencv image information matrix with the output original information
     img_yuv = np.frombuffer(vision_data, np.uint8)
 
     img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
     img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
     
-    index = 0
+    # Draw image according to vehicle information
     bboxes = []
-    for i, _ in enumerate(tensorList.tensorPackageVec):
-        res1 = np.frombuffer(tensorList.tensorPackageVec[i].tensorVec[0].dataStr, dtype = np.float32)
-        print(res1.shape)
-        maxindex = res1.transpose().argmax()
-        print(maxindex)
-        maxvalue = res1.transpose().max()
-        print(maxvalue)
-        print_res = "class: {}   prob: {:.3}".format(class_indict[maxindex+1], maxvalue)
-        print(print_res)
-        bboxes = {'x0': int(results[index].x0),
-                  'x1': int(results[index].x1),
-                  'y0': int(results[index].y0),
-                  'y1': int(results[index].y1),
-                  'confidence': round(maxvalue, 4),
-                  'text': class_indict[maxindex]}
-        text = "{}:{}".format(bboxes['text'], str(bboxes['confidence']))
+
+    # Drawing parameters
+    X_OFFSET_PIXEL = 10
+    Y_TYPE_OFFSET_PIXEL = 30
+    Y_PROB_OFFSET_PIXEL = 60
+    TYPE_FONT_SIZE = 0.9
+    PROB_FONT_SIZE = 0.8
+    FONT_THICKNESS = 2
+    RECTANGLE_THICKNESS = 3
+    FONT_COLOR = (0, 255, 0)
+    RECTANGLE_COLOR = (255, 0, 0)
+
+    for i, _ in enumerate(classList.classVec):
+        bboxes = {'x0': int(yolo_results[i].x0),
+                  'x1': int(yolo_results[i].x1),
+                  'y0': int(yolo_results[i].y0),
+                  'y1': int(yolo_results[i].y1),
+                  'confidence': round(vehicle_results[i].confidence, 4),
+                  'text': vehicle_results[i].className}
         if bboxes['confidence'] > 0.2:
-            cv2.putText(img, text, (bboxes['x0'] + 30, bboxes['y0'] + 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2)
-            cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 3)
-        index += 1
-    
+            cv2.putText(img, bboxes['text'], (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_TYPE_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, TYPE_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
+            cv2.putText(img, 'prob:' + str(bboxes['confidence']), (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_PROB_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, PROB_FONT_SIZE, (0, 255, 0), LINE_THICKNESS)
+            cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), RECTANGLE_COLOR, RECTANGLE_THICKNESS)
+
     cv2.imwrite("./result.jpg", img) 
     # destroy streams
     streamManagerApi.DestroyAllStreams()
