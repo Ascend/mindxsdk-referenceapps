@@ -59,7 +59,7 @@ npu-smi info
 ### 1.5 技术实现流程图
 
 <center>
-    <img src=".\img\image-20220414234741840.png" />
+    <img src="./img/process.png" />
     <br>
     <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -72,7 +72,7 @@ npu-smi info
 
 
 <center>
-    <img src=".\img\image-20220414234829013.png" />
+    <img src="./img/pipeline.png" />
     <br>
     <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -81,6 +81,7 @@ npu-smi info
       图2 头部姿态识别pipeline示意图
   	</div>
 </center>
+
 
 
 
