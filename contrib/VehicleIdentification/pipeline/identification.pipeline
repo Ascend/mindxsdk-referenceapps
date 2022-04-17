@@ -44,7 +44,8 @@
         "mxpi_distributor0": {
             "props": {
                 "dataSource": "mxpi_objectpostprocessor0",
-                "classIds": "2|7"
+                "classIds": "2|7",
+				"distributeAll": "yes"
             },
             "next": "mxpi_imagecrop0",
             "factory": "mxpi_distributor"
