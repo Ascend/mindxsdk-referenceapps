@@ -1,4 +1,4 @@
-# 头部姿态识别
+# 车型识别
 
 ## 1 介绍
 在本系统中，目的是基于MindX SDK，在昇腾平台上，开发端到端车型识别的参考设计，实现对图像中的车辆进行车型识别的功能，并把可视化结果保存到本地，达到功能要求。
@@ -59,7 +59,7 @@ npu-smi info
 ### 1.5 技术实现流程图
 
 <center>
-    <img src="img\image-20220414234741840.png" />
+    <img src=".\img\image-20220414234741840.png" />
     <br>
     <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -72,7 +72,7 @@ npu-smi info
 
 
 <center>
-    <img src="img\image-20220414234829013.png" />
+    <img src=".\img\image-20220414234829013.png" />
     <br>
     <div style="color:orange; border-bottom: 1px solid #d9d9d9;
     display: inline-block;
@@ -81,6 +81,7 @@ npu-smi info
       图2 头部姿态识别pipeline示意图
   	</div>
 </center>
+
 
 
 
@@ -125,7 +126,7 @@ env
 
 **步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 
-**步骤2** 将获取到的YOLOv3模型pb文件存放至："./models/yolo/"。
+**步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 
 **步骤3** 模型转换
 
