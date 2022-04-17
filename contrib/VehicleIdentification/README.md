@@ -58,30 +58,15 @@ npu-smi info
 
 ### 1.5 技术实现流程图
 
-<center>
-    <img src="./img/process.png" />
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">
-      图1 车型识别流程图
-  	</div>
-</center>
+![process](./img/process.png)
+
+图1 车型识别流程图
 
 
 
-<center>
-    <img src="./img/pipeline.png" />
-    <br>
-    <div style="color:orange; border-bottom: 1px solid #d9d9d9;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">
-      图2 头部姿态识别pipeline示意图
-  	</div>
-</center>
+![pipeline](./img/pipeline.png)
 
+图2 头部姿态识别pipeline示意图
 
 
 

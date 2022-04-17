@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -134,7 +134,10 @@ if __name__ == '__main__':
     FONT_COLOR = (0, 255, 0)
     RECTANGLE_COLOR = (255, 0, 0)
 
-    for i, _ in enumerate(classList.classVec):
+    # When the confidence of the recognition result is greater than the threshold, it will be marked on the picture
+    THRESHOLD = 0.3
+
+    for i, value in enumerate(classList.classVec):
         bboxes = {'x0': int(yolo_results[i].x0),
                   'x1': int(yolo_results[i].x1),
                   'y0': int(yolo_results[i].y0),
@@ -142,9 +145,13 @@ if __name__ == '__main__':
                   'confidence': round(vehicle_results[i].confidence, 4),
                   'text': vehicle_results[i].className}
         if bboxes['confidence'] > 0.3:
-            cv2.putText(img, bboxes['text'], (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_TYPE_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, TYPE_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
-            cv2.putText(img, 'prob:' + str(bboxes['confidence']), (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_PROB_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, PROB_FONT_SIZE, (0, 255, 0), FONT_THICKNESS)
-            cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), RECTANGLE_COLOR, RECTANGLE_THICKNESS)
+            cv2.putText(img, bboxes['text'], (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_TYPE_OFFSET_PIXEL),
+                        cv2.FONT_HERSHEY_SIMPLEX, TYPE_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
+            cv2.putText(img, 'prob:' + str(bboxes['confidence']),
+                        (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_PROB_OFFSET_PIXEL),
+                        cv2.FONT_HERSHEY_SIMPLEX, PROB_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
+            cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']),
+                          RECTANGLE_COLOR, RECTANGLE_THICKNESS)
 
     cv2.imwrite("./result.jpg", img) 
     # destroy streams
