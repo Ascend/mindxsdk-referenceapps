@@ -26,7 +26,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "./models/yolov3_tf_bs1_fp16.om"
+                "modelPath": "./models/yolo/yolov3_tf_bs1_fp16.om"
             },
             "next": "mxpi_objectpostprocessor0",
             "factory": "mxpi_tensorinfer"
@@ -34,9 +34,9 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "./models/yolov3_tf_bs1_fp16.cfg",
-                "labelPath": "./models/coco.names",
-                "postProcessLibPath": "/home/zhangcheng1/MindX_SDK/mxVision-2.0.4/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessConfigPath": "./models/yolo/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "./models/yolo/coco.names",
+                "postProcessLibPath": "{MindX_SDK路径}lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "next": "mxpi_distributor0",
             "factory": "mxpi_objectpostprocessor"
@@ -67,7 +67,7 @@
         "mxpi_tensorinfer1": {
             "props": {
                 "dataSource": "mxpi_imagecrop0",
-                "modelPath": "./models/googlenet1.om"
+                "modelPath": "./models/googlenet/googlenet.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_classpostprocessor0"
@@ -76,9 +76,9 @@
             "props": {
 				"dataSource": "mxpi_tensorinfer1",
 				"funcLanguage": "c++",
-				"postProcessConfigPath": "./models/vehiclepostprocess.cfg",
-				"labelPath": "./models/car.names",
-				"postProcessLibPath": "/home/zhangcheng1/MindX_SDK/mxVision-2.0.4/lib/modelpostprocessors/libvehiclepostprocess.so"
+				"postProcessConfigPath": "./models/googlenet/vehiclepostprocess.cfg",
+				"labelPath": "./models/googlenet/car.names",
+				"postProcessLibPath": "./lib/libvehiclepostprocess.so"
             },
             "factory": "mxpi_classpostprocessor", 
             "next": "appsink0"

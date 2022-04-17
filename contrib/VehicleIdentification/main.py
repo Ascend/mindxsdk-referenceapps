@@ -141,9 +141,9 @@ if __name__ == '__main__':
                   'y1': int(yolo_results[i].y1),
                   'confidence': round(vehicle_results[i].confidence, 4),
                   'text': vehicle_results[i].className}
-        if bboxes['confidence'] > 0.2:
+        if bboxes['confidence'] > 0.3:
             cv2.putText(img, bboxes['text'], (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_TYPE_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, TYPE_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
-            cv2.putText(img, 'prob:' + str(bboxes['confidence']), (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_PROB_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, PROB_FONT_SIZE, (0, 255, 0), LINE_THICKNESS)
+            cv2.putText(img, 'prob:' + str(bboxes['confidence']), (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_PROB_OFFSET_PIXEL), cv2.FONT_HERSHEY_SIMPLEX, PROB_FONT_SIZE, (0, 255, 0), FONT_THICKNESS)
             cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), RECTANGLE_COLOR, RECTANGLE_THICKNESS)
 
     cv2.imwrite("./result.jpg", img) 
