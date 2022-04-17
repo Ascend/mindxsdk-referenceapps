@@ -36,7 +36,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/yolo/yolov3_tf_bs1_fp16.cfg",
                 "labelPath": "./models/yolo/coco.names",
-                "postProcessLibPath": "{MindX_SDK路径}lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "{MindX_SDK路径}/lib/modelpostprocessors/libyolov3postprocess.so"
             },
             "next": "mxpi_distributor0",
             "factory": "mxpi_objectpostprocessor"
@@ -45,7 +45,7 @@
             "props": {
                 "dataSource": "mxpi_objectpostprocessor0",
                 "classIds": "2|7",
-				"distributeAll": "yes"
+                "distributeAll": "yes"
             },
             "next": "mxpi_imagecrop0",
             "factory": "mxpi_distributor"
@@ -56,10 +56,10 @@
                 "dataSourceImage": "mxpi_imagedecoder0",
                 "resizeWidth": "224",
                 "resizeHeight": "224",
-				"leftExpandRatio": "0.2",
+                "leftExpandRatio": "0.2",
                 "rightExpandRatio": "0.2",
-				"upExpandRatio": "0.2",
-				"downExpandRatio": "0.2",
+                "upExpandRatio": "0.2",
+                "downExpandRatio": "0.2",
                 "resizeType": "Resizer_Stretch"
             },
             "next": "mxpi_tensorinfer1",
@@ -75,11 +75,11 @@
         },
         "mxpi_classpostprocessor0": {
             "props": {
-				"dataSource": "mxpi_tensorinfer1",
-				"funcLanguage": "c++",
-				"postProcessConfigPath": "./models/googlenet/vehiclepostprocess.cfg",
-				"labelPath": "./models/googlenet/car.names",
-				"postProcessLibPath": "./lib/libvehiclepostprocess.so"
+                "dataSource": "mxpi_tensorinfer1",
+                "funcLanguage": "c++",
+                "postProcessConfigPath": "./models/googlenet/vehiclepostprocess.cfg",
+                "labelPath": "./models/googlenet/car.names",
+                "postProcessLibPath": "./lib/libvehiclepostprocess.so"
             },
             "factory": "mxpi_classpostprocessor", 
             "next": "appsink0"
