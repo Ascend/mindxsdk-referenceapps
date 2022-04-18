@@ -79,6 +79,8 @@ npu-smi info
 |MindX SDK|2.0.4|
 |Python|3.9.2|
 |CANN|5.0.4|
+|numpy|1.22.3|
+|opencv-python|4.5.5|
 
 在编译运行项目前，需要设置环境变量：
 
@@ -88,15 +90,15 @@ npu-smi info
 # 执行如下命令，打开.bashrc文件
 vi .bashrc
 # 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME=${SDK安装路径}
+export MX_SDK_HOME=${SDK安装路径}
 
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
+export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
+export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
 
-PYTHONPATH=${MX_SDK_HOME}/python:$PYTHONPATH
+export PYTHONPATH=${MX_SDK_HOME}/python:$PYTHONPATH
 
 # 保存退出.bashrc文件
 # 执行如下命令使环境变量生效
