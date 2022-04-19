@@ -30,11 +30,11 @@ namespace MxBase {
         return *this;
     }
 
-    VehiclePostProcess::VehiclePostProcess(const VehiclePostProcess &other){
+    VehiclePostProcess::VehiclePostProcess(const VehiclePostProcess &other)
+    {
         softmax_ = other.softmax_;
         classNum_ = other.classNum_;
         topK_ = other.topK_;
-
     }
 
     APP_ERROR VehiclePostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)
