@@ -63,8 +63,8 @@ namespace MxBase {
     }
 
     APP_ERROR VehiclePostProcess::Process(const std::vector<TensorBase>& tensors,
-                                         std::vector<std::vector<ClassInfo>> &classInfos,
-                                         const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                          std::vector<std::vector<ClassInfo>> &classInfos,
+                                          const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
         LogDebug << "Start to Process VehiclePostProcess.";
         APP_ERROR ret = APP_ERR_OK;

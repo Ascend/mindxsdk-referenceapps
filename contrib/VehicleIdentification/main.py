@@ -19,8 +19,8 @@ import os
 import sys
 import copy
 import math
-import cv2
 import json
+import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -61,10 +61,10 @@ if __name__ == '__main__':
         dataInput.data = f.read()
 
     # Stream Info
-    streamName = b'identification'
-    inPluginId = 0
+    streamname = b'identification'
+    inpluginid = 0
     # Send Input Data to Stream
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    uniqueId = streamManagerApi.SendData(streamname, inpluginid, dataInput)
 
     # Get the result returned by the plugins
     keys = [b"mxpi_imagedecoder0", b"mxpi_distributor0_0", b"mxpi_classpostprocessor0"]
@@ -72,12 +72,12 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    outPluginId = 0
-    infer_result = streamManagerApi.GetProtobuf(streamName, outPluginId, keyVec)
+    outpluginid = 0
+    infer_result = streamManagerApi.GetProtobuf(streamname, outpluginid, keyVec)
     
-    imgdecoder_result_index = 0
-    yolo_result_index = 1
-    vehicle_result_index = 2
+    IMGDECODER_INDEX = 0
+    YOLO_INDEX = 1
+    VEHICLE_INDEX = 2
     
     # Can not decode the image
     if infer_result.size() == 0:
@@ -96,24 +96,24 @@ if __name__ == '__main__':
         cv2.imwrite(Output_PATH, image_res)
         exit()
 
-    if infer_result[yolo_result_index].errorCode != 0:
+    if infer_result[YOLO_INDEX].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
-            infer_result[yolo_result_index].errorCode, infer_result[yolo_result_index].messageName))
+            infer_result[YOLO_INDEX].errorCode, infer_result[YOLO_INDEX].messageName))
         exit()
 
     objectList = MxpiDataType.MxpiObjectList()
-    objectList.ParseFromString(infer_result[yolo_result_index].messageBuf)
+    objectList.ParseFromString(infer_result[YOLO_INDEX].messageBuf)
     print(objectList)
     yolo_results = objectList.objectVec
 
-    if infer_result[vehicle_result_index].errorCode != 0:
+    if infer_result[VEHICLE_INDEX].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorPlugin=%s" % (
-            infer_result[vehicle_result_index].errorCode, infer_result[vehicle_result_index].messageName))
+            infer_result[VEHICLE_INDEX].errorCode, infer_result[VEHICLE_INDEX].messageName))
         exit()
 
     # Get vehicleIdentification result
     classList = MxpiDataType.MxpiClassList()
-    classList.ParseFromString(infer_result[vehicle_result_index].messageBuf)
+    classList.ParseFromString(infer_result[VEHICLE_INDEX].messageBuf)
     vehicle_results = classList.classVec
     print(classList)
     
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     
     # mxpi_imagedecoder0 image decoding output information
     visionList = MxpiDataType.MxpiVisionList()
-    visionList.ParseFromString(infer_result[imgdecoder_result_index].messageBuf)
+    visionList.ParseFromString(infer_result[IMGDECODER_INDEX].messageBuf)
     
     vision_data = visionList.visionVec[0].visionData.dataStr
     visionInfo = visionList.visionVec[0].visionInfo
@@ -157,7 +157,14 @@ if __name__ == '__main__':
                   'y1': int(yolo_results[i].y1),
                   'confidence': round(vehicle_results[i].confidence, 4),
                   'text': vehicle_results[i].className}
-        if bboxes['confidence'] > THRESHOLD:
+        try:
+            confidence = bboxes['confidence']
+        except KeyError:
+            print("Error!Confidence is not included in the results!")
+            exit()
+
+        if confidence > THRESHOLD:
+            
             cv2.putText(img, bboxes['text'], (bboxes['x0'] + X_OFFSET_PIXEL, bboxes['y0'] + Y_TYPE_OFFSET_PIXEL),
                         cv2.FONT_HERSHEY_SIMPLEX, TYPE_FONT_SIZE, FONT_COLOR, FONT_THICKNESS)
             cv2.putText(img, 'prob:' + str(bboxes['confidence']),

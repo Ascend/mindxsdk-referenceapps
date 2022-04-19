@@ -26,14 +26,14 @@ namespace MxBase {
 
         VehiclePostProcess(const VehiclePostProcess &other) = default;
 
+        VehiclePostProcess& operator=(const VehiclePostProcess &other);
+
         APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 
         APP_ERROR DeInit() override;
 
         APP_ERROR Process(const std::vector<TensorBase> &tensors, std::vector<std::vector<ClassInfo>> &classInfos,
                           const std::map<std::string, std::shared_ptr<void>> &configParamMap = {}) override;
-
-        VehiclePostProcess &operator=(const VehiclePostProcess &other);
 
         bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
 
