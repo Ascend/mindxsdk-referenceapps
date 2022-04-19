@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,13 @@ namespace MxBase {
         classNum_ = other.classNum_;
         topK_ = other.topK_;
         return *this;
+    }
+
+    VehiclePostProcess::VehiclePostProcess(const VehiclePostProcess &other){
+        softmax_ = other.softmax_;
+        classNum_ = other.classNum_;
+        topK_ = other.topK_;
+
     }
 
     APP_ERROR VehiclePostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -61,10 +61,10 @@ if __name__ == '__main__':
         dataInput.data = f.read()
 
     # Stream Info
-    streamname = b'identification'
-    inpluginid = 0
+    STREAM_NAME = b'identification'
+    INPLUGIN_ID = 0
     # Send Input Data to Stream
-    uniqueId = streamManagerApi.SendData(streamname, inpluginid, dataInput)
+    uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
     # Get the result returned by the plugins
     keys = [b"mxpi_imagedecoder0", b"mxpi_distributor0_0", b"mxpi_classpostprocessor0"]
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    outpluginid = 0
-    infer_result = streamManagerApi.GetProtobuf(streamname, outpluginid, keyVec)
+    OUTPLUGIN_ID = 0
+    infer_result = streamManagerApi.GetProtobuf(STREAM_NAME, OUTPLUGIN_ID, keyVec)
     
     IMGDECODER_INDEX = 0
     YOLO_INDEX = 1
