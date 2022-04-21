@@ -207,9 +207,9 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -s 1280*720 -an -f h264 test.264
 
 ## 6 编译与运行
 
-**步骤1** 按照第2小结**环境依赖**中的步骤设置环境变量。
+**步骤1** 按照第2小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤2** 按照第 4 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 `VehicleRetrogradeRecognition/models` 目录下。
+**步骤2** 按照第4小节 **模型转换** 中的步骤获得 om 模型文件，放置在 `VehicleRetrogradeRecognition/models` 目录下。
 
 **步骤3** 修改`VehicleRetrogradeRecognition/plugins/MxpiTrackRetrogradeCar`文件夹下的CMakeLists.txt文件。将其中的"$ENV{MX_SDK_HOME}"修改成自己的SDK目录。
 
