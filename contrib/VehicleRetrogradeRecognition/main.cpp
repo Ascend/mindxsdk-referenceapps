@@ -89,9 +89,9 @@ int main(int argc, char* argv[])
         }
         // write to file first frame must IDR frame
         bIsIDR = (output->dataSize > 1);
-        if(!m_bFoundFirstIDR)
+        if (!m_bFoundFirstIDR)
         {
-            if(!bIsIDR) {
+            if (!bIsIDR){
                 continue;
             } else {
                 m_bFoundFirstIDR = true;
@@ -104,17 +104,12 @@ int main(int argc, char* argv[])
         LogInfo << "Dealing frame id:" << frameCount;
         frameCount++;
         if (frameCount > MaxframeCount) {
-
             LogInfo << "write frame to file done";
             break;
         }
-
         delete output;
-
     }
-
     fclose(fp);
-
     // destroy streams
     mxStreamManager.DestroyAllStreams();
     return 0;
