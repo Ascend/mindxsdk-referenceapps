@@ -26,7 +26,7 @@
 * @api
 * @brief Definition of TrackIdReplaceClassName class.
 */
-struct center{
+struct center {
     double x;
     double y;
 };
