@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
         bIsIDR = (output->dataSize > 1);
         if (!m_bFoundFirstIDR)
         {
-            if (!bIsIDR){
+            if (!bIsIDR) {
                 continue;
             } else {
                 m_bFoundFirstIDR = true;
