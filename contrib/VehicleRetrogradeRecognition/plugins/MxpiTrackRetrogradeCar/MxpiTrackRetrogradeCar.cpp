@@ -118,7 +118,7 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
         // 获取bounding box的中心位置
         center boxs = {(srcMxpiObject.x0()+srcMxpiObject.x1())/count_center, (srcMxpiObject.y0()+srcMxpiObject.y1())/count_center};
-        for(int j = 0; j<srcMxpiTrackLetList.trackletvec_size(); j++)
+        for (int j = 0; j<srcMxpiTrackLetList.trackletvec_size(); j++)
         {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int index = (int)srcMxpiTrackLet.trackid();
@@ -138,7 +138,7 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
                         pts[index].push(boxs);
                     }
                     std::vector<center> last_point = {};
-                    for(uint32_t j = 0; j<pts[index].size(); j++)
+                    for (uint32_t j = 0; j<pts[index].size(); j++)
                     {
                         if (pts[index].size()-j<=lastPointSize)
                         {
