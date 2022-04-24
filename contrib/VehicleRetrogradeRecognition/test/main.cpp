@@ -21,32 +21,32 @@
 #include <cstring>
 #include <sys/time.h>
 #include <ctime>
-#include <stdio.h> 
-#include <chrono> 
+#include <stdio.h>
+#include <chrono>
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
 #include <sys/time.h>
 #include <ctime>
-#include <stdio.h> 
-#include <chrono> 
+#include <stdio.h>
+#include <chrono>
 
 namespace {
-std::string ReadPipelineConfig(const std::string& pipelineConfigPath)
-{
-    std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
-    if (!file) {
-        LogError << pipelineConfigPath << " file dose not exist.";
-        return "";
+    std::string ReadPipelineConfig(const std::string& pipelineConfigPath)
+    {
+        std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
+        if (!file) {
+            LogError << pipelineConfigPath << " file dose not exist.";
+            return "";
+        }
+        file.seekg(0, std::ifstream::end);
+        uint32_t fileSize = file.tellg();
+        file.seekg(0);
+        std::unique_ptr<char[]> data(new char[fileSize]);
+        file.read(data.get(), fileSize);
+        file.close();
+        std::string pipelineConfig(data.get(), fileSize);
+        return pipelineConfig;
     }
-    file.seekg(0, std::ifstream::end);
-    uint32_t fileSize = file.tellg();
-    file.seekg(0);
-    std::unique_ptr<char[]> data(new char[fileSize]);
-    file.read(data.get(), fileSize);
-    file.close();
-    std::string pipelineConfig(data.get(), fileSize);
-    return pipelineConfig;
-}
 }
 
 int main(int argc, char* argv[])
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
         LogError << "Failed to open file.";
         return APP_ERR_COMM_OPEN_FAIL;
     }
-
+    
     bool m_bFoundFirstIDR = false;
     bool bIsIDR = false;
     uint32_t frameCount = 0;
@@ -98,18 +98,16 @@ int main(int argc, char* argv[])
             LogError << "Failed to get pipeline output.";
             return ret;
         }
-
         // write to file first frame must IDR frame
         bIsIDR = (output->dataSize > 1);
-        if(!m_bFoundFirstIDR)
+        if (!m_bFoundFirstIDR)
         {
-            if(!bIsIDR) {
+            if (!bIsIDR) {
                 continue;
             } else {
                 m_bFoundFirstIDR = true;
             }
         }
-
         // write frame to file
         if (fwrite(output->dataPtr, output->dataSize, 1, fp) != 1) {
             LogInfo << "write frame to file fail";
@@ -117,22 +115,16 @@ int main(int argc, char* argv[])
         LogInfo << "Dealing frame id:" << frameCount;
         frameCount++;
         if (frameCount > MaxframeCount) {
-
             LogInfo << "write frame to file done";
             break;
         }
-
         delete output;
-
         auto end = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
         double average = (double)(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den / frameCount;
         std::cout << "fps: " << 1 / average << std::endl;
-
     }
-
     fclose(fp);
-
     // destroy streams
     mxStreamManager.DestroyAllStreams();
     return 0;
