@@ -112,13 +112,13 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
     k = double(limit_y1-limit_y2)/double(limit_x1-limit_x2);
     b = double(limit_y1)-k*double(limit_x1);
     
-    for (int i=0; i<srcMxpiObjectList.objectvec_size(); i++)
+    for (int i = 0; i<srcMxpiObjectList.objectvec_size(); i++)
     {
         MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
         // 获取bounding box的中心位置
         center boxs = {(srcMxpiObject.x0()+srcMxpiObject.x1())/count_center, (srcMxpiObject.y0()+srcMxpiObject.y1())/count_center};
-        for(int j=0; j<srcMxpiTrackLetList.trackletvec_size(); j++)
+        for(int j = 0; j<srcMxpiTrackLetList.trackletvec_size(); j++)
         {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int index = (int)srcMxpiTrackLet.trackid();
@@ -138,7 +138,7 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
                         pts[index].push(boxs);
                     }
                     std::vector<center> last_point = {};
-                    for(uint32_t j = 0; j < pts[index].size(); j++)
+                    for(uint32_t j = 0; j<pts[index].size(); j++)
                     {
                         if (pts[index].size()-j<=lastPointSize)
                         {
@@ -285,7 +285,7 @@ APP_ERROR MxpiTrackRetrogradeCar::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     }
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
-    shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
+    shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
     APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *srcMxpiTrackLetListSptr, *dstMxpiObjectListSptr); // Generate sample output
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackRetrogradeCar gets inference information failed.");
@@ -305,21 +305,21 @@ std::vector<std::shared_ptr<void>> MxpiTrackRetrogradeCar::DefineProperties()
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
    
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataSource", "inputName", "the name of postprocessor", "mxpi_distributor0_0", "NULL", "NULL"});
-    auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
-    auto limitX1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int>{
+    auto limitX1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "x1", "inputX1Value", "the point of x1", 1, -1, 1281});
-    auto limitY1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int>{
+    auto limitY1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "y1", "inputY1Value", "the point of y1", 0, -1, 721});
-    auto limitX2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int>{
+    auto limitX2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "x2", "inputX2Value", "the point of x2", 0, -1, 1281});
-    auto limitY2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int>{
+    auto limitY2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "y2", "inputY2Value", "the point of y2", 0, -1, 721});
-    auto isVerticalProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int>{
+    auto isVerticalProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "isVertical", "is the vedio vertical", "is the vedio vertical", 0, -1, 3});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiTrackRetrogradeCar", "NULL", "NULL"});
 
     properties.push_back(parentNameProSptr);
