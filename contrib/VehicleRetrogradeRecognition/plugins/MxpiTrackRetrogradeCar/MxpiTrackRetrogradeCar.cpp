@@ -33,7 +33,8 @@ namespace {
     const float count_center = 2.0;
     static std::vector<int> is_retrograde;
 }
-bool is_element_in_vector(vector<int> v, int element){
+bool is_element_in_vector(vector<int> v, int element)
+{
     vector<int>::iterator it;
     it=find(v.begin(), v.end(), element);
     if (it!=v.end())
@@ -51,19 +52,18 @@ APP_ERROR MxpiTrackRetrogradeCar::Init(std::map<std::string, std::shared_ptr<voi
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
     std::shared_ptr<string> motNamePropSptr = std::static_pointer_cast<string>(configParamMap["motSource"]);
-    motName_ = *motNamePropSptr.get();   
+    motName_ = *motNamePropSptr.get();
     std::shared_ptr<int> inputX1PropSptr = std::static_pointer_cast<int>(configParamMap["x1"]);
-    limit_x1 = *inputX1PropSptr.get(); 
+    limit_x1 = *inputX1PropSptr.get();
     std::shared_ptr<int> inputY1PropSptr = std::static_pointer_cast<int>(configParamMap["y1"]);
-    limit_y1 = *inputY1PropSptr.get(); 
+    limit_y1 = *inputY1PropSptr.get();
     std::shared_ptr<int> inputX2PropSptr = std::static_pointer_cast<int>(configParamMap["x2"]);
-    limit_x2 = *inputX2PropSptr.get(); 
+    limit_x2 = *inputX2PropSptr.get();
     std::shared_ptr<int> inputY2PropSptr = std::static_pointer_cast<int>(configParamMap["y2"]);
-    limit_y2 = *inputY2PropSptr.get(); 
+    limit_y2 = *inputY2PropSptr.get();
     std::shared_ptr<int> isVerticalPropSptr = std::static_pointer_cast<int>(configParamMap["isVertical"]);
-    is_vertical = *isVerticalPropSptr.get(); 
-    std::shared_ptr<string> descriptionMessageProSptr = 
-        std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
+    is_vertical = *isVerticalPropSptr.get();
+    std::shared_ptr<string> descriptionMessageProSptr = std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     descriptionMessage_ = *descriptionMessageProSptr.get();
     return APP_ERR_OK;
 }
@@ -101,99 +101,116 @@ APP_ERROR MxpiTrackRetrogradeCar::PrintMxpiErrorInfo(MxpiBuffer& buffer, const s
 }
 
 /*
- * @description: Replace className with trackId 
+ * @description: Find the Retrograde Car
  */
-APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, 
-                                                            const MxpiTrackLetList srcMxpiTrackLetList, 
-                                                            MxpiObjectList& dstMxpiObjectList)
+APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
+                                                       const MxpiTrackLetList srcMxpiTrackLetList,
+                                                       MxpiObjectList& dstMxpiObjectList)
 {
-    double k;// 分界线斜率
+    double k; // 分界线斜率
     double b;
     k = double(limit_y1-limit_y2)/double(limit_x1-limit_x2);
     b = double(limit_y1)-k*double(limit_x1);
     
-    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++){
-        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);       
+    for (int i=0; i<srcMxpiObjectList.objectvec_size(); i++)
+    {
+        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
-
         // 获取bounding box的中心位置
         center boxs = {(srcMxpiObject.x0()+srcMxpiObject.x1())/count_center, (srcMxpiObject.y0()+srcMxpiObject.y1())/count_center};
-        for(int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++){
-            MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);  
+        for(int j=0; j<srcMxpiTrackLetList.trackletvec_size(); j++)
+        {
+            MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int index = (int)srcMxpiTrackLet.trackid();
             // 保存每个车辆轨迹最新的20个bbox
-            if (srcMxpiTrackLet.trackflag() != 2){
-                MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);  
-                if (srcMxpiHeader.memberid() == i){
-                    if (pts[index].size()>=traceSize){
+            if (srcMxpiTrackLet.trackflag()!=2)
+            {
+                MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);
+                if (srcMxpiHeader.memberid()==i)
+                {
+                    if (pts[index].size()>=traceSize)
+                    {
                         pts[index].pop();
                         pts[index].push(boxs);
                     }
-                    else{
+                    else
+                    {
                         pts[index].push(boxs);
                     }
                     std::vector<center> last_point = {};
-                    for(uint32_t j = 0; j < pts[index].size(); j++){
-                        if (pts[index].size()-j<=lastPointSize){
+                    for(uint32_t j = 0; j < pts[index].size(); j++)
+                    {
+                        if (pts[index].size()-j<=lastPointSize)
+                        {
                             last_point.push_back(pts[index].front());
                         }
                         pts[index].push(pts[index].front());
                         pts[index].pop();
                     }
                     // 不少于2个bbox的车辆轨迹可用于方向判断
-                    if (last_point.size()==2){
-                        int p1,p2,m1,m2;
+                    if (last_point.size()==lastPointSize)
+                    {
+                        int p1, p2, m1, m2;
                         // 去掉边缘误差判断情况
                         if (last_point[0].x<x_min || last_point[0].x>x_max || last_point[1].x<x_min || last_point[1].x>x_max || last_point[0].y<y_min || last_point[0].y>y_max || last_point[1].y<y_min || last_point[1].y>y_max)
                             continue;
                         // 如果计数标志位是垂直的，使用x坐标来判断
-                        if (is_vertical){
+                        if (is_vertical)
+                        {
                             p1=last_point[0].x;
                             p2=last_point[1].x;
                             m1=last_point[0].y;
                             m2=last_point[1].y;
-                            if (p1>p2){
-                                if ((limit_y1+limit_y2)/count_center < m1){ // 逆行
-                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
+                            if (p1>p2)
+                            {
+                                if ((limit_y1+limit_y2)/count_center < m1)
+                                { // 逆行
+                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
                                     dstMxpiObject->set_x0(srcMxpiObject.x0());
                                     dstMxpiObject->set_y0(srcMxpiObject.y0());
                                     dstMxpiObject->set_x1(srcMxpiObject.x1());
                                     dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
-                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence()); 
+                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
                                     dstMxpiClass->set_classid(0);
                                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                                 }
                             }
-                            else{
-                                if ((limit_y1+limit_y2)/count_center > m1){ // 逆行
-                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
+                            else
+                            {
+                                if ((limit_y1+limit_y2)/count_center > m1)
+                                { // 逆行
+                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
                                     dstMxpiObject->set_x0(srcMxpiObject.x0());
                                     dstMxpiObject->set_y0(srcMxpiObject.y0());
                                     dstMxpiObject->set_x1(srcMxpiObject.x1());
                                     dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
-                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence()); 
+                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
                                     dstMxpiClass->set_classid(0);
                                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                                 }
                             }
                         }
-                        else{
+                        else
+                        {
                             p1=last_point[0].y;
                             p2=last_point[1].y;
                             m1=last_point[0].x;
                             m2=last_point[1].x;
-                            if (p1>p2){ // 向上开
-                                if ((k*m1+b > p1 && k<0) || (k*m1+b < p1 && k>0)){ // 逆行
-                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid())){
-                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
+                            if (p1>p2)
+                            { // 向上开
+                                if ((k*m1+b>p1 && k<0) || (k*m1+b<p1 && k>0))
+                                { // 逆行
+                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
+                                    {
+                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
                                         dstMxpiObject->set_x0(srcMxpiObject.x0());
                                         dstMxpiObject->set_y0(srcMxpiObject.y0());
                                         dstMxpiObject->set_x1(srcMxpiObject.x1());
                                         dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
-                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence()); 
+                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence());
                                         dstMxpiClass->set_classid(0);
                                         dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                                     }
@@ -201,16 +218,19 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
                                         is_retrograde.push_back(srcMxpiTrackLet.trackid());
                                 }
                             }
-                            if (p1<p2){
-                                if ((k*m1+b < p1 && k<0) || (k*m1+b > p1 && k>0)){ // 逆行
-                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid())){
-                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();    
+                            if (p1<p2)
+                            {
+                                if ((k*m1+b<p1 && k<0) || (k*m1+b>p1 && k>0))
+                                { // 逆行
+                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
+                                    {
+                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
                                         dstMxpiObject->set_x0(srcMxpiObject.x0());
                                         dstMxpiObject->set_y0(srcMxpiObject.y0());
                                         dstMxpiObject->set_x1(srcMxpiObject.x1());
                                         dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
-                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence()); 
+                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence());
                                         dstMxpiClass->set_classid(0);
                                         dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                                     }
@@ -228,7 +248,8 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiTrackRetrogradeCar::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
+APP_ERROR MxpiTrackRetrogradeCar::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
+{
     LogInfo << "MxpiTrackRetrogradeCar::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
@@ -241,9 +262,9 @@ APP_ERROR MxpiTrackRetrogradeCar::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);  // Get the data from buffer
     shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
     if (metadata == nullptr) {
-        shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>(); 
-        MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();   
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();    
+        shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
+        MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
         APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
         if (ret != APP_ERR_OK) {
             return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackRetrogradeCar add metadata failed.");
@@ -265,7 +286,7 @@ APP_ERROR MxpiTrackRetrogradeCar::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
-    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*dstMxpiObjectListSptr); // Generate sample output
+    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *srcMxpiTrackLetListSptr, *dstMxpiObjectListSptr); // Generate sample output
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiTrackRetrogradeCar gets inference information failed.");
     }
@@ -314,4 +335,3 @@ std::vector<std::shared_ptr<void>> MxpiTrackRetrogradeCar::DefineProperties()
 
 // Register the Sample plugin through macro
 MX_PLUGIN_GENERATE(MxpiTrackRetrogradeCar)
-
