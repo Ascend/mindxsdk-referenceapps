@@ -73,9 +73,9 @@ APP_ERROR MxpiSelectObject::PrintMxpiErrorInfo(MxpiBuffer& buffer, const std::st
  * @description: Replace className with trackId 
  */
 APP_ERROR MxpiSelectObject::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, 
-                                                       MxpiObjectList& dstMxpiObjectList)
+                                                 MxpiObjectList& dstMxpiObjectList)
 {
-    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++){
+    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
         const char *target1 = "person";
         const char *target2 = "car";
         const int maxArea = 160000; 

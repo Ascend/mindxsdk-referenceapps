@@ -94,7 +94,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
     int x1 = atoi(x1_.c_str());
     int y1 = atoi(y1_.c_str());
     int passengerNumThisFrame = 0;
-    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++){
+    for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
         MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);       
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);  
         MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
@@ -104,7 +104,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
         dstMxpiObject->set_y1(srcMxpiObject.y1());
         MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-        for (int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++){
+        for (int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++) {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             if (srcMxpiTrackLet.trackflag() != 2){
                 MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);  
@@ -120,7 +120,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
     else{
-        for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++){
+        for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++) {
             MxpiObject dstMxpiObject = dstMxpiObjectList.objectvec(i);
             MxpiClass dstMxpiClass = dstMxpiObject.classvec(0);
             int x = (dstMxpiObject.x0() + dstMxpiObject.x1())/2;
@@ -140,7 +140,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
 
 APP_ERROR MxpiPassengerFlowEstimation ::UpdateLastObjectList(const MxpiObjectList dstMxpiObjectList){
     lastObjects.clear();
-    for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++){
+    for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++) {
         MxpiObject dstMxpiObject = dstMxpiObjectList.objectvec(i);
         MxpiClass dstMxpiClass = dstMxpiObject.classvec(0);
         int x = (dstMxpiObject.x0() + dstMxpiObject.x1())/2;
@@ -201,7 +201,6 @@ APP_ERROR MxpiPassengerFlowEstimation ::Process(std::vector<MxpiBuffer*>& mxpiBu
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation gets inference information failed.");
     }
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr)); // Add Generated data to metedata
-    //printf("\n%s\n",pluginName_.c_str());
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation add metadata failed.");
     }

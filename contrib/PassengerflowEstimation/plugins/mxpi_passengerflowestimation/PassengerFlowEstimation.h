@@ -61,8 +61,7 @@ public:
      * @param buffer
      * @return APP_ERROR
      */
-    /*static MxTools::MxpiPortInfo DefineInputPorts();
-    static MxTools::MxpiPortInfo DefineOutputPorts();*/
+     
     APP_ERROR GenerateSampleOutput(const MxTools::MxpiObjectList srcMxpiObjectList,
                                    const MxTools::MxpiTrackLetList srcMxpiTrackLetList,
                                    const MxTools::MxpiFrameInfo srcMxpiFrameInfo,

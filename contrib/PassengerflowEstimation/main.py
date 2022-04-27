@@ -23,7 +23,6 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-    # 构建pipeline
     with open("./pipeline/passengerflowestimation.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
@@ -32,10 +31,10 @@ if __name__ == '__main__':
         exit()
     streamName = b'passengerflowestimation_pipline'
     # save the result
-    frameid = 0
+    frameId = 0
     f = open("result.h264", "ab")
-    while frameid < 1200:
-        frameid += 1
+    while frameId < 1200:
+        frameId += 1
         infer_result = streamManagerApi.GetResult(streamName, 0, 10000)
         f.write(infer_result.data)
     f.close()
