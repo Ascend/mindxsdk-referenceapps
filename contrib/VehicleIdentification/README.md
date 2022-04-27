@@ -150,7 +150,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 
 
 
-**步骤@** 或：可以在 [**此处**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/dataset.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip) 获得已经转换好的`after-modify.caffemodel`文件
+**步骤@** 或：可以在 [**此处**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)  获得已经转换好的`after-modify.caffemodel`文件
 
 
 
