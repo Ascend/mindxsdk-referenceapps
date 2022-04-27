@@ -36,23 +36,22 @@ npu-smi info
 ├── models
 │   ├── vehicle
 │   │   ├── car.names
-│   │   ├── deploy.prototxt
 │   │   ├── googlenet.om
-│   │   ├── insert_op.cfg
-│   │   └── vehiclepostprocess.cfg
+│   │   ├── insert_op.cfg				# googlenet aipp转换配置
+│   │   └── vehiclepostprocess.cfg		# googlenet后处理配置
 │   ├── yolo
 │   │   ├── aipp_yolov3_416_416.aippconfig
 │   │   ├── coco.names
-│   │   ├── yolov3_tf_bs1_fp16.cfg
+│   │   ├── yolov3_tf_bs1_fp16.cfg		# yolov3后处理配置
 │   │   └── yolov3_tf_bs1_fp16.om
 ├── pipeline
-│   └── identification.pipeline        # pipeline文件
-├── vehiclePostProcess
+│   └── identification.pipeline         # pipeline文件
+├── vehiclePostProcess			        # 车型识别后处理库
 │   ├── CMakeLists.txt
 │   ├── VehiclePostProcess.cpp
 │   └── VehiclePostProcess.h
 ├── main.py
-├── build.sh # 编译头部姿态后处理插件脚本
+├── build.sh 							# 编译车型识别后处理插件脚本
 └── test.jpg
 ```
 
@@ -147,7 +146,13 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 
 由于此模型为老版本模型，atc不支持转换，需要将模型权重文件与结构文件更新，项目提供更新后的模型结构文件deploy.prototxt，位于`./models/googlenet/deploy.prototxt`。
 
-将权重文件放置于`./models/googlenet/`目录下，执行目录下的updatemodel.py（需要安装caffe环境），得到新版caffe权重文件`googlenet.caffemodel`。
+将权重文件放置于`./models/googlenet/`目录下，执行目录下的updatemodel.py（需要安装caffe环境），得到新版caffe权重文件`after-modify.caffemodel`。
+
+
+
+**步骤@** 或：可以在 [**此处**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/dataset.zip https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip) 获得已经转换好的`after-modify.caffemodel`文件
+
+
 
 **步骤3** 模型转换：
 
@@ -156,7 +161,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 ```bash
 # 环境变量配置如3.1
 
-atc --framework=0 --model=./deploy.prototxt --weight=./googlenet.caffemodel --input_shape="data:1,3,224,224" --input_format=NCHW --insert_op_conf=./insert_op.cfg --output=./googlenet --output_type=FP32 --soc_version=Ascend310
+atc --framework=0 --model=./deploy.prototxt --weight=./after-modify.caffemodel --input_shape="data:1,3,224,224" --input_format=NCHW --insert_op_conf=./insert_op.cfg --output=./googlenet --output_type=FP32 --soc_version=Ascend310
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。 
@@ -171,7 +176,7 @@ atc --framework=0 --model=./deploy.prototxt --weight=./googlenet.caffemodel --in
 
 ### 3.3 可用模型获取
 
-此处提供转换好的YOLOV3模型，车型识别模型（googlenet）的om文件以及一份测试集：[下载地址]()
+此处提供转换好的YOLOV3模型，车型识别模型（googlenet）的om文件：[**下载地址**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
 
 注：**下载后请将两个模型请放置于models的对应目录下（`models/yolo`和`models/googlenet`）**
 
@@ -180,6 +185,10 @@ atc --framework=0 --model=./deploy.prototxt --weight=./googlenet.caffemodel --in
 ## 4 编译与运行
 
 示例步骤如下：
+
+**步骤0（可选）** 
+
+下载一份测试集：[**下载链接**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/dataset.zip)
 
 **步骤1** 
 
@@ -203,7 +212,7 @@ chmod 640 ./lib/libvehiclepostprocess.so
 ```
 **步骤4** 
 
-在测试集中选择一张jpg文件，放入项目根目录中，再执行
+在测试集中或自行选择一张jpg文件，放入项目根目录中，再执行
 ```bash
 python3 main.py
 ```
