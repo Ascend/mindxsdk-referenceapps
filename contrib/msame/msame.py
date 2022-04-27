@@ -19,7 +19,7 @@ import os
 import sys
 import argparse
 import mindx.sdk as sdk
-
+import stat
 
 def parse_args():
     parser = argparse.ArgumentParser(description='msame-python')
@@ -150,6 +150,7 @@ def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
         i_index=0
         for ik in nums:
             f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_APPEND|os.O_CREAT)
+            os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",stat.S_IRWXU)
             output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
                 for k in range(j*shape[i_index],(j+1)*shape[i_index]):
