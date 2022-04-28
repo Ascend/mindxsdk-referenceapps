@@ -167,7 +167,7 @@ def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
     if datatype == 'TXT':
         i_index = 0
         for ik in nums:
-            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",  
+            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", 
                     os.O_RDWR | os.O_APPEND | os.O_CREAT,stat.S_IRWXU)
             os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
             output_desc = len(ik)
@@ -218,7 +218,7 @@ def get_npy(binfile, input_type):
             files_bin.append(np.load(binfile+"/"+s).flatten())
     elif os.path.isfile(binfile):
         files_bin.append(np.load(binfile).flatten())
-    new_files = []
+    new_file = []
     #make new bin
     a = len(files_bin)-1+1
     for im in range(a):
@@ -227,22 +227,22 @@ def get_npy(binfile, input_type):
             continue
         else:
             a = files_bin[im]
-            b = new_files[im-1]
-            new_files.append(np.concatenate((a, b), axis=0))
+            b = new_file[im-1]
+            new_file.append(np.concatenate((a, b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
     return bins
 
 
 if  __name__ == '__main__':
-    totaltimes = 0.0
-    ifsaves = True
+    times = 0.0
+    saves = True
     for mj in range(loop):
         nowtimes = time.time()
-        times = infer(ifsaves)
-        ifsaves = False
-        totaltimes += times
+        times = infer(saves)
+        saves = False
+        times += times
         print("loop {0} : Inference time: {1:f} ms".format(mj, times*1000))
     print("infer success!")
-    print("Inference average time: {0:f} ms".format(totaltimes/loop*1000))
+    print("Inference average time: {0:f} ms".format(times/loop*1000))
 
 
