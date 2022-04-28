@@ -87,11 +87,11 @@ APP_ERROR MxpiTrackIdReplaceClassName::GenerateSampleOutput(const MxpiObjectList
         dstMxpiObject->set_y1(srcMxpiObject.y1());
         MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-        for(int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++) {
+        for (int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++) {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
-            if(srcMxpiTrackLet.trackflag() != w) {
+            if (srcMxpiTrackLet.trackflag() != w) {
                 MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);
-                if(srcMxpiHeader.memberid() == i) {
+                if (srcMxpiHeader.memberid() == i) {
                     dstMxpiClass->set_classid(0);
                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                     continue;

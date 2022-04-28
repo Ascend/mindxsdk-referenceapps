@@ -69,4 +69,4 @@ private:
     std::ostringstream ErrorInfo_;
 };
 }
- # endif //SDKMEMORY_MXPISAMPLEPLUGIN_H
+#endif // SDKMEMORY_MXPISAMPLEPLUGIN_H
