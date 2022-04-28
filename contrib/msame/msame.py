@@ -16,10 +16,10 @@
 import time
 import os
 import sys
+import stat
 import argparse
 import numpy as np
 import mindx.sdk as sdk
-import stat
 
 
 def parse_args():
@@ -70,8 +70,8 @@ def infer(saves):
         index += 1
     types_input = str(m.input_dtype[0])
     t = get_input_num(m) 
-    
-    for i in range(len(t)):
+    b = len(t)
+    for i in range(b):
         t[i] = sdk.Tensor(t[i])
         t[i].to_device(0)
     last_time = time.time()
@@ -82,7 +82,7 @@ def infer(saves):
 
     now_time = time.time()
     one_times = now_time-last_time
-    nums,shape = get_nums(outputs, types_output) 
+    nums, shape = get_nums(outputs, types_output) 
     if saves:
         save_files(filepath, outputs, output, datatype, nums, shape, types_output)                                            
     return one_times
@@ -120,9 +120,9 @@ def get_input_num(m):
             if len(binfile.split('.')) == 2:
                 try:
                     if binfile.split('.')[1] == 'bin':
-                        t.append(get_array(binfile,type_map[types_input]))
+                        t.append(get_array(binfile, type_map[types_input]))
                     else:
-                        t.append(get_npy(binfile,type_map[types_input]))
+                        t.append(get_npy(binfile, type_map[types_input]))
                 except KeyError:
                     print("KeyError")
     return t
@@ -136,7 +136,10 @@ def get_nums(outputs, types_output):
 
     for ij in outputs:
         ij.to_host()
-        num = np.array(ij).astype(type_map[types_output[index][0]])
+        try:
+            num = np.array(ij).astype(type_map[types_output[index][0]])
+        except KeyError:
+            print("KeyError")
         num = num.flatten()
         try:
             num.dtype = type_map[types_output[index][0]]
@@ -165,7 +168,7 @@ def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
         i_index = 0
         for ik in nums:
             f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",  
-                    os.O_RDWR|os.O_APPEND|os.O_CREAT,stat.S_IRWXU)
+                    os.O_RDWR | os.O_APPEND | os.O_CREAT,stat.S_IRWXU)
             os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
             output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
@@ -202,7 +205,7 @@ def get_array(binfile, input_type):
         else:
             a = files_bin[im]
             b = new_files[im-1]
-            new_files.append(np.concatenate((a,b), axis=0))
+            new_files.append(np.concatenate((a, b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
     return bins
 
@@ -217,29 +220,29 @@ def get_npy(binfile, input_type):
         files_bin.append(np.load(binfile).flatten())
     new_files = []
     #make new bin
-    for im in range(len(files_bin)):
+    a = len(files_bin)-1+1
+    for im in range(a):
         if im == 0:
             new_files.append(files_bin[0])
             continue
         else:
             a = files_bin[im]
             b = new_files[im-1]
-            new_files.append(np.concatenate((a,b), axis=0))
+            new_files.append(np.concatenate((a, b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
-    print(bins)
     return bins
 
 
 if  __name__ == '__main__':
-    total_times = 0.0
-    if_saves = True
+    totaltimes = 0.0
+    ifsaves = True
     for mj in range(loop):
-        now_times = time.time()
-        times = infer(if_saves)
-        if_saves = False
-        total_times += times
+        nowtimes = time.time()
+        times = infer(ifsaves)
+        ifsaves = False
+        totaltimes += times
         print("loop {0} : Inference time: {1:f} ms".format(mj, times*1000))
     print("infer success!")
-    print("Inference average time: {0:f} ms".format(total_times/loop*1000))
+    print("Inference average time: {0:f} ms".format(totaltimes/loop*1000))
 
 
