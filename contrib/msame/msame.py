@@ -149,7 +149,7 @@ def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
     if datatype == 'TXT':
         i_index=0
         for ik in nums:
-            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_APPEND|os.O_CREAT)
+            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_APPEND|os.O_CREAT,stat.S_IRWXU)
             os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",stat.S_IRWXU)
             output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
