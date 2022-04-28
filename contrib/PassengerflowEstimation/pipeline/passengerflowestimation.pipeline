@@ -67,7 +67,7 @@
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imageresize0",
-                    "modelPath": "/home/dongyu3/tmp_lihaowei/models/yolov4_onnx_test.om"
+                    "modelPath": ".models/passengerflowestimation.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "queue4"
@@ -84,7 +84,7 @@
                     "dataSource": "mxpi_tensorinfer0",
                     "postProcessConfigPath": "./models/yolov4.cfg",
                     "labelPath": "./models/yolov3.names",
-                    "postProcessLibPath": "/home/dongyu3/MindX_SDK/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
+                    "postProcessLibPath": "${MindX_SDK安装路径}/mxVision/lib/modelpostprocessors/libyolov3postprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next":  "mxpi_selectobject0"

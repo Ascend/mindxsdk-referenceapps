@@ -29,13 +29,13 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    streamName = b'passengerflowestimation_pipline'
+    STREAMNAME = b'passengerflowestimation_pipline'
     # save the result
-    frameId = 0
+    FRAMEID = 0
     f = open("result.h264", "ab")
-    while frameId < 1200:
-        frameId += 1
-        infer_result = streamManagerApi.GetResult(streamName, 0, 10000)
+    while FRAMEID < 1200:
+        FRAMEID += 1
+        infer_result = streamManagerApi.GetResult(STREAMNAME, 0, 10000)
         f.write(infer_result.data)
     f.close()
     streamManagerApi.DestroyAllStreams()

@@ -34,7 +34,7 @@ APP_ERROR MxpiPassengerFlowEstimation ::Init(std::map<std::string, std::shared_p
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
     std::shared_ptr<string> motNamePropSptr = std::static_pointer_cast<string>(configParamMap["motSource"]);
-    motName_ = *motNamePropSptr.get();   
+    motName = *motNamePropSptr.get();
     std::shared_ptr<string> descriptionMessageProSptr = std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     descriptionMessage_ = *descriptionMessageProSptr.get();
     std::shared_ptr<string> x0 = std::static_pointer_cast<string>(configParamMap["x0"]);
@@ -82,11 +82,11 @@ APP_ERROR MxpiPassengerFlowEstimation::PrintMxpiErrorInfo(MxpiBuffer& buffer, co
 
 
 /*
- * @description: Replace className with trackId 
+ * @description: Replace className with trackId
  */
-APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, 
+APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
                                                             const MxpiTrackLetList srcMxpiTrackLetList,
-                                                            const MxpiFrameInfo srcMxpiFrameInfo, 
+                                                            const MxpiFrameInfo srcMxpiFrameInfo,
                                                             MxpiObjectList& dstMxpiObjectList)
 {
     int x0 = atoi(x0_.c_str());
@@ -95,19 +95,20 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
     int y1 = atoi(y1_.c_str());
     int passengerNumThisFrame = 0;
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
-        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);       
-        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);  
+        MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
+        MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
         MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
         dstMxpiObject->set_x0(srcMxpiObject.x0());
         dstMxpiObject->set_y0(srcMxpiObject.y0());
         dstMxpiObject->set_x1(srcMxpiObject.x1());
         dstMxpiObject->set_y1(srcMxpiObject.y1());
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
         for (int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++) {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
-            if (srcMxpiTrackLet.trackflag() != 2){
-                MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);  
+            int INTEGER = 2;
+            if (srcMxpiTrackLet.trackflag() != INTEGER){
+                MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);
                 if (srcMxpiHeader.memberid() == i){
                     dstMxpiClass->set_classid(0);
                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
@@ -116,43 +117,43 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
             }
         }
     }
-    if(lastObjects.empty()){
+    if (lastObjects.empty()){
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
-    else{
+    else {
         for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++) {
             MxpiObject dstMxpiObject = dstMxpiObjectList.objectvec(i);
             MxpiClass dstMxpiClass = dstMxpiObject.classvec(0);
             int x = (dstMxpiObject.x0() + dstMxpiObject.x1())/2;
             int y = (dstMxpiObject.y0() + dstMxpiObject.y1())/2;
-            std::pair<int,int> point = std::make_pair(x,y);
+            std::pair<int, int> point = std::make_pair(x, y);
             int TrackId = atoi(dstMxpiClass.classname().c_str());
-            std::pair<int,int> LastPoint = lastObjects[TrackId];
-            bool Intersect = IsIntersect(LastPoint.first,LastPoint.second,point.first,point.second,x0,y0,x1,y1);
-            if (Intersect){
-                statiscalResult++ ;
-            }   
+            std::pair<int, int> LastPoint = lastObjects[TrackId];
+            bool Intersect = IsIntersect(LastPoint.first, LastPoint.second, point.first, point.second, x0, y0, x1, y1);
+            if (Intersect) {
+                statiscalResult++;
+            } 
         }
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiPassengerFlowEstimation ::UpdateLastObjectList(const MxpiObjectList dstMxpiObjectList){
+APP_ERROR MxpiPassengerFlowEstimation::UpdateLastObjectList(const MxpiObjectList dstMxpiObjectList){
     lastObjects.clear();
     for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++) {
         MxpiObject dstMxpiObject = dstMxpiObjectList.objectvec(i);
         MxpiClass dstMxpiClass = dstMxpiObject.classvec(0);
         int x = (dstMxpiObject.x0() + dstMxpiObject.x1())/2;
         int y = (dstMxpiObject.y0() + dstMxpiObject.y1())/2;
-        std::pair<int,int> point = std::make_pair(x,y);
+        std::pair<int, int> point = std::make_pair(x, y);
         int TrackId = atoi(dstMxpiClass.classname().c_str());
         lastObjects[TrackId] = point;
     }
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiPassengerFlowEstimation ::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
+APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
     LogInfo << "MxpiPassengerFlowEstimation::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
@@ -163,12 +164,12 @@ APP_ERROR MxpiPassengerFlowEstimation ::Process(std::vector<MxpiBuffer*>& mxpiBu
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "MxpiPassengerFlowEstimation process is not implemented");
     }
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);  // Get the data from buffer
-    shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
+    shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName);
     shared_ptr<void> metadata3 = mxpiMetadataManager.GetMetadata("ReservedFrameInfo");
     if (metadata == nullptr) {
-        shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>(); 
-        MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();   
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();    
+        shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
+        MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec(); 
         APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
         if (ret != APP_ERR_OK) {
             return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation add metadata failed.");
@@ -189,14 +190,14 @@ APP_ERROR MxpiPassengerFlowEstimation ::Process(std::vector<MxpiBuffer*>& mxpiBu
     if (desc2->name() != SAMPLE_KEY2) {   // check whether the proto struct name is MxpiTrackList
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTrackLetList, failed");
     }
-    if (desc3->name() != SAMPLE_KEY3) {   
+    if (desc3->name() != SAMPLE_KEY3) { 
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiFrameInfo, failed");
     }
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiFrameInfo> srcMxpiFrameInfoSptr = static_pointer_cast<MxpiFrameInfo>(metadata3);
-    shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();    
-    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr,*srcMxpiTrackLetListSptr,*srcMxpiFrameInfoSptr,*dstMxpiObjectListSptr); // Generate sample output
+    shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
+    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *srcMxpiTrackLetListSptr, *srcMxpiFrameInfoSptr, *dstMxpiObjectListSptr); // Generate sample output
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation gets inference information failed.");
     }
@@ -215,26 +216,26 @@ std::vector<std::shared_ptr<void>> MxpiPassengerFlowEstimation::DefineProperties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
    
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "dataSource", "inputName", "the name of postprocessor", "mxpi_selectobject0", "NULL", "NULL"});
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "dataSource", "inputName", "the name of postprocessor", "mxpi_selectobject0", "NULL", "NULL" });
 
-    auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
+    auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL" });
     
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is PassengerFlowEstimation", "NULL", "NULL"});
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is PassengerFlowEstimation", "NULL", "NULL" });
     
-    auto x0_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "x0", "x0", "x0", "736", "NULL", "NULL"});
+    auto x0_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "x0", "x0", "x0", "736", "NULL", "NULL" });
     
-    auto y0_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "y0", "y0", "y0", "191", "NULL", "NULL"});
+    auto y0_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "y0", "y0", "y0", "191", "NULL", "NULL" });
     
-    auto x1_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "x1", "x0", "x0", "1870", "NULL", "NULL"});
+    auto x1_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "x1", "x0", "x0", "1870", "NULL", "NULL" });
     
-    auto y1_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "y1", "y0", "y0", "191", "NULL", "NULL"});
+    auto y1_Sptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "y1", "y0", "y0", "191", "NULL", "NULL" });
 
     properties.push_back(parentNameProSptr);
     properties.push_back(motNameProSptr);
