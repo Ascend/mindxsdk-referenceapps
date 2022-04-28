@@ -14,21 +14,22 @@
 # limitations under the License.
 # ============================================================================
 import time
-import numpy as np
 import os
 import sys
 import argparse
+import numpy as np
 import mindx.sdk as sdk
 import stat
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='msame-python')
-    parser.add_argument('--input',required=False,type=str,default='')
-    parser.add_argument('--model',required=True,type=str,help='model is necessary')
-    parser.add_argument('--output',required=True,type=str,help='check out your output path')
-    parser.add_argument('--outfmt',required=True,type=str,help='your output format must in "TXT"  or   "BIN"')
-    parser.add_argument('--loop',required=False,type=int,default=1)
-    parser.add_argument('--device',required=False,type=int,default=0)
+    parser.add_argument('--input', required=False, type=str, default='')
+    parser.add_argument('--model', required=True, type=str, help='model is necessary')
+    parser.add_argument('--output', required=True, type=str, help='check out your output path')
+    parser.add_argument('--outfmt', required=True, type=str, help='your output format must in "TXT"  or   "BIN"')
+    parser.add_argument('--loop', required=False, type=int, default=1)
+    parser.add_argument('--device', required=False, type=int, default=0)
 
     my_args = parser.parse_args()
     return my_args
@@ -66,7 +67,7 @@ def infer(saves):
     for i in m.output_dtype:
         types_output.append([])
         types_output[index].append(str(i))
-        index+=1
+        index += 1
     types_input = str(m.input_dtype[0])
     t = get_input_num(m) 
     
@@ -81,43 +82,53 @@ def infer(saves):
 
     now_time = time.time()
     one_times = now_time-last_time
-    nums,shape = get_nums(outputs,types_output) 
+    nums,shape = get_nums(outputs, types_output) 
     if saves:
-        save_files(filepath,outputs,output,datatype,nums,shape,types_output)                                            
+        save_files(filepath, outputs, output, datatype, nums, shape, types_output)                                            
     return one_times
 
+
 def get_input_num(m):
-    inputsize=[]
+    inputsize = []
     index = 0
     for j in m.input_shape:
         inputsize.append(1)
         for k in j:
-            inputsize[index]*=k
+            inputsize[index] *= k
         index += 1
     types_input = str(m.input_dtype[0])
     t = []
-    if args.input=='':
-        for i in range(len(inputsize)):
-            t.append(np.zeros(inputsize[i],type_map[types_input]))
+    if args.input == '':
+        for i in inputsize:
+            try:
+                t.append(np.zeros(i, type_map[types_input]))
+            except KeyError:
+                print("KeyError")
     else:
         binfile = args.input
         if len(binfile.split(',')) > 1:
             multi_bin = binfile.split(',')
-            for i in range(len(multi_bin)):
-                if multi_bin.split('.')[1] == 'bin':
-                    t.append(get_array(multi_bin[i],type_map[types_input]))
-                else:
-                    t.append(get_npy(multi_bin[i],type_map[types_input]))
+            for i in multi_bin:
+                try:
+                    if multi_bin.split('.')[1] == 'bin':
+                        t.append(get_array(i, type_map[types_input]))
+                    else:
+                        t.append(get_npy(i, type_map[types_input]))
+                except KeyError:
+                    print("KeyError")
         else:
-            if len(binfile.split('.'))==2:
-
-                if binfile.split('.')[1] == 'bin':
-                    t.append(get_array(binfile,type_map[types_input]))
-                else:
-                    t.append(get_npy(binfile,type_map[types_input]))
+            if len(binfile.split('.')) == 2:
+                try:
+                    if binfile.split('.')[1] == 'bin':
+                        t.append(get_array(binfile,type_map[types_input]))
+                    else:
+                        t.append(get_npy(binfile,type_map[types_input]))
+                except KeyError:
+                    print("KeyError")
     return t
+ 
 
-def get_nums(outputs,types_output):
+def get_nums(outputs, types_output):
     index = 0
     num_list = []
     shape = []
@@ -127,10 +138,13 @@ def get_nums(outputs,types_output):
         ij.to_host()
         num = np.array(ij).astype(type_map[types_output[index][0]])
         num = num.flatten()
-        num.dtype = type_map[types_output[index][0]]
+        try:
+            num.dtype = type_map[types_output[index][0]]
+        except KeyError:
+            print("KeyError")
         shape.append(ij.shape[-1])
         num_list.append(num)
-        index+=1
+        index += 1
     #to list
     i_index = 0
     nums = []
@@ -138,58 +152,62 @@ def get_nums(outputs,types_output):
         output_desc = len(i)
         nums.append([])
         for j in range(int(output_desc/shape[i_index])):
-            for k in range(j*shape[i_index],(j+1)*shape[i_index]):
+            for k in range(j*shape[i_index], (j+1)*shape[i_index]):
                 nums[i_index].append(num_list[i_index][k])
-        i_index+=1
-    return (nums,shape)
+        i_index += 1
+    return (nums, shape)
 
-def save_files(filepath,outputs,output,datatype,nums,shape,types_output):
+
+def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
     filepath = filepath.split('/')[-1]
     #TXT
     if datatype == 'TXT':
-        i_index=0
+        i_index = 0
         for ik in nums:
-            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",os.O_RDWR|os.O_APPEND|os.O_CREAT,stat.S_IRWXU)
-            os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",stat.S_IRWXU)
+            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt",  
+                    os.O_RDWR|os.O_APPEND|os.O_CREAT,stat.S_IRWXU)
+            os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
             output_desc = len(ik)
             for j in range(int(output_desc/shape[i_index])):
-                for k in range(j*shape[i_index],(j+1)*shape[i_index]):
-                    os.write(f,str.encode(str(nums[i_index][k])+' '))
-                os.write(f,str.encode('\n'))
-            i_index+=1
+                for k in range(j*shape[i_index], (j+1)*shape[i_index]):
+                    os.write(f, str.encode(str(nums[i_index][k])+' '))
+                os.write(f, str.encode('\n'))
+            i_index += 1
     else:
     #BIN
-        i_index=0
+        i_index = 0
         for i in outputs:
             i.to_host()
             num = np.array(i)
             num = num.flatten()
             num.tofile(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".bin")
-            i_index+=1
+            i_index += 1
     
 
-def get_array(binfile,input_type):
+def get_array(binfile, input_type):
     files_bin = []
     #make list  files_bin
     if os.path.isdir(binfile):
         for s in os.listdir(binfile):
-            files_bin.append(np.fromfile(binfile+"/"+s,dtype=input_type).flatten())
+            files_bin.append(np.fromfile(binfile+"/"+s, dtype=input_type).flatten())
     elif os.path.isfile(binfile):
-        files_bin.append(np.fromfile(binfile,dtype=input_type).flatten())
+        files_bin.append(np.fromfile(binfile, dtype=input_type).flatten())
     new_files = []
     #make new bin
-    for im in range(len(files_bin)):
-        if im ==0:
+    a = len(files_bin)-1+1
+    for im in range(a):
+        if im == 0:
             new_files.append(files_bin[0])
             continue
         else:
             a = files_bin[im]
             b = new_files[im-1]
-            new_files.append(np.concatenate((a,b),axis=0))
+            new_files.append(np.concatenate((a,b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
     return bins
 
-def get_npy(binfile,input_type):
+
+def get_npy(binfile, input_type):
     files_bin = []
     #make list  files_bin
     if os.path.isdir(binfile):
@@ -200,17 +218,16 @@ def get_npy(binfile,input_type):
     new_files = []
     #make new bin
     for im in range(len(files_bin)):
-        if im ==0:
+        if im == 0:
             new_files.append(files_bin[0])
             continue
         else:
             a = files_bin[im]
             b = new_files[im-1]
-            new_files.append(np.concatenate((a,b),axis=0))
+            new_files.append(np.concatenate((a,b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
     print(bins)
     return bins
-
 
 
 if  __name__ == '__main__':
@@ -220,8 +237,8 @@ if  __name__ == '__main__':
         now_times = time.time()
         times = infer(if_saves)
         if_saves = False
-        total_times+=times
-        print("loop {0} : Inference time: {1:f} ms".format(mj,times*1000))
+        total_times += times
+        print("loop {0} : Inference time: {1:f} ms".format(mj, times*1000))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(total_times/loop*1000))
 
