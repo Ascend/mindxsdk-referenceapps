@@ -11,13 +11,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+import MxpiDataType_pb2 as MxpiDataType
 import json
 import os
 import numpy as np
-
-import MxpiDataType_pb2 as MxpiDataType
+import os
+import stat
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 if __name__ == '__main__':
+    FLAGS = os.O_RDWR | os.O_APPEND | os.O_CREAT
+    MODES = stat.S_IWUSR | stat.S_IRUSR | stat.S_IRWXU | stat.S_IEXEC
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
@@ -32,10 +36,9 @@ if __name__ == '__main__':
     STREAMNAME = b'passengerflowestimation_pipline'
     # save the result
     FRAMEID = 0
-    f = open("result.h264", "ab")
-    while FRAMEID < 1200:
-        FRAMEID += 1
-        infer_result = streamManagerApi.GetResult(STREAMNAME, 0, 10000)
-        f.write(infer_result.data)
-    f.close()
+    with os.fdopen(os.open('result.h264', FLAGS, MODES), 'ab+') as f:
+        while FRAMEID < 1200:
+            FRAMEID += 1
+            infer_result = streamManagerApi.GetResult(STREAMNAME, 0, 10000)
+            f.write(infer_result.data)
     streamManagerApi.DestroyAllStreams()

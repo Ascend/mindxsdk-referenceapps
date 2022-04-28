@@ -6,7 +6,7 @@
             "mxpi_rtspsrc0": {
                 "factory": "mxpi_rtspsrc",
                 "props": {
-                    "rtspUrl": "rtsp://192.168.88.106:8554/test.264",
+                    "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                     "channelId": "0"
                 },
                 "next": "queue0"
@@ -67,7 +67,7 @@
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imageresize0",
-                    "modelPath": ".models/passengerflowestimation.om"
+                    "modelPath": "./models/yolov4.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "queue4"

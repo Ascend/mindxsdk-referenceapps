@@ -82,7 +82,7 @@ private:
     std::string x1_;
     std::string y1_;
     int statiscalResult;
-    std::unordered_map<int,std::pair<int,int>> lastObjects;
+    std::unordered_map<int, std::pair<int, int>> lastObjects;
     std::ostringstream ErrorInfo_;
 };
 }

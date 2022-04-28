@@ -2,7 +2,7 @@
 
 ## 1介绍
 
-passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量统计，将最后统计得到的客流量结果在终端或者一个文本文档内显示。输入一段视频，最后可以得出在某一时间内的客流量。
+passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量统计，将最后统计得到的客流量结果在终端内显示。输入一段视频，最后可以得出在某一时间内的客流量。
 
 ### 1.1支持的产品
 
@@ -41,7 +41,7 @@ passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量�
 ├── models
 │   ├── aipp_Passengerflowdetection.config            # 模型转换aipp配置文件
 │   ├── passengerflowestimation.onnx      # onnx模型
-│   └── passengerflowestimation.om               # om模型
+│   └── yolov4.om               # om模型
 ├── pipeline
 │   └── passengerflowestimation.pipeline        # pipeline文件
 ├── plugins
@@ -91,7 +91,7 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 ```
 
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。并且本项目用到了mxpi_opencvosd插件，使用mxpi_opencvosd插件前，需要使用osd相关的模型文件，请执行MindX SDK开发套件包安装目录下operators/opencvosd/generate_osd_om.sh脚本生成所需模型文件（在generate_osd_om.sh所在文件夹下执行`bash generate_osd_om.sh `）。{install_path}替换为开发套件包所在路径。**（注：开头两行为每次一重新开启终端执行程序就需要输入，此外的其他为转换模型需要，若已经转换模型成功，则不需要输入这些）**
+注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。并且本项目用到了mxpi_opencvosd插件，使用mxpi_opencvosd插件前，需要使用osd相关的模型文件，请执行MindX SDK开发套件包安装目录下operators/opencvosd/generate_osd_om.sh脚本生成所需模型文件（在generate_osd_om.sh所在文件夹下执行`bash generate_osd_om.sh `，若这条命令执行失败，则将passengerflowestimation目录下的.om文件移动到generate_osd_om.sh所在的文件夹目录下MindXSDK安装路径/mxVision/operators/opencvosd下）。{install_path}替换为开发套件包所在路径。**（注：开头两行为每次一重新开启终端执行程序就需要输入，此外的其他为转换模型需要，若已经转换模型成功，则不需要输入这些）**
 
 
 
@@ -116,7 +116,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 2. 进入`passengerflowestimation/models`文件夹下面执行命令**（注：提前设置好环境变量）**：
 
 ```
-atc --model=${模型路径}/passengerflowestimation.onnx --framework=5 --output=${输出.om模型路径}/passengerflowestimation --input_format=NCHW --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,3,608,608" --log=info --insert_op_conf=${aipp文件路径}/aipp_Passengerflowdetection.config 
+atc --model=${模型路径}/passengerflowestimation.onnx --framework=5 --output=${输出.om模型路径}/yolov4 --input_format=NCHW --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,3,608,608" --log=info --insert_op_conf=${aipp文件路径}/aipp_Passengerflowdetection.config 
 ```
 
 执行该命令后会在指定输出.om模型路径生成项目指定模型文件`passengerflowestimation.om`。若模型转换成功则输出：
@@ -224,7 +224,14 @@ aipp_op{
 bash build.sh
 ```
 
-命令执行成功之后会在passengerflowestimation/plugins/mxpi_passengerflowestimation和passengerflowestimation/plugins/mxpi_selectobject目录下分别生成build文件夹。将build文件夹下生成的.so下载后上传到${SDK安装路径}/mxVision/lib/plugins目录下。
+命令执行成功之后会在passengerflowestimation/plugins/mxpi_passengerflowestimation和passengerflowestimation/plugins/mxpi_selectobject目录下分别生成build文件夹。将build文件夹下生成的.so下载后上传到${SDK安装路径}/mxVision/lib/plugins目录下。在生成build文件夹后，进入到build目录下执行如下指令：
+
+```
+chmod 640 libmxpi_passengerflowestimation.so
+chmod 640 libmxpi_selectobject.so
+```
+
+
 
 ### 步骤5 运行：
 
@@ -245,4 +252,6 @@ python3 main.py
 ![image1.png](https://s2.loli.net/2022/04/22/m7DMpSjK8W4zfNk.png)
 
 帧率已经达到要求。
+
+**(在test文件夹中，有本项目的测试用例。test.264为上传到mediaServer中的.h264的视频，result.mp4是result.h264转换成MP4的结果。)**
 

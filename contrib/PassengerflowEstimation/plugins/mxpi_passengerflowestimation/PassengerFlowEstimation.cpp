@@ -107,9 +107,9 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
         for (int j = 0; j < srcMxpiTrackLetList.trackletvec_size(); j++) {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int INTEGER = 2;
-            if (srcMxpiTrackLet.trackflag() != INTEGER){
+            if (srcMxpiTrackLet.trackflag() != INTEGER) {
                 MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);
-                if (srcMxpiHeader.memberid() == i){
+                if (srcMxpiHeader.memberid() == i) {
                     dstMxpiClass->set_classid(0);
                     dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                     continue;
@@ -117,7 +117,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
             }
         }
     }
-    if (lastObjects.empty()){
+    if (lastObjects.empty()) {
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
     else {
@@ -132,14 +132,14 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
             bool Intersect = IsIntersect(LastPoint.first, LastPoint.second, point.first, point.second, x0, y0, x1, y1);
             if (Intersect) {
                 statiscalResult++;
-            } 
+            }
         }
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiPassengerFlowEstimation::UpdateLastObjectList(const MxpiObjectList dstMxpiObjectList){
+APP_ERROR MxpiPassengerFlowEstimation::UpdateLastObjectList(const MxpiObjectList dstMxpiObjectList) {
     lastObjects.clear();
     for (int i = 0; i < dstMxpiObjectList.objectvec_size(); i++) {
         MxpiObject dstMxpiObject = dstMxpiObjectList.objectvec(i);
@@ -153,7 +153,7 @@ APP_ERROR MxpiPassengerFlowEstimation::UpdateLastObjectList(const MxpiObjectList
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuffer){
+APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuffer) {
     LogInfo << "MxpiPassengerFlowEstimation::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
@@ -169,7 +169,7 @@ APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuf
     if (metadata == nullptr) {
         shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
         MxpiObject* dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec(); 
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
         APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
         if (ret != APP_ERR_OK) {
             return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation add metadata failed.");
@@ -190,7 +190,7 @@ APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuf
     if (desc2->name() != SAMPLE_KEY2) {   // check whether the proto struct name is MxpiTrackList
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiTrackLetList, failed");
     }
-    if (desc3->name() != SAMPLE_KEY3) { 
+    if (desc3->name() != SAMPLE_KEY3) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_PROTOBUF_NAME_MISMATCH, "Proto struct name is not MxpiFrameInfo, failed");
     }
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
