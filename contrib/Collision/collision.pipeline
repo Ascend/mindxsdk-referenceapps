@@ -1,0 +1,170 @@
+{
+    "collision": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "factory": "mxpi_rtspsrc",
+            "props": {
+                "rtspUrl":"rtsp://192.168.88.107:8554/test1.264",
+                "channelId": "0"
+            },
+            "next": "queue0"
+        },
+        "queue0": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "factory": "mxpi_videodecoder",
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV12",
+                "vdecChannelId": "0"
+            },
+            "next": "tee0"
+        },
+        "tee0": {
+            "factory": "tee",
+            "next": [
+                "queue1",
+                "queue2"
+            ]
+        },
+        "queue1": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_imageresize0"
+        },
+        "queue2": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_opencvosd0:0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "resizeHeight": "416",
+                "resizeWidth": "416",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "queue3"
+        },
+        "queue3": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./model/yolov3.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "funcLanguage":"c++",
+                "postProcessConfigPath": "./model/yolov3.cfg",
+                "labelPath": "./model/coco.names",
+                "postProcessLibPath": "/home/weifeng4/MindX_SDK/mxVision-2.0.4/lib/modelpostprocessors/libyolov3postprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_motsimplesortV20"
+        },
+         "mxpi_motsimplesortV20": {
+             "props": {
+                "dataSourceDetection": "mxpi_objectpostprocessor0"
+            },
+            "factory": "mxpi_motsimplesortV2",
+            "next": "mxpi_trackidreplaceclassname0"
+        },
+        "mxpi_trackidreplaceclassname0": {
+            "props": {
+                    "dataSource": "mxpi_objectpostprocessor0",
+                    "motSource": "mxpi_motsimplesortV20"
+            },
+            "factory": "mxpi_trackidreplaceclassname",
+            "next": "mxpi_collisionclassname0"
+        },
+        "mxpi_collisionclassname0": {
+            "props": {
+                    "dataSource": "mxpi_trackidreplaceclassname0"
+            },
+            "factory": "mxpi_collisionclassname",
+            "next": "queue4"
+        },
+        "queue4": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_object2osdinstances0"
+        },
+        "mxpi_object2osdinstances0": {
+            "props": {
+                "colorMap": "255,100,100|100,255,100|100,100,255|255,128,0",
+                "fontFace": "16",
+                "fontScale": "1",
+                "fontThickness": "2",
+                "fontLineType": "8",
+                "rectThickness": "2",
+                "rectLineType": "8"
+            },
+            "factory": "mxpi_object2osdinstances",
+            "next": "queue5"
+        },
+        "queue5": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_opencvosd0:1"
+        },
+        "mxpi_opencvosd0": {
+            "factory": "mxpi_opencvosd",
+            "next": "queue6"
+        },
+        "queue6": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_videoencoder0"
+        },
+        "mxpi_videoencoder0": {
+            "props": {
+                "inputFormat": "YUV420SP_NV12",
+                "outputFormat": "H264",
+                "fps": "1",
+                "iFrameInterval": "50",
+                "imageHeight":"720",
+                "imageWidth":"1280"
+            },
+            "factory": "mxpi_videoencoder",
+            "next": "queue7"
+        },
+        "queue7": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "factory": "appsink",
+            "former": "mxpi_videoencoder0"
+        }
+    }
+}
