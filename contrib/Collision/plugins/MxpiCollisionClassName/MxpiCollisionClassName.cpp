@@ -1,18 +1,19 @@
 /*
-* Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 #include "MxpiCollisionClassName.h"
 #include "MxBase/Log/Log.h"
 #include <math.h>
@@ -41,7 +42,8 @@ APP_ERROR MxpiCollisionClassName::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,const MxpiErrorInfo mxpiErrorInfo)
+APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
+                                                   const MxpiErrorInfo mxpiErrorInfo)
 {
     APP_ERROR ret = APP_ERR_OK;
     // Define an object of MxpiMetadataManager
@@ -65,7 +67,8 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
     {
         data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/w;
         data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/w;
-        data[i][2]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(),w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(),w),1/w)/w;
+        data[i][w]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+
+                       pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
     }
 
     int a[n*n][2]; // ´æ´¢Åö×²±àºÅ
@@ -78,8 +81,8 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
     {
         for (int j = 0; j < n; j++)
         {
-            num[i][j] = pow(pow(data[i][0]-data[j][0],w)+pow(data[i][1]-data[j][1],w),1/w);
-            if (num[i][j] < max(data[i][2], data[j][2]))
+            num[i][j] = pow(pow(data[i][0]-data[j][0], w)+ pow(data[i][1]-data[j][1], w), 1/w);
+            if (num[i][j] < max(data[i][w], data[j][w]))
             {
                 if (i < j)
                 {
@@ -103,7 +106,7 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
         int t = 0;
         for (int o = 0; o < n*n; o++)
         {
-            for (int p = 0; p < 2; p++)
+            for (int p = 0; p < w; p++)
             {
                 if (a[o][p]==i)
                     t++;
@@ -188,9 +191,9 @@ std::vector<std::shared_ptr<void>> MxpiCollisionClassName::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_trackidreplaceclassname0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiCollisionClassName", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
