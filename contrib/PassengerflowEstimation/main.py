@@ -11,13 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import MxpiDataType_pb2 as MxpiDataType
-import numpy as np
 import stat
 import json
 import os
+import numpy as np
+import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
 if __name__ == '__main__':
     FLAGS = os.O_RDWR | os.O_APPEND | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR | stat.S_IRWXU | stat.S_IEXEC
