@@ -13,11 +13,10 @@
 
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import MxpiDataType_pb2 as MxpiDataType
+import numpy as np
+import stat
 import json
 import os
-import numpy as np
-import os
-import stat
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 if __name__ == '__main__':
     FLAGS = os.O_RDWR | os.O_APPEND | os.O_CREAT
