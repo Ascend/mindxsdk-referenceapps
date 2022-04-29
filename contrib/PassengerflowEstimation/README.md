@@ -253,5 +253,5 @@ python3 main.py
 
 帧率已经达到要求。
 
-**(在test文件夹中，有本项目的测试用例。test.264为上传到mediaServer中的.h264的视频，result.mp4是result.h264转换成MP4的结果。)**
+
 
