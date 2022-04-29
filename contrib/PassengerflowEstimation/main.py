@@ -14,6 +14,7 @@
 import stat
 import json
 import os
+import math
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
