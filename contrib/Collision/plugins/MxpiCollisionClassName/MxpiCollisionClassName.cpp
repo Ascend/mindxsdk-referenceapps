@@ -16,7 +16,7 @@
 
 #include "MxpiCollisionClassName.h"
 #include "MxBase/Log/Log.h"
-#include <math.h>
+#include "math.h"
 using namespace MxPlugins;
 using namespace MxTools;
 using namespace std;
