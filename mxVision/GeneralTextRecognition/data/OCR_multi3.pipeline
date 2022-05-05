@@ -1,0 +1,665 @@
+{
+  "OCR0": {
+    "stream_config": {
+      "deviceId": "0"
+    },
+    "appsrc0": {
+      "props": {
+      "blocksize":"409600"
+      },
+      "factory":"appsrc",
+      "next":"queue0"
+    },
+    "queue0": {
+        "factory": "queue",
+        "next": "mxpi_imagedecoder0"
+    },
+    "mxpi_imagedecoder0": {
+      "props": {
+        "cvProcessor": "opencv"
+      },
+      "factory": "mxpi_imagedecoder",
+      "next": "queue1"
+    },
+    "queue1": {
+        "factory": "queue",
+        "next": "mxpi_imageresizer0"
+    },
+    "mxpi_imageresizer0": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_KeepAspectRatio_Fit",
+        "parentName": "mxpi_imagedecoder0"
+     },
+      "factory": "mxpi_imageresize",
+      "next": "queue2"
+    },
+    "queue2": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer0"
+    },
+    "mxpi_tensorinfer0": {
+      "props": {
+        "dataSource": "mxpi_imageresizer0",
+        "modelPath": "./data/model/Dynamic24_ch_ppocr_server_v2.0_det_infer.om"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue3"
+    },
+    "queue3": {
+        "factory": "queue",
+        "next": "mxpi_textobjectpostprocessor0"
+    },
+    "mxpi_textobjectpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/det/det.cfg",
+        "postProcessLibPath": "./lib/libDBPostProcess.so"
+       },
+      "factory": "mxpi_textobjectpostprocessor",
+      "next": "queue4"
+    },
+    "queue4": {
+        "factory": "queue",
+        "next": "mxpi_warpperspective0"
+    },
+    "mxpi_warpperspective0": {
+        "props": {
+            "debugMode": "false"
+        },
+        "factory": "mxpi_warpperspective",
+        "next": "queue5"
+    },
+    "queue5": {
+        "factory": "queue",
+        "next": "mxpi_rotation0"
+    },
+    "mxpi_rotation0": {
+      "props": {
+        "dataSourceWarp": "mxpi_warpperspective0",
+        "rotateCode": "ROTATE_90_COUNTERCLOCKWISE",
+        "rotCondition": "GE",
+        "criticalValue": "1.5"
+      },
+      "factory": "mxpi_rotation",
+      "next": "tee0"
+    },
+    "tee0": {
+      "factory": "tee",
+      "next": ["queue10","queue11"]
+    },
+    "queue10": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+        "factory": "queue",
+        "next": "mxpi_imageresize1"
+    },
+    "queue11": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+      "factory": "queue",
+      "next": "mxpi_rotation1:0"
+    },
+    "mxpi_imageresize1": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "48",
+        "resizeWidth": "192",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "48",
+        "paddingWidth": "192",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+      },
+      "factory": "mxpi_imageresize",
+      "next": "queue6"
+    },
+    "queue6": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer1"
+    },
+    "mxpi_tensorinfer1": {
+      "props": {
+        "dataSource": "mxpi_imageresize1",
+        "modelPath": "./data/model/ch_ppocr_mobile_v2.0_cls_infer_3_48_192.om",
+        "waitingTime": "50",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue66"
+    },
+    "queue66": {
+        "factory": "queue",
+        "next": "mxpi_classpostprocessor0"
+    },
+    "mxpi_classpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/cls/cls.cfg",
+        "labelPath": "./data/config/cls/ic15.names",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libresnet50postprocess.so"
+      },
+      "factory": "mxpi_classpostprocessor",
+      "next": "mxpi_rotation1:1"
+    },
+    "mxpi_rotation1": {
+      "props": {
+        "dataSourceClass": "mxpi_classpostprocessor0",
+        "rotateCode": "ROTATE_180",
+        "rotCondition": "GT",
+        "criticalValue": "0.9"
+      },
+      "factory": "mxpi_rotation",
+      "next": "queue7"
+    },
+    "queue7": {
+        "factory": "queue",
+        "next": "mxpi_imageresize2"
+    },
+    "mxpi_imageresize2": {
+      "props": {
+        "cvProcessor": "opencv",
+        "parentName": "mxpi_rotation1",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "32",
+        "resizeWidth": "320",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "32",
+        "paddingWidth": "320",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+       },
+       "factory": "mxpi_imageresize",
+       "next": "queue8"
+    },
+    "queue8": {
+        "factory": "queue",
+        "next": "crnn_recognition"
+    },
+    "crnn_recognition": {
+      "props": {
+        "dataSource": "mxpi_imageresize2",
+        "modelPath": "./data/model/ch_ppocr_server_v2.0_rec_infer_3_32_320_bs_1_2_4_8_16.om",
+        "waitingTime": "10",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue9"
+    },
+    "queue9": {
+        "factory": "queue",
+        "next": "mxpi_textgenerationpostprocessor0"
+    },
+    "mxpi_textgenerationpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/rec/rec_cfg.txt",
+        "labelPath": "./data/config/rec/ppocr_keys_v1.txt",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libcrnnpostprocess.so"
+      },
+      "factory": "mxpi_textgenerationpostprocessor",
+      "next": "queue98"
+    },
+    "queue98": {
+        "factory": "queue",
+        "next": "mxpi_dataserialize0"
+    },
+    "mxpi_dataserialize0": {
+      "props": {
+            "outputDataKeys":"mxpi_textobjectpostprocessor0,mxpi_textgenerationpostprocessor0"
+      },
+      "factory": "mxpi_dataserialize",
+      "next": "appsink0"
+    },
+    "appsink0": {
+      "props": {
+      "blocksize": "4096000"
+      },
+      "factory":"appsink"
+    }
+  },
+  "OCR1": {
+    "stream_config": {
+      "deviceId": "0"
+    },
+    "appsrc0": {
+      "props": {
+      "blocksize":"409600"
+      },
+      "factory":"appsrc",
+      "next":"queue0"
+    },
+    "queue0": {
+        "factory": "queue",
+        "next": "mxpi_imagedecoder0"
+    },
+    "mxpi_imagedecoder0": {
+      "props": {
+        "cvProcessor": "opencv"
+      },
+      "factory": "mxpi_imagedecoder",
+      "next": "queue1"
+    },
+    "queue1": {
+        "factory": "queue",
+        "next": "mxpi_imageresizer0"
+    },
+    "mxpi_imageresizer0": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_KeepAspectRatio_Fit",
+        "parentName": "mxpi_imagedecoder0"
+     },
+      "factory": "mxpi_imageresize",
+      "next": "queue2"
+    },
+    "queue2": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer0"
+    },
+    "mxpi_tensorinfer0": {
+      "props": {
+        "dataSource": "mxpi_imageresizer0",
+        "modelPath": "./data/model/Dynamic24_ch_ppocr_server_v2.0_det_infer.om"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue3"
+    },
+    "queue3": {
+        "factory": "queue",
+        "next": "mxpi_textobjectpostprocessor0"
+    },
+    "mxpi_textobjectpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/det/det.cfg",
+        "postProcessLibPath": "./lib/libDBPostProcess.so"
+       },
+      "factory": "mxpi_textobjectpostprocessor",
+      "next": "queue4"
+    },
+    "queue4": {
+        "factory": "queue",
+        "next": "mxpi_warpperspective0"
+    },
+    "mxpi_warpperspective0": {
+        "props": {
+            "debugMode": "false"
+        },
+        "factory": "mxpi_warpperspective",
+        "next": "queue5"
+    },
+    "queue5": {
+        "factory": "queue",
+        "next": "mxpi_rotation0"
+    },
+    "mxpi_rotation0": {
+      "props": {
+        "dataSourceWarp": "mxpi_warpperspective0",
+        "rotateCode": "ROTATE_90_COUNTERCLOCKWISE",
+        "rotCondition": "GE",
+        "criticalValue": "1.5"
+      },
+      "factory": "mxpi_rotation",
+      "next": "tee0"
+    },
+    "tee0": {
+      "factory": "tee",
+      "next": ["queue10","queue11"]
+    },
+    "queue10": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+        "factory": "queue",
+        "next": "mxpi_imageresize1"
+    },
+    "queue11": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+      "factory": "queue",
+      "next": "mxpi_rotation1:0"
+    },
+    "mxpi_imageresize1": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "48",
+        "resizeWidth": "192",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "48",
+        "paddingWidth": "192",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+      },
+      "factory": "mxpi_imageresize",
+      "next": "queue6"
+    },
+    "queue6": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer1"
+    },
+    "mxpi_tensorinfer1": {
+      "props": {
+        "dataSource": "mxpi_imageresize1",
+        "modelPath": "./data/model/ch_ppocr_mobile_v2.0_cls_infer_3_48_192.om",
+        "waitingTime": "50",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue66"
+    },
+    "queue66": {
+        "factory": "queue",
+        "next": "mxpi_classpostprocessor0"
+    },
+    "mxpi_classpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/cls/cls.cfg",
+        "labelPath": "./data/config/cls/ic15.names",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libresnet50postprocess.so"
+      },
+      "factory": "mxpi_classpostprocessor",
+      "next": "mxpi_rotation1:1"
+    },
+    "mxpi_rotation1": {
+      "props": {
+        "dataSourceClass": "mxpi_classpostprocessor0",
+        "rotateCode": "ROTATE_180",
+        "rotCondition": "GT",
+        "criticalValue": "0.9"
+      },
+      "factory": "mxpi_rotation",
+      "next": "queue7"
+    },
+    "queue7": {
+        "factory": "queue",
+        "next": "mxpi_imageresize2"
+    },
+    "mxpi_imageresize2": {
+      "props": {
+        "cvProcessor": "opencv",
+        "parentName": "mxpi_rotation1",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "32",
+        "resizeWidth": "320",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "32",
+        "paddingWidth": "320",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+       },
+       "factory": "mxpi_imageresize",
+       "next": "queue8"
+    },
+    "queue8": {
+        "factory": "queue",
+        "next": "crnn_recognition"
+    },
+    "crnn_recognition": {
+      "props": {
+        "dataSource": "mxpi_imageresize2",
+        "modelPath": "./data/model/ch_ppocr_server_v2.0_rec_infer_3_32_320_bs_1_2_4_8_16.om",
+        "waitingTime": "10",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue9"
+    },
+    "queue9": {
+        "factory": "queue",
+        "next": "mxpi_textgenerationpostprocessor0"
+    },
+    "mxpi_textgenerationpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/rec/rec_cfg.txt",
+        "labelPath": "./data/config/rec/ppocr_keys_v1.txt",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libcrnnpostprocess.so"
+      },
+      "factory": "mxpi_textgenerationpostprocessor",
+      "next": "queue98"
+    },
+    "queue98": {
+        "factory": "queue",
+        "next": "mxpi_dataserialize0"
+    },
+    "mxpi_dataserialize0": {
+      "props": {
+            "outputDataKeys":"mxpi_textobjectpostprocessor0,mxpi_textgenerationpostprocessor0"
+      },
+      "factory": "mxpi_dataserialize",
+      "next": "appsink0"
+    },
+    "appsink0": {
+      "props": {
+      "blocksize": "4096000"
+      },
+      "factory":"appsink"
+    }
+  },
+  "OCR2": {
+    "stream_config": {
+      "deviceId": "0"
+    },
+    "appsrc0": {
+      "props": {
+      "blocksize":"409600"
+      },
+      "factory":"appsrc",
+      "next":"queue0"
+    },
+    "queue0": {
+        "factory": "queue",
+        "next": "mxpi_imagedecoder0"
+    },
+    "mxpi_imagedecoder0": {
+      "props": {
+        "cvProcessor": "opencv"
+      },
+      "factory": "mxpi_imagedecoder",
+      "next": "queue1"
+    },
+    "queue1": {
+        "factory": "queue",
+        "next": "mxpi_imageresizer0"
+    },
+    "mxpi_imageresizer0": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_KeepAspectRatio_Fit",
+        "parentName": "mxpi_imagedecoder0"
+     },
+      "factory": "mxpi_imageresize",
+      "next": "queue2"
+    },
+    "queue2": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer0"
+    },
+    "mxpi_tensorinfer0": {
+      "props": {
+        "dataSource": "mxpi_imageresizer0",
+        "modelPath": "./data/model/Dynamic24_ch_ppocr_server_v2.0_det_infer.om"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue3"
+    },
+    "queue3": {
+        "factory": "queue",
+        "next": "mxpi_textobjectpostprocessor0"
+    },
+    "mxpi_textobjectpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/det/det.cfg",
+        "postProcessLibPath": "./lib/libDBPostProcess.so"
+       },
+      "factory": "mxpi_textobjectpostprocessor",
+      "next": "queue4"
+    },
+    "queue4": {
+        "factory": "queue",
+        "next": "mxpi_warpperspective0"
+    },
+    "mxpi_warpperspective0": {
+        "props": {
+            "debugMode": "false"
+        },
+        "factory": "mxpi_warpperspective",
+        "next": "queue5"
+    },
+    "queue5": {
+        "factory": "queue",
+        "next": "mxpi_rotation0"
+    },
+    "mxpi_rotation0": {
+      "props": {
+        "dataSourceWarp": "mxpi_warpperspective0",
+        "rotateCode": "ROTATE_90_COUNTERCLOCKWISE",
+        "rotCondition": "GE",
+        "criticalValue": "1.5"
+      },
+      "factory": "mxpi_rotation",
+      "next": "tee0"
+    },
+    "tee0": {
+      "factory": "tee",
+      "next": ["queue10","queue11"]
+    },
+    "queue10": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+        "factory": "queue",
+        "next": "mxpi_imageresize1"
+    },
+    "queue11": {
+      "props": {
+        "max-size-buffers": "100"
+      },
+      "factory": "queue",
+      "next": "mxpi_rotation1:0"
+    },
+    "mxpi_imageresize1": {
+      "props": {
+        "cvProcessor": "opencv",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "48",
+        "resizeWidth": "192",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "48",
+        "paddingWidth": "192",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+      },
+      "factory": "mxpi_imageresize",
+      "next": "queue6"
+    },
+    "queue6": {
+        "factory": "queue",
+        "next": "mxpi_tensorinfer1"
+    },
+    "mxpi_tensorinfer1": {
+      "props": {
+        "dataSource": "mxpi_imageresize1",
+        "modelPath": "./data/model/ch_ppocr_mobile_v2.0_cls_infer_3_48_192.om",
+        "waitingTime": "50",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue66"
+    },
+    "queue66": {
+        "factory": "queue",
+        "next": "mxpi_classpostprocessor0"
+    },
+    "mxpi_classpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/cls/cls.cfg",
+        "labelPath": "./data/config/cls/ic15.names",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libresnet50postprocess.so"
+      },
+      "factory": "mxpi_classpostprocessor",
+      "next": "mxpi_rotation1:1"
+    },
+    "mxpi_rotation1": {
+      "props": {
+        "dataSourceClass": "mxpi_classpostprocessor0",
+        "rotateCode": "ROTATE_180",
+        "rotCondition": "GT",
+        "criticalValue": "0.9"
+      },
+      "factory": "mxpi_rotation",
+      "next": "queue7"
+    },
+    "queue7": {
+        "factory": "queue",
+        "next": "mxpi_imageresize2"
+    },
+    "mxpi_imageresize2": {
+      "props": {
+        "cvProcessor": "opencv",
+        "parentName": "mxpi_rotation1",
+        "resizeType": "Resizer_PaddleOCR",
+        "resizeHeight": "32",
+        "resizeWidth": "320",
+        "paddingType": "Padding_RightDown",
+        "paddingHeight": "32",
+        "paddingWidth": "320",
+        "paddingColorB": "128",
+        "paddingColorG": "128",
+        "paddingColorR": "128"
+       },
+       "factory": "mxpi_imageresize",
+       "next": "queue8"
+    },
+    "queue8": {
+        "factory": "queue",
+        "next": "crnn_recognition"
+    },
+    "crnn_recognition": {
+      "props": {
+        "dataSource": "mxpi_imageresize2",
+        "modelPath": "./data/model/ch_ppocr_server_v2.0_rec_infer_3_32_320_bs_1_2_4_8_16.om",
+        "waitingTime": "10",
+        "singleBatchInfer": "0"
+      },
+      "factory": "mxpi_tensorinfer",
+      "next": "queue9"
+    },
+    "queue9": {
+        "factory": "queue",
+        "next": "mxpi_textgenerationpostprocessor0"
+    },
+    "mxpi_textgenerationpostprocessor0": {
+      "props": {
+        "postProcessConfigPath": "./data/config/rec/rec_cfg.txt",
+        "labelPath": "./data/config/rec/ppocr_keys_v1.txt",
+        "postProcessLibPath": "/root/MindX_SDK/mxVision/lib/modelpostprocessors/libcrnnpostprocess.so"
+      },
+      "factory": "mxpi_textgenerationpostprocessor",
+      "next": "queue98"
+    },
+    "queue98": {
+        "factory": "queue",
+        "next": "mxpi_dataserialize0"
+    },
+    "mxpi_dataserialize0": {
+      "props": {
+            "outputDataKeys":"mxpi_textobjectpostprocessor0,mxpi_textgenerationpostprocessor0"
+      },
+      "factory": "mxpi_dataserialize",
+      "next": "appsink0"
+    },
+    "appsink0": {
+      "props": {
+      "blocksize": "4096000"
+      },
+      "factory":"appsink"
+    }
+  }
+}

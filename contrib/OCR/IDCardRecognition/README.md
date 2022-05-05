@@ -75,7 +75,8 @@ npu-smi info
 │   ├── TextInfoPlugin
 │   │   ├── CMakeLists.txt
 │   │   ├── TextInfoPlugin.cpp
-│   │   └── TextInfoPlugin.h
+│   │   ├── TextInfoPlugin.h
+│   │   └── vocab.txt
 ```
 
 ## 2.环境依赖
@@ -130,9 +131,11 @@ make -j
 
 ### 4.1部署
 
-**步骤1**：[ctpn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_ctpn.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内。
+**步骤1**：在官网下载bert词表vocab.txt[bert-base-uncased at main (huggingface.co)](https://huggingface.co/bert-base-uncased/tree/main)，放入目录**./plugins/TextInfoPlugin**下
 
-**步骤2**：配置环境变量，根据自己的环境变量不同，需要配置不同的环境变量，下面给出参考示例：
+**步骤2**：[ctpn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_ctpn.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内。
+
+**步骤3**：配置环境变量，根据自己的环境变量不同，需要配置不同的环境变量，下面给出参考示例：
 
 ```bash
 export ASCEND_HOME=/usr/local/Ascend
@@ -154,7 +157,7 @@ export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LI
 
 注意：请把${XXX}替换为具体的SDK安装路径
 
-**步骤3**：在```IDCardRecognition.py```中，更改```pipeline```路径。
+**步骤4**：在```IDCardRecognition.py```中，更改```pipeline```路径。
 
 ### 4.2 运行
 
