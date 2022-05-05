@@ -1,0 +1,129 @@
+{
+    "center_face": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresizer0"
+        },
+        "mxpi_imageresizer0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "800",
+                "resizeWidth": "800"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "tee0"
+        },
+        "tee0": {
+            "factory": "tee",
+            "next": [
+                "queue0",
+                "queue1"
+            ]
+        },
+        "queue0": {
+            "props": {
+                "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_tensorinfer0"
+        },
+        "queue1": {
+            "props": {
+                "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_opencvosd0:0"
+        },
+        "tee1": {
+            "factory": "tee",
+            "next": [
+                "queue2",
+                "queue3"
+            ]
+        },
+        "queue2": {
+            "props": {
+                "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "queue3": {
+            "props": {
+                "max-size-buffers": "50"
+            },
+            "factory": "queue",
+            "next": "mxpi_objectpostprocessor1"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresizer0",
+                "modelPath": "../model/centerface_offical.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "tee1"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "../model/centerface.cfg",
+                "postProcessLibPath": "../plugins/lib/plugins/libmxpi_centerfacepostprocessor.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_object2osdinstances0"
+        },
+        "mxpi_objectpostprocessor1": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "../model/centerface.cfg",
+                "postProcessLibPath": "../plugins/lib/plugins/libmxpi_centerfacekeypointpostprocessor.so"
+            },
+            "factory": "mxpi_keypointpostprocessor",
+            "next": "mxpi_synchronize0:1"
+        },
+        "mxpi_object2osdinstances0": {
+            "props": {
+                "colorMap": "128, 128, 255|200,200,200|0,128,255|255,128,0",
+                "fontFace": "16",
+                "fontScale": "0.5",
+                "fontThickness": "1",
+                "fontLineType": "16",
+                "rectThickness": "1",
+                "rectLineType": "16"
+            },
+            "factory": "mxpi_object2osdinstances",
+            "next": "mxpi_opencvosd0:1"
+        },
+        "mxpi_opencvosd0": {
+            "props": {
+                "dataSourceImage": "mxpi_imagedecoder0",
+                "dataSourceOsd": "mxpi_object2osdinstances0"
+            },
+            "factory": "mxpi_opencvosd",
+            "next": "mxpi_synchronize0:0"
+        },
+        "mxpi_synchronize0": {
+            "factory": "mxpi_synchronize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
