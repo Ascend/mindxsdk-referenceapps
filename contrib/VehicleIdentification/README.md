@@ -25,7 +25,7 @@ npu-smi info
 
 ### 1.3 软件方案介绍
 
-本方案中，采用yolov3预训练模型对输入图片进行车辆识别，车辆识别后对识别出的车辆图像进行抠图，然后使用GoogLeNet_cars模型进行头部姿态识别，最终根据GoogLeNet_cars模型识别得到的车型信息和置信度生成框出并标有车辆车型与置信度的jpg图片。
+本方案中，采用yolov3预训练模型对输入图片进行车辆识别，车辆识别后对识别出的车辆图像进行抠图，然后使用GoogLeNet_cars模型进行车型识别，最终根据GoogLeNet_cars模型识别得到的车型信息和置信度生成框出并标有车辆车型与置信度的jpg图片。
 
 注：由于GoogLeNet_cars模型限制，仅支持识别在`./models/vehicle/car.names`文件中的 **431** 种车辆。
 
@@ -144,7 +144,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 
 **步骤2** 更新caffemodel文件：
 
-由于此模型为老版本模型，atc不支持转换，需要将模型权重文件与结构文件更新，项目提供更新后的模型结构文件deploy.prototxt，位于`./models/googlenet/deploy.prototxt`。
+由于此模型为老版本模型，atc不支持转换，需要将模型权重文件与结构文件更新，项目在[模型下载链接中](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)同时提供更新后的模型结构文件deploy.prototxt。
 
 将权重文件放置于`./models/googlenet/`目录下，执行目录下的updatemodel.py（需要安装caffe环境），得到新版caffe权重文件`after-modify.caffemodel`。
 
