@@ -134,7 +134,7 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateOutput(const MxpiObjectList srcMx
                 if (Intersect) {
                     statiscalResult++ ;
                 }
-            }  
+            }
         }
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }

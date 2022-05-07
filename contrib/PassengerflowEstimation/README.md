@@ -64,7 +64,7 @@ passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量�
 
 本项目实现对输入视频的人流量进行统计，流程图如下：
 
-![passengerdetect.png](https://s2.loli.net/2022/04/20/ea1387YxRJiFzrD.png)
+![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image1.png)
 
 
 
@@ -249,9 +249,8 @@ python3 main.py
 
 在程序运行过程中，会自动输出帧率：
 
-![image1.png](https://s2.loli.net/2022/04/22/m7DMpSjK8W4zfNk.png)
+![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image2.png)
 
 帧率已经达到要求。
-
 
 
