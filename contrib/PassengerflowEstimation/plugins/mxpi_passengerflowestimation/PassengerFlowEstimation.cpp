@@ -128,10 +128,10 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateOutput(const MxpiObjectList srcMx
             int y = (dstMxpiObject.y0() + dstMxpiObject.y1())/2;
             std::pair<int, int> point = std::make_pair(x, y);
             int TrackId = atoi(dstMxpiClass.classname().c_str());
-            if(lastObjects.count(TrackId) > 0) {
+            if (lastObjects.count(TrackId) > 0) {
                 std::pair<int, int> LastPoint = lastObjects[TrackId];
                 bool Intersect = IsIntersect(LastPoint.first, LastPoint.second, point.first, point.second, x0, y0, x1, y1);
-                if(Intersect) {
+                if (Intersect) {
                     statiscalResult++ ;
                 }
             }  
