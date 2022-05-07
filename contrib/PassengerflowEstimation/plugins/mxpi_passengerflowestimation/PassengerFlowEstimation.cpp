@@ -85,9 +85,9 @@ APP_ERROR MxpiPassengerFlowEstimation::PrintMxpiErrorInfo(MxpiBuffer& buffer, co
  * @description: Replace className with trackId
  */
 APP_ERROR MxpiPassengerFlowEstimation::GenerateOutput(const MxpiObjectList srcMxpiObjectList,
-                                                            const MxpiTrackLetList srcMxpiTrackLetList,
-                                                            const MxpiFrameInfo srcMxpiFrameInfo,
-                                                            MxpiObjectList& dstMxpiObjectList)
+                                                      const MxpiTrackLetList srcMxpiTrackLetList,
+                                                      const MxpiFrameInfo srcMxpiFrameInfo,
+                                                      MxpiObjectList& dstMxpiObjectList)
 {
     int x0 = atoi(x0_.c_str());
     int y0 = atoi(y0_.c_str());
@@ -128,13 +128,13 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateOutput(const MxpiObjectList srcMx
             int y = (dstMxpiObject.y0() + dstMxpiObject.y1())/2;
             std::pair<int, int> point = std::make_pair(x, y);
             int TrackId = atoi(dstMxpiClass.classname().c_str());
-            if(lastObjects.count(TrackId) > 0){
-                std::pair<int,int> LastPoint = lastObjects[TrackId];
-                bool Intersect = IsIntersect(LastPoint.first,LastPoint.second,point.first,point.second,x0,y0,x1,y1);
-                if(Intersect){
+            if(lastObjects.count(TrackId) > 0) {
+                std::pair<int, int> LastPoint = lastObjects[TrackId];
+                bool Intersect = IsIntersect(LastPoint.first, LastPoint.second, point.first, point.second, x0, y0, x1, y1);
+                if(Intersect) {
                     statiscalResult++ ;
                 }
-            }   
+            }  
         }
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
