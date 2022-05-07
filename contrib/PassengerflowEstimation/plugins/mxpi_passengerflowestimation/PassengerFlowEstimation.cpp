@@ -84,7 +84,7 @@ APP_ERROR MxpiPassengerFlowEstimation::PrintMxpiErrorInfo(MxpiBuffer& buffer, co
 /*
  * @description: Replace className with trackId
  */
-APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList,
+APP_ERROR MxpiPassengerFlowEstimation::GenerateOutput(const MxpiObjectList srcMxpiObjectList,
                                                             const MxpiTrackLetList srcMxpiTrackLetList,
                                                             const MxpiFrameInfo srcMxpiFrameInfo,
                                                             MxpiObjectList& dstMxpiObjectList)
@@ -128,11 +128,13 @@ APP_ERROR MxpiPassengerFlowEstimation::GenerateSampleOutput(const MxpiObjectList
             int y = (dstMxpiObject.y0() + dstMxpiObject.y1())/2;
             std::pair<int, int> point = std::make_pair(x, y);
             int TrackId = atoi(dstMxpiClass.classname().c_str());
-            std::pair<int, int> LastPoint = lastObjects[TrackId];
-            bool Intersect = IsIntersect(LastPoint.first, LastPoint.second, point.first, point.second, x0, y0, x1, y1);
-            if (Intersect) {
-                statiscalResult++;
-            }
+            if(lastObjects.count(TrackId) > 0){
+                std::pair<int,int> LastPoint = lastObjects[TrackId];
+                bool Intersect = IsIntersect(LastPoint.first,LastPoint.second,point.first,point.second,x0,y0,x1,y1);
+                if(Intersect){
+                    statiscalResult++ ;
+                }
+            }   
         }
         APP_ERROR ret = UpdateLastObjectList(dstMxpiObjectList);
     }
@@ -197,7 +199,7 @@ APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuf
     shared_ptr<MxpiTrackLetList> srcMxpiTrackLetListSptr = static_pointer_cast<MxpiTrackLetList>(metadata2);
     shared_ptr<MxpiFrameInfo> srcMxpiFrameInfoSptr = static_pointer_cast<MxpiFrameInfo>(metadata3);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
-    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *srcMxpiTrackLetListSptr, *srcMxpiFrameInfoSptr, *dstMxpiObjectListSptr); // Generate sample output
+    APP_ERROR ret = GenerateOutput(*srcMxpiObjectListSptr, *srcMxpiTrackLetListSptr, *srcMxpiFrameInfoSptr, *dstMxpiObjectListSptr); // Generate sample output
     if (ret != APP_ERR_OK) {
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, ret, "MxpiPassengerFlowEstimation gets inference information failed.");
     }
