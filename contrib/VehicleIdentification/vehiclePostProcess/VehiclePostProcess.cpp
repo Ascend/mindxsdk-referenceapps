@@ -82,7 +82,7 @@ namespace MxBase {
             return ret;
         }
 
-        if(inputs.size() <= 0){
+        if (inputs.size() <= 0) {
             LogError << "The tensors size is invalid!";
             return ret;
         }

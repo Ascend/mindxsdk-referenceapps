@@ -212,7 +212,7 @@ chmod 640 ./lib/libvehiclepostprocess.so
 ```
 **步骤4** 
 
-在测试集中或自行选择一张jpg文件，放入项目根目录中，再执行
+在测试集中或自行选择一张或多张jpg文件，放入新建`./input`目录下，再执行
 ```bash
 python3 main.py
 ```
