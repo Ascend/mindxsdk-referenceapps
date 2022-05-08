@@ -26,7 +26,7 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
-def GetFileNames(rootdir):
+def get_file_names(rootdir):
     fs = []
     for root, dirs, files in os.walk(rootdir, topdown = True):
         for name in files: 
@@ -38,7 +38,7 @@ def GetFileNames(rootdir):
 
 if __name__ == '__main__':
 
-    testfiles = get_fileNames('./input/')
+    testfiles = get_file_names('./input/')
 
     if len(testfiles) == 0:
         print("The input directory is EMPTY!")
