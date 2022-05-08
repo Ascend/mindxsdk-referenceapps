@@ -25,9 +25,10 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-def get_fileNames(rootdir):
+
+def GetFileNames(rootdir):
     fs = []
-    for root, dirs, files in os.walk(rootdir,topdown = True):
+    for root, dirs, files in os.walk(rootdir, topdown = True):
         for name in files: 
             _, ending = os.path.splitext(name)
             if ending == ".jpg":
@@ -62,7 +63,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    if os.path.exists('result') != True:
+    if os.path.exists('result') is not True:
         os.mkdir('result')
 
     for testfile in testfiles:
