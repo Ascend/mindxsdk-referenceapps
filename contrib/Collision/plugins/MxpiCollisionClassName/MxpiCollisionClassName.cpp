@@ -57,7 +57,7 @@ APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std
     return ret;
 }
 
-APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)
+APP_ERROR MxpiCollisionClassName::CollisionJudgment(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)
 {
     int w = 2;
     int n = srcMxpiObjectList.objectvec_size();
@@ -163,7 +163,7 @@ APP_ERROR MxpiCollisionClassName::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     // Generate sample output
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
-    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *dstMxpiObjectListSptr);
+    APP_ERROR ret = CollisionJudgment(*srcMxpiObjectListSptr, *dstMxpiObjectListSptr);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret, pluginName_) << "MxpiCollisionClassName gets inference information failed.";
         mxpiErrorInfo.ret = ret;
