@@ -34,7 +34,7 @@ APP_ERROR MxpiPassengerFlowEstimation ::Init(std::map<std::string, std::shared_p
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
     std::shared_ptr<string> motNamePropSptr = std::static_pointer_cast<string>(configParamMap["motSource"]);
-    motName = *motNamePropSptr.get();
+    motName_ = *motNamePropSptr.get();
     std::shared_ptr<string> descriptionMessageProSptr = std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     descriptionMessage_ = *descriptionMessageProSptr.get();
     std::shared_ptr<string> x0 = std::static_pointer_cast<string>(configParamMap["x0"]);
@@ -166,7 +166,7 @@ APP_ERROR MxpiPassengerFlowEstimation::Process(std::vector<MxpiBuffer*>& mxpiBuf
         return PrintMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo, APP_ERR_COMM_FAILURE, "MxpiPassengerFlowEstimation process is not implemented");
     }
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);  // Get the data from buffer
-    shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName);
+    shared_ptr<void> metadata2 = mxpiMetadataManager.GetMetadata(motName_);
     shared_ptr<void> metadata3 = mxpiMetadataManager.GetMetadata("ReservedFrameInfo");
     if (metadata == nullptr) {
         shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();

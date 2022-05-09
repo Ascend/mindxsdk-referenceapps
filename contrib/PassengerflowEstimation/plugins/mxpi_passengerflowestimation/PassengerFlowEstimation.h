@@ -62,7 +62,7 @@ public:
      * @return APP_ERROR
      */
      
-    APP_ERROR GenerateSampleOutput(const MxTools::MxpiObjectList srcMxpiObjectList,
+    APP_ERROR GenerateOutput(const MxTools::MxpiObjectList srcMxpiObjectList,
                                    const MxTools::MxpiTrackLetList srcMxpiTrackLetList,
                                    const MxTools::MxpiFrameInfo srcMxpiFrameInfo,
                                    MxTools::MxpiObjectList& dstMxpiObjectList);
