@@ -132,7 +132,7 @@ YOLOv4:
 atc --model=./yolov4_dynamic_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp_yolov4_576_576.config --input_shape="input:1,3,576,576" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了已经转换好的YOLOv4 om模型：[链接](https://pan.baidu.com/s/1ovT-ACjAOptttP9uIamacQ?pwd=u8ua)
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了原模型以及已经转换好的YOLOv4 om模型：[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleRetrogradeRecognition/models.zip)
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
