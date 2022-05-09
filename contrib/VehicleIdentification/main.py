@@ -67,6 +67,10 @@ if __name__ == '__main__':
         os.mkdir('result')
 
     for testfile in testfiles:
+        filename = testfile
+        # remove '.jpg'
+        outputname = filename[:-4]
+        # add path
         testfile = "input/" + testfile
 
         if os.path.getsize(testfile) == 0:
@@ -85,7 +89,7 @@ if __name__ == '__main__':
         # Send Input Data to Stream
         uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
         
-        print(testfile[6:] + " -------------START-------------")
+        print(filename + " -------------START-------------")
         print()
 
         # Get the result returned by the plugins
@@ -114,11 +118,11 @@ if __name__ == '__main__':
             image_res = copy.deepcopy(image)
             image_res = cv2.cvtColor(image_res, cv2.COLOR_RGB2BGR)
             SRC_PATH = os.path.realpath(__file__).rsplit("/", 1)[0]
-            resultname = "./result/" + testfile[6:-4] + "_result.jpg"
+            resultname = "./result/" + outputname + "_result.jpg"
             Output_PATH = os.path.join(SRC_PATH, resultname)
             cv2.imwrite(Output_PATH, image_res)
             print()
-            print(testfile[6:] + " --------------END--------------")
+            print(filename + " --------------END--------------")
             print()
             continue
 
@@ -203,9 +207,9 @@ if __name__ == '__main__':
                 cv2.rectangle(img, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']),
                             RECTANGLE_COLOR, RECTANGLE_THICKNESS)
 
-        resultfile = "./result/" + testfile[6:-4] + "_result.jpg"
+        resultfile = "./result/" + outputname + "_result.jpg"
         cv2.imwrite(resultfile, img)
-        print(testfile[6:] + " --------------END--------------")
+        print(filename + " --------------END--------------")
         print()
     # destroy streams
     streamManagerApi.DestroyAllStreams()
