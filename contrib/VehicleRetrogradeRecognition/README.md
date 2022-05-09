@@ -42,7 +42,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ```
 ├── models
-│   ├── aipp_yolov4_608_608.config            # 模型转换aipp配置文件
+│   ├── aipp_yolov4_576_576.config            # 模型转换aipp配置文件
+│   ├── coco.names
+│   ├── fusion_result.json
 │   └── yolov4_bs.om               # om模型
 ├── pipeline
 │   └── VehicleRetrogradeRecognition.pipeline        # pipeline文件
