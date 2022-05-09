@@ -38,6 +38,7 @@ SAMPLE_FOLDER=(
     RotateObjectDetection/
     FairMOT/
     UltraFastLaneDetection/
+    PassengerflowEstimation
 )
 
 
