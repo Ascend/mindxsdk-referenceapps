@@ -60,7 +60,7 @@ public:
      * @param buffer
      * @return APP_ERROR
      */
-    APP_ERROR GenerateSampleOutput(const MxTools::MxpiObjectList srcMxpiObjectList, MxTools::MxpiObjectList& dstMxpiObjectList);
+    APP_ERROR CollisionJudgment(const MxTools::MxpiObjectList srcMxpiObjectList, MxTools::MxpiObjectList& dstMxpiObjectList);
 private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);
