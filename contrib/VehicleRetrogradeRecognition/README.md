@@ -148,7 +148,7 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -s 1280*720 -an -f h264 test.264
 //-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
 ```
 
-**步骤2** 按照第3小结**软件依赖**安装live555和ffmpeg，按照步骤1或者 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改`VehicleRetrogradeRecognition/pipeline`目录下的VehicleRetrogradeRecognition.pipeline文件中mxpi_rtspsrc0的内容。
+**步骤2** 按照第3小结**软件依赖**安装live555和ffmpeg，按照步骤1或者 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/one_stop_navigation.md)将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改`VehicleRetrogradeRecognition/pipeline`目录下的VehicleRetrogradeRecognition.pipeline文件中mxpi_rtspsrc0的内容。
 
 ```
         "mxpi_rtspsrc0": {
