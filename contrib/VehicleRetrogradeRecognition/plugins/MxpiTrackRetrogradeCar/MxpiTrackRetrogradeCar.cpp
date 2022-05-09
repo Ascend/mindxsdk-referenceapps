@@ -123,125 +123,115 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int index = (int)srcMxpiTrackLet.trackid();
             // 保存每个车辆轨迹最新的20个bbox
-            if (srcMxpiTrackLet.trackflag()!=2)
+            if (srcMxpiTrackLet.trackflag()!=2 && srcMxpiTrackLet.headervec(0).memberid()==i)
             {
-                MxpiMetaHeader srcMxpiHeader = srcMxpiTrackLet.headervec(0);
-                if (srcMxpiHeader.memberid()==i)
+                if (pts[index].size()>=traceSize)
+                    pts[index].pop();
+                pts[index].push(boxs);
+                std::vector<center> last_point = {};
+                for (uint32_t j = 0; j<pts[index].size(); j++)
                 {
-                    if (pts[index].size()>=traceSize)
+                    if (pts[index].size()-j<=lastPointSize)
                     {
-                        pts[index].pop();
-                        pts[index].push(boxs);
+                        last_point.push_back(pts[index].front());
                     }
-                    else
+                    pts[index].push(pts[index].front());
+                    pts[index].pop();
+                }
+                // 不少于2个bbox的车辆轨迹可用于方向判断
+                if (last_point.size()==lastPointSize)
+                {
+                    int p1, p2, m1, m2;
+                    // 去掉边缘误差判断情况
+                    if (last_point[0].x<x_min || last_point[0].x>x_max || last_point[1].x<x_min || last_point[1].x>x_max || last_point[0].y<y_min || last_point[0].y>y_max || last_point[1].y<y_min || last_point[1].y>y_max)
+                        continue;
+                    // 如果计数标志位是垂直的，使用x坐标来判断
+                    if (is_vertical)
                     {
-                        pts[index].push(boxs);
-                    }
-                    std::vector<center> last_point = {};
-                    for (uint32_t j = 0; j<pts[index].size(); j++)
-                    {
-                        if (pts[index].size()-j<=lastPointSize)
+                        p1=last_point[0].x;
+                        p2=last_point[1].x;
+                        m1=last_point[0].y;
+                        m2=last_point[1].y;
+                        if (p1>p2)
                         {
-                            last_point.push_back(pts[index].front());
-                        }
-                        pts[index].push(pts[index].front());
-                        pts[index].pop();
-                    }
-                    // 不少于2个bbox的车辆轨迹可用于方向判断
-                    if (last_point.size()==lastPointSize)
-                    {
-                        int p1, p2, m1, m2;
-                        // 去掉边缘误差判断情况
-                        if (last_point[0].x<x_min || last_point[0].x>x_max || last_point[1].x<x_min || last_point[1].x>x_max || last_point[0].y<y_min || last_point[0].y>y_max || last_point[1].y<y_min || last_point[1].y>y_max)
-                            continue;
-                        // 如果计数标志位是垂直的，使用x坐标来判断
-                        if (is_vertical)
-                        {
-                            p1=last_point[0].x;
-                            p2=last_point[1].x;
-                            m1=last_point[0].y;
-                            m2=last_point[1].y;
-                            if (p1>p2)
-                            {
-                                if ((limit_y1+limit_y2)/count_center < m1)
-                                { // 逆行
-                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
-                                    dstMxpiObject->set_x0(srcMxpiObject.x0());
-                                    dstMxpiObject->set_y0(srcMxpiObject.y0());
-                                    dstMxpiObject->set_x1(srcMxpiObject.x1());
-                                    dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
-                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-                                    dstMxpiClass->set_classid(0);
-                                    dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
-                                }
-                            }
-                            else
-                            {
-                                if ((limit_y1+limit_y2)/count_center > m1)
-                                { // 逆行
-                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
-                                    dstMxpiObject->set_x0(srcMxpiObject.x0());
-                                    dstMxpiObject->set_y0(srcMxpiObject.y0());
-                                    dstMxpiObject->set_x1(srcMxpiObject.x1());
-                                    dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
-                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-                                    dstMxpiClass->set_classid(0);
-                                    dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
-                                }
+                            if ((limit_y1+limit_y2)/count_center < m1)
+                            { // 逆行
+                                MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
+                                dstMxpiObject->set_x0(srcMxpiObject.x0());
+                                dstMxpiObject->set_y0(srcMxpiObject.y0());
+                                dstMxpiObject->set_x1(srcMxpiObject.x1());
+                                dstMxpiObject->set_y1(srcMxpiObject.y1());
+                                MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                dstMxpiClass->set_confidence(srcMxpiClass.confidence());
+                                dstMxpiClass->set_classid(0);
+                                dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                             }
                         }
                         else
                         {
-                            p1=last_point[0].y;
-                            p2=last_point[1].y;
-                            m1=last_point[0].x;
-                            m2=last_point[1].x;
-                            if (p1>p2)
-                            { // 向上开
-                                if ((k*m1+b>p1 && k<0) || (k*m1+b<p1 && k>0))
-                                { // 逆行
-                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
-                                    {
-                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
-                                        dstMxpiObject->set_x0(srcMxpiObject.x0());
-                                        dstMxpiObject->set_y0(srcMxpiObject.y0());
-                                        dstMxpiObject->set_x1(srcMxpiObject.x1());
-                                        dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
-                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-                                        dstMxpiClass->set_classid(0);
-                                        dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
-                                    }
-                                    else
-                                        is_retrograde.push_back(srcMxpiTrackLet.trackid());
-                                }
-                            }
-                            if (p1<p2)
-                            {
-                                if ((k*m1+b<p1 && k<0) || (k*m1+b>p1 && k>0))
-                                { // 逆行
-                                    if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
-                                    {
-                                        MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
-                                        dstMxpiObject->set_x0(srcMxpiObject.x0());
-                                        dstMxpiObject->set_y0(srcMxpiObject.y0());
-                                        dstMxpiObject->set_x1(srcMxpiObject.x1());
-                                        dstMxpiObject->set_y1(srcMxpiObject.y1());
-                                        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
-                                        dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-                                        dstMxpiClass->set_classid(0);
-                                        dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
-                                    }
-                                    else
-                                        is_retrograde.push_back(srcMxpiTrackLet.trackid());
-                                }
+                            if ((limit_y1+limit_y2)/count_center > m1)
+                            { // 逆行
+                                MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
+                                dstMxpiObject->set_x0(srcMxpiObject.x0());
+                                dstMxpiObject->set_y0(srcMxpiObject.y0());
+                                dstMxpiObject->set_x1(srcMxpiObject.x1());
+                                dstMxpiObject->set_y1(srcMxpiObject.y1());
+                                MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                dstMxpiClass->set_confidence(srcMxpiClass.confidence());
+                                dstMxpiClass->set_classid(0);
+                                dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
                             }
                         }
                     }
-                    continue;
+                    else
+                    {
+                        p1=last_point[0].y;
+                        p2=last_point[1].y;
+                        m1=last_point[0].x;
+                        m2=last_point[1].x;
+                        if (p1>p2)
+                        { // 向上开
+                            if ((k*m1+b>p1 && k<0) || (k*m1+b<p1 && k>0))
+                            { // 逆行
+                                if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
+                                {
+                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
+                                    dstMxpiObject->set_x0(srcMxpiObject.x0());
+                                    dstMxpiObject->set_y0(srcMxpiObject.y0());
+                                    dstMxpiObject->set_x1(srcMxpiObject.x1());
+                                    dstMxpiObject->set_y1(srcMxpiObject.y1());
+                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
+                                    dstMxpiClass->set_classid(0);
+                                    dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
+                                }
+                                else
+                                    is_retrograde.push_back(srcMxpiTrackLet.trackid());
+                            }
+                        }
+                        if (p1<p2)
+                        {
+                            if ((k*m1+b<p1 && k<0) || (k*m1+b>p1 && k>0))
+                            { // 逆行
+                                if (is_element_in_vector(is_retrograde, srcMxpiTrackLet.trackid()))
+                                {
+                                    MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
+                                    dstMxpiObject->set_x0(srcMxpiObject.x0());
+                                    dstMxpiObject->set_y0(srcMxpiObject.y0());
+                                    dstMxpiObject->set_x1(srcMxpiObject.x1());
+                                    dstMxpiObject->set_y1(srcMxpiObject.y1());
+                                    MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+                                    dstMxpiClass->set_confidence(srcMxpiClass.confidence());
+                                    dstMxpiClass->set_classid(0);
+                                    dstMxpiClass->set_classname(to_string(srcMxpiTrackLet.trackid()));
+                                }
+                                else
+                                    is_retrograde.push_back(srcMxpiTrackLet.trackid());
+                            }
+                        }
+                    }
                 }
+                continue;
             }
         }
     }
