@@ -365,6 +365,32 @@ cd到权错误so文件所在位置，使用命令`
 chmod 640 {NAME}.so 
 ```
 
+## 5.8 无法找到后处理插件，can not find the element factory: mxpi_objectpostprocessor
+
+错误：后处理插件无法找到，can not find the element factory: mxpi_objectpostprocessor
+### 现象描述
+
+```bash
+E20220509 10:19:21.689942 25598 MxsmElement.cpp:390] [6014][element invalid factory] Feature is NULL, can not find the element factory: mxpi_XXX
+```
+
+### 定位
+到${MX_SDK_HOME}/opensource/bin路径下，执行./gst-inspect-1.0 ../../lib/plugins/mxpi_xxxpostprocessor.so(插件so的 相对路径或者绝对路径)检查插件。
+
+### 可能原因
+
+后处理插件使用的pybind依赖python3.9，请确保环境上的python3.9已安装，建议安装python3.9.2
+
+### 处理方法
+
+安装python3.9后，将libpython3.9.so.1.0拷贝到/usr/lib/路径下
+执行以下命令清除历史缓存
+```bash
+rm ~/.cache/gstreamer-1.0/registry.x86_64.bin
+```
+（根据具体运行环境选择x86_64.bin或者aarch64.bin来清除gstreamer的历史缓存）
+再次运行程序即可。
+
 # 6 PR提交
 
 ## 6.1 ci-pipeline-failed
