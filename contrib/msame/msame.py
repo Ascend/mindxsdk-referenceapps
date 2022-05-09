@@ -197,7 +197,7 @@ def get_array(binfile, input_type):
         files_bin.append(np.fromfile(binfile, dtype=input_type).flatten())
     new_files = []
     #make new bin
-    a = len(files_bin)-1+1
+    a = len(files_bin)
     for im in range(a):
         if im == 0:
             new_files.append(files_bin[0])
@@ -220,7 +220,7 @@ def get_npy(binfile, input_type):
         files_bin.append(np.load(binfile).flatten())
     new_file = []
     #make new bin
-    a = len(files_bin)-1+1
+    a = len(files_bin)
     for im in range(a):
         if im == 0:
             new_file.append(files_bin[0])
@@ -235,14 +235,15 @@ def get_npy(binfile, input_type):
 
 if  __name__ == '__main__':
     TIMES = 0.0
+    TRANS = 1000
     SAVES = True
     for mj in range(loop):
         nowtimes = time.time()
         TIMES = infer(SAVES)
         SAVES = False
         TIMES += TIMES
-        print("loop {0} : Inference time: {1:f} ms".format(mj, TIMES*1000))
+        print("loop {0} : Inference time: {1:f} ms".format(mj, TIMES*TRANS))
     print("infer success!")
-    print("Inference average time: {0:f} ms".format(TIMES/loop*1000))
+    print("Inference average time: {0:f} ms".format(TIMES/loop*TRANS))
 
 
