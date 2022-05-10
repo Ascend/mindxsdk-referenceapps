@@ -82,7 +82,7 @@
 ## 3 模型转换
 
 **步骤1** 模型获取
-在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)，选择“历史版本”中版本1.1下载）
+在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)）
 
 **步骤2** 模型存放
 将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/model/"。
@@ -173,6 +173,15 @@ nms_iouthreshold: 0.6
 **步骤4** 设置环境变量，
 FFMPEG_HOME为ffmpeg安装的路径，MX_SDK_HOME为MindXSDK安装的路径
 LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
+这里提供两种方式
+1. export命令
+```
+export MX_SDK_HOME=${SDK安装路径}
+export FFMPEG_HOME=${FFMPEG安装路径} 
+export  LD_LIBRARY_PATH=${FFMPEG_HOME}/lib:${LD_LIBRARY_PATH}
+```
+
+2. 修改.bashrc
 ```
 # 执行如下命令，打开.bashrc文件
 vi .bashrc
@@ -228,3 +237,18 @@ bash run.sh
 
 **解决方案** 将YolovDetection.cpp中的图片resize大小由416x416改为608x608，并将main.cpp文件里的modelType由0改为1
 
+### config文件读取异常
+**问题描述** 未提及修改main.cpp中的configUtil.LoadConfiguration的路径，运行程序会报error
+```
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+E20220507 17:05:13.253134 16193 FileUtils.cpp:315] realpath parsing failed.
+E20220507 17:05:13.253193 16193 ConfigUtil.cpp:247] Failed to get canonicalized file path.
+W20220507 17:05:13.253223 16193 ConfigUtil.h:103] [1016][Object, file or other resource doesn't exist] Fail to read (program_name) from config, default is: mindx_sdk
+W20220507 17:05:13.253239 16193 ConfigUtil.h:103] [1016][Object, file or other resource doesn't exist] Fail to read (base_filename) from config, default is: mxsdk.log
+W20220507 17:05:13.253248 16193 ConfigUtil.h:103] [1016][Object, file or other resource doesn't exist] Fail to read (set_log_destination) from config, default is: 1
+```
+
+**解决方案** 将main.cpp中72行的configUtil.LoadConfiguration路径改为实际值
+```
+configUtil.LoadConfiguration("$ENV{MX_SDK_HOME}/config/logging.conf", configData, MxBase::ConfigMode::CONFIGFILE);
+```
