@@ -5,9 +5,9 @@
 
 ### 1.1 支持的产品
 
-MindX SDK mxVision:2.0.4
-mxVision version:2.0.4.b096
-Plat: linux aarch64
+MindX SDK mxVision:2.0.4   
+mxVision version:2.0.4.b096   
+Plat: linux aarch64   
 
 ### 1.2 支持的版本
 
@@ -30,7 +30,7 @@ Ascend 21.0.4
 
 ### 1.5 技术实现流程图
 
-![image-20220401173124980](D:\文件\华为算子\模型\未命名文件.png)
+![image-20220401173124980](./img/process.png)
 
 
 
