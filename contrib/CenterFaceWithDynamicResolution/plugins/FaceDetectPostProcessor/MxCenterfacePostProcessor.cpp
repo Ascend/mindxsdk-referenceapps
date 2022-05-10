@@ -98,8 +98,8 @@ APP_ERROR MxCenterfacePostProcessor::Process(std::vector<void *> &featLayerData,
   imageInfo.modelHeight = resizeInfo.heightResize;
   imageInfo.imgHeight = resizeInfo.heightOriginal;
   imageInfo.imgWidth = resizeInfo.widthOriginal;
-  modelWidth_ = resizeInfo.widthResize / downSample;
-  modelHeight_ = resizeInfo.heightResize / downSample;
+  modelWidth_ = resizeInfo.widthResize / DOWN_SAMPLE;
+  modelHeight_ = resizeInfo.heightResize / DOWN_SAMPLE;
   std::vector<FaceInfo> faces;
   detect(featLayerData, faces, imageInfo, scoreThresh_, iouThresh_);
   for (int i = 0; i < faces.size(); i++) {
@@ -164,13 +164,13 @@ void MxCenterfacePostProcessor::decode(float *heatmap, float *scale,
     int id_w = ids[2 * i + 1];
     int index = id_h * modelWidth_ + id_w;
 
-    float s0 = std::exp(scale0[index]) * 4;
-    float s1 = std::exp(scale1[index]) * 4;
+    float s0 = std::exp(scale0[index]) * DOWN_SAMPLE;
+    float s1 = std::exp(scale1[index]) * DOWN_SAMPLE;
     float o0 = offset0[index];
     float o1 = offset1[index];
 
-    float x1 = std::max(0., (id_w + o1 + 0.5) * 4 - s1 / 2);
-    float y1 = std::max(0., (id_h + o0 + 0.5) * 4 - s0 / 2);
+    float x1 = std::max(0., (id_w + o1 + 0.5) * DOWN_SAMPLE - s1 / SCALE_FACTOR);
+    float y1 = std::max(0., (id_h + o0 + 0.5) * DOWN_SAMPLE - s0 / SCALE_FACTOR);
     float x2 = 0, y2 = 0;
     x1 = std::min(x1, (float)imageinfo.modelWidth);
     y1 = std::min(y1, (float)imageinfo.modelHeight);
@@ -229,17 +229,16 @@ void MxCenterfacePostProcessor::squareBox(std::vector<FaceInfo> &faces,
   for (int i = 0; i < faces.size(); i++) {
     w = faces[i].x2 - faces[i].x1;
     h = faces[i].y2 - faces[i].y1;
-    int scaleFactor = 2;
     maxSize = std::max(w, h);
-    cenx = faces[i].x1 + w / scaleFactor;
-    ceny = faces[i].y1 + h / scaleFactor;
+    cenx = faces[i].x1 + w / SCALE_FACTOR;
+    ceny = faces[i].y1 + h / SCALE_FACTOR;
 
-    faces[i].x1 = std::max(cenx - maxSize / scaleFactor, 0.f);
-    faces[i].y1 = std::max(ceny - maxSize / scaleFactor, 0.f);
+    faces[i].x1 = std::max(cenx - maxSize / SCALE_FACTOR, 0.f);
+    faces[i].y1 = std::max(ceny - maxSize / SCALE_FACTOR, 0.f);
     faces[i].x2 =
-        std::min(cenx + maxSize / scaleFactor, imageinfo.imgWidth - 1.f);
+        std::min(cenx + maxSize / SCALE_FACTOR, imageinfo.imgWidth - 1.f);
     faces[i].y2 =
-        std::min(ceny + maxSize / scaleFactor, imageinfo.imgHeight - 1.f);
+        std::min(ceny + maxSize / SCALE_FACTOR, imageinfo.imgHeight - 1.f);
   }
 }
 

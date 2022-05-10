@@ -178,6 +178,26 @@ static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpi
   return APP_ERR_OK;
 }
 
+// 当没有检测到人脸时，输出原始图片
+static APP_ERROR CopyFile(const std::string srcFile, const std::string desFile) {
+    std::ifstream is(srcFile, std::ifstream::in | std::ios::binary);
+    is.seekg(0, is.end);
+    int length = is.tellg();
+    is.seekg(0, is.beg);
+    char * buffer = new char[length];
+    is.read(buffer, length);
+    std::ofstream os(desFile, std::ofstream::out | std::ios::binary);
+    if (!os.is_open()) {
+        LogError << "Fail to open the picture.";
+        return -1;
+    }
+    os.write(buffer, length);
+    delete [] buffer;
+    is.close();
+    os.close();
+    return APP_ERR_OK;
+}
+
 // 打印protobuf信息
 static APP_ERROR PrintInfo(std::vector<MxStream::MxstProtobufOut> outPutInfo) {
   if (outPutInfo.size() == 0) {
@@ -235,7 +255,7 @@ int main(int argc, char *argv[]) {
   if (arguments.size() > 1) {
     fileName = arguments[1];
   } else {
-    fileName = "../images/0_Parade_marchingband_1_5.jpg";
+    LogError << "Please set your picture file path .";
   }
 
   // 将图片的信息读取到dataBuffer中
@@ -263,6 +283,10 @@ int main(int argc, char *argv[]) {
   ret = PrintInfo(output);
   if (ret != APP_ERR_OK) {
     LogError << "Fail to print the info of output, ret = " << ret << ".";
+    LogError << "Fail to detect face.";
+    MkdirRecursive("./result");
+    std::string desFile = "./result/result.jpg";
+    CopyFile(fileName, desFile);
     return ret;
   }
 

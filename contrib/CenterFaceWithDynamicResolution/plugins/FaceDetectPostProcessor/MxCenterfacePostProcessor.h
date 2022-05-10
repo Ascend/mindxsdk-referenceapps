@@ -25,7 +25,7 @@
 #include "MxBase/ModelPostProcessors/ModelPostProcessorBase/ObjectPostDataType.h"
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 #include "acl/acl.h"
-typedef struct FaceInfo {
+struct FaceInfo {
   float x1;
   float y1;
   float x2;
@@ -71,7 +71,8 @@ private:
   int modelHeight_ = 200;
   float scale_w = 1.f;
   float scale_h = 1.f;
-  int downSample = 4;
+  int DOWN_SAMPLE = 4;
+  int SCALE_FACTOR = 2;
   // IOU thresh hold
   float iouThresh_ = 0.4;
   int numsMethod = 1;
