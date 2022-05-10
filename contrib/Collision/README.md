@@ -69,9 +69,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ### 1.5 技术实现流程图
 
-![image-20220503155633135](C:\Users\谭孟豪\AppData\Roaming\Typora\typora-user-images\image-20220503155633135.png)
-
-
+![SDK流程图](../Collision/image/SDK流程图.png)
 
 ## 2 环境依赖
 
@@ -106,8 +104,8 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 
 | 依赖软件 | 版本       | 说明                           |                                                     使用教程 |
 | -------- | ---------- | ------------------------------ | -----------------------------------------------------------: |
-| live555  | 1.09       | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md) |
-| ffmpeg   | 2021-07-21 | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://ffmpeg.org/download.html) |
+| live555  | 1.09       | 实现视频转rstp进行推流         | [链接]([guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md)) |
+| ffmpeg   | 2021-07-21 | 实现mp4格式视频转为264格式视频 | [链接]([guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md)) |
 | python   | 3.9.2      | 与SDK配套                      | [链接]([Linux（Ubuntu）系统安装Python (biancheng.net)](http://c.biancheng.net/view/4162.html)) |
 
 ## 4 模型转换
@@ -144,7 +142,7 @@ ATC run success, welcome to the next use.
 
 ## 5 准备
 
-按照第3小结**软件依赖**安装live555和ffmpeg，按照 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md)将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改collision.pipeline文件中mxpi_rtspsrc0的内容。
+按照第3小结**软件依赖**安装live555和ffmpeg，按照 [Live555离线视频转RTSP说明文档]([guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md))将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改collision.pipeline文件中mxpi_rtspsrc0的内容。
 
 ```
         "mxpi_rtspsrc0": {
@@ -189,18 +187,28 @@ python3.9.2 collision.py
 ffmpeg -i collision.h264 -vcodec h264 collision.mp4
 ```
 
-![image-20220503164820258](C:\Users\谭孟豪\AppData\Roaming\Typora\typora-user-images\image-20220503164820258.png)![image-20220503164827809](C:\Users\谭孟豪\AppData\Roaming\Typora\typora-user-images\image-20220503164827809.png)![image-20220503164834947](C:\Users\谭孟豪\AppData\Roaming\Typora\typora-user-images\image-20220503164834947.png)
+![碰撞前](../Collision/image/碰撞前.png)![碰撞时](../Collision/image/碰撞时.png)![碰撞后](../Collision/image/碰撞后.png)
 
 ## 8 常见问题
 
 视频编码参数配置错误
 
-**问题描述：**
+1.**问题描述：**
 
 `Collision/collision.pipeline`中视频编码分辨率参数目前未配置，自适应分辨率编码输出。 如手动指定imageHeight 和 imageWidth 属性，则需要和视频输入分配率相同，否则会包如下类型的错：
 
-![img](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image3.png)
+![error](../Collision/image/error.png)
 
 **解决方案：**
 
 确保`Collision/collision.pipeline`中 mxpi_videoencoder0 插件的 imageHeight 和 imageWidth 属性值是输入.h264视频的高和宽。此时我们可以在用ffmpeg进行视频拉流时找到设置.h264视频的高和宽。
+
+2.**问题描述：**
+
+`Collision/collision.py`中视频帧数参数目前未确定，系统则会对缺省的视频拉流帧数进行识别并输出，所以会造成输出长视频不完整和短视频重复的结果。
+
+**解决方案：**
+
+确保`Collision/collision.py`中第52行`if t > 'xxx'`的属性值是输入.h264视频帧数。此时我们可以在用ffmpeg进行视频拉流时找到设置.h264视频的帧数。
+
+![视频格式转换](../Collision/image/视频格式转换.png)
