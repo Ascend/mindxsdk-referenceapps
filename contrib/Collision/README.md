@@ -113,11 +113,10 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 
 模型转换，步骤如下：
 
-从上述下载链接中下载yolov3模型至 ./model 文件夹下，也可以直接在model文件下执行以下代码，解压缩之后得到文件名为：yolov3_tf.pb 。
+从上述下载链接中下载yolov3模型至 ./model 文件夹下，也可以直接在model文件下执行以下代码得到的模型文件名为：yolov3_tf.pb 。
 
 ```
-wget --no-check-certificate https://obs-9be7.obs.cn-east-2.myhuaweicloud.com/turing/resourcecenter/model/YoloV3/zh/1.1/ATC_YoloV3_from_Tensorflow_Ascend310.zip
-unzip ATC_YoloV3_from_Tensorflow_Ascend310.zip
+wget --no-check-certificate https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Collision/yolov3_tf.pb
 ```
 
 进入 `./models` 文件夹下执行命令：
