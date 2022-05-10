@@ -249,7 +249,7 @@ python3 main.py
 
 在视频拉流时候，帧率为：
 
-![img](/home/dongyu3/mindxsdk-referenceapps/contrib/PassengerflowEstimation/images/image3.png)
+![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image3.png)
 
 在程序运行过程中，会自动输出帧率,该帧率为输出视频的帧率：
 
