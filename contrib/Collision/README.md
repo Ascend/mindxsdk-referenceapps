@@ -69,7 +69,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ### 1.5 技术实现流程图
 
-![SDK流程图](../Collision/image/SDK流程图.png)
+![SDK流程图](../Collision/image/SDK_process.png)
 
 ## 2 环境依赖
 
@@ -186,7 +186,7 @@ python3.9.2 collision.py
 ffmpeg -i collision.h264 -vcodec h264 collision.mp4
 ```
 
-![碰撞前](../Collision/image/碰撞前.png)![碰撞时](../Collision/image/碰撞时.png)![碰撞后](../Collision/image/碰撞后.png)
+![碰撞前](../Collision/image/before_collision.png)![碰撞时](../Collision/image/collision.png)![碰撞后](../Collision/image/after_collision.png)
 
 ## 8 常见问题
 
@@ -210,4 +210,4 @@ ffmpeg -i collision.h264 -vcodec h264 collision.mp4
 
 确保`Collision/collision.py`中第52行`if t > 'xxx'`的属性值是输入.h264视频帧数。此时我们可以在用ffmpeg进行视频拉流时找到设置.h264视频的帧数。
 
-![视频格式转换](../Collision/image/视频格式转换.png)
+![视频格式转换](../Collision/image/video_conversion.png)
