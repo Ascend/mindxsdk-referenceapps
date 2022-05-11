@@ -16,6 +16,7 @@
 set -e 
 
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
+export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
 
 function build_plugin() {
     build_path=$current_folder/build

@@ -21,13 +21,9 @@ include_directories(${MX_SDK_HOME}/opensource/include)
 include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
 include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
 include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
-include_directories(/usr/local/Ascend/ascend-toolkit/latest/acllib/include)
-include_directories(${MX_SDK_HOME}/opensource/include/opencv4 )
 
 link_directories(${MX_SDK_HOME}/lib)
 link_directories(${MX_SDK_HOME}/opensource/lib)
-link_directories(${MX_SDK_HOME}/opensource/lib64)
-link_directories(/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64 )
 
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")

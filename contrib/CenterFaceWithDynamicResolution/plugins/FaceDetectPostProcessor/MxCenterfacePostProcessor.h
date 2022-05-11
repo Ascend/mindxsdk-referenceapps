@@ -24,7 +24,6 @@
 #include "MxBase/Log/Log.h"
 #include "MxBase/ModelPostProcessors/ModelPostProcessorBase/ObjectPostDataType.h"
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
-#include "acl/acl.h"
 struct FaceInfo {
   float x1;
   float y1;

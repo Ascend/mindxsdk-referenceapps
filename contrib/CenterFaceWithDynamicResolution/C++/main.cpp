@@ -1,5 +1,5 @@
 /*
- * Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
+ * Copyright(C) Huawei Technologies Co.,Ltd. 2012-2022 All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -179,7 +179,7 @@ static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpi
 }
 
 // 当没有检测到人脸时，输出原始图片
-static APP_ERROR CopyFile(const std::string srcFile, const std::string desFile) {
+static APP_ERROR CopyFile(const std::string &srcFile, const std::string &desFile) {
     std::ifstream is(srcFile, std::ifstream::in | std::ios::binary);
     is.seekg(0, is.end);
     int length = is.tellg();

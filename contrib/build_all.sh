@@ -41,6 +41,7 @@ SAMPLE_FOLDER=(
     VehicleIdentification/
     VehicleRetrogradeRecognition/
     Collision/
+    CenterFaceWithDynamicResolution/
 )
 
 

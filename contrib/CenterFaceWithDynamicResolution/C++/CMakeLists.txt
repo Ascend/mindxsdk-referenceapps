@@ -20,13 +20,10 @@ include_directories(
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include
         ${MX_SDK_HOME}/opensource/include/opencv4
-        /usr/local/Ascend/ascend-toolkit/latest/acllib/include
 )
 link_directories(
         ${MX_SDK_HOME}/lib
         ${MX_SDK_HOME}/opensource/lib
-        ../plugins/lib/
-        /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
 )
 add_executable(Main main.cpp )
 target_link_libraries(Main
