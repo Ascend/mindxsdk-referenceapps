@@ -15,7 +15,17 @@
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
-### 1.3 软件方案介绍
+### 1.3 特性及适用场景
+
+本案例可以满足对视频的检测，对检测到的碰撞的车辆在碰撞时刻，输出“Collision”的字样进行提醒。经过测试我们可以知道有以下限制条件：
+
+1.对一个正常清晰的路面，我们可以完成绝大多数正常的一个车辆碰撞检测。
+
+2.当视频清晰度不够，或者车辆速度过快，yolov3并不能很好的识别目标，或者当大车与小车发生碰撞，导致小车被遮挡，或者碰撞事故严重，导致受损车辆无法被检测出来，那么我们对碰撞就会检测失败。
+
+3.当车辆很密集时，障碍物很多时，就会导致物体画框增多，画框不同角度的重叠就可能导致碰撞误判。
+
+### 1.4 软件方案介绍
 
 基于MindX SDK的车辆碰撞识别业务流程为：待检测视频存放在live555服务器上经mxpi_rtspsrc拉流插件输入，然后使用视频解码插件mxpi_videodecoder将视频解码成图片，再通过图像缩放插件mxpi_imageresize将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件mxpi_tensorinfer得到检测结果，再经yolov3后处理插件处理推理结果，得到识别框。再接入跟踪插件中识别框进行目标跟踪，得到目标的跟踪编号，然后在使用mxpi_trackidreplaceclassname插件将跟踪编号覆盖类名信息，再接入本项目开发的碰撞检测插件mxpi_collisionclassname，使用mxpi_object2osdinstances和mxpi_opencvosd分别将识别框和类名（更替写入跟踪编号或者“Collison”碰撞提醒）绘制到原图片，再通过mxpi_videoencoder将图片合成视频
 
@@ -37,9 +47,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 12   | OSD可视化插件        | 主要实现对每帧图像标注跟踪结果。                             |
 | 13   | 视频编码插件         | 用于将OSD可视化插件输出的图片进行视频编码，输出视频。        |
 
-
-
-### 1.4 代码目录结构与说明
+### 1.5 代码目录结构与说明
 
 ```
 ├── model
@@ -65,20 +73,20 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 └── collision.py
 ```
 
-
-
-### 1.5 技术实现流程图
+### 1.6 技术实现流程图
 
 ![SDK流程图](../Collision/image/SDK_process.png)
 
+
+
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
 | MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
-| ubantu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
 | Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 
 在编译运行项目前，需要设置环境变量：
@@ -98,6 +106,8 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 
 注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径;install_path替换为开发套件包所在路径。LD_LIBRARY_PATH用以加载开发套件包中lib库。
 
+
+
 ## 3 依赖安装
 
 推理中涉及到第三方软件依赖如下表所示。
@@ -108,7 +118,10 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 | ffmpeg   | 2021-07-21 | 实现mp4格式视频转为264格式视频 | [链接]([guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md)) |
 | python   | 3.9.2      | 与SDK配套                      | [链接]([Linux（Ubuntu）系统安装Python (biancheng.net)](http://c.biancheng.net/view/4162.html)) |
 
+
+
 ## 4 模型转换
+
 本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0005.html) 。
 
 模型转换，步骤如下：
@@ -154,6 +167,8 @@ ATC run success, welcome to the next use.
         },
 ```
 
+
+
 ## 6 编译与运行
 
 **步骤1** 按照第2小结**环境依赖**中的步骤设置环境变量。
@@ -178,6 +193,8 @@ python3.9.2 collision.py
 
 命令执行成功后会在当前目录下生成检测结果视频文件collision.h264,查看文件验证目标跟踪结果。
 
+
+
 ## 7 结果展示（部分截图）
 
 生成的collision.h264文件在本地我们可以用适配.h264文件格式的视频播放软件进行播放。也可以使用ffmpeg转换成.mp4格式进行本地播放。
@@ -187,6 +204,8 @@ ffmpeg -i collision.h264 -vcodec h264 collision.mp4
 ```
 
 ![碰撞前](../Collision/image/before_collision.png)![碰撞时](../Collision/image/collision.png)![碰撞后](../Collision/image/after_collision.png)
+
+
 
 ## 8 常见问题
 
