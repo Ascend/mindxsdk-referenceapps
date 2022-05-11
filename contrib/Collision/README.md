@@ -122,23 +122,14 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 
 ## 4 模型转换
 
-本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/C/210261e64adc42d2b3d84c447844e4c7)。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0005.html) 。
+本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)]([ATC YOLOv3(FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4))。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0005.html) 。
 
 模型转换，步骤如下：
 
-从上述下载链接中下载yolov3模型至 ./model 文件夹下，也可以直接在model文件下执行以下代码得到的模型文件名为：yolov3_tf.pb 。
+从上述下载链接中下载yolov3模型解压缩文件yolov3_tf.pb至 ./model 文件夹下，进入 `./models` 文件夹下执行命令：
 
 ```
-wget --no-check-certificate https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Collision/yolov3_tf.pb
-```
-
-进入 `./models` 文件夹下执行命令：
-
-```
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3 \
---soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig \
---input_shape="input/input_data:1,416,416,3" \
---out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 yolov3.om。执行后终端输出为：
