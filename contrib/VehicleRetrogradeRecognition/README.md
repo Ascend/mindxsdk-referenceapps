@@ -75,7 +75,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
 | MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| ubantu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
 | Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 
 在编译运行项目前，需要设置环境变量：
