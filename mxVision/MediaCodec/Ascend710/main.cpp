@@ -184,7 +184,7 @@ APP_ERROR StopMultiStreams()
     int i = 0;
     for (auto iter = g_sequentialStreams.begin(); iter != g_sequentialStreams.end(); ++iter) {
         threads[i] = std::thread([](std::shared_ptr<SequentialStream> stream) {
-            stream.Stop();
+            stream->Stop();
         }, iter->second);
         ++i;
     }
