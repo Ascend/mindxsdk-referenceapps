@@ -174,6 +174,7 @@ APP_ERROR CreateMultiStreams(const StreamConfig &config)
         g_threads[i] = std::thread(CreateSingleStream, config, i);
     }
     LogInfo << "Totally " << config.channelCount << " streams were created."
+    
     return APP_ERR_OK;
 }
 
