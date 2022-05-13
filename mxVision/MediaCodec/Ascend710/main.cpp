@@ -52,6 +52,7 @@ struct StreamConfig {
     std::string iFrameInterval;
     std::string resizeWidth;
     std::string resizeHeight;
+    std::string fpsMode;
 
     const std::map<std::string, std::string> QueueProperties = {{"max-size-buffers", "50"}};
 
@@ -59,7 +60,8 @@ struct StreamConfig {
     {
         std::map<std::string, std::string> properties = {
             {"rtspUrl", rtspUrls[chlIdx]},
-            {"channelId", std::to_string(chlIdx)}
+            {"channelId", std::to_string(chlIdx)},
+            {"fpsMode", fpsMode},
         };
         return properties;
     }
@@ -104,6 +106,7 @@ APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
 
     configData.GetFileValueWarm("stream.channelCount", config.channelCount);
     configData.GetFileValueWarm("stream.deviceId", config.deviceId);
+    configData.GetFileValueWarm("stream.fpsMode", config.fpsMode);
     configData.GetFileValueWarm("stream.resizeWidth", config.resizeWidth);
     configData.GetFileValueWarm("stream.reszieHeight", config.reszieHeight);
     configData.GetFileValueWarm("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
@@ -176,6 +179,17 @@ APP_ERROR CreateMultiStreams(const StreamConfig &config)
 
 APP_ERROR StopMultiStreams()
 {
+    std::vector<std::thread> threads(g_sequentialStreams.size());
+    int i = 0;
+    for (auto iter = g_sequentialStreams.begin(); iter != g_sequentialStreams.end(); ++iter) {
+        thread[i] = std::thread([](std::shared_ptr<SequentialStream> stream) {
+            stream.Stop();
+        });
+        ++i;
+    }
+    for (auto &th : threads) {
+        th.join();
+    }
     g_sequentialStreams.clear();
     LogInfo << "All streams were stoppped successfully.";
     return APP_ERR_OK;
