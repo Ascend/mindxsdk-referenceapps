@@ -104,19 +104,19 @@ APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
     MxBase::ConfigData configData;
     util.LoadConfiguration(path, configData, MxBase::CONFIGFILE);
 
-    configData.GetFileValueWarm("stream.channelCount", config.channelCount);
-    configData.GetFileValueWarm("stream.deviceId", config.deviceId);
-    configData.GetFileValueWarm("stream.fpsMode", config.fpsMode);
-    configData.GetFileValueWarm("stream.resizeWidth", config.resizeWidth);
-    configData.GetFileValueWarm("stream.reszieHeight", config.reszieHeight);
-    configData.GetFileValueWarm("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
-    configData.GetFileValueWarm("VideoDecoder.outputImageFormat", config.outputImageFormat);
-    configData.GetFileValueWarm("VideoEncoder.inputFormat", config.inputFormat);
-    configData.GetFileValueWarm("VideoEncoder.outputFormat", config.outputFormat);
-    configData.GetFileValueWarm("VideoEncoder.iamgeWidth", config.videoEncodeWidth);
-    configData.GetFileValueWarm("VideoEncoder.imageHeight", config.videoEncodeHeight);
-    configData.GetFileValueWarm("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
-    configData.GetFileValueWarm("VideoEncoder.iFrameInterval", config.iFrameInterval);
+    configData.GetFileValueWarn("stream.channelCount", config.channelCount);
+    configData.GetFileValueWarn("stream.deviceId", config.deviceId);
+    configData.GetFileValueWarn("stream.fpsMode", config.fpsMode);
+    configData.GetFileValueWarn("stream.resizeWidth", config.resizeWidth);
+    configData.GetFileValueWarn("stream.resizeHeight", config.resizeHeight);
+    configData.GetFileValueWarn("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
+    configData.GetFileValueWarn("VideoDecoder.outputImageFormat", config.outputImageFormat);
+    configData.GetFileValueWarn("VideoEncoder.inputFormat", config.inputFormat);
+    configData.GetFileValueWarn("VideoEncoder.outputFormat", config.outputFormat);
+    configData.GetFileValueWarn("VideoEncoder.iamgeWidth", config.videoEncodeWidth);
+    configData.GetFileValueWarn("VideoEncoder.imageHeight", config.videoEncodeHeight);
+    configData.GetFileValueWarn("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
+    configData.GetFileValueWarn("VideoEncoder.iFrameInterval", config.iFrameInterval);
 
     for (size_t i = 0; i < config.channelCount; ++i) {
         auto name = "stream.ch" + std::to_string(i);
@@ -173,8 +173,8 @@ APP_ERROR CreateMultiStreams(const StreamConfig &config)
     for (auto i = 0; i < config.channelCount; ++i) {
         g_threads[i] = std::thread(CreateSingleStream, config, i);
     }
-    LogInfo << "Totally " << config.channelCount << " streams were created."
-    
+    LogInfo << "Totally " << config.channelCount << " streams were created.";
+
     return APP_ERR_OK;
 }
 
@@ -183,9 +183,9 @@ APP_ERROR StopMultiStreams()
     std::vector<std::thread> threads(g_sequentialStreams.size());
     int i = 0;
     for (auto iter = g_sequentialStreams.begin(); iter != g_sequentialStreams.end(); ++iter) {
-        thread[i] = std::thread([](std::shared_ptr<SequentialStream> stream) {
+        threads[i] = std::thread([](std::shared_ptr<SequentialStream> stream) {
             stream.Stop();
-        });
+        }, iter->second);
         ++i;
     }
     for (auto &th : threads) {
