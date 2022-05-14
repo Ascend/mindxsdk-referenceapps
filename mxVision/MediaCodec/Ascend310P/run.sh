@@ -20,6 +20,6 @@ cmake -S . -Bbuild
 make -C ./build -j
 
 # run
-./build/mediaCodec710
+./build/mediaCodec310P
 
 exit 0

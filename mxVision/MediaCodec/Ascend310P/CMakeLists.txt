@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(MediaCodec710)
+project(MediaCodec310P)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -11,7 +11,7 @@ else()
 endif()
 
 add_definitions(-D _GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
-set(TARGET_NAME mediaCodec710)
+set(TARGET_NAME mediaCodec310P)
 
 include_directories(${MX_SDK_HOME}/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
