@@ -56,10 +56,10 @@ stream.deviceId = 0
 可通过修改配置文件(setup.config)stream.channelCount配置项，设置视频拉流路数
 stream.channelCount = 1
 
-可通过修改配置文件(setup.config)stream.channelCount配置项，设置是否打印fps
+可通过修改配置文件(setup.config)stream.fpsMode配置项，设置是否打印fps
 stream.fpsMode = 1
 
-可通过修改配置文件(setup.config)stream.channelCount配置项，设置视频拉流地址
+可通过修改配置文件(setup.config)stream.ch0配置项，设置视频拉流地址
 stream.ch0 = rtsp://xxx.xxx.xxx.xxx:xxx/xxx.264
 
 注:stream.ch最小数量需不小于stream.channelCount传入数值
