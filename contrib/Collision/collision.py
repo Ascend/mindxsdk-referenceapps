@@ -40,19 +40,20 @@ if __name__ == '__main__':
     # Inputs data to a specified stream based on streamName.
     STREAM_NAME = b'collision'
 
-    f = os.fdopen( './out_collision.h264' , 'wb' )
+    fd = os.open( './out_collision.h264' , os.O_RDWR|os.O_CREAT )
+    fo = os.fdopen(fd, "wb")
     T = 0
     while True:
         # Obtain the inference result by specifying streamName and uniqueId.
         infer_result = streamManagerApi.GetResult(STREAM_NAME, 0, 300000)
-        f.write(infer_result.data)  
+        fo.write(infer_result.data)
         T = T+1
         print(T)
         # the toal frames of video
-        if T > 350:
+        if T > 100:
             print('ending')
             break
     
-    f.close()
+    fo.close()
     # destroy streams
     streamManagerApi.DestroyAllStreams()
