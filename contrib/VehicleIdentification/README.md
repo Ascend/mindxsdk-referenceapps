@@ -33,9 +33,10 @@ npu-smi info
 本工程名称为VehicleIdentification，工程目录如下图所示：
 ```
 ├── models
-│   ├── vehicle
+│   ├── googlenet
 │   │   ├── car.names
 │   │   ├── googlenet.om
+│   │   ├── updatemodel.py				# caffemodel旧版本升级新版本
 │   │   ├── insert_op.cfg				# googlenet aipp转换配置
 │   │   └── vehiclepostprocess.cfg		# googlenet后处理配置
 │   ├── yolo
@@ -138,7 +139,11 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行后终端输出为：
+```bash
+ATC start working now, please wait for a moment.
+ATC run success, welcome to the next use.
+```
 
 ### 3.2 googlenet模型转换
 
@@ -146,15 +151,11 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 
 **步骤2** 更新caffemodel文件：
 
-由于此模型为老版本模型，atc不支持转换，需要将模型权重文件与结构文件更新，项目在[模型下载链接中](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)同时提供更新后的模型结构文件deploy.prototxt。
+由于此模型为老版本模型，atc不支持转换，需要将模型权重文件与结构文件更新，项目在[模型下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)中同时提供更新后的模型结构文件deploy.prototxt。
 
 将权重文件放置于`./models/googlenet/`目录下，执行目录下的updatemodel.py（需要安装caffe环境），得到新版caffe权重文件`after-modify.caffemodel`。
 
-
-
-**步骤@** 或：可以在 [**此处**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)  获得已经转换好的`after-modify.caffemodel`文件
-
-
+> 若环境没有安装caffe，也可以在 [**此处**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)  获得已经转换好的`after-modify.caffemodel`文件。
 
 **步骤3** 模型转换：
 
@@ -166,7 +167,11 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 atc --framework=0 --model=./deploy.prototxt --weight=./after-modify.caffemodel --input_shape="data:1,3,224,224" --input_format=NCHW --insert_op_conf=./insert_op.cfg --output=./googlenet --output_type=FP32 --soc_version=Ascend310
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 
+执行完模型转换脚本后，会生成相应的.om模型文件。 执行后终端输出为：
+```bash
+ATC start working now, please wait for a moment.
+ATC run success, welcome to the next use.
+```
 
 
 
@@ -198,7 +203,16 @@ atc --framework=0 --model=./deploy.prototxt --weight=./after-modify.caffemodel -
 ```bash
 bash build.sh
 ```
-**步骤2** 
+
+编译成功后，生成的`libvehiclepostprocess.so`后处理库文件位于`./lib`目录下。执行后终端输出为：
+
+```bash
+[ 50%] Building CXX object CMakeFiles/vehiclepostprocess.dir/VehiclePostProcess.cpp.o
+[100%] Linking CXX shared library {项目路径}/lib/libvehiclepostprocess.so
+[100%] Built target vehiclepostprocess
+```
+
+**步骤2**
 
 修改so文件权限：
 
@@ -219,3 +233,6 @@ chmod 640 ./lib/libvehiclepostprocess.so
 python3 main.py
 ```
 
+执行后会在终端按顺序输出车辆的车型信息和置信度
+
+生成的结果图片中添加方框框出车辆，在方框左上角标出车型信息和置信度，按 **{原名}_result.jpg** 的命名规则存储在`./result`目录下，查看结果文件验证检测结果。
