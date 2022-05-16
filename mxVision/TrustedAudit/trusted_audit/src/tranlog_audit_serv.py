@@ -329,18 +329,6 @@ def port_check(input_ip, input_port):
         pass
 
 
-def main(current_ip, current_port):
-    if port_check(current_ip, current_port):
-        logging.info(current_ip + ':' + str(current_port) + '已被占用，请检查后重试，退出。')
-        print(current_ip + ':' + str(current_port) + '已被占用，请检查后重试，退出。')
-        sys.exit()
-    logging.info('可信日志服务端, docker制作日期2022年5月5日')
-    print('可信日志服务端, docker制作日期2021年5月5日')
-    auditor_thread = threading.Thread(target=auditor, args=(g_es_object, g_secure_db_object1, g_secure_db_object2))
-    auditor_thread.start()
-    app.run(port=port, host=ip_address, threaded=True)
-
-
 if __name__ == '__main__':
     parser = reqparse.RequestParser()
     parser.add_argument('content')
@@ -363,5 +351,13 @@ if __name__ == '__main__':
     logging.info('根据高安数据库，下一个log_id为' + str(NEXT_LOG_ID))
     print('根据高安数据库，下一个log_id为', NEXT_LOG_ID)
     PORT = 1234
-    ip_address = '0.0.0.0'
-    main(ip_address, PORT)
+    IP_ADDRESS = '0.0.0.0'
+    if port_check(IP_ADDRESS, PORT):
+        logging.info(IP_ADDRESS + ':' + str(PORT) + '已被占用，请检查后重试，退出。')
+        print(IP_ADDRESS + ':' + str(PORT) + '已被占用，请检查后重试，退出。')
+        sys.exit()
+    logging.info('可信日志服务端, docker制作日期2022年5月5日')
+    print('可信日志服务端, docker制作日期2021年5月5日')
+    auditor_thread = threading.Thread(target=auditor, args=(g_es_object, g_secure_db_object1, g_secure_db_object2))
+    auditor_thread.start()
+    app.run(port=PORT, host=IP_ADDRESS, threaded=True)

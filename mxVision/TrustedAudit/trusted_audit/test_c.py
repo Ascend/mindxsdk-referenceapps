@@ -14,24 +14,16 @@
 from datetime import timedelta, datetime
 import sys
 import requests
+from test_b import search_query
 
-
-def search_query(start_time, end_time, page_num, page_size):
+    
+def search_query_full(start_time, end_time, page_num, page_size, url):
     search_query_msg = {'start_time': start_time, 'end_time': end_time,
-     'page_num':page_num, 'page_size':page_size}
-    rsp = requests.request('POST', 'http://172.18.0.4:1234/Searcher_full',
-    json = search_query_msg).json()
-    all_item_count = rsp['total_len']
-    rsp_items = rsp['content']
-    if rsp_items is not None:
-        log_ids = [ i['log_id'] for i in rsp_items]
-        verified_result_list = [ i['verify_result'] for i in rsp_items ]
-        print('检索到', all_item_count, '条日志，第', page_num, '页的', page_size,
-            '条日志对应的log_id为', log_ids, '验证结果为', verified_result_list)
-    else:
-        print('检索到', all_item_count, '条日志，第', page_num, '页不含日志')
+        'page_num':page_num, 'page_size':page_size}
+    url = 'http://172.18.0.4:1234/Searcher_full'
+    search_query(search_query_msg, url)
 
 
 if __name__ == '__main__':
-    search_query(sys.argv[1] + ' ' + sys.argv[2],
+    search_query_full(sys.argv[1] + ' ' + sys.argv[2],
         sys.argv[3] + ' ' + sys.argv[4], int(sys.argv[5]), int(sys.argv[6]))
