@@ -113,7 +113,7 @@ APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
     configData.GetFileValueWarn("VideoDecoder.outputImageFormat", config.outputImageFormat);
     configData.GetFileValueWarn("VideoEncoder.inputFormat", config.inputFormat);
     configData.GetFileValueWarn("VideoEncoder.outputFormat", config.outputFormat);
-    configData.GetFileValueWarn("VideoEncoder.iamgeWidth", config.videoEncodeWidth);
+    configData.GetFileValueWarn("VideoEncoder.imageWidth", config.videoEncodeWidth);
     configData.GetFileValueWarn("VideoEncoder.imageHeight", config.videoEncodeHeight);
     configData.GetFileValueWarn("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
     configData.GetFileValueWarn("VideoEncoder.iFrameInterval", config.iFrameInterval);
