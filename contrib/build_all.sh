@@ -29,7 +29,7 @@ SAMPLE_FOLDER=(
 	PersonCount/
 	FatigueDrivingRecognition/
 	# CartoonGANPicture/
-	HeadPoseEstimation/
+	# HeadPoseEstimation/
 	FaceBoxes/
 	BertTextClassification/
     # RTM3DTargetDetection/
