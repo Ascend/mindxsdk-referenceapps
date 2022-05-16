@@ -32,7 +32,20 @@ def get_file_names(rootdir):
         for name in files: 
             _, ending = os.path.splitext(name)
             if ending == ".jpg":
-                fs.append(os.path.join(name))   
+                fs.append(os.path.join(name))
+            
+            if ending == ".JPG":
+                # remove '.JPG' add '.jpg'
+                name = name[:-4] + '.jpg'
+                newname = 'input/' + name
+                oldname = 'input/' + name[:-4] + '.JPG'
+                
+                if os.path.exists(newname):
+                    newname = 'input/' + name[:-4] + '(1).jpg'
+                    name = name[:-4] + '(1).jpg'
+                os.rename(oldname, newname)
+
+                fs.append(os.path.join(name)) 
     return fs
 
 
