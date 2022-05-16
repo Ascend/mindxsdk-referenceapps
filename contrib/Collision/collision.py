@@ -40,7 +40,7 @@ if __name__ == '__main__':
     # Inputs data to a specified stream based on streamName.
     STREAM_NAME = b'collision'
 
-    fd = os.open( './out_collision.h264' , os.O_RDWR|os.O_CREAT )
+    fd = os.open( './out_collision.h264' , os.O_RDWR| os.O_CREAT , 640)
     fo = os.fdopen(fd, "wb")
     T = 0
     while True:
