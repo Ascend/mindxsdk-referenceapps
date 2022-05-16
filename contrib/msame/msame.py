@@ -69,16 +69,15 @@ def infer(saves):
         types_output[index].append(str(i))
         index += 1
     types_input = str(m.input_dtype[0])
-    t = get_input_num(m) 
+    t = get_input_num(m, type_map[types_input])
     b = len(t)
-    for i in range(b):
-        t[i] = sdk.Tensor(t[i])
-        t[i].to_device(0)
+    for bs in range(b):
+        t[bs] = sdk.Tensor(t[bs])
+        t[bs].to_device(0)
     last_time = time.time()
     outputs = m.infer(t)
 
     outputs[0].to_host()
-
 
     now_time = time.time()
     one_times = now_time-last_time
@@ -88,7 +87,7 @@ def infer(saves):
     return one_times
 
 
-def get_input_num(m):
+def get_input_num(m, input_type):
     inputsize = []
     index = 0
     for j in m.input_shape:
@@ -98,6 +97,7 @@ def get_input_num(m):
         index += 1
     types_input = str(m.input_dtype[0])
     t = []
+    files_name = []
     if args.input == '':
         for i in inputsize:
             try:
@@ -106,27 +106,56 @@ def get_input_num(m):
                 print("KeyError")
     else:
         binfile = args.input
+        all_names = []
         if len(binfile.split(',')) > 1:
             multi_bin = binfile.split(',')
             for i in multi_bin:
-                try:
-                    if multi_bin.split('.')[1] == 'bin':
-                        t.append(get_array(i, type_map[types_input]))
-                    else:
-                        t.append(get_npy(i, type_map[types_input]))
-                except KeyError:
-                    print("KeyError")
+                files_name.append(i)
+                all_names.append(get_files(i))
         else:
-            if len(binfile.split('.')) == 2:
-                try:
-                    if binfile.split('.')[1] == 'bin':
-                        t.append(get_array(binfile, type_map[types_input]))
-                    else:
-                        t.append(get_npy(binfile, type_map[types_input]))
-                except KeyError:
-                    print("KeyError")
+            files_name.append(binfile)
+            all_names.append(get_files(binfile))
+        for mul in files_name:
+            print(mul)
+            if all_names[0][0].split('.')[1] == "bin":
+                t.append(get_bins(mul, input_type))
+            elif all_names[0][0].split('.')[1] == "npy":
+                t.append(get_npy(mul, input_type))
     return t
  
+
+
+def get_bins(f, input_type):
+    files_bin = []
+    bins = []
+    if os.path.isdir(f):
+        for s in os.listdir(f):
+            files_bin.append(np.fromfile(f+"/"+s, dtype=input_type).flatten())
+    elif os.path.isfile(f):
+        files_bin.append(np.fromfile(f, dtype=input_type).flatten())
+    bins = get_array(files_bin, input_type) 
+    return bins
+
+def get_npy(f, input_type):
+    files_npy = []
+    bins = []
+    if os.path.isdir(npyfile):
+        for s in os.listdir(f):
+            files_npy.append(np.load(f+"/"+s, dtype=input_type).flatten())
+    elif os.path.isfile(f):
+        files_npy.append(np.fromfile(f, dtype=input_type).flatten())
+    bins = get_array(files_npy, input_type)
+    return bins
+
+
+def get_files(binfile):
+    all_name = []
+    if os.path.isdir(binfile):
+        for s in os.listdir(binfile):
+            all_name.append(s)
+    elif os.path.isfile(binfile):
+        all_name.append(binfile)
+    return all_name
 
 def get_nums(outputs, types_output):
     index = 0
@@ -187,14 +216,7 @@ def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
             i_index += 1
     
 
-def get_array(binfile, input_type):
-    files_bin = []
-    #make list  files_bin
-    if os.path.isdir(binfile):
-        for s in os.listdir(binfile):
-            files_bin.append(np.fromfile(binfile+"/"+s, dtype=input_type).flatten())
-    elif os.path.isfile(binfile):
-        files_bin.append(np.fromfile(binfile, dtype=input_type).flatten())
+def get_array(files_bin, input_type):
     new_files = []
     #make new bin
     a = len(files_bin)
@@ -207,30 +229,9 @@ def get_array(binfile, input_type):
             b = new_files[im-1]
             new_files.append(np.concatenate((a, b), axis=0))
     bins = np.array(new_files[-1]).astype(input_type)
+
     return bins
 
-
-def get_npy(binfile, input_type):
-    files_bin = []
-    #make list  files_bin
-    if os.path.isdir(binfile):
-        for s in os.listdir(binfile):
-            files_bin.append(np.load(binfile+"/"+s).flatten())
-    elif os.path.isfile(binfile):
-        files_bin.append(np.load(binfile).flatten())
-    new_file = []
-    #make new bin
-    a = len(files_bin)
-    for im in range(a):
-        if im == 0:
-            new_file.append(files_bin[0])
-            continue
-        else:
-            a = files_bin[im]
-            b = new_file[im-1]
-            new_file.append(np.concatenate((a, b), axis=0))
-    bins = np.array(new_file[-1]).astype(input_type)
-    return bins
 
 
 if  __name__ == '__main__':
