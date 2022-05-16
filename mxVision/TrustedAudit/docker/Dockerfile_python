@@ -1,0 +1,10 @@
+FROM python:3.7.2
+RUN pip install --upgrade pip
+RUN pip install cryptography==3.4.7
+RUN pip install numpy==1.19.1
+RUN pip install elasticsearch==7.12.0
+RUN pip install objsize==0.3.3
+RUN pip install psycopg2==2.9.2
+RUN pip install flask==2.1.0
+RUN pip install flask-Cors==3.0.10
+RUN pip install flask-RESTful==0.3.9
