@@ -40,7 +40,7 @@ def get_file_names(rootdir):
                 newname = 'input/' + name
                 oldname = 'input/' + name[:-4] + '.JPG'
                 
-                if os.path.exists(newname):
+                while os.path.exists(newname):
                     newname = 'input/' + name[:-4] + '(1).jpg'
                     name = name[:-4] + '(1).jpg'
                 os.rename(oldname, newname)
