@@ -83,6 +83,7 @@ private:
     std::string y1_;
     int statiscalResult;
     std::unordered_map<int, std::pair<int, int>> lastObjects;
+    std::unordered_map<int, int> viewedTrackId;
     std::ostringstream ErrorInfo_;
 };
 }
