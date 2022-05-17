@@ -109,6 +109,8 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
 {
     double k; // 分界线斜率
     double b;
+    if (limit_x1==0 && limit_x2==0)
+        limit_x1++;
     k = double(limit_y1-limit_y2)/double(limit_x1-limit_x2);
     b = double(limit_y1)-k*double(limit_x1);
     
@@ -300,13 +302,13 @@ std::vector<std::shared_ptr<void>> MxpiTrackRetrogradeCar::DefineProperties()
     auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
     auto limitX1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
-            INT, "x1", "inputX1Value", "the point of x1", 1, -1, 1281});
+            INT, "x1", "inputX1Value", "the point of x1", 1, -100000, 100000});
     auto limitY1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
-            INT, "y1", "inputY1Value", "the point of y1", 0, -1, 721});
+            INT, "y1", "inputY1Value", "the point of y1", 0, -100000, 100000});
     auto limitX2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
-            INT, "x2", "inputX2Value", "the point of x2", 0, -1, 1281});
+            INT, "x2", "inputX2Value", "the point of x2", 0, -100000, 100000});
     auto limitY2ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
-            INT, "y2", "inputY2Value", "the point of y2", 0, -1, 721});
+            INT, "y2", "inputY2Value", "the point of y2", 0, -100000, 100000});
     auto isVerticalProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
             INT, "isVertical", "is the vedio vertical", "is the vedio vertical", 0, -1, 3});
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
