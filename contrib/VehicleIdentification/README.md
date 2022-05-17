@@ -50,9 +50,14 @@ npu-smi info
 │   ├── CMakeLists.txt
 │   ├── VehiclePostProcess.cpp
 │   └── VehiclePostProcess.h
+├── input
+│   ├── xxx.jpg							# 待检测文件
+│   └── yyy.jpg
+├── result
+│   ├── xxx_result.jpg					# 运行程序后生成的结果图片
+│   └── yyy_result.jpg
 ├── main.py
-├── build.sh 							# 编译车型识别后处理插件脚本
-└── test.jpg
+└── build.sh 							# 编译车型识别后处理插件脚本
 ```
 
 ### 1.5 技术实现流程图
