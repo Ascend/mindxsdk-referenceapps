@@ -78,7 +78,7 @@
                 "funcLanguage":"c++",
                 "postProcessConfigPath": "./models/yolov4.cfg",
                 "labelPath": "./models/coco.names",
-                "postProcessLibPath": "${MX_SDK_HOME}/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"
