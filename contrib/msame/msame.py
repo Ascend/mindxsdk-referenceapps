@@ -70,21 +70,26 @@ def infer(saves):
         index += 1
     types_input = str(m.input_dtype[0])
     t = get_input_num(m, type_map[types_input])
+    multi = 1
+    for p in m.input_shape[0]:
+        multi = multi * p
+    if t[0].shape[0] != multi :
+        print("Error : Please check the input shape and input dtype")
+        sys.exit()
     b = len(t)
     for bs in range(b):
         t[bs] = sdk.Tensor(t[bs])
         t[bs].to_device(0)
     last_time = time.time()
     outputs = m.infer(t)
-
-    outputs[0].to_host()
-
     now_time = time.time()
     one_times = now_time-last_time
-    nums, shape = get_nums(outputs, types_output) 
+    outputs[0].to_host()
+    nums, shape = get_nums(outputs, types_output)
     if saves:
-        save_files(filepath, outputs, output, datatype, nums, shape, types_output)                                            
+        save_files(filepath, outputs, output, datatype, nums, shape, types_output)
     return one_times
+
 
 
 def get_input_num(m, input_type):
@@ -116,7 +121,6 @@ def get_input_num(m, input_type):
             files_name.append(binfile)
             all_names.append(get_files(binfile))
         for mul in files_name:
-            print(mul)
             if all_names[0][0].split('.')[1] == "bin":
                 t.append(get_bins(mul, input_type))
             elif all_names[0][0].split('.')[1] == "npy":
@@ -139,11 +143,11 @@ def get_bins(f, input_type):
 def get_npy(f, input_type):
     files_npy = []
     bins = []
-    if os.path.isdir(npyfile):
+    if os.path.isdir(f):
         for s in os.listdir(f):
             files_npy.append(np.load(f+"/"+s, dtype=input_type).flatten())
     elif os.path.isfile(f):
-        files_npy.append(np.fromfile(f, dtype=input_type).flatten())
+        files_npy.append(np.load(f).flatten())
     bins = get_array(files_npy, input_type)
     return bins
 
@@ -242,7 +246,6 @@ if  __name__ == '__main__':
         nowtimes = time.time()
         TIMES = infer(SAVES)
         SAVES = False
-        TIMES += TIMES
         print("loop {0} : Inference time: {1:f} ms".format(mj, TIMES*TRANS))
     print("infer success!")
     print("Inference average time: {0:f} ms".format(TIMES/loop*TRANS))
