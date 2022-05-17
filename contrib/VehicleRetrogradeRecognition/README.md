@@ -112,7 +112,7 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)
 
 **步骤2** 模型存放
-将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/model/"。
+将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/models/"。
 
 **步骤3** 模型转换
 在onnx文件所在目录下执行一下命令
