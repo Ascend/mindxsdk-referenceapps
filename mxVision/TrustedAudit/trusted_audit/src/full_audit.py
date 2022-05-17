@@ -137,7 +137,7 @@ def write_to_block_table(current_time, last_block, secure_db_object):
 def log_processing_for_full_audit(chunk_buffer, secure_db_obj, es_index):
     process_and_write_log_index_mt_table(chunk_buffer, secure_db_obj, es_index)
     current_time = datetime.now()
-    write_to_block_table_flag, last_block, log_index_mt_max_table_id
+    write_to_block_table_flag, last_block, log_index_mt_max_table_id\
         = process_and_decide_to_write_block_table(current_time, secure_db_obj)
     if write_to_block_table_flag is True:
         write_to_block_table(current_time, last_block, secure_db_obj)

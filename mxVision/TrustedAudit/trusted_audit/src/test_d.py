@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-from src.es_database_operate import ESDatebase
-from src.user_search import read_from_es, read_from_secure_db_for_statistic
-from src.server_config import ES_PRE_INDEX, GAUSS_ROOT_USER, GAUSS_ROOT_PWD, GAUSS_DB_NAME
-from src.gauss_database_operate import GaussDatabase
-from src.database_init import gauss_database_init
+from es_database_operate import ESDatebase
+from user_search import read_from_es, read_from_secure_db_for_statistic
+from server_config import ES_PRE_INDEX, GAUSS_ROOT_USER, GAUSS_ROOT_PWD, GAUSS_DB_NAME
+from gauss_database_operate import GaussDatabase
+from database_init import gauss_database_init
 
 
 if __name__ == '__main__':

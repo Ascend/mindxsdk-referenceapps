@@ -61,13 +61,13 @@
 │   |   │   │   ├── server_config.py
 │   |   │   │   ├── tranlog_audit_serv.py
 │   |   │   │   ├── user_audit.py
-│   |   │   │   └── user_search.py
+│   |   │   │   ├── user_search.py
+│   |   │   │   ├── test_a.py
+│   |   │   │   ├── test_b.py
+│   |   │   │   ├── test_c.py
+│   |   │   │   └── test_d.py
 │   |   │   ├── main_trusted_audit.py
-│   |   │   ├── TrustedAudit.pipeline
-│   |   │   ├── test_a.py
-│   |   │   ├── test_b.py
-│   |   │   ├── test_c.py
-│   |   │   └── test_d.py
+│   |   │   └── TrustedAudit.pipeline
 │   |   └── README.md
 ```
 
@@ -106,7 +106,7 @@ source ~/.bashrc
 cd 项目所在目录/docker
 bash docker_run.sh
 ```
-(若首次运行，请确保系统正确联网，以便从互联网下载标准ElasticSearch/python/opengauss docker镜像，如需要代理，请根据实际情况修改Dockerfile中的代理配置；编译脚本会自动建立gauss数据库、elasticsearch数据库、python运行环境三个容器，并配置网络环境；最后初始化数据库，建立对应的库、表）
+(若首次运行，请确保系统正确联网，以便从互联网下载标准ElasticSearch/python/opengauss docker镜像，如需要代理，请根据实际情况修改Dockerfile中的代理配置；编译脚本会自动建立gauss数据库、elasticsearch数据库、python运行环境三个容器，并配置网络环境；最后初始化数据库，建立对应的库、表；elasticsearch、gauss数据的用户名和口令采用默认，IP和端口号在docker运行脚本文件中已配置）
 
 ***步骤2***:查看数据库初始化情况
 
@@ -146,7 +146,7 @@ originalLogsPath字段表示mindx源日志文件所在位置，默认为/work/mi
 cd 项目所在目录/trusted_audit/
 python main_trusted_audit.py
 ```
-（该程序会启动gauss数据库、elastic数据库、python环境所在的三个docker环境；启动python环境中的可信日志主服务；启动watcher监控mindx源日志文件夹；该文件的命令行输出类似下述内容后**暂停**）
+（该程序会启动gauss数据库、elastic数据库、python环境所在的三个docker环境；启动python环境中的可信日志主服务；启动watcher监控mindx源日志文件夹；该文件的命令行输出类似下述内容后**暂停**，注意每条输出之间有若干秒延迟，等待各组件初始化完毕，最终输出Creates streams successfully）
 
 ```
 MxpiTrustedAuditPlugin::Init start.
@@ -183,7 +183,7 @@ info: file_name mxsdk.log.info.... 本次读取 73 行
 ### 7.1 测试发送25条网关日志到主程序
 ***步骤1***:在另一个shell窗口运行
 ```
-cd 项目所在目录/trusted_audit/
+cd 项目所在目录/trusted_audit/src
 python test_a.py
 ```
 该shell窗口显示
@@ -206,11 +206,13 @@ cat /tmp/server.log
 准备处理第...个chunk，含25条日志，当前时间...
 处理完第...个chunk，含25条日志，当前时间...
 ```
+注意需要等待server.log显示这25条日志已处理完
+
 ### 7.2 按用户查询之前发送的网关日志
 
 运行按用户查询的用例程序，注意输入正确的用户id和起止时间；查询窗口为每页10条，请求第1页
 ```
-cd 项目所在目录/trusted_audit/
+cd 项目所在目录/trusted_audit/src
 python test_b.py ae6791e7330ded894b2e60fb2e9ab444 2021-12-17 15:09:17.364057 2021-12-17 15:09:41.364057 1 10
 ```
 该shell窗口显示
@@ -225,7 +227,7 @@ python test_b.py ae6791e7330ded894b2e60fb2e9ab444 2021-12-17 15:09:17.364057 202
 
 运行按时间段查询的用例程序，注意输入正确的起止时间；查询窗口为每页10条，请求第1页
 ```
-cd 项目所在目录/trusted_audit/
+cd 项目所在目录/trusted_audit/src
 python test_c.py 2021-12-17 15:09:17.364057 2021-12-17 15:09:41.364057 1 10
 ```
 该shell窗口显示
@@ -239,7 +241,7 @@ python test_c.py 2021-12-17 15:09:17.364057 2021-12-17 15:09:41.364057 1 10
 
 ***步骤1***:手动更改日志，执行
 ```
-cd 项目所在目录/trusted_audit/
+cd 项目所在目录/trusted_audit/src
 python test_d.py ae6791e7330ded894b2e60fb2e9ab444 hello_world
 ```
 该步骤将更改低安全区数据库中用户ae6791e7330ded894b2e60fb2e9ab444对应日志的第5条内容为hello_world，shell信息提示如下

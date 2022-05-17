@@ -17,7 +17,7 @@ import requests
 from test_b import search_query
 
     
-def search_query_full(start_time, end_time, page_num, page_size, url):
+def search_query_full(start_time, end_time, page_num, page_size):
     search_query_msg = {'start_time': start_time, 'end_time': end_time,
         'page_num':page_num, 'page_size':page_size}
     url = 'http://172.18.0.4:1234/Searcher_full'

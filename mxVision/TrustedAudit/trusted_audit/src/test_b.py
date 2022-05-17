@@ -30,10 +30,10 @@ def search_query(search_query_msg, url):
     if rsp_items is not None:
         log_ids = [ i['log_id'] for i in rsp_items]
         verified_result_list = [ i['verify_result'] for i in rsp_items ]
-        print('检索到', all_item_count, '条日志，第', page_num, '页的', page_size,
-            '条日志对应的log_id为', log_ids, '验证结果为', verified_result_list)
+        print('检索到', all_item_count, '条日志，第', search_query_msg['page_num'], '页的',
+            search_query_msg['page_size'], '条日志对应的log_id为', log_ids, '验证结果为', verified_result_list)
     else:
-        print('检索到', all_item_count, '条日志，第', page_num, '页不含日志')
+        print('检索到', all_item_count, '条日志，第', search_query_msg['page_num'], '页不含日志')
 
 
 if __name__ == '__main__':

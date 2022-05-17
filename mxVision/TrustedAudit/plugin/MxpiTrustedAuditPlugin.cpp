@@ -24,7 +24,6 @@ using namespace std;
 namespace {
     const string SAMPLE_KEY = "MxpiObjectList";
 }
-#define PATH_MAX 255
 #define SLEEP_TIME 10
 
 APP_ERROR MxpiTrustedAuditPlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
