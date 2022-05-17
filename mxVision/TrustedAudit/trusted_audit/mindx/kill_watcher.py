@@ -23,11 +23,11 @@ def process_check(processname):
     kill_count = 0
     for pid in pl:
         try:
-            if (psutil.Process(pid).exe().startswith('/usr/local/bin/python') 
-            or psutil.Process(pid).exe().startswith('/usr/bin/python') 
-            or psutil.Process(pid).exe().startswith('python')) 
-            and len(psutil.Process(pid).cmdline()) >= 3 
-            and psutil.Process(pid).cmdline()[2] == processname:
+            if (psutil.Process(pid).exe().startswith('/usr/local/bin/python') or \
+            psutil.Process(pid).exe().startswith('/usr/bin/python') or \
+            psutil.Process(pid).exe().startswith('python')) and \
+            len(psutil.Process(pid).cmdline()) >= 3 and \
+            psutil.Process(pid).cmdline()[2] == processname:
                 psutil.Process(pid).kill()
                 kill_count += 1
         except psutil.NoSuchProcess:

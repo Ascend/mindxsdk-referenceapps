@@ -39,8 +39,8 @@ def handle_file(f1, start_line, year_info):
         if count < start_line:
             continue
         try: # content 是读取的一行没有格式信息的纯文本信息；这里对content格式化处理
-            if content.startswith('Log file created at:') 
-            or content.startswith('Running on machine:') 
+            if content.startswith('Log file created at:')\
+            or content.startswith('Running on machine:')\
             or content.startswith('Log line format:'): # 如果是开头的三行，不处理
                 continue
             content_split = content.split(']')
@@ -178,11 +178,11 @@ def process_check(processname):
     pl = psutil.pids()
     for pid in pl:
         try:
-            if (psutil.Process(pid).exe().startswith('/usr/local/bin/python') 
-            or psutil.Process(pid).exe().startswith('/usr/bin/python') 
-            or psutil.Process(pid).exe().startswith('python')) 
-            and len(psutil.Process(pid).cmdline()) >= 3 
-            and psutil.Process(pid).cmdline()[2] == processname:
+            if (psutil.Process(pid).exe().startswith('/usr/local/bin/python') or \
+            psutil.Process(pid).exe().startswith('/usr/bin/python') or \
+            psutil.Process(pid).exe().startswith('python')) and \
+            len(psutil.Process(pid).cmdline()) >= 3 and \
+            psutil.Process(pid).cmdline()[2] == processname:
                 count += 1
         except psutil.NoSuchProcess:
             continue

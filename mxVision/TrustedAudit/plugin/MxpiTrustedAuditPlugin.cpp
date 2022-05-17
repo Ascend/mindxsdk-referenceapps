@@ -34,13 +34,8 @@ APP_ERROR MxpiTrustedAuditPlugin::Init(std::map<std::string, std::shared_ptr<voi
     if (!getcwd(current_path, PATH_MAX)) {
         LogInfo << "get current path fail!!";
     }
-    const char *ptr;
-    ptr = strrchr(current_path, '/');
-    int length = strlen(current_path) - strlen(ptr);
     string s_current_path(current_path);
-    string s_last_pth;
-    s_last_pth = s_current_path.substr(0, length);
-    LogInfo << s_last_pth;
+    LogInfo << s_current_path;
 
     string instruction = "docker restart container_elasticsearch_" + version;
     system((const char*)instruction.c_str());
@@ -58,7 +53,7 @@ APP_ERROR MxpiTrustedAuditPlugin::Init(std::map<std::string, std::shared_ptr<voi
     std::shared_ptr<string> originalLogsPathProSptr = std::static_pointer_cast<string>(configParamMap["originalLogsPath"]);
     originalLogsPath_ = *originalLogsPathProSptr.get();
 
-    instruction = "python -u " + s_last_pth + "/mindx/mindx_watcher_and_sender.py >> /tmp/watcher.log 2>&1 &";
+    instruction = "python -u " + s_current_path + "/mindx/mindx_watcher_and_sender.py >> /tmp/watcher.log 2>&1 &";
     LogInfo << instruction;
     system((const char*)instruction.c_str());
 
@@ -84,11 +79,8 @@ APP_ERROR MxpiTrustedAuditPlugin::DeInit()
     ptr = strrchr(current_path, '/');
     int length = strlen(current_path) - strlen(ptr);
     string s_current_path(current_path);
-    string s_last_pth;
-    s_last_pth = s_current_path.substr(0, length);
-    LogInfo << s_last_pth;
-
-    string instruction = "python -u " + s_last_pth + "/mindx/kill_watcher.py >> /tmp/kill_watcher.log 2>&1 &";
+    
+    string instruction = "python -u " + s_current_path + "/mindx/kill_watcher.py >> /tmp/kill_watcher.log 2>&1 &";
     LogInfo << instruction;
     system((const char*)instruction.c_str());
 
