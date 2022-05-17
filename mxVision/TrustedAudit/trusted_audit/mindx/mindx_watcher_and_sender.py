@@ -195,7 +195,7 @@ def process_check(processname):
 
 
 if __name__ == "__main__":
-    folder_name = '/work/mindx_sdk/mxVision/logs'
+    FOLDER_NAME = '/work/mindx_sdk/mxVision/logs'
     LOG_FILES = {} # 全局变量LOG_FILES用于监控各文件日期、已读取行号等信息
     SENDING_CHUNK_SIZE = 100 # 发缓冲区大小；buffer大小建议设为chunk大小的若干倍，避免阻塞
     SENDING_GAP_TIME = 5

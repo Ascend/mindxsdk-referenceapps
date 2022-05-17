@@ -136,7 +136,7 @@ bash build.sh
 ```
 originalLogsPath字段表示mindx源日志文件所在位置，默认为/work/mindx_sdk/mxVision/logs
 
-同时修改，项目所在目录/trusted_audit/mindx/mindx_watcher_and_sender.py，第152行变量folder_name，默认为"/work/mindx_sdk/mxVision/logs"
+同时修改，项目所在目录/trusted_audit/mindx/mindx_watcher_and_sender.py，第198行变量FOLDER_NAME，默认为"/work/mindx_sdk/mxVision/logs"
 
 ## 6 运行
 ### 运行可信日志服务端主程序插件
