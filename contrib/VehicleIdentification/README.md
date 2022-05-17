@@ -222,12 +222,6 @@ chmod 640 ./lib/libvehiclepostprocess.so
 
 **步骤3** 
 
-修改`pipeline/identification.pipeline`文件中: **mxpi_objectpostprocessor0**插件的`postProcessLibPath`属性，修改为
-```
-{本机SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so
-```
-**步骤4** 
-
 在测试集中或自行选择一张或多张jpg文件，放入新建`./input`目录下，再执行
 ```bash
 python3 main.py

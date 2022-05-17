@@ -36,7 +36,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "./models/yolo/yolov3_tf_bs1_fp16.cfg",
                 "labelPath": "./models/yolo/coco.names",
-                "postProcessLibPath": "{MindX_SDK路径}/lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "libyolov3postprocess.so"
             },
             "next": "mxpi_distributor0",
             "factory": "mxpi_objectpostprocessor"
