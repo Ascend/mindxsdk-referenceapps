@@ -69,7 +69,10 @@ def infer(saves):
         types_output[index].append(str(i))
         index += 1
     types_input = str(m.input_dtype[0])
-    t = get_input_num(m, type_map[types_input])
+    try:
+        t = get_input_num(m, type_map[types_input])
+    except KeyError:
+        print("KeyError")
     multi = 1
     for p in m.input_shape[0]:
         multi = multi * p
@@ -140,6 +143,7 @@ def get_bins(f, input_type):
     bins = get_array(files_bin, input_type) 
     return bins
 
+
 def get_npy(f, input_type):
     files_npy = []
     bins = []
@@ -160,6 +164,7 @@ def get_files(binfile):
     elif os.path.isfile(binfile):
         all_name.append(binfile)
     return all_name
+
 
 def get_nums(outputs, types_output):
     index = 0
