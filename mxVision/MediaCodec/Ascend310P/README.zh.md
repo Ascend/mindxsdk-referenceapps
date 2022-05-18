@@ -59,10 +59,21 @@ stream.channelCount = 1
 可通过修改配置文件(setup.config)stream.fpsMode配置项，设置是否打印fps
 stream.fpsMode = 1
 
-可通过修改配置文件(setup.config)stream.ch0配置项，设置视频拉流地址
+可通过修改配置文件(setup.config)VideoEncoder.fpsMode配置项，设置是否打印编码插件fps
+VideoEncoder.fpsMode = 0
+
+可通过修改配置文件(setup.config)VideoDecoder.inputVideoFormat配置项，设置拉流视频格式
+VideoDecoder.inputVideoFormat = H264
+
+可通过修改配置文件(setup.config)VideoDecoder.inputVideoFormat配置项，设置编码插件格式
+VideoEncoder.outputFormat = H264
+
+可通过修改配置文件(setup.config)stream.ch0配置项，设置视频拉流地址(支持设置264/265格式)
 stream.ch0 = rtsp://xxx.xxx.xxx.xxx:xxx/xxx.264
 
-注:stream.ch最小数量需不小于stream.channelCount传入数值
+注:
+1 stream.ch最小数量需不小于stream.channelCount传入数值
+2 此处视频为265视频，则VideoDecoder.inputVideoFormat及VideoEncoder.outputFormat需设置为H265
 
 ```
 

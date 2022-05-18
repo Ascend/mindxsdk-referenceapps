@@ -158,6 +158,7 @@ APP_ERROR CreateSingleStream(const StreamConfig &config, size_t chlIdx)
 
     auto ret = sequentialStream->Build();
     if (ret != APP_ERR_OK) {
+        g_signalQuit = true;
         LogError << GetError(ret) << "Failed to build stream.";
         return ret;
     }
@@ -172,6 +173,9 @@ APP_ERROR CreateMultiStreams(const StreamConfig &config)
     g_threads.resize(config.channelCount);
     for (auto i = 0; i < config.channelCount; ++i) {
         g_threads[i] = std::thread(CreateSingleStream, config, i);
+        if (g_signalQuit) {
+            break;
+        }
     }
     LogInfo << "Totally " << config.channelCount << " streams were created.";
 
