@@ -20,13 +20,16 @@
 
 - 软件依赖
 
-| 软件名称             | 版本     |
-| -------------------- | -------- |
-| MindX SDK            | 2.0.2    |
-| docker               | 20.10.12 |
-| Python               | 3.7.5    |
-| python扩展包psutil   | 5.8.0    |
-| python扩展包watchdog | 2.1.6    |
+| 软件名称                     |   版本   |
+| --------------------------- | ---------|
+| MindX SDK                   | 3.0RC2    |
+| docker                      | 20.10.12 |
+| Python                      | 3.7.2    |
+| python扩展包psutil          | 5.8.0    |
+| python扩展包watchdog        | 2.1.6    |
+| python扩展包elasticsearch   | 7.12.1   |
+| python扩展包psycopg2        | 2.9.2    |
+（若psycopg2安装失败，则安装psycopg2-binary）
 
 
 
@@ -130,13 +133,13 @@ bash build.sh
 "mxpi_trustedauditplugin":{
     "props":{
         "descriptionMessage": "Trusted Audit Plugin Message",
-        "originalLogsPath": "/work/mindx_sdk/mxVision/logs"
+        "originalLogsPath": "/root/log/mindxsdk/logs"
     }
 }
 ```
-originalLogsPath字段表示mindx源日志文件所在位置，默认为/work/mindx_sdk/mxVision/logs
+originalLogsPath字段表示mindx源日志文件所在位置，默认为/root/log/mindxsdk/logs
 
-同时修改，项目所在目录/trusted_audit/mindx/mindx_watcher_and_sender.py，第198行变量FOLDER_NAME，默认为"/work/mindx_sdk/mxVision/logs"
+同时修改，项目所在目录/trusted_audit/mindx/mindx_watcher_and_sender.py，第198行变量FOLDER_NAME，默认为"/root/log/mindxsdk/logs"
 
 ## 6 运行
 ### 运行可信日志服务端主程序插件

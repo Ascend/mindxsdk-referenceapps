@@ -131,7 +131,7 @@ class MyFileSystemEventHandler(FileSystemEventHandler):
 
     def on_created(self, event):
         global FILE_NAME, LOG_FILES
-        FILE_NAME = event.key[1].replace(folder_name, '', 1)[1:] 
+        FILE_NAME = event.key[1].replace(FOLDER_NAME, '', 1)[1:] 
         # 创建新文件时触发, 文件名为把路径删除掉的字符串，再删除开头的斜杠
         if FILE_NAME.startswith('mxsdk.log.'):
             print(datetime.now(), '时检测到新建文件', FILE_NAME) 
@@ -146,7 +146,7 @@ class MyFileSystemEventHandler(FileSystemEventHandler):
         if event.key[1].endswith('/logs'): # 如果事件结尾是/logs则说明是目录级的变动，不处理
             pass
         else: # 文件名为把路径删除掉的字符串，再删除开头的斜杠
-            FILE_NAME = event.key[1].replace(folder_name, '', 1)[1:]
+            FILE_NAME = event.key[1].replace(FOLDER_NAME, '', 1)[1:]
             if FILE_NAME.startswith('mxsdk.log.'):
                 if FILE_NAME not in LOG_FILES:
                     year_info = FILE_NAME.split('.')[3][0:4] # 取4位的年信息
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     sender_thread.start()
     event_handler = MyFileSystemEventHandler() # 文件监控进程
     observer = Observer()
-    observer.schedule(event_handler, path=folder_name, recursive=True)
+    observer.schedule(event_handler, path=FOLDER_NAME, recursive=True)
     observer.start()
     try:
         while True:
