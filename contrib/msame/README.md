@@ -83,7 +83,6 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 
 ## 5 软件依赖说明
 
-如果涉及第三方软件依赖，请详细列出。
 
 | 依赖软件 | 版本   | 说明                   |
 | -------- | ------ | ---------------------- |
