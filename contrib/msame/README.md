@@ -1,7 +1,7 @@
 # 模型性能工具
 
 ## 1 介绍
-基于MindX SDK实现开发模型性能工具
+基于MindX SDK实现开发模型性能工具，用于测试om模型性能。
 
 ### 1.1 支持的产品
 
@@ -13,22 +13,24 @@ Plat: linux aarch64
 
 Ascend 21.0.4
 
-### 1.3 软件方案介绍
 
-表1.1 系统方案各子系统功能描述：
+### 1.3 代码目录结构与说明
 
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | infer  | 用于模型推理 |
-| 2    | time   | 用于耗时统计 |
+```
+.
+├── img
+│   ├── error1.jpg
+│   │── error2.jpg
+│   │── error3.jpg
+│   │── process.jpg
+├── msame.py
+├── README.md
+```
 
-### 1.4 代码目录结构与说明
-
-本工程名称”模型性能工具“。
 
 
 
-### 1.5 技术实现流程图
+### 1.4 技术实现流程图
 
 ![image-20220401173124980](./img/process.png)
 
@@ -69,7 +71,14 @@ pip install numpy == 1.21.2
 ```
 python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 ```
-
+参数说明：
+```
+--input：模型的输入路径（bin文件或npy文件的路径）
+--output：模型的输出路径（输出的bin文件或txt文件的路径）
+--model：om模型的路径
+--outfmt：模型的输出格式，“TXT”为输出txt格式，“BIN”为输出bin格式
+--loop：执行推理的次数，默认为1
+```
 
 
 ## 5 软件依赖说明
@@ -80,23 +89,3 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 | -------- | ------ | ---------------------- |
 | numpy    | 1.21.2 | 将数据保存为二进制文件 |
 |          |        |                        |
-
-
-
-## 6 常见问题
-
-### 6.1 精度问题
-
-**问题描述：**
-
-msame—c++纯推理数据
-
-![image-20220329172043922](./img/error1.png)
-
-msame—sdk纯推理数据
-
-![image-20220329172200891](./img/error3.png)
-
-误差整理：
-
-![image-20220329171715855](./img/error2.png)
