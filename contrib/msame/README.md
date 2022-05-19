@@ -62,7 +62,7 @@ pip install numpy == 1.21.2
 
 
 
-## 编译与运行
+##  3 编译与运行
 示例步骤如下：
 **步骤1** 设置环境变量
 
@@ -82,7 +82,7 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 ```
 
 
-## 5 软件依赖说明
+## 4 软件依赖说明
 
 如果涉及第三方软件依赖，请详细列出。
 
