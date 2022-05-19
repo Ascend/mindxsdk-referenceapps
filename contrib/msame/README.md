@@ -71,6 +71,7 @@ pip install numpy == 1.21.2
 ```
 python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 ```
+在输出路径下成功输出预期的“.txt”或“.bin”则运行成功，否则报错。
 参数说明：
 ```
 --input：模型的输入路径（bin文件或npy文件的路径）
