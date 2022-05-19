@@ -19,12 +19,12 @@ Ascend 21.0.4
 ```
 .
 ├── img
-│   ├── error1.jpg
-│   │── error2.jpg
-│   │── error3.jpg
-│   │── process.jpg
-├── msame.py
-├── README.md
+│   ├── error1.jpg                            // 误差图1
+│   │── error2.jpg                            // 误差图2
+│   │── error3.jpg                            // 误差图3
+│   │── process.jpg                           // 流程图
+├── msame.py                                  // 模型推理工具代码
+├── README.md                                 // ReadMe
 ```
 
 
@@ -54,7 +54,7 @@ Ascend 21.0.4
 source set_env.sh
 ```
 
-## 依赖安装
+## 3 依赖安装
 
 ```
 pip install numpy == 1.21.2
@@ -62,7 +62,7 @@ pip install numpy == 1.21.2
 
 
 
-##  3 编译与运行
+##  4 编译与运行
 示例步骤如下：
 **步骤1** 设置环境变量
 
@@ -82,11 +82,17 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 ```
 
 
-## 4 软件依赖说明
+## 5 软件依赖说明
 
 如果涉及第三方软件依赖，请详细列出。
 
 | 依赖软件 | 版本   | 说明                   |
 | -------- | ------ | ---------------------- |
 | numpy    | 1.21.2 | 将数据保存为二进制文件 |
-|          |        |                        |
+
+## 6 常见问题
+ 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。
+ 执行msame输出结果：   
+![image-20220401173124980](./img/error1.png)
+ 执行本例输出结果：   
+![image-20220401173124980](./img/error3.png)
