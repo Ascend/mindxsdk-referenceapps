@@ -19,9 +19,8 @@ Ascend 21.0.4
 ```
 .
 ├── img
-│   ├── error1.jpg                            // 误差图1
-│   │── error2.jpg                            // 误差图2
-│   │── error3.jpg                            // 误差图3
+│   ├── error1.jpg                            // readme误差图1
+│   │── error2.jpg                            // readme误差图2
 │   │── process.jpg                           // 流程图
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
@@ -91,8 +90,8 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 | numpy    | 1.21.2 | 将数据保存为二进制文件 |
 
 ## 6 常见问题
- 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。
+ 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。  
  执行msame输出结果：   
 ![image-20220401173124980](./img/error1.png)
  执行本例输出结果：   
-![image-20220401173124980](./img/error3.png)
+![image-20220401173124980](./img/error2.png)
