@@ -19,8 +19,8 @@ Ascend 21.0.4
 ```
 .
 ├── img
-│   ├── error1.jpg                            // readme误差图1
-│   │── error2.jpg                            // readme误差图2
+│   ├── error1.jpg                            // msame推理结果
+│   │── error2.jpg                            // 本例推理结果
 │   │── process.jpg                           // 流程图
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
