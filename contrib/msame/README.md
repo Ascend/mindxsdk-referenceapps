@@ -111,8 +111,15 @@ python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test 
 | numpy    | 1.21.2 | 将数据保存为二进制文件 |
 
 ## 6 常见问题
- 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。  
+### 6.1 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。  
  执行msame-C++输出结果：   
 ![image-20220401173124980](./img/error1.png)
  执行本例（msame-python）输出结果：   
 ![image-20220401173124980](./img/error2.png)
+### 6.2   
+![image-20220401173124980](./img/error3.png)
+问题描述：   
+模型需要的输入shape与提供的数据shape不一致。
+解决方案：   
+可在msame.py中自行输出m.input_shape查看模型需要的输入shape，m.input_dtype查看数据的shape。   
+自行编写脚本查看bin或npy文件的shape和dtype，与模型的shape和dtype对齐。
