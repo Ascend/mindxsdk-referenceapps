@@ -24,6 +24,7 @@ Ascend 21.0.4
 │   │── error2.jpg                            // 本例(msame-python)推理结果
 │   │── process.jpg                           // 流程图
 ├── dog.jpg                                   // yolov3模型的输入图片
+├── dog.npy                                   // yolov3模型的输入图片对应的npy文件
 ├── set_env.sh                                // 需要设置的环境变量
 ├── Getnpy.py                                 // 生成npy文件示例代码
 ├── msame.py                                  // 模型推理工具代码
