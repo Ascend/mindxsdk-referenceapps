@@ -1,7 +1,7 @@
 # 模型性能工具
 
 ## 1 介绍
-基于MindX SDK实现开发模型性能工具，用于测试om模型性能。
+基于MindX SDK实现开发模型性能工具，用于测试om模型性能，本例为msame的python版本。
 
 ### 1.1 支持的产品
 
@@ -68,18 +68,17 @@ pip install numpy == 1.21.2
 **步骤2**  运行
 
 ```
-python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
+python3.9 msame.py --model xxx --input xxx --output xxx  --loop xxx --outfmt xxx
 ```
 在输出路径下成功输出预期的“.txt”或“.bin”则运行成功，否则报错。   
 参数说明：
 ```
+--model：om模型的路径
 --input：模型的输入路径（bin文件或npy文件的路径）
 --output：模型的输出路径（输出的bin文件或txt文件的路径）
---model：om模型的路径
---outfmt：模型的输出格式，“TXT”为输出txt格式，“BIN”为输出bin格式
+--outfmt：模型的输出格式，“TXT”为输出txt格式，“BIN”为输出bin格式，不区分大小写
 --loop：执行推理的次数，默认为1
 ```
-
 
 ## 5 软件依赖说明
 
@@ -90,7 +89,7 @@ python3.9 msame.py --input xxx --output xxx --model xxx --loop xxx --outfmt xxx
 
 ## 6 常见问题
  存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。  
- 执行msame输出结果：   
+ 执行msame-C++输出结果：   
 ![image-20220401173124980](./img/error1.png)
- 执行本例输出结果：   
+ 执行本例（msame-python）输出结果：   
 ![image-20220401173124980](./img/error2.png)
