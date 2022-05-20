@@ -1,7 +1,7 @@
 # 模型性能工具
 
 ## 1 介绍
-基于MindX SDK实现开发模型性能工具，用于测试om模型性能，本例为msame的python版本。
+基于MindX SDK实现开发模型性能工具，用于测试om模型性能，本例为msame的python版本实现。
 
 ### 1.1 支持的产品
 
@@ -76,9 +76,20 @@ python3.9 msame.py --model xxx --input xxx --output xxx  --loop xxx --outfmt xxx
 --model：om模型的路径
 --input：模型的输入路径（bin文件或npy文件的路径）
 --output：模型的输出路径（输出的bin文件或txt文件的路径）
---outfmt：模型的输出格式，“TXT”为输出txt格式，“BIN”为输出bin格式，不区分大小写
+--outfmt：模型的输出格式，“TXT”为输出txt格式，其余输出为bin格式。  
 --loop：执行推理的次数，默认为1
 ```
+npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.jpg   
+```
+python3.9 Getnpy.py
+```
+   转换成功后应在当前目录下产生dog.npy
+以yolov3模型作为示例参考：
+```
+python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test --outfmt TXT
+```   
+执行成功后，在test目录下生成yolov3_tf_bs1_fp16_0.txt,yolov3_tf_bs1_fp16_1.txt,yolov3_tf_bs1_fp16_2.txt   
+输出文件的个数与模型的输出有关。   
 
 ## 5 软件依赖说明
 
