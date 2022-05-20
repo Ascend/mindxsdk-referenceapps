@@ -22,6 +22,8 @@ Ascend 21.0.4
 │   ├── error1.jpg                            // msame推理结果
 │   │── error2.jpg                            // 本例推理结果
 │   │── process.jpg                           // 流程图
+├── dog.jpg                                   // yolov3模型的输入图片
+├── Getnpy.py                                 // 生成npy文件示例代码
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
 ```
