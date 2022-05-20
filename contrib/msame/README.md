@@ -83,12 +83,12 @@ npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.j
 ```
 python3.9 Getnpy.py
 ```
-   转换成功后应在当前目录下产生dog.npy
+   转换成功后应在当前目录下产生dog.npy   
 以yolov3模型作为示例参考：
 ```
 python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test --outfmt TXT
 ```   
-执行成功后，在test目录下生成yolov3_tf_bs1_fp16_0.txt,yolov3_tf_bs1_fp16_1.txt,yolov3_tf_bs1_fp16_2.txt   
+执行成功后，在test目录下生成yolov3_tf_bs1_fp16_0.txt，yolov3_tf_bs1_fp16_1.txt， yolov3_tf_bs1_fp16_2.txt   
 输出文件的个数与模型的输出有关。   
 
 ## 5 软件依赖说明
