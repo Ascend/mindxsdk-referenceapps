@@ -119,7 +119,7 @@ python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test 
 ### 6.2   
 ![image-20220401173124980](./img/error3.png)
 问题描述：   
-模型需要的输入shape与提供的数据shape不一致。
+模型需要的输入shape与提供的数据shape不一致。   
 解决方案：   
 可在msame.py中自行输出m.input_shape查看模型需要的输入shape，m.input_dtype查看数据的shape。   
 自行编写脚本查看bin或npy文件的shape和dtype，与模型的shape和dtype对齐。
