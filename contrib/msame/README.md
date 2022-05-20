@@ -20,8 +20,8 @@ Ascend 21.0.4
 ```
 .
 ├── img
-│   ├── error1.jpg                            // msame推理结果
-│   │── error2.jpg                            // 本例推理结果
+│   ├── error1.jpg                            // msame-C++推理结果
+│   │── error2.jpg                            // 本例(msame-python)推理结果
 │   │── process.jpg                           // 流程图
 ├── dog.jpg                                   // yolov3模型的输入图片
 ├── set_env.sh                                // 需要设置的环境变量
