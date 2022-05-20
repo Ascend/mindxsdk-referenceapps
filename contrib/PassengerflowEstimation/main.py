@@ -39,5 +39,8 @@ if __name__ == '__main__':
         while FRAMEID < 1200:
             FRAMEID += 1
             infer_result = streamManagerApi.GetResult(STREAMNAME, 0, 10000)
+            if infer_result.data == b'[1002][Internal error] ':
+                print("Error! cannot find video source!")
+                break
             f.write(infer_result.data)
     streamManagerApi.DestroyAllStreams()
