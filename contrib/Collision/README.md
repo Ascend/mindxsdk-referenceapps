@@ -1,7 +1,7 @@
 # 车辆碰撞识别
 
 ## 1 介绍
-此项目的碰撞插件基于MindXSDK开发，在晟腾芯片上进行目标检测和跟踪，可以对车辆进行画框和编号，检测到车辆碰撞后，可将追踪编号提示为“Collision”并将检测结果可视化并保存。
+此项目的碰撞插件基于MindXSDK开发，在昇腾芯片上进行目标检测和跟踪，可以对车辆进行画框和编号，检测到车辆碰撞后，可将追踪编号提示为“Collision”并将检测结果可视化并保存。
 
 项目主要流程为：通过live555服务器进行拉流输入视频，然后进行视频解码将264格式的视频解码为YUV格式的图片，图片缩放后经过模型推理进行车辆识别，识别结果经过yolov3后处理后得到识别框，对识别框进行跟踪并编号，用编号覆盖原有的类别信息，如检测到车辆发生碰撞，碰撞的车辆的编号将会被“Collision”所替换，再将识别框和类别信息分别转绘到图片上，最后将图片编码成视频进行输出。
 
@@ -57,10 +57,10 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 │   └── yolov3.om               # om模型
 │       
 ├── plugins
-│   ├── MxpiCollisionClassNames     # 碰撞检测插件
+│   ├── MxpiCollisionClassName     # 碰撞检测插件
 │   │   ├── CMakeLists.txt        
-│   │   ├── MxpiCollisionClassNames.cpp  
-│   │   ├── MxpiCollisionClassNames.h
+│   │   ├── MxpiCollisionClassName.cpp  
+│   │   ├── MxpiCollisionClassName.h
 │   │   └── build.sh
 │   └── MxpiTrackIdReplaceClassName  # 跟踪编号取代类名插件
 │       ├── CMakeLists.txt
@@ -162,8 +162,20 @@ ATC run success, welcome to the next use.
         },
 ```
 
+我们默认ffmpeg转换视频为264格式时，分辨率统一为1280*720，如果自己需要更改分辨率，请同时修改collision.pipeline文件中mxpi_videoencoder0的"imageHeight"和"imageWidth"内容。
 
-
+     "mxpi_videoencoder0": {
+                "props": {
+                    "inputFormat": "YUV420SP_NV12",
+                    "outputFormat": "H264",
+                    "fps": "1",
+                    "iFrameInterval": "50",
+                    "imageHeight":"720",
+                    "imageWidth":"1280"
+                },
+                "factory": "mxpi_videoencoder",
+                "next": "queue7"
+            },
 ## 6 编译与运行
 
 **步骤1** 按照第2小结**环境依赖**中的步骤设置环境变量。
@@ -186,16 +198,16 @@ bash build.sh
 python3.9.2 collision.py
 ```
 
-命令执行成功后会在当前目录下生成检测结果视频文件collision.h264,查看文件验证目标跟踪结果。
+命令执行成功后会在当前目录下生成检测结果视频文件out_collision.h264,查看文件验证目标跟踪结果。
 
 
 
 ## 7 结果展示（部分截图）
 
-生成的collision.h264文件在本地我们可以用适配.h264文件格式的视频播放软件进行播放。也可以使用ffmpeg转换成.mp4格式进行本地播放。
+生成的out_collision.h264文件在本地我们可以用适配.h264文件格式的视频播放软件进行播放。也可以使用ffmpeg转换成.mp4格式进行本地播放。
 
 ```
-ffmpeg -i collision.h264 -vcodec h264 collision.mp4
+ffmpeg -i out_collision.h264 -vcodec h264 out_collision.mp4
 ```
 
 ![碰撞前](../Collision/image/before_collision.png)![碰撞时](../Collision/image/collision.png)![碰撞后](../Collision/image/after_collision.png)
@@ -208,7 +220,7 @@ ffmpeg -i collision.h264 -vcodec h264 collision.mp4
 
 1.**问题描述：**
 
-`Collision/collision.pipeline`中视频编码分辨率参数目前未配置，自适应分辨率编码输出。 如手动指定imageHeight 和 imageWidth 属性，则需要和视频输入分配率相同，否则会包如下类型的错：
+`Collision/collision.pipeline`中视频编码分辨率参数已经手动指定imageHeight 和 imageWidth 属性，需要和视频输入分配率相同，否则会包如下类型的错：
 
 ![error](../Collision/image/error.png)
 
