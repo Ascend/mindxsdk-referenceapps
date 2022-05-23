@@ -1,7 +1,7 @@
-# 模型性能工具
+# 模型推理工具
 
 ## 1 介绍
-基于MindX SDK实现开发模型性能工具，用于测试om模型性能，本例为msame的python版本实现。   
+基于MindX SDK实现开发模型推理工具，用于测试om模型推理，本例为msame的python版本实现。   
 [msame-C++工具链接](https://gitee.com/ascend/tools/tree/master/msame)
 
 ### 1.1 支持的产品
