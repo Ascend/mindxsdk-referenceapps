@@ -128,7 +128,7 @@ bash build.sh
 （编译脚本会自动复制编译好的libmxpi_trustedauditplugin.so文件到${MX_SDK_HOME}/lib/plugins/路径）
 
 ### 5.3 插件配置
-用户可根据Mindx安装路径更改Mindx源日志输出路径，配置文件为：项目所在目录/trusted_audit/test/TrustedAudit.pipeline
+用户可根据Mindx安装路径更改Mindx源日志输出路径，配置文件为：项目所在目录/trusted_audit/TrustedAudit.pipeline
 ```
 "mxpi_trustedauditplugin":{
     "props":{
@@ -255,7 +255,7 @@ log_id为...的ES数据中item_raw_content字段已被修改为{'key': 'hello_wo
 
 ***步骤2***:运行按用户查询的用例程序，注意**起止时间要与7.2的用例些许不同**
 ```
-cd 项目所在目录/trusted_audit/test
+cd 项目所在目录/trusted_audit/src
 python test_b.py ae6791e7330ded894b2e60fb2e9ab444 2021-12-17 15:09:16.364057 2021-12-17 15:09:42.364057 1 10
 ```
 该shell窗口显示
@@ -267,7 +267,7 @@ python test_b.py ae6791e7330ded894b2e60fb2e9ab444 2021-12-17 15:09:16.364057 202
 
 ***步骤3***:运行按时间段查询的用例程序，注意**起止时间要与7.3的用例些许不同**
 ```
-cd 项目所在目录/trusted_audit/test
+cd 项目所在目录/trusted_audit/src
 python test_c.py 2021-12-17 15:09:16.364057 2021-12-17 15:09:42.364057 1 10
 ```
 该shell窗口显示
