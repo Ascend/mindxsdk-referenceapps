@@ -18,24 +18,24 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-	ActionRecognition/
-	CrowdCounting/
-    mxBase_wheatDetection/
-	EdgeDetectionPicture/
+	# ActionRecognition/
+	# CrowdCounting/
+    # mxBase_wheatDetection/
+	# EdgeDetectionPicture/
     HelmetIdentification/
     Individual/
-    human_segmentation/
-	OpenposeKeypointDetection/
+    # human_segmentation/
+	# OpenposeKeypointDetection/
 	PersonCount/
 	FatigueDrivingRecognition/
-	CartoonGANPicture/
-	HeadPoseEstimation/
+	# CartoonGANPicture/
+	# HeadPoseEstimation/
 	FaceBoxes/
 	BertTextClassification/
-    RTM3DTargetDetection/
+    # RTM3DTargetDetection/
     EfficientDet/
     SentimentAnalysis/
-    RotateObjectDetection/
+    # RotateObjectDetection/
     FairMOT/
     UltraFastLaneDetection/
     Collision/
