@@ -62,7 +62,7 @@ def handle_file(f1, start_line):
             # 最终格式为 yyyy-mm-dd hh:mm:ss.uuuuuu 的字符串;5位的thread_id;
             #形如file:line的file_line;msg信息
             temp_content_dict = {'type': content[0],
-                'timestamp': year_month_day[1:5] + '-' + year_month_day[5:7] + '-' + year_month_day[8:] + \
+                'timestamp': year_month_day[0:4] + '-' + year_month_day[4:6] + '-' + year_month_day[6:8] + \
                 ' ' + hour_min_second_micro,
                 'thread_id': thread_id,  'file_line': file_line,  'msg': msg}
             output.append(temp_content_dict)
@@ -152,7 +152,7 @@ class MyFileSystemEventHandler(FileSystemEventHandler):
                 target_line = LOG_FILES.get(FILE_NAME)
                 temp_lines = read_file(event.key[1], target_line)
                 if isinstance(temp_lines, list) and len(temp_lines) > 0: # 对于行数并未改变的行为，或者文件读取出错，不处理
-                    LOG_FILES.get(FILE_NAME) += len(temp_lines)
+                    LOG_FILES[FILE_NAME] += len(temp_lines)
                     sending_buffer_lock.acquire()
                     SENDING_BUFFER.extend(temp_lines)
                     SENDING_QUEUE.put('hello')
@@ -193,7 +193,7 @@ def process_check(processname):
 
 
 if __name__ == "__main__":
-    FOLDER_NAME = '/work/mindx_sdk/mxVision/logs'
+    FOLDER_NAME = '/root/log/mindxsdk/logs'
     LOG_FILES = {} # 全局变量LOG_FILES用于监控各文件日期、已读取行号等信息
     SENDING_CHUNK_SIZE = 100 # 发缓冲区大小；buffer大小建议设为chunk大小的若干倍，避免阻塞
     SENDING_GAP_TIME = 5
