@@ -2,7 +2,7 @@
 
 ## 1 介绍
 基于MindX SDK实现开发模型性能工具，用于测试om模型性能，本例为msame的python版本实现。   
-[msame-C++工具链接]()
+[msame-C++工具链接](https://gitee.com/ascend/tools/tree/master/msame)
 
 ### 1.1 支持的产品
 
@@ -87,9 +87,9 @@ python3.9 msame.py --model xxx --input xxx --output xxx  --loop xxx --outfmt xxx
 --outfmt    
 功能说明：模型的输出格式 参数值：TXT 或 BIN 示例：--outfmt TXT
 --loop   
-功能说明：执行推理的次数，默认为1 参数值：正整数 示例：--loop 2
+功能说明：执行推理的次数 默认为1 参数值：正整数 示例：--loop 2
 --device   
-功能说明： 参数值：正整数 示例：1 
+功能说明：执行代码的设备编号 参数值：自然数 示例：1 
 ```
 npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.jpg   
 ```
