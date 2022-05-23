@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,29 +16,8 @@
 set -e 
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
-
 SAMPLE_FOLDER=(
-	# ActionRecognition/
-	# CrowdCounting/
-    # mxBase_wheatDetection/
-	# EdgeDetectionPicture/
-    HelmetIdentification/
-    Individual/
-    # human_segmentation/
-	# OpenposeKeypointDetection/
-	PersonCount/
-	FatigueDrivingRecognition/
-	# CartoonGANPicture/
-	# HeadPoseEstimation/
-	FaceBoxes/
-	BertTextClassification/
-    # RTM3DTargetDetection/
-    EfficientDet/
-    SentimentAnalysis/
-    # RotateObjectDetection/
-    FairMOT/
-    UltraFastLaneDetection/
-    VehicleIdentification/
+	/vehiclePostProcess/
 )
 
 
