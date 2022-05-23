@@ -89,7 +89,7 @@ python3.9 msame.py --model xxx --input xxx --output xxx  --loop xxx --outfmt xxx
 --loop   
 功能说明：执行推理的次数 默认为1 参数值：正整数 示例：--loop 2
 --device   
-功能说明：执行代码的设备编号 参数值：自然数 示例：1 
+功能说明：执行代码的设备编号 参数值：自然数 示例：--device 1 
 ```
 npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.jpg   
 ```
