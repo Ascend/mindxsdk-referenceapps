@@ -84,7 +84,7 @@
 ```
 vi ~/.bashrc
 export MX_SDK_HOME=${安装路径}/mxVision
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${LD_LIBRARY_PATH}
 export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}" 
 export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
 export GST_PULGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
@@ -265,7 +265,7 @@ python test_b.py ae6791e7330ded894b2e60fb2e9ab444 2021-12-17 15:09:16.364057 202
 ```
 （注意：按用户查找时，标识符0表示该条目日志正确；标识符1表示该条目被篡改）
 
-***步骤3***:运行按时间段查询的用例程序，注意**起止时间要与7.2的用例些许不同**
+***步骤3***:运行按时间段查询的用例程序，注意**起止时间要与7.3的用例些许不同**
 ```
 cd 项目所在目录/trusted_audit/test
 python test_c.py 2021-12-17 15:09:16.364057 2021-12-17 15:09:42.364057 1 10

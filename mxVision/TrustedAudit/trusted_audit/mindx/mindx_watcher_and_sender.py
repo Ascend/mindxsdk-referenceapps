@@ -33,7 +33,7 @@ def sending_time_threshold_check(last_item_timestamp):
         return False
 
 
-def handle_file(f1, start_line, year_info):
+def handle_file(f1, start_line):
     output = []
     for count, content in enumerate(f1, 1):
         if count < start_line:
@@ -53,16 +53,17 @@ def handle_file(f1, start_line, year_info):
             if len(content_split) <= 1: # 无时间戳 不处理
                 print('warning:FILE_NAME', FILE_NAME, 'fail:line', count, '无时间戳，内容为', content)
                 continue
-            month_day = first_part_split[0][1:]
+            year_month_day = first_part_split[0][1:]
             hour_min_second_micro = first_part_split[1]
             thread_id = first_part_split[2]
             file_line = first_part_split[3]
             # IWEF标识符，表示Information/debug Warning Error Fault;
             # 用年信息加上日志条目中的20位月日时分秒信息，精确到微秒;
-            # 最终格式为 yyyymmdd hh:mm:ss.uuuuuu 的字符串;5位的thread_id;
+            # 最终格式为 yyyy-mm-dd hh:mm:ss.uuuuuu 的字符串;5位的thread_id;
             #形如file:line的file_line;msg信息
             temp_content_dict = {'type': content[0],
-                'timestamp': year_info + '-' + month_day[0:2] + '-' + month_day[2:] + ' ' + hour_min_second_micro,
+                'timestamp': year_month_day[1:5] + '-' + year_month_day[5:7] + '-' + year_month_day[8:] + \
+                ' ' + hour_min_second_micro,
                 'thread_id': thread_id,  'file_line': file_line,  'msg': msg}
             output.append(temp_content_dict)
         except Exception:
@@ -74,21 +75,20 @@ def handle_file(f1, start_line, year_info):
     return output
 
 
-def open_file(filename, start_line, year_info):
+def open_file(filename, start_line):
     output = []
     with open(filename) as f1:
-        output = handle_file(f1, start_line, year_info)
+        output = handle_file(f1, start_line)
     print('info: FILE_NAME', FILE_NAME, '本次读取', len(output), '行')
     return output
 
 
 def read_file(filename, log_file_info): # 从start_line的行号往后读取多行
-    start_line = log_file_info[0]
-    year_info = log_file_info[1]
+    start_line = log_file_info
     count = None
     output = []
     try:
-        output = open_file(filename, start_line, year_info)
+        output = open_file(filename, start_line)
     except Exception:
         traceback.print_exc()
         print('error: FILE_NAME', FILE_NAME, '文件打开失败，该文件可能被自动删除')
@@ -135,9 +135,8 @@ class MyFileSystemEventHandler(FileSystemEventHandler):
         # 创建新文件时触发, 文件名为把路径删除掉的字符串，再删除开头的斜杠
         if FILE_NAME.startswith('mxsdk.log.'):
             print(datetime.now(), '时检测到新建文件', FILE_NAME) 
-            # 列表的第一个是存储读取行标志的，从1开始; 列表的第二个是存储4位的年信息
-            year_info = FILE_NAME.split('.')[3][0:4]
-            LOG_FILES[FILE_NAME] = [1, year_info]
+            # 列表的存储读取行标志的，从1开始
+            LOG_FILES[FILE_NAME] = 1
         else: # 临时文件一般以.开头或数字文件名，不处理
             pass
 
@@ -149,16 +148,15 @@ class MyFileSystemEventHandler(FileSystemEventHandler):
             FILE_NAME = event.key[1].replace(FOLDER_NAME, '', 1)[1:]
             if FILE_NAME.startswith('mxsdk.log.'):
                 if FILE_NAME not in LOG_FILES:
-                    year_info = FILE_NAME.split('.')[3][0:4] # 取4位的年信息
-                    LOG_FILES[FILE_NAME] = [1, year_info]
+                    LOG_FILES[FILE_NAME] = 1
                 target_line = LOG_FILES.get(FILE_NAME)
                 temp_lines = read_file(event.key[1], target_line)
                 if isinstance(temp_lines, list) and len(temp_lines) > 0: # 对于行数并未改变的行为，或者文件读取出错，不处理
-                    LOG_FILES.get(FILE_NAME)[0] += len(temp_lines)
+                    LOG_FILES.get(FILE_NAME) += len(temp_lines)
                     sending_buffer_lock.acquire()
                     SENDING_BUFFER.extend(temp_lines)
                     SENDING_QUEUE.put('hello')
-                    print(datetime.now(), '时检测到文件', FILE_NAME, '变化，当前已读取到', LOG_FILES.get(FILE_NAME)[0], '行')
+                    print(datetime.now(), '时检测到文件', FILE_NAME, '变化，当前已读取到', LOG_FILES.get(FILE_NAME), '行')
                     sending_buffer_lock.release()
     
     def on_deleted(self, event):

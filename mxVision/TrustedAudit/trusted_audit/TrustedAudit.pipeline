@@ -6,7 +6,7 @@
         "mxpi_trustedauditplugin": {
             "props": {
                 "descriptionMessage": "Trusted Audti Plugin Message",
-                "originalLogsPath": "/work/mindx_sdk/mxVision/logs"
+                "originalLogsPath": "/root/log/mindxsdk/logs"
         },
             "factory": "mxpi_trustedauditplugin",
             "next": "fakesink1"
