@@ -22,11 +22,14 @@ Ascend 21.0.4
 ├── img
 │   ├── error1.jpg                            // msame-C++推理结果
 │   │── error2.jpg                            // 本例(msame-python)推理结果
+│   │── error3.jpg                            // 输入不一致报错截图
 │   │── process.jpg                           // 流程图
 ├── dog.jpg                                   // yolov3模型的输入图片
 ├── dog.npy                                   // yolov3模型的输入图片对应的npy文件
+├── dog.bin                                   // yolov3模型的输入图片对应的bin文件
 ├── set_env.sh                                // 需要设置的环境变量
 ├── Getnpy.py                                 // 生成npy文件示例代码
+├── Getbin.py                                 // 生成bin文件示例代码
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
 ```
@@ -96,7 +99,12 @@ npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.j
 python3.9 Getnpy.py
 ```
    转换成功后应在当前目录下产生dog.npy   
-以yolov3模型作为示例参考：
+bin文件生成可参考目录中Getbin.py，示例需在当前目录准备dog.jpg   
+```
+python3.9 Getbin.py
+```
+   转换成功后应在当前目录下产生dog.bin   
+以yolov3模型npy文件输入作为示例参考：
 ```
 python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test --outfmt TXT
 ```   
