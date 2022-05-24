@@ -77,7 +77,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ![SDK流程图](../Collision/image/SDK_process.png)
 
-
+注：红色为本项目开发插件 蓝色为沿用其他项目开发插件 其余为SDK内置插件
 
 ## 2 环境依赖
 
