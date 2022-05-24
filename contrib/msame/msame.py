@@ -149,7 +149,7 @@ def get_npy(f, input_type):
     bins = []
     if os.path.isdir(f):
         for s in os.listdir(f):
-            files_npy.append(np.load(f+"/"+s, dtype=input_type).flatten())
+            files_npy.append(np.load(f+"/"+s).flatten())
     elif os.path.isfile(f):
         files_npy.append(np.load(f).flatten())
     bins = get_array(files_npy, input_type)
