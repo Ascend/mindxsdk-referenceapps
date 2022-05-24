@@ -37,5 +37,7 @@ def search_query(search_query_msg, url):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 8:
+        print('error: 输入参数错误，退出')
     search_query_user(sys.argv[1], sys.argv[2] + ' ' + sys.argv[3],
         sys.argv[4] + ' ' + sys.argv[5], int(sys.argv[6]), int(sys.argv[7]))

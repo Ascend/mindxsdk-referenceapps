@@ -20,6 +20,8 @@ from database_init import gauss_database_init
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 3:
+        print('error: 输入参数错误，退出')
     selected_user_id = sys.argv[1]
     modified_content = sys.argv[2]
     START_TIME_STR = '2021-06-10 00:00:00.000000'

@@ -25,5 +25,7 @@ def search_query_full(start_time, end_time, page_num, page_size):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 7:
+        print('error: 输入参数错误，退出')
     search_query_full(sys.argv[1] + ' ' + sys.argv[2],
         sys.argv[3] + ' ' + sys.argv[4], int(sys.argv[5]), int(sys.argv[6]))
