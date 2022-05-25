@@ -16,7 +16,7 @@ import threading
 # 高安数据库口令
 GAUSS_ROOT_USER = 'gaussdb'
 GAUSS_ROOT_PWD = 'Enmo@123'
-GAUSS_DB_NAME = 'mindxlog'
+GAUSS_DB_NAME = 'postgres'
 GAUSS_USER = 'myauditor'
 GAUSS_PWD = 'Huawei123'
 # ES相关变量
