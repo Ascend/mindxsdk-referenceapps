@@ -30,7 +30,7 @@ import objsize
 from es_database_operate import ESDatebase
 from full_audit import log_processing_for_full_audit
 from server_config import ES_MAP_SCHEMA, CHUNK_ITEM_NUMBER_THRESHOLD, CHUNK_TIME_THRESHOLD,\
-    CHUNK_ITEM_NUMBER_THRESHOLD_UP, ES_INDEX_THRESHOLD, ES_PRE_INDEX, es_database_lock, SEARCH_BUFFER_SIZE
+    CHUNK_ITEM_NUMBER_THRESHOLD_UP, ES_INDEX_THRESHOLD, ES_PRE_INDEX, es_database_lock
 from database_init import gauss_database_init, obtain_largest_log_id
 from user_audit import log_processing_for_user_audit
 from user_search import user_search_main
@@ -252,7 +252,7 @@ def process_return_window(search_result, req):
 
 @app.route('/Searcher', methods=['POST'])
 def searcher():
-    global NEXT_LOG_ID, SEARCH_BUFFER
+    global NEXT_LOG_ID
     req = request.json
     logging.info('收到查找请求：' + str(req) + '当前的NEXT_LOG_ID为' + str(NEXT_LOG_ID))
     print('收到查找请求：', req, '当前的NEXT_LOG_ID为', NEXT_LOG_ID)
@@ -260,22 +260,13 @@ def searcher():
     err_code = None
     resp = {'order_info':None}
     searcher_lock.acquire()
-    if (req['user_id'], req['start_time'], req['end_time'], NEXT_LOG_ID) in SEARCH_BUFFER: 
-        # 之前搜索过同样的结果，则可以直接返回已经查询过的结果；
-        # NEXT_LOG_ID用于标记数据库在查询间隙没有改动, err_code = -1 表示之前查询过的值
-        err_code = -1
-        search_result = SEARCH_BUFFER[(req['user_id'], req['start_time'], req['end_time'], NEXT_LOG_ID)]
-    else:
-        # 调用搜索接口; err_code为返回值错误情况；result为查询结果;
-        # err_code = 0 是表示查询结果全部正确, err_code = 1 表示在请求的时间段内未查询到任何数据,
-        # err_code = 2 表示发现了某条审计路径验证错误, err_code = 3 表示发现了某条日志在chunk块内的顺序验证错误,
-        # err_code = 4 表示高安库里无统计信息,err_code = 5 表示es里条目数和统计信息有差异，库被删了,
-        # err_code = 6 表示没有读到高安库里的根
-        err_code, search_result = user_search_main(g_es_object, g_secure_db_object1,
-            g_secure_db_object2, req['user_id'], req['start_time'], req['end_time'])
-        if len(SEARCH_BUFFER.keys()) >= SEARCH_BUFFER_SIZE:
-            SEARCH_BUFFER.popitem(last=False)
-        SEARCH_BUFFER[(req['user_id'], req['start_time'], req['end_time'], NEXT_LOG_ID)] = search_result
+    # 调用搜索接口; err_code为返回值错误情况；result为查询结果;
+    # err_code = 0 是表示查询结果全部正确, err_code = 1 表示在请求的时间段内未查询到任何数据,
+    # err_code = 2 表示发现了某条审计路径验证错误, err_code = 3 表示发现了某条日志在chunk块内的顺序验证错误,
+    # err_code = 4 表示高安库里无统计信息,err_code = 5 表示es里条目数和统计信息有差异，库被删了,
+    # err_code = 6 表示没有读到高安库里的根
+    err_code, search_result = user_search_main(g_es_object, g_secure_db_object1,
+        g_secure_db_object2, req['user_id'], req['start_time'], req['end_time'])
     searcher_lock.release()
     resp = {'total_len': len(search_result)}
     resp['content'] = process_return_window(search_result, req)
@@ -287,7 +278,7 @@ def searcher():
 
 @app.route('/Searcher_full', methods=['POST'])
 def searcher_full():
-    global NEXT_LOG_ID, SEARCH_BUFFER
+    global NEXT_LOG_ID
     req = request.json
     logging.info('收到查找请求：' + str(req) + '当前的NEXT_LOG_ID为' + str(NEXT_LOG_ID))
     print('收到查找请求：', req, '当前的NEXT_LOG_ID为', NEXT_LOG_ID)
@@ -295,19 +286,10 @@ def searcher_full():
     err_code = None
     resp = {'order_info':None}
     searcher_lock.acquire()
-    if (req['start_time'], req['end_time'], NEXT_LOG_ID) in SEARCH_BUFFER: 
-        # 之前搜索过同样的结果，则可以直接返回已经查询过的结果； 
-        # NEXT_LOG_ID用于标记数据库在查询间隙没有改动, err_code = -1 表示之前查询过的值
-        err_code = -1
-        search_result = SEARCH_BUFFER[ (req['start_time'], req['end_time'], NEXT_LOG_ID)]
-    else: 
-        # 调用搜索接口; err_code为返回值错误情况；result为查询结果,
-        # err_code = 0 是表示查询结果全部正确, err_code = 1 表示在请求的时间段内未查询到任何数据, 
-        # err_code = 2 是表示查询结果不全，es库被删了, err_code = 3 表示重构根不正确
-        err_code, search_result = full_search_main(g_es_object, g_secure_db_object1, req['start_time'], req['end_time'])
-        if len(SEARCH_BUFFER.keys()) >= SEARCH_BUFFER_SIZE:
-            SEARCH_BUFFER.popitem(last=False)
-        SEARCH_BUFFER[ (req['start_time'], req['end_time'], NEXT_LOG_ID) ] = search_result
+    # 调用搜索接口; err_code为返回值错误情况；result为查询结果,
+    # err_code = 0 是表示查询结果全部正确, err_code = 1 表示在请求的时间段内未查询到任何数据, 
+    # err_code = 2 是表示查询结果不全，es库被删了, err_code = 3 表示重构根不正确
+    err_code, search_result = full_search_main(g_es_object, g_secure_db_object1, req['start_time'], req['end_time'])
     searcher_lock.release()
     resp = {'total_len': len(search_result)}
     resp['content'] = process_return_window(search_result, req)
@@ -341,7 +323,6 @@ if __name__ == '__main__':
     g_es_object = ESDatebase()
     time.sleep(5)
     g_secure_db_object1, g_secure_db_object2 = gauss_database_init('database1', 'database2')
-    SEARCH_BUFFER = collections.OrderedDict()
     ES_INDEX_LIST = []
     NEXT_LOG_ID = obtain_largest_log_id(g_secure_db_object1, ES_INDEX_LIST)
     cur_dir = os.path.abspath(__file__).rsplit('/', 1)[0]

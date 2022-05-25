@@ -16,7 +16,7 @@ import threading
 # 高安数据库口令
 GAUSS_ROOT_USER = 'gaussdb'
 GAUSS_ROOT_PWD = 'Enmo@123'
-GAUSS_DB_NAME = 'postgres'
+GAUSS_DB_NAME = 'mindxlog'
 GAUSS_USER = 'myauditor'
 GAUSS_PWD = 'Huawei123'
 # ES相关变量
@@ -106,6 +106,5 @@ LOG_INDEX_BY_USER_TABLE_ALL_KEYS_APPENDIX = [' CHAR(32) NULL', ' VARCHAR(32) NUL
 # 字段名称: user_id 类型: CHAR(32) 存储16B的es_index_name，不可变长度 含义与作用: 表示该条记录在es中存在哪个es_index产生。
 # 字段名称: user_cnt 类型: INT UNSIGNED 含义与作用: 用于标识该条记录为该用户的第几条日志条目记录。每个用户的记录都单增。从1开始
 LOG_INDEX_BY_USER_TABLE_NUMBER = 16
-SEARCH_BUFFER_SIZE = 10
 es_database_lock = threading.Lock()
 secure_db_lock = threading.Lock()
