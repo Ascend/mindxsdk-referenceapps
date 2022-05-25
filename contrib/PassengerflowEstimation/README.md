@@ -258,4 +258,5 @@ python3 main.py
 帧率已经达到要求。
 
 ## 8适用场景
-本项目适用于俯视角度较大，并且人流量不是非常密集的视频中人流量统计。若人流非常密集，由于yolov4模型识别人体不准确，故无法准确统计。
+本项目适用于俯视角度较大，并且人流量不是非常密集的视频中人流量统计。若人流非常密集，由于yolov4模型识别人体不准确，故无法准确统计客流量。并且在视频中的画线要尽量水平。待检测的视频最好如下所示：
+![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image4.png)
