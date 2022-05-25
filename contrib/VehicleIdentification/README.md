@@ -198,10 +198,6 @@ ATC run success, welcome to the next use.
 
 示例步骤如下：
 
-**步骤0（可选）** 
-
-下载一份测试集：[**下载链接**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/dataset.zip)
-
 **步骤1** 
 
 后处理插件库编译：在项目目录下执行
@@ -227,7 +223,7 @@ chmod 640 ./lib/libvehiclepostprocess.so
 
 **步骤3** 
 
-在测试集中或自行选择一张或多张jpg文件，放入新建`./input`目录下，再执行
+自行选择一张或多张jpg文件，放入新建`./input`目录下，再执行
 ```bash
 python3 main.py
 ```
