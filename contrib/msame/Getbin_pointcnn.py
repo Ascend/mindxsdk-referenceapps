@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ============================================================================
-import mindx.sdk as sdk
 import numpy as np
-image_path = "dog.jpg"
-
-im = sdk.image(image_path, 0)
-resize_img = sdk.dvpp.resize(im, height=416, width=416)
-t = resize_img.get_tensor()
-t.to_host()
-npy = np.array(t)
-np.save("dog.npy", npy)
-
+data = np.random.randn(1, 1024, 3).astype(np.float32)
+data.tofile('pointcnn.bin')

@@ -14,8 +14,12 @@ Plat: linux aarch64
 
 Ascend 21.0.4
 
+### 1.3 适用场景   
 
-### 1.3 代码目录结构与说明
+使用于单输入或多输入模型推理   
+
+
+### 1.4 代码目录结构与说明
 
 ```
 .
@@ -24,12 +28,10 @@ Ascend 21.0.4
 │   │── error2.jpg                            // 本例(msame-python)推理结果
 │   │── error3.jpg                            // 输入不一致报错截图
 │   │── process.jpg                           // 流程图
-├── dog.jpg                                   // yolov3模型的输入图片
-├── dog.npy                                   // yolov3模型的输入图片对应的npy文件
-├── dog.bin                                   // yolov3模型的输入图片对应的bin文件
 ├── set_env.sh                                // 需要设置的环境变量
 ├── Getnpy.py                                 // 生成npy文件示例代码
-├── Getbin.py                                 // 生成bin文件示例代码
+├── Getbin_yolov3.py                          // 生成yolov3的bin文件示例代码
+├── Getbin_pointcnn.py                        // 生成pointcnn的bin文件示例代码
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
 ```
@@ -37,7 +39,7 @@ Ascend 21.0.4
 
 
 
-### 1.4 技术实现流程图
+### 1.5 技术实现流程图
 
 ![image-20220401173124980](./img/process.png)
 
@@ -55,6 +57,12 @@ Ascend 21.0.4
 | mxVision | 2.0.4  |
 | numpy    | 1.21.2 |
 
+软件依赖说明：
+
+| 依赖软件 | 版本   | 说明                   |
+| -------- | ------ | ---------------------- |
+| numpy    | 1.21.2 | 将数据保存为二进制文件 |
+
 在编译运行项目前，需要设置环境变量：
 
 ```
@@ -67,9 +75,40 @@ source set_env.sh
 pip install numpy == 1.21.2
 ```
 
+## 4 准备工作
 
+[单输入模型yolov3样例]: 
+[多输入模型pointnet样例]: 
 
-##  4 编译与运行
+注：多输入样例在输入时，多个输入用  ,  隔开。
+
+准备工作：
+yolov3输入npy文件生成可参考目录中Getnpy_yolov3.py，示例需在当前目录准备dog.jpg
+
+```
+python3.9 Getnpy_yolov3.py
+```
+
+转换成功后应在当前目录下产生dog.npy
+yolov3输入bin文件生成可参考目录中Getbin_yolov3.py，示例需在当前目录准备dog.jpg
+
+```
+python3.9 Getbin_yolov3.py
+```
+
+转换成功后应在当前目录下产生dog.bin   
+
+pointcnn输入bin文件生成可参考目录中Getbin_pointcnn.py   
+
+```
+python3.9 Getbin_pointcnn.py
+```
+
+转换成功后在当前目录下生成pointcnn.bin   
+
+注：如上三个py文件分别适用于示例yolov3或poincnn的输入尺寸，更换模型需自行修改尺寸。   
+
+##  5 编译与运行
 示例步骤如下：   
 **步骤1** 设置环境变量
 
@@ -94,29 +133,24 @@ python3.9 msame.py --model xxx --input xxx --output xxx  --loop xxx --outfmt xxx
 --device   
 功能说明：执行代码的设备编号 参数值：自然数 示例：--device 1 
 ```
-npy文件生成可参考目录中Getnpy.py，示例需在当前目录准备dog.jpg   
-```
-python3.9 Getnpy.py
-```
-   转换成功后应在当前目录下产生dog.npy   
-bin文件生成可参考目录中Getbin.py，示例需在当前目录准备dog.jpg   
-```
-python3.9 Getbin.py
-```
-   转换成功后应在当前目录下产生dog.bin   
+单输入模型：   
 以yolov3模型npy文件输入作为示例参考：
+
 ```
 python3.9 msame.py  --model yolov3_tf_bs1_fp16.om --input dog.npy --output test --outfmt TXT
-```   
+```
 执行成功后，在test目录下生成yolov3_tf_bs1_fp16_0.txt，yolov3_tf_bs1_fp16_1.txt， yolov3_tf_bs1_fp16_2.txt   
 输出文件的个数与模型的输出有关。   
 
-## 5 软件依赖说明
+多输入模型：   
 
+以pointcnn模型bin文件输入作为示例参考：    
 
-| 依赖软件 | 版本   | 说明                   |
-| -------- | ------ | ---------------------- |
-| numpy    | 1.21.2 | 将数据保存为二进制文件 |
+```
+python3.9 msame.py --model pointcnn_bs64.om --output test --outfmt BIN --input pointcnn.bin,pointcnn.bin
+```
+
+执行成功后，在test目录下生成pointcnn_bs64_0.bin     
 
 ## 6 常见问题
 ### 6.1 存储为txt格式时可能会出现第六位开始的误差，可以忽略此问题。  
