@@ -1,0 +1,66 @@
+{
+    "KPYunet": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_rtspsrc0": {
+            "props": {
+                "rtspUrl": "rtsp://192.168.88.106:8554/family-t.264",
+                "channelId": "0"
+            },
+            "factory": "mxpi_rtspsrc",
+            "next": "mxpi_videodecoder0"
+        }, 
+        "mxpi_videodecoder0": {
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV12",
+                "deviceId": "0",
+                "vdecChannelId": "0"
+            },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_imageresize0"
+        },
+
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "resizeHeight": "1080",
+                "resizeWidth": "1920",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "modelPath": "./models/yunet.om",
+                "singleBatchInfer": "1",
+                "outputHasBatchDim": "0"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_keypointpostprocessor0"
+        },
+        "mxpi_keypointpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "./config/face_yunet.cfg",
+                "postProcessLibPath": "libkpyunetpostprocess.so"
+            },
+            "factory": "mxpi_keypointpostprocessor",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_keypointpostprocessor0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+
+        "appsink0": {
+            "factory": "appsink"
+        }
+
+    }
+}
