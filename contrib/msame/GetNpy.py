@@ -15,13 +15,12 @@
 # ============================================================================
 import mindx.sdk as sdk
 import numpy as np
+IMAGE_PATH = "dog.jpg"
 
-image_path = "dog.jpg"                   #输入图片
-device_id = 0                            #芯片ID
-im = sdk.image(image_path, device_id)    #创造图片对象
-resize_img = sdk.dvpp.resize(im, height=416, width=416)  #对图片进行resize处理
-t = resize_img.get_tensor()   #获取图片的Tensor对象
+im = sdk.image(IMAGE_PATH, 0)
+resize_img = sdk.dvpp.resize(im, height=416, width=416)
+t = resize_img.get_tensor()
 t.to_host()
-n = np.array(t)
-n.tofile("dog.bin")
+npy = np.array(t)
+np.save("dog.npy", npy)
 
