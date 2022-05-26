@@ -156,14 +156,14 @@ var_reci_chn_2: 1.0
 
   ```bash
   chmod +x build.sh
-  ./build.sh
+  bash build.sh
   ```
 
 - 运行
 
   ```bash
   chmod +x run.sh
-  ./run.sh
+  bash run.sh "图片路径"  #相对路径为相对C++/Main可执行文件的路径，如果图片放于脚本同级目录，请使用bash run.sh ../picture.jpg
   ```
 
 > 1.先获取onnx模型，并使用命令转化成所需要的om模型

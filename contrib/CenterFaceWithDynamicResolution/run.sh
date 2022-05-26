@@ -59,7 +59,8 @@ if [ ! -f "${cur_path}/C++/Main" ]; then
 else
   # execute
   cd C++
-  ./Main
+# set your picture file_path
+  ./Main $1
 fi
 
 exit 0
