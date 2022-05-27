@@ -41,7 +41,7 @@ APP_ERROR MxpiCollisionClassName::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,const MxpiErrorInfo mxpiErrorInfo)
+APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName, const MxpiErrorInfo mxpiErrorInfo)
 {
     APP_ERROR ret = APP_ERR_OK;
     // Define an object of MxpiMetadataManager
@@ -55,36 +55,41 @@ APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std
     return ret;
 }
 
-APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)   //Åö×²ÅÐ¶¨
+APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)
 {
-    int n=srcMxpiObjectList.objectvec_size();
+    int w = 2;
+    int n = srcMxpiObjectList.objectvec_size();
     double data[n][3];
     double num[n][n];
     for (int i = 0; i < n; i++)
     {
-        data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/2;
-        data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/2;
-        data[i][2]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(),2)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(),2),0.5)/2;
+        data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/w;
+        data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/w;
+        data[i][2]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
     }
-    
-    int a[n*n][2];  //´æ´¢Åö×²±àºÅ
+
+    int a[n*n][2];
     for (int i = 0; i < n*n; i++)
-    {a[i][0]=-1;a[i][1]=-1;}
+    {
+        a[i][0]=-1;
+        a[i][1]=-1;
+    }
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            num[i][j]=pow(pow(data[i][0]-data[j][0],2)+pow(data[i][1]-data[j][1],2),0.5);
-            if (num[i][j] < max(data[i][2],data[j][2]))
+            num[i][j]=pow(pow(data[i][0]-data[j][0], w)+pow(data[i][1]-data[j][1], w), 1/w);
+            if (num[i][j] < max(data[i][w], data[j][w]))
             {
                 if (i < j)
                 {
-                    a[(i+1)*(j+1)-1][0]=i;a[(i+1)*(j+1)-1][1]=j;
+                    a[(i+1)*(j+1)-1][0]=i;
+                    a[(i+1)*(j+1)-1][1]=j;
                 }
             }
         }
-    }        
-    
+    }
+
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
         MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
@@ -93,13 +98,12 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
         dstMxpiObject->set_y0(srcMxpiObject.y0());
         dstMxpiObject->set_x1(srcMxpiObject.x1());
         dstMxpiObject->set_y1(srcMxpiObject.y1());
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-        //dstMxpiClass->set_classid(0);
-        int t=0;
+        int t = 0;
         for (int o = 0; o < n*n; o++)
         {
-            for (int p = 0; p < 2; p++)
+            for (int p = 0; p < w; p++)
             {
                 if (a[o][p]==i)
                     t++;
@@ -107,15 +111,15 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
         }
         if (t==0)
         {
-            dstMxpiClass->set_classname(srcMxpiClass.classname());    //¸´ÖÆ
+            dstMxpiClass->set_classname(srcMxpiClass.classname());
         }
         else
         {
             dstMxpiClass->set_classname("Collision");
         }
-   
+
     }
-    
+
     return APP_ERR_OK;
 }
 
@@ -185,9 +189,9 @@ std::vector<std::shared_ptr<void>> MxpiCollisionClassName::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_trackidreplaceclassname0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiCollisionClassName", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
