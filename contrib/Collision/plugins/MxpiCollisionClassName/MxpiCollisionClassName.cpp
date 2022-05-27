@@ -65,7 +65,7 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
     {
         data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/w;
         data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/w;
-        data[i][2]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
+        data[i][w]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
     }
 
     int a[n*n][2];
@@ -117,7 +117,6 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
         {
             dstMxpiClass->set_classname("Collision");
         }
-
     }
 
     return APP_ERR_OK;
