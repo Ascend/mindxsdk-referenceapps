@@ -1,22 +1,21 @@
 /*
- * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+* Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 #include "MxpiCollisionClassName.h"
 #include "MxBase/Log/Log.h"
-#include "math.h"
+#include <math.h>
 using namespace MxPlugins;
 using namespace MxTools;
 using namespace std;
@@ -42,8 +41,7 @@ APP_ERROR MxpiCollisionClassName::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,
-                                                   const MxpiErrorInfo mxpiErrorInfo)
+APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::string pluginName,const MxpiErrorInfo mxpiErrorInfo)
 {
     APP_ERROR ret = APP_ERR_OK;
     // Define an object of MxpiMetadataManager
@@ -57,42 +55,36 @@ APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std
     return ret;
 }
 
-APP_ERROR MxpiCollisionClassName::CollisionJudgment(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)
+APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)   //Åö×²ÅÐ¶¨
 {
-    int w = 2;
-    int n = srcMxpiObjectList.objectvec_size();
+    int n=srcMxpiObjectList.objectvec_size();
     double data[n][3];
     double num[n][n];
     for (int i = 0; i < n; i++)
     {
-        data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/w;
-        data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/w;
-        data[i][w]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+
-                       pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
+        data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/2;
+        data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/2;
+        data[i][2]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(),2)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(),2),0.5)/2;
     }
-
-    int a[n*n][2];
+    
+    int a[n*n][2];  //´æ´¢Åö×²±àºÅ
     for (int i = 0; i < n*n; i++)
-    {
-        a[i][0]=-1;
-        a[i][1]=-1;
-    }
+    {a[i][0]=-1;a[i][1]=-1;}
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
-            num[i][j] = pow(pow(data[i][0]-data[j][0], w)+ pow(data[i][1]-data[j][1], w), 1/w);
-            if (num[i][j] < max(data[i][w], data[j][w]))
+            num[i][j]=pow(pow(data[i][0]-data[j][0],2)+pow(data[i][1]-data[j][1],2),0.5);
+            if (num[i][j] < max(data[i][2],data[j][2]))
             {
                 if (i < j)
                 {
-                    a[(i+1)*(j+1)-1][0]=i;
-                    a[(i+1)*(j+1)-1][1]=j;
+                    a[(i+1)*(j+1)-1][0]=i;a[(i+1)*(j+1)-1][1]=j;
                 }
             }
         }
-    }
-
+    }        
+    
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
         MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
@@ -101,12 +93,13 @@ APP_ERROR MxpiCollisionClassName::CollisionJudgment(const MxpiObjectList srcMxpi
         dstMxpiObject->set_y0(srcMxpiObject.y0());
         dstMxpiObject->set_x1(srcMxpiObject.x1());
         dstMxpiObject->set_y1(srcMxpiObject.y1());
-        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();
+        MxpiClass* dstMxpiClass = dstMxpiObject->add_classvec();   
         dstMxpiClass->set_confidence(srcMxpiClass.confidence());
-        int t = 0;
+        //dstMxpiClass->set_classid(0);
+        int t=0;
         for (int o = 0; o < n*n; o++)
         {
-            for (int p = 0; p < w; p++)
+            for (int p = 0; p < 2; p++)
             {
                 if (a[o][p]==i)
                     t++;
@@ -114,14 +107,15 @@ APP_ERROR MxpiCollisionClassName::CollisionJudgment(const MxpiObjectList srcMxpi
         }
         if (t==0)
         {
-            dstMxpiClass->set_classname(srcMxpiClass.classname());
+            dstMxpiClass->set_classname(srcMxpiClass.classname());    //¸´ÖÆ
         }
         else
         {
             dstMxpiClass->set_classname("Collision");
         }
+   
     }
-
+    
     return APP_ERR_OK;
 }
 
@@ -163,7 +157,7 @@ APP_ERROR MxpiCollisionClassName::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     // Generate sample output
     shared_ptr<MxpiObjectList> srcMxpiObjectListSptr = static_pointer_cast<MxpiObjectList>(metadata);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
-    APP_ERROR ret = CollisionJudgment(*srcMxpiObjectListSptr, *dstMxpiObjectListSptr);
+    APP_ERROR ret = GenerateSampleOutput(*srcMxpiObjectListSptr, *dstMxpiObjectListSptr);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret, pluginName_) << "MxpiCollisionClassName gets inference information failed.";
         mxpiErrorInfo.ret = ret;
@@ -191,9 +185,9 @@ std::vector<std::shared_ptr<void>> MxpiCollisionClassName::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_trackidreplaceclassname0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiCollisionClassName", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
