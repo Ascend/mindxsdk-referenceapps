@@ -116,7 +116,7 @@ atc -model=centerface_offical.onnx --output=centerface_offical  --soc_version=As
 
 该模型转化使用了aipp，配置如下：
 
-```js
+```yaml
 aipp_op{
 aipp_mode: static
 crop: false

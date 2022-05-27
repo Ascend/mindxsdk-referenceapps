@@ -80,6 +80,7 @@
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "../model/centerface.cfg",
+                "labelPath": "../model/person.names",
                 "postProcessLibPath": "../plugins/lib/plugins/libmxpi_centerfacepostprocessor.so"
             },
             "factory": "mxpi_objectpostprocessor",

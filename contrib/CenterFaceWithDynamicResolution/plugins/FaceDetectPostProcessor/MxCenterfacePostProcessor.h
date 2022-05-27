@@ -35,9 +35,6 @@ struct FaceInfo {
 namespace MxBase {
 class MxCenterfacePostProcessor : public MxBase::ObjectPostProcessBase {
 public:
-  // @modify:used directly instead of called within framework
-  APP_ERROR Init(const std::string &configPath, const std::string &labelPath);
-
   APP_ERROR
   Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 

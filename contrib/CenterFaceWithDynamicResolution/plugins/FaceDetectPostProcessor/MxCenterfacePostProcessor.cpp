@@ -25,32 +25,15 @@
 #include <iostream>
 using namespace std;
 namespace MxBase {
-APP_ERROR MxCenterfacePostProcessor::Init(const std::string &configPath,
-                                          const std::string &labelPath) {
-  APP_ERROR ret = APP_ERR_OK;
-  std::map<std::string, std::shared_ptr<void>> postConfig;
-  if (!configPath.empty())
-    postConfig["postProcessConfigPath"] =
-        std::make_shared<std::string>(configPath);
-  if (!labelPath.empty())
-    postConfig["labelPath"] = std::make_shared<std::string>(labelPath);
-
-  ret = Init(postConfig);
-  if (ret == APP_ERR_OK) { // Init for this class derived information
-    ret = ReadConfigParams();
-  }
-  return ret;
-}
-
 APP_ERROR MxCenterfacePostProcessor::Init(
     const std::map<std::string, std::shared_ptr<void>> &postConfig) {
-  APP_ERROR ret = LoadConfigDataAndLabelMap(postConfig);
+  APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
   if (ret != APP_ERR_OK) {
-    LogError << "LoadConfigDataAndLabelMap failed. ret=" << ret;
+    LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
     return ret;
   }
   ReadConfigParams();
-  LogDebug << "End to Init centerface FaceDetectPostProcessor";
+  LogDebug << "End to Init MxCenterfacePostProcessor";
   return APP_ERR_OK;
 }
 
@@ -59,7 +42,7 @@ APP_ERROR MxCenterfacePostProcessor::Process(
     std::vector<std::vector<MxBase::ObjectInfo>> &objectInfos,
     const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos,
     const std::map<std::string, std::shared_ptr<void>> &configParamMap) {
-  LogDebug << "Start to Process CenterfacePostProcess ...";
+  LogDebug << "Start to Process MxCenterfacePostProcessor ...";
   APP_ERROR ret = APP_ERR_OK;
   auto outputs = tensors;
   ret = CheckAndMoveTensors(outputs);
