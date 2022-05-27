@@ -1,0 +1,28 @@
+{
+    "trustedaudit+start": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "mxpi_trustedauditplugin": {
+            "props": {
+                "descriptionMessage": "Trusted Audti Plugin Message",
+                "originalLogsPath": "/root/log/mindxsdk/logs"
+        },
+            "factory": "mxpi_trustedauditplugin",
+            "next": "fakesink1"
+        },
+        "appsrc1": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_trustedauditplugin"
+        },
+        "fakesink1": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "fakesink"
+        }
+    }
+}

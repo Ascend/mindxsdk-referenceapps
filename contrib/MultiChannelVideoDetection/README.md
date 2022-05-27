@@ -73,7 +73,7 @@ make install
 
 > 模型转换
 
-**步骤1** 下载YOLOv3模型 。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MultiChannelVideoDetection/model.zip)
+**步骤1** 下载YOLOv3模型 。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"。
 
@@ -94,7 +94,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
