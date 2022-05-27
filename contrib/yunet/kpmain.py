@@ -19,14 +19,12 @@ limitations under the License.
 
 
 
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
 import os
-import argparse
 from PIL import Image
-
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':
     
@@ -48,10 +46,10 @@ if __name__ == '__main__':
     # get result from stream and write
     streamName = b'KPYunet'
     inPluginId = 0
-    FrameCount = 0
-    while FrameCount <= 100:
-        FrameCount += 1
-        inferResult = streamManagerApi.GetResult(streamName,inPluginId)
+    frameCount = 0
+    while frameCount <= 100:
+        frameCount += 1
+        inferResult = streamManagerApi.GetResult(streamName, inPluginId)
         print(inferResult.data)
 
 

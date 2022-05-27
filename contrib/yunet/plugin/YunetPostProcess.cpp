@@ -28,8 +28,7 @@ namespace {
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
     const float VARIANCE[2] = {0.1, 0.2};}
 namespace MxBase {
-
-YunetPostProcess& YunetPostProcess::operator=(const YunetPostProcess& other)
+    YunetPostProcess& YunetPostProcess::operator=(const YunetPostProcess& other)
     {
         if (this == &other) {
             return *this;
@@ -38,7 +37,7 @@ YunetPostProcess& YunetPostProcess::operator=(const YunetPostProcess& other)
         return *this;
     }
 
-APP_ERROR YunetPostProcess::Init(const std::map <std::string, std::shared_ptr<void>>& postConfig)
+    APP_ERROR YunetPostProcess::Init(const std::map <std::string, std::shared_ptr<void>>& postConfig)
     {
         LogInfo << "Start to Init YunetPostProcess.";
         APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
@@ -55,8 +54,9 @@ APP_ERROR YunetPostProcess::Init(const std::map <std::string, std::shared_ptr<vo
         return APP_ERR_OK;
     }
 
-void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
-                                                 std::vector <std::vector<ObjectInfo>>& objectInfos, const std::vector <ResizedImageInfo>& resizedImageInfos)
+    void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
+                                            std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                            const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
         LogInfo << "YunetPostProcess start to write results.";
                 
@@ -72,11 +72,9 @@ void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& ten
         auto iou = tensors[2].GetBuffer();
 
         cv::Mat PriorBox;
-        cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer()); //60160*14
-        GeneratePriorBox(PriorBox); 
+        cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
+        GeneratePriorBox(PriorBox);
 
-
-        
         float width_resize = resizedImageInfos[0].widthResize;
         float height_resize = resizedImageInfos[0].heightResize;
         float width_original = resizedImageInfos[0].widthOriginal;
@@ -87,7 +85,7 @@ void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& ten
         if (width_resize_scale >= height_resize_scale) {
             resize_scale_factor = height_resize_scale;
         }
-        else{
+        else {
             resize_scale_factor = width_resize_scale;        
         }        
         cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor); 
@@ -99,15 +97,15 @@ void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& ten
             auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
             auto dataPtr_Iou = (float *) tensors[2].GetBuffer() + i * tensors[2].GetByteSize() / batchSize;
             for (uint32_t j = 0; j < VectorNum; j++) {
-                float* begin_Conf = dataPtr_Conf + j*2; 
+                float* begin_Conf = dataPtr_Conf + j * 2; 
                 float* begin_Iou = dataPtr_Iou + j; 
                 float conf = *(begin_Conf + 1);
                 float iou = *begin_Iou;
-                if(iou < 0.f) iou = 0.f;
-                if(iou > 1.f) iou = 1.f;
+                if (iou < 0.f) iou = 0.f;
+                if (iou > 1.f) iou = 1.f;
 
                 conf = sqrtf(iou * conf);
-                if(conf> confThresh_ ){
+                if (conf> confThresh_ ){
                     ObjectInfo objInfo;
                     objInfo.confidence = conf;
                     objInfo.x0 = res.at<float>(j,LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
@@ -122,120 +120,118 @@ void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& ten
             objectInfos.push_back(objectInfo);   
         }      
         LogInfo << "YunetPostProcess write results successed.";
-}
-APP_ERROR YunetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                        const std::map<std::string, std::shared_ptr<void>> &configParamMap)
-{
-    LogInfo << "Start to Process YunetPostProcess.";
-    APP_ERROR ret = APP_ERR_OK;
-    auto inputs = tensors;
-    ret = CheckAndMoveTensors(inputs);
-    if (ret != APP_ERR_OK) {
-        LogError << "CheckAndMoveTensors failed. ret=" << ret;
-        return ret;
     }
-    ObjectDetectionOutput(inputs, objectInfos, resizedImageInfos);
-    LogInfo << "End to Process YunetPostProcess.";
-    return APP_ERR_OK;
-}
-
-/*
- * @description: Generate prior boxes for detection boxes decoding
- * @param anchors  A Matrix used to save prior boxes that contains box coordinates(x0,y0,x1,y1), shape[21824,4]
- */
-void YunetPostProcess::GeneratePriorBox(cv::Mat &anchors)
- {
-    // 'min_sizes': [[32, 64, 128], [256], [512]], this parameter is used for generating prior box
-    // now [10,16,24],[32,48],[64,96],[128,192,256]
-    std::vector<int> min_sizes[4];
-    min_sizes[0].emplace_back(10);  
-    min_sizes[0].emplace_back(16);
-    min_sizes[0].emplace_back(24);
-    min_sizes[1].emplace_back(32);  
-    min_sizes[1].emplace_back(48);
-    min_sizes[2].emplace_back(64);
-    min_sizes[2].emplace_back(96);  
-    min_sizes[3].emplace_back(128);
-    min_sizes[3].emplace_back(192);
-    min_sizes[3].emplace_back(256);  
-    std::vector<std::vector<int>>feature_maps(4, std::vector<int>(2));
-    for (int i = 0; i < feature_maps.size(); i++) {
-        feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
-        feature_maps[i][1] = IMAGE_WIDTH / STEPS[i];
+    APP_ERROR YunetPostProcess::Process(const std::vector<TensorBase> &tensors,
+                                    std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                    const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                    const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+    {
+        LogInfo << "Start to Process YunetPostProcess.";
+        APP_ERROR ret = APP_ERR_OK;
+        auto inputs = tensors;
+        ret = CheckAndMoveTensors(inputs);
+        if (ret != APP_ERR_OK) {
+            LogError << "CheckAndMoveTensors failed. ret=" << ret;
+            return ret;
+        }
+        ObjectDetectionOutput(inputs, objectInfos, resizedImageInfos);
+        LogInfo << "End to Process YunetPostProcess.";
+        return APP_ERR_OK;
     }
-    for (int k = 0; k < feature_maps.size(); k++){
-        auto f = feature_maps[k];
-        auto _min_sizes = min_sizes[k];
-        float step = (float)STEPS[k];
-        for (int i = 0; i < f[0]; i++){
-            for (int j = 0; j < f[1]; j++) {
-                for (auto min_size : _min_sizes) {
-                    cv::Mat anchor(1, 4, CV_32F);
-                    float center_x = (j + 0.5f) * step;
-                    float center_y = (i + 0.5f) * step;
 
-                    //anchor.at<float>(0,0) 
-                    float xmin = (center_x - (float)min_size / 2.f) / IMAGE_WIDTH;
-                    float ymin = (center_y - (float)min_size / 2.f) / IMAGE_HEIGHT;
-                    float xmax = (center_x + (float)min_size / 2.f) / IMAGE_WIDTH;
-                    float ymax = (center_y + (float)min_size / 2.f) / IMAGE_HEIGHT;
+    /*
+     * @description: Generate prior boxes for detection boxes decoding
+     * @param anchors  A Matrix used to save prior boxes that contains box coordinates(x0,y0,x1,y1), shape[21824,4]
+     */
+    void YunetPostProcess::GeneratePriorBox(cv::Mat &anchors)
+    {
+        // 'min_sizes': [10,16,24],[32,48],[64,96],[128,192,256], this parameter is used for generating prior box
+        std::vector<int> min_sizes[4];
+        min_sizes[0].emplace_back(10);  
+        min_sizes[0].emplace_back(16);
+        min_sizes[0].emplace_back(24);
+        min_sizes[1].emplace_back(32);  
+        min_sizes[1].emplace_back(48);
+        min_sizes[2].emplace_back(64);
+        min_sizes[2].emplace_back(96);  
+        min_sizes[3].emplace_back(128);
+        min_sizes[3].emplace_back(192);
+        min_sizes[3].emplace_back(256);  
+        std::vector<std::vector<int>>feature_maps(4, std::vector<int>(2));
+        for (int i = 0; i < feature_maps.size(); i++) {
+            feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
+            feature_maps[i][1] = IMAGE_WIDTH / STEPS[i];
+        }
+        for (int k = 0; k < feature_maps.size(); k++) {
+            auto f = feature_maps[k];
+            auto _min_sizes = min_sizes[k];
+            float step = (float)STEPS[k];
+            for (int i = 0; i < f[0]; i++){
+                for (int j = 0; j < f[1]; j++) {
+                    for (auto min_size : _min_sizes) {
+                        cv::Mat anchor(1, 4, CV_32F);
+                        float center_x = (j + 0.5f) * step;
+                        float center_y = (i + 0.5f) * step;
 
-                    float prior_width = xmax - xmin;
-                    float prior_height = ymax - ymin;
-                    float prior_center_x = (xmin + xmax)/2;
-                    float prior_center_y = (ymin + ymax)/2;
+                        //anchor.at<float>(0,0) 
+                        float xmin = (center_x - (float)min_size / 2.f) / IMAGE_WIDTH;
+                        float ymin = (center_y - (float)min_size / 2.f) / IMAGE_HEIGHT;
+                        float xmax = (center_x + (float)min_size / 2.f) / IMAGE_WIDTH;
+                        float ymax = (center_y + (float)min_size / 2.f) / IMAGE_HEIGHT;
 
-                    anchor.at<float>(0,0) = prior_width;
-                    anchor.at<float>(0,1) = prior_height;
-                    anchor.at<float>(0,2) = prior_center_x;
-                    anchor.at<float>(0,3) = prior_center_y;
+                        float prior_width = xmax - xmin;
+                        float prior_height = ymax - ymin;
+                        float prior_center_x = (xmin + xmax) / 2;
+                        float prior_center_y = (ymin + ymax) / 2;
 
-                    anchors.push_back(anchor);
+                        anchor.at<float>(0, 0) = prior_width;
+                        anchor.at<float>(0, 1) = prior_height;
+                        anchor.at<float>(0, 2) = prior_center_x;
+                        anchor.at<float>(0, 3) = prior_center_y;
 
+                        anchors.push_back(anchor);
+
+                    }
                 }
             }
         }
+
+    }
+    /*
+     * @description: Generate prior boxes for detection boxes decoding
+     * @param loc:  The matrix which contains box biases, shape[21824, 4]
+     * @param prior: The matrix which contains prior box coordinates, shape[21824,4]
+     * @param resize_scale_factor: The factor of min(WidthOriginal/WidthResize, HeightOriginal/HeightResize)
+     * @param boxes: The matrix which contains detection box coordinates(x0,y0,x1,y1), shape[21824,4]
+     */
+    cv::Mat YunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor) {
+        cv::Mat loc_first = loc.colRange(0, 2);
+        cv::Mat loc_last = loc.colRange(2, 4);
+        cv::Mat prior_first = prior.colRange(0, 2);
+        cv::Mat prior_last = prior.colRange(2, 4);
+
+        cv::Mat boxes1 = prior_last + (loc_first*VARIANCE[0]).mul(prior_first);
+        cv::Mat boxes2;
+        cv::exp(loc_last * VARIANCE[1], boxes2);
+        boxes2 = boxes2.mul(prior_first);
+        boxes1 = boxes1 - boxes2 / 2;
+        boxes2 = boxes2 + boxes1;
+
+        cv::Mat boxes;
+        cv::hconcat(boxes1, boxes2, boxes);
+        if (resize_scale_factor == 0){
+            LogError << "resize_scale_factor is 0.";
+        }
+        return boxes;
     }
 
- }
-/*
- * @description: Generate prior boxes for detection boxes decoding
- * @param loc:  The matrix which contains box biases, shape[21824, 4]
- * @param prior: The matrix which contains prior box coordinates, shape[21824,4]
- * @param resize_scale_factor: The factor of min(WidthOriginal/WidthResize, HeightOriginal/HeightResize)
- * @param boxes: The matrix which contains detection box coordinates(x0,y0,x1,y1), shape[21824,4]
- */
-cv::Mat YunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor){
-    cv::Mat loc_first = loc.colRange(0,2);
-    cv::Mat loc_last = loc.colRange(2,4);
-    cv::Mat prior_first = prior.colRange(0,2);
-    cv::Mat prior_last = prior.colRange(2,4);
-
-    cv::Mat boxes1 = prior_last + (loc_first*VARIANCE[0]).mul(prior_first);
-    cv::Mat boxes2;
-    cv::exp(loc_last * VARIANCE[1], boxes2);
-    boxes2 = boxes2.mul(prior_first);
-    boxes1 = boxes1 - boxes2 / 2;
-    boxes2 = boxes2 + boxes1;
-
-    cv::Mat boxes;
-    cv::hconcat(boxes1, boxes2, boxes);
-    if (resize_scale_factor == 0){
-        LogError << "resize_scale_factor is 0.";
+    extern "C" {
+        std::shared_ptr <MxBase::YunetPostProcess> GetObjectInstance()
+        {
+            LogInfo << "Begin to get YunetPostProcess instance.";
+            auto instance = std::make_shared<MxBase::YunetPostProcess>();
+            LogInfo << "End to get YunetPostProcess instance.";
+            return instance;
+        }
     }
-    return boxes;
-}
-
-extern "C" {
-    std::shared_ptr <MxBase::YunetPostProcess> GetObjectInstance()
-    {
-        LogInfo << "Begin to get YunetPostProcess instance.";
-        auto instance = std::make_shared<MxBase::YunetPostProcess>();
-        LogInfo << "End to get YunetPostProcess instance.";
-        return instance;
-    }
-}
-
 }

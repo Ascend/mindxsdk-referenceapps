@@ -25,11 +25,11 @@
 #define DEFAULT_IOU_THRESH  0.3
 #define DEFAULT_CONFIDENCE_THRESH  0.9
 
-namespace MxBase {   
-    bool operator<(const KeyPointDetectionInfo &a ,const KeyPointDetectionInfo &b){
+namespace MxBase {
+    bool operator<(const KeyPointDetectionInfo &a, const KeyPointDetectionInfo &b){
         return a.score < b.score;
     }
-    bool operator<(const ObjectInfo &a ,const ObjectInfo &b){
+    bool operator<(const ObjectInfo &a, const ObjectInfo &b){
         return a.confidence < b.confidence;
     }
         
@@ -67,6 +67,5 @@ namespace MxBase {
     extern "C" {
         std::shared_ptr<MxBase::KPYunetPostProcess> GetKetpointInstance();
     }
-
 }
 #endif

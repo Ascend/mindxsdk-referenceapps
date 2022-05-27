@@ -19,13 +19,12 @@ limitations under the License.
 
 
 
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
 import os
-import argparse
 from PIL import Image
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 if __name__ == '__main__':
@@ -48,13 +47,15 @@ if __name__ == '__main__':
     # get result from stream and write
     streamName = b'Yunet'
     inPluginId = 0
-    FrameCount = 0
-    with open("./result.264","wb") as fp0:
-        while FrameCount <= 100:
-            FrameCount += 1
-            inferResult = streamManagerApi.GetResult(streamName,inPluginId)
-            fp0.write(inferResult.data)
+    frameCount = 0
 
+    fp = open("./result.264", "wb")
+    while frameCount <= 100:
+        frameCount += 1
+        inferResult = streamManagerApi.GetResult(streamName, inPluginId)
+        fp.write(inferResult.data)
+    fp.close()
+    
 # destroy streams
 streamManagerApi.DestroyAllStreams()
 
