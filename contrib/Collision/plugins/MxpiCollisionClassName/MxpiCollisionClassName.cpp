@@ -58,6 +58,7 @@ APP_ERROR MxpiCollisionClassName::SetMxpiErrorInfo(MxpiBuffer& buffer, const std
 APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcMxpiObjectList, MxpiObjectList& dstMxpiObjectList)
 {
     int w = 2;
+    double M = 2;
     int n = srcMxpiObjectList.objectvec_size();
     double data[n][3];
     double num[n][n];
@@ -65,7 +66,7 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
     {
         data[i][0]=(srcMxpiObjectList.objectvec(i).x0()+srcMxpiObjectList.objectvec(i).x1())/w;
         data[i][1]=(srcMxpiObjectList.objectvec(i).y0()+srcMxpiObjectList.objectvec(i).y1())/w;
-        data[i][w]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/w)/w;
+        data[i][w]=pow(pow(srcMxpiObjectList.objectvec(i).x1()-srcMxpiObjectList.objectvec(i).x0(), w)+pow(srcMxpiObjectList.objectvec(i).y1()-srcMxpiObjectList.objectvec(i).y0(), w), 1/M)/w;
     }
 
     int a[n*n][2];
@@ -78,7 +79,7 @@ APP_ERROR MxpiCollisionClassName::GenerateSampleOutput(const MxpiObjectList srcM
     {
         for (int j = 0; j < n; j++)
         {
-            num[i][j]=pow(pow(data[i][0]-data[j][0], w)+pow(data[i][1]-data[j][1], w), 1/w);
+            num[i][j]=pow(pow(data[i][0]-data[j][0], w)+pow(data[i][1]-data[j][1], w), 1/M);
             if (num[i][j] < max(data[i][w], data[j][w]))
             {
                 if (i < j)
