@@ -166,13 +166,13 @@ var_reci_chn_2: 1.0
   bash run.sh "图片路径"  #相对路径为相对C++/Main可执行文件的路径，如果图片放于脚本同级目录，请使用bash run.sh ../picture.jpg
   ```
 
-> 1.先获取onnx模型，并使用命令转化成所需要的om模型
+> 1.先获取onnx模型，并使用命令转化成所需要的om模型，并放置在model目录下。
 >
 > 2.run.sh脚本中LD_LIBRARY_PATH设置了ACL动态库链接路径为/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64，如果实际环境中路径不一致，需要替换为实际的目录。
 >
 > 3.如果环境变量中没有MX_SDK_HOME变量，请配置MX_SDK_HOME变量为你实际的MX_SDK安装目录。
 >
-> 4.运行时请准备图片放置在run.sh中所示的文件目录中。
+> 4.运行时请准备图片，按上述命令执行后，结果会生成在C++/result路径下。
 
 ## 5.适用场景
 
