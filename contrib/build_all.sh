@@ -38,7 +38,7 @@ SAMPLE_FOLDER=(
     # RotateObjectDetection/
     FairMOT/
     UltraFastLaneDetection/
-    vehicleIdentification/
+    VehicleIdentification/
     Collision/
 )
 
