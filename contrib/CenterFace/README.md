@@ -18,7 +18,7 @@
 
 基于MindX SDK的人脸检测和关键点模型(动态分辨率)推理流程为：
 
-待检测图片通过appsrc插件输入，然后使用图像解码mxpi_imagedecoder对图片进行解码，再通过图像缩放插件mxpi_imageresize将图形缩放至合适的分辨率档位，缩放后的图形输入模型推理插件mxpi_tensorinfer得到模型输出。本项目开发的模型后处理插件包括目标检测和关键点检测两部分；模型推理得到的结果分别送入两个后处理插件。人脸检测插件用来得到人脸目标框，关键点检测插件得到五个关键点。人脸检测插件的结果可同图片mxpi_imagedecoder结果送入OSD可视化插件，和关键点检测插件通过appsink完成整个pipline的流程，最后在外部使用opencv对人脸和关键点进行可视化描绘并保存。本系统的各模块及功能如表1所示：
+待检测图片通过appsrc插件输入，然后使用图像解码mxpi_imagedecoder对图片进行解码，再通过图像缩放插件mxpi_imageresize将图形缩放至合适的分辨率档位，缩放后的图形输入模型推理插件mxpi_tensorinfer得到模型输出。本项目开发的模型后处理插件包括目标检测和关键点检测两部分；模型推理得到的结果分别送入两个后处理插件。人脸检测插件用来得到人脸目标框，关键点检测插件得到五个关键点。人脸检测插件的结果可同图片mxpi_imagedecoder结果送入OSD可视化插件，和关键点检测插件通过appsink完成整个pipeline的流程，最后在外部使用opencv对人脸和关键点进行可视化描绘并保存。本系统的各模块及功能如表1所示：
 
 表1 系统方案各模块功能描述：
 
@@ -105,13 +105,13 @@ export ASCEND_OPP_PATH=${install_path}/opp
 下载onnx模型之后，将onnx文件移至"/model",并在终端执行如下命令：
 
 ```bash
-atc -model=centerface_offical.onnx --output=centerface_offical --dynamic_image_size="768,1024;800,800;1024,768;864,1120;1120,864;960,1216;1216,960;1056,1312;1312,1056;1152,1408;1408,1152;1248,1504;1504,1248;1344,1600;1600,1344;1440,1696;1696,1440;1536,1792;1792,1536;1632,1888;1888,1632;1728,1984;1984,1728;1824,2080;2080,1824"   --soc_version=Ascend310 --input_shape="input.1:1,3,-1,-1" --input_format=NCHW --framework=5 --insert_op_conf=centerface_aipp.cfg
+atc --model=centerface_offical.onnx --output=centerface_offical --dynamic_image_size="768,1024;800,800;1024,768;864,1120;1120,864;960,1216;1216,960;1056,1312;1312,1056;1152,1408;1408,1152;1248,1504;1504,1248;1344,1600;1600,1344;1440,1696;1696,1440;1536,1792;1792,1536;1632,1888;1888,1632;1728,1984;1984,1728;1824,2080;2080,1824"   --soc_version=Ascend310 --input_shape="input.1:1,3,-1,-1" --input_format=NCHW --framework=5 --insert_op_conf=centerface_aipp.cfg
 ```
 
 > 以上命令将模型转化为具有多档位的动态分辨率模型，转成单档位可使用如下命令：
 
 ```bash
-atc -model=centerface_offical.onnx --output=centerface_offical  --soc_version=Ascend310 --input_shape="input.1:1,3,800,800" --input_format=NCHW --framework=5 --insert_op_conf=centerface_aipp.cfg
+atc --model=centerface_offical.onnx --output=centerface_offical  --soc_version=Ascend310 --input_shape="input.1:1,3,800,800" --input_format=NCHW --framework=5 --insert_op_conf=centerface_aipp.cfg
 ```
 
 该模型转化使用了aipp，配置如下：
@@ -150,19 +150,19 @@ var_reci_chn_2: 1.0
 }
 ```
 
+> 如使用单档位命令转化后的模型，resizer插件下游紧接模型推理时缩放宽高可以自动获取，在pipeline中缩放插件mxpi_imageresizer0无需再配置resizeHeight和resizerWidth。而使用多档位命令转换的模型时，未配置resize宽高默认缩放到第一个档位，使用其它档位仍需配置缩放的宽高。
+
 ## 4 编译与运行
 
 - 编译
 
   ```bash
-  chmod +x build.sh
   bash build.sh
   ```
-
+  
 - 运行
 
   ```bash
-  chmod +x run.sh
   bash run.sh "图片路径"  #相对路径为相对C++/Main可执行文件的路径，如果图片放于脚本同级目录，请使用bash run.sh ../picture.jpg
   ```
 

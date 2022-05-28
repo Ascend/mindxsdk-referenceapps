@@ -201,10 +201,10 @@ static APP_ERROR CopyFile(const std::string &srcFile, const std::string &desFile
 // 打印protobuf信息
 static APP_ERROR PrintInfo(std::vector<MxStream::MxstProtobufOut> outPutInfo) {
   if (outPutInfo.size() == 0) {
-    LogError << "outPutInfo size is 0";
+    LogInfo << "outPutInfo size is 0";
     return APP_ERR_ACL_FAILURE;
   }
-  LogError << "outPutInfo size is " << outPutInfo.size();
+  LogInfo << "outPutInfo size is " << outPutInfo.size();
   if (outPutInfo[0].errorCode != APP_ERR_OK) {
     LogError << "GetProtobuf error. errorCode=" << outPutInfo[0].errorCode;
     return outPutInfo[0].errorCode;
