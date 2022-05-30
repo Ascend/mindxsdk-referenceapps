@@ -59,8 +59,26 @@ if [ ! -f "${cur_path}/C++/Main" ]; then
 else
   # execute
   cd C++
-# set your picture file_path
-  ./Main $1
+  # set your picture file_path
+  fileName=$1
+  if [ -f $fileName ]
+  then
+    ./Main $fileName
+  else
+    if [ -d $fileName ]
+    then
+      for file in ./${fileName}/*
+      do
+          if test -f $file
+          then
+            echo $file
+            ./Main $file
+          fi
+      done
+    else
+      echo "error: ${cur_path}/C++/${fileName} not exist."
+    fi
+  fi
 fi
 
 exit 0

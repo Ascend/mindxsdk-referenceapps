@@ -29,6 +29,12 @@ const uint32_t YUV_BYTES_DE = 2;
 // Read the information in the file
 static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
 {
+    int findIndex1 = filePath.rfind(".");
+    std::string fileFormat = filePath.substr(findIndex1+1);
+    if(fileFormat!="jpg"){
+        LogError << "Only jpg format is supported. But get (" << fileFormat << ").";
+        return APP_ERR_COMM_READ_FAIL;
+    }
     char c[PATH_MAX] = {0x00};
     size_t count = filePath.copy(c, PATH_MAX);
     if (count != filePath.length()) {
@@ -119,7 +125,8 @@ static bool MkdirRecursive(const std::string &filepath) {
 // 结果可视化
 static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpiVisionList,
                             const std::shared_ptr<MxTools::MxpiObjectList> &mxpiObjectList,
-                            const std::shared_ptr<MxTools::MxpiPoseList> &keypointList) {
+                            const std::shared_ptr<MxTools::MxpiPoseList> &keypointList,
+                            const std::string fileName) {
   // 处理输出原件的protobuf结果信息
   auto &visionInfo = mxpiVisionList->visionvec(0).visioninfo();
   auto &visionData = mxpiVisionList->visionvec(0).visiondata();
@@ -168,8 +175,11 @@ static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpi
     }
   }
 
+  int findIndex1 = fileName.rfind("/");
+  int findIndex2 = fileName.rfind(".");
+  std::string fileNameNew = fileName.substr(findIndex1,findIndex2-findIndex1);
   MkdirRecursive("./result");
-  cv::imwrite("./result/result.jpg", imgBgr);
+  cv::imwrite("./result/"+fileNameNew+"_result.jpg", imgBgr);
   ret = MxBase::MemoryHelper::MxbsFree(memoryDst);
   if (ret != APP_ERR_OK) {
     LogError << "Fail to MxbsFree memory.";
@@ -284,8 +294,11 @@ int main(int argc, char *argv[]) {
   if (ret != APP_ERR_OK) {
     LogError << "Fail to print the info of output, ret = " << ret << ".";
     LogError << "Fail to detect face.";
+    int findIndex1 = fileName.rfind("/");
+    int findIndex2 = fileName.rfind(".");
+    std::string fileNameNew = fileName.substr(findIndex1,findIndex2-findIndex1);
     MkdirRecursive("./result");
-    std::string desFile = "./result/result.jpg";
+    std::string desFile = "./result/"+fileNameNew+"_result.jpg";
     CopyFile(fileName, desFile);
     return ret;
   }
@@ -299,7 +312,7 @@ int main(int argc, char *argv[]) {
   auto keypointList =
       std::static_pointer_cast<MxTools::MxpiPoseList>(output[2].messagePtr);
   // 将结果写入本地图片中
-  SaveResult(mxpiVision, objectList, keypointList);
+  SaveResult(mxpiVision, objectList, keypointList, fileName);
 
   mxStreamManager->DestroyAllStreams();
 
