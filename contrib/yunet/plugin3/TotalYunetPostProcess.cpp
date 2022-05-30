@@ -28,9 +28,14 @@ namespace {
     const float IMAGE_HEIGHT = 1080.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
     const float VARIANCE[2] = {0.1, 0.2};
-    const uint32_t RECTENGLEPOINT = 4;
+    const uint32_t RECTANGLEPOINT = 4;
     const uint32_t KEYPOINTNUM = 5;
     const uint32_t POINT_SIZE = 2;
+    const uint32_t PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}};
+    const uint32_t DIM = 2;
+    const uint32_t RECTANGLE_COLOR = 1;
+    const uint32_t KEYPOINT_COLOR = 2;
+    const uint32_t DIV_TWO = 2;
 }
 namespace MxBase {
     TotalYunetPostProcess& TotalYunetPostProcess::operator=(const TotalYunetPostProcess& other)
@@ -123,13 +128,13 @@ namespace MxBase {
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = 1; // give object rectangles color 1
+                    objInfo.classId = RECTANGLE_COLOR;
                     
                     kpInfo.score = conf;
                     for (int k = 0; k < KEYPOINTNUM; k++)
                     {
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTENGLEPOINT + k * 2) * IMAGE_WIDTH / width_resize_scale);
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTENGLEPOINT + k * 2 + 1) * IMAGE_HEIGHT / height_resize_scale);
+                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTANGLEPOINT + k * DIM) * IMAGE_WIDTH / width_resize_scale);
+                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTANGLEPOINT + k * DIM + 1) * IMAGE_HEIGHT / height_resize_scale);
                     }
                     objectInfo.push_back(objInfo);
                     keypointInfo.push_back(kpInfo);
@@ -152,9 +157,8 @@ namespace MxBase {
                     objInfo.y0= y - POINT_SIZE;
                     objInfo.y1= y + POINT_SIZE;
                     objInfo.confidence = 0;
-                    objInfo.classId = 2; // give keypoints color 2
+                    objInfo.classId = KEYPOINT_COLOR;
                     objectInfoSorted.push_back(objInfo);
-
                 }
             }
 
@@ -186,38 +190,26 @@ namespace MxBase {
      */
     void TotalYunetPostProcess::GeneratePriorBox(cv::Mat &anchors)
     {
-        // 'min_sizes': [10,16,24],[32,48],[64,96],[128,192,256], this parameter is used for generating prior box
-        std::vector<int> min_sizes[RECTENGLEPOINT];
-        min_sizes[0].emplace_back(10);  // parameter for generating proir box
-        min_sizes[0].emplace_back(16);  // parameter for generating proir box
-        min_sizes[0].emplace_back(24);  // parameter for generating proir box
-        min_sizes[1].emplace_back(32);  // parameter for generating proir box
-        min_sizes[1].emplace_back(48);  // parameter for generating proir box
-        min_sizes[2].emplace_back(64);  // parameter for generating proir box
-        min_sizes[2].emplace_back(96);  // parameter for generating proir box
-        min_sizes[3].emplace_back(128);  // parameter for generating proir box
-        min_sizes[3].emplace_back(192);  // parameter for generating proir box
-        min_sizes[3].emplace_back(256);  // parameter for generating proir box
-        std::vector<std::vector<int>>feature_maps(RECTENGLEPOINT, std::vector<int>(2));
+        std::vector<std::vector<int>>feature_maps(RECTANGLEPOINT, std::vector<int>(DIM));
         for (int i = 0; i < feature_maps.size(); i++) {
             feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
             feature_maps[i][1] = IMAGE_WIDTH / STEPS[i];
         }
         for (int k = 0; k < feature_maps.size(); k++) {
             auto f = feature_maps[k];
-            auto _min_sizes = min_sizes[k];
             float step = (float)STEPS[k];
             for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
-                    for (auto min_size : _min_sizes) {
-                        cv::Mat anchor(1, RECTENGLEPOINT, CV_32F);
+                    for (int l = 0; l < 3 && PRIOR_PARAMETERS[k][l] != -1; l++) {
+                        float min_size = PRIOR_PARAMETERS[k][l];
+                        cv::Mat anchor(1, RECTANGLEPOINT, CV_32F);
                         float center_x = (j + 0.5f) * step;
                         float center_y = (i + 0.5f) * step;
 
-                        float xmin = (center_x - (float)min_size / 2.f) / IMAGE_WIDTH;
-                        float ymin = (center_y - (float)min_size / 2.f) / IMAGE_HEIGHT;
-                        float xmax = (center_x + (float)min_size / 2.f) / IMAGE_WIDTH;
-                        float ymax = (center_y + (float)min_size / 2.f) / IMAGE_HEIGHT;
+                        float xmin = (center_x - min_size / 2.f) / IMAGE_WIDTH;
+                        float ymin = (center_y - min_size / 2.f) / IMAGE_HEIGHT;
+                        float xmax = (center_x + min_size / 2.f) / IMAGE_WIDTH;
+                        float ymax = (center_y + min_size / 2.f) / IMAGE_HEIGHT;
 
                         float prior_width = xmax - xmin;
                         float prior_height = ymax - ymin;
@@ -253,7 +245,7 @@ namespace MxBase {
         cv::Mat boxes2;
         cv::exp(loc_last * VARIANCE[1], boxes2);
         boxes2 = boxes2.mul(prior_first);
-        boxes1 = boxes1 - boxes2 / 2; // change center position into rectangle position
+        boxes1 = boxes1 - boxes2 / DIV_TWO;
         boxes2 = boxes2 + boxes1;
 
         cv::Mat boxes3;
