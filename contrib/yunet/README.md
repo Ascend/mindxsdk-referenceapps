@@ -39,33 +39,33 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 ├── build.sh
 ├── config
-│   ├── face_yunet.cfg
-│   └── Yunet.aippconfig
+│   ├── face_yunet.cfg
+│   └── Yunet.aippconfig
 ├── kpmain.py
 ├── main.py
 ├── models
-│   └── Yunet.onnx 
+│   └── Yunet.onnx 
 ├── pipeline
-│   ├── 1080can.pipeline
-│   ├── 3can.pipeline
-│   ├── kpcan.pipeline
-│   ├── KPYunet.pipeline
-│   └── Yunet.pipeline
+│   ├── 1080can.pipeline
+│   ├── 3can.pipeline
+│   ├── kpcan.pipeline
+│   ├── KPYunet.pipeline
+│   └── Yunet.pipeline
 ├── plugin
-│   ├── build.sh
-│   ├── CMakeLists.txt
-│   ├── YunetPostProcess.cpp
-│   └── YunetPostProcess.h
+│   ├── build.sh
+│   ├── CMakeLists.txt
+│   ├── YunetPostProcess.cpp
+│   └── YunetPostProcess.h
 ├── plugin2
-│   ├── build.sh
-│   ├── CMakeLists.txt
-│   ├── KPYunetPostProcess.cpp
-│   ├── KPYunetPostProcess.h
+│   ├── build.sh
+│   ├── CMakeLists.txt
+│   ├── KPYunetPostProcess.cpp
+│   ├── KPYunetPostProcess.h
 ├── plugin3ww
-│   ├── build.sh
-│   ├── CMakeLists.txt
-│   ├── TotalYunetPostProcess.cpp
-│   └── TotalYunetPostProcess.h
+│   ├── build.sh
+│   ├── CMakeLists.txt
+│   ├── TotalYunetPostProcess.cpp
+│   └── TotalYunetPostProcess.h
 ├── README.md
 └── run.sh
 ````
