@@ -82,32 +82,6 @@ pip install numpy == 1.21.2
 
 注：多输入样例在输入时，多个输入用  ,  隔开。
 
-准备工作：
-yolov3输入npy文件生成可参考目录中Getnpy_yolov3.py，示例需在当前目录准备dog.jpg
-
-```
-python3.9 Getnpy_yolov3.py
-```
-
-转换成功后应在当前目录下产生dog.npy
-yolov3输入bin文件生成可参考目录中Getbin_yolov3.py，示例需在当前目录准备dog.jpg
-
-```
-python3.9 Getbin_yolov3.py
-```
-
-转换成功后应在当前目录下产生dog.bin   
-
-pointcnn输入bin文件生成可参考目录中Getbin_pointcnn.py   
-
-```
-python3.9 Getbin_pointcnn.py
-```
-
-转换成功后在当前目录下生成pointcnn.bin   
-
-注：如上三个py文件分别适用于示例yolov3或poincnn的输入尺寸，更换模型需自行修改尺寸。   
-
 ##  5 编译与运行
 示例步骤如下：   
 **步骤1** 设置环境变量
