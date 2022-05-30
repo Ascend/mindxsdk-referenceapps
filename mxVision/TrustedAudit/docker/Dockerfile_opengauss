@@ -1,0 +1,2 @@
+FROM enmotech/opengauss
+# WORKDIR /work/trustworthyAI/
