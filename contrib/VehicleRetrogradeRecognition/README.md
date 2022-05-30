@@ -245,7 +245,7 @@ ffmpeg -f h264 -i out.h264 -vcodec copy out.mp4
 
 ![](image/image2.jpg)
 
-注：输入视频帧率应高于25，否则无法发挥全部性能。
+满足1920*1080分辨率下25帧率的推理
 
 ## 8 常见问题
 
