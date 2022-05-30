@@ -36,7 +36,7 @@ link_directories(
     ${MX_SDK_HOME}/opensource/lib/
     ${MX_SDK_HOME}/opensource/lib64/
 )
-
+link_libraries(pthread)
 add_executable(main main.cpp)
 
 target_link_libraries(main glog mxbase plugintoolkit mxpidatatype streammanager cpprest mindxsdk_protobuf)
