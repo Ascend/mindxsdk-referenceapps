@@ -29,9 +29,6 @@ Ascend 21.0.4
 │   │── error3.jpg                            // 输入不一致报错截图
 │   │── process.jpg                           // 流程图
 ├── set_env.sh                                // 需要设置的环境变量
-├── Getnpy.py                                 // 生成npy文件示例代码
-├── Getbin_yolov3.py                          // 生成yolov3的bin文件示例代码
-├── Getbin_pointcnn.py                        // 生成pointcnn的bin文件示例代码
 ├── msame.py                                  // 模型推理工具代码
 ├── README.md                                 // ReadMe
 ```
