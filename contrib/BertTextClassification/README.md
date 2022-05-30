@@ -134,7 +134,8 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 
 ## 3 模型转换
 
-**步骤1** 请参考https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/BertTextClassification/bert_text_classification.pb下载模型的pb文件，存放到开发环境普通用户下的任意目录，例如：$HOME/models/bert_text_classification。
+**步骤1** 请参考https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/BertTextClassification/bert_text_classification.pb  
+下载模型的pb文件，存放到开发环境普通用户下的任意目录，例如：$HOME/models/bert_text_classification。
 
 **步骤2** 执行以下命令使用atc命令进行模型转换：
 
