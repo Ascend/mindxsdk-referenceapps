@@ -26,13 +26,13 @@
 #define DEFAULT_CONFIDENCE_THRESH  0.9
 
 namespace MxBase {
-    bool operator<(const KeyPointDetectionInfo &a, const KeyPointDetectionInfo &b){
+    bool operator<(const KeyPointDetectionInfo &a, const KeyPointDetectionInfo &b) {
         return a.score < b.score;
     }
-    bool operator<(const ObjectInfo &a, const ObjectInfo &b){
+    bool operator<(const ObjectInfo &a, const ObjectInfo &b) {
         return a.confidence < b.confidence;
     }
-        
+    
     class KPYunetPostProcess : public KeypointPostProcessBase {
     public:
         KPYunetPostProcess() = default;
@@ -55,8 +55,8 @@ namespace MxBase {
         void GeneratePriorBox(cv::Mat &anchors);
         cv::Mat decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor);
         void KeypointDetectionOutput(const std::vector <MxBase::TensorBase>& tensors,
-                                   std::vector <std::vector<MxBase::KeyPointDetectionInfo>>& ketpointInfos,
-                                   const std::vector <MxBase::ResizedImageInfo>& resizedImageInfos = {});
+                                     std::vector <std::vector<MxBase::KeyPointDetectionInfo>>& ketpointInfos,
+                                     const std::vector <MxBase::ResizedImageInfo>& resizedImageInfos = {});
     private:
         uint32_t objectConfTensor_ = DEFAULT_OBJECT_CONF_TENSOR;
         uint32_t objectInfoTensor_ = DEFAULT_OBJECT_INFO_TENSOR;

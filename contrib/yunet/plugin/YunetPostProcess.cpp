@@ -15,7 +15,7 @@
  */
 
 #include "YunetPostProcess.h"
-#include "MxBase/Log/Log.h"     
+#include "MxBase/Log/Log.h"
 
 namespace {
     const uint32_t LEFTTOPX = 0;
@@ -26,7 +26,9 @@ namespace {
     const float IMAGE_WIDTH = 1920.0;
     const float IMAGE_HEIGHT = 1080.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
-    const float VARIANCE[2] = {0.1, 0.2};}
+    const float VARIANCE[2] = {0.1, 0.2};
+    const uint32_t RECTENGLEPOINT = 4;
+}
 namespace MxBase {
     YunetPostProcess& YunetPostProcess::operator=(const YunetPostProcess& other)
     {
@@ -55,8 +57,8 @@ namespace MxBase {
     }
 
     void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
-                                            std::vector <std::vector<ObjectInfo>>& objectInfos,
-                                            const std::vector <ResizedImageInfo>& resizedImageInfos)
+                                                 std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                 const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
         LogInfo << "YunetPostProcess start to write results.";
                 
@@ -84,47 +86,46 @@ namespace MxBase {
         float resize_scale_factor = 1.0;
         if (width_resize_scale >= height_resize_scale) {
             resize_scale_factor = height_resize_scale;
+        } else {
+            resize_scale_factor = width_resize_scale;
         }
-        else {
-            resize_scale_factor = width_resize_scale;        
-        }        
-        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor); 
+        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor);
 
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
-        for (uint32_t i = 0; i < batchSize; i++){
+        for (uint32_t i = 0; i < batchSize; i++) {
             std::vector <ObjectInfo> objectInfo;
             auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
             auto dataPtr_Iou = (float *) tensors[2].GetBuffer() + i * tensors[2].GetByteSize() / batchSize;
             for (uint32_t j = 0; j < VectorNum; j++) {
-                float* begin_Conf = dataPtr_Conf + j * 2; 
-                float* begin_Iou = dataPtr_Iou + j; 
+                float* begin_Conf = dataPtr_Conf + j * 2;
+                float* begin_Iou = dataPtr_Iou + j;
                 float conf = *(begin_Conf + 1);
                 float iou = *begin_Iou;
                 if (iou < 0.f) iou = 0.f;
                 if (iou > 1.f) iou = 1.f;
 
                 conf = sqrtf(iou * conf);
-                if (conf> confThresh_ ){
+                if (conf> confThresh_ ) {
                     ObjectInfo objInfo;
                     objInfo.confidence = conf;
-                    objInfo.x0 = res.at<float>(j,LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y0 = res.at<float>(j,LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.x1 = res.at<float>(j,RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y1 = res.at<float>(j,RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
 
                     objectInfo.push_back(objInfo);
                 }
             }
             MxBase::NmsSort(objectInfo, iouThresh_);
-            objectInfos.push_back(objectInfo);   
-        }      
+            objectInfos.push_back(objectInfo);
+        }
         LogInfo << "YunetPostProcess write results successed.";
     }
     APP_ERROR YunetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                    std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                    const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                    const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                        const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
         LogInfo << "Start to Process YunetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
@@ -147,16 +148,16 @@ namespace MxBase {
     {
         // 'min_sizes': [10,16,24],[32,48],[64,96],[128,192,256], this parameter is used for generating prior box
         std::vector<int> min_sizes[4];
-        min_sizes[0].emplace_back(10);  
+        min_sizes[0].emplace_back(10);
         min_sizes[0].emplace_back(16);
         min_sizes[0].emplace_back(24);
-        min_sizes[1].emplace_back(32);  
+        min_sizes[1].emplace_back(32);
         min_sizes[1].emplace_back(48);
         min_sizes[2].emplace_back(64);
-        min_sizes[2].emplace_back(96);  
+        min_sizes[2].emplace_back(96);
         min_sizes[3].emplace_back(128);
         min_sizes[3].emplace_back(192);
-        min_sizes[3].emplace_back(256);  
+        min_sizes[3].emplace_back(256);
         std::vector<std::vector<int>>feature_maps(4, std::vector<int>(2));
         for (int i = 0; i < feature_maps.size(); i++) {
             feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
@@ -166,14 +167,13 @@ namespace MxBase {
             auto f = feature_maps[k];
             auto _min_sizes = min_sizes[k];
             float step = (float)STEPS[k];
-            for (int i = 0; i < f[0]; i++){
+            for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
                     for (auto min_size : _min_sizes) {
                         cv::Mat anchor(1, 4, CV_32F);
                         float center_x = (j + 0.5f) * step;
                         float center_y = (i + 0.5f) * step;
 
-                        //anchor.at<float>(0,0) 
                         float xmin = (center_x - (float)min_size / 2.f) / IMAGE_WIDTH;
                         float ymin = (center_y - (float)min_size / 2.f) / IMAGE_HEIGHT;
                         float xmax = (center_x + (float)min_size / 2.f) / IMAGE_WIDTH;
@@ -184,18 +184,16 @@ namespace MxBase {
                         float prior_center_x = (xmin + xmax) / 2;
                         float prior_center_y = (ymin + ymax) / 2;
 
-                        anchor.at<float>(0, 0) = prior_width;
-                        anchor.at<float>(0, 1) = prior_height;
-                        anchor.at<float>(0, 2) = prior_center_x;
-                        anchor.at<float>(0, 3) = prior_center_y;
+                        anchor.at<float>(0, LEFTTOPX) = prior_width;
+                        anchor.at<float>(0, LEFTTOPY) = prior_height;
+                        anchor.at<float>(0, RIGHTTOPX) = prior_center_x;
+                        anchor.at<float>(0, RIGHTTOPY) = prior_center_y;
 
                         anchors.push_back(anchor);
-
                     }
                 }
             }
         }
-
     }
     /*
      * @description: Generate prior boxes for detection boxes decoding
@@ -219,7 +217,7 @@ namespace MxBase {
 
         cv::Mat boxes;
         cv::hconcat(boxes1, boxes2, boxes);
-        if (resize_scale_factor == 0){
+        if (resize_scale_factor == 0) {
             LogError << "resize_scale_factor is 0.";
         }
         return boxes;

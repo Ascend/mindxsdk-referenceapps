@@ -25,7 +25,7 @@
 #define DEFAULT_CONFIDENCE_THRESH  0.9
 
 namespace MxBase {
-    bool operator<(const ObjectInfo &a, const ObjectInfo &b){
+    bool operator<(const ObjectInfo &a, const ObjectInfo &b) {
         return a.confidence < b.confidence;
     }
         

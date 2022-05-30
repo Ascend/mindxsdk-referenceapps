@@ -17,13 +17,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-
-
-import numpy as np
-import MxpiDataType_pb2 as MxpiDataType
 import cv2
 import os
+import stat
 from PIL import Image
+import numpy as np
+import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 if __name__ == '__main__':

@@ -19,10 +19,11 @@ limitations under the License.
 
 
 
-import numpy as np
-import MxpiDataType_pb2 as MxpiDataType
+
 import cv2
 import os
+import numpy as np
+import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
@@ -49,12 +50,13 @@ if __name__ == '__main__':
     inPluginId = 0
     frameCount = 0
 
-    fp = open("./result.264", "wb")
-    while frameCount <= 100:
-        frameCount += 1
-        inferResult = streamManagerApi.GetResult(streamName, inPluginId)
-        fp.write(inferResult.data)
-    fp.close()
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open('./result.264', flags, modes), 'w') as fp:
+        while frameCount <= 100:
+            frameCount += 1
+            inferResult = streamManagerApi.GetResult(streamName, inPluginId)
+            fp.write(inferResult.data)
     
 # destroy streams
 streamManagerApi.DestroyAllStreams()

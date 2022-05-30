@@ -15,7 +15,7 @@
  */
 
 #include "TotalYunetPostProcess.h"
-#include "MxBase/Log/Log.h"     
+#include "MxBase/Log/Log.h"
 #include <map>
 
 namespace {
@@ -27,7 +27,9 @@ namespace {
     const float IMAGE_WIDTH = 1920.0;
     const float IMAGE_HEIGHT = 1080.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
-    const float VARIANCE[2] = {0.1, 0.2};}
+    const float VARIANCE[2] = {0.1, 0.2};
+    const uint32_t RECTENGLEPOINT = 4;
+}
 namespace MxBase {
     TotalYunetPostProcess& TotalYunetPostProcess::operator=(const TotalYunetPostProcess& other)
     {
@@ -56,11 +58,11 @@ namespace MxBase {
     }
 
     void TotalYunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
-                                                  std::vector <std::vector<ObjectInfo>>& objectInfos,
-                                                  const std::vector <ResizedImageInfo>& resizedImageInfos)
+                                                      std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                      const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
         LogInfo << "TotalYunetPostProcess start to write results.";
-                
+        
         for (auto num : { objectInfoTensor_, objectConfTensor_ }) {
             if ((num >= tensors.size()) || (num < 0)) {
                 LogError << GetError(APP_ERR_INVALID_PARAM) << "TENSOR(" << num
@@ -74,7 +76,7 @@ namespace MxBase {
 
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
-        GeneratePriorBox(PriorBox); 
+        GeneratePriorBox(PriorBox);
         
         float width_resize = resizedImageInfos[0].widthResize;
         float height_resize = resizedImageInfos[0].heightResize;
@@ -85,11 +87,10 @@ namespace MxBase {
         float resize_scale_factor = 1.0;
         if (width_resize_scale >= height_resize_scale) {
             resize_scale_factor = height_resize_scale;
+        } else {
+            resize_scale_factor = width_resize_scale;
         }
-        else {
-            resize_scale_factor = width_resize_scale;        
-        }        
-        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor); 
+        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor);
 
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
@@ -103,15 +104,15 @@ namespace MxBase {
             auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
             auto dataPtr_Iou = (float *) tensors[2].GetBuffer() + i * tensors[2].GetByteSize() / batchSize;
             for (uint32_t j = 0; j < VectorNum; j++) {
-                float* begin_Conf = dataPtr_Conf + j * 2; 
-                float* begin_Iou = dataPtr_Iou + j; 
+                float* begin_Conf = dataPtr_Conf + j * 2;
+                float* begin_Iou = dataPtr_Iou + j;
                 float conf = *(begin_Conf + 1);
                 float iou = *begin_Iou;
                 if (iou < 0.f) iou = 0.f;
                 if (iou > 1.f) iou = 1.f;
 
                 conf = sqrtf(iou * conf);
-                if (conf> confThresh_ ){
+                if (conf> confThresh_ ) {
                     ObjectInfo objInfo;
                     KeyPointDetectionInfo kpInfo;
 
@@ -120,7 +121,7 @@ namespace MxBase {
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = 1;    //give object rectangles color
+                    objInfo.classId = 1;    // give object rectangles color
                     
                     kpInfo.score = conf;
                     for (int k = 0; k < 5; k++)
@@ -149,7 +150,7 @@ namespace MxBase {
                     objInfo.y0= y - 2;
                     objInfo.y1= y + 2;
                     objInfo.confidence = 0;
-                    objInfo.classId = 2;    //give keypoints color
+                    objInfo.classId = 2;    // give keypoints color
                     objectInfoSorted.push_back(objInfo);
 
                 }
@@ -185,33 +186,32 @@ namespace MxBase {
     {
         // 'min_sizes': [10,16,24],[32,48],[64,96],[128,192,256], this parameter is used for generating prior box
         std::vector<int> min_sizes[4];
-        min_sizes[0].emplace_back(10);  
+        min_sizes[0].emplace_back(10);
         min_sizes[0].emplace_back(16);
         min_sizes[0].emplace_back(24);
-        min_sizes[1].emplace_back(32);  
+        min_sizes[1].emplace_back(32);
         min_sizes[1].emplace_back(48);
         min_sizes[2].emplace_back(64);
-        min_sizes[2].emplace_back(96);  
+        min_sizes[2].emplace_back(96);
         min_sizes[3].emplace_back(128);
         min_sizes[3].emplace_back(192);
-        min_sizes[3].emplace_back(256);  
+        min_sizes[3].emplace_back(256);
         std::vector<std::vector<int>>feature_maps(4, std::vector<int>(2));
         for (int i = 0; i < feature_maps.size(); i++) {
             feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
             feature_maps[i][1] = IMAGE_WIDTH / STEPS[i];
         }
-        for (int k = 0; k < feature_maps.size(); k++){
+        for (int k = 0; k < feature_maps.size(); k++) {
             auto f = feature_maps[k];
             auto _min_sizes = min_sizes[k];
             float step = (float)STEPS[k];
-            for (int i = 0; i < f[0]; i++){
+            for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
                     for (auto min_size : _min_sizes) {
                         cv::Mat anchor(1, 4, CV_32F);
                         float center_x = (j + 0.5f) * step;
                         float center_y = (i + 0.5f) * step;
 
-                        //anchor.at<float>(0,0) 
                         float xmin = (center_x - (float)min_size / 2.f) / IMAGE_WIDTH;
                         float ymin = (center_y - (float)min_size / 2.f) / IMAGE_HEIGHT;
                         float xmax = (center_x + (float)min_size / 2.f) / IMAGE_WIDTH;
@@ -222,18 +222,16 @@ namespace MxBase {
                         float prior_center_x = (xmin + xmax) / 2;
                         float prior_center_y = (ymin + ymax) / 2;
 
-                        anchor.at<float>(0, 0) = prior_width;
-                        anchor.at<float>(0, 1) = prior_height;
-                        anchor.at<float>(0, 2) = prior_center_x;
-                        anchor.at<float>(0, 3) = prior_center_y;
+                        anchor.at<float>(0, LEFTTOPX) = prior_width;
+                        anchor.at<float>(0, LEFTTOPY) = prior_height;
+                        anchor.at<float>(0, RIGHTTOPX) = prior_center_x;
+                        anchor.at<float>(0, RIGHTTOPY) = prior_center_y;
 
                         anchors.push_back(anchor);
-
                     }
                 }
             }
         }
-
     }
     /*
      * @description: Generate prior boxes for detection boxes decoding
@@ -245,8 +243,8 @@ namespace MxBase {
     cv::Mat TotalYunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor) {
         cv::Mat loc_first = loc.colRange(0, 2);
         cv::Mat loc_last = loc.colRange(2, 4);
-        cv::Mat prior_first = prior.colRange(0, 2);  //center
-        cv::Mat prior_last = prior.colRange(2, 4);   //size
+        cv::Mat prior_first = prior.colRange(0, 2);
+        cv::Mat prior_last = prior.colRange(2, 4);
         cv::Mat facepoint = loc.colRange(4, 14);
 
         cv::Mat boxes1 = prior_last + (loc_first * VARIANCE[0]).mul(prior_first);
@@ -265,11 +263,10 @@ namespace MxBase {
             else cv::hconcat(boxes3, singlepoint, boxes3);
         }
 
-
         cv::Mat boxes;
         cv::hconcat(boxes1, boxes2, boxes);
         cv::hconcat(boxes, boxes3, boxes);
-        if (resize_scale_factor == 0){
+        if (resize_scale_factor == 0) {
             LogError << "resize_scale_factor is 0.";
         }
         return boxes;
