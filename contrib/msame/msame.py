@@ -123,6 +123,9 @@ def get_input_num(m, input_type):
         else:
             files_name.append(binfile)
             all_names.append(get_files(binfile))
+            if len(all_names[0]) == 0:
+                print("It's an empty folder, please check your input")
+                sys.exit(0)
         for mul in files_name:
             if all_names[0][0].split('.')[1] == "bin":
                 t.append(get_bins(mul, input_type))
@@ -202,7 +205,7 @@ def get_nums(outputs, types_output):
 def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
     filepath = filepath.split('/')[-1]
     #TXT
-    if datatype == 'TXT':
+    if datatype == 'TXT' or 'txt':
         i_index = 0
         for ik in nums:
             f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", 
@@ -246,13 +249,15 @@ def get_array(files_bin, input_type):
 if  __name__ == '__main__':
     TIMES = 0.0
     TRANS = 1000
+    SUM = 0
     SAVES = True
     for mj in range(loop):
         nowtimes = time.time()
         TIMES = infer(SAVES)
+        SUM += TIMES
         SAVES = False
         print("loop {0} : Inference time: {1:f} ms".format(mj, TIMES*TRANS))
     print("infer success!")
-    print("Inference average time: {0:f} ms".format(TIMES/loop*TRANS))
+    print("Inference average time: {0:f} ms".format(SUM/loop*TRANS))
 
 
