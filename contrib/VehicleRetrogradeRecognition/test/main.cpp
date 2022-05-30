@@ -25,10 +25,7 @@
 #include <chrono>
 #include "MxBase/Log/Log.h"
 #include "MxStream/StreamManager/MxStreamManager.h"
-#include <sys/time.h>
-#include <ctime>
-#include <stdio.h>
-#include <chrono>
+#include <thread>
 
 namespace {
     std::string ReadPipelineConfig(const std::string& pipelineConfigPath)
@@ -46,6 +43,29 @@ namespace {
         file.close();
         std::string pipelineConfig(data.get(), fileSize);
         return pipelineConfig;
+    }
+    uint32_t frameCount = 0;
+    bool ISSIGINTUP = false;
+}
+
+void time_func() {
+    int time_step = 0;
+    int time_count = 0;
+    auto begin_time = std::chrono::system_clock::now();
+    int one_step = 2;
+    
+    while (1) {
+        auto end = std::chrono::system_clock::now();
+        auto cur_time = (std::chrono::duration_cast<std::chrono::microseconds>(end - begin_time)) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den;
+        if ((cur_time.count()) >= (time_step + one_step)) {
+            time_step = time_step + one_step;
+            LogInfo << "fps: " << (frameCount - time_count) * 1.0 / one_step;
+            time_count = frameCount;
+        }
+        if (ISSIGINTUP == true) {
+            LogInfo << "Exit";
+            break;
+        }
     }
 }
 
@@ -82,15 +102,14 @@ int main(int argc, char* argv[])
     
     bool m_bFoundFirstIDR = false;
     bool bIsIDR = false;
-    uint32_t frameCount = 0;
     uint32_t MaxframeCount = 5000;
 
     std::string streamName = "encoder";
     int inPluginId = 0;
     int msTimeOut = 200000;
 
-    auto start = std::chrono::system_clock::now();
-
+    std::thread t(time_func);
+    t.detach();
     while (1) {
         // get stream output
         MxStream::MxstDataOutput* output = mxStreamManager.GetResult(streamName, inPluginId, msTimeOut);
@@ -116,13 +135,10 @@ int main(int argc, char* argv[])
         frameCount++;
         if (frameCount > MaxframeCount) {
             LogInfo << "write frame to file done";
+            ISSIGINTUP = true;
             break;
         }
         delete output;
-        auto end = std::chrono::system_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        double average = (double)(duration.count()) * std::chrono::microseconds::period::num / std::chrono::microseconds::period::den / frameCount;
-        std::cout << "fps: " << 1 / average << std::endl;
     }
     fclose(fp);
     // destroy streams
