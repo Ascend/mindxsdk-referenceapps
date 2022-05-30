@@ -17,9 +17,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import cv2
 import os
 import stat
+import cv2
 from PIL import Image
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
@@ -28,8 +28,8 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 if __name__ == '__main__':
     
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    STREAM_MANAGER_API = StreamManagerApi()
+    ret = STREAM_MANAGER_API.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -37,23 +37,23 @@ if __name__ == '__main__':
     # create streams by pipeline config file
     with open("./pipeline/KPYunet.pipeline", 'rb') as f:
         pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # get result from stream and write
-    streamName = b'KPYunet'
-    inPluginId = 0
-    frameCount = 0
-    while frameCount <= 100:
-        frameCount += 1
-        inferResult = streamManagerApi.GetResult(streamName, inPluginId)
+    STREAM_NAME = b'KPYunet'
+    IN_PLUGIN_ID = 0
+    FRAME_COUNT = 0
+    while FRAME_COUNT <= 100:
+        FRAME_COUNT += 1
+        inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
         print(inferResult.data)
 
 
 # destroy streams
-streamManagerApi.DestroyAllStreams()
+STREAM_MANAGER_API.DestroyAllStreams()
 
 
 

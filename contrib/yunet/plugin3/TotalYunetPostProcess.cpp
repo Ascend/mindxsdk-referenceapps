@@ -29,6 +29,8 @@ namespace {
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
     const float VARIANCE[2] = {0.1, 0.2};
     const uint32_t RECTENGLEPOINT = 4;
+    const uint32_t KEYPOINTNUM = 5;
+    const uint32_t POINT_SIZE = 2;
 }
 namespace MxBase {
     TotalYunetPostProcess& TotalYunetPostProcess::operator=(const TotalYunetPostProcess& other)
@@ -112,7 +114,7 @@ namespace MxBase {
                 if (iou > 1.f) iou = 1.f;
 
                 conf = sqrtf(iou * conf);
-                if (conf> confThresh_ ) {
+                if (conf> confThresh_) {
                     ObjectInfo objInfo;
                     KeyPointDetectionInfo kpInfo;
 
@@ -121,13 +123,13 @@ namespace MxBase {
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = 1;    // give object rectangles color
+                    objInfo.classId = 1; // give object rectangles color 1
                     
                     kpInfo.score = conf;
-                    for (int k = 0; k < 5; k++)
+                    for (int k = 0; k < KEYPOINTNUM; k++)
                     {
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, 4 + k * 2) * IMAGE_WIDTH / width_resize_scale);
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, 4 + k * 2 + 1) * IMAGE_HEIGHT / height_resize_scale);
+                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTENGLEPOINT + k * 2) * IMAGE_WIDTH / width_resize_scale);
+                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTENGLEPOINT + k * 2 + 1) * IMAGE_HEIGHT / height_resize_scale);
                     }
                     objectInfo.push_back(objInfo);
                     keypointInfo.push_back(kpInfo);
@@ -138,26 +140,26 @@ namespace MxBase {
 
             for (uint32_t j = 0; j < objectInfo.size(); j++) {
                 objectInfoSorted.push_back(objectInfo[j]);
-                for(int k = 0; k < 5; k++)
+                for (int k = 0; k < KEYPOINTNUM; k++)
                 {
                     float x = match[objectInfo[j]].keyPointMap[k][0];
                     float y = match[objectInfo[j]].keyPointMap[k][1];
                     ObjectInfo objInfo;
 
                     // use [(x-2,y-2),(x+2,y+2)] object rectangle to draw keypoints
-                    objInfo.x0= x - 2;
-                    objInfo.x1= x + 2;
-                    objInfo.y0= y - 2;
-                    objInfo.y1= y + 2;
+                    objInfo.x0= x - POINT_SIZE;
+                    objInfo.x1= x + POINT_SIZE;
+                    objInfo.y0= y - POINT_SIZE;
+                    objInfo.y1= y + POINT_SIZE;
                     objInfo.confidence = 0;
-                    objInfo.classId = 2;    // give keypoints color
+                    objInfo.classId = 2; // give keypoints color 2
                     objectInfoSorted.push_back(objInfo);
 
                 }
             }
 
             objectInfos.push_back(objectInfoSorted);
-        }      
+        }
         LogInfo << "TotalYunetPostProcess write results successed.";
     }
     APP_ERROR TotalYunetPostProcess::Process(const std::vector<TensorBase> &tensors,
@@ -185,18 +187,18 @@ namespace MxBase {
     void TotalYunetPostProcess::GeneratePriorBox(cv::Mat &anchors)
     {
         // 'min_sizes': [10,16,24],[32,48],[64,96],[128,192,256], this parameter is used for generating prior box
-        std::vector<int> min_sizes[4];
-        min_sizes[0].emplace_back(10);
-        min_sizes[0].emplace_back(16);
-        min_sizes[0].emplace_back(24);
-        min_sizes[1].emplace_back(32);
-        min_sizes[1].emplace_back(48);
-        min_sizes[2].emplace_back(64);
-        min_sizes[2].emplace_back(96);
-        min_sizes[3].emplace_back(128);
-        min_sizes[3].emplace_back(192);
-        min_sizes[3].emplace_back(256);
-        std::vector<std::vector<int>>feature_maps(4, std::vector<int>(2));
+        std::vector<int> min_sizes[RECTENGLEPOINT];
+        min_sizes[0].emplace_back(10);  // parameter for generating proir box
+        min_sizes[0].emplace_back(16);  // parameter for generating proir box
+        min_sizes[0].emplace_back(24);  // parameter for generating proir box
+        min_sizes[1].emplace_back(32);  // parameter for generating proir box
+        min_sizes[1].emplace_back(48);  // parameter for generating proir box
+        min_sizes[2].emplace_back(64);  // parameter for generating proir box
+        min_sizes[2].emplace_back(96);  // parameter for generating proir box
+        min_sizes[3].emplace_back(128);  // parameter for generating proir box
+        min_sizes[3].emplace_back(192);  // parameter for generating proir box
+        min_sizes[3].emplace_back(256);  // parameter for generating proir box
+        std::vector<std::vector<int>>feature_maps(RECTENGLEPOINT, std::vector<int>(2));
         for (int i = 0; i < feature_maps.size(); i++) {
             feature_maps[i][0] = IMAGE_HEIGHT / STEPS[i];
             feature_maps[i][1] = IMAGE_WIDTH / STEPS[i];
@@ -208,7 +210,7 @@ namespace MxBase {
             for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
                     for (auto min_size : _min_sizes) {
-                        cv::Mat anchor(1, 4, CV_32F);
+                        cv::Mat anchor(1, RECTENGLEPOINT, CV_32F);
                         float center_x = (j + 0.5f) * step;
                         float center_y = (i + 0.5f) * step;
 
@@ -251,11 +253,11 @@ namespace MxBase {
         cv::Mat boxes2;
         cv::exp(loc_last * VARIANCE[1], boxes2);
         boxes2 = boxes2.mul(prior_first);
-        boxes1 = boxes1 - boxes2 / 2;
+        boxes1 = boxes1 - boxes2 / 2; // change center position into rectangle position
         boxes2 = boxes2 + boxes1;
 
         cv::Mat boxes3;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < KEYPOINTNUM; i++)
         {
             cv::Mat singlepoint = facepoint.colRange(i * 2, (i + 1) * 2);
             singlepoint = prior_last + (singlepoint * VARIANCE[0]).mul(prior_first);

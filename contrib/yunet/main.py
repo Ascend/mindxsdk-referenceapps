@@ -20,8 +20,8 @@ limitations under the License.
 
 
 
-import cv2
 import os
+import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
@@ -31,8 +31,8 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 if __name__ == '__main__':
     
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    STREAM_MANAGER_API = StreamManagerApi()
+    ret = STREAM_MANAGER_API.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -40,26 +40,26 @@ if __name__ == '__main__':
     # create streams by pipeline config file
     with open("./pipeline/Yunet.pipeline", 'rb') as f:
         pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
     # get result from stream and write
-    streamName = b'Yunet'
-    inPluginId = 0
-    frameCount = 0
+    STREAM_NAME = b'Yunet'
+    IN_PLUGIN_ID = 0
+    FRAME_COUNT = 0
 
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    modes = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open('./result.264', flags, modes), 'w') as fp:
-        while frameCount <= 100:
-            frameCount += 1
-            inferResult = streamManagerApi.GetResult(streamName, inPluginId)
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    MODES = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open('./result.264', FLAGS, MODES), 'w') as fp:
+        while FRAME_COUNT <= 100:
+            FRAME_COUNT += 1
+            inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
     
 # destroy streams
-streamManagerApi.DestroyAllStreams()
+STREAM_MANAGER_API.DestroyAllStreams()
 
 
 
