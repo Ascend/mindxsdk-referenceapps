@@ -21,6 +21,7 @@ limitations under the License.
 
 
 import os
+import stat
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
