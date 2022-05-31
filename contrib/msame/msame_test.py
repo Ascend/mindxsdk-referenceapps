@@ -55,9 +55,10 @@ output = args.output
 datatype = args.outfmt
 device_id = args.device
 output = args.output
-types_output = []
+
 
 def infer(saves):
+    types_output = []
     if not os.path.exists(output):
         os.makedirs(output)
     m = sdk.model(filepath, device_id)
@@ -79,7 +80,7 @@ def infer(saves):
                 except KeyError:
                     print("KeyError")
                 path = fi.split('.')[0]
-                one_time = t_save(path, m, t, saves)
+                one_time = t_save(path, m, t, saves, types_output)
             if isf == 0:
                 print("It's an empty folder, please check your input")
                 sys.exit(0)
@@ -89,7 +90,7 @@ def infer(saves):
             except KeyError:
                 print("KeyError")
             path = filepath
-            one_time = t_save(path, m, t, saves)
+            one_time = t_save(path, m, t, saves, types_output)
         else:
             if  not os.path.isfile(args.input):
                 print("please check your file!")
@@ -102,15 +103,16 @@ def infer(saves):
                 path = args.input
             else:
                 path = args.input.split('/')[-1].split('.')[0]
-            one_time = t_save(path, m, t, saves)
+            one_time = t_save(path, m, t, saves, types_output)
     else:
         try:
             t = get_input_num(m, type_map[types_input])
         except KeyError:
             print("KeyError")
         path = filepath
-        one_time = t_save(path, m, t, saves)
+        one_time = t_save(path, m, t, saves, types_output)
     return one_time
+
 
 def get_input_num(m, input_type):
     inputsize = []
@@ -153,13 +155,15 @@ def get_input_num(m, input_type):
         tis = t
     return tis
 
-def t_save(path, m, t, saves):
+
+def t_save(path, m, t, saves, types_output):
     multi = 1
     for p in m.input_shape[0]:
         multi = multi * p
+    print(t[0][0].shape)
     if t[0][0].shape[0] != multi :
         print("Error : Please check the input shape and input dtype")
-        sys.exit()
+        sys.exit(0)
     if len(m.input_shape) == 1:
         tim = sdk.Tensor(t[0][0])
         tim.to_device(0)
@@ -186,6 +190,7 @@ def t_save(path, m, t, saves):
         save_files(path, outputs, output, datatype, nums, shape, types_output)
     return one_times
 
+
 def get_t(name, m, input_type):
     ti = []
     if name.split('.')[1] == 'bin':
@@ -193,6 +198,7 @@ def get_t(name, m, input_type):
     elif name.split('.')[1] == 'npy':
         ti.append(get_npy(name, input_type))
     return ti
+
 
 def get_bins(f, input_type):
     files_bin = []
@@ -203,6 +209,7 @@ def get_bins(f, input_type):
     else:
         files_bin.append(np.fromfile(f, dtype=input_type).flatten())
     return files_bin
+
 
 def get_npy(f, input_type):
     files_npy = []
