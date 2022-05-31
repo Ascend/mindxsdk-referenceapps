@@ -50,18 +50,17 @@ type_map['dtype.double'] = np.double
 
 args = parse_args()
 loop = args.loop
-filepath = args.model
-output = args.output
-datatype = args.outfmt
+_filepath = args.model
+_output = args.output
+_datatype = args.outfmt
 device_id = args.device
-output = args.output
 
 
 def infer(saves):
     types_output = []
-    if not os.path.exists(output):
-        os.makedirs(output)
-    m = sdk.model(filepath, device_id)
+    if not os.path.exists(_output):
+        os.makedirs(_output)
+    m = sdk.model(_filepath, device_id)
     index = 0
     for i in m.output_dtype:
         types_output.append([])
@@ -160,7 +159,6 @@ def t_save(path, m, t, saves, types_output):
     multi = 1
     for p in m.input_shape[0]:
         multi = multi * p
-    print(t[0][0].shape)
     if t[0][0].shape[0] != multi :
         print("Error : Please check the input shape and input dtype")
         sys.exit(0)
@@ -185,9 +183,9 @@ def t_save(path, m, t, saves, types_output):
     now_time = time.time()
     one_times = now_time-last_time
     outputs[0].to_host()
-    nums, shape = get_nums(outputs, types_output)
+    nums, _shape = get_nums(outputs, types_output)
     if saves:
-        save_files(path, outputs, output, datatype, nums, shape, types_output)
+        save_files(path, outputs, _output, _datatype, nums, _shape, types_output)
     return one_times
 
 
@@ -265,17 +263,17 @@ def get_nums(outputs, types_output):
     return (nums, shape)
 
 
-def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
+def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_output):
     #TXT
-    if datatype == 'TXT' or 'txt':
+    if _datatype == 'TXT' or 'txt':
         i_index = 0
         for ik in nums:
-            f = os.open(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", 
+            f = os.open(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".txt", 
                     os.O_RDWR | os.O_APPEND | os.O_CREAT, stat.S_IRWXU)
-            os.chmod(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
+            os.chmod(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
             output_desc = len(ik)
-            for j in range(int(output_desc/shape[i_index])):
-                for k in range(j*shape[i_index], (j+1)*shape[i_index]):
+            for j in range(int(output_desc/_shape[i_index])):
+                for k in range(j*_shape[i_index], (j+1)*_shape[i_index]):
                     os.write(f, str.encode(str(nums[i_index][k])+' '))
                 os.write(f, str.encode('\n'))
             i_index += 1
@@ -286,7 +284,7 @@ def save_files(filepath, outputs, output, datatype, nums, shape, types_output):
             i.to_host()
             num = np.array(i)
             num = num.flatten()
-            num.tofile(output+'/'+filepath.split('.')[0]+'_'+str(i_index)+".bin")
+            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".bin")
             i_index += 1
     
 
