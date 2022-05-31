@@ -22,13 +22,12 @@ namespace {
     const uint32_t LEFTTOPY = 1;
     const uint32_t RIGHTTOPX = 2;
     const uint32_t RIGHTTOPY = 3;
-    
+    const int PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}}; 
     const float IMAGE_WIDTH = 1920.0;
     const float IMAGE_HEIGHT = 1080.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
     const float VARIANCE[2] = {0.1, 0.2};
     const uint32_t RECTANGLEPOINT = 4;
-    const uint32_t PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}};
     const uint32_t DIM = 2; // image dimension is 2
     const uint32_t RECTANGLE_COLOR = 1;
     const uint32_t KEYPOINT_COLOR = 2;

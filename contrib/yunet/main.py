@@ -51,9 +51,9 @@ if __name__ == '__main__':
     IN_PLUGIN_ID = 0
     FRAME_COUNT = 0
 
-    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    FLAGS = os.O_WRONLY | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open('./result.264', FLAGS, MODES), 'w') as fp:
+    with os.fdopen(os.open('./result.264', FLAGS, MODES), 'wb') as fp:
         while FRAME_COUNT <= 100:
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
