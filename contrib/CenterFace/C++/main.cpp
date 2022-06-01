@@ -31,7 +31,7 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
 {
     int findIndex1 = filePath.rfind(".");
     std::string fileFormat = filePath.substr(findIndex1+1);
-    if(fileFormat!="jpg"){
+    if (fileFormat!="jpg") {
         LogError << "Only jpg format is supported. But get (" << fileFormat << ").";
         return APP_ERR_COMM_READ_FAIL;
     }
@@ -177,7 +177,7 @@ static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpi
 
   int findIndex1 = fileName.rfind("/");
   int findIndex2 = fileName.rfind(".");
-  std::string fileNameNew = fileName.substr(findIndex1,findIndex2-findIndex1);
+  std::string fileNameNew = fileName.substr(findIndex1, findIndex2-findIndex1);
   MkdirRecursive("./result");
   cv::imwrite("./result/"+fileNameNew+"_result.jpg", imgBgr);
   ret = MxBase::MemoryHelper::MxbsFree(memoryDst);
@@ -265,7 +265,8 @@ int main(int argc, char *argv[]) {
   if (arguments.size() > 1) {
     fileName = arguments[1];
   } else {
-    LogError << "Please set your picture file path .";
+    LogError << "file path is null, please set your picture file path .";
+    return 0;
   }
 
   // 将图片的信息读取到dataBuffer中
@@ -296,7 +297,7 @@ int main(int argc, char *argv[]) {
     LogError << "Fail to detect face.";
     int findIndex1 = fileName.rfind("/");
     int findIndex2 = fileName.rfind(".");
-    std::string fileNameNew = fileName.substr(findIndex1,findIndex2-findIndex1);
+    std::string fileNameNew = fileName.substr(findIndex1, findIndex2-findIndex1);
     MkdirRecursive("./result");
     std::string desFile = "./result/"+fileNameNew+"_result.jpg";
     CopyFile(fileName, desFile);

@@ -57,12 +57,11 @@ public:
   APP_ERROR Process(std::vector<void *> &featLayerData,
                     std::vector<MxBase::ObjectInfo> &objInfos,
                     const MxBase::ResizedImageInfo &resizeInfo);
-  void detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
-              const ImageInfo &imgInfo, float scoreThresh = 0.5,
-              float nmsThresh = 0.3);
+  APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
+              const ImageInfo &imgInfo);
 
 private:
-  enum NumsMethod { LINEAR = 1, GAUSSIAN = 2, ORIGINAL_NMX = 3 };
+  enum NmsMethod { LINEAR = 1, GAUSSIAN = 2, ORIGINAL_NMX = 3 };
   int modelWidth_ = 200;
   int modelHeight_ = 200;
   float scale_w = 1.f;
@@ -70,16 +69,16 @@ private:
   int DOWN_SAMPLE = 4;
   int SCALE_FACTOR = 2;
   // IOU thresh hold
-  float iouThresh_ = 0.4;
-  int numsMethod = 1;
+  float nmsThresh_ = 0.4;
+  int nmsMethod = 1;
 
 private:
-  void nms(std::vector<FaceInfo> &vec_boxs, float nmsthresh, float iouthresh,
-           unsigned int method = 1, float sigma = 0.5);
-  void decode(float *heatmap, float *scale, float *offset, float *landmarks,
-              std::vector<FaceInfo> &faces, const ImageInfo &imageinfo,
-              float scoreThresh, float nmsThresh);
-  std::vector<int> getIds(float *heatmap, int h, int w, float thresh);
+  void nms(std::vector<FaceInfo> &vec_boxs, unsigned int method = 1, float sigma = 0.5);
+  APP_ERROR decode(float *heatmap, float *scale, float *offset, float *landmarks,
+              std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
+  std::vector<int> getIds(float *heatmap, int h, int w);
+  float GetNmsWeight(float iou, float sigma, int method);
+  float GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps);
   void squareBox(std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
   APP_ERROR ReadConfigParams();
 };

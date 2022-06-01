@@ -35,4 +35,3 @@ add_library(${TARGET_LIBRARY} SHARED MxCenterfaceKeyPointPostProcessor.cpp MxCen
 target_link_libraries(${TARGET_LIBRARY} glib-2.0 gstreamer-1.0 gobject-2.0 gstbase-1.0 gmodule-2.0 glog)
 
 target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase mindxsdk_protobuf )
-#target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
