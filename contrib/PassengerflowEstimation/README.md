@@ -247,16 +247,9 @@ python3 main.py
 
 ## 7性能测试
 
-在视频拉流时候，帧率为：
-
-![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image3.png)
-
-在程序运行过程中，会自动输出帧率,该帧率为输出视频的帧率：
-
-![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image2.png)
-
-测试帧率：
-本样例统计出每秒处理的帧数，测试视频的帧率为25分辨率1920*1080，按照代码测试实时fps达到指标实时fps为25fps则满足测试要求。因为拉流开始会导致丢帧，测试视频的帧数过少会引起性能测试值偏低。经过计算实时fps值，得到实时fps为25（如下图所示），满足性能测试要求。
+测试帧率： 本样例的测试脚本main.py测试拉流25帧视频时输出的帧率，通过计算帧数和整个计算过程所需时间的比值，统计整个过程中平均帧率。
+测试视频的帧率为25，分辨率1920*1080，因为拉流开始会导致丢帧，而测试脚本是通过计算帧数和整个处理过程所需的时间的比值获得的平均帧率，所以测试视频的帧数过少会引起性能测试值偏低，FRAMENUM需要设为较大值(不小于源测试视频的帧数)。
+经过计算平均fps值，得到平均fps为24.89（如下图所示），考虑到一开始拉流丢帧造成的损失，满足性能测试要求。 
 
 
 ## 8适用场景
