@@ -22,7 +22,8 @@ namespace {
     const uint32_t LEFTTOPY = 1;
     const uint32_t RIGHTTOPX = 2;
     const uint32_t RIGHTTOPY = 3;
-    const int PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}}; 
+    const int PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}};
+    const int PRIOR_PARAMETERS_COUNT = 3;
     const float IMAGE_WIDTH = 1920.0;
     const float IMAGE_HEIGHT = 1080.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
@@ -160,7 +161,7 @@ namespace MxBase {
             float step = (float)STEPS[k];
             for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
-                    for (int l = 0; l < 3 && PRIOR_PARAMETERS[k][l] != -1; l++) {
+                    for (int l = 0; l < PRIOR_PARAMETERS_COUNT && PRIOR_PARAMETERS[k][l] != -1; l++) {
                         float min_size = PRIOR_PARAMETERS[k][l];
                         cv::Mat anchor(1, RECTANGLEPOINT, CV_32F);
                         float center_x = (j + 0.5f) * step;
