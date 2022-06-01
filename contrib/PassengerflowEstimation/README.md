@@ -255,7 +255,9 @@ python3 main.py
 
 ![img](https://gitee.com/distancemay/mindxsdk-referenceapps/raw/master/contrib/PassengerflowEstimation/images/image2.png)
 
-帧率已经达到要求。
+测试帧率：
+本样例统计出每秒处理的帧数，测试视频的帧率为25分辨率1920*1080，按照代码测试实时fps达到指标实时fps为25fps则满足测试要求。因为拉流开始会导致丢帧，测试视频的帧数过少会引起性能测试值偏低。经过计算实时fps值，得到实时fps为25（如下图所示），满足性能测试要求。
+
 
 ## 8适用场景
 本项目适用于俯视角度较大，并且人流量不是非常密集的视频中人流量统计。若人流非常密集，由于yolov4模型识别人体不准确，故无法准确统计客流量。并且在视频中的画线要尽量水平。待检测的视频最好如下所示：

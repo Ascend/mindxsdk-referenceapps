@@ -6,7 +6,7 @@
             "mxpi_rtspsrc0": {
                 "factory": "mxpi_rtspsrc",
                 "props": {
-                    "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
+                    "rtspUrl": "rtsp://xxx.xxx.xx.xxx:xxxx/xxxx.264",
                     "channelId": "0"
                 },
                 "next": "queue0"
