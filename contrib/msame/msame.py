@@ -70,6 +70,7 @@ def infer(saves):
     multi = 1
     f = []
     if len(m.input_shape) == 1:
+        print(m.input_shape)
         if os.path.isdir(args.input):
             isf = 0
             for fi in os.listdir(args.input):
@@ -88,7 +89,7 @@ def infer(saves):
                 t = get_input_num(m, type_map[types_input])
             except KeyError:
                 print("KeyError")
-            path = filepath
+            path = _filepath
             one_time = t_save(path, m, t, saves, types_output)
         else:
             if  not os.path.isfile(args.input):
@@ -108,7 +109,7 @@ def infer(saves):
             t = get_input_num(m, type_map[types_input])
         except KeyError:
             print("KeyError")
-        path = filepath
+        path = _filepath
         one_time = t_save(path, m, t, saves, types_output)
     return one_time
 
@@ -139,17 +140,19 @@ def get_input_num(m, input_type):
             multi_bin = binfile.split(',')
             for i in multi_bin:
                 files_name.append(i)
-                all_names.append(get_files(i))
+                all_names.extend(get_files(i))
         else:
             files_name.append(binfile)
-            all_names.append(get_files(binfile))
+            all_names.extend(get_files(binfile))
+
             if len(all_names[0]) == 0:
                 print("It's an empty folder, please check your input")
                 sys.exit(0)
-        for mul in files_name:
-            if all_names[0][0].split('.')[1] == "bin":
+
+        for mul in all_names:
+            if mul.split('.')[1] == "bin":
                 t.append(get_bins(mul, input_type))
-            elif all_names[0][0].split('.')[1] == "npy":
+            elif mul.split('.')[1] == "npy":
                 t.append(get_npy(mul, input_type))
         tis = t
     return tis
@@ -166,6 +169,9 @@ def t_save(path, m, t, saves, types_output):
         tim = sdk.Tensor(t[0][0])
         tim.to_device(0)
     else:
+        if len(t) != len(m.input_shape):
+            print("Error : Please check the input shape and input dtype")
+            sys.exit(0)
         if args.input == '':
             tim = []
             for bs in t[0]:
@@ -265,7 +271,7 @@ def get_nums(outputs, types_output):
 
 def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_output):
     #TXT
-    if _datatype == 'TXT' or 'txt':
+    if _datatype == 'TXT' or _datatype == 'txt':
         i_index = 0
         for ik in nums:
             f = os.open(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".txt", 
