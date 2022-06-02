@@ -71,16 +71,16 @@ APP_ERROR MxpiRoadSegPostProcess::chw2hwc(const std::vector<MxBase::TensorBase> 
                                           std::vector<MxBase::TensorBase> &outputTensors)
 {
     LogInfo << "MxpiRoadSegPostProcess::chw_to_hwc start.";
-    if(inputTensors.size() == 0){
+    if (inputTensors.size() == 0) {
         LogInfo << "inputTensors is 0";
     }
     auto tensor = inputTensors[0];
     auto inputShape = tensor.GetShape();
-    uint32_t N = inputShape[0],C = inputShape[1],H = inputShape[2],W = inputShape[3];
-    std::vector<uint32_t> outputShape = {N,H,W,C};
+    uint32_t N = inputShape[0], C = inputShape[1], H = inputShape[2], W = inputShape[3];
+    std::vector<uint32_t> outputShape = {N, H, W, C};
     MxBase::TensorBase tmpTensor(outputShape, tensor.GetDataType());
     APP_ERROR ret = MxBase::TensorBase::TensorBaseMalloc(tmpTensor);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogInfo << "TensorBaseMalloc error";
         return ret;
     }
@@ -88,9 +88,9 @@ APP_ERROR MxpiRoadSegPostProcess::chw2hwc(const std::vector<MxBase::TensorBase> 
         auto tensorPtr = (float*)tensor.GetBuffer() + i * tensor.GetByteSize() / N;
         auto tmpTensorPtr = (float*)tmpTensor.GetBuffer() + i * tmpTensor.GetByteSize() / N;
         uint32_t stride = H * W;
-        for(uint32_t c = 0; c != C ;++c){
+        for (uint32_t c = 0; c != C; ++c) {
             uint32_t t = c * stride;
-            for (uint32_t j = 0; j != stride; ++j){
+            for (uint32_t j = 0; j != stride; ++j) {
                 float f = *(tensorPtr+t+j);
                 *(tmpTensorPtr+j * (C)+c) = f;
             }
@@ -125,10 +125,11 @@ APP_ERROR MxpiRoadSegPostProcess::PostProcess(std::vector<MxBase::TensorBase> &i
 
     cv::resize(imageMat, imageMat, cv::Size(imgWidth, imgHeight), cv::INTER_CUBIC);
     cv::Mat argmax(imgHeight, imgWidth, CV_8UC1);
+    const int WHITE = 255, BLACK = 0;
     for (size_t x = 0; x < imgHeight; ++x) {
         for (size_t y = 0; y < imgWidth; ++y) {
             // if probability more than threshold value is true
-            argmax.at<uchar>(x, y) = (imageMat.at<float>(x, y) > THRESHOLD_VALUE) ? 255: 0;
+            argmax.at<uchar>(x, y) = (imageMat.at<float>(x, y) > THRESHOLD_VALUE) ? WHITE: BLACK;
         }
     }
     mask = argmax;
@@ -157,7 +158,7 @@ APP_ERROR MxpiRoadSegPostProcess::GenerateVisionList(const cv::Mat mask,
     return APP_ERR_OK;
 }
 // image fusion
-APP_ERROR MxpiRoadSegPostProcess::openCVImageFusion(size_t idx,const MxTools::MxpiVision srcMxpiVision,
+APP_ERROR MxpiRoadSegPostProcess::openCVImageFusion(size_t idx, const MxTools::MxpiVision srcMxpiVision,
                                                     MxTools::MxpiVision& dstMxpiVision,
                                                     cv::Mat threeChannelMask)
 {
@@ -172,7 +173,7 @@ APP_ERROR MxpiRoadSegPostProcess::openCVImageFusion(size_t idx,const MxTools::Mx
     memorySrc.ptrData = (void*)visionData.dataptr();
     MxBase::MemoryData memoryDst(visionData.datasize(), MxBase::MemoryData::MEMORY_HOST_NEW);
     APP_ERROR  ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, memorySrc);
-    if (ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
@@ -271,7 +272,7 @@ APP_ERROR MxpiRoadSegPostProcess::GenerateVisionListOutput(const MxpiTensorPacka
     // nchw_to_nhwc
     std::vector<MxBase::TensorBase> resizedTensors = {};
     APP_ERROR ret = chw2hwc(tensors, resizedTensors);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
          LogInfo <<"chw_to_hwc failed";
     }
     
@@ -282,7 +283,7 @@ APP_ERROR MxpiRoadSegPostProcess::GenerateVisionListOutput(const MxpiTensorPacka
     imageInfo.imgWidth = srcMxpiVision.visioninfo().width();
     cv::Mat mask;
     ret = PostProcess(resizedTensors, imageInfo, mask);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogInfo <<"PostProcess failed";
     }
     // single channel mask to three channel mask
@@ -296,7 +297,7 @@ APP_ERROR MxpiRoadSegPostProcess::GenerateVisionListOutput(const MxpiTensorPacka
     merge(channels, threeChannelMask);
     // image fusion
     ret = GenerateVisionList(threeChannelMask, srcMxpiVisionList, dstMxpiVisionList);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogInfo <<"GenerateVisionList failed";
     }
     return APP_ERR_OK;
@@ -319,7 +320,7 @@ APP_ERROR MxpiRoadSegPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         return APP_ERR_COMM_FAILURE;
     }
     // Get the data from buffer
-    shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);  
+    shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     if (metadata == nullptr) {
         ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata is NULL, failed";
         mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;

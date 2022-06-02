@@ -81,7 +81,7 @@ namespace MxPlugins {
          * @brief convert NCHW to NHWC
          * @return APP_ERROR
          */
-        APP_ERROR GenerateVisionList(const cv::Mat mask,const MxTools::MxpiVisionList srcMxpiVisionList,
+        APP_ERROR GenerateVisionList(const cv::Mat mask, const MxTools::MxpiVisionList srcMxpiVisionList,
                                      MxTools::MxpiVisionList& dstMxpiVisionList);
          /**
          * @api
@@ -95,7 +95,7 @@ namespace MxPlugins {
          * @return APP_ERROR
          */
         
-        APP_ERROR openCVImageFusion(size_t idx,const MxTools::MxpiVision srcMxpiVision,
+        APP_ERROR openCVImageFusion(size_t idx, const MxTools::MxpiVision srcMxpiVision,
                                     MxTools::MxpiVision& dstMxpiVision,
                                     cv::Mat threeChannelMask);
          /**
@@ -121,7 +121,7 @@ namespace MxPlugins {
          */
     private:
         APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
-        const MxTools::MxpiErrorInfo mxpiErrorInfo);
+                                   const MxTools::MxpiErrorInfo mxpiErrorInfo);
         std::string parentName_;
         std::ostringstream ErrorInfo_;
     };
