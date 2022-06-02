@@ -152,6 +152,9 @@ def get_input_num(m, input_type):
             for i in multi_bin:
                 files_name.append(i)
                 all_names.extend(get_files(i))
+                if len(all_names) == 0:
+                    print("It's an empty folder,please check your input")
+                    sys.exit(0)
         else:
             files_name.append(binfile)
             all_names.extend(get_files(binfile))
