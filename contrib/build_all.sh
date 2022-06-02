@@ -40,8 +40,8 @@ SAMPLE_FOLDER=(
     UltraFastLaneDetection/
     VehicleIdentification/
     VehicleRetrogradeRecognition/
-    Collision/
     PassengerflowEstimation/
+    Collision/
 )
 
 
