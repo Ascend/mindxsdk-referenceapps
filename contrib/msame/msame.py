@@ -69,16 +69,17 @@ def infer(saves):
     types_input = str(m.input_dtype[0])
     multi = 1
     f = []
-    for mk in args.input:
-        if os.path.isdir(mk):
-            continue
-        elif os.path.isfile(mk):
-            continue
-        else:
-            print("Error: file doesn't exit")
-            sys.exit(0)
+    if args.input != '':
+        mm = args.input.split(',')
+        for mk in mm:
+            if os.path.isdir(mk):
+                continue
+            elif os.path.isfile(mk):
+                continue
+            else:
+                print("Error: file doesn't exit")
+                sys.exit(0)
     if len(m.input_shape) == 1:
-        print(m.input_shape)
         if os.path.isdir(args.input):
             isf = 0
             for fi in os.listdir(args.input):
