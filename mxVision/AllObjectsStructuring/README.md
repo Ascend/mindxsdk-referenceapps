@@ -70,7 +70,7 @@
 
 注：本例中mxVision SDK安装路径为 /root/MindX_SDK。
 
-**步骤3：** 在项目根目录下 AllObjectStructuring/ 创建目录models `mkdir models` ，联系我们获取最新模型，并放到项目根目录下 AllObjectStructuring/models/ 目录下。
+**步骤3：** 在项目根目录下 AllObjectStructuring/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuring/AllObjectsStructuring_models.zip)，并放到项目根目录下 AllObjectStructuring/models/ 目录下。
 
 **步骤4：** 在项目根目录下 AllObjectStructuring/ 创建目录faces_to_register `mkdir faces_to_register` ，将用来注册入库的人脸照片放到项目根目录下 AllObjectStructuring/faces_to_register/ 目录下。faces_to_register目录中可以存放子文件夹，照片格式必须为.jpg，且子文件夹名称必须为英文字符。如果不需要接入特征检索功能，此步骤可忽略。
 
