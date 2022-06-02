@@ -39,8 +39,8 @@ SAMPLE_FOLDER=(
     FairMOT/
     UltraFastLaneDetection/
     VehicleIdentification/
-    VehicleRetrogradeRecognition/
     PassengerflowEstimation/
+    VehicleRetrogradeRecognition/
     Collision/
 )
 
