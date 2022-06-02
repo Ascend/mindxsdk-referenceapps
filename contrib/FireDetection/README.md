@@ -92,7 +92,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 - **步骤2** 在原开源项目中将`pt`文件转换为`onnx`文件，在`fire-smoke-detect-yolov4\yolov5`目录下执行
 
   ```bash
-  python3.9.2 /model/export.py --weights ./best.pt
+  python3.9.2 /models/export.py --weights ./best.pt
   ```
 
   运行结果：生成`best.onnx`文件。
@@ -109,18 +109,18 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 - **步骤4** Slice算子处理
 
-  利用`FireDetection\model`目录下的脚本`modify_yolov5s_slice.py`修改模型Slice算子
+  移动上一步生成的`best_s.onnx`文件至`FireDetection\model`，并使用该目录下的脚本`modify_yolov5s_slice.py`修改模型Slice算子
 
   ```bash
-  python3.9.2 /model/modify_yolov5s_slice.py best_s.onnx
+  python3.9.2 modify_yolov5s_slice.py best_s.onnx
   ```
 
   运行结果：生成`best_s_t.onnx`文件。
 
-- **步骤5** 将`best_s_t.onnx`文件移动至`FireDetection/model`目录下，然后运行model目录下的`atc.sh`
+- **步骤5** 将`best_s_t.onnx`文件重命名为`firedetection.onnx`，然后运行当前目录`FireDetection\model`下的`atc.sh`
 
   ```bash
-  bash /model/atc.sh
+  bash atc.sh
   ```
 
   执行该命令后会在当前文件夹下生成项目需要的模型文件
@@ -152,7 +152,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 - **步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
-- **步骤2** 按照第 4 小节 **模型转换** 中的步骤获得 `om` 模型文件，放置在 `FireDetection/models` 目录下。
+- **步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 `om` 模型文件，放置在 `FireDetection/model` 目录下。
 - **步骤3** 修改`fire_v.pipline`中`mxpi_modelinfer0`中`postProcessLibPath`的值`${SDK安装路径}`为 MindX SDK 的安装路径
 
 - **步骤4** 运行。进入 `FireDetection` 目录，在 `FireDetection` 目录下执行命令：

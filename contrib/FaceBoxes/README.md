@@ -224,7 +224,7 @@ export MX_SDK_HOME=${CUR_PATH}/../../..
 
 ```bash
 chmod +x run.sh
-./run.sh
+bash run.sh
 ```
 
 
