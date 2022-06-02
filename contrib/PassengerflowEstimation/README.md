@@ -183,6 +183,7 @@ aipp_op{
         },
 ```
 
+在mxpi_objectpostprocessor0插件中，修改postProcessLibPath中的路径为自己libyolov3postprocess.so文件路径。
 ## 6编译与运行
 
 ### 步骤1
@@ -214,7 +215,7 @@ aipp_op{
             },
 ```
 
-这里点$(x_0,y_0)$与$(x_1,y_1)$确定了一条线段，这个插件统计经过该线段的客流量。
+这里点$(x_0,y_0)$与$(x_1,y_1)$确定了一条线段，这个插件统计经过该线段的客流量。修改mxpi_objectpostprocessor0插件中的postProcessLibPath为自己当前的libyolov3postprocess.so路径。
 
 ### 步骤4 编译
 
