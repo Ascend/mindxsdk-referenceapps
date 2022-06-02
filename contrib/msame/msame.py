@@ -69,6 +69,14 @@ def infer(saves):
     types_input = str(m.input_dtype[0])
     multi = 1
     f = []
+    for mk in args.input:
+        if os.path.isdir(mk):
+            continue
+        elif os.path.isfile(mk):
+            continue
+        else:
+            print("Error: file doesn't exit")
+            sys.exit(0)
     if len(m.input_shape) == 1:
         print(m.input_shape)
         if os.path.isdir(args.input):
@@ -123,16 +131,18 @@ def get_input_num(m, input_type):
             inputsize[index] *= k
         index += 1
     types_input = str(m.input_dtype[0])
-    t = []
     files_name = []
     tis = []
+    t = []
     if args.input == '':
         for i in inputsize:
             try:
-                t.append(np.zeros(i, type_map[types_input]))
+                tas = []
+                tas.append(np.zeros(i, type_map[types_input]))
+                t.append(tas)
             except KeyError:
                 print("KeyError")
-        tis.append(t)
+        tis.extend(t)
     else:
         binfile = args.input
         all_names = []
@@ -172,18 +182,11 @@ def t_save(path, m, t, saves, types_output):
         if len(t) != len(m.input_shape):
             print("Error : Please check the input shape and input dtype")
             sys.exit(0)
-        if args.input == '':
-            tim = []
-            for bs in t[0]:
-                bs = sdk.Tensor(bs)
-                bs.to_device(0)
-                tim.append(bs)
-        else:
-            tim = []
-            for bs in t:
-                bs = sdk.Tensor(bs[0])
-                bs.to_device(0)
-                tim.append(bs)
+        tim = []
+        for bs in t:
+            bs = sdk.Tensor(bs[0])
+            bs.to_device(0)
+            tim.append(bs)
     last_time = time.time()
     outputs = m.infer(tim)
     now_time = time.time()
@@ -230,7 +233,7 @@ def get_files(binfile):
     all_name = []
     if os.path.isdir(binfile):
         for s in os.listdir(binfile):
-            all_name.append(s)
+            all_name.append(binfile + '/' + s)
     elif os.path.isfile(binfile):
         all_name.append(binfile)
     return all_name
