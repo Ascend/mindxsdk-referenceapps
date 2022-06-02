@@ -21,6 +21,7 @@
 #include <glob.h>
 #include <string>
 #include <sys/stat.h>
+#include<set>
 namespace {
 const uint32_t YUV_BYTES_NU = 3;
 const uint32_t YUV_BYTES_DE = 2;
@@ -29,12 +30,14 @@ const uint32_t YUV_BYTES_DE = 2;
 // Read the information in the file
 static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
 {
-    int findIndex1 = filePath.rfind(".");
-    std::string fileFormat = filePath.substr(findIndex1+1);
-    if (fileFormat!="jpg") {
-        LogError << "Only jpg format is supported. But get (" << fileFormat << ").";
-        return APP_ERR_COMM_READ_FAIL;
-    }
+  int findIndex1 = filePath.rfind(".");
+  std::string fileFormat = filePath.substr(findIndex1+1);
+  std::set<std::string> supportedFormats {"JPG", "jpg", "JPEG", "jpeg"};
+  if (supportedFormats.count(fileFormat) == 0) {
+    LogError << "Only jpg format is supported. But get (" << fileFormat << ").";
+    return APP_ERR_COMM_READ_FAIL;
+  }
+
     char c[PATH_MAX] = {0x00};
     size_t count = filePath.copy(c, PATH_MAX);
     if (count != filePath.length()) {
