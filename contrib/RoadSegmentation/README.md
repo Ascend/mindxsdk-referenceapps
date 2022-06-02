@@ -1,112 +1,138 @@
-# Â·Ãæ·Ö¸î
-## 1. ¼ò½é
-±¾ÑùÀı»ùÓÚMindX SDKÊµÏÖÁË¶Ëµ½¶ËµÄÂ·Ãæ·Ö¸î¹¦ÄÜ£¬Ö÷Òª²ÉÓÃÁËUnetÄ£ĞÍ¶ÔÊäÈëµÄÂ·ÃæÍ¼Æ¬½øĞĞÓïÒå·Ö¸î£¬Êä³ömaskÑÚÄ¤£¬È»ºóÓëÔ­Í¼½áºÏ£¬Éú³É±ê×¢³öÂ·ÃæµÄ¿ÉÊÓ»¯½á¹û¡£
-## 2. Ä¿Â¼½á¹¹
+ï»¿# è·¯é¢åˆ†å‰²
+## 1. ç®€ä»‹
+æœ¬æ ·ä¾‹åŸºäºMindX SDKå®ç°äº†ç«¯åˆ°ç«¯çš„è·¯é¢åˆ†å‰²åŠŸèƒ½ï¼Œä¸»è¦é‡‡ç”¨äº†Unetæ¨¡å‹å¯¹è¾“å…¥çš„è·¯é¢å›¾ç‰‡è¿›è¡Œè¯­ä¹‰åˆ†å‰²ï¼Œè¾“å‡ºmaskæ©è†œï¼Œç„¶åä¸åŸå›¾ç»“åˆï¼Œç”Ÿæˆè·¯é¢è¯­ä¹‰åˆ†å‰²åçš„å¯è§†åŒ–ç»“æœã€‚
+## 2. ç›®å½•ç»“æ„
 ```
-©À©¤©¤ config #ÅäÖÃÎÄ¼şÄ¿Â¼
-©¦   ©¸©¤©¤ aipp_road_segmentation.config
-©À©¤©¤ model  #Ä£ĞÍÄ¿Â¼
-©¦ 	©¸©¤©¤Road.onnx 
-©À©¤©¤ pipeline
-©¦   ©¸©¤©¤ road.pipeline
-©À©¤©¤ plugin #ºó´¦Àí²å¼şÄ¿Â¼
-©¦ 	©¸©¤©¤RoadSegPostProcess
-©¦		©À©¤©¤ build
-©¦		©À©¤©¤ build.sh  #±àÒë½Å±¾
-©¦		©À©¤©¤ lib 
-©¦		©¦     ©¸©¤©¤plugins #±àÒëºÃµÄ²å¼ş´æ·ÅÎ»ÖÃ
-©¦ 		©À©¤©¤ CMakeLists.txt
-©¦   		©À©¤©¤ MxpiRoadSegPostProcess.cpp
-©¦  		©¸©¤©¤ MxpiRoadSegPostProcess.cpp.h
-©À©¤©¤ main.py
-©À©¤©¤ README.md
-©À©¤©¤ build.sh
-©¸©¤©¤ run.sh
+â”œâ”€â”€ config #é…ç½®æ–‡ä»¶ç›®å½•
+â”‚   â””â”€â”€ aipp_road_segmentation.config
+â”œâ”€â”€ model  #æ¨¡å‹ç›®å½•
+â”‚	â””â”€â”€  Road.onnx
+â”‚   â””â”€â”€  road_segmentation.om
+â”‚  	â””â”€â”€  pt2onnx.py  
+â”œâ”€â”€ pipeline
+â”‚   â””â”€â”€ road.pipeline
+â”œâ”€â”€ plugin #åå¤„ç†æ’ä»¶ç›®å½•
+â”‚ 	â””â”€â”€RoadSegPostProcess
+â”‚		â”œâ”€â”€ build
+â”‚		â”œâ”€â”€ build.sh  #ç¼–è¯‘è„šæœ¬
+â”‚		â”œâ”€â”€ lib 
+â”‚		â”‚     â””â”€â”€plugins #ç¼–è¯‘å¥½çš„æ’ä»¶å­˜æ”¾ä½ç½®
+â”‚ 		â”œâ”€â”€ CMakeLists.txt
+â”‚   	â”œâ”€â”€ MxpiRoadSegPostProcess.cpp
+â”‚  		â””â”€â”€ MxpiRoadSegPostProcess.cpp.h
+â”œâ”€â”€ main.py
+â”œâ”€â”€ README.md
+â”œâ”€â”€ build.sh
+â””â”€â”€ run.sh
 ```
-## 3. ÒÀÀµ
-| Èí¼şÃû³Æ | °æ±¾   |
+## 3. ä¾èµ–
+| è½¯ä»¶åç§° | ç‰ˆæœ¬   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
 |MindX SDK|2.0.4|
 |Python|3.9.2|
+|pytorch|>= 1.5.0|
 |CANN|5.0.4|
 |C++| 11.0|
 |opencv2| |> 
 
-## 4. Ä£ĞÍ×ª»»  
-Ê¹ÓÃAscend atc¹¤¾ß½«onnxÄ£ĞÍ×ª»»ÎªomÄ£ĞÍ
+## 4. æ¨¡å‹è½¬æ¢  
+### 4.1 å¯¼å‡ºonnxæ–‡ä»¶
+  è·å–[è·¯é¢åˆ†å‰²æ¡ˆä¾‹](https://github.com/tunafatih/Road-Free-Space-Segmentation-Internship-Project)ï¼Œåœ¨æœ¬åœ°ä½¿ç”¨pt2onnx.pyæ–‡ä»¶ï¼Œå°†ptæƒé‡æ–‡ä»¶è½¬æ¢æˆonnxæ–‡ä»¶ï¼Œæˆ–å¯[ç‚¹å‡»æ­¤å¤„](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RoadSegmentation/model.zip)ä¸‹è½½è½¬æ¢å¥½çš„onnxæ–‡ä»¶ã€‚
+### 4.2 ä½¿ç”¨Ascend atcå·¥å…·å°†onnxæ¨¡å‹è½¬æ¢ä¸ºomæ¨¡å‹
+åœ¨ä½¿ç”¨[atcå·¥å…·](https://www.hiascend.com/document/detail/zh/canncommercial/504/inferapplicationdev/atctool)ä¹‹å‰éœ€é…ç½®ç¯å¢ƒ
 ```
-# CANN°²×°Ä¿Â¼
+# CANNå®‰è£…ç›®å½•
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
 export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
 export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest
-
-# ÔÚ ÑùÀı/modelÄ¿Â¼ÏÂÖ´ĞĞatc×ª»»ÃüÁî 
-atc --framework=5 --model=Road.onnx --output=road_segmentation --input_format=NCHW  --insert_op_conf=../config/aipp_road_segmentation.config --input_shape="image:1,3,224,224" --log=debug --soc_version=Ascend310  
 ```
-Èô³öÏÖÒÔÏÂĞÅÏ¢£¬Ôò×ª»»³É¹¦
+ä¹‹åå°†4.1èŠ‚ä¸­å¯¼å‡ºçš„onnxæ–‡ä»¶ä¸Šä¼ è‡³```./model```ç›®å½•ä¸‹ï¼Œåœ¨è¯¥ç›®å½•ä¸‹æ‰§è¡Œ
+```
+atc --framework=5 --model=Road.onnx --output=road_segmentation --input_format=NCHW  --insert_op_conf=aipp_road_segmentation.config --input_shape="image:1,3,224,224" --log=debug --soc_version=Ascend310  
+```
+è‹¥å‡ºç°ä»¥ä¸‹ä¿¡æ¯ï¼Œåˆ™è½¬æ¢æˆåŠŸ
 ```
 ATC run success
 ```
-## 5. ÍÆÀí
-### 5.1 ÅäÖÃMindX SDK»·¾³±äÁ¿
+## 5. æ¨ç†
+### 5.1 é…ç½®MindX SDKç¯å¢ƒå˜é‡
 ```
-export MX_SDK_HOME=${SDK°²×°Â·¾¶}
+export MX_SDK_HOME=${SDKå®‰è£…è·¯å¾„}
 export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/MindX_SDK/mxVision/lib/plugins
+export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:/home/weifeng1/MindX_SDK/mxVision/lib/plugins
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
 
-#²é¿´»·¾³±äÁ¿
+#æŸ¥çœ‹ç¯å¢ƒå˜é‡
 env
 ```
-### 5.2 ±àÒëºó´¦Àí²å¼ş
+### 5.2 ç¼–è¯‘åå¤„ç†æ’ä»¶
+åœ¨æ ·ä¾‹ç›®å½•ä¸‹æ‰§è¡Œ
 ```
-ÔÚpluginÄ¿Â¼ÏÂ
+./build.sh
+```
+æˆ–åœ¨RoadSegPostProcessç›®å½•ä¸‹æ‰§è¡Œ
+```
 mkdir build
 cd build
 cmake ..
 make -j
+#ä¹‹åå¯ä»¥åœ¨ æ ·ä¾‹/plugin/lib/pluginsç›®å½•ä¸‹çœ‹åˆ°ç¼–è¯‘å¥½çš„.soæ’ä»¶
+#è¿›å…¥/plugin/lib/pluginsç›®å½•
+chmod 640 *.so #ä¿®æ”¹æƒé™
+ç„¶åç¼–è¯‘å¥½çš„æ’ä»¶ç§»åŠ¨åˆ°${SDKå®‰è£…è·¯å¾„}/lib/pluginsç›®å½•ä¸‹
 ```
-Ö®ºó¿ÉÒÔÔÚ ÑùÀı/plugin/lib/pluginsÄ¿Â¼ÏÂ¿´µ½±àÒëºÃµÄ.so²å¼ş
+### 5.3 é…ç½®pipeline
+æ ¹æ®æ‰€éœ€åœºæ™¯ï¼Œé…ç½®pipelineæ–‡ä»¶ï¼Œè°ƒæ•´è·¯å¾„å‚æ•°ç­‰ã€‚
 ```
-#½øÈë¸ÃÄ¿Â¼
-chmod 640 *.so #ĞŞ¸ÄÈ¨ÏŞ
-```
-È»ºóÆäÒÆ¶¯µ½${SDK°²×°Â·¾¶}/lib/pluginsÄ¿Â¼ÏÂ
-
-### 5.3 ÅäÖÃpipeline
-¸ù¾İËùĞè³¡¾°£¬ÅäÖÃpipelineÎÄ¼ş£¬µ÷ÕûÂ·¾¶²ÎÊıµÈ¡£
-```
-  #ÅäÖÃmxpi_tensorinfer²å¼şµÄÄ£ĞÍ¼ÓÔØÂ·¾¶£º modelPath
+  #é…ç½®mxpi_tensorinferæ’ä»¶çš„æ¨¡å‹åŠ è½½è·¯å¾„ï¼š modelPath
   "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "${road_segmentation.omÄ£ĞÍÂ·¾¶}"
+                "modelPath": "${road_segmentation.omæ¨¡å‹è·¯å¾„}"
             },
             "factory": "mxpi_tensorinfer",
             "next": "appsink0"
         },
-	#ÅäÖÃ¿ÉÊÓ»¯½á¹ûÊä³öÂ·¾¶£ºlocation
+	#é…ç½®å¯è§†åŒ–ç»“æœè¾“å‡ºè·¯å¾„ï¼šlocation
 	"appsink0": {
             "props": {
                 "blocksize": "4096000",
-	"location":"${Êä³ö½á¹ûÎÄ¼şÃû}" 
+				"location":"${è¾“å‡ºç»“æœæ–‡ä»¶å}" 
             },
             "factory": "filesink"
         }
 ```
-### 5.4 ¸ü¸ÄÍ¼Æ¬
-¿ÉĞŞ¸Ämain.pyÎÄ¼şÖĞµÄfilepathµÄ±äÁ¿Öµ½«Æä¸ÄÎª²âÊÔÍ¼Æ¬µÄµØÖ·
-### 5.5 Êä³ö½á¹û
+### 5.4 æ›´æ”¹å›¾ç‰‡
+å¯ä¿®æ”¹main.pyæ–‡ä»¶ä¸­çš„FILE_PATHçš„å˜é‡å€¼å°†å…¶æ”¹ä¸ºæµ‹è¯•å›¾ç‰‡çš„åœ°å€
+### 5.5 è¾“å‡ºç»“æœ
+åœ¨æ ·ä¾‹ç›®å½•ä¸‹æ‰§è¡Œ
 ```
-#ÔÚÑùÀıÄ¿Â¼ÏÂÖ´ĞĞ
 python3.9 main.py
 ```
-¿É¿´µ½Â·Ãæ·Ö¸î¿ÉÊÓ»¯½á¹û 
+æˆ–
+```
+./run.sh
+```
+å¯çœ‹åˆ°è·¯é¢åˆ†å‰²å¯è§†åŒ–ç»“æœ 
+## 6 ç»“æœå±•ç¤º
+![åœ¨è¿™é‡Œæ’å…¥å›¾ç‰‡æè¿°](https://img-blog.csdnimg.cn/3a07ceda71b9402b88cfd38a9e033622.png)
+![åœ¨è¿™é‡Œæ’å…¥å›¾ç‰‡æè¿°](https://img-blog.csdnimg.cn/701e66974ec8460091ba7ee96426423c.png)
+
+
+
+## 7 çº¦æŸé™åˆ¶
+è¾“å…¥å›¾ç‰‡çš„å®½é«˜é¡»æ˜¯å¶æ•°ä¸”å›¾ç‰‡åªæ”¯æŒHuffmanç¼–ç ï¼Œ[imagedecoderæ’ä»¶ä»‹ç»](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0115.html)å’Œ[imageencoderæ’ä»¶ä»‹ç»](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0120.html)
+![åœ¨è¿™é‡Œæ’å…¥å›¾ç‰‡æè¿°](https://img-blog.csdnimg.cn/a90335b846484d76992d07473c1dea3d.png)
+![åœ¨è¿™é‡Œæ’å…¥å›¾ç‰‡æè¿°](https://img-blog.csdnimg.cn/93b777389c4743b9a2783ae6e4070b31.png)
+
+
+
+
 
 
 

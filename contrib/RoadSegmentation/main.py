@@ -1,5 +1,5 @@
 """
-Copyright 2020 Huawei Technologies Co., Ltd
+Copyright 2021 Huawei Technologies Co., Ltd
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+import cv2
+import numpy as np
+from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import MxpiDataType_pb2 as MxpiDataType
-import numpy as np
-import cv2
-import os
-from PIL import Image
 
 if __name__ == '__main__':
     # init stream manager
@@ -38,45 +38,45 @@ if __name__ == '__main__':
         exit()
 
     # Construct the input of the stream & check the input image
-    min_image_size = 32
-    max_image_size = 8192
+    MIN_IMAGE_SIZE = 32
+    MAX_IMAGE_SIZE = 8192
     dataInput = MxDataInput()
-    filepath = "4.jpg"
-    if os.path.exists(filepath) != 1:
+    FILE_PATH = "4.jpg"
+    if os.path.exists(FILE_PATH) != 1:
         print("Failed to get the input picture. Please check it!")
         streamManagerApi.DestroyAllStreams()
         exit()
     else:
         try:
-            image = Image.open(filepath)
+            image = Image.open(FILE_PATH)
             if image.format != 'JPEG':
                 print('input image only support jpg, curr format is {}.'.format(image.format))
                 streamManagerApi.DestroyAllStreams()
                 exit()
-            elif image.width < min_image_size or image.width > max_image_size:
+            elif image.width < MIN_IMAGE_SIZE or image.width > MAX_IMAGE_SIZE:
                 print('input image width must in range [{}, {}], curr width is {}.'.format(
-                    min_image_size, max_image_size, image.width))
+                    MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.width))
                 streamManagerApi.DestroyAllStreams()
                 exit()
-            elif image.height < min_image_size or image.height > max_image_size:
+            elif image.height < MIN_IMAGE_SIZE or image.height > MAX_IMAGE_SIZE:
                 print('input image height must in range [{}, {}], curr height is {}.'.format(
-                    min_image_size, max_image_size, image.height))
+                    MIN_IMAGE_SIZE, MAX_IMAGE_SIZE, image.height))
                 streamManagerApi.DestroyAllStreams()
                 exit()
             else:
-                input_valid = True
+                INPUT_VALID = True
                 # read input image
-                with open(filepath, 'rb') as f:
+                with open(FILE_PATH, 'rb') as f:
                     dataInput.data = f.read()
         except IOError:
-            print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(filepath))
+            print('an IOError occurred while opening {}, maybe your input is not a picture.'.format(FILE_PATH))
             streamManagerApi.DestroyAllStreams()
             exit()
 
-    # Inputs data to a specified stream based on streamName.
-    streamName = b'segment'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    # Inputs data to a specified stream based on STREAM_NAME.
+    STREAM_NAME = b'segment'
+    INPLUGIN_ID = 0
+    uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
