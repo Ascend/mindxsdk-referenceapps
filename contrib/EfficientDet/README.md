@@ -111,6 +111,7 @@ EfficientDet 的后处理插件接收模型推理插件输出的两个特征图�
 | cmake    | 3.5+   |
 | mxVision | 2.0.4  |
 | python   | 3.9.2  |
+| webcolors| 1.11.1 |
 
 确保环境中正确安装mxVision SDK。
 
@@ -141,8 +142,8 @@ PYTHONPATH: python环境路径
 1. 从上述 onnx 模型下载链接中下载 onnx 模型 simplified-efficient-det-d0-mindxsdk-order.onnx 和 simplified-efficient-det-d6-mindxsdk-order.onnx 至 ``python/models/onnx-models`` 文件夹下。
 2. 进入 ``python/models/conversion-scripts`` 文件夹下依次执行命令：
 ```
-bash model_convertion_d0.sh
-bash model_convertion_d6.sh
+bash model_conversion_d0.sh
+bash model_conversion_d6.sh
 ```
 执行后会在当前文件夹下生成项目需要的模型文件 efficient-det-d0-mindxsdk-order.om 和 efficient-det-d6-mindxsdk-order.om，转换成功的终端输出为：
 ```
@@ -316,3 +317,12 @@ python3 evaluate.py --pipeline=pipeline/EfficientDet-d0-previous-version.pipelin
 **解决方案：**
 
 检测 main.py 和 evaluate.py 里所用的 pipeline 文件, 将文件中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值。
+
+### 5.3 未修改模型文件或生成so的权限
+SDK对运行库so和模型文件有要求，如出现以下报错提示请参考FASQ中相关内容使用chmod指定权限640
+```shell
+Check Owner permission failed: Current permission is 7, but required no greater than 6.
+```
+
+**解决方案：**  
+cd到对应目录并指定相关文件权限为640
