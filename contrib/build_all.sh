@@ -38,10 +38,10 @@ SAMPLE_FOLDER=(
     # RotateObjectDetection/
     FairMOT/
     UltraFastLaneDetection/
-    PassengerflowEstimation
     VehicleIdentification/
     VehicleRetrogradeRecognition/
     Collision/
+    PassengerflowEstimation/
 )
 
 
