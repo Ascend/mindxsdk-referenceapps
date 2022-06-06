@@ -300,10 +300,12 @@ int main(int argc, char *argv[]) {
     LogError << "Fail to detect face.";
     int findIndex1 = fileName.rfind("/");
     int findIndex2 = fileName.rfind(".");
-    std::string fileNameNew = fileName.substr(findIndex1, findIndex2-findIndex1);
-    MkdirRecursive("./result");
-    std::string desFile = "./result/"+fileNameNew+"_result.jpg";
-    CopyFile(fileName, desFile);
+    if (ret == APP_ERR_MXPLUGINS_METADATA_IS_NULL) {
+      std::string fileNameNew = fileName.substr(findIndex1, findIndex2-findIndex1);
+      MkdirRecursive("./result");
+      std::string desFile = "./result/"+fileNameNew+"_result.jpg";
+      CopyFile(fileName, desFile);
+    }
     return ret;
   }
 

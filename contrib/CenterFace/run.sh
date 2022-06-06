@@ -72,7 +72,7 @@ else
           if test -f $file
           then
             echo $file
-            ./Main $file
+            ./Main $file || true
           fi
       done
     else
