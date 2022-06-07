@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef OFFICIAL_CV_CENTERFACE_INFER_MXBASE_MXCENTERFACEPOSTPROCESSOR_H_
-#define OFFICIAL_CV_CENTERFACE_INFER_MXBASE_MXCENTERFACEPOSTPROCESSOR_H_
+#ifndef CENTERFACEKEYPOINT_POSTPROCESSOR_H_
+#define CENTERFACEKEYPOINT_POSTPROCESSOR_H_
+#include <vector>
+#include <string>
 #include <map>
 #include <memory>
-#include <string>
-#include <vector>
-
-#include "MxBase/Log/Log.h"
+#include "MxBase/PostProcessBases/KeypointPostProcessBase.h"
 #include "MxBase/ModelPostProcessors/ModelPostProcessorBase/ObjectPostDataType.h"
-#include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
+#include "MxBase/Log/Log.h"
 struct FaceInfo {
   float x1;
   float y1;
@@ -32,33 +31,40 @@ struct FaceInfo {
   float score;
   float landmarks[10];
 };
+
 namespace MxBase {
-class MxCenterfacePostProcessor : public MxBase::ObjectPostProcessBase {
+class CenterfaceKeyPointPostProcessor
+    : public MxBase::KeypointPostProcessBase {
 public:
   APP_ERROR
   Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 
-  /*
-   * @description: Do nothing temporarily.
-   * @return APP_ERROR error code.
-   */
   APP_ERROR DeInit() override {
-    // do nothing for this derived class
     return APP_ERR_OK;
   }
 
   APP_ERROR
   Process(const std::vector<MxBase::TensorBase> &tensors,
-          std::vector<std::vector<MxBase::ObjectInfo>> &objectInfos,
-          const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos = {},
-          const std::map<std::string, std::shared_ptr<void>> &configParamMap =
-              {}) override;
+          std::vector<std::vector<KeyPointDetectionInfo>> &keyPointInfos,
+          const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos,
+          const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+      override;
 
   APP_ERROR Process(std::vector<void *> &featLayerData,
-                    std::vector<MxBase::ObjectInfo> &objInfos,
+                    std::vector<KeyPointDetectionInfo> &keyPointInfos,
                     const MxBase::ResizedImageInfo &resizeInfo);
   APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
-              const ImageInfo &imgInfo);
+                   const ImageInfo &imgInfo);
+
+private:
+  void nms(std::vector<FaceInfo> &vec_boxs, unsigned int method = 1, float sigma = 0.5);
+  APP_ERROR decode(float *heatmap, float *scale, float *offset, float *landmarks,
+                   std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
+  std::vector<int> getIds(float *heatmap, int h, int w);
+  float GetNmsWeight(float iou, float sigma, int method);
+  float GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps);
+  void squareBox(std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
+  APP_ERROR ReadConfigParams();
 
 private:
   enum NmsMethod { LINEAR = 1, GAUSSIAN = 2, ORIGINAL_NMX = 3 };
@@ -71,21 +77,11 @@ private:
   // IOU thresh hold
   float nmsThresh_ = 0.4;
   int nmsMethod = 1;
-
-private:
-  void nms(std::vector<FaceInfo> &vec_boxs, unsigned int method = 1, float sigma = 0.5);
-  APP_ERROR decode(float *heatmap, float *scale, float *offset, float *landmarks,
-              std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
-  std::vector<int> getIds(float *heatmap, int h, int w);
-  float GetNmsWeight(float iou, float sigma, int method);
-  float GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps);
-  void squareBox(std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
-  APP_ERROR ReadConfigParams();
 };
 
 extern "C" {
-std::shared_ptr<MxBase::MxCenterfacePostProcessor> GetObjectInstance();
+std::shared_ptr<MxBase::CenterfaceKeyPointPostProcessor> GetKeypointInstance();
 }
 } // namespace MxBase
 
-#endif // OFFICIAL_CV_CENTERFACE_INFER_MXBASE_MXCENTERFACEPOSTPROCESSOR_H_
+#endif // CENTERFACEKEYPOINT_POSTPROCESSOR_H_

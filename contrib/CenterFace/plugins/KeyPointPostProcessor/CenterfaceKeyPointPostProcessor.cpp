@@ -12,37 +12,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "MxCenterfacePostProcessor.h"
+#include "CenterfaceKeyPointPostProcessor.h"
 
+#include <MxBase/Maths/FastMath.h>
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "MxBase/CV/ObjectDetection/Nms/Nms.h"
-#include <MxBase/Maths/FastMath.h>
-#include <iostream>
 using namespace std;
 namespace MxBase {
-APP_ERROR MxCenterfacePostProcessor::Init(
+APP_ERROR CenterfaceKeyPointPostProcessor::Init(
     const std::map<std::string, std::shared_ptr<void>> &postConfig) {
-  APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
+  APP_ERROR ret = KeypointPostProcessBase::Init(postConfig);
   if (ret != APP_ERR_OK) {
-    LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
+    LogError << GetError(ret) << "Fail to superInit in KeypointPostProcessBase.";
     return ret;
   }
   ReadConfigParams();
-  LogDebug << "End to Init MxCenterfacePostProcessor";
+  LogDebug << "End to Init CenterfaceKeyPointPostProcessor";
   return APP_ERR_OK;
 }
 
-APP_ERROR MxCenterfacePostProcessor::Process(
+APP_ERROR CenterfaceKeyPointPostProcessor::Process(
     const std::vector<MxBase::TensorBase> &tensors,
-    std::vector<std::vector<MxBase::ObjectInfo>> &objectInfos,
+    std::vector<std::vector<KeyPointDetectionInfo>> &keyPointInfos,
     const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos,
     const std::map<std::string, std::shared_ptr<void>> &configParamMap) {
-  LogDebug << "Start to Process MxCenterfacePostProcessor ...";
+  LogDebug << "Start to Process CenterfaceKeyPointPostProcessor ...";
   auto outputs = tensors;
   APP_ERROR ret = CheckAndMoveTensors(outputs);
   if (ret != APP_ERR_OK) {
@@ -56,7 +55,7 @@ APP_ERROR MxCenterfacePostProcessor::Process(
   MxBase::ResizedImageInfo resizeImgInfo;
 
   for (size_t i = 0; i < batch_size; i++) {
-    std::vector<MxBase::ObjectInfo> objInfo;
+    std::vector<MxBase::KeyPointDetectionInfo> keyPointInfo;
     featLayerData.reserve(tensors.size());
     std::transform(tensors.begin(), tensors.end(), featLayerData.begin(),
                    [batch_size, i](MxBase::TensorBase tensor) -> void * {
@@ -65,20 +64,20 @@ APP_ERROR MxCenterfacePostProcessor::Process(
                          tensor.GetSize() / batch_size * i);
                    });
     resizeImgInfo = resizedImageInfos[i];
-    ret = this->Process(featLayerData, objInfo, resizeImgInfo);
+    ret = this->Process(featLayerData, keyPointInfo, resizeImgInfo);
     if (ret != APP_ERR_OK) {
       LogError << "Postprocessing failed:" << ret;
       return ret;
     }
-    objectInfos.push_back(objInfo);
+    keyPointInfos.push_back(keyPointInfo);
   }
-
   return APP_ERR_OK;
 }
 
-APP_ERROR MxCenterfacePostProcessor::Process(std::vector<void *> &featLayerData,
-                                             std::vector<MxBase::ObjectInfo> &objInfos,
-                                             const MxBase::ResizedImageInfo &resizeInfo) {
+APP_ERROR CenterfaceKeyPointPostProcessor::Process(
+    std::vector<void *> &featLayerData,
+    std::vector<KeyPointDetectionInfo> &keyPointInfos,
+    const MxBase::ResizedImageInfo &resizeInfo) {
   ImageInfo imageInfo;
   imageInfo.modelWidth = resizeInfo.widthResize;
   imageInfo.modelHeight = resizeInfo.heightResize;
@@ -92,28 +91,29 @@ APP_ERROR MxCenterfacePostProcessor::Process(std::vector<void *> &featLayerData,
     LogInfo << GetError(ret) << "fail to detect  face.";
     return ret;
   }
+  int keyPointNums = 5;
   for (int i = 0; i < faces.size(); i++) {
-    MxBase::ObjectInfo objectInfo;
-    objectInfo.x0 = faces[i].x1;
-    objectInfo.x1 = faces[i].x2;
-    objectInfo.y0 = faces[i].y1;
-    objectInfo.y1 = faces[i].y2;
-    objectInfo.confidence = faces[i].score;
-    objInfos.push_back(objectInfo);
+    MxBase::KeyPointDetectionInfo keypointInfo;
+    for (int j = 0; j < keyPointNums; j++) {
+      vector<float> temp = {faces[i].landmarks[2 * j],
+                            faces[i].landmarks[2 * j + 1]};
+      keypointInfo.keyPointMap[j] = temp;
+    }
+    keyPointInfos.push_back(keypointInfo);
   }
   return APP_ERR_OK;
 }
 
-APP_ERROR MxCenterfacePostProcessor::ReadConfigParams() {
+APP_ERROR CenterfaceKeyPointPostProcessor::ReadConfigParams() {
   configData_.GetFileValue<float>("SCORE_THRESH", scoreThresh_);
   configData_.GetFileValue<float>("IOU_THRESH", nmsThresh_);
   configData_.GetFileValue<int>("NMS_METHOD", nmsMethod);
   return APP_ERR_OK;
 }
 
-APP_ERROR MxCenterfacePostProcessor::detect(std::vector<void *> &featLayerData,
-                                            std::vector<FaceInfo> &faces,
-                                            const ImageInfo &imgInfo) {
+APP_ERROR CenterfaceKeyPointPostProcessor::detect(std::vector<void *> &featLayerData,
+                                                std::vector<FaceInfo> &faces,
+                                                const ImageInfo &imgInfo) {
   scale_w = (float)imgInfo.imgWidth / (float)imgInfo.modelWidth;
   scale_h = (float)imgInfo.imgHeight / (float)imgInfo.modelHeight;
   int hotMapIndex = 0;
@@ -132,10 +132,10 @@ APP_ERROR MxCenterfacePostProcessor::detect(std::vector<void *> &featLayerData,
   return APP_ERR_OK;
 }
 
-APP_ERROR MxCenterfacePostProcessor::decode(float *heatmap, float *scale,
-                                            float *offset, float *landmarks,
-                                            std::vector<FaceInfo> &faces,
-                                            const ImageInfo &imageinfo) {
+APP_ERROR CenterfaceKeyPointPostProcessor::decode(float *heatmap, float *scale,
+                                                float *offset, float *landmarks,
+                                                std::vector<FaceInfo> &faces,
+                                                const ImageInfo &imageinfo) {
   int spacial_size = modelHeight_ * modelWidth_;
 
   float *heatmap_ = heatmap;
@@ -210,7 +210,7 @@ APP_ERROR MxCenterfacePostProcessor::decode(float *heatmap, float *scale,
   return APP_ERR_OK;
 }
 
-std::vector<int> MxCenterfacePostProcessor::getIds(float *heatmap, int h, int w) {
+std::vector<int> CenterfaceKeyPointPostProcessor::getIds(float *heatmap, int h, int w) {
   std::vector<int> ids;
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
@@ -223,8 +223,8 @@ std::vector<int> MxCenterfacePostProcessor::getIds(float *heatmap, int h, int w)
   return ids;
 }
 
-void MxCenterfacePostProcessor::squareBox(std::vector<FaceInfo> &faces,
-                                          const ImageInfo &imageinfo) {
+void CenterfaceKeyPointPostProcessor::squareBox(std::vector<FaceInfo> &faces,
+                                              const ImageInfo &imageinfo) {
   float w = 0, h = 0, maxSize = 0;
   float cenx = 0, ceny = 0;
   for (int i = 0; i < faces.size(); i++) {
@@ -237,14 +237,14 @@ void MxCenterfacePostProcessor::squareBox(std::vector<FaceInfo> &faces,
     faces[i].x1 = std::max(cenx - maxSize / SCALE_FACTOR, 0.f);
     faces[i].y1 = std::max(ceny - maxSize / SCALE_FACTOR, 0.f);
     faces[i].x2 =
-        std::min(cenx + maxSize / SCALE_FACTOR, imageinfo.imgWidth - 1.f);
+            std::min(cenx + maxSize / SCALE_FACTOR, imageinfo.imgWidth - 1.f);
     faces[i].y2 =
-        std::min(ceny + maxSize / SCALE_FACTOR, imageinfo.imgHeight - 1.f);
+            std::min(ceny + maxSize / SCALE_FACTOR, imageinfo.imgHeight - 1.f);
   }
 }
 
 // 根据Nms方法获取weight
-float MxCenterfacePostProcessor::GetNmsWeight(float iou, float sigma, int method) {
+float CenterfaceKeyPointPostProcessor::GetNmsWeight(float iou, float sigma, int method) {
   float weight = 0;
   if (method == NmsMethod::LINEAR) // linear
     weight = iou > nmsThresh_ ? 1 - iou : 1;
@@ -259,7 +259,7 @@ float MxCenterfacePostProcessor::GetNmsWeight(float iou, float sigma, int method
 }
 
 // 计算两个方框的IOU
-float MxCenterfacePostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps) {
+float CenterfaceKeyPointPostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps) {
   float area =
           (curr_box.x2 - curr_box.x1 + 1) * (curr_box.y2 - curr_box.y1 + 1);
   // iou between max box and detection box
@@ -269,8 +269,8 @@ float MxCenterfacePostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, f
   return iou;
 }
 
-void MxCenterfacePostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
-                                    unsigned int method, float sigma) {
+void CenterfaceKeyPointPostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
+                                        unsigned int method, float sigma) {
   int box_len = vec_boxs.size();
   for (int i = 0; i < box_len; i++) {
     FaceInfo *max_ptr = &vec_boxs[i];
@@ -312,10 +312,10 @@ void MxCenterfacePostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
 }
 
 extern "C" {
-std::shared_ptr<MxBase::MxCenterfacePostProcessor> GetObjectInstance() {
-  LogInfo << "Begin to get CenterFacePostProcess instance.";
-  auto instance = std::make_shared<MxCenterfacePostProcessor>();
-  LogInfo << "End to get CenterFacePostProcess instance.";
+std::shared_ptr<MxBase::CenterfaceKeyPointPostProcessor> GetKeypointInstance() {
+  LogInfo << "Begin to get CenterfaceKeyPointPostProcessor instance.";
+  auto instance = std::make_shared<CenterfaceKeyPointPostProcessor>();
+  LogInfo << "End to get CenterfaceKeyPointPostProcessor instance.";
   return instance;
 }
 }
