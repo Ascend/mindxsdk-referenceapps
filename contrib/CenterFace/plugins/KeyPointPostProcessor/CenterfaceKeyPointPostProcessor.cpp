@@ -14,7 +14,6 @@
  */
 #include "CenterfaceKeyPointPostProcessor.h"
 
-#include <MxBase/Maths/FastMath.h>
 #include <algorithm>
 #include <iostream>
 #include <map>
@@ -31,7 +30,9 @@ APP_ERROR CenterfaceKeyPointPostProcessor::Init(
     LogError << GetError(ret) << "Fail to superInit in KeypointPostProcessBase.";
     return ret;
   }
-  ReadConfigParams();
+  configData_.GetFileValue<float>("SCORE_THRESH", scoreThresh_);
+  configData_.GetFileValue<float>("IOU_THRESH", nmsThresh_);
+  configData_.GetFileValue<int>("NMS_METHOD", nmsMethod);
   LogDebug << "End to Init CenterfaceKeyPointPostProcessor";
   return APP_ERR_OK;
 }
@@ -104,16 +105,9 @@ APP_ERROR CenterfaceKeyPointPostProcessor::Process(
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfaceKeyPointPostProcessor::ReadConfigParams() {
-  configData_.GetFileValue<float>("SCORE_THRESH", scoreThresh_);
-  configData_.GetFileValue<float>("IOU_THRESH", nmsThresh_);
-  configData_.GetFileValue<int>("NMS_METHOD", nmsMethod);
-  return APP_ERR_OK;
-}
-
 APP_ERROR CenterfaceKeyPointPostProcessor::detect(std::vector<void *> &featLayerData,
-                                                std::vector<FaceInfo> &faces,
-                                                const ImageInfo &imgInfo) {
+                                                  std::vector<FaceInfo> &faces,
+                                                  const ImageInfo &imgInfo) {
   scale_w = (float)imgInfo.imgWidth / (float)imgInfo.modelWidth;
   scale_h = (float)imgInfo.imgHeight / (float)imgInfo.modelHeight;
   int hotMapIndex = 0;
@@ -133,9 +127,9 @@ APP_ERROR CenterfaceKeyPointPostProcessor::detect(std::vector<void *> &featLayer
 }
 
 APP_ERROR CenterfaceKeyPointPostProcessor::decode(float *heatmap, float *scale,
-                                                float *offset, float *landmarks,
-                                                std::vector<FaceInfo> &faces,
-                                                const ImageInfo &imageinfo) {
+                                                  float *offset, float *landmarks,
+                                                  std::vector<FaceInfo> &faces,
+                                                  const ImageInfo &imageinfo) {
   int spacial_size = modelHeight_ * modelWidth_;
 
   float *heatmap_ = heatmap;
@@ -224,7 +218,7 @@ std::vector<int> CenterfaceKeyPointPostProcessor::getIds(float *heatmap, int h, 
 }
 
 void CenterfaceKeyPointPostProcessor::squareBox(std::vector<FaceInfo> &faces,
-                                              const ImageInfo &imageinfo) {
+                                                const ImageInfo &imageinfo) {
   float w = 0, h = 0, maxSize = 0;
   float cenx = 0, ceny = 0;
   for (int i = 0; i < faces.size(); i++) {
@@ -270,7 +264,7 @@ float CenterfaceKeyPointPostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_
 }
 
 void CenterfaceKeyPointPostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
-                                        unsigned int method, float sigma) {
+                                          unsigned int method, float sigma) {
   int box_len = vec_boxs.size();
   for (int i = 0; i < box_len; i++) {
     FaceInfo *max_ptr = &vec_boxs[i];

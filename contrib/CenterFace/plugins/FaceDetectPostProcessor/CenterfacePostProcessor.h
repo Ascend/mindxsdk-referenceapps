@@ -48,11 +48,12 @@ public:
           const std::map<std::string, std::shared_ptr<void>> &configParamMap =
               {}) override;
 
+  APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
+                   const ImageInfo &imgInfo);
+
   APP_ERROR Process(std::vector<void *> &featLayerData,
                     std::vector<MxBase::ObjectInfo> &objInfos,
                     const MxBase::ResizedImageInfo &resizeInfo);
-  APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
-              const ImageInfo &imgInfo);
 
 private:
   enum NmsMethod { LINEAR = 1, GAUSSIAN = 2, ORIGINAL_NMX = 3 };
@@ -74,7 +75,6 @@ private:
   float GetNmsWeight(float iou, float sigma, int method);
   float GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps);
   void squareBox(std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
-  APP_ERROR ReadConfigParams();
 };
 
 extern "C" {
