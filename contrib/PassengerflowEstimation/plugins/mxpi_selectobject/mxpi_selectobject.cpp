@@ -77,13 +77,11 @@ APP_ERROR MxpiSelectObject::GenerateSampleOutput(const MxpiObjectList srcMxpiObj
 {
     for (int i = 0; i < srcMxpiObjectList.objectvec_size(); i++) {
         const char *target1 = "person";
-        const char *target2 = "car";
         const int maxArea = 160000;
         MxpiObject srcMxpiObject = srcMxpiObjectList.objectvec(i);
         MxpiClass srcMxpiClass = srcMxpiObject.classvec(0);
         int Area = abs(srcMxpiObject.x0() - srcMxpiObject.x1()) * abs(srcMxpiObject.y0() - srcMxpiObject.y1());
-        if ((!strcmp(srcMxpiClass.classname().c_str(), target1) || !strcmp(srcMxpiClass.classname().c_str(), target2))
-        && Area < maxArea) {
+        if ((!strcmp(srcMxpiClass.classname().c_str(), target1)) && Area < maxArea) {
             MxpiObject* dstMxpiObject = dstMxpiObjectList.add_objectvec();
             dstMxpiObject->set_x0(srcMxpiObject.x0());
             dstMxpiObject->set_y0(srcMxpiObject.y0());
