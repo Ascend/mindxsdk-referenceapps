@@ -24,8 +24,8 @@ namespace {
     const uint32_t RIGHTTOPY = 3;
     const int PRIOR_PARAMETERS[4][3] = {{10, 16, 24}, {32, 48, -1}, {64, 96, -1}, {128, 192, 256}};
     const int PRIOR_PARAMETERS_COUNT = 3;
-    const float IMAGE_WIDTH = 1920.0;
-    const float IMAGE_HEIGHT = 1080.0;
+    const float IMAGE_WIDTH = 160.0;
+    const float IMAGE_HEIGHT = 120.0;
     const float STEPS[4] = {8.0, 16.0, 32.0, 64.0};
     const float VARIANCE[2] = {0.1, 0.2};
     const uint32_t RECTANGLEPOINT = 4;
@@ -120,23 +120,31 @@ namespace MxBase {
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = RECTANGLE_COLOR;
+                    objInfo.classId = j;
                     
-                    kpInfo.score = conf;
-                    for (int k = 0; k < KEYPOINTNUM; k++)
-                    {
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTANGLEPOINT + k * DIM) * IMAGE_WIDTH / width_resize_scale);
-                        kpInfo.keyPointMap[k].push_back(res.at<float>(j, RECTANGLEPOINT + k * DIM + 1) * IMAGE_HEIGHT / height_resize_scale);
-                    }
                     objectInfo.push_back(objInfo);
-                    keypointInfo.push_back(kpInfo);
-                    match[objInfo] = kpInfo;
                 }
             }
             MxBase::NmsSort(objectInfo, iouThresh_);
-
             for (uint32_t j = 0; j < objectInfo.size(); j++) {
-                keypointInfoSorted.push_back(match[objectInfo[j]]);
+                int keypoint_Pos = objectInfo[j].classId;
+                objectInfo[j].classId = RECTANGLE_COLOR;
+                objectInfoSorted.push_back(objectInfo[j]);
+
+                KeyPointDetectionInfo kpInfo;
+                float* begin_Conf = dataPtr_Conf + keypoint_Pos * 2;
+                float* begin_Iou = dataPtr_Iou + keypoint_Pos;
+                float conf = *(begin_Conf + 1);
+                kpInfo.score = conf;
+
+                for (int k = 0; k < KEYPOINTNUM; k++)
+                {
+                    float x = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM) * IMAGE_WIDTH / width_resize_scale;
+                    float y = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM + 1) * IMAGE_HEIGHT / height_resize_scale;
+                    kpInfo.keyPointMap[k].push_back(x);
+                    kpInfo.keyPointMap[k].push_back(y);
+                }
+                keypointInfoSorted.push_back(kpInfo);
             }
 
             keypointInfos.push_back(keypointInfoSorted);

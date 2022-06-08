@@ -58,6 +58,7 @@ if __name__ == '__main__':
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
+            # print(inferResult.data)
     
 # destroy streams
 STREAM_MANAGER_API.DestroyAllStreams()

@@ -5,7 +5,7 @@
         },
         "mxpi_rtspsrc0": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://192.168.88.106:8554/family-f.264",
                 "channelId": "0"
             },
             "factory": "mxpi_rtspsrc",
@@ -20,12 +20,11 @@
             "factory": "mxpi_videodecoder",
             "next": "mxpi_imageresize0"
         },
-
         "mxpi_imageresize0": {
             "props": {
                 "dataSource": "mxpi_videodecoder0",
-                "resizeHeight": "120",
-                "resizeWidth": "160"
+                "resizeHeight": "1080",
+                "resizeWidth": "1920"
             },
             "factory": "mxpi_imageresize",
             "next": "tee0"
@@ -49,11 +48,11 @@
                 "max-size-buffers":"20000"
             },
             "factory":"queue",
-            "next":"mxpi_imageresize11"
+            "next":"queue11"
         },
         "mxpi_tensorinfer0": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },
@@ -84,15 +83,7 @@
             "factory":"mxpi_object2osdinstances",
             "next":"mxpi_channelosdcoordsconverter0:1"
         },
-        "mxpi_imageresize11": {
-            "props": {
-                "dataSource": "mxpi_videodecoder0",
-                "resizeHeight": "1080",
-                "resizeWidth": "1920"
-            },
-            "factory": "mxpi_imageresize",
-            "next": "queue11"
-        },
+
         "queue11":{
             "props":{
                 "max-size-buffers":"500"
@@ -100,30 +91,12 @@
             "factory":"queue",
             "next":"mxpi_channelimagesstitcher0:0"
         },
-        "mxpi_imageresize12": {
-            "props": {
-                "dataSource": "mxpi_videodecoder1",
-                "resizeHeight": "1080",
-                "resizeWidth": "1920"
-            },
-            "factory": "mxpi_imageresize",
-            "next": "queue12"
-        },
         "queue12":{
             "props":{
                 "max-size-buffers":"500"
             },
             "factory":"queue",
             "next":"mxpi_channelimagesstitcher0:1"
-        },
-        "mxpi_imageresize13": {
-            "props": {
-                "dataSource": "mxpi_videodecoder2",
-                "resizeHeight": "1080",
-                "resizeWidth": "1920"
-            },
-            "factory": "mxpi_imageresize",
-            "next": "queue13"
         },
         "queue13":{
             "props":{
@@ -193,7 +166,7 @@
 
         "mxpi_rtspsrc1": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://192.168.88.106:8554/four-f.264",
                 "channelId": "1"
             },
             "factory": "mxpi_rtspsrc",
@@ -211,8 +184,8 @@
         "mxpi_imageresize2": {
             "props": {
                 "dataSource": "mxpi_videodecoder1",
-                "resizeHeight": "120",
-                "resizeWidth": "160"
+                "resizeHeight": "1080",
+                "resizeWidth": "1920"
             },
             "factory": "mxpi_imageresize",
             "next": "tee1"
@@ -236,11 +209,11 @@
                 "max-size-buffers":"20000"
             },
             "factory":"queue",
-            "next":"mxpi_imageresize12"
+            "next":"queue12"
         },
         "mxpi_tensorinfer1": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },
@@ -279,7 +252,7 @@
 
         "mxpi_rtspsrc2": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://192.168.88.106:8554/students-f.264",
                 "channelId": "2"
             },
             "factory": "mxpi_rtspsrc",
@@ -297,8 +270,8 @@
         "mxpi_imageresize4": {
             "props": {
                 "dataSource": "mxpi_videodecoder2",
-                "resizeHeight": "120",
-                "resizeWidth": "160"
+                "resizeHeight": "1080",
+                "resizeWidth": "1920"
             },
             "factory": "mxpi_imageresize",
             "next": "tee2"
@@ -322,11 +295,11 @@
                 "max-size-buffers":"20000"
             },
             "factory":"queue",
-            "next":"mxpi_imageresize13"
+            "next":"queue13"
         },
         "mxpi_tensorinfer2": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },

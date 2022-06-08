@@ -126,7 +126,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 设置视频源，此处用rtsp拉流，将视频源转化为.264格式。
 
 ````
-ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 xxx.264
+ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.264
 ````
 
 将转化后的.264视频用live555产生rtsp拉流。
@@ -147,7 +147,7 @@ rtsp://192.168.88.106:8554/students-t.264
 
 ## 4 模型转化
 
-本项目中使用的模型是yunet模型，onnx模型可以直接[下载](https://github.com/ShiqiYu/libfacedetection.train/blob/a61a428929148171b488f024b5d6774f93cdbc13/tasks/task1/onnx/yunet.onnx)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+本项目中使用的模型是yunet模型，onnx模型可以直接[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/yunet/yunet.onnx)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
 
 模型转换步骤如下：
 
@@ -164,7 +164,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 cd到models文件夹，运行
 
 ````
-atc --framework=5 --model=yunet.onnx --output=yunet --input_format=NCHW --input_shape="input:1,3,1080,1920" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/Yunet.aippconfig
+atc --framework=5 --model=yunet.onnx --output=yunet --input_format=NCHW --input_shape="input:1,3,120,160" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/Yunet.aippconfig
 ````
 
 执行该命令后会在指定输出.om模型路径生成项目指定模型文件`yunet.om`。若模型转换成功则输出：
@@ -179,8 +179,8 @@ aipp文件配置如下：
 ```
 aipp_op {
     related_input_rank : 0
-    src_image_size_w : 1920
-    src_image_size_h : 1080
+    src_image_size_w : 160
+    src_image_size_h : 120
     crop : false
     aipp_mode: static
     input_format : YUV420SP_U8
@@ -231,6 +231,8 @@ make install
 ````
 chmod 640 libyunetpostprocess.so
 ````
+
+对于plugin2、plugin3目录也同样处理。
 
 2.添加.cfg 文件的权限
 
