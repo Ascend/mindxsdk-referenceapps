@@ -31,14 +31,12 @@ struct FaceInfo {
   float landmarks[10];
 };
 namespace MxBase {
-class CenterfacePostProcessor : public MxBase::ObjectPostProcessBase {
+class FaceDetectPostProcessor : public MxBase::ObjectPostProcessBase {
 public:
   APP_ERROR
   Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 
-  APP_ERROR DeInit() override {
-    return APP_ERR_OK;
-  }
+  APP_ERROR DeInit() override;
 
   APP_ERROR
   Process(const std::vector<MxBase::TensorBase> &tensors,
@@ -76,7 +74,7 @@ private:
 };
 
 extern "C" {
-std::shared_ptr<MxBase::CenterfacePostProcessor> GetObjectInstance();
+std::shared_ptr<MxBase::FaceDetectPostProcessor> GetObjectInstance();
 }
 } // namespace MxBase
 

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "CenterfacePostProcessor.h"
+#include "FaceDetectPostProcessor.h"
 
 #include <algorithm>
 #include <map>
@@ -22,7 +22,7 @@
 #include <iostream>
 using namespace std;
 namespace MxBase {
-APP_ERROR CenterfacePostProcessor::Init(
+APP_ERROR FaceDetectPostProcessor::Init(
     const std::map<std::string, std::shared_ptr<void>> &postConfig) {
   APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
   if (ret != APP_ERR_OK) {
@@ -32,16 +32,20 @@ APP_ERROR CenterfacePostProcessor::Init(
   configData_.GetFileValue<float>("SCORE_THRESH", scoreThresh_);
   configData_.GetFileValue<float>("IOU_THRESH", nmsThresh_);
   configData_.GetFileValue<int>("NMS_METHOD", nmsMethod);
-  LogDebug << "End to Init CenterfacePostProcessor";
+  LogDebug << "End to Init FaceDetectPostProcessor";
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfacePostProcessor::Process(
+APP_ERROR FaceDetectPostProcessor::DeInit() {
+  return APP_ERR_OK;
+}
+
+APP_ERROR FaceDetectPostProcessor::Process(
     const std::vector<MxBase::TensorBase> &tensors,
     std::vector<std::vector<MxBase::ObjectInfo>> &objectInfos,
     const std::vector<MxBase::ResizedImageInfo> &resizedImageInfos,
     const std::map<std::string, std::shared_ptr<void>> &configParamMap) {
-  LogDebug << "Start to Process CenterfacePostProcessor ...";
+  LogDebug << "Start to Process FaceDetectPostProcessor ...";
   auto outputs = tensors;
   APP_ERROR ret = CheckAndMoveTensors(outputs);
   if (ret != APP_ERR_OK) {
@@ -75,7 +79,7 @@ APP_ERROR CenterfacePostProcessor::Process(
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfacePostProcessor::ProcessOnePicture(
+APP_ERROR FaceDetectPostProcessor::ProcessOnePicture(
     std::vector<void *> &featLayerData,
     std::vector<MxBase::ObjectInfo> &objInfos,
     const MxBase::ResizedImageInfo &resizeInfo) {
@@ -104,7 +108,7 @@ APP_ERROR CenterfacePostProcessor::ProcessOnePicture(
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfacePostProcessor::detect(std::vector<void *> &featLayerData,
+APP_ERROR FaceDetectPostProcessor::detect(std::vector<void *> &featLayerData,
                                           std::vector<FaceInfo> &faces,
                                           const ImageInfo &imgInfo) {
   scale_w = (float)imgInfo.imgWidth / (float)imgInfo.modelWidth;
@@ -125,7 +129,7 @@ APP_ERROR CenterfacePostProcessor::detect(std::vector<void *> &featLayerData,
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfacePostProcessor::decode(float *heatmap, float *scale,
+APP_ERROR FaceDetectPostProcessor::decode(float *heatmap, float *scale,
                                           float *offset, float *landmarks,
                                           std::vector<FaceInfo> &faces,
                                           const ImageInfo &imageinfo) {
@@ -203,7 +207,7 @@ APP_ERROR CenterfacePostProcessor::decode(float *heatmap, float *scale,
   return APP_ERR_OK;
 }
 
-std::vector<int> CenterfacePostProcessor::getIds(float *heatmap, int h, int w) {
+std::vector<int> FaceDetectPostProcessor::getIds(float *heatmap, int h, int w) {
   std::vector<int> ids;
   for (int i = 0; i < h; i++) {
     for (int j = 0; j < w; j++) {
@@ -216,7 +220,7 @@ std::vector<int> CenterfacePostProcessor::getIds(float *heatmap, int h, int w) {
   return ids;
 }
 
-void CenterfacePostProcessor::squareBox(std::vector<FaceInfo> &faces,
+void FaceDetectPostProcessor::squareBox(std::vector<FaceInfo> &faces,
                                         const ImageInfo &imageinfo) {
   float w = 0, h = 0, maxSize = 0;
   float cenx = 0, ceny = 0;
@@ -237,7 +241,7 @@ void CenterfacePostProcessor::squareBox(std::vector<FaceInfo> &faces,
 }
 
 // 根据Nms方法获取weight
-float CenterfacePostProcessor::GetNmsWeight(float iou, float sigma, int method) {
+float FaceDetectPostProcessor::GetNmsWeight(float iou, float sigma, int method) {
   float weight = 0;
   if (method == NmsMethod::LINEAR) // linear
     weight = iou > nmsThresh_ ? 1 - iou : 1;
@@ -252,7 +256,7 @@ float CenterfacePostProcessor::GetNmsWeight(float iou, float sigma, int method) 
 }
 
 // 计算两个方框的IOU
-float CenterfacePostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps) {
+float FaceDetectPostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps) {
   float area =
           (curr_box.x2 - curr_box.x1 + 1) * (curr_box.y2 - curr_box.y1 + 1);
   // iou between max box and detection box
@@ -262,7 +266,7 @@ float CenterfacePostProcessor::GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, flo
   return iou;
 }
 
-void CenterfacePostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
+void FaceDetectPostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
                                   unsigned int method, float sigma) {
   int box_len = vec_boxs.size();
   for (int i = 0; i < box_len; i++) {
@@ -305,10 +309,10 @@ void CenterfacePostProcessor::nms(std::vector<FaceInfo> &vec_boxs,
 }
 
 extern "C" {
-std::shared_ptr<MxBase::CenterfacePostProcessor> GetObjectInstance() {
-  LogInfo << "Begin to get CenterFacePostProcess instance.";
-  auto instance = std::make_shared<CenterfacePostProcessor>();
-  LogInfo << "End to get CenterFacePostProcess instance.";
+std::shared_ptr<MxBase::FaceDetectPostProcessor> GetObjectInstance() {
+  LogInfo << "Begin to get FaceDetectPostProcessor instance.";
+  auto instance = std::make_shared<FaceDetectPostProcessor>();
+  LogInfo << "End to get FaceDetectPostProcessor instance.";
   return instance;
 }
 }
