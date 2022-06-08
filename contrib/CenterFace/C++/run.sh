@@ -54,11 +54,10 @@ echo "export env success."
 echo "prepare to execute main program."
 
 # check file
-if [ ! -f "${cur_path}/C++/Main" ]; then
+if [ ! -f "${cur_path}/Main" ]; then
   echo "Main not exist, please build first."
 else
   # execute
-  cd C++
   # set your picture file_path
   fileName=$1
   if [ -f $fileName ]
@@ -76,7 +75,7 @@ else
           fi
       done
     else
-      echo "error: ${cur_path}/C++/${fileName} not exist."
+      echo "error: ${cur_path}/${fileName} not exist."
     fi
   fi
 fi
