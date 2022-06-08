@@ -163,7 +163,9 @@ var_reci_chn_2: 1.0
 - 运行
 
   ```bash
-  bash run.sh "图片路径"  #相对路径为相对C++/Main可执行文件的路径，如果图片放于脚本同级目录，请使用bash run.sh ../picture.jpg
+  cd C++
+  #将图片或文件夹放置C++目录下 运行命令
+  bash run.sh "图片路径 或者 文件夹路径"  
   ```
 
 > 1.先获取onnx模型，并使用命令转化成所需要的om模型，并放置在model目录下。
