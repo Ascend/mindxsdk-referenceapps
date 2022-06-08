@@ -19,7 +19,6 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <memory>
 #include "MxBase/PostProcessBases/KeypointPostProcessBase.h"
 #include "MxBase/ModelPostProcessors/ModelPostProcessorBase/ObjectPostDataType.h"
 #include "MxBase/Log/Log.h"
@@ -53,7 +52,7 @@ public:
   APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
                    const ImageInfo &imgInfo);
 
-  APP_ERROR Process(std::vector<void *> &featLayerData,
+  APP_ERROR ProcessOnePicture(std::vector<void *> &featLayerData,
                     std::vector<KeyPointDetectionInfo> &keyPointInfos,
                     const MxBase::ResizedImageInfo &resizeInfo);
 

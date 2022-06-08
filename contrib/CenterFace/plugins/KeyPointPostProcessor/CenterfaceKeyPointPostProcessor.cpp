@@ -65,7 +65,7 @@ APP_ERROR CenterfaceKeyPointPostProcessor::Process(
                          tensor.GetSize() / batch_size * i);
                    });
     resizeImgInfo = resizedImageInfos[i];
-    ret = this->Process(featLayerData, keyPointInfo, resizeImgInfo);
+    ret = this->ProcessOnePicture(featLayerData, keyPointInfo, resizeImgInfo);
     if (ret != APP_ERR_OK) {
       LogError << "Postprocessing failed:" << ret;
       return ret;
@@ -75,7 +75,7 @@ APP_ERROR CenterfaceKeyPointPostProcessor::Process(
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfaceKeyPointPostProcessor::Process(
+APP_ERROR CenterfaceKeyPointPostProcessor::ProcessOnePicture(
     std::vector<void *> &featLayerData,
     std::vector<KeyPointDetectionInfo> &keyPointInfos,
     const MxBase::ResizedImageInfo &resizeInfo) {

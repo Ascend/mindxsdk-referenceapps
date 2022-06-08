@@ -19,7 +19,6 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <memory>
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 #include "MxBase/ModelPostProcessors/ModelPostProcessorBase/ObjectPostDataType.h"
 #include "MxBase/Log/Log.h"
@@ -51,10 +50,6 @@ public:
   APP_ERROR detect(std::vector<void *> &featLayerData, std::vector<FaceInfo> &faces,
                    const ImageInfo &imgInfo);
 
-  APP_ERROR Process(std::vector<void *> &featLayerData,
-                    std::vector<MxBase::ObjectInfo> &objInfos,
-                    const MxBase::ResizedImageInfo &resizeInfo);
-
 private:
   enum NmsMethod { LINEAR = 1, GAUSSIAN = 2, ORIGINAL_NMX = 3 };
   int modelWidth_ = 200;
@@ -75,6 +70,9 @@ private:
   float GetNmsWeight(float iou, float sigma, int method);
   float GetIou(FaceInfo &curr_box, FaceInfo *max_ptr, float overlaps);
   void squareBox(std::vector<FaceInfo> &faces, const ImageInfo &imageinfo);
+  APP_ERROR ProcessOnePicture(std::vector<void *> &featLayerData,
+                              std::vector<MxBase::ObjectInfo> &objInfos,
+                              const MxBase::ResizedImageInfo &resizeInfo);
 };
 
 extern "C" {

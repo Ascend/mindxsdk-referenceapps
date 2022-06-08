@@ -64,7 +64,7 @@ APP_ERROR CenterfacePostProcessor::Process(
                          tensor.GetSize() / batch_size * i);
                    });
     resizeImgInfo = resizedImageInfos[i];
-    ret = this->Process(featLayerData, objInfo, resizeImgInfo);
+    ret = this->ProcessOnePicture(featLayerData, objInfo, resizeImgInfo);
     if (ret != APP_ERR_OK) {
       LogError << "Postprocessing failed:" << ret;
       return ret;
@@ -75,9 +75,10 @@ APP_ERROR CenterfacePostProcessor::Process(
   return APP_ERR_OK;
 }
 
-APP_ERROR CenterfacePostProcessor::Process(std::vector<void *> &featLayerData,
-                                           std::vector<MxBase::ObjectInfo> &objInfos,
-                                           const MxBase::ResizedImageInfo &resizeInfo) {
+APP_ERROR CenterfacePostProcessor::ProcessOnePicture(
+    std::vector<void *> &featLayerData,
+    std::vector<MxBase::ObjectInfo> &objInfos,
+    const MxBase::ResizedImageInfo &resizeInfo) {
   ImageInfo imageInfo;
   imageInfo.modelWidth = resizeInfo.widthResize;
   imageInfo.modelHeight = resizeInfo.heightResize;
