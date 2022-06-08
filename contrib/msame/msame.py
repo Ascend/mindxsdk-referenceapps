@@ -61,6 +61,7 @@ def infer(saves):
     if not os.path.exists(_output):
         os.makedirs(_output)
     m = sdk.model(_filepath, device_id)
+    print(m)
     index = 0
     for i in m.output_dtype:
         types_output.append([])
@@ -115,13 +116,32 @@ def infer(saves):
             one_time = t_save(path, m, t, saves, types_output)
     else:
         try:
-            t = get_input_num(m, type_map[types_input])
+            if len(args.input.split(',')) > 1 and os.path.isdir(args.input.split(',')[0]):
+                for fi in args.input.split(','):
+                    t = get_multi_dir(m, type_map[types_input], fi)
+                    path = fi
+                    one_time = t_save(path, m, t, saves, types_output)
+            else:
+                t = get_input_num(m, type_map[types_input])
         except KeyError:
             print("KeyError")
         path = _filepath
         one_time = t_save(path, m, t, saves, types_output)
     return one_time
 
+
+
+def get_multi_dir(m, input_type, dirs):
+    a_names = []
+    t = []
+    for di in os.listdir(dirs):
+        a_names.extend(get_files(dirs + '/' + di)) 
+    for ai in a_names:
+        if ai.split('.')[-1] == 'bin':
+            t.append(get_bins(ai, input_type))
+        else:
+            t.append(get_npy(ai, input_type))
+    return t
 
 def get_input_num(m, input_type):
     inputsize = []
@@ -156,6 +176,7 @@ def get_input_num(m, input_type):
                     print("It's an empty folder,please check your input")
                     sys.exit(0)
         else:
+            print(binfile)
             files_name.append(binfile)
             all_names.extend(get_files(binfile))
 
@@ -323,6 +344,9 @@ if  __name__ == '__main__':
     TRANS = 1000
     SUM = 0
     SAVES = True
+    if loop <= 0:
+        print("pliease check your loop!")
+        sys.exit(0)
     for mj in range(loop):
         nowtimes = time.time()
         TIMES = infer(SAVES)
