@@ -178,9 +178,11 @@ static APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> &mxpi
     }
   }
 
-  int findIndex1 = fileName.rfind("/");
-  int findIndex2 = fileName.rfind(".");
-  std::string fileNameNew = fileName.substr(findIndex1, findIndex2-findIndex1);
+  std::string fileName_ =  "./" + fileName;
+  LogInfo << "filename" << fileName_;
+  int findIndex1 = fileName_.rfind("/");
+  int findIndex2 = fileName_.rfind(".");
+  std::string fileNameNew = fileName_.substr(findIndex1, findIndex2-findIndex1);
   MkdirRecursive("./result");
   cv::imwrite("./result/"+fileNameNew+"_result.jpg", imgBgr);
   ret = MxBase::MemoryHelper::MxbsFree(memoryDst);
@@ -298,6 +300,7 @@ int main(int argc, char *argv[]) {
   if (ret != APP_ERR_OK) {
     LogError << "Fail to print the info of output, ret = " << ret << ".";
     LogError << "Fail to detect face.";
+    fileName =  "./" + fileName;
     int findIndex1 = fileName.rfind("/");
     int findIndex2 = fileName.rfind(".");
     if (ret == APP_ERR_MXPLUGINS_METADATA_IS_NULL) {
