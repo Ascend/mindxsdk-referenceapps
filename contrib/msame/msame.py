@@ -61,7 +61,6 @@ def infer(saves):
     if not os.path.exists(_output):
         os.makedirs(_output)
     m = sdk.model(_filepath, device_id)
-    print(m)
     index = 0
     for i in m.output_dtype:
         types_output.append([])
@@ -202,7 +201,7 @@ def t_save(path, m, t, saves, types_output):
         sys.exit(0)
     if len(m.input_shape) == 1:
         tim = sdk.Tensor(t[0][0])
-        tim.to_device(0)
+        tim.to_device(device_id)
     else:
         if len(t) != len(m.input_shape):
             print("Error : Please check the input shape and input dtype")
@@ -210,7 +209,7 @@ def t_save(path, m, t, saves, types_output):
         tim = []
         for bs in t:
             bs = sdk.Tensor(bs[0])
-            bs.to_device(0)
+            bs.to_device(device_id)
             tim.append(bs)
     last_time = time.time()
     outputs = m.infer(tim)
