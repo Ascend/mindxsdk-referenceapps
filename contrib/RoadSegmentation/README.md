@@ -1,13 +1,39 @@
 ﻿# 路面分割
-## 1. 简介
+
+## 1 介绍
 本样例基于MindX SDK实现了端到端的路面分割功能，主要采用了Unet模型对输入的路面图片进行语义分割，输出mask掩膜，然后与原图结合，生成路面语义分割后的可视化结果。
-## 2. 目录结构
+项目主要流程：将输入图片解码成YUV格式，经图片缩放后输入至模型中，得到结果mask，并将其与原图融合，最后编码输出结果。
+
+### 1.1 支持的产品
+昇腾310（推理）
+
+
+### 1.2 支持的版本
+CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
+SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
+
+### 1.3 软件方案介绍
+基于MindX SDK的路面分割业务流程：待检测图片通过 appsrc 插件输入，然后使用图像解码插件mxpi_imagedecoder对图片进行解码，再通过图像缩放插件mxpi_imageresize将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件mxpi_tensorinfer得到检测结果，本项目开发的路面分割后处理插件处理推理结果，从中获取掩膜mask，然后与原始图片进行融合，之后通过图像编码插件mxpi_imageencoder将后处理插件的融合后的数据进行编码，最后使用输出插件appsink输出可视化的结果
+表1 系统方案各子系统功能描述：
+
+| 序号 |  子系统  | 功能描述     |
+| ---- | ------   | ------------ |
+| 1    | 图片输入  | 	Gstreamer原生插件。配合SendData接口与SendDataWithUniqueId接口使用，向Stream中发送数据，appsrc将数据发给下游元件，当且仅当Stream中存在appsrc插件时以上两个接口有效。 |
+| 2    | 图像解码    | 用于图像解码，只支持JPG/JPEG/BMP格式。说明：JPG/JPEG输入图片格式约束：只支持Huffman编码，码流的subsample为444/422/420/400/440。不支持算术编码。不支持渐进JPEG格式。不支持JPEG2000格式。 |
+| 3   | 图像缩放    | 对解码后的YUV格式的图像进行指定宽高的缩放，暂时只支持YUV格式的图像。 |
+| 4    | 模型推理    | 对输入的张量进行推理。 |
+| 5    | 模型后处理插件  | 将模型推理的结果mask 与原图融合|
+| 6    | 图像编码    | 用于图片编码。 |
+| 7   | 图像输出    | Gstreamer原生插件。配合GetResult接口与GetResultWithUniqueId接口使用，从stream中获取数据，当且仅当stream中存在appsink插件时，以上两个接口有效。 |
+
+
+### 1.4 代码目录结构与说明
 ```
+本sample工程名称为路面分割，工程目录如下图所示：
+
 ├── config #配置文件目录
 │   └── aipp_road_segmentation.config
 ├── model  #模型目录
-│	└──  Road.onnx
-│   └──  road_segmentation.om
 │  	└──  pt2onnx.py  
 ├── pipeline
 │   └── road.pipeline
@@ -25,69 +51,58 @@
 ├── build.sh
 └── run.sh
 ```
-## 3. 依赖
-| 软件名称 | 版本   |
-| :--------: | :------: |
-|ubantu 18.04|18.04.1 LTS   |
-|MindX SDK|2.0.4|
-|Python|3.9.2|
-|pytorch|>= 1.5.0|
-|CANN|5.0.4|
-|C++| 11.0|
-|opencv2| |> 
 
-## 4. 模型转换  
-### 4.1 导出onnx文件
-  获取[路面分割案例](https://github.com/tunafatih/Road-Free-Space-Segmentation-Internship-Project)，在本地使用pt2onnx.py文件，将pt权重文件转换成onnx文件，或可[点击此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RoadSegmentation/model.zip)下载转换好的onnx文件。
-### 4.2 使用Ascend atc工具将onnx模型转换为om模型
-在使用[atc工具](https://www.hiascend.com/document/detail/zh/canncommercial/504/inferapplicationdev/atctool)之前需配置环境
-```
-# CANN安装目录
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest
-```
-之后将4.1节中导出的onnx文件上传至```./model```目录下，在该目录下执行
-```
-atc --framework=5 --model=Road.onnx --output=road_segmentation --input_format=NCHW  --insert_op_conf=aipp_road_segmentation.config --input_shape="image:1,3,224,224" --log=debug --soc_version=Ascend310  
-```
-若出现以下信息，则转换成功
-```
-ATC run success
-```
-## 5. 推理
-### 5.1 配置MindX SDK环境变量
+### 1.5 技术实现流程图
+
+![SDK流程图](../RoadSegmentation/image/SDK_process.png)
+
+
+## 2 环境依赖
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+
+| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
+| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
+| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+
+在编译运行项目前，需要设置环境变量：
+
+- MindSDK 环境变量介绍
 ```
 export MX_SDK_HOME=${SDK安装路径}
 export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
 export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
 export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:/home/weifeng1/MindX_SDK/mxVision/lib/plugins
 export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
+```
+- CANN 环境变量介绍
+```
+export install_path=/usr/local/Ascend/ascend-toolkit/latest
+export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
+export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
+export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
+export ASCEND_OPP_PATH=${install_path}/opp
+export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest
+```
 
-#查看环境变量
-env
+## 3 模型转换
+### 3.1 导出onnx文件
+  获取[路面分割案例](https://github.com/tunafatih/Road-Free-Space-Segmentation-Internship-Project)，在本地使用pt2onnx.py文件，将pt权重文件转换成onnx文件，或可[点击此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RoadSegmentation/model.zip)下载转换好的onnx文件。
+### 3.2 使用Ascend atc工具将onnx模型转换为om模型
+在使用[atc工具](https://www.hiascend.com/document/detail/zh/canncommercial/504/inferapplicationdev/atctool)之前**需按第2节环境依赖章节**事先配置好CANN环境，之后将3.1节中导出的onnx文件上传至```model```目录下，在该目录下执行
 ```
-### 5.2 编译后处理插件
-在样例目录下执行
+atc --framework=5 --model=Road.onnx --output=road_segmentation --input_format=NCHW  --insert_op_conf=../config/aipp_road_segmentation.config --input_shape="image:1,3,224,224" --log=debug --soc_version=Ascend310  
 ```
-./build.sh
+若出现以下信息，则转换成功
 ```
-或在RoadSegPostProcess目录下执行
+ATC run success
 ```
-mkdir build
-cd build
-cmake ..
-make -j
-#之后可以在 样例/plugin/lib/plugins目录下看到编译好的.so插件
-#进入/plugin/lib/plugins目录
-chmod 640 *.so #修改权限
-然后编译好的插件移动到${SDK安装路径}/lib/plugins目录下
-```
-### 5.3 配置pipeline
-根据所需场景，配置pipeline文件，调整路径参数等。
+## 4 编译与运行
+
+示例步骤如下：
+**步骤1** 修改相应文件
+根据所需场景，配置pipeline文件，调整路径参数。
 ```
   #配置mxpi_tensorinfer插件的模型加载路径： modelPath
   "mxpi_tensorinfer0": {
@@ -107,33 +122,36 @@ chmod 640 *.so #修改权限
             "factory": "filesink"
         }
 ```
-### 5.4 更改图片
-可修改main.py文件中的FILE_PATH的变量值将其改为测试图片的地址
-### 5.5 输出结果
-在样例目录下执行
+修改main.py中的输入图片路径FILE_PATH
+
+**步骤2** 设置环境变量
+按**第2节环境依赖**中设置环境变量
+
+**步骤3** 执行编译的步骤
+在样例目录下，执行
 ```
-python3.9 main.py
+./build.sh
 ```
-或
+**步骤4** 运行及输出结果
+在样例目录下，执行
 ```
 ./run.sh
+或
+python3.9 main.py
 ```
-可看到路面分割可视化结果 
-## 6 结果展示
-![在这里插入图片描述](https://img-blog.csdnimg.cn/3a07ceda71b9402b88cfd38a9e033622.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/701e66974ec8460091ba7ee96426423c.png)
 
 
+## 5 常见问题
 
-## 7 约束限制
-输入图片的宽高须是偶数且图片只支持Huffman编码，[imagedecoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0115.html)和[imageencoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0120.html)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a90335b846484d76992d07473c1dea3d.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/93b777389c4743b9a2783ae6e4070b31.png)
+1.图片解码失败
+**问题描述：**  在使用解码插件时，提示如下错误
+![解码失败](../RoadSegmentation/image/imagedecoder_error.png)
 
+**解决方案：** 更换图片，详情[imagedecoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0115.html)
 
-
-
-
-
-
+2.图片编码失败
+**问题描述：** 
+![编码失败](../RoadSegmentation/image/imageencoder_error01.png)
+![编码失败](../RoadSegmentation/image/imageencoder_error02.png)
+**解决方案：** 输入图片的高和宽须为偶数，且宽须对齐至16的倍数，详情[imageencoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0120.html)
 

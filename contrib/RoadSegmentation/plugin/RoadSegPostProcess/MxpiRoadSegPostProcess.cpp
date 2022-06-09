@@ -111,15 +111,16 @@ APP_ERROR MxpiRoadSegPostProcess::PostProcess(std::vector<MxBase::TensorBase> &i
     uint32_t imgHeight = imageInfo.imgHeight;
     uint32_t imgWidth = imageInfo.imgWidth;
 
-    uint32_t outputModelChannel = tensor.GetShape()[3];
-    uint32_t outputModelWidth = tensor.GetShape()[2];
-    uint32_t outputModelHeight = tensor.GetShape()[1];
+    // model is N*H*W*C
+    uint32_t outputModelChannel = tensor.GetShape()[3];  // there is two channel, the first channel is not road, the second is road
+    uint32_t outputModelWidth = tensor.GetShape()[2];   // get width value
+    uint32_t outputModelHeight = tensor.GetShape()[1];  // get height value
     cv::Mat imageMat(outputModelHeight, outputModelWidth, CV_32FC1);
     auto data = reinterpret_cast<float (*)[outputModelWidth][outputModelChannel]>(tensor.GetBuffer());
 
     for (size_t x = 0; x < outputModelHeight; ++x) {
         for (size_t y = 0; y < outputModelWidth; ++y) {
-            imageMat.at<float>(x, y) = data[x][y][1];
+            imageMat.at<float>(x, y) = data[x][y][1];  // The probability of identifying it as road
         }
     }
 
