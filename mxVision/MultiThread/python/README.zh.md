@@ -57,7 +57,7 @@ mkdir models
 - 使用默认pipeline文件
 
 ```bash
-./run.sh
+bash run.sh
 ```
 注意：
 
@@ -68,7 +68,7 @@ mkdir models
 - 自定义pipeline文件（例如：mypipeline.pipeline)
 
 ```bash
-./run.sh ./mypipeline.pipeline
+bash run.sh ./mypipeline.pipeline
 ```
 
 ### 5.3 结果

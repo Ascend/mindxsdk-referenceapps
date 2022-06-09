@@ -18,9 +18,9 @@ source ../envs/atc_env.sh
 
 # atc transform model
 atc \
-  --model=./model/firedetection.onnx \
+  --model=./firedetection.onnx \
   --framework=5 \
-  --output=./model/firedetection \
+  --output=./firedetection \
   --input_format=NCHW \
   --input_shape="images:1,3,640,640"  \
   --out_nodes="Transpose_217:0;Transpose_233:0;Transpose_249:0"  \

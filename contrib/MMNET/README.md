@@ -126,7 +126,7 @@ ATC run success
 
 **步骤1** 获取om模型
 
-**步骤2** 修改run.sh最后的执行文件名称
+**步骤2** 修改run.sh中MX_SDK_HOME
 
 
 **步骤3** 配置pipeline
@@ -156,7 +156,7 @@ filepath_out = "test-out.jpg"
 然后执行run.sh文件：
 
 ```
-./run.sh
+bash run.sh
 ```
 
 输出的图片即为样例的人像分割后的图片。
@@ -175,7 +175,7 @@ filepath = "./test/"  #测试集图片存放路径
 gt_dir = './mask'   #测试集掩膜mask图片存放路径
 ```
 
-**步骤3** 修改run.sh最后的执行文件名称：
+**步骤3** 修改run.sh中MX_SDK_HOME和执行文件名称：
 
 ```
 python3 evaluate.py
@@ -184,6 +184,6 @@ python3 evaluate.py
 并执行：
 
 ```
-./run.sh
+bash run.sh
 ```
 
