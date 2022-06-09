@@ -43,6 +43,7 @@ SAMPLE_FOLDER=(
     VehicleRetrogradeRecognition/
     Collision/
     PassengerflowEstimation/
+    CenterFace/
 )
 
 
