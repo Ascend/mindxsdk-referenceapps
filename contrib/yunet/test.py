@@ -34,6 +34,7 @@ import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+
 def sigint_handler(signum, frame):
     signum = signum
     frame = frame
@@ -45,6 +46,7 @@ signal.signal(signal.SIGINT, sigint_handler)
 signal.signal(signal.SIGHUP, sigint_handler)
 signal.signal(signal.SIGTERM, sigint_handler)
 ISSIGINTUP = False
+
 if __name__ == '__main__':
     
     # init stream manager
@@ -68,17 +70,17 @@ if __name__ == '__main__':
     FRAME_COUNT = 0
 
     def time_func():
-        TIME_STEP = 0
-        TIME_COUNT = 0
-        BEGIN_TIME = datetime.datetime.now()
-        ONE_STEP = 10
+        time_step = 0
+        time_count = 0
+        begin_time = datetime.datetime.now()
+        one_step = 10
 
         while True:
-            CUR_TIME = (datetime.datetime.now() - BEGIN_TIME).total_seconds()
-            if CUR_TIME >= (TIME_STEP + ONE_STEP):
-                TIME_STEP = TIME_STEP + ONE_STEP
-                print("10秒平均帧率:", (FRAME_COUNT - TIME_COUNT) * 1.0 / ONE_STEP)
-                TIME_COUNT = FRAME_COUNT
+            cur_time = (datetime.datetime.now() - begin_time).total_seconds()
+            if cur_time >= (time_step + one_step):
+                time_step = time_step + one_step
+                print("10秒平均帧率:", (FRAME_COUNT - time_count) * 1.0 / one_step)
+                time_count = FRAME_COUNT
             if ISSIGINTUP:
                 print("Exit")
                 break
