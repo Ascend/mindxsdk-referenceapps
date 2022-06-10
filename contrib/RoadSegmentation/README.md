@@ -1,8 +1,10 @@
-﻿# 路面分割
+﻿
+# 路面分割
 
 ## 1 介绍
 本样例基于MindX SDK实现了端到端的路面分割功能，主要采用了Unet模型对输入的路面图片进行语义分割，输出mask掩膜，然后与原图结合，生成路面语义分割后的可视化结果。
-项目主要流程：将输入图片解码成YUV格式，经图片缩放后输入至模型中，得到结果mask，并将其与原图融合，最后编码输出结果。
+项目主要流程：将输入图片解码成YUV格式，经图片缩放后输入至模型中，得到结果mask，并将其与原图融合，最后编码输出可视化结果。
+主要适应场景：形状规则的路面，且较明显区分于周围环境。
 
 ### 1.1 支持的产品
 昇腾310（推理）
@@ -53,10 +55,9 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 ```
 
 ### 1.5 技术实现流程图
-
 ![SDK流程图](../RoadSegmentation/image/SDK_process.png)
 
-
+注：红色字体为本项目开发的后处理插件，其他为SDK内置插件
 ## 2 环境依赖
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
@@ -149,9 +150,4 @@ python3.9 main.py
 
 **解决方案：** 更换图片，详情[imagedecoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0115.html)
 
-2.图片编码失败
-**问题描述：** 
-![编码失败](../RoadSegmentation/image/imageencoder_error01.png)
-![编码失败](../RoadSegmentation/image/imageencoder_error02.png)
-**解决方案：** 输入图片的高和宽须为偶数，且宽须对齐至16的倍数，详情[imageencoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0120.html)
 

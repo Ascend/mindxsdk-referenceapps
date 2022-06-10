@@ -29,8 +29,10 @@ namespace {
     const string VISION_KEY = "MxpiVisionList";
     const uint32_t YUV_BYTES_NU = 3;
     const uint32_t YUV_BYTES_DE = 2;
+    const uint32_t OUTPUT_IMAGE_WIDTH = 480;
+    const uint32_t OUTPUT_IMAGE_HEIGHT = 240;
     const float THRESHOLD_VALUE = 0.5; // threshold value
-    const float FUSION_COEFFICIENT = 0.7; // the coefficient of picture fusion
+    const float FUSION_COEFFICIENT = 0.6; // the coefficient of picture fusion
     const int PIXEL_FORMAT = 12;  // MxbasePixelFormat type
     struct ImageInfo {
         int modelWidth;
@@ -193,6 +195,9 @@ APP_ERROR MxpiRoadSegPostProcess::openCVImageFusion(size_t idx, const MxTools::M
     // image_fusion
     cv::Mat dst;
     cv::addWeighted(srcImage, 1, threeChannelMask, FUSION_COEFFICIENT, 0, dst);
+
+    // unify the output image size
+    cv::resize(dst, dst, cv::Size(OUTPUT_IMAGE_WIDTH, OUTPUT_IMAGE_HEIGHT), cv::INTER_LINEAR);
 
     // mat2vision
     ret = Mat2MxpiVision(idx, dst, dstMxpiVision);
