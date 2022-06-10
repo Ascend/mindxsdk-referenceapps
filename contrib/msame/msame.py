@@ -57,6 +57,9 @@ device_id = args.device
 
 
 def infer(saves):
+    if device_id < 0 or device_id >= 4:
+        print("device_id {0} is false ,please check".format(device_id))
+        sys.exit(0)
     types_output = []
     if not os.path.exists(_output):
         os.makedirs(_output)
@@ -116,11 +119,25 @@ def infer(saves):
     else:
         try:
             if len(args.input.split(',')) > 1 and os.path.isdir(args.input.split(',')[0]):
+                index1 = 0
                 for fi in args.input.split(','):
+                    indexs = 0
+                    index1 += 1
+                    for fii in os.listdir(fi):
+                        indexs += 1
+                    if indexs == 0:
+                        print("It's an empty dir,please check your input!")
+                        sys.exit(0)
                     t = get_multi_dir(m, type_map[types_input], fi)
                     path = fi
                     one_time = t_save(path, m, t, saves, types_output)
             else:
+                index1 = 0
+                for fis in os.listdir(args.input):
+                    index1 += 1
+                if index1 == 0:
+                    print("It's an empty dir,please check your input!")
+                    sys.exit(0)
                 t = get_input_num(m, type_map[types_input])
         except KeyError:
             print("KeyError")
@@ -176,7 +193,6 @@ def get_input_num(m, input_type):
                     print("It's an empty folder,please check your input")
                     sys.exit(0)
         else:
-            print(binfile)
             files_name.append(binfile)
             all_names.extend(get_files(binfile))
 
@@ -345,7 +361,7 @@ if  __name__ == '__main__':
     SUM = 0
     SAVES = True
     if loop <= 0:
-        print("pliease check your loop!")
+        print("please check your loop!")
         sys.exit(0)
     for mj in range(loop):
         nowtimes = time.time()
