@@ -1,4 +1,5 @@
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#!/bin/bash
+# Copyright 2021 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,20 +12,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+ 
+set -e 
+current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
-# atc environment
-source ../envs/env.sh
-source ../envs/atc_env.sh
 
-# atc transform model
-atc \
-  --model=./firedetection.onnx \
-  --framework=5 \
-  --output=./firedetection \
-  --input_format=NCHW \
-  --input_shape="images:1,3,640,640"  \
-  --out_nodes="Transpose_217:0;Transpose_233:0;Transpose_249:0"  \
-  --enable_small_channel=1 \
-  --insert_op_conf=./aipp_yolov5.cfg \
-  --soc_version=Ascend310 \
-  --log=info
+SAMPLE_FOLDER=(
+/plugins/mxpi_passengerflowestimation
+/plugins/mxpi_selectobject
+)
+
+
+err_flag=0
+for sample in "${SAMPLE_FOLDER[@]}";do
+    cd "${current_folder}${sample}"
+    bash build.sh || {
+        echo -e "Failed to build ${sample}"
+		err_flag=1
+    }
+done
+
+
+if [ ${err_flag} -eq 1 ]; then
+	exit 1
+fi
+exit 0
