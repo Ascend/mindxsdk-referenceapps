@@ -19,16 +19,32 @@ limitations under the License.
 
 
 
-
+import sys
+import re
+import json
 import os
 import stat
+import random
+import signal
+import datetime
+import threading
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+def sigint_handler(signum, frame):
+    signum = signum
+    frame = frame
+    global ISSIGINTUP
+    ISSIGINTUP = True
+    print("catched interrupt signal")
 
+signal.signal(signal.SIGINT, sigint_handler)
+signal.signal(signal.SIGHUP, sigint_handler)
+signal.signal(signal.SIGTERM, sigint_handler)
+ISSIGINTUP = False
 if __name__ == '__main__':
     
     # init stream manager
@@ -51,13 +67,31 @@ if __name__ == '__main__':
     IN_PLUGIN_ID = 0
     FRAME_COUNT = 0
 
+    def time_func():
+        TIME_STEP = 0
+        TIME_COUNT = 0
+        BEGIN_TIME = datetime.datetime.now()
+        ONE_STEP = 10
+
+        while True:
+            CUR_TIME = (datetime.datetime.now() - BEGIN_TIME).total_seconds()
+            if CUR_TIME >= (TIME_STEP + ONE_STEP):
+                TIME_STEP = TIME_STEP + ONE_STEP
+                print("10秒平均帧率:", (FRAME_COUNT - TIME_COUNT) * 1.0 / ONE_STEP)
+                TIME_COUNT = FRAME_COUNT
+            if ISSIGINTUP:
+                print("Exit")
+                break
+
+    t = threading.Thread(target=time_func, args=())
+    t.start()
     FLAGS = os.O_WRONLY | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR
     with os.fdopen(os.open('./result.264', FLAGS, MODES), 'wb') as fp:
-        while FRAME_COUNT <= 100:
+        while FRAME_COUNT <= 1000:
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
-    
+
     # destroy streams
     STREAM_MANAGER_API.DestroyAllStreams()

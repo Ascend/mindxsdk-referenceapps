@@ -52,8 +52,5 @@ if __name__ == '__main__':
         print(inferResult.data)
 
 
-# destroy streams
-STREAM_MANAGER_API.DestroyAllStreams()
-
-
-
+    # destroy streams
+    STREAM_MANAGER_API.DestroyAllStreams()
