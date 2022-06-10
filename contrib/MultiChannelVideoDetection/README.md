@@ -98,8 +98,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
-
+执行完模型转换脚本后，会生成相应的.om模型文件。
 模型转换使用了ATC工具，如需更多信息请参考:
 
  https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
@@ -138,7 +137,7 @@ reasonerConfig.yoloLabelPath = "${yolov3 coco.names路径}";
 ```c++
 reasonerConfig.maxDecodeFrameQueueLength = 400; // 多路视频时请适当减小
 reasonerConfig.writeDetectResultToFile = true; // 检测结果是否写文件, 默认为false
-reasonerConfig.enablePerformanceMonitorPrint = true; // 性能可视化开关，默认为true
+reasonerConfig.enablePerformanceMonitorPrint = false; // 性能可视化开关，默认为false
 reasonerConfig.intervalPerformanceMonitorPrint = 5; // 性能监控输出间隔(s)
 reasonerConfig.intervalMainThreadControlCheck = 2; // 流程检查间隔(ms)
 reasonerConfig.printDetectResult = true; // 输出检测结果，默认为true
