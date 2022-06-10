@@ -142,6 +142,7 @@ def get_multi_dir(m, input_type, dirs):
             t.append(get_npy(ai, input_type))
     return t
 
+
 def get_input_num(m, input_type):
     inputsize = []
     index = 0
