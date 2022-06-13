@@ -117,7 +117,7 @@ namespace MxBase {
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-
+                    objInfo.classId = RECTANGLE_COLOR;
                     objectInfo.push_back(objInfo);
                 }
             }

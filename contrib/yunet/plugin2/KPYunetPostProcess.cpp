@@ -62,6 +62,62 @@ namespace MxBase {
         return APP_ERR_OK;
     }
 
+    void KPYunetPostProcess::generate_keypointInfos(const std::vector <TensorBase>& tensors,
+                                                    std::vector <std::vector<KeyPointDetectionInfo>>& keypointInfos,
+                                                    const std::vector <ResizedImageInfo>& resizedImageInfos,
+                                                    cv::Mat &res)
+    {
+        auto shape = tensors[0].GetShape();
+        float width_resize_scale = (float)resizedImageInfos[0].widthResize / resizedImageInfos[0].widthOriginal;
+        float height_resize_scale = (float)resizedImageInfos[0].heightResize / resizedImageInfos[0].heightOriginal;
+        uint32_t batchSize = shape[0];
+        uint32_t VectorNum = shape[1];
+
+        for (uint32_t i = 0; i < batchSize; i++) {
+            std::vector <ObjectInfo> objectInfo, objectInfoSorted;
+            std::vector <KeyPointDetectionInfo> keypointInfoSorted;
+            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
+            for (uint32_t j = 0; j < VectorNum; j++) {
+                float* begin_Conf = dataPtr_Conf + j * 2;
+                float conf = *(begin_Conf + 1);
+
+                conf = sqrtf(iou * conf);
+                if (conf> confThresh_) {
+                    ObjectInfo objInfo;
+                    objInfo.confidence = conf;
+                    objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.classId = j;
+                    
+                    objectInfo.push_back(objInfo);
+                }
+            }
+
+            MxBase::NmsSort(objectInfo, iouThresh_);
+            for (uint32_t j = 0; j < objectInfo.size(); j++) {
+                int keypoint_Pos = objectInfo[j].classId;
+                objectInfo[j].classId = RECTANGLE_COLOR;
+                objectInfoSorted.push_back(objectInfo[j]);
+
+                KeyPointDetectionInfo kpInfo;
+                float* begin_Conf = dataPtr_Conf + keypoint_Pos * 2;
+                kpInfo.score = *(begin_Conf + 1);
+
+                for (int k = 0; k < KEYPOINTNUM; k++)
+                {
+                    float x = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM) * IMAGE_WIDTH / width_resize_scale;
+                    float y = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM + 1) * IMAGE_HEIGHT / height_resize_scale;
+                    kpInfo.keyPointMap[k].push_back(x);
+                    kpInfo.keyPointMap[k].push_back(y);
+                }
+                keypointInfoSorted.push_back(kpInfo);
+            }
+            keypointInfos.push_back(keypointInfoSorted);
+        }
+    }
+
     void KPYunetPostProcess::KeypointDetectionOutput(const std::vector <TensorBase>& tensors,
                                                      std::vector <std::vector<KeyPointDetectionInfo>>& keypointInfos,
                                                      const std::vector <ResizedImageInfo>& resizedImageInfos)
@@ -76,79 +132,9 @@ namespace MxBase {
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
         GeneratePriorBox(PriorBox);
-        
-        float width_resize = resizedImageInfos[0].widthResize;
-        float height_resize = resizedImageInfos[0].heightResize;
-        float width_original = resizedImageInfos[0].widthOriginal;
-        float height_original = resizedImageInfos[0].heightOriginal;
-        float width_resize_scale = width_resize / width_original;
-        float height_resize_scale = height_resize / height_original;
-        float resize_scale_factor = 1.0;
-        if (width_resize_scale >= height_resize_scale) {
-            resize_scale_factor = height_resize_scale;
-        } else {
-            resize_scale_factor = width_resize_scale;
-        }
-        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor);
+        cv::Mat res = decode_for_loc(location, PriorBox);
+        generate_keypointInfos(tensors, keypointInfos, resizedImageInfos, res);
 
-        uint32_t batchSize = shape[0];
-        uint32_t VectorNum = shape[1];
-
-        std::map<ObjectInfo, KeyPointDetectionInfo> match;
-        for (uint32_t i = 0; i < batchSize; i++) {
-            std::vector <ObjectInfo> objectInfo;
-            std::vector <ObjectInfo> objectInfoSorted;
-            std::vector <KeyPointDetectionInfo> keypointInfo;
-            std::vector <KeyPointDetectionInfo> keypointInfoSorted;
-            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
-            auto dataPtr_Iou = (float *) tensors[2].GetBuffer() + i * tensors[2].GetByteSize() / batchSize;
-            for (uint32_t j = 0; j < VectorNum; j++) {
-                float* begin_Conf = dataPtr_Conf + j * 2;
-                float* begin_Iou = dataPtr_Iou + j;
-                float conf = *(begin_Conf + 1);
-                float iou = *begin_Iou;
-                if (iou < 0.f) iou = 0.f;
-                if (iou > 1.f) iou = 1.f;
-
-                conf = sqrtf(iou * conf);
-                if (conf> confThresh_) {
-                    ObjectInfo objInfo;
-                    KeyPointDetectionInfo kpInfo;
-
-                    objInfo.confidence = conf;
-                    objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = j;
-                    
-                    objectInfo.push_back(objInfo);
-                }
-            }
-            MxBase::NmsSort(objectInfo, iouThresh_);
-            for (uint32_t j = 0; j < objectInfo.size(); j++) {
-                int keypoint_Pos = objectInfo[j].classId;
-                objectInfo[j].classId = RECTANGLE_COLOR;
-                objectInfoSorted.push_back(objectInfo[j]);
-
-                KeyPointDetectionInfo kpInfo;
-                float* begin_Conf = dataPtr_Conf + keypoint_Pos * 2;
-                float* begin_Iou = dataPtr_Iou + keypoint_Pos;
-                float conf = *(begin_Conf + 1);
-                kpInfo.score = conf;
-
-                for (int k = 0; k < KEYPOINTNUM; k++)
-                {
-                    float x = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM) * IMAGE_WIDTH / width_resize_scale;
-                    float y = res.at<float>(keypoint_Pos, RECTANGLEPOINT + k * DIM + 1) * IMAGE_HEIGHT / height_resize_scale;
-                    kpInfo.keyPointMap[k].push_back(x);
-                    kpInfo.keyPointMap[k].push_back(y);
-                }
-                keypointInfoSorted.push_back(kpInfo);
-            }
-
-            keypointInfos.push_back(keypointInfoSorted);
-        }
         LogInfo << "KPYunetPostProcess write results successed.";
     }
     APP_ERROR KPYunetPostProcess::Process(const std::vector<TensorBase> &tensors,
@@ -212,14 +198,8 @@ namespace MxBase {
             }
         }
     }
-    /*
-     * @description: Generate prior boxes for detection boxes decoding
-     * @param loc:  The matrix which contains box biases, shape[21824, 4]
-     * @param prior: The matrix which contains prior box coordinates, shape[21824,4]
-     * @param resize_scale_factor: The factor of min(WidthOriginal/WidthResize, HeightOriginal/HeightResize)
-     * @param boxes: The matrix which contains detection box coordinates(x0,y0,x1,y1), shape[21824,4]
-     */
-    cv::Mat KPYunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor) {
+
+    cv::Mat KPYunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior) {
         cv::Mat loc_first = loc.colRange(0, 2);
         cv::Mat loc_last = loc.colRange(2, 4);
         cv::Mat prior_first = prior.colRange(0, 2);
@@ -245,9 +225,6 @@ namespace MxBase {
         cv::Mat boxes;
         cv::hconcat(boxes1, boxes2, boxes);
         cv::hconcat(boxes, boxes3, boxes);
-        if (resize_scale_factor == 0) {
-            LogError << "resize_scale_factor is 0.";
-        }
         return boxes;
     }
 

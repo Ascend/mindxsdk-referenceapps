@@ -5,7 +5,7 @@
         },
         "mxpi_rtspsrc0": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                 "channelId": "0"
             },
             "factory": "mxpi_rtspsrc",
@@ -193,7 +193,7 @@
 
         "mxpi_rtspsrc1": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                 "channelId": "1"
             },
             "factory": "mxpi_rtspsrc",
@@ -279,7 +279,7 @@
 
         "mxpi_rtspsrc2": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.106:8554/family-test.264",
+                "rtspUrl": "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",
                 "channelId": "2"
             },
             "factory": "mxpi_rtspsrc",

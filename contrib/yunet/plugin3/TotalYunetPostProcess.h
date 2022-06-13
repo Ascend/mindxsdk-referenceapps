@@ -49,10 +49,15 @@ namespace MxBase {
 
     protected:
         void GeneratePriorBox(cv::Mat &anchors);
-        cv::Mat decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor);
+        cv::Mat decode_for_loc(cv::Mat &loc, cv::Mat &prior);
         void ObjectDetectionOutput(const std::vector <MxBase::TensorBase>& tensors,
                                    std::vector <std::vector<MxBase::ObjectInfo>>& objectInfos,
                                    const std::vector <MxBase::ResizedImageInfo>& resizedImageInfos = {});
+        void generate_objectInfos(const std::vector <TensorBase>& tensors,
+                                  std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                  const std::vector <ResizedImageInfo>& resizedImageInfos,
+                                  cv::Mat &res);
+    
     private:
         uint32_t objectConfTensor_ = DEFAULT_OBJECT_CONF_TENSOR;
         uint32_t objectInfoTensor_ = DEFAULT_OBJECT_INFO_TENSOR;
