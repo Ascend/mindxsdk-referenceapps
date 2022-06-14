@@ -1,21 +1,21 @@
-﻿
+﻿﻿
 # 路面分割
 
 ## 1 介绍
-本样例基于MindX SDK实现了端到端的路面分割功能，主要采用了Unet模型对输入的路面图片进行语义分割，输出mask掩膜，然后与原图结合，生成路面语义分割后的可视化结果。
+本样例基于MindX SDK实现了端到端的路面分割功能，主要采用了Unet模型对输入的路面图片进行语义分割，输出mask掩膜，然后与原图结合，生成路面语义分割后的可视化结果。<br>
 项目主要流程：将输入图片解码成YUV格式，经图片缩放后输入至模型中，得到结果mask，并将其与原图融合，最后编码输出可视化结果。
-主要适应场景：形状规则的路面，且较明显区分于周围环境。
 
 ### 1.1 支持的产品
 昇腾310（推理）
 
 
 ### 1.2 支持的版本
-CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
+CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）<br>
 SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ### 1.3 软件方案介绍
 基于MindX SDK的路面分割业务流程：待检测图片通过 appsrc 插件输入，然后使用图像解码插件mxpi_imagedecoder对图片进行解码，再通过图像缩放插件mxpi_imageresize将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件mxpi_tensorinfer得到检测结果，本项目开发的路面分割后处理插件处理推理结果，从中获取掩膜mask，然后与原始图片进行融合，之后通过图像编码插件mxpi_imageencoder将后处理插件的融合后的数据进行编码，最后使用输出插件appsink输出可视化的结果
+
 表1 系统方案各子系统功能描述：
 
 | 序号 |  子系统  | 功能描述     |
@@ -46,12 +46,11 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 │		├── lib 
 │		│     └──plugins #编译好的插件存放位置
 │ 		├── CMakeLists.txt
-│   	├── MxpiRoadSegPostProcess.cpp
+│   	        ├── MxpiRoadSegPostProcess.cpp
 │  		└── MxpiRoadSegPostProcess.cpp.h
 ├── main.py
 ├── README.md
-├── build.sh
-└── run.sh
+└── build.sh
 ```
 
 ### 1.5 技术实现流程图
@@ -60,12 +59,13 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 注：红色字体为本项目开发的后处理插件，其他为SDK内置插件
 
 ### 1.6 特性及适应场景
-本案例可以满足路面的语义分割内容，但同时对输入的图像有以下限制：
-1.对于输入的图像是灰度图像时，会影响分割效果。
-2.当路面上的障碍物（如车辆）较为密集时，会降低模型的分割效果
-3.当输入图片中的路面有阴影或颜色不一致时，会影响分割效果
-4.当输入图片中不含路面，也会有少量的标识
-5.适应于形状规则且与周围环境色差较大的路面图片
+本案例可以满足路面的语义分割内容，但同时对输入的图danghznag像有以下限制：<br>
+1.对于输入的图像是灰度图像时，会影响分割效果。<br>
+2.当路面上的障碍物（如车辆）较为密集时，会降低模型的分割效果。<br>
+3.当输入图片中的路面有阴影或颜色不一致时，会影响分割效果。<br>
+4.当输入图片中不含路面，也会有少量的标识。<br>
+5.适用于单张图片的输入。<br>
+6.适应于形状规则且与周围环境色差较大的路面图片。<br>
 
 ## 2 环境依赖
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
@@ -80,20 +80,11 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 - MindSDK 环境变量介绍
 ```
-export MX_SDK_HOME=${SDK安装路径}
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:/home/weifeng1/MindX_SDK/mxVision/lib/plugins
-export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
+. ${SDK-path}/set_env.sh
 ```
 - CANN 环境变量介绍
 ```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest
+. ${ascend-toolkit-path}/set_env.sh
 ```
 
 ## 3 模型转换
@@ -127,12 +118,11 @@ ATC run success
 	"appsink0": {
             "props": {
                 "blocksize": "4096000",
-				"location":"${输出结果文件名}" 
+		"location":"${输出结果文件名}" 
             },
             "factory": "filesink"
         }
 ```
-修改main.py中的输入图片路径FILE_PATH
 
 **步骤2** 设置环境变量
 按**第2节环境依赖**中设置环境变量
@@ -140,14 +130,12 @@ ATC run success
 **步骤3** 执行编译的步骤
 在样例目录下，执行
 ```
-./build.sh
+bash build.sh
 ```
 **步骤4** 运行及输出结果
 在样例目录下，执行
 ```
-./run.sh
-或
-python3.9 main.py
+python3.9 main.py test.jpg
 ```
 
 

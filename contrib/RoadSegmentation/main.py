@@ -16,6 +16,7 @@ limitations under the License.
 
 import os
 import cv2
+import sys
 import numpy as np
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -41,7 +42,13 @@ if __name__ == '__main__':
     MIN_IMAGE_SIZE = 32
     MAX_IMAGE_SIZE = 8192
     dataInput = MxDataInput()
-    FILE_PATH = "4.jpg"
+    if len(sys.argv) != 2:
+        print('please input image path')
+    else:
+        if sys.argv[1] == '':
+            print('input image path is not valid, use default config.')
+        else:
+            FILE_PATH = sys.argv[1]
     if os.path.exists(FILE_PATH) != 1:
         print("Failed to get the input picture. Please check it!")
         streamManagerApi.DestroyAllStreams()
