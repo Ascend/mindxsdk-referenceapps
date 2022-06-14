@@ -131,13 +131,15 @@ def infer(saves):
                     t = get_multi_dir(m, type_map[types_input], fi)
                     path = fi
                     one_time = t_save(path, m, t, saves, types_output)
-            else:
+            elif os.path.isdir(args.input):
                 index1 = 0
                 for fis in os.listdir(args.input):
                     index1 += 1
                 if index1 == 0:
                     print("It's an empty dir,please check your input!")
                     sys.exit(0)
+                t = get_input_num(m, type_map[types_input])
+            else:
                 t = get_input_num(m, type_map[types_input])
         except KeyError:
             print("KeyError")
