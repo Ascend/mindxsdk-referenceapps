@@ -46,7 +46,7 @@ if __name__ == '__main__':
         print('please input image path')
     else:
         if sys.argv[1] == '':
-            print('input image path is not valid, use default config.')
+            print('input image path is not valid. Please check it!')
         else:
             FILE_PATH = sys.argv[1]
     if os.path.exists(FILE_PATH) != 1:
