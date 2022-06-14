@@ -81,7 +81,6 @@ namespace MxBase {
                 float* begin_Conf = dataPtr_Conf + j * 2;
                 float conf = *(begin_Conf + 1);
 
-                conf = sqrtf(iou * conf);
                 if (conf> confThresh_) {
                     ObjectInfo objInfo;
                     objInfo.confidence = conf;
