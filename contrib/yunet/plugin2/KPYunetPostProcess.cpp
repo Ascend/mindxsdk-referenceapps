@@ -80,6 +80,10 @@ namespace MxBase {
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j * 2;
                 float conf = *(begin_Conf + 1);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 544442555aec11d25c39000a6ff5bd90fd5e1a0b
                 if (conf> confThresh_) {
                     ObjectInfo objInfo;
                     objInfo.confidence = conf;
