@@ -66,7 +66,7 @@ namespace MxBase {
     void TotalYunetPostProcess::generate_objectInfos(const std::vector <TensorBase>& tensors,
                                                      std::vector <std::vector<ObjectInfo>>& objectInfos,
                                                      const std::vector <ResizedImageInfo>& resizedImageInfos,
-                                                     cv::Mat& res) 
+                                                     cv::Mat& res)
     {
         auto shape = tensors[0].GetShape();
         float width_resize_scale = (float)resizedImageInfos[0].widthResize / resizedImageInfos[0].widthOriginal;
