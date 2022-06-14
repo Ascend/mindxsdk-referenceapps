@@ -64,9 +64,9 @@ namespace MxBase {
         return APP_ERR_OK;
     }
     void TotalYunetPostProcess::generate_objectInfos(const std::vector <TensorBase>& tensors,
-                                                      std::vector <std::vector<ObjectInfo>>& objectInfos,
-                                                      const std::vector <ResizedImageInfo>& resizedImageInfos,
-                                                      cv::Mat &res) 
+                                                     std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                     const std::vector <ResizedImageInfo>& resizedImageInfos,
+                                                     cv::Mat& res) 
     {
         auto shape = tensors[0].GetShape();
         float width_resize_scale = (float)resizedImageInfos[0].widthResize / resizedImageInfos[0].widthOriginal;
@@ -141,7 +141,7 @@ namespace MxBase {
 
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
-        GeneratePriorBox(PriorBox);        
+        GeneratePriorBox(PriorBox);
         cv::Mat res = decode_for_loc(location, PriorBox);
         generate_objectInfos(tensors, objectInfos, resizedImageInfos, res);
 

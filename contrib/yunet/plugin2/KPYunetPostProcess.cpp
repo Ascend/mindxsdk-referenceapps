@@ -65,7 +65,7 @@ namespace MxBase {
     void KPYunetPostProcess::generate_keypointInfos(const std::vector <TensorBase>& tensors,
                                                     std::vector <std::vector<KeyPointDetectionInfo>>& keypointInfos,
                                                     const std::vector <ResizedImageInfo>& resizedImageInfos,
-                                                    cv::Mat &res)
+                                                    cv::Mat& res)
     {
         auto shape = tensors[0].GetShape();
         float width_resize_scale = (float)resizedImageInfos[0].widthResize / resizedImageInfos[0].widthOriginal;
@@ -80,10 +80,8 @@ namespace MxBase {
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j * 2;
                 float conf = *(begin_Conf + 1);
-<<<<<<< HEAD
-=======
 
->>>>>>> 544442555aec11d25c39000a6ff5bd90fd5e1a0b
+                conf = sqrtf(iou * conf);
                 if (conf> confThresh_) {
                     ObjectInfo objInfo;
                     objInfo.confidence = conf;
