@@ -1,4 +1,5 @@
-﻿﻿
+﻿
+﻿
 # 路面分割
 
 ## 1 介绍
@@ -46,7 +47,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 │		├── lib 
 │		│     └──plugins #编译好的插件存放位置
 │ 		├── CMakeLists.txt
-│   	        ├── MxpiRoadSegPostProcess.cpp
+│   	├── MxpiRoadSegPostProcess.cpp
 │  		└── MxpiRoadSegPostProcess.cpp.h
 ├── main.py
 ├── README.md
@@ -54,7 +55,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 ```
 
 ### 1.5 技术实现流程图
-![SDK流程图](../RoadSegmentation/image/SDK_process.png)
+![SDK流程](../RoadSegmentation/image/SDK_process.png)
 
 注：红色字体为本项目开发的后处理插件，其他为SDK内置插件
 
@@ -118,7 +119,7 @@ ATC run success
 	"appsink0": {
             "props": {
                 "blocksize": "4096000",
-		"location":"${输出结果文件名}" 
+				"location":"${输出结果文件名}" 
             },
             "factory": "filesink"
         }
@@ -135,7 +136,7 @@ bash build.sh
 **步骤4** 运行及输出结果
 在样例目录下，执行
 ```
-python3.9 main.py test.jpg
+python3.9 main.py test.jpg   #测试图片地址
 ```
 
 
