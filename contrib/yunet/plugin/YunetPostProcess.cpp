@@ -61,6 +61,50 @@ namespace MxBase {
         return APP_ERR_OK;
     }
 
+    void YunetPostProcess::generate_objectInfos(const std::vector <TensorBase>& tensors,
+                                                std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                const std::vector <ResizedImageInfo>& resizedImageInfos,
+                                                cv::Mat& res)
+    {
+        auto shape = tensors[0].GetShape();
+        float width_resize_scale = (float)resizedImageInfos[0].widthResize / resizedImageInfos[0].widthOriginal;
+        float height_resize_scale = (float)resizedImageInfos[0].heightResize / resizedImageInfos[0].heightOriginal;
+        uint32_t batchSize = shape[0];
+        uint32_t VectorNum = shape[1];
+
+        for (uint32_t i = 0; i < batchSize; i++) {
+            std::vector <ObjectInfo> objectInfo, objectInfoSorted;
+            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
+            for (uint32_t j = 0; j < VectorNum; j++) {
+                float* begin_Conf = dataPtr_Conf + j * 2;
+                float conf = *(begin_Conf + 1);
+                
+                if (conf> confThresh_) {
+                    ObjectInfo objInfo;
+                    objInfo.confidence = j;
+                    objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                    objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                    objInfo.classId = RECTANGLE_COLOR;
+                    
+                    objectInfo.push_back(objInfo);
+                }
+            }
+            MxBase::NmsSort(objectInfo, iouThresh_);
+            if (!objectInfo.size()) {
+                ObjectInfo objInfo;
+                objInfo.confidence = 0;
+                objInfo.x0 = 0;
+                objInfo.y0 = 0;
+                objInfo.x1 = 0;
+                objInfo.y1 = 0;
+                objInfo.classId = 2;
+                objectInfo.push_back(objInfo);
+            }
+            objectInfos.push_back(objectInfo);
+        }
+    }
     void YunetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
                                                  std::vector <std::vector<ObjectInfo>>& objectInfos,
                                                  const std::vector <ResizedImageInfo>& resizedImageInfos)
@@ -81,49 +125,8 @@ namespace MxBase {
         cv::Mat PriorBox;
         cv::Mat location = cv::Mat(shape[1], shape[2], CV_32FC1, tensors[0].GetBuffer());
         GeneratePriorBox(PriorBox);
-
-        float width_resize = resizedImageInfos[0].widthResize;
-        float height_resize = resizedImageInfos[0].heightResize;
-        float width_original = resizedImageInfos[0].widthOriginal;
-        float height_original = resizedImageInfos[0].heightOriginal;
-        float width_resize_scale = width_resize / width_original;
-        float height_resize_scale = height_resize / height_original;
-        float resize_scale_factor = 1.0;
-        if (width_resize_scale >= height_resize_scale) {
-            resize_scale_factor = height_resize_scale;
-        } else {
-            resize_scale_factor = width_resize_scale;
-        }
-        cv::Mat res = decode_for_loc(location, PriorBox, resize_scale_factor);
-
-        uint32_t batchSize = shape[0];
-        uint32_t VectorNum = shape[1];
-        for (uint32_t i = 0; i < batchSize; i++) {
-            std::vector <ObjectInfo> objectInfo;
-            auto dataPtr_Conf = (float *) tensors[1].GetBuffer() + i * tensors[1].GetByteSize() / batchSize;
-            auto dataPtr_Iou = (float *) tensors[2].GetBuffer() + i * tensors[2].GetByteSize() / batchSize;
-            for (uint32_t j = 0; j < VectorNum; j++) {
-                float* begin_Conf = dataPtr_Conf + j * 2;
-                float* begin_Iou = dataPtr_Iou + j;
-                float conf = *(begin_Conf + 1);
-                float iou = *begin_Iou;
-                if (iou < 0.f) iou = 0.f;
-                if (iou > 1.f) iou = 1.f;
-
-                if (conf> confThresh_) {
-                    ObjectInfo objInfo;
-                    objInfo.confidence = conf;
-                    objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                    objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = RECTANGLE_COLOR;
-                    objectInfo.push_back(objInfo);
-                }
-            }
-            MxBase::NmsSort(objectInfo, iouThresh_);
-            objectInfos.push_back(objectInfo);
-        }
+        cv::Mat res = decode_for_loc(location, PriorBox);
+        generate_objectInfos(tensors, objectInfos, resizedImageInfos, res);
         LogInfo << "YunetPostProcess write results successed.";
     }
     APP_ERROR YunetPostProcess::Process(const std::vector<TensorBase> &tensors,
@@ -194,7 +197,7 @@ namespace MxBase {
      * @param resize_scale_factor: The factor of min(WidthOriginal/WidthResize, HeightOriginal/HeightResize)
      * @param boxes: The matrix which contains detection box coordinates(x0,y0,x1,y1), shape[21824,4]
      */
-    cv::Mat YunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior, float resize_scale_factor) {
+    cv::Mat YunetPostProcess::decode_for_loc(cv::Mat &loc, cv::Mat &prior) {
         cv::Mat loc_first = loc.colRange(0, 2);
         cv::Mat loc_last = loc.colRange(2, 4);
         cv::Mat prior_first = prior.colRange(0, 2);
@@ -209,9 +212,6 @@ namespace MxBase {
 
         cv::Mat boxes;
         cv::hconcat(boxes1, boxes2, boxes);
-        if (resize_scale_factor == 0) {
-            LogError << "resize_scale_factor is 0.";
-        }
         return boxes;
     }
 

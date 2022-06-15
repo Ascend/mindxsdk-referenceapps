@@ -90,10 +90,13 @@ if __name__ == '__main__':
     FLAGS = os.O_WRONLY | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR
     with os.fdopen(os.open('./result.264', FLAGS, MODES), 'wb') as fp:
-        while FRAME_COUNT <= 1000:
+        while FRAME_COUNT <= 100:
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
+            if ISSIGINTUP:
+                print("Exit")
+                break
 
     # destroy streams
     STREAM_MANAGER_API.DestroyAllStreams()

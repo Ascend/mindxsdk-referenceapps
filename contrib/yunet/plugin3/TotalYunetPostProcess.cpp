@@ -16,7 +16,6 @@
 
 #include "TotalYunetPostProcess.h"
 #include "MxBase/Log/Log.h"
-#include <map>
 
 namespace {
     const uint32_t LEFTTOPX = 0;
@@ -80,15 +79,15 @@ namespace MxBase {
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* begin_Conf = dataPtr_Conf + j * 2;
                 float conf = *(begin_Conf + 1);
-
+                
                 if (conf> confThresh_) {
                     ObjectInfo objInfo;
-                    objInfo.confidence = conf;
+                    objInfo.confidence = j;
                     objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
                     objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
                     objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                    objInfo.classId = j;
+                    objInfo.classId = RECTANGLE_COLOR;
                     
                     objectInfo.push_back(objInfo);
                 }
@@ -96,12 +95,11 @@ namespace MxBase {
             MxBase::NmsSort(objectInfo, iouThresh_);
 
             for (uint32_t j = 0; j < objectInfo.size(); j++) {
-                int keypoint_Pos = objectInfo[j].classId;
-                objectInfo[j].classId = RECTANGLE_COLOR;
-                objectInfoSorted.push_back(objectInfo[j]);
-
+                int keypoint_Pos = (int)objectInfo[j].confidence;
                 float* begin_Conf = dataPtr_Conf + keypoint_Pos * 2;
                 float conf = *(begin_Conf + 1);
+                objectInfo[j].confidence = conf;
+                objectInfoSorted.push_back(objectInfo[j]);
 
                 for (int k = 0; k < KEYPOINTNUM; k++)
                 {
@@ -117,6 +115,16 @@ namespace MxBase {
                     objInfo.classId = KEYPOINT_COLOR;
                     objectInfoSorted.push_back(objInfo);
                 }
+            }
+            if (!objectInfoSorted.size()) {
+                ObjectInfo objInfo;
+                objInfo.confidence = 0;
+                objInfo.x0 = 0;
+                objInfo.y0 = 0;
+                objInfo.x1 = 0;
+                objInfo.y1 = 0;
+                objInfo.classId = 2;
+                objectInfoSorted.push_back(objInfo);
             }
             objectInfos.push_back(objectInfoSorted);
         }

@@ -20,13 +20,32 @@ limitations under the License.
 
 
 
+import sys
+import re
+import json
 import os
 import stat
+import random
+import signal
+import datetime
+import threading
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
+def sigint_handler(signum, frame):
+    signum = signum
+    frame = frame
+    global ISSIGINTUP
+    ISSIGINTUP = True
+    print("catched interrupt signal")
+
+signal.signal(signal.SIGINT, sigint_handler)
+signal.signal(signal.SIGHUP, sigint_handler)
+signal.signal(signal.SIGTERM, sigint_handler)
+ISSIGINTUP = False
 
 
 if __name__ == '__main__':
@@ -58,6 +77,9 @@ if __name__ == '__main__':
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
-    
+            if ISSIGINTUP:
+                print("Exit")
+                break
+
     # destroy streams
     STREAM_MANAGER_API.DestroyAllStreams()

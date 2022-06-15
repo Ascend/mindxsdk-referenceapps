@@ -17,13 +17,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import sys
+import re
+import json
 import os
 import stat
+import random
+import signal
+import datetime
+import threading
 import cv2
-from PIL import Image
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
+from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+
+def sigint_handler(signum, frame):
+    signum = signum
+    frame = frame
+    global ISSIGINTUP
+    ISSIGINTUP = True
+    print("catched interrupt signal")
+
+signal.signal(signal.SIGINT, sigint_handler)
+signal.signal(signal.SIGHUP, sigint_handler)
+signal.signal(signal.SIGTERM, sigint_handler)
+ISSIGINTUP = False
 
 if __name__ == '__main__':
     
@@ -46,10 +65,14 @@ if __name__ == '__main__':
     STREAM_NAME = b'KPYunet'
     IN_PLUGIN_ID = 0
     FRAME_COUNT = 0
+
     while FRAME_COUNT <= 100:
         FRAME_COUNT += 1
         inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
         print(inferResult.data)
+        if ISSIGINTUP:
+            print("Exit")
+            break
 
 
     # destroy streams
