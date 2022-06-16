@@ -32,6 +32,7 @@ namespace {
     const uint32_t DIM = 2; // image dimension is 2
     const uint32_t RECTANGLE_COLOR = 1;
     const uint32_t KEYPOINT_COLOR = 2;
+    const uint32_t HINTPOINT_COLOR = 3;
     const uint32_t DIV_TWO = 2;
 }
 namespace MxBase {
@@ -99,7 +100,7 @@ namespace MxBase {
                 objInfo.y0 = 0;
                 objInfo.x1 = 0;
                 objInfo.y1 = 0;
-                objInfo.classId = 2;
+                objInfo.classId = HINTPOINT_COLOR;
                 objectInfo.push_back(objInfo);
             }
             objectInfos.push_back(objectInfo);

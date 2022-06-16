@@ -34,6 +34,7 @@ namespace {
     const uint32_t DIM = 2;
     const uint32_t RECTANGLE_COLOR = 1;
     const uint32_t KEYPOINT_COLOR = 2;
+    const uint32_t HINTPOINT_COLOR = 3;
     const uint32_t DIV_TWO = 2;
 }
 namespace MxBase {
@@ -62,6 +63,7 @@ namespace MxBase {
     {
         return APP_ERR_OK;
     }
+    
     void TotalYunetPostProcess::generate_objectInfos(const std::vector <TensorBase>& tensors,
                                                      std::vector <std::vector<ObjectInfo>>& objectInfos,
                                                      const std::vector <ResizedImageInfo>& resizedImageInfos,
@@ -123,7 +125,7 @@ namespace MxBase {
                 objInfo.y0 = 0;
                 objInfo.x1 = 0;
                 objInfo.y1 = 0;
-                objInfo.classId = 2;
+                objInfo.classId = HINTPOINT_COLOR;
                 objectInfoSorted.push_back(objInfo);
             }
             objectInfos.push_back(objectInfoSorted);
