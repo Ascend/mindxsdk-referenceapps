@@ -32,6 +32,7 @@ import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+
 def sigint_handler(signum, frame):
     signum = signum
     frame = frame
