@@ -139,12 +139,14 @@ def infer(saves):
                     print("It's an empty dir,please check your input!")
                     sys.exit(0)
                 t = get_input_num(m, type_map[types_input])
+                path = _filepath
+                one_time = t_save(path, m, t, saves, types_output)
             else:
                 t = get_input_num(m, type_map[types_input])
+                path = _filepath
+                one_time = t_save(path, m, t, saves, types_output)
         except KeyError:
             print("KeyError")
-        path = _filepath
-        one_time = t_save(path, m, t, saves, types_output)
     return one_time
 
 
@@ -237,6 +239,7 @@ def t_save(path, m, t, saves, types_output):
     outputs[0].to_host()
     nums, _shape = get_nums(outputs, types_output)
     if saves:
+        print(_output)
         save_files(path, outputs, _output, _datatype, nums, _shape, types_output)
     return one_times
 
@@ -317,12 +320,13 @@ def get_nums(outputs, types_output):
 
 def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_output):
     #TXT
+    my_time =  time.strftime("%Y%m%d%H%I%S", time.localtime( time.time() ))
     if _datatype == 'TXT' or _datatype == 'txt':
         i_index = 0
         for ik in nums:
-            f = os.open(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".txt", 
+            f = os.open(_output+'/'+_filepath.split('.')[0]+'_'+my_time+'_'+str(i_index)+".txt", 
                     os.O_RDWR | os.O_APPEND | os.O_CREAT, stat.S_IRWXU)
-            os.chmod(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".txt", stat.S_IRWXU)
+            os.chmod(_output+'/'+_filepath.split('.')[0]+'_'+my_time+'_'+str(i_index)+".txt", stat.S_IRWXU)
             output_desc = len(ik)
             for j in range(int(output_desc/_shape[i_index])):
                 for k in range(j*_shape[i_index], (j+1)*_shape[i_index]):
@@ -336,7 +340,7 @@ def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_outpu
             i.to_host()
             num = np.array(i)
             num = num.flatten()
-            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+str(i_index)+".bin")
+            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+mytime+'_'++str(i_index)+".bin")
             i_index += 1
     
 
