@@ -340,7 +340,7 @@ def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_outpu
             i.to_host()
             num = np.array(i)
             num = num.flatten()
-            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+my_time+'_'++str(i_index)+".bin")
+            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+my_time+'_'+str(i_index)+".bin")
             i_index += 1
     
 
