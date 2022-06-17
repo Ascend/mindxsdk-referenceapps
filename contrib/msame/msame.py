@@ -320,7 +320,7 @@ def get_nums(outputs, types_output):
 
 def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_output):
     #TXT
-    my_time =  time.strftime("%Y%m%d%H%I%S", time.localtime( time.time() ))
+    my_time =  time.strftime("%Y%m%d%H%M%S", time.localtime( time.time() ))
     if _datatype == 'TXT' or _datatype == 'txt':
         i_index = 0
         for ik in nums:
@@ -340,7 +340,7 @@ def save_files(_filepath, outputs, _output, _datatype, nums, _shape, types_outpu
             i.to_host()
             num = np.array(i)
             num = num.flatten()
-            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+mytime+'_'++str(i_index)+".bin")
+            num.tofile(_output+'/'+_filepath.split('.')[0]+'_'+my_time+'_'++str(i_index)+".bin")
             i_index += 1
     
 
