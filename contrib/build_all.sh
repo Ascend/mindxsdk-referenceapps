@@ -45,6 +45,7 @@ SAMPLE_FOLDER=(
     Collision/
     PassengerflowEstimation/
     CenterFace/
+    YOLOX/
 )
 
 
