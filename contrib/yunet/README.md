@@ -236,9 +236,7 @@ chmod 640 libyunetpostprocess.so
 
 对于plugin2、plugin3目录也同样处理。
 
-2.添加.cfg 文件的权限
-
-cd到根目录的config文件目录，运行
+2.config/face_yunet.cfg 确认权限640
 
 ````
 chmod 640 face_yunet.cfg
