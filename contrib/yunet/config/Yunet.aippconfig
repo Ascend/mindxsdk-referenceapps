@@ -1,7 +1,7 @@
 aipp_op {
     related_input_rank : 0
-    src_image_size_w : 1920
-    src_image_size_h : 1080
+    src_image_size_w : 160
+    src_image_size_h : 120
     crop : false
     aipp_mode: static
     input_format : YUV420SP_U8
