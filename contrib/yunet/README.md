@@ -228,7 +228,7 @@ make -j
 make install
 ````
 
-如果权限问题，cd到run包的./lib/modelpostprocessors目录，运行
+如果权限问题，cd到MindSDK安装路径的lib/modelpostprocessors目录，运行
 
 ````
 chmod 640 libyunetpostprocess.so
