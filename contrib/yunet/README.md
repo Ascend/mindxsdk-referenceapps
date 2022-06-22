@@ -46,9 +46,6 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ├── models
 │   └── Yunet.onnx 
 ├── pipeline
-│   ├── 1080can.pipeline
-│   ├── 3can.pipeline
-│   ├── kpcan.pipeline
 │   ├── KPYunet.pipeline
 │   └── Yunet.pipeline
 ├── plugin
