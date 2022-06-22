@@ -103,11 +103,6 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 . /usr/local/Ascend/ascend-toolkit/set_env.sh
 . ${SDK安装路径}/mxVision/set_env.sh
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
 ```
 
 注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。
@@ -116,21 +111,13 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ## 3 软件依赖说明
 
-如果涉及第三方软件依赖，请详细列出。
+
 
 | 软件名称 | 版本       | 说明                           | 使用教程                                                     |
 | -------- | ---------- | ------------------------------ | ------------------------------------------------------------ |
 | live555  | 1.09       | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md) |
 | ffmpeg   | 4.2.1 | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md#https://ffmpeg.org/download.html) |
 
-
-
-使用方法：首先运行run包
-
-````
-. /usr/local/Ascend/ascend-toolkit/set_env.sh 
-. ~/MindX_SDK/mxVision-2.0.4/set_env.sh
-````
 
 设置视频源，此处用rtsp拉流，将视频源转化为.264格式。
 
@@ -140,7 +127,7 @@ ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.26
 
 将转化后的.264视频用live555产生rtsp拉流。
 
-由于本项目是支持端对端3路推理，故设置3个视频源，请使用者自行将pipeline中的对应位置修改为所需要的。
+由于本项目是支持端对端3路推理，故设置3个视频源，请使用者自行将pipeline中的对应位置修改为自己所使用的的服务器和文件名。
 
 
 
