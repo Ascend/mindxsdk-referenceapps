@@ -97,15 +97,29 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 | ubuntu              | 18.04 | 操作系统                      | 请上ubuntu官网获取                                        |
 | Ascend-CANN-toolkit | 5.0.4 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
 
+
+
 在编译运行项目前，需要设置环境变量：
 
-```
-. /usr/local/Ascend/ascend-toolkit/set_env.sh
-. ${SDK安装路径}/mxVision/set_env.sh
+MindSDK 环境变量:
 
 ```
+. ${SDK-path}/set_env.sh
+```
 
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。
+CANN 环境变量：
+
+```
+. ${ascend-toolkit-path}/set_env.sh
+```
+
+- 环境变量介绍
+
+```
+SDK-path: mxVision SDK 安装路径
+ascend-toolkit-path: CANN 安装路径。
+```  
+ 
 
 
 
