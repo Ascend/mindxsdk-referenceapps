@@ -37,7 +37,7 @@
 
     cd xxx/gstreamer-rtsp-ssl-example
     make
-    编译成功后会生成rtsp_server可执行程序
+    生成rtsp_server可执行程序，则说明编译成功。
 
 ## 4 运行
 
@@ -57,12 +57,14 @@
     RTSP_PASSWORD=password
     ```
 
-    注:起流程序默认不带解密功能，需使用openssl工具手动解密
+    注:起流程序默认不带解密功能，需使用openssl工具手动解密，命令如下:
     openssl rsa -in server.key -out server_no.crt
-    ca.crt、server.crt证书制作参考mxVision手册证书制作章节
+    生成server_no.crt，则说明成功。
+
+    证书ca.crt、server.crt的制作，请参考mxVision手册证书制作章节。
 
 ### 4.2 运行
 
     cd xxx/gstreamer-rtsp-ssl-example
     ./rtsp_server
-    起流成功后提示:stream ready at rtsps://127.0.0.1:8554/test
+    起流成功后提示: stream ready at rtsps://127.0.0.1:8554/test
