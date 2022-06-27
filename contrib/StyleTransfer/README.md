@@ -67,13 +67,12 @@ StyleTransfer
 
 **步骤1** 将pth模型转换为onnx模型
 
+设置环境变量
 ```
-bash env.sh \
+bash env.sh 
 
 ```
-
-cd models/
-
+将原始pth模型转化为onnx模型
 ```
 
     python3 CycleGAN_onnx_export.py \
