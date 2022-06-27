@@ -74,7 +74,6 @@ bash env.sh
 ```
 将原始pth模型转化为onnx模型
 ```
-
     python3 CycleGAN_onnx_export.py \
 
 --model_ga_path=latest_net_G_A.pth      \
