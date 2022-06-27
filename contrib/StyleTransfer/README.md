@@ -4,6 +4,7 @@
 
 本文中风格转换中的地图转换。它通过一种无监督的少样本的学习方式，能够实现航拍地图和卫星地图之间的相互转换。
 论文原文：https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
+
 初始模型及转换脚本下载：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
 
 ### 1.1 支持的产品
@@ -67,19 +68,19 @@ StyleTransfer
 **步骤1** 将pth模型转换为onnx模型
 
 ```
-                bash env.sh \
+bash env.sh \
 
 ```
 
-                cd models/
+cd models/
 
 ```
 
-                python3 CycleGAN_onnx_export.py \
+    python3 CycleGAN_onnx_export.py \
 
-        --model_ga_path=latest_net_G_A.pth      \
+--model_ga_path=latest_net_G_A.pth      \
 
-        --model_ga_onnx_name=model_Ga.onnx       \
+--model_ga_onnx_name=model_Ga.onnx       \
 
 ```
 
@@ -87,7 +88,7 @@ StyleTransfer
 **步骤2** 将onnx模型转换为om模型
 
 ```
-                atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
+atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
 
 ```
 
@@ -95,9 +96,9 @@ StyleTransfer
 **步骤3** 运行程序
 
 ```
-                cd src/
+cd src/
 
-                python main.py
+python main.py
 
 ```
 
@@ -106,7 +107,7 @@ StyleTransfer
 生成的地图存放在result目录中。
 
 ```
-                ls ../result/map.jpg 
+ls ../result/map.jpg 
 
 ```
 
