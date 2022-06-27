@@ -39,15 +39,15 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 ├── build.sh
 ├── config
-│   ├── face_yunet.cfg
-│   └── Yunet.aippconfig
+│   ├── face_yunet.cfg      #yunet配置文件
+│   └── Yunet.aippconfig    # 模型转换aipp配置文件
 ├── kpmain.py
 ├── main.py
 ├── models
 │   └── Yunet.onnx 
 ├── pipeline
 │   ├── KPYunet.pipeline
-│   └── Yunet.pipeline
+│   └── Yunet.pipeline    #pipeline文件
 ├── plugin
 │   ├── build.sh
 │   ├── CMakeLists.txt
@@ -82,7 +82,7 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 "MxpiObject":[{"classVec":[{"classId":3,"className":"","confidence":0,"headerVec":[]}],"x0":0,"x1":0,"y0":0,"y1":0}]
 ````
-另外，本项目要求输入视频为1920*1080 25fps视频，若视频过大则可能会导致内存错误
+另外，本项目要求输入视频为1920*1080 25fps视频，不支持25帧率以上视频
 
 
 
@@ -151,15 +151,7 @@ ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.26
 
 模型转换步骤如下：
 
-设置ATC env：当前目录下运行
-
-````
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-````
+按照2环境依赖设置环境变量
 
 cd到models文件夹，运行
 
@@ -213,6 +205,9 @@ aipp_op {
 
 
 ## 5 编译运行
+
+main.py 用来生成端对端三路推理的可视化视频
+kpmain：用来生成单路关键点后处理的数据结果（用来确保关键点类型后处理的实现成功，关键点效果看main.py的可视化结果）
 
 1.编译后处理插件
 
