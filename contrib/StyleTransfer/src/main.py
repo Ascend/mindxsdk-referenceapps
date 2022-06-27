@@ -35,7 +35,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 if __name__ == '__main__':
     #  check input image
 
-    img_path = "../sat.jpg"
+    IMG_PATH = "../sat.jpg"
 
     # initialize the stream manager
     stream_manager = StreamManagerApi()
@@ -55,8 +55,8 @@ if __name__ == '__main__':
         exit()
 
     # prepare the input of the stream #begin
-    streamName = b"styletransfer"
-    inPluginId = 0
+    STREAM_NAME = b"styletransfer"
+    PLUGIN_ID = 0
     dataInput = MxDataInput()
     with open(img_path, 'rb') as f:
 
@@ -84,17 +84,17 @@ if __name__ == '__main__':
     tensorList.ParseFromString(infer.metadataVec[0].serializedMetadata)
     output_res_DANet = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     # Reshape and transpose
-    result = output_res_DANet.reshape(3,256,256)
-    result = result.transpose(1,2,0)
+    result = output_res_DANet.reshape(3, 256, 256)
+    result = result.transpose(1, 2, 0)
     # Reverse Normalize
     result = result*255.0
 
-    result = cv2.cvtColor(result,COLOR_RGB2BGR)
-    result = cv2.resize(result,(512, 512))
+    result = cv2.cvtColor(result, COLOR_RGB2BGR)
+    result = cv2.resize(result, (512, 512))
 
     print("___________infer_finish_____________")
 
-    cv2.imwrite('../result/map.jpg',result)
+    cv2.imwrite('../result/map.jpg', result)
 
     stream_manager.DestroyAllStreams()
 
