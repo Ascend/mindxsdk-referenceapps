@@ -136,7 +136,7 @@ bash env.sh
 atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
 
-转换完成后在存放在models/。中
+转换完成后在存放在./models中。
 **步骤3** 运行程序
 ```
 python main.py
