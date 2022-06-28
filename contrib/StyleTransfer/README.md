@@ -6,7 +6,9 @@
 
 论文原文：https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
 
-初始模型及转换脚本下载：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
+初始模型、推理模型及转换脚本下载：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
+
+测试集下载地址：https://people.eecs.berkeley.edu/~taesung_park/CycleGAN/datasets/maps.zip
 
 ### 1.1 支持的产品
 
@@ -35,89 +37,33 @@ npu-smi info
 +===================+=================+========================================+
 ```
 
+### 1.3 软件方案介绍
+| 序号 | 子系统  | 功能描述 |
+| 1   | 图像输入 | 调用MindX SDK的appsrc输入图片|
+| 2   | 图像解码 | 调用MindX SDK的mxpi_decode对图像解码|
+| 2   | 图像放缩 | 调用MindX SDK的mxpi_imageresize，放缩到256*256大小 |
+| 3   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
+| 7   | 结果输出 | 输出图片信息|
 ### 1.4 代码目录结构与说明
 
-    本sample工程名称为Styletransfer，工程目录如下图所示：
-    
+    本sample工程名称为Styletransfer，工程目录如下图所示：  
 ```
 StyleTransfer
 .
 ├── README.md
-├── env.sh                        //环境变量脚本
 ├── models       
-│   └── aipp_CycleGAN_pth.config  //atc 配置文件  
+│   └── aipp_CycleGAN_pth.config  //aipp配置文件  
 ├── pipeline
 │   └── styletransfer.pipeline
 └── src
     └── main.py
 ```
-
-
 ### 2 环境依赖
-
 推荐系统为：Linux davinci-mini arch64 GNU/Linux
-
-
-
-
-### 3 代码实现
-
-示例步骤如下：
-
-### 3.1 模型转换
-
-**步骤1** 将pth模型转换为onnx模型
-
-设置环境变量
+### 2.1 依赖安装
+eg：Linux davinci-mini arch64 GNU/Linux
 ```
-bash env.sh 
-
-```
-将原始pth模型转化为onnx模型
-```
-    python3 CycleGAN_onnx_export.py \
-
---model_ga_path=latest_net_G_A.pth      \
-
---model_ga_onnx_name=model_Ga.onnx       \
-
-```
-
-
-**步骤2** 将onnx模型转换为om模型
-
-```
-atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
-
-```
-
-
-**步骤3** 运行程序
-
-```
-cd src/
-
-python main.py
-
-```
-
-### 3.2 运行结果
-
-生成的地图存放在result目录中。
-
-```
-ls ../result/map.jpg 
-
-```
-
-
-### 4 软件依赖说明
-
-### 4.1 软件依赖
-
-
-```
-CANN 5.0.2.alpha003
+CANN 5.0.5
 
 torch == 1.5.0
 
@@ -142,11 +88,8 @@ tensorflow-estimator ==1.15.1
 termcolor==1.1.0
 
 ```
-
-### 4.2 python第三方库
-
+### 2.2 python第三方库
 ```
-
 numpy == 1.16.6
 
 Pillow == 8.2.0
@@ -162,4 +105,45 @@ requests == 2.22.0
 tqdm == 4.61.0
 
 PyYAML == 5.4.1
+```
+
+### 3 开发准备
+
+### 3.1 模型转换
+示例步骤如下：
+
+**步骤1** 将pth模型转换为onnx模型
+首先在ModelZoo下载CycleGAN模型。
+
+下载地址：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
+
+**步骤2** 设置环境变量
+```
+bash env.sh 
+
+```
+**步骤3** 将原始pth模型转化为onnx模型
+```
+    python3 CycleGAN_onnx_export.py \
+
+--model_ga_path=latest_net_G_A.pth      \
+
+--model_ga_onnx_name=model_Ga.onnx       \
+
+```
+**步骤4** 将onnx模型转换为om模型
+```
+atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
+```
+
+转换完成后在存放在models/。中
+**步骤3** 运行程序
+```
+python main.py
+```
+### 3.2 运行结果
+
+生成的地图存放在result目录中。
+```
+ls ../result/map.jpg 
 ```
