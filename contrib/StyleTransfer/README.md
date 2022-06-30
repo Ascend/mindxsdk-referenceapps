@@ -2,7 +2,7 @@
 
 ## 介绍
 
-本文中风格转换中的地图转换。它通过一种无监督的少样本的学习方式，能够实现卫星地图和卫星地图之间的转换。
+本文中风格转换中的地图转换。它通过一种无监督的少样本的学习方式，能够实现航拍地图到卫星地图的转换。
 
 论文原文：https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
 
@@ -58,7 +58,7 @@ npu-smi info
 ### 代码目录结构与说明
 
 本参考设计工程名称为Styletransfer，工程目录如下图所示： 
- 
+
 ```
 StyleTransfer
 .
@@ -96,6 +96,7 @@ PyYAML == 5.4.1
 > 模型转换
 
 **步骤1** 将pth模型转换为onnx模型
+
 首先在ModelZoo下载CycleGAN模型。
 
 下载地址：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
@@ -166,6 +167,7 @@ python main.py
 ###  运行结果
 
 生成的地图存放在result目录中。
+
 ```
 ls ../result/map.jpg 
 ```
