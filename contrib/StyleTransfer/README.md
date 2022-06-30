@@ -46,12 +46,14 @@ npu-smi info
 
 ### 软件方案介绍
 
+```
 | 序号 | 子系统  | 功能描述 |
 | 1   | 图像输入 | 调用MindX SDK的appsrc输入图片|
 | 2   | 图像解码 | 调用MindX SDK的mxpi_decode对图像解码|
 | 2   | 图像放缩 | 调用MindX SDK的mxpi_imageresize，放缩到256*256大小 |
 | 3   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
 | 7   | 结果输出 | 输出图片信息|
+```
 
 ### 代码目录结构与说明
 
