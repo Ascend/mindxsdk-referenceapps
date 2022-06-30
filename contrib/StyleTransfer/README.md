@@ -23,8 +23,6 @@
 |     numpy     |   1.22.3    |
 | opencv-python |    4.5.5    |
 
-### 支持的版本
-
 版本号查询方法，在Atlas产品环境下，运行命令：
 
 ```
@@ -67,16 +65,6 @@ StyleTransfer
 └── src
     └── main.py
 ```
-### 环境依赖
-
-|   软件名称    |    版本     |
-| :-----------: | :---------: |
-|    ubantu     |  18.04.5 LTS |
-|   MindX SDK   |    2.0.4    |
-|    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
-|     numpy     |   1.22.3    |
-| opencv-python |    4.5.5    |
 
 ### python第三方库
 
