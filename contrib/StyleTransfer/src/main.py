@@ -29,17 +29,16 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 MODEL_WIDTH = 256
 MODEL_HEIGHT = 256
 
+RGB_TUNNEL_NUMBER = 3
 NORMALIZE_MAX = 255.0
 
 if __name__ == '__main__':
     #  check input image
-
     IMG_PATH = "../sat.jpg"
 
     # initialize the stream manager
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
-
     if stream_state != 0:
         print("Failed to init Stream manager, ret=%s" % str(stream_state))
         exit()
@@ -72,7 +71,6 @@ if __name__ == '__main__':
         keyVec.push_back(key)
 
     # Get the result from the stream
-
     infer = stream_manager.GetResult(streamName, b'appsink0', keyVec)
     if infer.metadataVec[0].errorCode != 0:
         print("GetResult error. errorCode=%d ,errorMsg=%s" % (
@@ -82,15 +80,15 @@ if __name__ == '__main__':
     tensorList = MxpiDataType.MxpiTensorPackageList()
     tensorList.ParseFromString(infer.metadataVec[0].serializedMetadata)
     output_res_DANet = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+
     # Reshape and transpose
-    result = output_res_DANet.reshape(3, MODEL_WIDTH, MODEL_WIDTH)
+    result = output_res_DANet.reshape(RGB_TUNNEL_NUMBER, MODEL_WIDTH, MODEL_WIDTH)
     result = result.transpose(1, 2, 0)
+
     # Reverse Normalize
     result = result * NORMALIZE_MAX
-
     result = cv2.cvtColor(result, COLOR_RGB2BGR)
     result = cv2.resize(result, (MODEL_WIDTH, MODEL_HEIGHT))
-
     print("___________infer_finish_____________")
 
     cv2.imwrite('../result/map.jpg', result)
