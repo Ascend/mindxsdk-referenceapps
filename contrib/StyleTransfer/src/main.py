@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 #-*-coding:utf-8-*-
 
-"""
-Styletransfer for Satellite picture to map picture
-"""
-
 # Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +26,10 @@ from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+MODEL_WIDTH = 256
+MODEL_HEIGHT = 256
 
+NORMALIZE_MAX = 255.0
 
 if __name__ == '__main__':
     #  check input image
@@ -84,13 +83,13 @@ if __name__ == '__main__':
     tensorList.ParseFromString(infer.metadataVec[0].serializedMetadata)
     output_res_DANet = np.frombuffer(tensorList.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     # Reshape and transpose
-    result = output_res_DANet.reshape(3, 256, 256)
+    result = output_res_DANet.reshape(3, MODEL_WIDTH, MODEL_WIDTH)
     result = result.transpose(1, 2, 0)
     # Reverse Normalize
-    result = result*255.0
+    result = result * NORMALIZE_MAX
 
     result = cv2.cvtColor(result, COLOR_RGB2BGR)
-    result = cv2.resize(result, (512, 512))
+    result = cv2.resize(result, (MODEL_WIDTH, MODEL_HEIGHT))
 
     print("___________infer_finish_____________")
 
