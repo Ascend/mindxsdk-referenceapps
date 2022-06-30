@@ -57,7 +57,8 @@ npu-smi info
 
 ### 代码目录结构与说明
 
-    本参考设计工程名称为Styletransfer，工程目录如下图所示：  
+本参考设计工程名称为Styletransfer，工程目录如下图所示： 
+ 
 ```
 StyleTransfer
 .
