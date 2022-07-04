@@ -24,6 +24,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 HEIGHT = 320
 WIDTH = 480
+DE_NORM = 255
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -83,9 +84,9 @@ if __name__ == '__main__':
             if(pred[i+1][j+1] < 0):
                 preds[i][j] = 0
             elif(pred[i+1][j+1] > 1):
-                preds[i][j] = 255
+                preds[i][j] = DE_NORM
             else:
-                preds[i][j] = pred[i+1][j+1] * 255
+                preds[i][j] = pred[i+1][j+1] * DE_NORM
     end_array = np.array(preds, dtype=int)
     SAVE_PATH = './result.jpg'
     img_resize = cv2.resize(end_array, (w, h), interpolation = cv2.INTER_NEAREST)

@@ -29,6 +29,7 @@ NUM = 0
 MAX_PIXEL = 255.0
 HEIGHT = 320
 WIDTH = 480
+DE_NORM = 255
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -93,9 +94,9 @@ if __name__ == '__main__':
                 if(pred[i+1][j+1] < 0):
                     preds[i][j] = 0
                 elif(pred[i+1][j+1] > 1):
-                    preds[i][j] = 255
+                    preds[i][j] = DE_NORM
                 else:
-                    preds[i][j] = pred[i+1][j+1] * 255
+                    preds[i][j] = pred[i+1][j+1] * DE_NORM
         end_array = np.array(preds, dtype=int)
         for i in range(HEIGHT):
             for j in range(WIDTH):

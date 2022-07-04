@@ -101,15 +101,9 @@ pipeline流程如下图所示：
 具体执行命令
 
 ```
-export MX_SDK_HOME=${自己的SDK安装包路径}  
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/python:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/5.0.4/acllib/lib64:/usr/local/Ascend/driver/lib64
-
-export PYTHONPATH=/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python:/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
+   cd /home/tanwenjun0/MindX_SDK/mxVision-2.0.4
+	
+   bash set_env.sh
 ```
 
 
@@ -130,17 +124,13 @@ https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 
 1. 下载上述模型压缩包，获取 ADNet_bs1.onnx 模型文件放置 ADNet/model 目录下。
 
-2. 设置环境变量用以使用atc工具
+2. 执行以下命令设置环境变量以使用atc工具
 
    ```
-   export install_path=/usr/local/Ascend/ascend-toolkit/latest
-   export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-   export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-   export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH:$LD_LIBRARY_PATH
-   export ASCEND_OPP_PATH=${install_path}/opp
-   ```
+   cd /home/tanwenjun0/Ascend/ascend-toolkit
 
-   
+   bash set_env.sh
+   ```
 
 3. 进入ADNet/model文件夹下执行命令
 
@@ -182,9 +172,7 @@ python main.py
 
 ## 5  测试精度
 
-**步骤 1** 安装数据集用以测试精度。数据集BSD68需要下载到当前目录，下载路径为
-
-百度云盘链接： https://pan.baidu.com/s/1XiePOuutbAuKRRTV949FlQ   提取码： 0315
+**步骤 1** 安装数据集用以测试精度。数据集 BSD68 需要自行下载。
 
 将下载的数据集BSD68上传至./ADNet目录下，我们运行 python transform.py 对数据集进行格式与尺寸转换得到 dataset 文件，得到ADNet文件夹的目录结构为如下。
 
