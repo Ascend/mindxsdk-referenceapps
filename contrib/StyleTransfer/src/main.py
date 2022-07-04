@@ -22,7 +22,6 @@ import io
 import cv2
 from cv2 import COLOR_RGB2BGR
 import numpy as np
-from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 

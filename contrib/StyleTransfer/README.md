@@ -54,6 +54,9 @@ npu-smi info
 | 3   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
 | 7   | 结果输出 | 输出图片信息|
 ```
+### 项目实现流程
+
+![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
 
 ### 代码目录结构与说明
 
@@ -103,8 +106,11 @@ PyYAML == 5.4.1
 
 **步骤2** 设置环境变量
 
+运行MindXSDK与ascend-toolkit下的set_env.sh设置环境变量
+MindXSDK：${MX_SDK_HOME}/set_env.sh
+ascend-toolkit：/usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
-bash env.sh 
+bash set_env.sh 
 
 ```
 
