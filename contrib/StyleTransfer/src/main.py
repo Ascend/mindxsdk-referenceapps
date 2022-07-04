@@ -33,17 +33,20 @@ NORMALIZE_MAX = 255.0
 
 if __name__ == '__main__':
     #  check input image
-    IMG_PATH = "../sat.jpg"
+    #IMG_PATH = "../sat.jp"
+    IMG_PATH = '/home/HwHiAiUser/train/312_A.jpg'
+    PIPELINE = "../pipeline/styletransfer.pipeline"
 
     # initialize the stream manager
     stream_manager = StreamManagerApi()
     stream_state = stream_manager.InitManager()
-    if stream_state != 0:
-        print("Failed to init Stream manager, ret=%s" % str(stream_state))
-        exit()
 
+    # check pipeline
+    if os.path.exists(PIPELINE) != 1:
+        print("The pipeline does not exist.")
+        exit()
     # create streams by the pipeline config
-    with open("../pipeline/styletransfer.pipeline", 'rb') as f:
+    with open(PIPELINE, 'rb') as f:
         pipeline = f.read().replace(b'\r', b'').replace(b'\n', b'')
     pipeline_string = pipeline
     stream_state = stream_manager.CreateMultipleStreams(pipeline_string)
@@ -55,10 +58,14 @@ if __name__ == '__main__':
     STREAM_NAME = b"styletransfer"
     PLUGIN_ID = 0
     dataInput = MxDataInput()
-    with open(img_path, 'rb') as f:
 
+    if os.path.exists(IMG_PATH) != 1:
+        print("The test image does not exist.")
+        exit()
+
+    with open(IMG_PATH, 'rb') as f:
         dataInput.data = f.read()
-    ret = stream_manager.SendData(streamName, inPluginId, dataInput)
+    ret = stream_manager.SendData(STREAM_NAME, PLUGIN_ID, dataInput)
 
     if ret < 0:
         print("Failed to send data to stream")
@@ -70,7 +77,7 @@ if __name__ == '__main__':
         keyVec.push_back(key)
 
     # Get the result from the stream
-    infer = stream_manager.GetResult(streamName, b'appsink0', keyVec)
+    infer = stream_manager.GetResult(STREAM_NAME, b'appsink0', keyVec)
     if infer.metadataVec[0].errorCode != 0:
         print("GetResult error. errorCode=%d ,errorMsg=%s" % (
             infer.metadataVec[0].errorCode, infer.metadataVec[0].errorMsg))

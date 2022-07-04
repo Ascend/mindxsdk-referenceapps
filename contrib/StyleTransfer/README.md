@@ -108,6 +108,7 @@ PyYAML == 5.4.1
 
 运行MindXSDK与ascend-toolkit下的set_env.sh设置环境变量
 MindXSDK：${MX_SDK_HOME}/set_env.sh
+
 ascend-toolkit：/usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
 bash set_env.sh 
