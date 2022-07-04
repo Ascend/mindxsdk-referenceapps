@@ -33,8 +33,7 @@ NORMALIZE_MAX = 255.0
 
 if __name__ == '__main__':
     #  check input image
-    #IMG_PATH = "../sat.jp"
-    IMG_PATH = '/home/HwHiAiUser/train/312_A.jpg'
+    IMG_PATH = "../sat.jpg"
     PIPELINE = "../pipeline/styletransfer.pipeline"
 
     # initialize the stream manager
