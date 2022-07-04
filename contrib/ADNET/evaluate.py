@@ -24,7 +24,6 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 SUM_PSNR = 0
-SUM = 0
 NUM = 0
 MAX_PIXEL = 255.0
 HEIGHT = 320
@@ -98,6 +97,7 @@ if __name__ == '__main__':
                 else:
                     preds[i][j] = pred[i+1][j+1] * DE_NORM
         end_array = np.array(preds, dtype=int)
+        SUM = 0
         for i in range(HEIGHT):
             for j in range(WIDTH):
                 SUM += (begin_array[i][j] - end_array[i][j]) ** 2
