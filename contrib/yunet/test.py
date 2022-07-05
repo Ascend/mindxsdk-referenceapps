@@ -42,6 +42,7 @@ def sigint_handler(signum, frame):
     ISSIGINTUP = True
     print("catched interrupt signal")
 
+
 def stop_thread():
     global OVER
     OVER = True
