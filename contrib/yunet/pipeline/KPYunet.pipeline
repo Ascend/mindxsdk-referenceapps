@@ -32,7 +32,7 @@
         },
         "mxpi_tensorinfer0": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },

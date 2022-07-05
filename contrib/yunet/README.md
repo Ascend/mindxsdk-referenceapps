@@ -1,5 +1,5 @@
 ## yunet实时人脸检测
-### 1介绍
+## 1介绍
 
 yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可视化呈现。输入一段视频，最后可以检测得到视频中所有人的人脸框架和关键点信息。
 
@@ -39,18 +39,15 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 ├── build.sh
 ├── config
-│   ├── face_yunet.cfg
-│   └── Yunet.aippconfig
+│   ├── face_yunet.cfg      #yunet配置文件
+│   └── Yunet.aippconfig    # 模型转换aipp配置文件
 ├── kpmain.py
 ├── main.py
 ├── models
 │   └── Yunet.onnx 
 ├── pipeline
-│   ├── 1080can.pipeline
-│   ├── 3can.pipeline
-│   ├── kpcan.pipeline
 │   ├── KPYunet.pipeline
-│   └── Yunet.pipeline
+│   └── Yunet.pipeline    #pipeline文件
 ├── plugin
 │   ├── build.sh
 │   ├── CMakeLists.txt
@@ -85,7 +82,7 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 "MxpiObject":[{"classVec":[{"classId":3,"className":"","confidence":0,"headerVec":[]}],"x0":0,"x1":0,"y0":0,"y1":0}]
 ````
-
+另外，本项目要求输入视频为1920*1080 25fps视频，不支持25帧率以上视频
 
 
 
@@ -100,40 +97,41 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 | ubuntu              | 18.04 | 操作系统                      | 请上ubuntu官网获取                                        |
 | Ascend-CANN-toolkit | 5.0.4 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
 
+
+
 在编译运行项目前，需要设置环境变量：
 
-```
-. /usr/local/Ascend/ascend-toolkit/set_env.sh
-. ${SDK安装路径}/mxVision/set_env.sh
+MindSDK 环境变量:
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+```
+. ${SDK-path}/set_env.sh
 ```
 
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。
+CANN 环境变量：
+
+```
+. ${ascend-toolkit-path}/set_env.sh
+```
+
+- 环境变量介绍
+
+```
+SDK-path: mxVision SDK 安装路径
+ascend-toolkit-path: CANN 安装路径。
+```  
+ 
 
 
 
 ## 3 软件依赖说明
 
-如果涉及第三方软件依赖，请详细列出。
+
 
 | 软件名称 | 版本       | 说明                           | 使用教程                                                     |
 | -------- | ---------- | ------------------------------ | ------------------------------------------------------------ |
-| live555  | 1.09       | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/one_stop_navigation.md) |
-| ffmpeg   | 2021-07-21 | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/one_stop_navigation.md) |
+| live555  | 1.09       | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md) |
+| ffmpeg   | 4.2.1 | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md#https://ffmpeg.org/download.html) |
 
-
-
-使用方法：首先运行run包
-
-````
-. /usr/local/Ascend/ascend-toolkit/set_env.sh 
-. ~/MindX_SDK/mxVision-2.0.4/set_env.sh
-````
 
 设置视频源，此处用rtsp拉流，将视频源转化为.264格式。
 
@@ -143,7 +141,7 @@ ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.26
 
 将转化后的.264视频用live555产生rtsp拉流。
 
-由于本项目是支持端对端3路推理，故设置3个视频源，请使用者自行将pipeline中的对应位置修改为所需要的。
+由于本项目是支持端对端3路推理，故设置3个视频源，请使用者自行将pipeline中的对应位置修改为自己所使用的的服务器和文件名。
 
 
 
@@ -153,15 +151,7 @@ ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.26
 
 模型转换步骤如下：
 
-设置ATC env：当前目录下运行
-
-````
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-````
+按照2环境依赖设置环境变量
 
 cd到models文件夹，运行
 
@@ -216,6 +206,9 @@ aipp_op {
 
 ## 5 编译运行
 
+main.py 用来生成端对端三路推理的可视化视频
+kpmain.py：用来生成单路关键点后处理的数据结果（用来确保关键点类型后处理的实现成功，关键点效果看main.py的可视化结果）
+kpmain.py在此项目中不是必须的，当前没有keypoint类型osd支持下，仅给出单路pipeline输出数据信息供参考
 1.编译后处理插件
 
 cd到plugin目录，mkdir新建文件夹build
@@ -228,7 +221,7 @@ make -j
 make install
 ````
 
-如果权限问题，cd到run包的./lib/modelpostprocessors目录，运行
+如果权限问题，cd到MindSDK安装路径的lib/modelpostprocessors目录，运行
 
 ````
 chmod 640 libyunetpostprocess.so
@@ -236,9 +229,7 @@ chmod 640 libyunetpostprocess.so
 
 对于plugin2、plugin3目录也同样处理。
 
-2.添加.cfg 文件的权限
-
-cd到根目录的config文件目录，运行
+2.config/face_yunet.cfg 确认权限640
 
 ````
 chmod 640 face_yunet.cfg
@@ -259,7 +250,20 @@ bash run.sh
 
 
 ## 6 性能检测
+测试插件libtotalyunetpostprocess.so的性能：
 
 ![fps](images/fps.png)
 
 性能检测结果如上。本项目采用视频拼接的方式实现3路视频输出，1个视频输出3路推理结果，故10秒平均帧率24.8，基本满足端对端3路25fps的性能要求。
+测试结束后会输出帧率为0，原因为我们是实时输出每10s帧率的，要在运行的时候实时看。
+
+
+
+## 7 常见问题
+
+若视频解码器负荷过高则会出现以下问题：
+![error1](images/error1.png)
+![error2](images/error2.png)
+
+导致此问题的可能原因为：视频帧率过高、视频尺寸过大或解码器正在同时解码过多其他视频
+解决方案：确保三路视频都为1920*1080 25fps并且减少其它任务的运行

@@ -53,7 +53,7 @@
         },
         "mxpi_tensorinfer0": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },
@@ -240,7 +240,7 @@
         },
         "mxpi_tensorinfer1": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },
@@ -326,7 +326,7 @@
         },
         "mxpi_tensorinfer2": {
             "props": {
-                "modelPath": "./models/yunet_160.om",
+                "modelPath": "./models/yunet.om",
                 "singleBatchInfer": "1",
                 "outputHasBatchDim": "0"
             },
