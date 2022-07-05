@@ -62,7 +62,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    with open("./pipeline/InferTest.pipeline", 'rb') as f:
+    with open("./pipeline/Yunet.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
@@ -78,13 +78,13 @@ if __name__ == '__main__':
         time_step = 0
         time_count = 0
         begin_time = datetime.datetime.now()
-        one_step = 10
+        one_step = 3
 
         while True:
             cur_time = (datetime.datetime.now() - begin_time).total_seconds()
             if cur_time >= (time_step + one_step):
                 time_step = time_step + one_step
-                print("10秒平均帧率:", (FRAME_COUNT - time_count) * 1.0 / one_step)
+                print("3秒平均帧率:", (FRAME_COUNT - time_count) * 1.0 / one_step)
                 time_count = FRAME_COUNT
             if ISSIGINTUP or OVER:
                 print("Exit")
@@ -95,11 +95,10 @@ if __name__ == '__main__':
     FLAGS = os.O_WRONLY | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR
     with os.fdopen(os.open('./result.264', FLAGS, MODES), 'wb') as fp:
-        while FRAME_COUNT <= 100:
+        while FRAME_COUNT <= 10000:
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
-            # print(inferResult.data)
             if ISSIGINTUP:
                 print("Exit")
                 break
