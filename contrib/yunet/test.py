@@ -42,10 +42,15 @@ def sigint_handler(signum, frame):
     ISSIGINTUP = True
     print("catched interrupt signal")
 
+def stop_thread():
+    global OVER
+    OVER = True
+
 signal.signal(signal.SIGINT, sigint_handler)
 signal.signal(signal.SIGHUP, sigint_handler)
 signal.signal(signal.SIGTERM, sigint_handler)
 ISSIGINTUP = False
+OVER = False
 
 if __name__ == '__main__':
     
@@ -57,7 +62,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    with open("./pipeline/Yunet.pipeline", 'rb') as f:
+    with open("./pipeline/InferTest.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
@@ -81,7 +86,7 @@ if __name__ == '__main__':
                 time_step = time_step + one_step
                 print("10秒平均帧率:", (FRAME_COUNT - time_count) * 1.0 / one_step)
                 time_count = FRAME_COUNT
-            if ISSIGINTUP:
+            if ISSIGINTUP or OVER:
                 print("Exit")
                 break
 
@@ -94,9 +99,11 @@ if __name__ == '__main__':
             FRAME_COUNT += 1
             inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
             fp.write(inferResult.data)
+            # print(inferResult.data)
             if ISSIGINTUP:
                 print("Exit")
                 break
 
     # destroy streams
     STREAM_MANAGER_API.DestroyAllStreams()
+    stop_thread()
