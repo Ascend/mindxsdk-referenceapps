@@ -1,8 +1,8 @@
-# Mind SDK 风格转换参考设计
+# Mind SDK 风格转换参考设计（从航拍图到卫星图的转换）
 
 ## 介绍
 
-本文中风格转换中的地图转换。它通过一种无监督的少样本的学习方式，能够实现航拍地图到卫星地图的转换。
+本文中风格转换中的航拍图到卫星图转换。它通过一种无监督的少样本的学习方式，能够实现风格转换。
 
 论文原文：https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix
 
@@ -163,7 +163,7 @@ aipp_op{
 atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
 
-转换完成后在存放在/models中。
+转换完成后存放在/models中。
 
 **步骤6** 运行程序
 
