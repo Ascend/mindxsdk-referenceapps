@@ -270,7 +270,7 @@ bash run.sh
 ````
 测试插件`libtotalyunetpostprocess.so`的性能：
 
-![fps](images/fps.png)
+![fps](images/fps2.png)
 
 因为性能检测结果实时输出，使用者在`test.py`运行过程中可以实时查看检测结果，并且在需要时，可以在输出帧率后立刻按CTRL+C停止，以查看帧率。
 性能检测结果如上。本项目三路推理的3秒平均帧率在74.0-75.0之间，满足端对端三路25fps的需求。
