@@ -47,13 +47,13 @@ namespace MxBase {
 
     APP_ERROR KPYunetPostProcess::Init(const std::map <std::string, std::shared_ptr<void>>& postConfig)
     {
-        LogInfo << "Start to Init KPYunetPostProcess.";
+        LogDebug << "Start to Init KPYunetPostProcess.";
         APP_ERROR ret = KeypointPostProcessBase::Init(postConfig);
         if (ret != APP_ERR_OK) {
             LogError << GetError(ret) << "Fail to superInit in KeypointPostProcessBase.";
             return ret;
         }
-        LogInfo << "End to Init KPYunetPostProcess.";
+        LogDebug << "End to Init KPYunetPostProcess.";
         return APP_ERR_OK;
     }
 
@@ -117,7 +117,7 @@ namespace MxBase {
                                                      std::vector <std::vector<KeyPointDetectionInfo>>& keypointInfos,
                                                      const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
-        LogInfo << "KPYunetPostProcess start to write results.";
+        LogDebug << "KPYunetPostProcess start to write results.";
         
         auto loc = tensors[0].GetBuffer();
         auto conf = tensors[1].GetBuffer();
@@ -130,14 +130,14 @@ namespace MxBase {
         cv::Mat res = decode_for_loc(location, PriorBox);
         generate_keypointInfos(tensors, keypointInfos, resizedImageInfos, res);
 
-        LogInfo << "KPYunetPostProcess write results successed.";
+        LogDebug << "KPYunetPostProcess write results successed.";
     }
     APP_ERROR KPYunetPostProcess::Process(const std::vector<TensorBase> &tensors,
                                           std::vector<std::vector<KeyPointDetectionInfo>> &KeypointInfos,
                                           const std::vector<ResizedImageInfo> &resizedImageInfos,
                                           const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
-        LogInfo << "Start to Process KPYunetPostProcess.";
+        LogDebug << "Start to Process KPYunetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
         auto inputs = tensors;
         ret = CheckAndMoveTensors(inputs);
@@ -146,7 +146,7 @@ namespace MxBase {
             return ret;
         }
         KeypointDetectionOutput(inputs, KeypointInfos, resizedImageInfos);
-        LogInfo << "End to Process KPYunetPostProcess.";
+        LogDebug << "End to Process KPYunetPostProcess.";
         return APP_ERR_OK;
     }
 

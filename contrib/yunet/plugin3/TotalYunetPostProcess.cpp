@@ -49,13 +49,13 @@ namespace MxBase {
 
     APP_ERROR TotalYunetPostProcess::Init(const std::map <std::string, std::shared_ptr<void>>& postConfig)
     {
-        LogInfo << "Start to Init TotalYunetPostProcess.";
+        LogDebug << "Start to Init TotalYunetPostProcess.";
         APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
         if (ret != APP_ERR_OK) {
             LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
             return ret;
         }
-        LogInfo << "End to Init TotalYunetPostProcess.";
+        LogDebug << "End to Init TotalYunetPostProcess.";
         return APP_ERR_OK;
     }
 
@@ -136,7 +136,7 @@ namespace MxBase {
                                                       std::vector <std::vector<ObjectInfo>>& objectInfos,
                                                       const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
-        LogInfo << "TotalYunetPostProcess start to write results.";
+        LogDebug << "TotalYunetPostProcess start to write results.";
         
         for (auto num : { objectInfoTensor_, objectConfTensor_ }) {
             if ((num >= tensors.size()) || (num < 0)) {
@@ -155,14 +155,14 @@ namespace MxBase {
         cv::Mat res = decode_for_loc(location, PriorBox);
         generate_objectInfos(tensors, objectInfos, resizedImageInfos, res);
 
-        LogInfo << "TotalYunetPostProcess write results successed.";
+        LogDebug << "TotalYunetPostProcess write results successed.";
     }
     APP_ERROR TotalYunetPostProcess::Process(const std::vector<TensorBase> &tensors,
                                              std::vector<std::vector<ObjectInfo>> &objectInfos,
                                              const std::vector<ResizedImageInfo> &resizedImageInfos,
                                              const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
-        LogInfo << "Start to Process TotalYunetPostProcess.";
+        LogDebug << "Start to Process TotalYunetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
         auto inputs = tensors;
         ret = CheckAndMoveTensors(inputs);
@@ -171,7 +171,7 @@ namespace MxBase {
             return ret;
         }
         ObjectDetectionOutput(inputs, objectInfos, resizedImageInfos);
-        LogInfo << "End to Process TotalYunetPostProcess.";
+        LogDebug << "End to Process TotalYunetPostProcess.";
         return APP_ERR_OK;
     }
 
