@@ -101,7 +101,7 @@ pipeline流程如下图所示：
 具体执行命令
 
 ```
-   cd /home/tanwenjun0/MindX_SDK/mxVision-2.0.4
+   cd /home/username/MindX_SDK/mxVision-2.0.4
 	
    bash set_env.sh
 ```
@@ -127,7 +127,7 @@ https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 2. 执行以下命令设置环境变量以使用atc工具
 
    ```
-   cd /home/tanwenjun0/Ascend/ascend-toolkit
+   cd /home/username/Ascend/ascend-toolkit
 
    bash set_env.sh
    ```
