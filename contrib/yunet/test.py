@@ -42,7 +42,6 @@ def sigint_handler(signum, frame):
     ISSIGINTUP = True
     print("catched interrupt signal")
 
-
 def stop_thread():
     global OVER
     OVER = True
@@ -95,14 +94,12 @@ if __name__ == '__main__':
     t.start()
     FLAGS = os.O_WRONLY | os.O_CREAT
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open('./result.264', FLAGS, MODES), 'wb') as fp:
-        while FRAME_COUNT <= 10000:
-            FRAME_COUNT += 1
-            inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
-            fp.write(inferResult.data)
-            if ISSIGINTUP:
-                print("Exit")
-                break
+    while FRAME_COUNT <= 10000:
+        FRAME_COUNT += 1
+        inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
+        if ISSIGINTUP:
+            print("Exit")
+            break
 
     # destroy streams
     STREAM_MANAGER_API.DestroyAllStreams()
