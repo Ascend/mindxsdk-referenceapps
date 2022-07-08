@@ -63,7 +63,7 @@ if __name__ == '__main__':
         exit()
 
     # create streams by pipeline config file
-    with open("./pipeline/Yunet.pipeline", 'rb') as f:
+    with open("./pipeline/InferTest.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
