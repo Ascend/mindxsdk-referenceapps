@@ -51,6 +51,7 @@ STANDARD_COLORS = [
     'WhiteSmoke', 'Yellow', 'YellowGreen'
 ]
 
+
 def from_colorname_to_bgr(color):
     """
     convert color name to bgr value
@@ -64,6 +65,7 @@ def from_colorname_to_bgr(color):
     rgb_color = webcolors.name_to_rgb(color)
     result = (rgb_color.blue, rgb_color.green, rgb_color.red)
     return result
+
 
 def standard_to_bgr(list_color_name):
     """
@@ -79,8 +81,9 @@ def standard_to_bgr(list_color_name):
     for i in range(len(list_color_name) - 36):  # -36 used to match the len(obj_list)
         standard.append(from_colorname_to_bgr(list_color_name[i]))
     return standard
-    
-def plot_one_box(origin_img, box,color=None, line_thickness=None):
+
+
+def plot_one_box(origin_img, box, color=None, line_thickness=None):
     """
     plot one bounding box on image
 
@@ -127,12 +130,12 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
         
-    pipeline_path = "picodet.pipeline"
-    if os.path.exists(pipeline_path) != 1:
+    PIPELINE_PATH = "picodet.pipeline"
+    if os.path.exists(PIPELINE_PATH) != 1:
         print("Pipeline does not exist !")
         exit()
 
-    with open(pipeline_path, 'rb') as f:
+    with open(PIPELINE_PATH, 'rb') as f:
         pipelineStr = f.read()
         ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
         if ret != 0:
@@ -141,7 +144,7 @@ if __name__ == '__main__':
             
     for root, dirs, images in os.walk(imagesPath, topdown=True):
         if len(images) == 0:
-            print("folder ",root, " is empty")
+            print("folder ", root, " is empty")
             continue
         for image in images:
             imagePath = os.path.join(root, image)
@@ -150,18 +153,18 @@ if __name__ == '__main__':
             with open(imagePath, 'rb') as f:
                 dataInput.data = f.read()
 
-            streamName = b'detection'
-            inPluginId = 0
-            uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+            STREAM_NAME = b'detection'
+            IN_PLUGIN_ID = 0
+            uniqueId = streamManagerApi.SendData(STREAM_NAME, IN_PLUGIN_ID, dataInput)
             if uniqueId < 0:
                 print("Failed to send data to stream.")
                 exit()
 
-            keys = [b"mxpi_objectpostprocessor0",b"mxpi_imagedecoder0"]
+            keys = [b"mxpi_objectpostprocessor0", b"mxpi_imagedecoder0"]
             keyVec = StringVector()
             for key in keys:
                 keyVec.push_back(key)
-            infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+            infer_result = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
             if infer_result.size() == 0:
                 print("infer_result is null")
                 continue
@@ -188,14 +191,14 @@ if __name__ == '__main__':
             color_list = standard_to_bgr(STANDARD_COLORS)
 
             for obj in objectList.objectVec:
-                box = {'x0': obj.x0,
+                objBox = {'x0': obj.x0,
                        'x1': obj.x1,
                        'y0': obj.y0,
                        'y1': obj.y1,
                        'text': obj.classVec[0].className,
                        'classId': int(obj.classVec[0].classId),
                        'confidence': round(obj.classVec[0].confidence, 4)}
-                plot_one_box(img, box, color=color_list[box['classId']])
+                plot_one_box(img, objBox, color=color_list[objBox.get('classId')])
             cv2.imwrite(os.path.join(resultPath, image), img)
                 
     streamManagerApi.DestroyAllStreams()

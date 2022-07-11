@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
 #include "PicodetPostProcess.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/Maths/FastMath.h"
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
+
+namespace {
+    const uint32_t REG_MAX = 7;
+    const uint32_t TENSOR_SIZE = 8;
+    const uint32_t TENSOR_SHAPE_SIZE = 3;
+    const uint32_t BOXES_TENSOR = 32;
+    const uint32_t BBOX_SIZE = 4;
+    const uint32_t HALF_OF_TENSORS = 2;
+}
 
 namespace MxBase {
     PicodetPostProcess &PicodetPostProcess::operator=(const PicodetPostProcess &other)
@@ -70,7 +78,7 @@ namespace MxBase {
                     << "is unequal to 8";
             return false;
         }
-        for (uint32_t i = 0; i < tensors.size() / 2; i++) {
+        for (uint32_t i = 0; i < TENSOR_SIZE / HALF_OF_TENSORS; i++) {
             auto shape1 = tensors[i].GetShape();
             auto shape2 = tensors[i + stridesNum_].GetShape();
             if (shape1.size() != TENSOR_SHAPE_SIZE || shape2.size() != TENSOR_SHAPE_SIZE) {
@@ -78,9 +86,9 @@ namespace MxBase {
                         << " or " << shape2.size() << ") is unequal to 3.";
                 return false;
             }
-            if (shape1[3] != classNum_ || shape2[3] != BOXES_TENSOR) {
-                LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "The classNum (" << shape1[3] << ") is unequal to "
-                        << classNum_ << " or the value of tensor shape " << shape2[3] << ") is unequal to 32.";
+            if (shape1[TENSOR_SHAPE_SIZE] != classNum_ || shape2[TENSOR_SHAPE_SIZE] != BOXES_TENSOR) {
+                LogError << GetError(APP_ERR_COMM_INVALID_PARAM) << "The classNum (" << shape1[TENSOR_SHAPE_SIZE] << ") is unequal to "
+                        << classNum_ << " or the value of tensor shape " << shape2[TENSOR_SHAPE_SIZE] << ") is unequal to 32.";
                 return false;
             }
         }
@@ -144,7 +152,7 @@ namespace MxBase {
         objectInfo.y1  = (float)(resizedImageInfo.heightOriginal * resizeY1) / resizedImageInfo.heightResize;
     }
 
-    void PicodetPostProcess::GetScoreAndLabel(const float *outBuffer, const uint32_t idx,float &score, int &curLabel)
+    void PicodetPostProcess::GetScoreAndLabel(const float *outBuffer, const uint32_t idx, float &score, int &curLabel)
     {
         const float * scores = outBuffer + (idx * classNum_);
         for (uint32_t label = 0; label < classNum_; label++) {
@@ -156,8 +164,8 @@ namespace MxBase {
     }
 
     APP_ERROR PicodetPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
-                                                  std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                                  const std::vector<ResizedImageInfo> &resizedImageInfos)
+                                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                                        const std::vector<ResizedImageInfo> &resizedImageInfos)
     {
         LogDebug << "PicodetPostProcess start to write results.";
         if (tensors.size() == 0) {
@@ -176,6 +184,10 @@ namespace MxBase {
                 int curLabel = 0;
                 GetScoreAndLabel(outBuffer1, idx, score, curLabel);
 
+                if (featureWidth ==  0) {
+                    LogError << "featureWidth is zero";
+                    return APP_ERR_DIVIDE_ZERO;
+                }
                 float centerY = ((idx / featureWidth) + 0.5) *  strides_[i];
                 float centerX = ((idx % featureWidth) + 0.5) *  strides_[i];
                 std::pair<int, int> center(centerX, centerY);
@@ -200,9 +212,9 @@ namespace MxBase {
     }
 
     APP_ERROR PicodetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                         std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                         const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                         const std::map<std::string, std::shared_ptr<void>> &paramMap)
+                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                        const std::map<std::string, std::shared_ptr<void>> &paramMap)
     {
         LogDebug << "Start to Process PicodetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
