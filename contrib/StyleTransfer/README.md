@@ -10,6 +10,19 @@
 
 初始模型、推理模型及转换脚本下载：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
 
+### 项目实现流程及适用场景
+
+![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
+
+项目的主要流程：
+（1）输入类型是图片数据（jpg图片序列）
+（2）通过调用MindX SDK提供的图像解码接口mxpi_imagedecoder，解码后获取图像数据。
+（3）然后进行图像尺寸大小变换，调用MindX SDK提供的图像尺寸大小变换接口mxpi_imageresize插件，输入图像大小要求高256，宽256。
+（4）模型后处理，调用MindX SDK提供的模型推理插件mxpi_modelinfer。然后调用MindX SDK提供的appsink将结果取出。
+（5）模型输出经过后处理后，得到图片数组并写入图片。
+场景限制：
+输入的图像应为卫星航拍图，在清晰度较好的情况下，能取得较好的推理效果。
+
 ### 支持的产品以及环境依赖
 
 支持 Atlas 200dk开发者套件、Ascend 310推理芯片。
@@ -54,9 +67,6 @@ npu-smi info
 | 3   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
 | 7   | 结果输出 | 输出图片信息|
 ```
-### 项目实现流程
-
-![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
 
 ### 代码目录结构与说明
 
@@ -104,6 +114,8 @@ PyYAML == 5.4.1
 
 下载地址：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
 
+模型获取解压后，将CycleGAN文件夹下的所有文件及文件夹全部都放在StyleTransfer/models文件夹中
+
 **步骤2** 设置环境变量
 
 运行MindXSDK与ascend-toolkit下的set_env.sh设置环境变量
@@ -117,13 +129,12 @@ bash set_env.sh
 
 **步骤3** 将原始pth模型转化为onnx模型
 
-```
-    python3 CycleGAN_onnx_export.py \
+进入/models目录
 
---model_ga_path=latest_net_G_A.pth      \
-
---model_ga_onnx_name=model_Ga.onnx       \
 ```
+python3  CycleGAN_onnx_export.py  --model_ga_path=latest_net_G_A.pth  --model_gb_path=latest_net_G_B.pth  --onnx_path=./onnxmodel/  --model_ga_onnx_name=model_Ga.onnx  --model_gb_onnx_name=model_Gb.onnx
+```
+生成的onnx模型在./onnxmodel/文件夹下
 
 **步骤4** 配置AIPP
 
@@ -159,13 +170,20 @@ aipp_op{
 
 **步骤5** 将onnx模型转换为om模型
 
+仍然在/models目录中操作
 ```
-atc --framework=5 --model=model_Ga.onnx --output=sat2map --input_format=NCHW --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0" --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
+atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0"  --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
 
 转换完成后存放在/models中。
 
-**步骤6** 运行程序
+**步骤6** 下载测试集
+
+在文章介绍中下载maps测试集，然后将测试集中testA文件夹复制到/StyleTransfer目录下
+
+更改测试图片可以通过更改main.py脚本的IMG_PATH变量。默认的测试图片是/StyleTransfer/testA/sat.jpg
+
+**步骤7** 运行程序
 
 ```
 python main.py
@@ -175,6 +193,12 @@ python main.py
 
 生成的地图存放在result目录中。
 
+如果没有需要在StyleTransfer文件夹中手动创建
+
+```
+mkdir result
+```
+查看生成图片
 ```
 ls ../result/map.jpg 
 ```
