@@ -15,6 +15,7 @@
 ![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
 
 项目的主要流程：
+
 （1）输入类型是图片数据（jpg图片序列）
 
 （2）通过调用MindX SDK提供的图像解码接口mxpi_imagedecoder，解码后获取图像数据。
