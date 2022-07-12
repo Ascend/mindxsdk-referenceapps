@@ -17,7 +17,7 @@
 #define PICODET_POST_PROCESS_H
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 
-namespace DefaultValues{
+namespace DefaultValues {
     const float DEFAULT_SCORE_THRESH = 0.4;
     const float DEFAULT_NMS_THRESH = 0.5;
     const uint32_t DEFAULT_STRIDES_NUM = 4;
@@ -32,7 +32,7 @@ namespace MxBase {
 
         ~PicodetPostProcess() = default;
 
-        PicodetPostProcess(const PicodetPostProcess &other) = default;
+        PicodetPostProcess(const PicodetPostProcess &other);
 
         PicodetPostProcess &operator=(const PicodetPostProcess &other);
 
