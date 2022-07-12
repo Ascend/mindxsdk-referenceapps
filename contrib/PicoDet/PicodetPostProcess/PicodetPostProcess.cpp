@@ -212,9 +212,9 @@ namespace MxBase {
     }
 
     APP_ERROR PicodetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                        const std::map<std::string, std::shared_ptr<void>> &paramMap)
+                                          std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                          const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                          const std::map<std::string, std::shared_ptr<void>> &paramMap)
     {
         LogDebug << "Start to Process PicodetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
