@@ -1,7 +1,7 @@
 ## yunet实时人脸检测
 ## 1介绍
 
-yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可视化呈现。输入一段视频，最后可以检测得到视频中所有人的人脸框架和关键点信息。
+yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可视化呈现。输入3路视频，对其进行推理，输出推理结果。
 
 ### 1.1 支持的产品
 
@@ -22,13 +22,11 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 | 3    | 数据分发       | 对单个输入数据进行2次分发。                                  |
 | 4    | 数据缓存       | 输出时为后续处理过程创建一个线程，用于将输入数据与输出数据解耦，并创建缓存队列，存储尚未输入到下流插件的数据。 |
 | 5    | 图像处理       | 对解码后的YUV格式的图像进行放缩。                            |
-| 6    | 模型推理插件   | 目标分类或检测。                                             |
-| 7    | 模型后处理插件 | 对模型输出的张量进行后处理。                                 |
-| 8    | 图片合并插件   | 对多张图片进行合并                                           |
-| 9    | OSD合并插件    | 对多个OSD实例进行合并                                        |
-| 10   | 目标框转绘插件 | 物体类型转化为OSD实例                                        |
-| 11   | OSD可视化插件  | 实现对视频流的每一帧图像进行绘制。                           |
-| 12   | 视频编码插件   | 用于将OSD可视化插件输出的图片进行视频编码，输出视频。        |
+| 6    | 模型推理插件   | 目标检测。                                                   |
+| 7    | 模型后处理插件 | 对模型输出的张量进行后处理，得到物体类型数据。               |
+| 8    | 目标框转绘插件 | 物体类型转化为OSD实例                                        |
+| 9    | OSD可视化插件  | 实现对视频流的每一帧图像进行绘制。                           |
+| 10   | 视频编码插件   | 用于将OSD可视化插件输出的图片进行视频编码，输出视频。        |
 
 
 
@@ -39,29 +37,32 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 ├── build.sh
 ├── config
-│   ├── face_yunet.cfg      #yunet配置文件
+│   ├── face_yunet.cfg      # yunet配置文件
 │   └── Yunet.aippconfig    # 模型转换aipp配置文件
-├── kpmain.py
-├── main.py
+├── kpmain.py	# 关键点信息输出代码
+├── main.py		# 单路视频输出代码
+├── test.py		# 三路后处理性能测试代码
 ├── models
 │   └── Yunet.onnx 
 ├── pipeline
-│   ├── KPYunet.pipeline
-│   └── Yunet.pipeline    #pipeline文件
+│   ├── InferTest.pipeline	# 三路后处理性能测试pipeline
+│   ├── PluginTest.pipeline	# 原方案插件性能测试pipeline
+│   ├── KPYunet.pipeline	# 关键点信息输出pipeline
+│   └── Yunet.pipeline   	# 单路视频输出pipeline
 ├── plugin
 │   ├── build.sh
 │   ├── CMakeLists.txt
-│   ├── YunetPostProcess.cpp
+│   ├── YunetPostProcess.cpp	# 人脸检测框后处理代码
 │   └── YunetPostProcess.h
 ├── plugin2
 │   ├── build.sh
 │   ├── CMakeLists.txt
-│   ├── KPYunetPostProcess.cpp
+│   ├── KPYunetPostProcess.cpp	# 人脸关键点后处理代码
 │   ├── KPYunetPostProcess.h
 ├── plugin3
 │   ├── build.sh
 │   ├── CMakeLists.txt
-│   ├── TotalYunetPostProcess.cpp
+│   ├── TotalYunetPostProcess.cpp	# 人脸检测框与关键点后处理代码（以供可视化）
 │   └── TotalYunetPostProcess.h
 ├── README.md
 └── run.sh
@@ -82,7 +83,7 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 ````
 "MxpiObject":[{"classVec":[{"classId":3,"className":"","confidence":0,"headerVec":[]}],"x0":0,"x1":0,"y0":0,"y1":0}]
 ````
-另外，本项目要求输入视频为1920*1080 25fps视频，不支持25帧率以上视频
+另外，本项目要求输入视频为1920*1080 25fps视频，不支持25帧率以上视频。
 
 
 
@@ -101,7 +102,7 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 
 在编译运行项目前，需要设置环境变量：
 
-MindSDK 环境变量:
+MindSDK 环境变量：
 
 ```
 . ${SDK-path}/set_env.sh
@@ -118,8 +119,8 @@ CANN 环境变量：
 ```
 SDK-path: mxVision SDK 安装路径
 ascend-toolkit-path: CANN 安装路径。
-```  
- 
+```
+
 
 
 
@@ -127,9 +128,9 @@ ascend-toolkit-path: CANN 安装路径。
 
 
 
-| 软件名称 | 版本       | 说明                           | 使用教程                                                     |
-| -------- | ---------- | ------------------------------ | ------------------------------------------------------------ |
-| live555  | 1.09       | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md) |
+| 软件名称 | 版本  | 说明                           | 使用教程                                                     |
+| -------- | ----- | ------------------------------ | ------------------------------------------------------------ |
+| live555  | 1.09  | 实现视频转rstp进行推流         | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md) |
 | ffmpeg   | 4.2.1 | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md#https://ffmpeg.org/download.html) |
 
 
@@ -153,7 +154,7 @@ ffmpeg -i xxx.mp4 -vcodec h264 -bf 0 -g 25 -r 25 -s 1920*1080 -an -f h264 xxx.26
 
 按照2环境依赖设置环境变量
 
-cd到models文件夹，运行
+`cd`到`models`文件夹，运行
 
 ````
 atc --framework=5 --model=yunet.onnx --output=yunet --input_format=NCHW --input_shape="input:1,3,120,160" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/Yunet.aippconfig
@@ -206,14 +207,21 @@ aipp_op {
 
 ## 5 编译运行
 
-main.py 用来生成端对端三路推理的可视化视频
-kpmain.py：用来生成单路关键点后处理的数据结果（用来确保关键点类型后处理的实现成功，关键点效果看main.py的可视化结果）
-kpmain.py在此项目中不是必须的，当前没有keypoint类型osd支持下，仅给出单路pipeline输出数据信息供参考
+`main.py`：用来生成端对端单路推理的可视化视频，以提供单路推理结果可视化的应用样例
+
+`kpmain.py`：用来生成单路关键点后处理的数据结果（用来确保关键点类型后处理的实现成功，关键点效果看main.py的可视化结果）
+
+（`kpmain.py`在此项目中不是必须的，当前没有keypoint类型osd支持下，仅给出单路pipeline输出数据信息供参考）
+
+`test.py`：用来输出端对端三路推理的后处理结果，以检测三路推理性能是否达标
+
+需要注意的是，本项目后处理插件支持三路视频推理的后处理，但由于mxVision-2.0.4暂不支持三路后处理输出，所以此处采取单路视频可视化和三路推理性能检测两部分，分别提供可视化应用与性能检测的功能。
+
 1.编译后处理插件
 
-cd到plugin目录，mkdir新建文件夹build
+`cd`到`plugin`目录，`mkdir`新建文件夹`build`
 
-cd到build，运行
+`cd`到`build`，运行
 
 ````
 cmake ..
@@ -221,25 +229,15 @@ make -j
 make install
 ````
 
-如果权限问题，cd到MindSDK安装路径的lib/modelpostprocessors目录，运行
+如果权限问题，`cd`到MindSDK安装路径的`lib/modelpostprocessors`目录，将`libyunetpostprocess.so`的权限更改为`640`。
 
-````
-chmod 640 libyunetpostprocess.so
-````
+对于`plugin2`、`plugin3`目录也同样处理。
 
-对于plugin2、plugin3目录也同样处理。
+2.`config/face_yunet.cfg` 确认权限640。
 
-2.config/face_yunet.cfg 确认权限640
+3.运行`main.py`程序
 
-````
-chmod 640 face_yunet.cfg
-````
-
-3.运行main.py程序
-
-cd到根目录
-
-运行
+`cd`到根目录，运行
 
 ````
 bash run.sh
@@ -250,7 +248,7 @@ bash run.sh
 
 
 ## 6 性能检测
-修改run.sh中
+修改`run.sh`中
 ````
 python3 main.py
 ````
@@ -262,12 +260,12 @@ python3 test.py
 ````
 bash run.sh
 ````
-测试插件libtotalyunetpostprocess.so的性能：
+测试插件`libtotalyunetpostprocess.so`的性能：
 
-![fps](images/fps1.png)
+![fps](images/fps.png)
 
-因为性能检测结果实时输出，需要使用者在test.py运行过程中实时查看检测结果，具体操作为可以在输出帧率后立刻按CTRL+C暂停，查看帧率
-性能检测结果如上。本项目采用视频拼接的方式实现3路视频输出，1个视频输出3路推理结果，3秒平均帧率25.33，满足端对端3路25fps的性能要求。
+因为性能检测结果实时输出，使用者在`test.py`运行过程中可以实时查看检测结果，并且在需要时，可以在输出帧率后立刻按CTRL+C停止，以查看帧率。
+性能检测结果如上。本项目三路推理的3秒平均帧率在74.0-75.0之间，满足端对端三路25fps的需求。
 
 
 
