@@ -12,7 +12,8 @@
 
 ### 项目实现流程及适用场景
 
-![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
+![avatar](/README_img/pic.png)
+
 
 项目的主要流程：
 （1）输入类型是图片数据（jpg图片序列）
