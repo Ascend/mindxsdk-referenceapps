@@ -45,7 +45,6 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
 |── layers.py      //biggan_prepocess.py需要引用的网络结构文件
 |── inception_utils.py      //biggan_prepocess.py需要引用的功能函数文件
 |── G_ema.pth      //已经训练好的网络模型文件
-├── env.sh  //环境变量设置
 ├──python  
 |   ├── biggan.pipeline      //业务流
 |   ├── main.py             // 主函数，用以在拥有数据集后生成图像
@@ -82,7 +81,9 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
 
 ## 3.前期数据和模型准备
 
-​      本项目使用的模型是biggan模型，来源于[ATC BigGAN(FP16)]https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d，具体流程可以详细参考[ATC BigGAN (FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d)
+​      本项目使用的模型是biggan模型，来源于https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d
+
+​       具体流程可以详细参考[ATC BigGAN (FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d)
 
 1. 数据获取
 
