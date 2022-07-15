@@ -32,28 +32,24 @@ from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, S
 
 
 
-def prepare_bin(label_path, noise_path, count):
+def preprocess(label_path, noise_path, num, count):
+
+
     label_files = os.listdir(label_path)
     noise_files = os.listdir(noise_path)
     
     label_files.sort(key=lambda x:int(x.split('input_')[1].split('.bin')[0]))
     noise_files.sort(key=lambda x:int(x.split('input_')[1].split('.bin')[0]))
     
-    print(label_files[count],noise_files[count])
+    print(label_files[count], noise_files[count])
     
-    label = np.fromfile(os.path.join(label_path,label_files[count]), dtype = np.float32, count = -1)
-    label.shape = 1,5,148
-    noise = np.fromfile(os.path.join(noise_path,noise_files[count]), dtype = np.float32, count = -1)
-    noise.shape = 1,1,20
-    
-    return label,noise
-
-def preprocess(label_path, noise_path, num, count):
-
-
+    label = np.fromfile(os.path.join(label_path, label_files[count]), dtype = np.float32, count = -1)
+    label.shape = 1, 5, 148
+    noise = np.fromfile(os.path.join(noise_path, noise_files[count]), dtype = np.float32, count = -1)
+    noise.shape = 1, 1, 20
     # gen np array
 
-    label, noise = prepare_bin(label_path, noise_path, count)  #传入count数值
+
     
     print("prepare_bin success")
     
@@ -66,39 +62,45 @@ def preprocess(label_path, noise_path, num, count):
     
 
     # add noise data
-    tensorVec_noise = tensor_package_vec.tensorVec.add()
-    tensorVec_noise.memType = 1
-    tensorVec_noise.deviceId = 0
-    tensorVec_noise.tensorDataSize = int(1*1*20*4) 
-    tensorVec_noise.tensorDataType = 0 # float32
+    tensorvec_noise = tensor_package_vec.tensorVec.add()
+    tensorvec_noise.memType = 1
+    tensorvec_noise.deviceId = 0
+    tensorvec_noise.tensorDataSize = int(1*1*20*4)
+     # H*W*C*(float32)
+    tensorvec_noise.tensorDataType = 0
+     # float32
     for i in noise.shape:
-        tensorVec_noise.tensorShape.append(i)
-    tensorVec_noise.dataStr = noise.tobytes()
+        tensorvec_noise.tensorShape.append(i)
+    tensorvec_noise.dataStr = noise.tobytes()
     
     # add label data
-    tensorVec_label = tensor_package_vec.tensorVec.add()
-    tensorVec_label.memType = 1
-    tensorVec_label.deviceId = 0
-    tensorVec_label.tensorDataSize = int(1*5*148*4) 
-    tensorVec_label.tensorDataType = 0 # float32
-  
+    tensorvec_label = tensor_package_vec.tensorVec.add()
+    tensorvec_label.memType = 1
+    tensorvec_label.deviceId = 0
+    tensorvec_label.tensorDataSize = int(1*5*148*4) 
+    tensorvec_label.tensorDataType = 0
+
+
     for i in label.shape:
-        tensorVec_label.tensorShape.append(i)
-    tensorVec_label.dataStr = label.tobytes()
+        tensorvec_label.tensorShape.append(i)
+    tensorvec_label.dataStr = label.tobytes()
 
     return mxpi_tensor_pack_list
 
+
 if __name__ == '__main__':
     # set stream name and device
-    stream_name = b'biggan'
-    in_plugin_id = 0
+    streamName = b'biggan'
+    IN_PLUGIN_ID = 0
   
     label_path = '../prep_label_bs1'
     noise_path = '../prep_noise_bs1'
-    out_dir = '../result'
-    num = 1000    #数据集范围
-    count = 11    #需要生成的编号
-    tensor_pack_list = preprocess(label_path, noise_path, num, count)
+    out_path = '../result'
+    NUM = 1000    
+    #数据集范围
+    COUNT = 11    
+    #需要生成的编号
+    tensor_pack_list = preprocess(label_path, noise_path, NUM, COUNT)
 
     # init stream manager
     stream_manager = StreamManagerApi()
@@ -109,8 +111,8 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     with open("./biggan.pipeline", 'rb') as f:
-        pipeline_str = f.read()
-    ret = stream_manager.CreateMultipleStreams(pipeline_str)
+        pipelineStr = f.read()
+    ret = stream_manager.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
@@ -138,7 +140,7 @@ if __name__ == '__main__':
     for key in keys:
         key_vec.push_back(key)
 
-    infer_raw = stream_manager.GetResult(stream_name, b'appsink0', key_vec)
+    infer_raw = stream_manager.GetResult(streamName, b'appsink0', key_vec)
     print("result.metadata size: ", infer_raw.metadataVec.size())
     infer_result = infer_raw.metadataVec[0]
     
@@ -158,8 +160,8 @@ if __name__ == '__main__':
     print("tensorPackageVec size=%d, tensorPackageVec[0].tensorVec size=%d" % ( 
         len(result.tensorPackageVec), len(result.tensorPackageVec[0].tensorVec)))
         
-    if not os.path.isdir(out_dir):
-        os.makedirs(out_dir)
+    if not os.path.isdir(out_path):
+        os.makedirs(out_path)
 
 
     img = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr
@@ -171,8 +173,8 @@ if __name__ == '__main__':
     img = img.view(shape)
     bs=1
     bs, _, _, _ = img.shape
-    base_name = os.path.join(str(count) + "_result")
-    target_path = os.path.join(out_dir, base_name + ".jpg")
+    baseName = os.path.join(str(COUNT) + "_result")
+    target_path = os.path.join(out_path, baseName + ".jpg")
     save_image(img[0], normalize = True, nrow = 1, fp = target_path)
     
     
