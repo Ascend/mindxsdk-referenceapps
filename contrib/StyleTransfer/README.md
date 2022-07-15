@@ -12,7 +12,7 @@
 
 ### 项目实现流程及适用场景
 
-![avatar](/README_img/pic.png)
+![avatar](./README_img/pic.png)
 
 
 项目的主要流程：
