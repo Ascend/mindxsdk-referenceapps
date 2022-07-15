@@ -15,19 +15,12 @@
 ![avatar](https://pic.imgdb.cn/item/62c24a535be16ec74ac0684c.png)
 
 项目的主要流程：
-
 （1）输入类型是图片数据（jpg图片序列）
-
 （2）通过调用MindX SDK提供的图像解码接口mxpi_imagedecoder，解码后获取图像数据。
-
 （3）然后进行图像尺寸大小变换，调用MindX SDK提供的图像尺寸大小变换接口mxpi_imageresize插件，输入图像大小要求高256，宽256。
-
 （4）模型后处理，调用MindX SDK提供的模型推理插件mxpi_modelinfer。然后调用MindX SDK提供的appsink将结果取出。
-
 （5）模型输出经过后处理后，得到图片数组并写入图片。
-
 场景限制：
-
 输入的图像应为卫星航拍图，在清晰度较好的情况下，能取得较好的推理效果。
 
 ### 支持的产品以及环境依赖
@@ -69,15 +62,15 @@ npu-smi info
 ```
 | 序号 | 子系统  | 功能描述 |
 | 1   | 图像输入 | 调用MindX SDK的appsrc输入图片|
-| 2   | 图像解码 | 调用MindX SDK的mxpi_decode对图像解码|
-| 2   | 图像放缩 | 调用MindX SDK的mxpi_imageresize，放缩到256*256大小 |
-| 3   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
-| 7   | 结果输出 | 输出图片信息|
+| 2   | 图像解码 | 调用MindX SDK的mxpi_mxpi_imagedecoder对图像解码|
+| 3   | 图像放缩 | 调用MindX SDK的mxpi_imageresize，放缩到256*256大小 |
+| 4   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
+| 5   | 结果输出 | 输出图片信息|
 ```
 
 ### 代码目录结构与说明
 
-本参考设计工程名称为Styletransfer，工程目录如下图所示： 
+本参考设计工程名称为StyleTransfer，工程目录如下图所示： 
 
 ```
 StyleTransfer
@@ -193,7 +186,7 @@ atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --inpu
 **步骤7** 运行程序
 
 ```
-python main.py
+python3 main.py
 ```
 
 ###  运行结果
