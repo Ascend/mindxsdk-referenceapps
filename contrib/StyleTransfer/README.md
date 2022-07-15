@@ -63,7 +63,7 @@ npu-smi info
 ```
 | 序号 | 子系统  | 功能描述 |
 | 1   | 图像输入 | 调用MindX SDK的appsrc输入图片|
-| 2   | 图像解码 | 调用MindX SDK的mxpi_mxpi_imagedecoder对图像解码|
+| 2   | 图像解码 | 调用MindX SDK的mxpi_imagedecoder对图像解码|
 | 3   | 图像放缩 | 调用MindX SDK的mxpi_imageresize，放缩到256*256大小 |
 | 4   | 图像推理 | 调用MindX SDK的mxpi_tensorinfer推理图像|
 | 5   | 结果输出 | 输出图片信息|
@@ -77,6 +77,8 @@ npu-smi info
 StyleTransfer
 .
 ├── README.md
+├── README_img      
+│   └── pic.png  //README流程图
 ├── models       
 │   └── aipp_CycleGAN_pth.config  //aipp配置文件  
 ├── pipeline
