@@ -32,20 +32,20 @@ from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, S
 
 
 
-def preprocess(label_path, noise_path, num, count):
+def preprocess(l_path, n_path, num, count):
 
 
-    label_files = os.listdir(label_path)
-    noise_files = os.listdir(noise_path)
+    label_files = os.listdir(l_path)
+    noise_files = os.listdir(n_path)
     
     label_files.sort(key=lambda x:int(x.split('input_')[1].split('.bin')[0]))
     noise_files.sort(key=lambda x:int(x.split('input_')[1].split('.bin')[0]))
     
     print(label_files[count], noise_files[count])
     
-    label = np.fromfile(os.path.join(label_path, label_files[count]), dtype = np.float32, count = -1)
+    label = np.fromfile(os.path.join(l_path, label_files[count]), dtype = np.float32, count = -1)
     label.shape = 1, 5, 148
-    noise = np.fromfile(os.path.join(noise_path, noise_files[count]), dtype = np.float32, count = -1)
+    noise = np.fromfile(os.path.join(n_path, noise_files[count]), dtype = np.float32, count = -1)
     noise.shape = 1, 1, 20
     # gen np array
 
@@ -66,9 +66,7 @@ def preprocess(label_path, noise_path, num, count):
     tensorvec_noise.memType = 1
     tensorvec_noise.deviceId = 0
     tensorvec_noise.tensorDataSize = int(1*1*20*4)
-     # H*W*C*(float32)
     tensorvec_noise.tensorDataType = 0
-     # float32
     for i in noise.shape:
         tensorvec_noise.tensorShape.append(i)
     tensorvec_noise.dataStr = noise.tobytes()
@@ -89,24 +87,13 @@ def preprocess(label_path, noise_path, num, count):
 
 
 if __name__ == '__main__':
-    # set stream name and device
-    streamName = b'biggan'
-    IN_PLUGIN_ID = 0
-  
-    label_path = '../prep_label_bs1'
-    noise_path = '../prep_noise_bs1'
-    out_path = '../result'
-    NUM = 1000    
-    #数据集范围
-    COUNT = 11    
-    #需要生成的编号
-    tensor_pack_list = preprocess(label_path, noise_path, NUM, COUNT)
+
 
     # init stream manager
     stream_manager = StreamManagerApi()
     ret = stream_manager.InitManager()
     if ret != 0:
-        print("Failed to init Stream manager, ret=%s" % str(ret))
+        print(" Init Stream manager failure , ret=%s" % str(ret))
         exit()
 
     # create streams by pipeline config file
@@ -114,24 +101,45 @@ if __name__ == '__main__':
         pipelineStr = f.read()
     ret = stream_manager.CreateMultipleStreams(pipelineStr)
     if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
+        print("Create Stream failure, ret=%s" % str(ret))
         exit()
 
 
+    # set stream name and device
+    stream_name = b'biggan'
+    IN_PLUGIN_ID = 0
+    #  数据集中label的位置
+    label_path = '../prep_label_bs1'
+    #  数据集中noise的位置
+    noise_path = '../prep_noise_bs1'
+    #  输出图像的位置
+    out_path = '../result'
+    #数据集范围
+    NUM = 1000    
+    #需要生成图像的编号
+    COUNT = 12  
+
+    tensor_pack_list = preprocess(label_path, noise_path, NUM, COUNT)
+
+    if COUNT > NUM:
+       print("set COUNT again, should be smaller than NUM.")
+       exit()
+
+    
 
     # send data to stream
-    protobuf_in = MxProtobufIn()
-    protobuf_in.key = b'appsrc0'
-    protobuf_in.type = b'MxTools.MxpiTensorPackageList'
-    protobuf_in.protobuf = tensor_pack_list.SerializeToString()
+    proto_buffer_in = MxProtobufIn()
+    proto_buffer_in.key = b'appsrc0'
+    proto_buffer_in.type = b'MxTools.MxpiTensorPackageList'
+    proto_buffer_in.protobuf = tensor_pack_list.SerializeToString()
 
-    protobuf_vec = InProtobufVector()
-    protobuf_vec.push_back(protobuf_in)
+    proto_buffer_vec = InProtobufVector()
+    proto_buffer_vec.push_back(proto_buffer_in)
     
-    time_start = time.time()
-    unique_id = stream_manager.SendProtobuf(stream_name, in_plugin_id, protobuf_vec)
-    if unique_id < 0:
-        print("Failed to send data to stream.")
+
+    ret = stream_manager.SendProtobuf(stream_name, IN_PLUGIN_ID, proto_buffer_vec)
+    if ret < 0:
+        print("Send data failure., ret=%s" % str(ret))
         exit()
 
     # get inference result
@@ -140,39 +148,38 @@ if __name__ == '__main__':
     for key in keys:
         key_vec.push_back(key)
 
-    infer_raw = stream_manager.GetResult(streamName, b'appsink0', key_vec)
-    print("result.metadata size: ", infer_raw.metadataVec.size())
-    infer_result = infer_raw.metadataVec[0]
+    result_raw = stream_manager.GetResult(stream_name, b'appsink0', key_vec)
+    SIZE_INFER_RAW = result_raw.metadataVec.size()
+    print("result.metadata size: ", SIZE_INFER_RAW)
+    result_metadata = result_raw.metadataVec[0]
     
-
-
-    if infer_result.errorCode != 0:
+    if result_metadata.errorCode != 0:
         print("GetResult error. errorCode=%d , errMsg=%s" % (
-            infer_result.errorCode, infer_result.errMsg))
+            result_metadata.errorCode, result_metadata.errMsg))
         exit()
-    time_end = time.time()
-    print('Time cost = %fms' % ((time_end - time_start) * 1000))
 
 
     # convert result
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(infer_result.serializedMetadata)
+    result_tensor_pack_list = MxpiDataType.MxpiTensorPackageList()
+    result_tensor_pack_list.ParseFromString(result_metadata.serializedMetadata)
+
     print("tensorPackageVec size=%d, tensorPackageVec[0].tensorVec size=%d" % ( 
-        len(result.tensorPackageVec), len(result.tensorPackageVec[0].tensorVec)))
-        
+        len(result_tensor_pack_list.tensorPackageVec), len(result_tensor_pack_list.tensorPackageVec[0].tensorVec)))
+    result_tensor = result_tensor_pack_list.tensorPackageVec[0].tensorVec[0]
+            
     if not os.path.isdir(out_path):
         os.makedirs(out_path)
 
 
-    img = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr
+    img = np.frombuffer(result_tensor.dataStr
         , dtype = np.float32)
-    print("raw output shape:", result.tensorPackageVec[0].tensorVec[0].tensorShape)   #1,3,128,128
+    print("raw output shape:", result_tensor.tensorShape)  
  
-    shape = (-1,3,128,128)
+    shape = (-1, 3, 128, 128)
     img = torch.from_numpy(img.copy())
     img = img.view(shape)
-    bs=1
-    bs, _, _, _ = img.shape
+    BATCH_SIZE=1
+    BATCH_SIZE, _, _, _ = img.shape
     baseName = os.path.join(str(COUNT) + "_result")
     target_path = os.path.join(out_path, baseName + ".jpg")
     save_image(img[0], normalize = True, nrow = 1, fp = target_path)
