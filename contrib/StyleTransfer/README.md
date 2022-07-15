@@ -172,7 +172,7 @@ aipp_op{
 
 仍然在/models目录中操作
 ```
-atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="Tanh_146:0"  --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
+atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="maps"  --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
 
 转换完成后存放在/models中。
