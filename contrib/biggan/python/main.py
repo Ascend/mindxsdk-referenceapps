@@ -106,20 +106,20 @@ if __name__ == '__main__':
 
 
     # set stream name and device
-    StreamName = b'biggan'
+    streamName = b'biggan'
     IN_PLUGIN_ID = 0
     #  数据集中label的位置
-    LabelPath = '../prep_label_bs1'
+    labelPath = '../prep_label_bs1'
     #  数据集中noise的位置
-    NoisePath = '../prep_noise_bs1'
+    noisePath = '../prep_noise_bs1'
     #  输出图像的位置
-    OutPath = '../result'
+    outPath = '../result'
     #数据集范围
     NUM = 1000    
     #需要生成图像的编号
     COUNT = 12  
 
-    tensor_pack_list = preprocess(LabelPath, NoisePath, NUM, COUNT)
+    tensor_pack_list = preprocess(labelPath, noisePath, NUM, COUNT)
 
     if COUNT > NUM:
         print("set COUNT again, should be smaller than NUM.")
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     proto_buffer_vec.push_back(proto_buffer_in)
     
 
-    ret = stream_manager.SendProtobuf(StreamName, IN_PLUGIN_ID, proto_buffer_vec)
+    ret = stream_manager.SendProtobuf(streamName, IN_PLUGIN_ID, proto_buffer_vec)
     if ret < 0:
         print("Send data failure., ret=%s" % str(ret))
         exit()
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     for key in keys:
         key_vec.push_back(key)
 
-    result_raw = stream_manager.GetResult(StreamName, b'appsink0', key_vec)
+    result_raw = stream_manager.GetResult(streamName, b'appsink0', key_vec)
     SIZE_INFER_RAW = result_raw.metadataVec.size()
     print("result.metadata size: ", SIZE_INFER_RAW)
     result_metadata = result_raw.metadataVec[0]
@@ -167,8 +167,8 @@ if __name__ == '__main__':
         len(result_tensor_pack_list.tensorPackageVec), len(result_tensor_pack_list.tensorPackageVec[0].tensorVec)))
     result_tensor = result_tensor_pack_list.tensorPackageVec[0].tensorVec[0]
             
-    if not os.path.isdir(OutPath):
-        os.makedirs(OutPath)
+    if not os.path.isdir(outPath):
+        os.makedirs(outPath)
 
 
     img = np.frombuffer(result_tensor.dataStr
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     BATCH_SIZE = 1
     BATCH_SIZE, _, _, _ = img.shape
     baseName = os.path.join(str(COUNT) + "_result")
-    target_path = os.path.join(OutPath, baseName + ".jpg")
+    target_path = os.path.join(outPath, baseName + ".jpg")
     save_image(img[0], normalize = True, nrow = 1, fp = target_path)
     
     
