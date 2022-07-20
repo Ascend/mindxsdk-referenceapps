@@ -62,12 +62,11 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
 
 推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
 
-| 软件名称   | 版本   |
-| ---------- | ------ |
-| python     | 3.9.2  |
-| numpy      | 1.22.4 |
-| torch      | 1.8.0  |
-| torchvison | 0.9.1  |
+| 软件名称      | 版本   |
+| ------------- | ------ |
+| python        | 3.9.2  |
+| numpy         | 1.22.4 |
+| opencv-python | 4.6.0  |
 
 
 
