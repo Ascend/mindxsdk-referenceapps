@@ -178,7 +178,7 @@ if __name__ == '__main__':
     img.resize(3, 128, 128)
     
     print("img.shape: ", img.shape)
-    # 128, 128, 3
+    # 3, 128, 128
     print(img)
     
     image =  img.copy()
@@ -188,7 +188,8 @@ if __name__ == '__main__':
     std = [0.229, 0.224, 0.225]  
     #dataLoader中设置的std参数
     #反标准化
-    for a in range(len(mean)): 
+    mean_len = range(len(mean))
+    for a in mean_len: 
         image[a] = img[a] * std[a] + mean[a]
     image = image * 255 
     image = np.transpose(image, (1, 2, 0))
