@@ -117,15 +117,23 @@ if __name__ == '__main__':
     #数据集范围
     NUM = 1000    
     #需要生成图像的编号
-    COUNT = 4
+    COUNT = 11
 
-    tensor_pack_list = preprocess(LABEL_PATH, NOISE_PATH, NUM, COUNT)
+
 
     if COUNT > NUM:
         print("set COUNT again, should be smaller than NUM.")
         exit()
 
+    if not os.path.isdir(LABEL_PATH):
+        print("LabelPath does not exit.")
+        exit()
+        
+    if not os.path.isdir(NOISE_PATH):
+        print("NoisePath does not exit.")
+        exit()
     
+    tensor_pack_list = preprocess(LABEL_PATH, NOISE_PATH, NUM, COUNT)
 
     # send data to stream
     proto_buffer_in = MxProtobufIn()
