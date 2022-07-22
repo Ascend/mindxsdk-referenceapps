@@ -15,8 +15,8 @@
 
 ### 1.2 支持的版本
 
-CANN：5.0.4
-SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
+CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
+SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 
 ### 1.3 软件方案介绍
@@ -62,13 +62,14 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
 
 推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
 
-| 软件名称      | 版本   |
-| ------------- | ------ |
-| python        | 3.9.2  |
-| numpy         | 1.22.4 |
-| opencv-python | 4.6.0  |
-
-
+| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
+| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
+| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+| python              | 3.9.2       |                               |                                                              |
+| numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
+| opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 
 
 
@@ -80,9 +81,7 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的version.info查看）
 
 ## 3.前期数据和模型准备
 
-​      本项目使用的模型是biggan模型，来源于https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d
-
-​       具体流程可以详细参考[ATC BigGAN (FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d)
+​      本项目使用的模型是biggan模型，来源于[ATC BigGAN(FP16)]https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d，具体流程可以详细参考[ATC BigGAN (FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/c77dfa7e891f4388b62eeef7e8cbbc2d)
 
 1. 数据获取
 
@@ -134,5 +133,29 @@ cd python
 python main.py
 ```
 
-**步骤7**   结果无误时会在biggan目录下生成result文件夹，文件夹中保存了count_result.jpg格式的生成图像。
+**步骤7**   结果无误时会在biggan目录下生成result文件夹，文件夹中保存了count_result.jpg格式的生成图像。如下图所示：
+
+
+
+![3](result.jpg)
+
+注： 具体实现图片依赖于label标签和noise噪声文件，文件随机生成，最终生成图片因人而异。
+
+## 5.常见问题
+
+**问题描述：**
+
+提示 No module named 'MxpiDataType_pb2'
+
+![1](SDK.jpg)
+
+**解决方案：**
+
+未配置SDK环境变量，可以输入命令查看环境变量设置是否正确
+
+```
+env list
+```
+
+
 
