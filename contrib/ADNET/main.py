@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # 构建流的输入对象--检测目标
     dataInput = MxDataInput()
     IMAGE_PATH = './test.jpg'
-    with open(iIMAGE_PATH, 'rb') as f:
+    with open(IMAGE_PATH, 'rb') as f:
         dataInput.data = f.read()
         begin_array = cv2.imread(IMAGE_PATH, cv2.IMREAD_GRAYSCALE)
         h, w = begin_array.shape[:2]
