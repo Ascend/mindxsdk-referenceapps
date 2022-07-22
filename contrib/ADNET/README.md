@@ -55,7 +55,7 @@ SDK：mxVision 2.0.4（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.5 技术实现流程图
 
-ADNet图像去噪模型的后处理的输入是 pipeline 中 mxpi_tensorinfer0 推理结束后通过 appsink0 输出的 tensor 数据，尺寸为[1*1*321*481]，将张量数据通过 pred 取出推测的结果值，将像素点组成的图片保存成result.jpg，同时通过提供的 BSD68 数据集完成模型 PSNR 的精度计算。
+ADNet图像去噪模型的后处理的输入是 pipeline 中 mxpi_tensorinfer0 推理结束后通过 appsink0 输出的 tensor 数据，尺寸为[1 * 1 * 321 * 481]，将张量数据通过 pred 取出推测的结果值，将像素点组成的图片保存成result.jpg，同时通过提供的 BSD68 数据集完成模型 PSNR 的精度计算。
 
 实现流程图如下图所示：
 
