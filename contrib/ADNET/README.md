@@ -104,7 +104,7 @@ pipeline流程如下图所示：
 
 ## 3  模型转换
 
-      本项目使用的模型是ADNet模型。
+本项目使用的模型是ADNet模型。
     
       选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
 pth 权重文件和 onnx 文件的下载链接
@@ -178,6 +178,6 @@ python3 main.py
 python3 evaluate.py
 ```
 
-模型在BSD68数据集上的精度达标，测试集共68张图像，最终得到模型平均PSNR值为30.054，满足精度要求。
+模型在BSD68数据集上的精度达标，最终模型平均PSNR输出值为30.054，满足精度要求（PSNR ≥ 29.27）。
 
 ![PSNR](./PSNR.png)
