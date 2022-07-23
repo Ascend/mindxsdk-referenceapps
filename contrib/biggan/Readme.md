@@ -40,12 +40,12 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 本工程名称为biggan，实际使用的工程目录如下图所示：     
 
 ```
-|── biggan_prepocess.py      //预处理函数，用以生成prep_label_bs1和prep_noise_bs1两 |                              个数据集
+|── biggan_prepocess.py      //预处理函数，用以生成prep_label_bs1和prep_noise_bs1两                                   个数据集
 |── BigGAN.py      //biggan_prepocess.py需要引用的网络模型文件
 |── layers.py      //biggan_prepocess.py需要引用的网络结构文件
 |── inception_utils.py      //biggan_prepocess.py需要引用的功能函数文件
 |── G_ema.pth      //已经训练好的网络模型文件
-├──python  
+├── python  
 |   ├── biggan.pipeline      //业务流
 |   ├── main.py             // 主函数，用以在拥有数据集后生成图像
 ├──model
