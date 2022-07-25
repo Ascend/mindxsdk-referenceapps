@@ -7,20 +7,16 @@
 ```
 ADNet 是一种包含注意力模块的卷积神经网络，主要包括用于图像去噪的稀疏块（SB）、特征增强块（FEB）、注意力块（AB）和重建块（RB）。
 
-其中，SB 模块通过使用扩张卷积和公共卷积来去除噪声，在性能和效率之间进行权衡。
+其中，SB 模块通过使用扩张卷积和公共卷积来去除噪声，在性能和效率之间进行权衡。FEB 模块通过长路径整合全局和局部特征信息，以增强去噪模型的表达能力。 
 
-FEB 模块通过长路径整合全局和局部特征信息，以增强去噪模型的表达能力。 
-
-AB 模块用于精细提取复杂背景中的噪声信息，对于复杂噪声图像，尤其是真实噪声图像非常有效。 
-
-此外，FEB 模块与 AB 模块集成以提高效率并降低训练去噪模型的复杂度。
+AB 模块用于精细提取复杂背景中的噪声信息，对于复杂噪声图像，尤其是真实噪声图像非常有效。 此外，FEB 模块与 AB 模块集成以提高效率并降低训练去噪模型的复杂度。
 
 最后，RB 模块通过获得的噪声映射和给定的噪声图像来构造干净的图像。
 ```
 
 ### 1.1 支持的产品
 
-本项目以昇腾 Atlas310 卡为主要的硬件平台
+以昇腾 Atlas310 卡为主要的硬件平台
 
 ### 1.2 支持的版本
 
@@ -172,7 +168,7 @@ python3 main.py
 **步骤 1** 安装数据集用以测试精度。数据集 BSD68 需要自行下载。
 [下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com:443/mindxsdk-referenceapps%20/contrib/ADNet/BSD68.zip?AccessKeyId=EL824MW90FQED2QEW8OO&Expires=1658776447&x-obs-security-token=gQpjbi1ub3J0aC00i6lPBJZPMU8U8BNYBbj2tCWpGlWDs_5UyDEUxZunnGMczKAXoD7wlNdJut8ufylhHuBZfmnvSx6RdoolvYZbq8CzXqyuGwFWjxS5V5meA__T2IWeNZPq76CPB8llk36HmIAvYOGyOhdjwNNCnh73MjnxHuQo4KOsUEhkk3LH8Vau0rA2rHndCQ72y9ZVZzvK_vUvCHALB681U7WehygYVSuMaSHILZox6tRTqUpFQddpVwq06ncZMSDXIxiSKUKDYVf1vHrZINgscQaFHXxhJZVJW8EACZ9rS7PVZMKyHdcHMNeKDdLLF1K9Ui5-yvfbSjeSyRL4tNXpgvXDIa44ItlAxS2CzI63UbEeV6DJAYavHj21gZOPkHxDCDE6Q7nVjmYrI1KM-4Ypq3v1KvVivIo0OyINaZdhHIJsTdVDPjNuX6G9qcKaW-i_BV6O60xrqsNPTB3CXGH2ZNASmV0vpwwaeMgwXyMrGW4dbqsNznocRyRp-dGgwgtoGlDNuJJPn58j237e_79w3z9Ix6bSuvB7MPI-qLMsY4oM7MFcyjrMFagv9B3Mgijfkfu9ls41-drEQ_wKTkEGFeSakn8JY4KGBLTRE2q_4PggjXNRGWI3pokRpEXB6Qgbjwz6oNKnF7cGN1iTQLcMwDiH5ZcXJ5vRkLeoMb8lynbRbS8bXph1frrZ6bx_4LdPMjklNVuomQk_jGC3P3_Eum28bAPbtQk1aybUsIJSnPm16V-m6Wv15EirMZ092McoyVsNY0EyQWOploEaPmGhD8pHZKicxXG1T5Wy62RhrWHtktlv4its&Signature=ZtlTlbiXYFHPIseueLlim6XUnkE%3D)
 
-在./ADNet目录下新建 dataset 文件夹，并将下载好的数据集BSD68上传至此文件夹。我们运行以下命令对数据集完成格式与尺寸转换，此时ADNet文件夹的目录结构为如下所示。
+在./ADNet目录下新建 dataset 文件夹与 BSD68文件夹，并将数据集下载至BSD68文件夹解压。我们运行以下命令对数据集完成格式与尺寸转换，将处理好的数据集保存在dataset文件夹中，此时ADNet文件夹的目录结构为如下所示。
 
 ```
 python3 transform.py
@@ -190,7 +186,7 @@ python3 transform.py
 ├── 流程.png          //流程图
 ├── pipeline.png          //pipeline流程图
 ├── BSD68          //原始数据集
-├── dataset          //完成转换后的测试数据集
+├── dataset          //完成转换后的待测试数据集
 └──README.md           
 ```
 
