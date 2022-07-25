@@ -1,8 +1,8 @@
 # ADNet图像去噪参考设计
 
 ## 1  介绍
-   使用 ADNet 模型，在 MindX SDK 环境下实现图像去噪功能。
-   由用户设置测试图片，传入到 pipeline 中先后实现前处理，模型推理，后处理等功能，最终输出结果图片实现可视化及模型精度计算。
+使用 ADNet 模型，在 MindX SDK 环境下实现图像去噪功能。
+由用户设置测试图片，传入到 pipeline 中先后实现前处理，模型推理，后处理等功能，最终输出结果图片实现可视化及模型精度计算。
 
 ```
 ADNet 是一种包含注意力模块的卷积神经网络，主要包括用于图像去噪的稀疏块（SB）、特征增强块（FEB）、注意力块（AB）和重建块（RB）。
@@ -110,16 +110,16 @@ pipeline流程如下图所示：
 具体执行命令
 
 ```
-   . ${MX_SDK-HOME}/set_env.sh
+. ${MX_SDK_HOME}/set_env.sh
 	
-   . ${ascend-toolkit-path}/set_env.sh
+. ${ascend-toolkit-path}/set_env.sh
 ```
 
 ## 3  模型转换
 
 本项目使用的模型是ADNet模型。
     
-      选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
+选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
 pth 权重文件和 onnx 文件的下载链接
 https://www.hiascend.com/zh/software/modelzoo/detail/1/d360c03430f04185a4fe1aa74250bfea
     
@@ -132,17 +132,16 @@ https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
 
 2. 进入ADNet/model文件夹下执行命令
 
-   ```
-   atc --framework=5 --model=ADNet.onnx --insert_op_conf=./aipp_adnet.cfg --output=ADNet_bs1 --input_format=NCHW -input_shape="image:1,1,321,481" --log=debug --soc_version=Ascend310 --output_type=FP32
-
-   ```
+```
+atc --framework=5 --model=ADNet.onnx --insert_op_conf=./aipp_adnet.cfg --output=ADNet_bs1 --input_format=NCHW -input_shape="image:1,1,321,481" --log=debug --soc_version=Ascend310 --output_type=FP32
+ ```
 
 3. 执行该命令会在当前目录下生成项目需要的模型文件ADNet_bs1.om。执行后终端输出为
 
-   ```
-   ATC start working now, please wait for a moment.
-   ATC run success, welcome to the next use.
-   ```
+ ```
+ATC start working now, please wait for a moment.
+ATC run success, welcome to the next use.
+```
 
    表示命令执行成功。
 
