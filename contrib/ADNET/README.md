@@ -83,6 +83,11 @@ pipeline流程如下图所示：
         
 本案例中的 ADNet 模型适用于灰度图像的去噪，并可以返回测试图像的PSNR精度值。
 
+本模型在以下几种情况去噪效果良好：含有目标数量多、含有目标数量少、前景目标面积占比图像较大、前景目标面积占比图像较小、各目标边界清晰。
+
+在以下两种情况去噪效果不太好：1. 图像中各目标之间的边界不清晰，可能会出现过度去噪、目标模糊的情况。 2. 图像中前景目标较多，可能会出现无法完成目标精确化降噪的情况。
+
+
 ## 2  环境依赖
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表
 
@@ -109,7 +114,7 @@ pipeline流程如下图所示：
 具体执行命令
 
 ```
-   . ${SDK-path}/set_env.sh
+   . ${MX_SDK-HOME}/set_env.sh
 	
    . ${ascend-toolkit-path}/set_env.sh
 ```
@@ -164,9 +169,14 @@ python3 main.py
 
 ## 5  测试精度
 
-**步骤 1** 安装数据集用以测试精度。数据集 BSD68 需要自行下载（下载链接：obs://mindx.sdk/mindxsdk-referenceapps /contrib/ADNet/）。
+**步骤 1** 安装数据集用以测试精度。数据集 BSD68 需要自行下载。
+[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com:443/mindxsdk-referenceapps%20/contrib/ADNet/BSD68.zip?AccessKeyId=EL824MW90FQED2QEW8OO&Expires=1658776447&x-obs-security-token=gQpjbi1ub3J0aC00i6lPBJZPMU8U8BNYBbj2tCWpGlWDs_5UyDEUxZunnGMczKAXoD7wlNdJut8ufylhHuBZfmnvSx6RdoolvYZbq8CzXqyuGwFWjxS5V5meA__T2IWeNZPq76CPB8llk36HmIAvYOGyOhdjwNNCnh73MjnxHuQo4KOsUEhkk3LH8Vau0rA2rHndCQ72y9ZVZzvK_vUvCHALB681U7WehygYVSuMaSHILZox6tRTqUpFQddpVwq06ncZMSDXIxiSKUKDYVf1vHrZINgscQaFHXxhJZVJW8EACZ9rS7PVZMKyHdcHMNeKDdLLF1K9Ui5-yvfbSjeSyRL4tNXpgvXDIa44ItlAxS2CzI63UbEeV6DJAYavHj21gZOPkHxDCDE6Q7nVjmYrI1KM-4Ypq3v1KvVivIo0OyINaZdhHIJsTdVDPjNuX6G9qcKaW-i_BV6O60xrqsNPTB3CXGH2ZNASmV0vpwwaeMgwXyMrGW4dbqsNznocRyRp-dGgwgtoGlDNuJJPn58j237e_79w3z9Ix6bSuvB7MPI-qLMsY4oM7MFcyjrMFagv9B3Mgijfkfu9ls41-drEQ_wKTkEGFeSakn8JY4KGBLTRE2q_4PggjXNRGWI3pokRpEXB6Qgbjwz6oNKnF7cGN1iTQLcMwDiH5ZcXJ5vRkLeoMb8lynbRbS8bXph1frrZ6bx_4LdPMjklNVuomQk_jGC3P3_Eum28bAPbtQk1aybUsIJSnPm16V-m6Wv15EirMZ092McoyVsNY0EyQWOploEaPmGhD8pHZKicxXG1T5Wy62RhrWHtktlv4its&Signature=ZtlTlbiXYFHPIseueLlim6XUnkE%3D)
 
-将下载的数据集BSD68上传至./ADNet目录下，我们运行 python transform.py 对数据集进行格式与尺寸转换得到 dataset 文件，得到ADNet文件夹的目录结构为如下。
+在./ADNet目录下新建 dataset 文件夹，并将下载好的数据集BSD68上传至此文件夹。我们运行以下命令对数据集完成格式与尺寸转换，此时ADNet文件夹的目录结构为如下所示。
+
+```
+python3 transform.py
+```
 
 ```
 ├── main.py  //运行工程项目的主函数
