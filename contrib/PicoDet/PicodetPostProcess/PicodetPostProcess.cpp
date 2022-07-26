@@ -25,6 +25,7 @@ namespace {
     const uint32_t BOXES_TENSOR = 32;
     const uint32_t BBOX_SIZE = 4;
     const uint32_t HALF_OF_TENSORS = 2;
+    const float OFFSET = 0.5;
 }
 
 namespace MxBase {
@@ -188,8 +189,8 @@ namespace MxBase {
                     LogError << "featureWidth is zero";
                     return APP_ERR_DIVIDE_ZERO;
                 }
-                float centerY = ((idx / featureWidth) + 0.5) *  strides_[i];
-                float centerX = ((idx % featureWidth) + 0.5) *  strides_[i];
+                float centerY = ((idx / featureWidth) + OFFSET) *  strides_[i];
+                float centerX = ((idx % featureWidth) + OFFSET) *  strides_[i];
                 std::pair<int, int> center(centerX, centerY);
 
                 if (score > scoreThresh_) {
