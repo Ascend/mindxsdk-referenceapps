@@ -27,7 +27,7 @@ from preprocess import preproc
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import *
 
-image_path = '../test.jpg'
+image_path = '../test_img/test.jpg'
 
 
 if __name__ == '__main__':
