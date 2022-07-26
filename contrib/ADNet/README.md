@@ -120,6 +120,7 @@ pipeline流程如下图所示：
 本项目使用的模型是ADNet模型。
     
 选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
+
 pth 权重文件和 onnx 文件的下载链接
 https://www.hiascend.com/zh/software/modelzoo/detail/1/d360c03430f04185a4fe1aa74250bfea
     
