@@ -25,6 +25,7 @@ import webcolors
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+
 def from_colorname_to_bgr(color):
     """
     convert color name to bgr value
@@ -47,8 +48,8 @@ def standard_to_bgr():
 
     """
     list_color_name = []
-    with open("colorlist.txt", "r") as f:
-      list_color_name = f.read()
+    with open("colorlist.txt", "r") as ff:
+        list_color_name = ff.read()
     list_color_name = list_color_name.split(',') 
               
     standard = []
