@@ -152,7 +152,7 @@ ascend-toolkit-path: CANN 安装路径。
 2. 将该模型转换为om模型，具体操作为： ``python/models/conversion-scripts`` 文件夹下,执行atc指令：
 
 ```
-atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_bs1 --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310 --insert_op_conf=../aipp-configs/centernet_bgr.aipp
+atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_pre_post --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310 --insert_op_conf=../aipp-configs/centernet_bgr.aipp
 ```
 
 若终端输出：
@@ -173,7 +173,7 @@ ATC run success, welcome to the next use.
                                                            
 
 ```
-atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_bs1 --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310
+atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_nopre_post --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310
 ```
 
 
@@ -221,24 +221,13 @@ python3 pre_post.py
 
 2. 修改``python/models``下的文件 yolox_eval.cfg 的参数 THRESH=0.0
 
-3. 使用以下指令运行路径``python/test``下的文件 parse_coco.py：
-```
-python3 parse_coco.py --json_file=data/annotations/instances_val2017.json --img_path=data/val2017
-```
-若运行成功，会在该目录下生成文件夹ground_truth，其中包含每张图像上提取的目标框真实位置与类别的txt文件。
-
-接下来将每张图的预测结果转为txt文件，并保存在同一文件夹下，其步骤如下：
-
-4. 进入``python/Main``路径，运行 命令：
+3. 进入``python/Main``路径，运行 命令：
 ```
 python3 eval_pre_post.py
 ```
 若运行成功，会在``python/test`` 路径下生成val2017_detection_result.json。
 
-<center>
-    <img src="./images/result_pre.png">
-    <br>
-</center>
+
 
 ### 4.2 业务流程不加图像预处理
 
@@ -280,9 +269,6 @@ python3 nopre_post.py
 python3 eval_nopre_post.py                                                                                                                               
 ```
 若运行成功，会在``python/test`` 路径下生成 val2017_detection_result.json文件。                                                                                              
-
-
-
 
 
 
