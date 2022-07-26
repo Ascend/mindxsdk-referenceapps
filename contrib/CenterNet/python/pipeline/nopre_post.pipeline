@@ -46,9 +46,9 @@
             "mxpi_objectpostprocessor0": {
                 "props": {
                     "dataSource": "mxpi_tensorinfer0",
-                    "postProcessConfigPath": "models/centernet.cfg",
-                    "labelPath": "models/coco.names",
-                    "postProcessLibPath": "./postprocess2/build/libcenternetpostprocess.so"
+                    "postProcessConfigPath": "../models/centernet.cfg",
+                    "labelPath": "../models/coco.names",
+                    "postProcessLibPath": "./postprocess/build/libcenternetpostprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "appsink0"
