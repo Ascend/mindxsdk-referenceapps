@@ -102,7 +102,7 @@ CenterNet 的后处理插件接收模型推理插件输出的特征图。本项�
 
 ### 1.6 适用场景
 
-经过测试，该项目适用于一般的自然图像，对含单个清晰目标的图像、灰度图像、模糊图像以及高分辨率的图像均有较好的检测效果，而用于含大量小目标的图像、光照不佳的图像和存在大量遮挡的图像时，有轻微的漏检现象。
+经过测试，该项目适用于各类图像。
 
 ## 2 环境依赖
 
@@ -139,7 +139,7 @@ ascend-toolkit-path: CANN 安装路径。
 
 ## 3. 模型转换
 
-本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/YOLOX/yolox_nano.onnx 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0699d3e48ff1447cafc85c2c9f007130 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
 
 ### 3.1 业务流程加图像预处理的模型转换方法
