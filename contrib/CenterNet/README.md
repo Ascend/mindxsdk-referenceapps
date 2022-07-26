@@ -96,8 +96,7 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 CenterNet 的后处理插件接收模型推理插件输出的特征图，该特征图为三张不同分辨率的特征图拼接而成，形状大小为1 x n x 85,其中 n 为三张网络模型输出特征图的像素点数总和，85 为 80 （数据集分类数）+ 4 （目标框回归坐标点）+ 1 （正类置信度）。本项目方案根据业务流程含不含预处理阶段技术流程图可分为如下两种。
 
 <center>
-    <img src="./images/pipeline_pre.png">
-    <img src="./images/pipeline_nopre.png">
+    <img src="./images/pipeline.jpg">
     <br>
 </center>
 
@@ -219,14 +218,17 @@ python3 pre_post.py
 ```
 其中：val2017文件夹下应存放有5000张待测图片。
 
-2. 修改``python/models``下的文件 yolox_eval.cfg 的参数 THRESH=0.0
+2. 修改``python/models``下的文件 centernet.cfg 的参数 SCORE_THRESH=0.0
 
 3. 进入``python/Main``路径，运行 命令：
 ```
 python3 eval_pre_post.py
 ```
 若运行成功，会在``python/test`` 路径下生成val2017_detection_result.json。
-
+<center>
+    <img src="./images/pre_post_result.png">
+    <br>
+</center>
 
 
 ### 4.2 业务流程不加图像预处理
@@ -246,7 +248,9 @@ bash ./postprocess/build.sh
 python3 nopre_post.py                                                                                                                                                             
 ```
 
-命令执行成功后在目录``python/test_img``下生成检测结果文件 nopre_post.jpg，查看结果文件验证检测结果。                                                                                                           
+命令执行成功后在目录``python/test_img``下生成检测结果文件 nopre_post.jpg，查看结果文件验证检测结果。
+
+                                                                                                           
                                                                                                                                                                                 
 **步骤4** 精度测试。                                                                                                                                                                   
                                                                                                                                                                                 
@@ -262,13 +266,17 @@ python3 nopre_post.py
 ```
 其中：val2017文件夹下应存放有5000张待测图片。                                                                                                                                                    
                                                                                                                                                                                 
-2. 修改``python/models``下的文件 yolox_eval.cfg 的参数 THRESH=0.0                                                                                                                                                                                                                       
+2. 修改``python/models``下的文件 centernet.cfg 的参数 SCORE_THRESH=0.0                                                                                                                                                                                                                       
 3. 进入``python/Main``路径，运行命令：                                                                                                                                                   
 
 ```                                                                                                                                                                             
 python3 eval_nopre_post.py                                                                                                                               
 ```
 若运行成功，会在``python/test`` 路径下生成 val2017_detection_result.json文件。                                                                                              
+<center>
+    <img src="./images/nopre_post_result.png">
+    <br>
+</center>
 
 
 
