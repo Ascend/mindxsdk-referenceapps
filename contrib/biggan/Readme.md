@@ -25,9 +25,8 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ### 1.3 软件方案介绍
 
-项目主要由主函数（main.py），数据集（prep_label_bs1, prep_noise_bs1），模型（biggan_sim_bs1.om），业务流（biggan.pipeline）组成。
-主函数中构建业务流steam，先读取相应路径下的bin文件转换成pipeline可处理的tensor数据，再传入pipeline在sdk环境下先后实现模型推理的功能，
-最后从流中取出相应的输出数据转换数据类型保存结果。
+​        项目主要由主函数（main.py），数据集（prep_label_bs1, prep_noise_bs1），模型（biggan_sim_bs1.om），业务流（biggan.pipeline）组成。
+​       主函数中构建业务流steam，先读取相应路径下的bin文件转换成pipeline可处理的tensor数据，再传入pipeline在sdk环境下先后实现模型推理的功能，最后从流中取出相应的输出数据转换数据类型保存结果。
 
 表1.1 系统方案中各模块功能：
 
