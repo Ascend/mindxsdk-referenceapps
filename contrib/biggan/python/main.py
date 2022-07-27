@@ -62,7 +62,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_noise = tensor_package_vec.tensorVec.add()
     tensorvec_noise.memType = 1
     tensorvec_noise.deviceId = 0
-    # bs*input_size(1*20)*(float32)
+    # bs为1， 1*20为噪声输入尺寸，4指向float32数据
     tensorvec_noise.tensorDataSize = int(1*1*20*4)
     tensorvec_noise.tensorDataType = 0
     for i in noise.shape:
@@ -73,7 +73,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_label = tensor_package_vec.tensorVec.add()
     tensorvec_label.memType = 1
     tensorvec_label.deviceId = 0
-    # bs*input_size(5*148)*(float32)
+    # bs为1， 5*148为标签输入尺寸，4指向float32数据
     tensorvec_label.tensorDataSize = int(1*5*148*4) 
     tensorvec_label.tensorDataType = 0
 
