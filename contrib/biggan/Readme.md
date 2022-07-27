@@ -7,6 +7,10 @@
 
 ​    将随机生成的label标签和noise噪声数据，通过pipeline传入模型中进行推理，最终输出可视化图片。
 
+注： 标签和噪声文件是通过运行ATC BigGAN 中的biggan_prepocess.py 和G_ema.pth 等文件，在当前目录下生成 “prep_label_bs1”和“prep_noise_bs1”两个文件夹中获取的。命名逻辑从input_0000.bin开始依次递增。
+
+​       具体流程参考第三节**前期数据和模型准备**。
+
 
 
 ### 1.1 支持的产品

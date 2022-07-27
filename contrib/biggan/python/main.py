@@ -2,7 +2,7 @@
 # coding=utf-8
 
 """
-Copyright(C) Huawei Technologies Co.,Ltd. 2012-2021 All rights reserved.
+Copyright(C) Huawei Technologies Co.,Ltd. 2012-2022 All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -42,15 +42,12 @@ def preprocess(l_path, n_path, num, count):
     noise_files.sort(key=lambda x:int(x.split('input_')[1].split('.bin')[0]))
     
     print(label_files[count], noise_files[count])
-    
+    # gen np array
     label = np.fromfile(os.path.join(l_path, label_files[count]), dtype = np.float32, count = -1)
     label.shape = 1, 5, 148
     noise = np.fromfile(os.path.join(n_path, noise_files[count]), dtype = np.float32, count = -1)
     noise.shape = 1, 1, 20
-    # gen np array
 
-
-    
     print("prepare_bin success")
     
     # gen tensor data
@@ -65,6 +62,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_noise = tensor_package_vec.tensorVec.add()
     tensorvec_noise.memType = 1
     tensorvec_noise.deviceId = 0
+    # bs*input_size(1*20)*(float32)
     tensorvec_noise.tensorDataSize = int(1*1*20*4)
     tensorvec_noise.tensorDataType = 0
     for i in noise.shape:
@@ -75,6 +73,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_label = tensor_package_vec.tensorVec.add()
     tensorvec_label.memType = 1
     tensorvec_label.deviceId = 0
+    # bs*input_size(5*148)*(float32)
     tensorvec_label.tensorDataSize = int(1*5*148*4) 
     tensorvec_label.tensorDataType = 0
 
