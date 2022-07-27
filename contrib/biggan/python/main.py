@@ -113,9 +113,9 @@ if __name__ == '__main__':
     NOISE_PATH = '../prep_noise_bs1'
     #  输出图像的位置
     OUT_PATH = '../result'
-    #数据集范围
+    #  数据集范围
     NUM = 1000    
-    #需要生成图像的编号
+    #  需要生成图像的编号
     COUNT = 11
 
 
