@@ -140,7 +140,7 @@ Infer finished.
 ```
 
 在处理完100张图片的验证集后，可以获得平均PSNR值：
-![](.image/pnsr.png)
+![](https://gitee.com/distancemay/mindxsdk-referenceapps/blob/master/contrib/SRflow/image/pnsr.png)
 
 与使用源模型软件包benchmark 推理结果对比结果如下：
 
