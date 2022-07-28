@@ -134,29 +134,29 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    gt_set_path = "./dataset/div2k-validation-modcrop8-gt"
-    x8_set_path = "./dataset/div2k-validation-modcrop8-x8"
+    GT_SET_PATH = "./dataset/div2k-validation-modcrop8-gt"
+    X8_SET_PATH = "./dataset/div2k-validation-modcrop8-x8"
 
-    if os.path.exists(gt_set_path) != 1:
+    if os.path.exists(GT_SET_PATH) != 1:
         print('The image set path {} does not exist.'.format(gt_set_path))
         exit()
     
-    if os.path.exists(x8_set_path) != 1:
+    if os.path.exists(X8_SET_PATH) != 1:
         print('The image set path {} does not exist.'.format(gt_set_path))
         exit()
 
     # get all image files
-    image_files = os.listdir(x8_set_path)
+    image_files = os.listdir(X8_SET_PATH)
     # sort by file name
     image_files.sort(key=lambda x: str(x[:-4]))
     
-    num = 0
-    pnsr_sum = 0
+    IMAGE_NUM = 0
+    PNSR_SUM = 0
     for i in range(len(image_files)):
-        input_image_path = os.path.join(x8_set_path , image_files[i])
-        hr_image_path = os.path.join(gt_set_path , image_files[i])
-        pnsr_sum += evaluate(input_image_path, hr_image_path , StreamManagerApi)
-        num += 1
+        input_image_path = os.path.join(X8_SET_PATH , image_files[i])
+        hr_image_path = os.path.join(GT_SET_PATH , image_files[i])
+        PNSR_SUM += evaluate(input_image_path, hr_image_path , StreamManagerApi)
+        IMAGE_NUM += 1
 
-    print("Average pnsr value = " , pnsr_sum / num)
+    print("Average pnsr value = " , PNSR_SUM / IMAGE_NUM)
     StreamManagerApi.DestroyAllStreams()
