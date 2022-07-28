@@ -47,36 +47,36 @@ def evaluate(input_path, hr_path , stream_manager_api):
     vision_data.memType = 0
     vision_data.dataSize = len(tensor)
 
-    KEY0 = b"appsrc0"
-    protobufVec = InProtobufVector()
+    key = b"appsrc0"
+    protobuf_vec = InProtobufVector()
     
     protobuf = MxProtobufIn()
-    protobuf.key = KEY0
+    protobuf.key = key
     protobuf.type = b"MxTools.MxpiVisionList"
     protobuf.protobuf = vision_list.SerializeToString()
-    protobufVec.push_back(protobuf)
+    protobuf_vec.push_back(protobuf)
 
     
-    STREAMNAME = b'superResolution'
-    INPLUGINID = 0
-    uniqueId = stream_manager_api.SendProtobuf(STREAMNAME, INPLUGINID, protobufVec)
+    stream_name = b'superResolution'
+    in_plugin_id = 0
+    unique_id = stream_manager_api.SendProtobuf(stream_name , in_plugin_id, protobuf_vec)
 
     # get plugin output data
     key = b"mxpi_tensorinfer0"
-    keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = stream_manager_api.GetProtobuf(STREAMNAME, 0, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
+    key_vec = StringVector()
+    key_vec.push_back(key)
+    infer_result = stream_manager_api.GetProtobuf(stream_name , 0, key_vec)
+    if infer_result.size() == 0:
+        print("infer_result is null")
         exit()
-    if inferResult[0].errorCode != 0:
+    if infer_result[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            inferResult[0].errorCode, inferResult[0].messageName.decode()))
+            infer_result[0].errorCode, infer_result[0].messageName.decode()))
         exit()
 
     # get the infer result
     inferList0 = MxpiDataType.MxpiTensorPackageList()
-    inferList0.ParseFromString(inferResult[0].messageBuf)
+    inferList0.ParseFromString(infer_result[0].messageBuf)
     inferData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
     output = np.frombuffer(inferData, dtype=np.float32)
 
