@@ -24,19 +24,13 @@ import cv2
 import numpy as np
 from utils import preprocess , postprocess , valid
 
-def evaluate(input_image_path, hr_image_path , streamManagerapi):
-    """
-	image super-resolution inference
-	:param input_image_path: input image path
-	:param streamManagerapi: streamManagerapi
-	:return: no return
-	"""
+def evaluate(input_path, hr_path , StreamManagerApi):
     print("Processing " + input_image_path + "...")
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
         exit()
     
-    tensor_data , origin_size = preprocess(input_image_path)
+    tensor_data , origin_size = preprocess(input_path)
     tensor = tensor_data[None, :]
 
     visionList = MxpiDataType.MxpiVisionList()
@@ -64,13 +58,13 @@ def evaluate(input_image_path, hr_image_path , streamManagerapi):
     
     streamName = b'superResolution'
     INPLUGINID = 0
-    uniqueId = streamManagerApi.SendProtobuf(streamName, INPLUGINID, protobufVec)
+    uniqueId = StreamManagerApi.SendProtobuf(streamName, INPLUGINID, protobufVec)
 
     # get plugin output data
     key = b"mxpi_tensorinfer0"
     keyVec = StringVector()
     keyVec.push_back(key)
-    inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    inferResult = StreamManagerApi.GetProtobuf(streamName, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
@@ -86,10 +80,10 @@ def evaluate(input_image_path, hr_image_path , streamManagerapi):
     output = np.frombuffer(inferData, dtype=np.float32)
 
     # postprocess and valid
-    hr = cv2.imread(hr_image_path)
+    hr = cv2.imread(hr_path)
     img = postprocess(output , hr.shape)
 
-    result_path = "./result/" + str(input_image_path[-8:])
+    result_path = "./result/" + str(input_path[-8:])
     cv2.imwrite(result_path , img)
     psnr_val = valid(img , hr)
     print("Infer finished.")
@@ -98,8 +92,8 @@ def evaluate(input_image_path, hr_image_path , streamManagerapi):
 if __name__ == '__main__':
     
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    StreamManagerApi = StreamManagerApi()
+    ret = StreamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -134,7 +128,7 @@ if __name__ == '__main__':
         }
     }
     pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = StreamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
@@ -160,8 +154,8 @@ if __name__ == '__main__':
     for i in range(len(image_files)):
         input_image_path = os.path.join(x8_set_path , image_files[i])
         hr_image_path = os.path.join(gt_set_path , image_files[i])
-        pnsr_sum += evaluate(input_image_path, hr_image_path , streamManagerApi)
+        pnsr_sum += evaluate(input_image_path, hr_image_path , StreamManagerApi)
         num += 1
 
     print("Average pnsr value = " , pnsr_sum / num)
-    streamManagerApi.DestroyAllStreams()
+    StreamManagerApi.DestroyAllStreams()
