@@ -20,6 +20,7 @@ import torchvision.transforms as transforms
 import cv2
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
+
 def preprocess(path):
     image = PIL.Image.open(path).convert('RGB')
     if image.size[0] > 256 or image.size[1] > 256:

@@ -24,7 +24,8 @@ import cv2
 import numpy as np
 from utils import preprocess , postprocess , valid
 
-def evaluate(input_path, hr_path , StreamManagerApi):
+
+def evaluate(input_path, hr_path , stream_manager_api):
     print("Processing " + input_image_path + "...")
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
@@ -33,18 +34,18 @@ def evaluate(input_path, hr_path , StreamManagerApi):
     tensor_data , origin_size = preprocess(input_path)
     tensor = tensor_data[None, :]
 
-    visionList = MxpiDataType.MxpiVisionList()
-    visionVec = visionList.visionVec.add()
-    visionInfo = visionVec.visionInfo
-    visionInfo.width = 256
-    visionInfo.height = 256
-    visionInfo.widthAligned = 256
-    visionInfo.heightAligned = 256
-    visionData = visionVec.visionData
-    visionData.dataStr = tensor.tobytes()
-    visionData.deviceId = 0
-    visionData.memType = 0
-    visionData.dataSize = len(tensor)
+    vision_list = MxpiDataType.MxpiVisionList()
+    vision_vec = vision_list .visionVec.add()
+    vision_info =  vision_vec.visionInfo
+    vision_info.width = 256
+    vision_info.height = 256
+    vision_info.widthAligned = 256
+    vision_info.heightAligned = 256
+    vision_data =  vision_vec.visionData
+    vision_data.dataStr = tensor.tobytes()
+    vision_data.deviceId = 0
+    vision_data.memType = 0
+    vision_data.dataSize = len(tensor)
 
     KEY0 = b"appsrc0"
     protobufVec = InProtobufVector()
@@ -52,19 +53,19 @@ def evaluate(input_path, hr_path , StreamManagerApi):
     protobuf = MxProtobufIn()
     protobuf.key = KEY0
     protobuf.type = b"MxTools.MxpiVisionList"
-    protobuf.protobuf = visionList.SerializeToString()
+    protobuf.protobuf = vision_list.SerializeToString()
     protobufVec.push_back(protobuf)
 
     
-    streamName = b'superResolution'
+    STREAMNAME = b'superResolution'
     INPLUGINID = 0
-    uniqueId = StreamManagerApi.SendProtobuf(streamName, INPLUGINID, protobufVec)
+    uniqueId = stream_manager_api.SendProtobuf(STREAMNAME, INPLUGINID, protobufVec)
 
     # get plugin output data
     key = b"mxpi_tensorinfer0"
     keyVec = StringVector()
     keyVec.push_back(key)
-    inferResult = StreamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    inferResult = stream_manager_api.GetProtobuf(STREAMNAME, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
