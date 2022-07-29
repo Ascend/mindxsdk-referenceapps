@@ -71,7 +71,7 @@ if __name__ == '__main__':
     tensor_data , origin_size = preprocess("./image/0802.png")
     tensor = tensor_data[None, :]
 
-    streamName = b'superResolution'
+    STREAMNAME = b'superResolution'
     INPLUGINID = 0
     visionList = MxpiDataType.MxpiVisionList()
     visionVec = visionList.visionVec.add()
@@ -95,13 +95,13 @@ if __name__ == '__main__':
     protobuf.protobuf = visionList.SerializeToString()
     protobufVec.push_back(protobuf)
  
-    uniqueId = streamManagerApi.SendProtobuf(streamName, INPLUGINID, protobufVec)
+    uniqueId = streamManagerApi.SendProtobuf(STREAMNAME, INPLUGINID, protobufVec)
 
     # get plugin output data
     KEY_VALUE = b"mxpi_tensorinfer0"
     keyVec = StringVector()
     keyVec.push_back(KEY_VALUE)
-    inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    inferResult = streamManagerApi.GetProtobuf(STREAMNAME, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
