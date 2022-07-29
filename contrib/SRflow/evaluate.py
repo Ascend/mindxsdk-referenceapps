@@ -75,10 +75,10 @@ def evaluate(input_path, hr_path , stream_manager_api):
         exit()
 
     # get the infer result
-    inferList0 = MxpiDataType.MxpiTensorPackageList()
-    inferList0.ParseFromString(infer_result[0].messageBuf)
-    inferData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
-    output = np.frombuffer(inferData, dtype=np.float32)
+    infer_list = MxpiDataType.MxpiTensorPackageList()
+    infer_list.ParseFromString(infer_result[0].messageBuf)
+    infer_data = infer_list.tensorPackageVec[0].tensorVec[0].dataStr
+    output = np.frombuffer(infer_data, dtype=np.float32)
 
     # postprocess and valid
     hr = cv2.imread(hr_path)
@@ -152,9 +152,9 @@ if __name__ == '__main__':
     
     IMAGE_NUM = 0
     PNSR_SUM = 0
-    for i in range(len(image_files)):
-        input_image_path = os.path.join(X8_SET_PATH , image_files[i])
-        hr_image_path = os.path.join(GT_SET_PATH , image_files[i])
+    for f in image_files:
+        input_image_path = os.path.join(X8_SET_PATH , f)
+        hr_image_path = os.path.join(GT_SET_PATH , f)
         PNSR_SUM += evaluate(input_image_path, hr_image_path , StreamManagerApi)
         IMAGE_NUM += 1
 
