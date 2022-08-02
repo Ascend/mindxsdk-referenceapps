@@ -18,6 +18,7 @@ import numpy as np
 import cv2
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
+
 def preprocess(path):
     image = cv2.imread(path)
     if image.shape[0] > 256 or image.shape[1] > 256:
