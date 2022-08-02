@@ -28,12 +28,14 @@ def preprocess(path):
     image = np.array(image).astype(np.float32).transpose()/255
     return image , image.shape
 
+
 def postprocess(output , hr_size):
     res = output.reshape(3, 2048, 2048)
     y = (np.clip(res, 0, 1) * 255).astype(np.uint8)
     result = y.transpose([2, 1, 0])[
         :hr_size[0], :hr_size[1], :]
     return result
+
 
 def valid(y , hr):
     psnr_val = psnr(y, hr)
