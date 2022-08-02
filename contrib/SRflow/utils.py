@@ -15,31 +15,25 @@
 # limitations under the License.
 
 import numpy as np
-import PIL.Image
-import torchvision.transforms as transforms
 import cv2
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
-
 def preprocess(path):
-    image = PIL.Image.open(path).convert('RGB')
-    if image.size[0] > 256 or image.size[1] > 256:
+    image = cv2.imread(path)
+    if image.shape[0] > 256 or image.shape[1] > 256:
         print("Error! Input image size > 256 * 256!")
         exit()
-    image = transforms.Pad(padding=(
-        0, 0, 256-image.size[0], 256-image.size[1]), padding_mode='edge')(image)
+    image = cv2.copyMakeBorder(image, 0 , 256-image.shape[0] , 0 , 256-image.shape[1] , cv2.BORDER_REPLICATE)
+    cv2.imwrite("tmp.jpg" , image)
     image = np.array(image).astype(np.float32).transpose()/255
-    return image , image.size
-
+    return image , image.shape
 
 def postprocess(output , hr_size):
     res = output.reshape(3, 2048, 2048)
     y = (np.clip(res, 0, 1) * 255).astype(np.uint8)
-    torch_y = y.transpose([2, 1, 0])[
+    result = y.transpose([2, 1, 0])[
         :hr_size[0], :hr_size[1], :]
-    result = np.array(torch_y)[: , : , ::-1]
     return result
-
 
 def valid(y , hr):
     psnr_val = psnr(y, hr)

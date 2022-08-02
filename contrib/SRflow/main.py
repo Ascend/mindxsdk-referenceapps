@@ -68,7 +68,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    tensor_data , origin_size = preprocess("./image/0802.png")
+    tensor_data , origin_size = preprocess("./image/test.png")
     tensor = tensor_data[None, :]
 
     STREAMNAME = b'superResolution'
@@ -76,6 +76,7 @@ if __name__ == '__main__':
     visionList = MxpiDataType.MxpiVisionList()
     visionVec = visionList.visionVec.add()
     visionInfo = visionVec.visionInfo
+    # The standard input size of srflow model is 256
     visionInfo.width = 256
     visionInfo.height = 256
     visionInfo.widthAligned = 256
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     infer_data = infer_list.tensorPackageVec[0].tensorVec[0].dataStr
     output = np.frombuffer(infer_data, dtype=np.float32)
 
-    hr = cv2.imread("./image/0802_hr.png")
+    hr = cv2.imread("./image/test_hr.png")
     img = postprocess(output , hr.shape)
     cv2.imwrite("result.jpg", img)
     psnr_val = valid(img , hr)

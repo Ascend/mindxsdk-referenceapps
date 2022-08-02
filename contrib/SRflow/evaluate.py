@@ -37,6 +37,8 @@ def evaluate(input_path, hr_path , stream_manager_api):
     vision_list = MxpiDataType.MxpiVisionList()
     vision_vec = vision_list .visionVec.add()
     vision_info =  vision_vec.visionInfo
+    
+    # The standard input size of srflow model is 256
     vision_info.width = 256
     vision_info.height = 256
     vision_info.widthAligned = 256
