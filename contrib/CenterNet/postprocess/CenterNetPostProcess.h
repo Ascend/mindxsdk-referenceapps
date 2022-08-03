@@ -24,23 +24,6 @@
 #include "NumCpp/NdArray.hpp"
 #include "NumCpp/Functions.hpp"
 
-
-//#if defined(__cpp_lib_math_special_functions) || !defined(NUMCPP_NO_USE_BOOST)
-//
-//#include "NumCpp/Core/Internal/StaticAsserts.hpp"
-//#include "NumCpp/Core/Internal/StlAlgorithms.hpp"
-//#include "NumCpp/NdArray.hpp"
-//#include "NumCpp/Functions.hpp"
-//#include "opencv2/opencv.hpp"
-//
-//#ifdef __cpp_lib_math_special_functions
-//#include <cmath>
-//#else
-//#include "boost/math/specials_functions/bessel.hpp"
-//#endif
-//#include "NumCpp.hpp"
-
-
 namespace DefaultValues {
     const int DEFAULT_CLASS_NUM = 80;
     const float DEFAULT_SCORE_THRESH = 0.0;
@@ -88,7 +71,6 @@ namespace MxBase {
                                    std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
                                    const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {});
 
-
         void ReadDataFromTensor(const std::vector <MxBase::TensorBase> &tensors,
                                 nc::NdArray<float> &heatmap,
                                 nc::NdArray<float> &wh,
@@ -118,7 +100,6 @@ namespace MxBase {
                                          nc::NdArray<float> reg, bool cat_spec_wh, int K);
         void GenerateBoxes(std::vector<nc::NdArray<float>> result,
                            std::vector <MxBase::ObjectInfo> &detBoxes);
-
 
     protected:
         int classNum_ = DefaultValues::DEFAULT_CLASS_NUM;

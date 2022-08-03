@@ -29,19 +29,25 @@ namespace {
     const int width = 128;
     const int cat = 80;
     const int K = 100;
+    const int yi = 1;
+    const int er = 2;
+    const int san = 3;
+    const int si = 4;
+    const int wuyier = 512;
+    const int yierba = 128;
 }
 
-namespace MxBase {
+namespace MxBase {	
     CenterNetPostProcess::CenterNetPostProcess(const CenterNetPostProcess &other) {
         classNum_ = other.classNum_;
         scoreThresh_ = other.scoreThresh_;
     }
 
-    CenterNetPostProcess &CenterNetPostProcess::operator=(const CenterNetPostProcess &other) {
+    CenterNetPostProcess &CenterNetPostProcess::operator = (const CenterNetPostProcess &other) {
         if (this == &other) {
             return *this;
         }
-        ObjectPostProcessBase::operator=(other);
+        ObjectPostProcessBase::operator = (other);
         classNum_ = other.classNum_;
         scoreThresh_ = other.scoreThresh_;
 
@@ -97,7 +103,7 @@ namespace MxBase {
         cv::Mat element = getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
         for (int i = 0; i < cat; i++) {
             cv::Mat maxpool;
-            float load[128][128];
+            float load[yierba][yierba];
             for (int j = 0; j < height; j++) {
                 for (int k = 0; k < width; k++) {
                     load[j][k] = fastmath::sigmoid(static_cast<float *>(hmPointer.get())[idx]);
@@ -105,9 +111,9 @@ namespace MxBase {
                 }
             }
 
-            cv::Mat tmp(128, 128, CV_32FC1, load);
+            cv::Mat tmp(yierba, yierba, CV_32FC1, load);
             dilate(tmp, maxpool, element);
-            std::vector<float> tmpv = maxpool.reshape(1, 1);
+            std::vector<float> tmpv = maxpool.reshape(yi, yi);
             for (int j = 0; j < height * width; j++){
                 if(heatmap(i, j) != tmpv[j]) {
                     heatmap(i, j) = 0;
@@ -115,22 +121,24 @@ namespace MxBase {
             }
         }
         // Read wh data
-        auto whDataPtr = (uint8_t *)tensors[1].GetBuffer();
+        auto whDataPtr = (uint8_t *)tensors[yi].GetBuffer();
         std::shared_ptr<void> whPointer;
         whPointer.reset(whDataPtr, g_uint8Deleter);
         idx = 0;
-        for (int i = 0; i < 2; i++) {
+	int nums_i1 = 2;
+        for (int i = 0; i < nums_i1; i++) {
             for (int j = 0; j < width * height; j++) {
                 wh(i, j) = (static_cast<float *>(whPointer.get())[idx]);
                 idx += 1;
             }
         }
 
-        auto regDataPtr = (uint8_t *)tensors[2].GetBuffer();
+        auto regDataPtr = (uint8_t *)tensors[er].GetBuffer();
         std::shared_ptr<void> regPointer;
+	int nums_i2 = 2;
         regPointer.reset(regDataPtr, g_uint8Deleter);
         idx = 0;
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < nums_i2; i++) {
             for (int j = 0; j < width * height; j++) {
                 regression(i, j) = (static_cast<float *>(regPointer.get())[idx]);
                 idx += 1;
@@ -141,16 +149,17 @@ namespace MxBase {
 
     nc::NdArray<float> CenterNetPostProcess::_gather_feat(nc::NdArray<float> feat, nc::NdArray<uint32_t> ind) {
         nc::NdArray<float> result;
-        int dim  = feat.shape().cols;//第二维
-        ind.reshape(ind.shape().cols, ind.shape().rows);//unsqueeze(2)
-        if (2 == dim)
+        int dim  = feat.shape().cols; //第二维
+	int nums_j1 = 2;
+        ind.reshape(ind.shape().cols, ind.shape().rows); //unsqueeze(2)
+        if (er == dim)
         {
-            ind = nc::concatenate({ind, ind},nc::Axis::COL);//expand(ind.size(0), ind.size(1), dim)#expand扩展某个size为1的维度到dim维,[100, 1]=>[100,dim]
-            result = nc::zeros<float>(K, 2);
+            ind = nc::concatenate({ind, ind},nc::Axis::COL); //expand(ind.size(0), ind.size(1), dim)#expand扩展某个size为1的维度到dim维,[100, 1]=>[100,dim]
+            result = nc::zeros<float>(K, er);
 
             for (int i = 0; i < K; i++)
             {
-                for (int j = 0; j < 2; j++)
+                for (int j = 0; j < nums_j1; j++)
                 {
                     result(i, j) = feat(ind(i, j), j);   // gather
                 }
@@ -158,7 +167,7 @@ namespace MxBase {
         }
         else
         {
-            result = nc::zeros<float>(K, 1);
+            result = nc::zeros<float>(K, yi);
             for (int i = 0; i < K; i++)
             {
                 result(i, 0) = feat(ind(i, 0) ,0);   //gather
@@ -168,16 +177,17 @@ namespace MxBase {
     }
     nc::NdArray<uint32_t> CenterNetPostProcess::_gather_feat(nc::NdArray<uint32_t> feat, nc::NdArray<uint32_t> ind) {
         nc::NdArray<uint32_t> result;
-        int dim = feat.shape().cols;//第二维
-        ind.reshape(ind.shape().cols, ind.shape().rows);//unsqueeze(2)
-        if (2 == dim)
+        int dim = feat.shape().cols; //第二维
+	int nums_j = 2;
+        ind.reshape(ind.shape().cols, ind.shape().rows); //unsqueeze(2)
+        if (er == dim)
         {
-            ind = nc::concatenate({ind, ind}, nc::Axis::COL);//expand(ind.size(0), ind.size(1), dim)#expand扩展某个size为1的维度到dim维,[1,500,1]=>[1,500,dim]
-            result = nc::zeros<uint32_t>(K, 2);
+            ind = nc::concatenate({ind, ind}, nc::Axis::COL); //expand(ind.size(0), ind.size(1), dim)#expand扩展某个size为1的维度到dim维,[1,500,1]=>[1,500,dim]
+            result = nc::zeros<uint32_t>(K, er);
 
             for (int i = 0; i < K; i++)
             {
-                for (int j = 0; j < 2; j++)
+                for (int j = 0; j < nums_j; j++)
                 {
                     result(i,j) = feat(ind(i, j), j);   //gather
                 }
@@ -185,17 +195,17 @@ namespace MxBase {
         }
         else
         {
-            result = nc::zeros<uint32_t>(K, 1);
+            result = nc::zeros<uint32_t>(K, yi);
             for (int i = 0; i < K; i++)
             {
-                result(i,0) = feat(ind(i,0),0);   //gather
+                result(i,ling) = feat(ind(i,ling),ling);   //gather
             }
         }
         return result;
     }
 
 
-    void CenterNetPostProcess::_tranpose_and_gather_feat(nc::NdArray<float> &feat, nc::NdArray<uint32_t> ind)//[dim,128*128], [100, dim]
+    void CenterNetPostProcess::_tranpose_and_gather_feat(nc::NdArray<float> &feat, nc::NdArray<uint32_t> ind) //[dim,128*128], [100, dim]
     {
         nc::NdArray<float> feat_trans = feat.transpose();
         feat = _gather_feat(feat_trans, ind);
@@ -218,20 +228,20 @@ namespace MxBase {
                 topk_xs(i,j) = (topk_inds_3d(i, j) % width);
             }
         }
-        nc::NdArray<uint32_t> topk_ind = nc::zeros<uint32_t>(1, K);
-        naive_arg_topK_2d(topk_scores.reshape(1, cat * K), K, topk_score, topk_ind);
+        nc::NdArray<uint32_t> topk_ind = nc::zeros<uint32_t>(yi, K);
+        naive_arg_topK_2d(topk_scores.reshape(yi, cat * K), K, topk_score, topk_ind);
 
         for (int j = 0; j < K; j++)
         {
-            topk_clses(0, j) = (topk_ind(0, j) / K);
+            topk_clses(ling, j) = (topk_ind(ling, j) / K);
         }
 
-        nc::NdArray<uint32_t> topk_inds_ = _gather_feat(topk_inds_3d.reshape(cat*K, 1), topk_ind);
-        nc::NdArray<uint32_t> topk_ys_ = _gather_feat(topk_ys.reshape(cat*K, 1), topk_ind);
-        nc::NdArray<uint32_t> topk_xs_ = _gather_feat(topk_xs.reshape(cat*K, 1), topk_ind);
-        topk_inds = nc::copy(topk_inds_.reshape(1, K));
-        topk_ys = nc::copy(topk_ys_.reshape(1, K));
-        topk_xs = nc::copy(topk_xs_.reshape(1, K));
+        nc::NdArray<uint32_t> topk_inds_ = _gather_feat(topk_inds_3d.reshape(cat*K, yi), topk_ind);
+        nc::NdArray<uint32_t> topk_ys_ = _gather_feat(topk_ys.reshape(cat*K, yi), topk_ind);
+        nc::NdArray<uint32_t> topk_xs_ = _gather_feat(topk_xs.reshape(cat*K, yi), topk_ind);
+        topk_inds = nc::copy(topk_inds_.reshape(yi, K));
+        topk_ys = nc::copy(topk_ys_.reshape(yi, K));
+        topk_xs = nc::copy(topk_xs_.reshape(yi, K));
 
         //return topk_score, topk_inds, topk_clses, topk_ys, topk_xs;
     }
@@ -239,34 +249,34 @@ namespace MxBase {
 
     nc::NdArray<float> CenterNetPostProcess::get_3rd_point(nc::NdArray<float> a, nc::NdArray<float> b){
         nc::NdArray<float> direct = a - b;
-        return b + nc::NdArray<float>{-direct[1], direct[0]};
+        return b + nc::NdArray<float>{-direct[yi], direct[ling]};
 }
 
     nc::NdArray<float> CenterNetPostProcess::get_dir(nc::NdArray<float> src_point, float rot_rad) {
         float sn = nc::sin(rot_rad);
         float cs = nc::cos(rot_rad);
-        nc::NdArray<float> src_result = {0, 0};
-        src_result[0] = src_point[0] * cs - src_point[1] * sn;
-        src_result[1] = src_point[0] * sn + src_point[1] * cs;
+        nc::NdArray<float> src_result = {ling, ling};
+        src_result[ling] = src_point[ling] * cs - src_point[yi] * sn;
+        src_result[yi] = src_point[ling] * sn + src_point[yi] * cs;
 
         return src_result;
     }
 
 
     cv::Mat CenterNetPostProcess::get_affine_transform(nc::NdArray<float> center, float scale, float rot,
-                                                       int output_size[2],nc::NdArray<float> shift = {0, 0}, int inv=0){
-        nc::NdArray<float> scales = {scale, scale};//创建矩阵
+                                                       int output_size[er],nc::NdArray<float> shift = {ling, ling}, int inv=0){
+        nc::NdArray<float> scales = {scale, scale}; //创建矩阵
         nc::NdArray<float> scale_tmp = scales;
-        float src_w = scale_tmp[0];
-        int dst_w = output_size[0];
-        int dst_h = output_size[1];
+        float src_w = scale_tmp[ling];
+        int dst_w = output_size[ling];
+        int dst_h = output_size[yi];
 
         float rot_rad = nc::constants::pi * rot / 180;
-        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{0, float(src_w * -0.5)}, rot_rad);
-        nc::NdArray<float> dst_dir = {0, float(dst_w * -0.5)};
+        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{ling, float(src_w * -0.5)}, rot_rad);
+        nc::NdArray<float> dst_dir = {ling, float(dst_w * -0.5)};
 
-        nc::NdArray<float> src = nc::zeros<float>(3, 2);
-        nc::NdArray<float> dst = nc::zeros<float>(3, 2);
+        nc::NdArray<float> src = nc::zeros<float>(san, er);
+        nc::NdArray<float> dst = nc::zeros<float>(san, er);
 
         nc::NdArray<float> temp;
         temp = center + scale_tmp * shift;
@@ -289,8 +299,8 @@ namespace MxBase {
         dst(2, 1) = temp(0,1);
 
         cv::Mat trans;
-        cv::Point2f SRC[3];
-        cv::Point2f DST[3];
+        cv::Point2f SRC[san];
+        cv::Point2f DST[san];
 
         // Set your 3 points to calculate the  Affine Transform
         SRC[0] = cv::Point2f(src(0,0),src(0,1));//numcpp to opencv`s point2f
@@ -361,10 +371,11 @@ namespace MxBase {
             }
         }
         //trans_NdArray.astype<float>();
+	int nums_q = 2; 
         for (int p = 0; p < coords.shape().rows; p++)
         {
             target_coords_temp = nc::copy(affine_transform(coords(p, {0,2}), trans_NdArray));
-            for (int q = 0; q < 2; q++)
+            for (int q = 0; q < nums_q; q++)
             {
                 target_coords(p, q) = target_coords_temp(q,0);
             }
@@ -395,11 +406,11 @@ namespace MxBase {
                     sum_same++;
                 }
             }
-
+	    int nums_k = 5;
             nc::NdArray<float> dets_post = nc::zeros<float>(K, 5);//标置位
             for (int j = 0; j < K; j++)
             {
-                for (int k = 0; k < 5; k++)//(boxes=4)+1+1
+                for (int k = 0; k < nums_k; k++)//(boxes=4)+1+1
                 {
                     dets_post(j, k) = dets_cat(j, k) * inds(j, 0);
                 }

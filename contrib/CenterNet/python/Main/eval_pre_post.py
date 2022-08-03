@@ -140,7 +140,6 @@ if __name__ == '__main__':
             exit()
         tensorResult = MxpiDataType.MxpiTensorPackageList()
         tensorResult.ParseFromString(tensorInfer.serializedMetadata)
-        # result1 = np.frombuffer(tensorResult.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         result = []
         for idx in range(len(tensorResult.tensorPackageVec[0].tensorVec)):
             result.append(np.frombuffer(tensorResult.tensorPackageVec[0].tensorVec[idx].dataStr, dtype=np.float32))
@@ -158,7 +157,6 @@ if __name__ == '__main__':
                 cv2.imwrite("./resultmany.jpg", img)
                 break
 
-            # results = objectList.objectVec[0]
             box = []
             box = {'x0': float(results.x0),
                    'x1': float(results.x1),
