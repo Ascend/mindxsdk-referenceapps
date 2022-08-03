@@ -104,7 +104,7 @@
 
 2. 模型获取
 
-​        直接获取已经训练并转好的om模型（biggan_sim_bs1.om）放在biggan/model目录下。如果没有model目录，需要用户自己新建一个文件夹并命名为model。
+​   直接获取已经训练并转好的om模型（biggan_sim_bs1.om）放在biggan/model目录下。如果没有model目录，需要用户自己新建一个文件夹并命名为model。
 
 ## 4.编译与运行
 
