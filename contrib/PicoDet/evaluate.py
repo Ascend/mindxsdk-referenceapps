@@ -139,8 +139,8 @@ if __name__ == '__main__':
     print(i)
     if os.path.exists(detect_file):
         os.remove(detect_file)
-    coco_result = json.dumps(coco_result)
-    fd = os.open(detect_file, os.O_RDWR | os.O_CREAT, 640)
+    coco_result = json.dumps(coco_result).encode()
+    fd = os.open(detect_file, os.O_RDWR | os.O_CREAT, stat.S_IRWXU | stat.S_IRGRP)
     os.write(fd, coco_result)
     run_coco_eval(coco_gt, image_ids, detect_file)
 
