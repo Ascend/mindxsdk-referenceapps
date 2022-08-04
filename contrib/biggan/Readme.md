@@ -12,6 +12,7 @@
 ```
 python biggan_preprocess.py --batch-size 1 --num-inputs 1000
 ```
+
     在当前目录下生成“prep_label_bs1”和“prep_noise_bs1”文件夹，分别存放标签数据和噪声数据。命名逻辑从input_0000.bin开始依次递增。
     如何生成标签和噪声文件具体流程请参考第三节**前期数据和模型准备**。
 
