@@ -130,7 +130,7 @@ python3 biggan_preprocess.py --batch-size 1 --num-inputs 1000
 cd python
 ```
 
-**步骤6**  main.py中默认为num为1000，count为11。也可根据用户需要在main.py脚本文件中自行设置数值，其中count需要小于num值。
+**步骤6**  main.py中默认为num为1000，count为11。也可根据用户需要在main.py脚本文件中自行设置数值，其中num需要等于**步骤3**中的num-inputs值，count需要小于num值。
 
 **步骤7**  在命令行输入：
 
