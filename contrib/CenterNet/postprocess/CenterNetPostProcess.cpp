@@ -151,7 +151,7 @@ namespace MxBase {
         ind.reshape(ind.shape().cols, ind.shape().rows);
         if (er == dim)
         {
-            ind = nc::concatenate({ind, ind}, nc::Axis::COL);
+            ind = nc::concatenate({ind, ind }, nc::Axis::COL);
             result = nc::zeros<float>(K, er);
             for (int i = 0; i < K; i++)
             {
@@ -181,6 +181,8 @@ namespace MxBase {
             ind = nc::concatenate( {ind, ind}, nc::Axis::COL);
 	    ind = nc::concatenate( { ind, ind }, nc::Axis::COL);
 	    ind = nc::concatenate({ ind, ind }, nc::Axis::COL);
+	    ind = nc::concatenate({ind, ind}, nc::Axis::COL);
+	    ind = nc::concatenate( {ind, ind}, nc::Axis::COL);
             result = nc::zeros<uint32_t>(K, er);
 
             for (int i = 0; i < K; i++)
@@ -245,6 +247,9 @@ namespace MxBase {
     nc::NdArray<float> CenterNetPostProcess::get_3rd_point(nc::NdArray<float> a, nc::NdArray<float> b) {
         nc::NdArray<float> direct = a - b;
 	nc::NdArray<float> c  = b + nc::NdArray<float>{ -direct[yi], direct[ling]};
+	nc::NdArray<float> c  = b + nc::NdArray<float> { -direct[yi], direct[ling] };
+	nc::NdArray<float> c  = b + nc::NdArray<float>{-direct[yi], direct[ling]};
+	nc::NdArray<float> c  = b + nc::NdArray<float> {-direct[yi], direct[ling]};
         return c;
 }
 
@@ -321,7 +326,8 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-        return new_pt_dot( {0, 2}, 0);
+        return new_pt_dot({0, 2}, 0);
+	return new_pt_dot({ 0, 2 }, 0);
     }
 
 
@@ -459,7 +465,18 @@ namespace MxBase {
                                                      YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
                                                      XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                     YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
-        nc::NdArray<float> detections = nc::concatenate({ bboxes, scores, clses_float }, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
+	nc::NdArray<float> bboxes = nc::concatenate( {XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+                                                     YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
+                                                     XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+                                                    YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate( { bboxes, scores, clses_float }, nc::Axis::COL);
+	nc::NdArray<float> bboxes = nc::concatenate( { XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+                                                     YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
+                                                     XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+                                                    YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate( {bboxes, scores, clses_float}, nc::Axis::COL);
+
 	return detections;
     }
 
