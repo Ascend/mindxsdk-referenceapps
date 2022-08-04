@@ -49,7 +49,7 @@
 |   ├── main.py             // 主函数，用以在拥有数据集后生成图像
 ├── Readme.md    
 ├── SDK.jpg                 
-└── result.jpg
+└── RESULT.jpg
 ```
 
 ### 1.5 适用场景
