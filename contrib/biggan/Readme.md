@@ -8,7 +8,12 @@
 
 ​   将随机生成的label标签和noise噪声数据，通过pipeline传入模型中进行推理，最终输出可视化图片。
 
-注： 如何生成标签和噪声文件具体流程请参考第三节**前期数据和模型准备**。命名逻辑从input_0000.bin开始依次递增。
+注： 标签和噪声文件的生成需要在ModelZoo的ATC BIgGAN中下载并上传“biggan_preprocess.py”，“G_ema.pth”；在github仓中下载并上传“BigGAN.py”， “layers.py”， “inception_utils.py” 文件。运行
+```
+python biggan_preprocess.py --batch-size 1 --num-inputs 1000
+```
+    在当前目录下生成“prep_label_bs1”和“prep_noise_bs1”文件夹，分别存放标签数据和噪声数据。命名逻辑从input_0000.bin开始依次递增。
+    如何生成标签和噪声文件具体流程请参考第三节**前期数据和模型准备**。
 
 ​  
 
