@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
 
 
-    if COUNT > NUM:
+    if COUNT >= NUM:
         print("set COUNT again, should be smaller than NUM.")
         exit()
 
@@ -205,6 +205,6 @@ if __name__ == '__main__':
     print(img_int)
     
     img_bgr = cv2.cvtColor(img_int, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(OUT_PATH + "/"+str(COUNT)+"_bgr.jpg", img_bgr)
+    cv2.imwrite(OUT_PATH + "/"+str(COUNT)+"_result.jpg", img_bgr)
     
    
