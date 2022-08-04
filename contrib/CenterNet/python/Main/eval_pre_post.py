@@ -155,7 +155,7 @@ if __name__ == '__main__':
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(tensorInfer.serializedMetadata)
 
-        Inds =0
+        g_inds = 0
         for results in objectList.objectVec:
             if results.classVec[0].classId == 81:
                 cv2.imwrite("./resultmany.jpg", img)
@@ -177,8 +177,8 @@ if __name__ == '__main__':
                     'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
                 }
                 coco_result.append(image_result)
-                Inds += 1
-                if Inds == 100:
+                g_inds += 1
+                if g_inds == 100:
                     break
                 text = "{}{}".format(str(box['confidence']), " ")
                 for item in box['text']:
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     Detect_File = 'val2017_detection_result.json'
     if os.path.exists(Detect_File):
         os.remove(Detect_File)
-    with open(Detect_File, 'w') as f:
+    with os.fdopen(os.open(Detect_File, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
         json.dump(coco_result, f, indent=4)
     run_coco_eval(coco_gt, image_ids, detect_file)
     streamManagerApi.DestroyAllStreams()

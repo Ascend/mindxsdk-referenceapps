@@ -136,20 +136,23 @@ if __name__ == '__main__':
                       'confidence': round(results.classVec[0].confidence, 4),
                       'class': results.classVec[0].classId,
                       'text': results.classVec[0].className}
-            image_result = {
-                'image_id': image_id,
-                'category_id': OBJECT_LIST[box['class']],
-                'score': float(box['confidence']),
-                'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
-            }
-            coco_result.append(image_result)
-            Inds += 1
-            if Inds == 100:
-                break
+            try:
+                image_result = {
+                    'image_id': image_id,
+                    'category_id': OBJECT_LIST[box['class']],
+                    'score': float(box['confidence']),
+                    'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
+                }
+                coco_result.append(image_result)
+                Inds += 1
+                if Inds == 100:
+                    break
+            except KeyError:
+                print("error")
     Detect_File = 'val2017_detection_result.json'
     if os.path.exists(Detect_File):
         os.remove(Detect_File)
-    with open(Detect_File, 'w') as f:
+    with os.fdopen(os.open(Detect_File, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
         json.dump(coco_result, f, indent=4)
     run_coco_eval(coco_gt, image_ids, Detect_File)
 

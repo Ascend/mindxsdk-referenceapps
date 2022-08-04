@@ -25,7 +25,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-Image_Path = "../test_img/test.jpg"
+g_imagePath = "../test_img/test.jpg"
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -43,15 +43,15 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    if os.path.exists(Image_Path) != 1:
+    if os.path.exists(g_imagePath) != 1:
         print("The test image does not exist.")
 
-    with open(Image_Path, 'rb') as f:
+    with open(g_imagePath, 'rb') as f:
         dataInput.data = f.read()
-    imgs = cv2.imread(Image_Path)
-    StreamName = b'detection'
-    InPluginId = 0
-    uniqueId = streamManagerApi.SendData(StreamName, InPluginId, dataInput)
+    imgs = cv2.imread(g_imagePath)
+    g_streamName = b'detection'
+    g_inPluginId = 0
+    uniqueId = streamManagerApi.SendData(g_streamName, g_inPluginId, dataInput)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -92,7 +92,8 @@ if __name__ == '__main__':
                 Text += item
             
             
-            cv2.putText(imgs, Text, (bboxes['x0'] + 10, bboxes['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
+            cv2.putText(imgs, Text, (bboxes['x0'] + 10, bboxes['y0'] + 10), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
             cv2.rectangle(imgs, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
             cv2.imwrite("../test_img/nopre_post.jpg", imgs)
         except KeyError:
