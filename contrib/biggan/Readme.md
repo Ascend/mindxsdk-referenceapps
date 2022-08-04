@@ -66,7 +66,7 @@ python biggan_preprocess.py --batch-size 1 --num-inputs 1000
 ## 2 环境依赖
 
 
-​     推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+​     推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
@@ -105,6 +105,7 @@ python biggan_preprocess.py --batch-size 1 --num-inputs 1000
 
    
    命名问题：样例中以bs为1，数据数量为1000为例，若改变了上述参数值，请对应调整网络模型命名以及main中num的数值。
+   路径问题：生成的“prep_label_bs1”和“prep_noise_bs1”文件夹需要放在/biggan目录下，否则在运行“main.py”时会出错。
 
 2. 模型获取
 
@@ -135,7 +136,7 @@ cd python
 **步骤6**  保存脚本文件，在命令行输入：
 
 ```
-python main.py
+python3 main.py
 ```
 
 **步骤7**   结果无误时会在biggan目录下生成result文件夹，文件夹中保存了count_result.jpg格式的生成图像。如下图所示：
