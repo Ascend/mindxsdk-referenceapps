@@ -153,7 +153,6 @@ namespace MxBase {
         {
             ind = nc::concatenate({ind, ind}, nc::Axis::COL);
             result = nc::zeros<float>(K, er);
-
             for (int i = 0; i < K; i++)
             {
                 for (int j = 0; j < er; j++)
@@ -179,7 +178,7 @@ namespace MxBase {
         ind.reshape(ind.shape().cols, ind.shape().rows);
         if (er == dim)
         {
-            ind = nc::concatenate({ind,ind }, nc::Axis::COL);
+            ind = nc::concatenate({ind, ind}, nc::Axis::COL);
             result = nc::zeros<uint32_t>(K, er);
 
             for (int i = 0; i < K; i++)
@@ -267,7 +266,7 @@ namespace MxBase {
         int dst_h = output_size[yi];
 
         float rot_rad = nc::constants::pi * rot / 180;
-        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{ling, float(src_w * -0.5)}, rot_rad);
+        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float> { ling, float(src_w * -0.5) }, rot_rad);
         nc::NdArray<float> dst_dir = { ling, float(dst_w * -0.5) };
         nc::NdArray<float> src = nc::zeros<float>(san, er);
         nc::NdArray<float> dst = nc::zeros<float>(san, er);
@@ -282,7 +281,7 @@ namespace MxBase {
         temp = dst_w * lingdianwu, dst_h * lingdianwu;
         dst(0, 0) = temp(0, 0);
         dst(0, 1) = temp(0, 1);
-        temp = nc::NdArray<float>{float(dst_w * lingdianwu), float(dst_h * lingdianwu)} + dst_dir;
+        temp = nc::NdArray<float> {float(dst_w * lingdianwu), float(dst_h * lingdianwu)} + dst_dir;
         dst(1, 0) = temp(0, 0);
         dst(1, 1) = temp(0, 1);
         temp = get_3rd_point(src(0, src.cSlice()), src(1, src.cSlice()));
