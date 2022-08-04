@@ -97,7 +97,7 @@
 
    1.3 路径问题：
 
-   ​        “biggan_preprocess.py”，“G_ema.pth” ， “BigGAN.py”， “layers.py”， “inception_utils.py” 和生成的“prep_label_bs1”和“prep_noise_bs1”文件夹需要全部放在/biggan目录下，否则在运行“main.py”时会出错。
+   ​        “biggan_preprocess.py”，“G_ema.pth” ， “BigGAN.py”， “layers.py”， “inception_utils.py” 和生成的“prep_label_bs1”和“prep_noise_bs1”文件夹需要全部放在/biggan目录下，否则在生成数据集和运行“main.py”时会出错。
 
 2. 模型获取
 
