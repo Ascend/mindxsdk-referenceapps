@@ -178,7 +178,9 @@ namespace MxBase {
         ind.reshape(ind.shape().cols, ind.shape().rows);
         if (er == dim)
         {
-            ind = nc::concatenate({ind, ind}, nc::Axis::COL);
+            ind = nc::concatenate( {ind, ind}, nc::Axis::COL);
+	    ind = nc::concatenate( { ind, ind }, nc::Axis::COL);
+	    ind = nc::concatenate({ ind, ind }, nc::Axis::COL);
             result = nc::zeros<uint32_t>(K, er);
 
             for (int i = 0; i < K; i++)
@@ -319,7 +321,7 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-        return new_pt_dot({0, 2}, 0);
+        return new_pt_dot( {0, 2}, 0);
     }
 
 
@@ -378,7 +380,7 @@ namespace MxBase {
         nc::NdArray<float> classes = dets(dets.rSlice(), {5, 6});
         nc::NdArray<float> scores = dets(dets.rSlice(), {4, 5});
         std::vector<nc::NdArray<float>> ret;
-        nc::NdArray<float> dets_cat = nc::concatenate({dets_01, dets_23, dets(dets.rSlice(), { 4, 5 })}, nc::Axis::COL);
+        nc::NdArray<float> dets_cat = nc::concatenate({ dets_01, dets_23, dets(dets.rSlice(), { 4, 5 }) }, nc::Axis::COL);
 
         for (int i = 0; i < cat; i++)
         {
@@ -453,11 +455,11 @@ namespace MxBase {
         }
         nc::NdArray<float> clses_float  = clses.reshape(K, 1).astype<float>();
         scores.reshape(K, 1);
-        nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0), 
+        nc::NdArray<float> bboxes = nc::concatenate({ XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                      YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
                                                      XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                     YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
-        nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate({ bboxes, scores, clses_float }, nc::Axis::COL);
 	return detections;
     }
 
