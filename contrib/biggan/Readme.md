@@ -99,10 +99,9 @@
    github文件下载路径：https://github.com/ajbrock/BigGAN-PyTorch.git 
 
    
-   命名问题：样例中以bs为1，数据数量为1000为例，若改变了上述参数值，请对应调整网络模型命名以及main中num的数值
+   命名问题：样例中以bs为1，数据数量为1000为例，若改变了上述参数值，请对应调整网络模型命名以及main中num的数值。
 
 2. 模型获取
-
 ​   直接获取已经训练并转好的om模型（biggan_sim_bs1.om）放在biggan/model目录下。如果没有model目录，需要用户自己新建一个文件夹并命名为model。
 
 ## 4.编译与运行
@@ -137,7 +136,7 @@ python main.py
 
 
 
-![3](result.jpg)
+![3](RESULT.jpg)
 
 注： 具体实现图片依赖于label标签和noise噪声文件，文件随机生成，最终生成图片因人而异。
 
