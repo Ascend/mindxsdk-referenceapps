@@ -27,7 +27,7 @@ from preprocess import preproc
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-Image_Path = '../test_img/test.jpg'
+IMAGE_PATH = '../test_img/test.jpg'
 
 
 if __name__ == '__main__':
@@ -46,11 +46,11 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    imgs = cv2.imread(Image_Path)
-    if os.path.exists(Image_Path) != 1:
+    imgs = cv2.imread(IMAGE_PATH)
+    if os.path.exists(IMAGE_PATH) != 1:
         print("The test image does not exist. Exit.")
         exit()
-    img = cv2.imread(Image_Path)
+    img = cv2.imread(IMAGE_PATH)
     
     pred_img = preproc(img)
     
@@ -81,9 +81,9 @@ if __name__ == '__main__':
     protobufVec.push_back(protobuf)
 
 
-    StreamName = b'detection'
-    InPluginId = 0
-    uniqueId = streamManagerApi.SendProtobuf(StreamName, InPluginId, protobufVec)
+    STREAM_NAME = b'detection'
+    INPLUGIN_ID = 0
+    uniqueId = streamManagerApi.SendProtobuf(STREAM_NAME, INPLUGIN_ID, protobufVec)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     keyVec.push_back(b"mxpi_tensorinfer0")
     keyVec.push_back(b"mxpi_objectpostprocessor0")
     
-    inferResult = streamManagerApi.GetResult(StreamName, b'appsink0', keyVec)
+    inferResult = streamManagerApi.GetResult(STREAM_NAME, b'appsink0', keyVec)
     if inferResult.metadataVec.size() == 0:
         print("GetResult failed")
         exit()

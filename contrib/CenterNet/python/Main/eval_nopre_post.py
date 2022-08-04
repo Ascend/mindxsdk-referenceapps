@@ -79,9 +79,9 @@ if __name__ == '__main__':
 
     dataInput = MxDataInput()
 
-    Image_Folder = '../test/data/coco/val2017/'
-    Annotation_File = '../test/data/coco/annotations/instances_val2017.json'
-    coco_gt = COCO(Annotation_File)
+    IMAGE_FOLDER = '../test/data/coco/val2017/'
+    ANNOTATION_FILE = '../test/data/coco/annotations/instances_val2017.json'
+    coco_gt = COCO(ANNOTATION_FILE)
     image_ids = coco_gt.getImgIds()
     coco_result = []
 
@@ -96,9 +96,9 @@ if __name__ == '__main__':
         with open(image_path, 'rb') as f:
             dataInput.data = f.read()
         imgs = cv2.imread(image_path)
-        StreamName = b'detection'
-        inPluginId = 0
-        uniqueId = streamManagerApi.SendData(StreamName, inPluginId, dataInput)
+        STREAM_NAME = b'detection'
+        INPLUGIN_ID = 0
+        uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
         if uniqueId < 0:
             print("Failed to send data to stream.")
@@ -109,7 +109,7 @@ if __name__ == '__main__':
             keyVec.push_back(key)
  
 
-        inferResult = streamManagerApi.GetProtobuf(StreamName, 0, keyVec)
+        inferResult = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
 
 
         if inferResult.size() == 0:
@@ -124,7 +124,7 @@ if __name__ == '__main__':
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(inferResult[0].messageBuf)
 
-        Inds = 0 
+        INDS = 0 
         for results in objectList.objectVec:
             if results.classVec[0].classId == 81:
                 break
@@ -144,16 +144,16 @@ if __name__ == '__main__':
                     'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
                 }
                 coco_result.append(image_result)
-                Inds += 1
-                if Inds == 100:
+                INDS += 1
+                if INDS == 100:
                     break
             except KeyError:
                 print("error")
-    Detect_File = 'val2017_detection_result.json'
-    if os.path.exists(Detect_File):
-        os.remove(Detect_File)
-    with os.fdopen(os.open(Detect_File, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
+    DETECT_FILE = 'val2017_detection_result.json'
+    if os.path.exists(DETECT_FILE):
+        os.remove(DETECT_FILE)
+    with os.fdopen(os.open(DETECT_FILE, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
         json.dump(coco_result, f, indent=4)
-    run_coco_eval(coco_gt, image_ids, Detect_File)
+    run_coco_eval(coco_gt, image_ids, DETECT_FILE)
 
     streamManagerApi.DestroyAllStreams()

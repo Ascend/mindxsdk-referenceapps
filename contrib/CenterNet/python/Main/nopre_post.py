@@ -25,7 +25,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-g_imagePath = "../test_img/test.jpg"
+IMAGE_PATH = "../test_img/test.jpg"
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -43,15 +43,15 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    if os.path.exists(g_imagePath) != 1:
+    if os.path.exists(IMAGE_PATH) != 1:
         print("The test image does not exist.")
 
-    with open(g_imagePath, 'rb') as f:
+    with open(IMAGE_PATH, 'rb') as f:
         dataInput.data = f.read()
-    imgs = cv2.imread(g_imagePath)
-    g_streamName = b'detection'
-    g_inPluginId = 0
-    uniqueId = streamManagerApi.SendData(g_streamName, g_inPluginId, dataInput)
+    imgs = cv2.imread(IMAGE_PATH)
+    STREAM_NAME  = b'detection'
+    INPLUGIN_ID = 0
+    uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    infer_result = streamManagerApi.GetProtobuf(StreamName, 0, keyVec)
+    infer_result = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
 
     if infer_result.size() == 0:
         print("infer_result is null")

@@ -75,14 +75,14 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    Image_Folder = '../test/data/coco/val2017/'
-    Annotation_File = '../test/data/coco/annotations/instances_val2017.json'
-    coco_gt = COCO(Annotation_File)
+    IMAGE_FOLDER = '../test/data/coco/val2017/'
+    ANNOTATION_FILE = '../test/data/coco/annotations/instances_val2017.json'
+    coco_gt = COCO(ANNOTATION_FILE)
     image_ids = coco_gt.getImgIds()
     coco_result = []
     for image_idx, image_id in enumerate(image_ids):
         image_info = coco_gt.loadImgs(image_id)[0]
-        image_path = os.path.join(Image_Folder, image_info['file_name'])
+        image_path = os.path.join(IMAGE_FOLDER, image_info['file_name'])
         print('Detect image: ', image_idx, ': ', image_info['file_name'], ', image id: ', image_id)
         if os.path.exists(image_path) != 1:
             print("The test image does not exist. Exit.")
@@ -118,9 +118,9 @@ if __name__ == '__main__':
         protobufVec.push_back(protobuf)
 
 
-        StreamName = b'detection'
-        InPluginId = 0
-        uniqueId = streamManagerApi.SendProtobuf(StreamName, InPluginId, protobufVec)
+        STREAM_NAME = b'detection'
+        INPLUGIN_ID = 0
+        uniqueId = streamManagerApi.SendProtobuf(STREAM_NAME, INPLUGIN_ID, protobufVec)
 
         if uniqueId < 0:
             print("Failed to send data to stream.")
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         keyVec.push_back(b"mxpi_tensorinfer0")
         keyVec.push_back(b"mxpi_objectpostprocessor0")
         
-        inferResult = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        inferResult = streamManagerApi.GetResult(STREAM_NAME, b'appsink0', keyVec)
         if inferResult.metadataVec.size() == 0:
             print("GetResult failed")
             exit()
@@ -155,7 +155,7 @@ if __name__ == '__main__':
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(tensorInfer.serializedMetadata)
 
-        g_inds = 0
+        INDS = 0
         for results in objectList.objectVec:
             if results.classVec[0].classId == 81:
                 cv2.imwrite("./resultmany.jpg", img)
@@ -177,18 +177,18 @@ if __name__ == '__main__':
                     'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
                 }
                 coco_result.append(image_result)
-                g_inds += 1
-                if g_inds == 100:
+                INDS += 1
+                if INDS == 100:
                     break
                 text = "{}{}".format(str(box['confidence']), " ")
                 for item in box['text']:
                     text += item
             except KeyError:
                 print("error")
-    Detect_File = 'val2017_detection_result.json'
-    if os.path.exists(Detect_File):
-        os.remove(Detect_File)
-    with os.fdopen(os.open(Detect_File, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
+    DETECT_FILE = 'val2017_detection_result.json'
+    if os.path.exists(DETECT_FILE):
+        os.remove(DETECT_FILE)
+    with os.fdopen(os.open(DETECT_FILE, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
         json.dump(coco_result, f, indent=4)
-    run_coco_eval(coco_gt, image_ids, detect_file)
+    run_coco_eval(coco_gt, image_ids, DETECT_FILE)
     streamManagerApi.DestroyAllStreams()

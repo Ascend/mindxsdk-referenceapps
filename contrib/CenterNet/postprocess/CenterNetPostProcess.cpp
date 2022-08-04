@@ -151,7 +151,7 @@ namespace MxBase {
         ind.reshape(ind.shape().cols, ind.shape().rows);
         if (er == dim)
         {
-            ind = nc::concatenate({ind, ind},nc::Axis::COL);
+            ind = nc::concatenate({ ind, ind },nc::Axis::COL);
             result = nc::zeros<float>(K, er);
 
             for (int i = 0; i < K; i++)
@@ -167,7 +167,7 @@ namespace MxBase {
             result = nc::zeros<float>(K, yi);
             for (int i = 0; i < K; i++)
             {
-                result(i, 0) = feat(ind(i, 0) ,0);
+                result(i, 0) = feat(ind(i, 0), 0);
             }
         }
         return result;
@@ -179,14 +179,14 @@ namespace MxBase {
         ind.reshape(ind.shape().cols, ind.shape().rows);
         if (er == dim)
         {
-            ind = nc::concatenate({ind, ind}, nc::Axis::COL);
+            ind = nc::concatenate({ ind, ind }, nc::Axis::COL);
             result = nc::zeros<uint32_t>(K, er);
 
             for (int i = 0; i < K; i++)
             {
                 for (int j = 0; j < nums_j; j++)
                 {
-                    result(i,j) = feat(ind(i, j), j);
+                    result(i, j) = feat(ind(i, j), j);
                 }
             }
         }
@@ -195,7 +195,7 @@ namespace MxBase {
             result = nc::zeros<uint32_t>(K, yi);
             for (int i = 0; i < K; i++)
             {
-                result(i,ling) = feat(ind(i,ling),ling);
+                result(i, ling) = feat(ind(i, ling), ling);
             }
         }
         return result;
@@ -243,7 +243,7 @@ namespace MxBase {
 
     nc::NdArray<float> CenterNetPostProcess::get_3rd_point(nc::NdArray<float> a, nc::NdArray<float> b) {
         nc::NdArray<float> direct = a - b;
-	nc::NdArray<float> c  = b + nc::NdArray<float>{-direct[yi], direct[ling]};
+	nc::NdArray<float> c  = b + nc::NdArray<float>{ -direct[yi], direct[ling] };
         return c;
 }
 
@@ -267,7 +267,7 @@ namespace MxBase {
         int dst_h = output_size[yi];
 
         float rot_rad = nc::constants::pi * rot / 180;
-        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{ling, float(src_w * -0.5)}, rot_rad);
+        nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{ ling, float(src_w * -0.5) }, rot_rad);
         nc::NdArray<float> dst_dir = { ling, float(dst_w * -0.5) };
         nc::NdArray<float> src = nc::zeros<float>(san, er);
         nc::NdArray<float> dst = nc::zeros<float>(san, er);
@@ -282,7 +282,7 @@ namespace MxBase {
         temp = dst_w * lingdianwu, dst_h * lingdianwu;
         dst(0, 0) = temp(0, 0);
         dst(0, 1) = temp(0, 1);
-        temp = nc::NdArray<float>{ float(dst_w * lingdianwu), float(dst_h * lingdianwu)} + dst_dir;
+        temp = nc::NdArray<float>{ float(dst_w * lingdianwu), float(dst_h * lingdianwu) } + dst_dir;
         dst(1, 0) = temp(0, 0);
         dst(1, 1) = temp(0, 1);
         temp = get_3rd_point(src(0, src.cSlice()), src(1, src.cSlice()));
@@ -320,7 +320,7 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-        return new_pt_dot({ 0, 2 }, 0);
+        return new_pt_dot( { 0, 2 }, 0);
     }
 
 
@@ -337,7 +337,7 @@ namespace MxBase {
 
     void CenterNetPostProcess::naive_arg_topK_2d(nc::NdArray<float> matrix, int K, nc::NdArray<float> &max_score, nc::NdArray<uint32_t> &max_k) {
         nc::NdArray<uint32_t> full_sort = nc::argsort(-matrix, nc::Axis::COL);
-        max_k = nc::copy(full_sort(full_sort.rSlice(),{0, K}));
+        max_k = nc::copy(full_sort(full_sort.rSlice(), {0, K}));
         for (int j = 0; j < K; j++)
         {
             max_score(0, j) = matrix(0, max_k(0, j));
@@ -379,7 +379,7 @@ namespace MxBase {
         nc::NdArray<float> classes = dets(dets.rSlice(), {5, 6});
         nc::NdArray<float> scores = dets(dets.rSlice(), {4, 5});
         std::vector<nc::NdArray<float>> ret;
-        nc::NdArray<float> dets_cat = nc::concatenate({dets_01, dets_23, dets(dets.rSlice(), { 4, 5 })}, nc::Axis::COL);
+        nc::NdArray<float> dets_cat = nc::concatenate({ dets_01, dets_23, dets(dets.rSlice(), { 4, 5 }) }, nc::Axis::COL);
 
         for (int i = 0; i < cat; i++)
         {
@@ -454,11 +454,11 @@ namespace MxBase {
         }
         nc::NdArray<float> clses_float  = clses.reshape(K, 1).astype<float>();
         scores.reshape(K, 1);
-        nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+        nc::NdArray<float> bboxes = nc::concatenate({ XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                      YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
                                                      XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                     YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
-        nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate({ bboxes, scores, clses_float }, nc::Axis::COL);
 	return detections;
     }
 

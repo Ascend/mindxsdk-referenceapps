@@ -305,6 +305,6 @@ python3 eval_nopre_post.py
 在CenterNet后处理的动态链接库的路径下运行命令：
 
 ```
-chmod 640 libcenternetpostprocess.so 
+
 ```
 
