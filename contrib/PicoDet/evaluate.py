@@ -16,6 +16,7 @@
 # limitations under the License.
 import sys
 import os
+import stat
 import argparse
 import json
 import cv2
