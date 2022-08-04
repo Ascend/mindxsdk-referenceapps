@@ -30,8 +30,7 @@ namespace DefaultValues {
 }
 
 namespace MxBase {
-    class CenterNetPostProcess: public ObjectPostProcessBase {
-
+    class CenterNetPostProcess : public ObjectPostProcessBase {
     public:
         CenterNetPostProcess() = default;
 
@@ -49,7 +48,7 @@ namespace MxBase {
                           std::vector <std::vector<MxBase::ObjectInfo>> &objectInfos,
                           const std::vector <MxBase::ResizedImageInfo> &resizedImageInfos = {},
                           const std::map <std::string, std::shared_ptr<void>> &paramMap = {});
-        struct Meta{
+        struct Meta {
             nc::NdArray<float> c;
             float s;
             int out_height;
@@ -104,7 +103,6 @@ namespace MxBase {
     protected:
         int classNum_ = DefaultValues::DEFAULT_CLASS_NUM;
         float scoreThresh_ = DefaultValues::DEFAULT_SCORE_THRESH; // Confidence threhold
-
     };
     extern "C" {
     std::shared_ptr<MxBase::CenterNetPostProcess> GetObjectInstance();

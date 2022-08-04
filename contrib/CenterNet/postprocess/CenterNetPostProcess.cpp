@@ -38,7 +38,7 @@ namespace {
     const float lingdianwu = 0.5
 }
 
-namespace MxBase {	
+namespace MxBase{	
     CenterNetPostProcess::CenterNetPostProcess(const CenterNetPostProcess &other) {
         classNum_ = other.classNum_;
         scoreThresh_ = other.scoreThresh_;
@@ -91,7 +91,7 @@ namespace MxBase {
         for (int i = 0; i < cat; i++) {
             for (int j = 0; j < height * width; j++) {
                 heatmap(i, j) = fastmath::sigmoid(static_cast<float *>(hmPointer.get())[idx]);
-                if(i == 0){
+                if (i == 0){
                     if (max0 < heatmap(i, j)){
                         max0 = heatmap(i, j);
                     }
@@ -147,8 +147,7 @@ namespace MxBase {
 
     nc::NdArray<float> CenterNetPostProcess::_gather_feat(nc::NdArray<float> feat, nc::NdArray<uint32_t> ind) {
         nc::NdArray<float> result;
-        int dim  = feat.shape().cols; 
-	int nums_j1 = 2;
+        int dim = feat.shape().cols; 
         ind.reshape(ind.shape().cols, ind.shape().rows); 
         if (er == dim)
         {
@@ -157,7 +156,7 @@ namespace MxBase {
 
             for (int i = 0; i < K; i++)
             {
-                for (int j = 0; j < nums_j1; j++)
+                for (int j = 0; j < er; j++)
                 {
                     result(i, j) = feat(ind(i, j), j);  
                 }
@@ -240,16 +239,14 @@ namespace MxBase {
         topk_inds = nc::copy(topk_inds_.reshape(yi, K));
         topk_ys = nc::copy(topk_ys_.reshape(yi, K));
         topk_xs = nc::copy(topk_xs_.reshape(yi, K));
-
     }
-
 
     nc::NdArray<float> CenterNetPostProcess::get_3rd_point(nc::NdArray<float> a, nc::NdArray<float> b){
         nc::NdArray<float> direct = a - b;
         return b + nc::NdArray<float>{ -direct[yi], direct[ling] };
 }
 
-    nc::NdArray<float> CenterNetPostProcess::get_dir(nc::NdArray<float> src_point, float rot_rad) {
+    nc::NdArray<float> CenterNetPostProcess::get_dir(nc::NdArray<float> src_point, float rot_rad){
         float sn = nc::sin(rot_rad);
         float cs = nc::cos(rot_rad);
         nc::NdArray<float> src_result = {ling, ling};
@@ -261,7 +258,7 @@ namespace MxBase {
 
 
     cv::Mat CenterNetPostProcess::get_affine_transform(nc::NdArray<float> center, float scale, float rot,
-                                                       int output_size[er],nc::NdArray<float> shift = { ling, ling }, int inv=0){
+                                                       int output_size[er],nc::NdArray<float> shift = { ling, ling }, int inv = 0){
         nc::NdArray<float> scales = { scale, scale };  
         nc::NdArray<float> scale_tmp = scales;
         float src_w = scale_tmp[ling];
@@ -271,7 +268,6 @@ namespace MxBase {
         float rot_rad = nc::constants::pi * rot / 180;
         nc::NdArray<float> src_dir = get_dir(nc::NdArray<float>{ ling, float(src_w * -0.5) }, rot_rad);
         nc::NdArray<float> dst_dir = { ling, float(dst_w * -0.5) };
-
         nc::NdArray<float> src = nc::zeros<float>(san, er);
         nc::NdArray<float> dst = nc::zeros<float>(san, er);
 
@@ -375,45 +371,41 @@ namespace MxBase {
     }
 
     std::vector<nc::NdArray<float>> CenterNetPostProcess::ctdet_post_process(nc::NdArray<float> dets,
-                                            nc::NdArray<float> c, float s, int h, int w, int num_classes){
-        int w_h[2]={w,h};
+        nc::NdArray<float> c, float s, int h, int w, int num_classes){
+        int w_h[2]={ w, h };
         nc::NdArray<float> dets_01 = transform_preds(dets(dets.rSlice(), {0, 2}), c, s, w_h);
         nc::NdArray<float> dets_23 = transform_preds(dets(dets.rSlice(), {2, 4}), c, s, w_h);
         nc::NdArray<float> classes = dets(dets.rSlice(), {5, 6});
         nc::NdArray<float> scores = dets(dets.rSlice(), {4, 5});
         std::vector<nc::NdArray<float>> ret;
-        nc::NdArray<float> dets_cat = nc::concatenate({dets_01, dets_23, dets(dets.rSlice(), {4, 5})}, nc::Axis::COL);
-	
-
+        nc::NdArray<float> dets_cat = nc::concatenate({ dets_01, dets_23, dets(dets.rSlice(), { 4, 5 }) }, nc::Axis::COL);
 
         for (int i = 0; i < cat; i++)
         {
             int sum_same = 0;
-            nc::NdArray<float> inds = nc::zeros<float>(K, 1); //标置位
+            nc::NdArray<float> inds = nc::zeros<float>(K, 1);
             for (int j = 0; j < K; j++) {
-                if (int(classes(j, 0)) == i) //相等则置1，否则为0
+                if (int(classes(j, 0)) == i)
                 {
-                    inds(j,0) = 1;
+                    inds(j, 0) = 1;
                     sum_same++;
                 }
             }
 	    int nums_k = 5;
-            nc::NdArray<float> dets_post = nc::zeros<float>(K, 5); //标置位
+            nc::NdArray<float> dets_post = nc::zeros<float>(K, 5);
             for (int j = 0; j < K; j++)
             {
-                for (int k = 0; k < nums_k; k++) //(boxes=4)+1+1
+                for (int k = 0; k < nums_k; k++)
                 {
                     dets_post(j, k) = dets_cat(j, k) * inds(j, 0);
                 }
             }
 
             ret.push_back(dets_post);
-	    
         }
 
-        return ret; // [80, 100, 5]
+        return ret;
     }
-
 
     std::vector<nc::NdArray<float>> CenterNetPostProcess::post_process(nc::NdArray<float> dets, Meta meta) {
         nc::NdArray<float> c = meta.c;
@@ -425,7 +417,6 @@ namespace MxBase {
         dets_result = ctdet_post_process(dets, c, s, out_height, out_width, cat);
         return dets_result;
     }
-
 
     nc::NdArray<float> CenterNetPostProcess::ctdet_decode(nc::NdArray<float> heat, nc::NdArray<float> wh,
                                                           nc::NdArray<float> reg, bool cat_spec_wh, int K)
@@ -440,14 +431,14 @@ namespace MxBase {
     
         nc::NdArray<float> XS;
         nc::NdArray<float> YS;
-        if (reg.size()) //非空
+        if (reg.size())
         {
             _tranpose_and_gather_feat(reg, inds);
-            reg.reshape(K, 2);
+            reg.reshape(K, er);
             nc::NdArray<float> xs_float = xs.reshape(K, 1).astype<float>();
-            XS = xs_float + reg(reg.rSlice(),{0, 1});
+            XS = xs_float + reg(reg.rSlice(),{ 0, 1 });
             nc::NdArray<float> ys_float = ys.reshape(K, 1).astype<float>();
-            YS = ys_float + reg(reg.rSlice(),{1, 2});
+            YS = ys_float + reg(reg.rSlice(),{ 1, 2 });
         }
         else
         {
@@ -463,29 +454,28 @@ namespace MxBase {
         }
         nc::NdArray<float> clses_float  = clses.reshape(K, 1).astype<float>();
         scores.reshape(K, 1);
-        nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), {0, 1}) / float(2.0),
-                                  YS - wh(wh.rSlice(),{1, 2}) / float(2.0),
-                                  XS + wh(wh.rSlice(),{0, 1}) / float(2.0),
-                                  YS + wh(wh.rSlice(),{1, 2}) / float(2.0)}, nc::Axis::COL);
-        nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
-	return detections; // [100, 5]
+        nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
+                                                     YS - wh(wh.rSlice(),{ 1, 2 }) / float(2.0),
+                                                     XS + wh(wh.rSlice(),{ 0, 1 }) / float(2.0),
+                                                     YS + wh(wh.rSlice(),{ 1, 2 }) / float(2.0)}, nc::Axis::COL);
+        nc::NdArray<float> detections = nc::concatenate({ bboxes, scores, clses_float }, nc::Axis::COL);
+	return detections;
     
     }
-
 
     void CenterNetPostProcess::GenerateBoxes(std::vector<nc::NdArray<float>> results,
                                              std::vector <MxBase::ObjectInfo> &detBoxes) {
         float maxr = 0;
-        for (int i = 0; i < results.size(); i++) { // size = 80
+        for (int i = 0; i < results.size(); i++) {
             for (int j = 0; j < results[i].shape().rows; j++) {
-                if (maxr < results[i](j,si)) maxr = results[i](j,si);
-                if (results[i](j,si) > scoreThresh_) { //置信度阈值
+                if (maxr < results[i](j, si)) maxr = results[i](j, si);
+                if (results[i](j, si) > scoreThresh_) {
                     MxBase::ObjectInfo det;
                     det.x0 = results[i](j, 0);
                     det.x1 = results[i](j, er);
                     det.y0 = results[i](j, 1)+lingdianwu;
-                    det.y1 = results[i](j, 3)+lingdianwu;
-                    det.confidence = results[i](j,si);
+                    det.y1 = results[i](j, san)+lingdianwu;
+                    det.confidence = results[i](j, si);
                     det.classId = i;
 		    det.className = configData_.GetClassName(i);
                     detBoxes.emplace_back(det);
@@ -503,7 +493,6 @@ namespace MxBase {
             detBoxes.emplace_back(det);
         }
     }
-
 
     void CenterNetPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
                                                      std::vector<std::vector<ObjectInfo>> &objectInfos,
@@ -545,9 +534,9 @@ namespace MxBase {
             meta.out_height = yierba;
 
             int size_feature = yierba * yierba;
-            nc::NdArray<float> hm = nc::zeros<float>(cat, size_feature); //heatmap
-            nc::NdArray<float> wh = nc::zeros<float>(2, size_feature); //width,height
-            nc::NdArray<float> reg = nc::zeros<float>(2, size_feature); //回归的位置，偏移?
+            nc::NdArray<float> hm = nc::zeros<float>(cat, size_feature);
+            nc::NdArray<float> wh = nc::zeros<float>(2, size_feature);
+            nc::NdArray<float> reg = nc::zeros<float>(2, size_feature);
             LogInfo << "Until here is good.";
             ReadDataFromTensor(tensors, hm, wh, reg);
             nc::NdArray<float> dets = ctdet_decode(hm, wh, reg, false, K);
@@ -561,9 +550,9 @@ namespace MxBase {
     }
 
     APP_ERROR CenterNetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                               std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                               const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                               const std::map<std::string, std::shared_ptr<void>> &paramMap) {
+                                            std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                            const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                            const std::map<std::string, std::shared_ptr<void>> &paramMap) {
         LogInfo << "Start to Process CenterNetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
         if (resizedImageInfos.size() == 0) {

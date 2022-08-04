@@ -25,7 +25,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-image_path = "../test_img/test.jpg"
+Image_Path = "../test_img/test.jpg"
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -43,15 +43,15 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    if os.path.exists(image_path) != 1:
+    if os.path.exists(Image_Path) != 1:
         print("The test image does not exist.")
 
-    with open(image_path, 'rb') as f:
+    with open(Image_Path, 'rb') as f:
         dataInput.data = f.read()
-    imgs = cv2.imread(image_path)
-    streamName = b'detection'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    imgs = cv2.imread(Image_Path)
+    StreamName = b'detection'
+    InPluginId = 0
+    uniqueId = streamManagerApi.SendData(StreamName, InPluginId, dataInput)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    infer_result = streamManagerApi.GetProtobuf(StreamName, 0, keyVec)
 
     if infer_result.size() == 0:
         print("infer_result is null")
@@ -85,14 +85,16 @@ if __name__ == '__main__':
                   'y1': int(results.y1),
                   'confidence': round(results.classVec[0].confidence, 4),
                   'text': results.classVec[0].className}
+        try:
 
-        text = "{}{}".format(str(bboxes['confidence']), " ")
-        for item in bboxes['text']:
-            text += item
-        
-        
-        cv2.putText(imgs, text, (bboxes['x0'] + 10, bboxes['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
-        cv2.rectangle(imgs, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
-        cv2.imwrite("../test_img/nopre_post.jpg", imgs)
-
+            Text = "{}{}".format(str(bboxes['confidence']), " ")
+            for item in bboxes['text']:
+                Text += item
+            
+            
+            cv2.putText(imgs, Text, (bboxes['x0'] + 10, bboxes['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
+            cv2.rectangle(imgs, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
+            cv2.imwrite("../test_img/nopre_post.jpg", imgs)
+        except KeyError:
+            print("error")
     streamManagerApi.DestroyAllStreams()

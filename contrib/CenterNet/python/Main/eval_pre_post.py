@@ -27,10 +27,14 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-
-OBJECT_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 31, 32, 33, 34, 35, 36, 37, 38,39, 40, 41, 42, 43, 44, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 67, 70, 72, 73, 74,75, 76, 77, 78, 79, 80,81, 82, 84, 85, 86, 87, 88, 89,90]
+OBJECT_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 
+               18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 31, 32, 33, 34, 
+               35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49, 
+               50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 
+               64, 65, 67, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 
+               84, 85, 86, 87, 88, 89, 90]
 
 
 def run_coco_eval(coco_gt_obj, image_id_list, dt_file_path):
@@ -71,14 +75,14 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    image_folder = '../test/data/coco/val2017/'
-    annotation_file = '../test/data/coco/annotations/instances_val2017.json'
-    coco_gt = COCO(annotation_file)
+    Image_Folder = '../test/data/coco/val2017/'
+    Annotation_File = '../test/data/coco/annotations/instances_val2017.json'
+    coco_gt = COCO(Annotation_File)
     image_ids = coco_gt.getImgIds()
     coco_result = []
     for image_idx, image_id in enumerate(image_ids):
         image_info = coco_gt.loadImgs(image_id)[0]
-        image_path = os.path.join(image_folder, image_info['file_name'])
+        image_path = os.path.join(Image_Folder, image_info['file_name'])
         print('Detect image: ', image_idx, ': ', image_info['file_name'], ', image id: ', image_id)
         if os.path.exists(image_path) != 1:
             print("The test image does not exist. Exit.")
@@ -114,9 +118,9 @@ if __name__ == '__main__':
         protobufVec.push_back(protobuf)
 
 
-        streamName = b'detection'
-        inPluginId = 0
-        uniqueId = streamManagerApi.SendProtobuf(streamName, inPluginId, protobufVec)
+        StreamName = b'detection'
+        InPluginId = 0
+        uniqueId = streamManagerApi.SendProtobuf(StreamName, InPluginId, protobufVec)
 
         if uniqueId < 0:
             print("Failed to send data to stream.")
@@ -151,7 +155,7 @@ if __name__ == '__main__':
         objectList = MxpiDataType.MxpiObjectList()
         objectList.ParseFromString(tensorInfer.serializedMetadata)
 
-        inds =0
+        Inds =0
         for results in objectList.objectVec:
             if results.classVec[0].classId == 81:
                 cv2.imwrite("./resultmany.jpg", img)
@@ -165,23 +169,26 @@ if __name__ == '__main__':
                       'confidence': round(results.classVec[0].confidence, 4),
                       'class': results.classVec[0].classId,
                       'text': results.classVec[0].className}
-            image_result = {
-                'image_id': image_id,
-                'category_id': OBJECT_LIST[box['class']],
-                'score': float(box['confidence']),
-                'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
-            }
-            coco_result.append(image_result)
-            inds += 1
-            if inds ==100:
-                break
-            text = "{}{}".format(str(box['confidence']), " ")
-            for item in box['text']:
-                text += item
-    detect_file = 'val2017_detection_result.json'
-    if os.path.exists(detect_file):
-        os.remove(detect_file)
-    with open(detect_file, 'w') as f:
+            try:
+                image_result = {
+                    'image_id': image_id,
+                    'category_id': OBJECT_LIST[box['class']],
+                    'score': float(box['confidence']),
+                    'bbox': [box['x0'], box['y0'], box['x1'] - box['x0'], box['y1'] - box['y0']]
+                }
+                coco_result.append(image_result)
+                Inds += 1
+                if Inds == 100:
+                    break
+                text = "{}{}".format(str(box['confidence']), " ")
+                for item in box['text']:
+                    text += item
+            except KeyError:
+                print("error")
+    Detect_File = 'val2017_detection_result.json'
+    if os.path.exists(Detect_File):
+        os.remove(Detect_File)
+    with open(Detect_File, 'w') as f:
         json.dump(coco_result, f, indent=4)
     run_coco_eval(coco_gt, image_ids, detect_file)
     streamManagerApi.DestroyAllStreams()
