@@ -180,9 +180,6 @@ if __name__ == '__main__':
                 INDS += 1
                 if INDS == 100:
                     break
-                text = "{}{}".format(str(box['confidence']), " ")
-                for item in box['text']:
-                    text += item
             except KeyError:
                 print("error")
     DETECT_FILE = 'val2017_detection_result.json'

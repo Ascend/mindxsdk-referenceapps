@@ -130,10 +130,10 @@ if __name__ == '__main__':
                   'class': results.classVec[0].classId,
                   'text': results.classVec[0].className}
         try:
-            text = "{}{}".format(str(box['confidence']), " ")
+            TEXT = "{}{}".format(str(box['confidence']), " ")
             for item in box['text']:
-                text += item
-            cv2.putText(imgs, text, (box['x0'] + 10, box['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
+                TEXT += item
+            cv2.putText(imgs, TEXT, (box['x0'] + 10, box['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
             cv2.rectangle(imgs, (box['x0'], box['y0']), (box['x1'], box['y1']), (255, 0, 0), 2)
             cv2.imwrite("../test_img/pre_post.jpg", imgs)
         except KeyError:

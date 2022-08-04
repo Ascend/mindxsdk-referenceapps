@@ -87,12 +87,12 @@ if __name__ == '__main__':
                   'text': results.classVec[0].className}
         try:
 
-            Text = "{}{}".format(str(bboxes['confidence']), " ")
+            TEXT = "{}{}".format(str(bboxes['confidence']), " ")
             for item in bboxes['text']:
-                Text += item
+                TEXT += item
             
             
-            cv2.putText(imgs, Text, (bboxes['x0'] + 10, bboxes['y0'] + 10), 
+            cv2.putText(imgs, TEXT, (bboxes['x0'] + 10, bboxes['y0'] + 10), 
                     cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 1)
             cv2.rectangle(imgs, (bboxes['x0'], bboxes['y0']), (bboxes['x1'], bboxes['y1']), (255, 0, 0), 2)
             cv2.imwrite("../test_img/nopre_post.jpg", imgs)
