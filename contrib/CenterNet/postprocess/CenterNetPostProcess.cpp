@@ -320,7 +320,7 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-        my_pt_dot = new_pt_dot( {0, 2}, 0);
+        my_pt_dot = new_pt_dot({0, 2}, 0);
 	return my_pt_dot;
     }
 

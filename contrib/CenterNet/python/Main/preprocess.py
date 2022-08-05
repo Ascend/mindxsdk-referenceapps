@@ -15,35 +15,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-
 import sys
 import os
 import cv2
 import numpy as np
 
-
-def preproc(image):
-    height, width = image.shape[0: 2]
-    new_height = int(height)
-    new_width  = int(width)
-    inp_height, inp_width = 512, 512
-    c = np.array([new_width / 2., new_height / 2.], dtype=np.float32)
-    s = max(height, width) * 1.0
-    src = np.zeros((3, 2), dtype=np.float32)
-    dst = np.array([[256, 256], [256, 0], [0, 0]])
-    src[0, :] = c
-    src[1, :] = np.array([c[0], c[1] - s * 0.5])
-    src[2, :] = c - np.array([s * 0.5, s * 0.5])
-    trans_input = cv2.getAffineTransform(np.float32(src), np.float32(dst))
-    resized_image = cv2.resize(image, (new_width, new_height))
+def preproc(my_i):
+    my_h, my_w = my_i.shape[0: 2]
+    my_new_h = int(my_h)
+    my_new_w  = int(my_w)
+    my_inp_h, my_inp_w = 512, 512
+    c = np.array([my_new_w / 2., my_new_h / 2.], dtype=np.float32)
+    s = max(my_h, my_w) * 1.0
+    my_s = np.zeros((3, 2), dtype=np.float32)
+    my_d = np.array([[256, 256], [256, 0], [0, 0]])
+    my_s[0, :] = c
+    my_s[1, :] = np.array([c[0], c[1] - s * 0.5])
+    my_s[2, :] = c - np.array([s * 0.5, s * 0.5])
+    trans_input = cv2.getAffineTransform(np.float32(my_s), np.float32(my_d))
+    resized_image = cv2.resize(my_i, (my_new_w, my_new_h))
     inp_image = cv2.warpAffine(
-	resized_image, trans_input, (inp_width, inp_height), flags=cv2.INTER_LINEAR)
+	resized_image, trans_input, (my_inp_w, my_inp_h), flags=cv2.INTER_LINEAR)
     inp_image = ((inp_image / 255. - [[[0.40789655, 0.44719303, 0.47026116]]]) /
                                      [[[0.2886383, 0.27408165, 0.27809834]]]).astype(np.float32)
     
-    images = inp_image.transpose(2, 0, 1).reshape(1, 3, inp_height, inp_width)
+    images = inp_image.transpose(2, 0, 1).reshape(1, 3, my_inp_h, my_inp_w)
     img = np.array(images).astype(np.float32)
     return img
 
