@@ -25,7 +25,6 @@ def preprocess(path):
         print("Error! Input image size > 256 * 256!")
         exit()
     image = cv2.copyMakeBorder(image, 0 , 256-image.shape[0] , 0 , 256-image.shape[1] , cv2.BORDER_REPLICATE)
-    cv2.imwrite("tmp.jpg" , image)
     image = np.array(image).astype(np.float32).transpose()/255
     return image , image.shape
 

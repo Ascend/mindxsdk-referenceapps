@@ -68,6 +68,9 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
+    if not os.path.exists("./image/test.png"):
+        print("Test png/jpg image does not exsit!")
+        exit()
     tensor_data , origin_size = preprocess("./image/test.png")
     tensor = tensor_data[None, :]
 

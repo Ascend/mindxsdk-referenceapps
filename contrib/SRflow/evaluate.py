@@ -26,8 +26,8 @@ from utils import preprocess , postprocess , valid
 
 
 def evaluate(input_path, hr_path , stream_manager_api):
-    print("Processing " + input_image_path + "...")
-    if os.path.exists(input_image_path) != 1:
+    print("Processing " + input_path + "...")
+    if os.path.exists(input_path) != 1:
         print("The input image does not exist.")
         exit()
     
