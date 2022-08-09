@@ -35,7 +35,7 @@ namespace {
     const int si = 4;
     const int wuyier = 512;
     const int yierba = 128;
-    const float lingdianwu = 0.5
+    const float lingdianwu = 0.5;
 }
 
 namespace MxBase {
@@ -320,7 +320,7 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-        my_pt_dot = new_pt_dot({0, 2}, 0);
+	nc::NdArray<float> my_pt_dot = new_pt_dot({0, 2}, 0);
 	return my_pt_dot;
     }
 

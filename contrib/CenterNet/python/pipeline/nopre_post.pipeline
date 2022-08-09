@@ -8,37 +8,12 @@
                     "blocksize": "409600"
                 },
                "factory": "appsrc",
-               "next": "mxpi_imagedecoder0"
-            },
-            "mxpi_imagedecoder0": {
-                "props": {
-                    "deviceId": "0",
-                    "cvProcessor": "opencv",
-                    "outputDataFormat": "RGB"
-                },
-                "factory": "mxpi_imagedecoder",
-                "next": "mxpi_imageresize0"
-            },
-            "mxpi_imageresize0": {
-            "props":{
-            "cvProcessor": "opencv",
-            "resizeHeight":"512",
-            "resizeWidth":"512",
-            "resizeType":"Resizer_KeepAspectRatio_Fit",
-            "paddingType":"Padding_Around",
-            "paddingHeight":"512",
-            "paddingWidth":"512",
-            "RGBValue":"0,0,0"
- },
-                "factory": "mxpi_imageresize",
-                "next": "mxpi_tensorinfer0"
+               "next": "mxpi_tensorinfer0"
             },
             "mxpi_tensorinfer0": {
                 "props": {
-                    "dataSource": "mxpi_imageresize0",
-                    "modelPath": "../models/conversion-scripts/CenterNet_nopre_post.om",
-                    "skipModelCheck": "1"
-
+                    "dataSource": "appsrc0",
+                    "modelPath": "../models/CenterNet_nopre_post.om"
                 },
                 "factory": "mxpi_tensorinfer",
                 "next": "mxpi_objectpostprocessor0"
@@ -48,7 +23,7 @@
                     "dataSource": "mxpi_tensorinfer0",
                     "postProcessConfigPath": "../models/centernet.cfg",
                     "labelPath": "../models/coco.names",
-                    "postProcessLibPath": "./postprocess/build/libcenternetpostprocess.so"
+                    "postProcessLibPath": "../../postprocess/build/libcenternetpostprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "appsink0"
@@ -61,4 +36,3 @@
             }
         }
     }
-                                            

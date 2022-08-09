@@ -29,11 +29,12 @@ from pycocotools.cocoeval import COCOeval
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-OBJECT_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 
-               18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 31, 32, 33, 34, 
-               35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49, 
-               50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 
-               64, 65, 67, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 
+
+OBJECT_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17,
+               18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 31, 32, 33, 34,
+               35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 49,
+               50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+               64, 65, 67, 70, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82,
                84, 85, 86, 87, 88, 89, 90]
 
 
@@ -67,7 +68,7 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-
+    
     with open("../pipeline/pre_post.pipeline", 'rb') as f:
         pipelineStr = f.read()
 
@@ -75,11 +76,15 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
+
+    dataInput = MxDataInput()
+
     IMAGE_FOLDER = '../test/data/coco/val2017/'
     ANNOTATION_FILE = '../test/data/coco/annotations/instances_val2017.json'
     coco_gt = COCO(ANNOTATION_FILE)
     image_ids = coco_gt.getImgIds()
     coco_result = []
+
     for image_idx, image_id in enumerate(image_ids):
         image_info = coco_gt.loadImgs(image_id)[0]
         image_path = os.path.join(IMAGE_FOLDER, image_info['file_name'])
@@ -87,85 +92,47 @@ if __name__ == '__main__':
         if os.path.exists(image_path) != 1:
             print("The test image does not exist. Exit.")
             exit()
-        img = cv2.imread(image_path)
-        
-        pred_img = preproc(img)
-        
-        visionList = MxpiDataType.MxpiVisionList()
-        visionVec = visionList.visionVec.add()
-        
-        visionInfo = visionVec.visionInfo
-        visionInfo.width = img.shape[1]
-        visionInfo.height = img.shape[0]
-        visionInfo.widthAligned = 512
-        visionInfo.heightAligned = 512
-
-        visionData = visionVec.visionData
-        visionData.dataStr = pred_img.tobytes()
-        visionData.deviceId = 0
-        visionData.memType = 0
-        visionData.dataSize = len(pred_img)
-        
-        KEY0 = b"appsrc0"
-
-        protobufVec = InProtobufVector()
-
-        
-        protobuf = MxProtobufIn()
-        protobuf.key = KEY0
-        protobuf.type = b"MxTools.MxpiVisionList"
-        protobuf.protobuf = visionList.SerializeToString()
-        protobufVec.push_back(protobuf)
-
-
+       
+        with open(image_path, 'rb') as f:
+            dataInput.data = f.read()
+        imgs = cv2.imread(image_path)
         STREAM_NAME = b'detection'
         INPLUGIN_ID = 0
-        uniqueId = streamManagerApi.SendProtobuf(STREAM_NAME, INPLUGIN_ID, protobufVec)
+        uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
-
+        keys = [b"mxpi_objectpostprocessor0"]
         keyVec = StringVector()
-        keyVec.push_back(b"mxpi_tensorinfer0")
-        keyVec.push_back(b"mxpi_objectpostprocessor0")
-        
-        inferResult = streamManagerApi.GetResult(STREAM_NAME, b'appsink0', keyVec)
-        if inferResult.metadataVec.size() == 0:
-            print("GetResult failed")
+        for key in keys:
+            keyVec.push_back(key)
+ 
+
+        inferResult = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
+
+
+        if inferResult.size() == 0:
+            print("infer_result is null")
             exit()
 
-
-        tensorInfer = inferResult.metadataVec[0]
-
-
-        if tensorInfer.errorCode != 0:
-            print("GetResult error. errorCode=%d, errMsg=%s" % (tensorInfer.errorCode, tensorInfer.errMsg))
+        if inferResult[0].errorCode != 0:
+            print("GetProtobuf error. errorCode=%d" % (
+                inferResult[0].errorCode))
             exit()
-        tensorResult = MxpiDataType.MxpiTensorPackageList()
-        tensorResult.ParseFromString(tensorInfer.serializedMetadata)
-        result = []
-        for idx in range(len(tensorResult.tensorPackageVec[0].tensorVec)):
-            result.append(np.frombuffer(tensorResult.tensorPackageVec[0].tensorVec[idx].dataStr, dtype=np.float32))
-        
-        tensorInfer = inferResult.metadataVec[1]
-        if tensorInfer.errorCode != 0:
-            print("GetResult error. errorCode=%d, errMsg=%s" % (tensorInfer.errorCode, tensorInfer.errMsg))
-            exit()
+
         objectList = MxpiDataType.MxpiObjectList()
-        objectList.ParseFromString(tensorInfer.serializedMetadata)
+        objectList.ParseFromString(inferResult[0].messageBuf)
 
-        INDS = 0
+        INDS = 0 
         for results in objectList.objectVec:
             if results.classVec[0].classId == 81:
-                cv2.imwrite("./resultmany.jpg", img)
                 break
-
             box = []
-            box = {'x0': float(results.x0),
-                   'x1': float(results.x1),
-                    'y0': float(results.y0),
-                    'y1': float(results.y1),
+            box = {'x0': int(results.x0),
+                   'x1': int(results.x1),
+                    'y0': int(results.y0),
+                    'y1': int(results.y1),
                       'confidence': round(results.classVec[0].confidence, 4),
                       'class': results.classVec[0].classId,
                       'text': results.classVec[0].className}
@@ -188,4 +155,5 @@ if __name__ == '__main__':
     with os.fdopen(os.open(DETECT_FILE, os.O_RDWR | os.O_CREAT, MODES), 'w') as f:
         json.dump(coco_result, f, indent=4)
     run_coco_eval(coco_gt, image_ids, DETECT_FILE)
+
     streamManagerApi.DestroyAllStreams()
