@@ -71,6 +71,7 @@ if __name__ == '__main__':
     if not os.path.exists("./image/test.png"):
         print("Test png/jpg image does not exsit!")
         exit()
+        
     tensor_data , origin_size = preprocess("./image/test.png")
     tensor = tensor_data[None, :]
 
@@ -119,6 +120,10 @@ if __name__ == '__main__':
     infer_list.ParseFromString(inferResult[0].messageBuf)
     infer_data = infer_list.tensorPackageVec[0].tensorVec[0].dataStr
     output = np.frombuffer(infer_data, dtype=np.float32)
+
+    if not os.path.exists("./image/test_hr.png"):
+        print("Test hr png/jpg image does not exsit!")
+        exit()
 
     hr = cv2.imread("./image/test_hr.png")
     img = postprocess(output , hr.shape)
