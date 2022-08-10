@@ -86,7 +86,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ## 3 运行
 
-选取一对八倍下采样前后的png格式图片作为样例(可直接使用div2k验证集中的图片对)，将下采样后的图片命名为test.png，将hr图片(低分辨图像对应的高分辨图像,即下采样前的图像)命名为test_hr.png放入image文件夹中。
+选取一对八倍下采样前后的png格式图片作为样例(可直接使用div2k验证集中的图片对)，将下采样后的图片命名为test.png，将hr图片(低分辨图像对应的高分辨图像,即下采样前的图像)命名为test_hr.png放入image文件夹中。注意:由于模型的输出图像大小固定为2048*2048,所以作为groundtruth的hr图片长边和短边的比例需要与低分辨图像相等,且长边大小为2048。
 
 在本项目目录下，运行脚本：
 
@@ -109,8 +109,8 @@ PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量�
 
 ### 4.1 准备验证数据集
 
+在[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SRFlow/dataset.zip)处下载数据集dataset.zip,放在项目目录下。
 ```
-wget  http://data.vision.ee.ethz.ch/alugmayr/SRFlow/datasets.zip
 unzip datasets.zip
 rm datasets.zip
 ```
