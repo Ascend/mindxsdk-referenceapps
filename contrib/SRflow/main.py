@@ -68,11 +68,15 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    if not os.path.exists("./image/test.png"):
+    IMAGE = "./image/test.png"
+    HRIMAGE = "./image/test_hr.png"
+
+    if not os.path.exists(IMAGE):
         print("Test png/jpg image does not exsit!")
         exit()
-        
-    tensor_data , origin_size = preprocess("./image/test.png")
+    
+
+    tensor_data , origin_size = preprocess(IMAGE)
     tensor = tensor_data[None, :]
 
     STREAMNAME = b'superResolution'
@@ -121,11 +125,11 @@ if __name__ == '__main__':
     infer_data = infer_list.tensorPackageVec[0].tensorVec[0].dataStr
     output = np.frombuffer(infer_data, dtype=np.float32)
 
-    if not os.path.exists("./image/test_hr.png"):
+    if not os.path.exists(HRIMAGE):
         print("Test hr png/jpg image does not exsit!")
         exit()
 
-    hr = cv2.imread("./image/test_hr.png")
+    hr = cv2.imread(HRIMAGE)
     img = postprocess(output , hr.shape)
     cv2.imwrite("result.jpg", img)
     psnr_val = valid(img , hr)
