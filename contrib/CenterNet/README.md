@@ -53,11 +53,11 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 ```
 .
 ├── images
-│   ├── DetectionPipeline.png
-│   ├── EvaluateInfo.png
-│   ├── EvaluateInfoPrevious.png
-│   ├── warning.png
-│   └── VersionError.png
+│   ├── MindXSDKValueError.png
+│   ├── pre_post.png
+│   ├── nopre_post.png
+│   ├── pipeline.jpg
+│   └── permissionerror.png
 ├── postprocess
 │   ├── build.sh
 │   ├── CMakeLists.txt
