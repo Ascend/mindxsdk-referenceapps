@@ -53,11 +53,11 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 ```
 .
 ├── images
-│   ├── DetectionPipeline.png
-│   ├── EvaluateInfo.png
-│   ├── EvaluateInfoPrevious.png
-│   ├── warning.png
-│   └── VersionError.png
+│   ├── MindXSDKValueError.png
+│   ├── pre_post.png
+│   ├── nopre_post.png
+│   ├── pipeline.jpg
+│   └── permissionerror.png
 ├── postprocess
 │   ├── build.sh
 │   ├── CMakeLists.txt
@@ -133,6 +133,14 @@ CANN 环境变量：
 ```
 SDK-path: mxVision SDK 安装路径
 ascend-toolkit-path: CANN 安装路径。
+```
+
+需要安装的NumCpp库：
+```
+cd postprocess
+git clone https://github.com/dpilger26/NumCpp
+mkdir include
+cp -r  NumCpp/include/NumCpp ./include/
 ```
 
 ## 3. 模型转换
