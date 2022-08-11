@@ -135,6 +135,14 @@ SDK-path: mxVision SDK 安装路径
 ascend-toolkit-path: CANN 安装路径。
 ```
 
+需要安装的NumCpp库：
+```
+cd postprocess
+git clone https://github.com/dpilger26/NumCpp
+mkdir include
+cp -r  NumCpp/include/NumCpp ./include/
+```
+
 ## 3. 模型转换
 
 本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0699d3e48ff1447cafc85c2c9f007130 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
