@@ -111,11 +111,11 @@ PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量�
 
 在[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SRFlow/dataset.zip)处下载数据集dataset.zip,放在项目目录下。
 ```
-unzip datasets.zip
-rm datasets.zip
+unzip dataset.zip
+rm dataset.zip
 ```
 
-将解压后的datasets文件目录下的div2k-validation-modcrop8-gt 文件夹和 div2k-validation-modcrop8-8x 文件夹放入本项目目录下的dataset文件夹中。
+将解压后的dataset文件目录下的div2k-validation-modcrop8-gt 文件夹和 div2k-validation-modcrop8-8x 文件夹放入本项目目录下的dataset文件夹中。
 
 ### 4.2 运行精度验证脚本
 
