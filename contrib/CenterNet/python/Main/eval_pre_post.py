@@ -18,9 +18,9 @@ limitations under the License.
 """
 
 import json
+import stat
 import os
 import cv2
-import stat
 import numpy as np
 from preprocess import preproc
 

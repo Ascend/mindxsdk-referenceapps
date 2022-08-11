@@ -320,7 +320,7 @@ namespace MxBase {
         nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
         new_pt = new_pt.transpose();
         nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-	nc::NdArray<float> my_pt_dot = new_pt_dot({0, 2}, 0);
+	nc::NdArray<float> my_pt_dot = new_pt_dot( {0, 2}, 0);
 	return my_pt_dot;
     }
 
@@ -457,7 +457,7 @@ namespace MxBase {
 	nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
                                                      YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
                                                      XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
-                                              YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
+					YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
         nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
 
 	return detections;

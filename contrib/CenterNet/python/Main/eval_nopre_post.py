@@ -18,6 +18,7 @@ limitations under the License.
 """
 
 import json
+import stat
 import os
 import cv2
 import numpy as np
@@ -63,6 +64,7 @@ def run_coco_eval(coco_gt_obj, image_id_list, dt_file_path):
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
+    MODES = stat.S_IWUSR | stat.S_IRUSR
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()

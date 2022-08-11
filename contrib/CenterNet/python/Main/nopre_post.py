@@ -25,7 +25,7 @@ from preprocess import preproc
 
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
 
 IMAGE_PATH = '../test_img/test.jpg'
 
