@@ -20,6 +20,7 @@ limitations under the License.
 import json
 import os
 import cv2
+import stat
 import numpy as np
 from preprocess import preproc
 
@@ -64,6 +65,7 @@ def run_coco_eval(coco_gt_obj, image_id_list, dt_file_path):
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
+    MODES = stat.S_IWUSR | stat.S_IRUSR
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -129,10 +131,10 @@ if __name__ == '__main__':
             if results.classVec[0].classId == 81:
                 break
             box = []
-            box = {'x0': int(results.x0),
-                   'x1': int(results.x1),
-                    'y0': int(results.y0),
-                    'y1': int(results.y1),
+            box = {'x0': results.x0,
+                   'x1': results.x1,
+                    'y0': results.y0,
+                    'y1': results.y1,
                       'confidence': round(results.classVec[0].confidence, 4),
                       'class': results.classVec[0].classId,
                       'text': results.classVec[0].className}

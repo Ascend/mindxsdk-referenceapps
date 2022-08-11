@@ -36,7 +36,7 @@
             "mxpi_tensorinfer0": {
                 "props": {
                     "dataSource": "mxpi_imageresize0",
-                    "modelPath": "../models/CenterNet_pre_post.om",
+                    "modelPath": "../models/conversion-scripts/CenterNet_pre_post.om",
                     "skipModelCheck": "1"
 
                 },
