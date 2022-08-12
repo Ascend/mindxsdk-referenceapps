@@ -195,10 +195,10 @@ ATC run success, welcome to the next use.
 
 ### 4.1 业务流程加图像预处理
 
-**步骤1** 在项目根目录执行命令：
+**步骤1** 在项目后处理目录执行命令：
 
 ```
-bash ./postprocess/build.sh  
+bash ./build.sh  
 ```
 
 **步骤2** 放入待测图片。将一张图片放在路径``python/test_img``下，命名为 test.jpg。
@@ -239,10 +239,10 @@ python3 eval_pre_post.py
 
 ### 4.2 业务流程不加图像预处理
 
-**步骤1** 在项目根目录执行命令：                                                                                                                                                             
+**步骤1** 在项目后处理目录执行命令：                                                                                                                                                             
                                                                                                                                                                                 
 ```                                                                                                                                                                             
-bash ./postprocess/build.sh                                                                                 
+bash ./build.sh                                                                                 
 ```
 
 **步骤2** 放入待测图片。将一张图片放在路径``python/test_img``下，命名为 test.jpg。                                                                                                                      
