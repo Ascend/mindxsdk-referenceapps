@@ -151,13 +151,13 @@ cp -r  NumCpp/include/NumCpp ./include/
 ### 3.1 业务流程加图像预处理的模型转换方法
 
 
-1. 从上述项目链接中下载 onnx 模型 CenterNet.onnx 至 ``python/models/conversion-scripts`` 文件夹下。
+1. 从上述项目链接中下载 onnx 模型 CenterNet.onnx 至 ``python/models`` 文件夹下。
 
 
-2. 将该模型转换为om模型，具体操作为： ``python/models/conversion-scripts`` 文件夹下,执行atc指令：
+2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行atc指令：
 
 ```
-atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_pre_post --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310 --insert_op_conf=../aipp-configs/aipp_bgr.config
+atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_pre_post --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310 --insert_op_conf=./aipp-configs/aipp_bgr.config
 ```
 
 若终端输出：
@@ -171,10 +171,10 @@ ATC run success, welcome to the next use.
 ### 3.2 业务流程不加图像预处理的模型转换方法
 
 
-1. 从上述项目链接中下载 onnx 模型CenterNet.onnx 至 ``python/models/conversion-scripts`` 文件夹下。
+1. 从上述项目链接中下载 onnx 模型CenterNet.onnx 至 ``python/models`` 文件夹下。
 
 
-2. 将该模型转换为om模型，具体操作为： ``python/models/conversion-scripts`` 文件夹下,执行atc指令：
+2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行atc指令：
                                                            
 
 ```
@@ -284,7 +284,8 @@ python3 eval_nopre_post.py
     <br>
 </center>
 
-
+### 4.3 目标精度
+目标精度为：0.364   
 
 ## 5 常见问题
 
@@ -298,19 +299,4 @@ python3 eval_nopre_post.py
 **解决方案：**
 
 检查Mindx SDK安装包的位置，并使用第二章介绍的指令正确导入环境变量。
-### 5.2 后处理插件权限问题
-
-运行检测 demo 和评测时都需要将生成的CenterNet后处理动态链接库的权限修改，否则将会报权限错误，如下图所示：
-<center>
-    <img src="./images/permissionerror.png">
-    <br>
-</center>
-
-**解决方案：**
-
-在CenterNet后处理的动态链接库的路径下运行命令：
-
-```
-
-```
 
