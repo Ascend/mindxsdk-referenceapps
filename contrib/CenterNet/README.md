@@ -287,16 +287,5 @@ python3 eval_nopre_post.py
 ### 4.3 目标精度
 目标精度为：0.364   
 
-## 5 常见问题
 
-### 5.1 未修改 pipeline 文件中的 ${MX_SDK_HOME} 值为具体值
-运行demo前需要正确导入环境变量，否则会报错，如下图所示：
-<center>
-    <img src="./images/MindXSDKValueError.png">
-    <br>
-</center>
-
-**解决方案：**
-
-检查Mindx SDK安装包的位置，并使用第二章介绍的指令正确导入环境变量。
 
