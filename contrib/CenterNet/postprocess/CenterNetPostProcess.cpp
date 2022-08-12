@@ -29,6 +29,7 @@ namespace {
     const int width = 128;
     const int cat = 80;
     const int K = 100;
+    const int ling = 0;
     const int yi = 1;
     const int er = 2;
     const int san = 3;
