@@ -131,7 +131,7 @@ CANN 环境变量：
 - 环境变量介绍
 
 ```
-SDK-path: mxVision SDK 安装路径
+SDK-path: SDK mxVision 安装路径
 ascend-toolkit-path: CANN 安装路径。
 ```
 
@@ -198,7 +198,7 @@ ATC run success, welcome to the next use.
 **步骤1** 在项目后处理目录执行命令：
 
 ```
-bash ./build.sh  
+bash build.sh  
 ```
 
 **步骤2** 放入待测图片。将一张图片放在路径``python/test_img``下，命名为 test.jpg。
@@ -213,7 +213,7 @@ python3 pre_post.py
 
 **步骤4** 精度测试。
 
-1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/stuff_annotations_trainval2017.zip)，并保存在项目目录``python/test/data``下，此文件夹下的组织形式应如下图所示：
+1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/stuff_annotations_trainval2017.zip)，并保存在项目目录``python/dataset``下，此文件夹下的组织形式应如下图所示：
 
 ```                                    
 .                                                               
@@ -242,7 +242,7 @@ python3 eval_pre_post.py
 **步骤1** 在项目后处理目录执行命令：                                                                                                                                                             
                                                                                                                                                                                 
 ```                                                                                                                                                                             
-bash ./build.sh                                                                                 
+bash build.sh                                                                                 
 ```
 
 **步骤2** 放入待测图片。将一张图片放在路径``python/test_img``下，命名为 test.jpg。                                                                                                                      
@@ -261,7 +261,7 @@ python3 nopre_post.py
 **步骤4** 精度测试。                                                                                                                                                                   
                                                                                                                                                                                 
 
-1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/stuff_annotations_trainval2017.zip)，并保存在项目目录``python/test/data``下，此文件夹下的组织形式应如下图所示：                                                                                                    
+1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/stuff_annotations_trainval2017.zip)，并保存在项目目录``python/dataset``下，此文件夹下的组织形式应如下图所示：                                                                                                    
                                                                                                                                                                                 
 ```                                                                                                                                                                             
 .                                                                                                                                                                               

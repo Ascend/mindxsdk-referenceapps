@@ -77,8 +77,8 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    IMAGE_FOLDER = '../test/data/coco/val2017/'
-    ANNOTATION_FILE = '../test/data/coco/annotations/instances_val2017.json'
+    IMAGE_FOLDER = '../dataset/val2017/'
+    ANNOTATION_FILE = '../dataset/annotations/instances_val2017.json'
     coco_gt = COCO(ANNOTATION_FILE)
     image_ids = coco_gt.getImgIds()
     coco_result = []

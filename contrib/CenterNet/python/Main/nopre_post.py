@@ -21,14 +21,71 @@ import json
 import os
 import cv2
 import numpy as np
+import webcolors
 from preprocess import preproc
-
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
 
 IMAGE_PATH = '../test_img/test.jpg'
 
+def from_colorname_to_bgr(color):
+    """
+    convert color name to bgr value
+
+    Args:
+        color: color name
+
+    Returns: bgr value
+
+    """
+    rgb_color = webcolors.name_to_rgb(color)
+    result = (rgb_color.blue, rgb_color.green, rgb_color.red)
+    return result
+
+def standard_to_bgr():
+    """
+    generate bgr list from color name list
+    Returns: bgr list
+
+    """
+    list_color_name = []
+    with open("colorlist.txt", "r") as ff:
+        list_color_name = ff.read()
+    list_color_name = list_color_name.split(',') 
+              
+    standard = []
+    for i in range(len(list_color_name) - 36):  # -36 used to match the len(obj_list)
+        standard.append(from_colorname_to_bgr(list_color_name[i]))
+        
+    return standard
+
+def plot_one_box(origin_img, box, color=None, line_thickness=None):
+    """
+    plot one bounding box on image
+
+    Args:
+        origin_img: pending image
+        box: infomation of the bounding box
+        color: bgr color used to draw bounding box
+        line_thickness: line thickness value when drawing the bounding box
+
+    Returns: None
+
+    """
+    tl = line_thickness or int(round(0.001 * max(origin_img.shape[0:2])))  # line thickness
+    if tl < 1:
+        tl = 1
+    c1, c2 = (int(box['x0']), int(box['y0'])), (int(box['x1']), int(box['y1']))
+    cv2.rectangle(origin_img, c1, c2, color=color, thickness=tl)
+    if box['text']:
+        tf = max(tl - 2, 1)  # font thickness
+        s_size = cv2.getTextSize(str('{:.0%}'.format(box['confidence'])), 0, fontScale=float(tl) / 3, thickness=tf)[0]
+        t_size = cv2.getTextSize(box['text'], 0, fontScale=float(tl) / 3, thickness=tf)[0]
+        c2 = c1[0] + t_size[0] + s_size[0] + 15, c1[1] - t_size[1] - 3
+        cv2.rectangle(origin_img, c1, c2, color, -1)  # filled
+        cv2.putText(origin_img, '{}: {:.0%}'.format(box['text'], box['confidence']), (c1[0], c1[1] - 2), 0,
+                    float(tl) / 3, [0, 0, 0], thickness=tf, lineType=cv2.FONT_HERSHEY_SIMPLEX)
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -72,13 +129,11 @@ if __name__ == '__main__':
 
     protobufVec = InProtobufVector()
 
-    
     protobuf = MxProtobufIn()
     protobuf.key = KEY0
     protobuf.type = b"MxTools.MxpiVisionList"
     protobuf.protobuf = visionList.SerializeToString()
     protobufVec.push_back(protobuf)
-
 
     STREAM_NAME = b'detection'
     INPLUGIN_ID = 0
@@ -97,9 +152,7 @@ if __name__ == '__main__':
         print("GetResult failed")
         exit()
 
-
     tensorInfer = inferResult.metadataVec[0]
-
 
     if tensorInfer.errorCode != 0:
         print("GetResult error. errorCode=%d, errMsg=%s" % (tensorInfer.errorCode, tensorInfer.errMsg))
@@ -116,9 +169,8 @@ if __name__ == '__main__':
         exit()
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(tensorInfer.serializedMetadata)
-
+    color_list = standard_to_bgr()
     for results in objectList.objectVec:
-        print(results)
         if results.classVec[0].classId == 81:
             break
         box = []
@@ -133,9 +185,8 @@ if __name__ == '__main__':
             TEXT = "{}{}".format(str(box['confidence']), " ")
             for item in box['text']:
                 TEXT += item
-            cv2.putText(imgs, TEXT, (box['x0'] + 10, box['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
-            cv2.rectangle(imgs, (box['x0'], box['y0']), (box['x1'], box['y1']), (255, 0, 0), 2)
-            cv2.imwrite("../test_img/pre_post.jpg", imgs)
+            plot_one_box(imgs, objBox, color=color_list[box.get('class')])
+            cv2.imwrite("../test_img/nopre_post.jpg", imgs)
         except KeyError:
             print("error")
     streamManagerApi.DestroyAllStreams()
