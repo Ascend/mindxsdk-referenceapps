@@ -53,11 +53,9 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 ```
 .
 ├── images
-│   ├── MindXSDKValueError.png
 │   ├── pre_post.png
 │   ├── nopre_post.png
 │   ├── pipeline.jpg
-│   └── permissionerror.png
 ├── postprocess
 │   ├── build.sh
 │   ├── CMakeLists.txt
@@ -69,15 +67,14 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 │   │   ├── eval_pre_post.py
 │   │   ├── nopre_post.py
 │   │   ├── pre_post.py
+│   │   ├── colorlist.txt
 │   │   └── preprocess.py
 │   ├── models
 │   │   ├── aipp-configs
 │   │   │   └── aipp_bgr.config
-│   │   ├── conversion-scripts              # 下载的onnx模型存放在该文件夹下
 │   │   ├── centernet.cfg
 │   │   └── coco.names                      #需要下载，下载链接在下方 
-│   ├── test    
-│   │   ├── data # 下载的数据集存放在此文件下
+│   ├── dataset     # 下载的数据集存放在此文件下
 │   ├── test_img
 │   │   └── test.jpg                        # 需要用户自行添加测试数据
 │   └── pipeline
@@ -87,7 +84,7 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 
 ```
 
-注：coco.names文件与parse_coco.py文件分别源于[链接](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch)的coco2014.names文件和[项目](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/FireDetection)中test文件夹下的parse_COCO.py文件,将这两个文件下载之后，分别放到python/models目录下和python/test目录下。
+注：coco.names文件源于[链接](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch)。
 
 ### 1.5 技术实现流程图
 
@@ -132,7 +129,7 @@ CANN 环境变量：
 
 ```
 SDK-path: SDK mxVision 安装路径
-ascend-toolkit-path: CANN 安装路径。
+ascend-toolkit-path: CANN 安装路径
 ```
 
 需要安装的NumCpp库：
@@ -209,7 +206,7 @@ bash build.sh
 python3 pre_post.py
 ```
 
-命令执行成功后在目录``python/test_img``下生成检测结果文件 pre_post_bgr.jpg，查看结果文件验证检测结果。
+命令执行成功后在目录``python/test_img``下生成检测结果文件 pre_post.jpg，查看结果文件验证检测结果。
 
 **步骤4** 精度测试。
 
@@ -230,7 +227,6 @@ python3 pre_post.py
 ```
 python3 eval_pre_post.py
 ```
-若运行成功，会在``python/test`` 路径下生成val2017_detection_result.json。
 <center>
     <img src="./images/pre_post_result.png">
     <br>
@@ -277,8 +273,7 @@ python3 nopre_post.py
 
 ```                                                                                                                                                                             
 python3 eval_nopre_post.py                                                                                                                               
-```
-若运行成功，会在``python/test`` 路径下生成 val2017_detection_result.json文件。                                                                                              
+```                                                                                       
 <center>
     <img src="./images/nopre_post_result.png">
     <br>
