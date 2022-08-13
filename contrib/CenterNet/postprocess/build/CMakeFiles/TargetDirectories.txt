@@ -1,3 +1,0 @@
-/home/xiubo2/ImageDetection/mindxsdk-referenceapps/contrib/CenterNet/postprocess/build/CMakeFiles/rebuild_cache.dir
-/home/xiubo2/ImageDetection/mindxsdk-referenceapps/contrib/CenterNet/postprocess/build/CMakeFiles/centernetpostprocess.dir
-/home/xiubo2/ImageDetection/mindxsdk-referenceapps/contrib/CenterNet/postprocess/build/CMakeFiles/edit_cache.dir
