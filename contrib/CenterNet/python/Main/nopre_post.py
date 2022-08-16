@@ -185,7 +185,7 @@ if __name__ == '__main__':
             TEXT = "{}{}".format(str(box['confidence']), " ")
             for item in box['text']:
                 TEXT += item
-            plot_one_box(imgs, objBox, color=color_list[box.get('class')])
+            plot_one_box(imgs, box, color=color_list[box.get('class')])
             cv2.imwrite("../test_img/nopre_post.jpg", imgs)
         except KeyError:
             print("error")
