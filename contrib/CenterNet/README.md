@@ -113,7 +113,7 @@ CenterNet 的后处理插件接收模型推理插件输出的特征图。本项�
 
 在编译运行项目前，需要设置环境变量：
 
-MindSDK 环境变量:
+MindX SDK 环境变量:
 
 ```
 . ${SDK-path}/set_env.sh
