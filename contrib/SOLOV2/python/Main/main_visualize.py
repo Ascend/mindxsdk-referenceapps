@@ -23,20 +23,17 @@ import cv2
 import numpy as np
 import mmcv
 from scipy import ndimage
-from StreamManagerApi import *
+from StreamManagerApi import MxDataInput, InProtobufVector, MxProtobufIn, StringVector, StreamManagerApi
 import MxpiDataType_pb2 as MxpiDataType
 
 
-
-file = "./test.jpg"
 parser = argparse.ArgumentParser(description='model')
-parser.add_argument('--dataset_path', default="../coco/val2017/")
-parser.add_argument('--anno_path', default='../coco/annotations/instances_val2017.json')
-parser.add_argument('--model_config', default="SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py")
 parser.add_argument("--model_input_height", default=800, type=int, help='input tensor height')
 parser.add_argument("--model_input_width", default=1216, type=int, help='input tensor width')
-args = parser.parse_args()
+parser.add_argument("--image_path", default="./test.jpg")
 
+args = parser.parse_args()
+file = args.image_path
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
@@ -58,8 +55,7 @@ if __name__ == '__main__':
         dataInput.data = f.read()
     img = cv2.imread(file)
 
-    streamName = b'detection'
-    uniqueId = streamManagerApi.SendData(streamName, 0, dataInput)
+    uniqueId = streamManagerApi.SendData(b'detection', 0, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
@@ -69,7 +65,7 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    infer_result = streamManagerApi.GetProtobuf(b'detection', 0, keyVec)
 
     if infer_result.size() == 0:
         print("infer_result is null")

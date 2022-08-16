@@ -29,11 +29,12 @@ from mmdet.datasets import build_dataset
 from tqdm import tqdm
 
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import *
+from StreamManagerApi import MxDataInput, InProtobufVector, MxProtobufIn, StringVector, StreamManagerApi
 
-def get_masks(result, num_classes=80):
-    for cur_result in result:
-        masks = [[] for _ in range(num_classes)]
+
+def get_masks(result_, num_classes_=80):
+    for cur_result in result_:
+        masks = [[] for _ in range(num_classes_)]
         if cur_result is None:
             return masks
         seg_pred = cur_result[0].astype(np.uint8)
@@ -41,10 +42,9 @@ def get_masks(result, num_classes=80):
         cate_score = cur_result[2].astype(np.float)
         num_ins = seg_pred.shape[0]  # 100
         for idx in range(num_ins):
-            cur_mask = seg_pred[idx, ...]
+            cur_mask_ = seg_pred[idx, ...]
             rle = mask_util.encode(
-                np.array(cur_mask[:, :, np.newaxis], order='F'))[0]
-            # print("rle", rle)
+                np.array(cur_mask_[:, :, np.newaxis], order='F'))[0]
             rst = (rle, cate_score[idx])
             masks[cate_label[idx]].append(rst)
         return masks
@@ -95,8 +95,7 @@ if __name__ == '__main__':
             dataInput.data = f.read()
 
         img = cv2.imread(image_path)
-        streamName = b'detection'
-        uniqueId = streamManagerApi.SendData(streamName, 0, dataInput)
+        uniqueId = streamManagerApi.SendData(b'detection', 0, dataInput)
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
@@ -106,7 +105,7 @@ if __name__ == '__main__':
         for key in keys:
             keyVec.push_back(key)
 
-        infer_result = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+        infer_result = streamManagerApi.GetProtobuf(b'detection', 0, keyVec)
 
         if infer_result.size() == 0:
             print("infer_result is null")
