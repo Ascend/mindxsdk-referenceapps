@@ -72,7 +72,6 @@ namespace MxBase {
                                                std::vector<int> &label, std::vector<float> &score) {
         int pad_left = (width_ - img_w_) / 2;
         int pad_top = (height_ - img_h_) / 2;
-        printf("pad_left is %d, pad_top is %d\n", pad_left, pad_top);
         // Read regression data
         auto shapeSeg = tensors[0].GetShape();
         auto segDataPtr = (uint8_t *)tensors[0].GetBuffer();
@@ -81,7 +80,9 @@ namespace MxBase {
         int idx = 0;
         int tmp_width = width_ / 4;
         int tmp_height = height_ / 4;
-        for (int i = 0; i < 100; i++) {
+        int num_seg = 100;
+        float half = 0.5;
+        for (int i = 0; i < num_seg; i++) {
             float tmp_seg[tmp_height][tmp_width];
             std::vector<uint8_t> tmp_ori;
             for (int j = 0; j < tmp_height; j++) {
@@ -98,7 +99,7 @@ namespace MxBase {
             cv::resize(tmp2, resize_seg2, cv::Size(ori_w_, ori_h_), 0, 0, cv::INTER_LINEAR);
             std::vector<float> tmp3 = resize_seg2.reshape(1, 1);
             for (int n = 0; n < tmp3.size(); n++) {
-                tmp3[n] = tmp3[n] > 0.5 ? 1 : 0;
+                tmp3[n] = tmp3[n] > half ? 1 : 0;
             }
             std::vector<std::vector<uint8_t>> mask_height;
             int idx2 = 0;
@@ -117,7 +118,7 @@ namespace MxBase {
         std::shared_ptr<void> labelPointer;
         labelPointer.reset(labelDataPtr, g_uint8Deleter);
         idx = 0;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < num_seg; i++) {
             label.push_back(static_cast<int *>(labelPointer.get())[idx]);
             idx += 1;
         }
@@ -127,7 +128,7 @@ namespace MxBase {
         std::shared_ptr<void> scorePointer;
         scorePointer.reset(scoreDataPtr, g_uint8Deleter);
         idx = 0;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < num_seg; i++) {
             score.push_back(static_cast<float *>(scorePointer.get())[idx]);
             idx += 1;
         }
@@ -138,10 +139,11 @@ namespace MxBase {
                                           std::vector<int> &label, std::vector<float> &score,
                                           std::vector <MxBase::ObjectInfo> &detBoxes) {
         // Get image size information of model input
+        int blank = classNum_ + 1;
         for (int i = 0; i < seg.size(); i++) {
             MxBase::ObjectInfo det;
             if (i == 0 && score[i] < scoreThresh_) {
-                det.classId = 81;
+                det.classId = blank;
                 det.confidence = score[i];
                 detBoxes.emplace_back(det);
                 break;
@@ -192,9 +194,9 @@ namespace MxBase {
     }
 
     APP_ERROR Solov2PostProcess::Process(const std::vector<TensorBase> &tensors,
-                                               std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                               const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                               const std::map<std::string, std::shared_ptr<void>> &paramMap) {
+                                         std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                         const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                         const std::map<std::string, std::shared_ptr<void>> &paramMap) {
         LogInfo << "Start to Process Solov2PostProcess.";
         APP_ERROR ret = APP_ERR_OK;
         if (resizedImageInfos.size() == 0) {

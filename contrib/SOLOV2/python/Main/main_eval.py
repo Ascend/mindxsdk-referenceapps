@@ -18,12 +18,11 @@ limitations under the License.
 """
 
 import os
+import argparse
 import cv2
 import numpy as np
-import argparse
 import mmcv
 import pycocotools.mask as mask_util
-
 from pycocotools.coco import COCO
 from mmdet.core import coco_eval, results2json, results2json_segm
 from mmdet.datasets import build_dataset
@@ -97,8 +96,7 @@ if __name__ == '__main__':
 
         img = cv2.imread(image_path)
         streamName = b'detection'
-        inPluginId = 0
-        uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+        uniqueId = streamManagerApi.SendData(streamName, 0, dataInput)
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()

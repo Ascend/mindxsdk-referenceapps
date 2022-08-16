@@ -14,7 +14,7 @@
             "props": {
                 "deviceId": "0",
                 "cvProcessor": "opencv",
-                "outputDataFormat": "RGB",
+                "outputDataFormat": "RGB"
             },
             "factory": "mxpi_imagedecoder",
             "next": "mxpi_imageresize0"

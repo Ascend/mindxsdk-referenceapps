@@ -18,33 +18,17 @@ limitations under the License.
 """
 
 import os
+import argparse
 import cv2
 import numpy as np
-import argparse
 import mmcv
-import pycocotools.mask as mask_util
 from scipy import ndimage
-from mmdet.datasets import build_dataset
+from StreamManagerApi import *
+import MxpiDataType_pb2 as MxpiDataType
 
-def get_masks(result, num_classes=80):
-    for cur_result in result:
-        masks = [[] for _ in range(num_classes)]
-        if cur_result is None:
-            return masks
-        seg_pred = cur_result[0].astype(np.uint8)
-        cate_label = cur_result[1].astype(np.int)
-        cate_score = cur_result[2].astype(np.float)
-        num_ins = seg_pred.shape[0]  # 100
-        for idx in range(num_ins):
-            cur_mask = seg_pred[idx, ...]
-            rle = mask_util.encode(
-                np.array(cur_mask[:, :, np.newaxis], order='F'))[0]
-            # print("rle", rle)
-            rst = (rle, cate_score[idx])
-            masks[cate_label[idx]].append(rst)
-        return masks
 
-file = "../coco/val2017/000000281447.jpg"
+
+file = "./test.jpg"
 parser = argparse.ArgumentParser(description='model')
 parser.add_argument('--dataset_path', default="../coco/val2017/")
 parser.add_argument('--anno_path', default='../coco/annotations/instances_val2017.json')
@@ -61,22 +45,8 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    # build dataset
-    cfg = mmcv.Config.fromfile(args.model_config)
-    cfg.data.test.test_mode = True
-    cfg.data.test.ann_file = args.anno_path
-    cfg.data.test.img_prefix = args.dataset_path
-    dataset = build_dataset(cfg.data.test)
-    num_classes = len(dataset.CLASSES)
-
-    with open("../pipeline/solov2.pipeline", 'rb') as f:
+    with open("./solov2.pipeline", 'rb') as f:
         pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
-    if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
-        exit()
-
-    pipelineStr = json.dumps(pipeline).encode()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -89,8 +59,7 @@ if __name__ == '__main__':
     img = cv2.imread(file)
 
     streamName = b'detection'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    uniqueId = streamManagerApi.SendData(streamName, 0, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
@@ -136,7 +105,6 @@ if __name__ == '__main__':
         cur_score = round(result.classVec[0].confidence, 4)
 
         label_text = result.classVec[0].className
-        # label_text += '|{:.02f}'.format(cur_score)
         # center
         center_y, center_x = ndimage.measurements.center_of_mass(cur_mask)
         vis_pos = (max(int(center_x) - 10, 0), int(center_y))

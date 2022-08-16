@@ -28,8 +28,7 @@ namespace DefaultValues {
 }
 
 namespace MxBase {
-    class Solov2PostProcess: public ObjectPostProcessBase {
-
+    class Solov2PostProcess : public ObjectPostProcessBase {
     public:
         Solov2PostProcess() = default;
 
@@ -61,12 +60,11 @@ namespace MxBase {
                            std::vector<int> &label, std::vector<float> &score,
                            std::vector <MxBase::ObjectInfo> &detBoxes);
 
-
     protected:
-        int ori_h_{0};
-        int ori_w_{0};
-        int img_h_{0};
-        int img_w_{0};
+        int ori_h_ {0};
+        int ori_w_ {0};
+        int img_h_ {0};
+        int img_w_ {0};
         int height_ = DefaultValues::DEFAULT_HEIGHT;
         int width_ = DefaultValues::DEFAULT_WIDTH;
         int classNum_ = DefaultValues::DEFAULT_CLASS_NUM;
