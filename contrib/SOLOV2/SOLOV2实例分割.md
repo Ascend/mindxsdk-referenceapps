@@ -1,4 +1,4 @@
-# CenterNet 目标检测
+# SOLOV2实例分割
 ## 1. 介绍
 
 SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同类目标进行检测，将检测得到的不同类的目标用不同色彩的轮廓图标记。输入一幅图像，可以检测得到图像中大部分类别目标的位置。本方案使用在 COCO2017 数据集上训练得到的 SOLOV2模型进行目标检测，数据集中共包含 80 个目标类，包括行人、自行车、公共汽车、手机、沙发、猫、狗等，可以对不同类别、不同角度、不同密集程度的目标进行检测并分割。
@@ -19,7 +19,7 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
 
 #### 1.3.1 业务流程加图像预处理方案
 
-整体业务流程为：待检测图片通过 appsrc 插件输入，然后使用图像解码插件 mxpi_imagedecoder 对图片进行解码，再通过图像缩放插件 mxpi_imageresize 将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件 mxpi_tensorinfer 得到推理结果，推理结果输入 mxpi_objectpostprocessor 插件进行后处理，得到输入图片中所有的目标框位置和对应的置信度。最后通过输出插件 appsink 获取检测结果，并在外部进行可视化，将检测结果标记到原图上，本系统的各模块及功能描述如表1所示：
+整体业务流程为：待检测图片通过 appsrc 插件输入，然后使用图像解码插件 mxpi_imagedecoder 对图片进行解码，再通过图像缩放插件 mxpi_imageresize 将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件 mxpi_tensorinfer 得到推理结果，推理结果输入 mxpi_objectpostprocessor 插件进行后处理，得到输入图片中所有的目标mask和对应的置信度。最后通过输出插件 appsink 获取检测结果，并在外部进行可视化，将检测结果标记到原图上，本系统的各模块及功能描述如表1所示：
 
 表1 系统方案各模块功能描述：
 
@@ -68,7 +68,7 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
 
 SOLOV2 的后处理插件接收模型推理插件输出的特征图。
 
-![图片](/Users/wenzekai/Desktop/solov2_pr/mindxsdk-referenceapps/contrib/SOLOV2/images/pipeline.png)
+![图片](./images/pipeline.png)
 
 
 ### 1.6 适用场景
@@ -121,7 +121,7 @@ cd ..
 
 ```
 // mmdet安装方式（需要先从github上下载源代码库）
-cd SOLO //源代码仓
+cd SOLO //源代码仓(https://github.com/WXinlong/SOLO)
 patch -p1 < ../MMDET.diff
 patch -p1 < ../SOLOV2.diff
 pip install -r requirements/build.txt # 可以不用执行这句话
@@ -195,7 +195,7 @@ python3 main_visualize.py
 ```
 python3 main_eval.py
 ```
-![结果图片](/Users/wenzekai/Desktop/solov2_pr/mindxsdk-referenceapps/contrib/SOLOV2/images/eval_result.png)
+![结果图片](./images/eval_result.png)
 
 ​                                                                                                   
 

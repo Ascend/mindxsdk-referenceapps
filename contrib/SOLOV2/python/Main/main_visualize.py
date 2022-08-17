@@ -28,8 +28,6 @@ import MxpiDataType_pb2 as MxpiDataType
 
 
 parser = argparse.ArgumentParser(description='model')
-parser.add_argument("--model_input_height", default=800, type=int, help='input tensor height')
-parser.add_argument("--model_input_width", default=1216, type=int, help='input tensor width')
 parser.add_argument("--image_path", default="./test.jpg")
 
 args = parser.parse_args()
@@ -107,6 +105,6 @@ if __name__ == '__main__':
         cv2.putText(seg_show, label_text, vis_pos,
                     cv2.FONT_HERSHEY_COMPLEX, 0.3, (255, 255, 255))  # green
     mmcv.imwrite(seg_show, './result.jpg')
-
+    print("sdk process finish!")
     # destroy streams
     streamManagerApi.DestroyAllStreams()

@@ -53,8 +53,6 @@ parser = argparse.ArgumentParser(description='model')
 parser.add_argument('--dataset_path', default="../coco/val2017/")
 parser.add_argument('--anno_path', default='../coco/annotations/instances_val2017.json')
 parser.add_argument('--model_config', default="SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py")
-parser.add_argument("--model_input_height", default=800, type=int, help='input tensor height')
-parser.add_argument("--model_input_width", default=1216, type=int, help='input tensor width')
 args = parser.parse_args()
 
 

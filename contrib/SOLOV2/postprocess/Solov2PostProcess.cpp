@@ -70,16 +70,18 @@ namespace MxBase {
     void Solov2PostProcess::ReadDataFromTensor(const std::vector <MxBase::TensorBase> &tensors,
                                                std::vector<std::vector<std::vector<uint8_t>>> &seg,
                                                std::vector<int> &label, std::vector<float> &score) {
-        int pad_left = (width_ - img_w_) / 2;
-        int pad_top = (height_ - img_h_) / 2;
+        int div = 2;
+        int pad_left = (width_ - img_w_) / div;  //  divide the pad into left and right.
+        int pad_top = (height_ - img_h_) / div;  //  divide the pad into top and bottom.
         // Read regression data
         auto shapeSeg = tensors[0].GetShape();
         auto segDataPtr = (uint8_t *)tensors[0].GetBuffer();
         std::shared_ptr<void> segPointer;
         segPointer.reset(segDataPtr, g_uint8Deleter);
         int idx = 0;
-        int tmp_width = width_ / 4;
-        int tmp_height = height_ / 4;
+        int div_seg = 4;
+        int tmp_width = width_ / div_seg;
+        int tmp_height = height_ / div_seg;
         int num_seg = 100;
         float half = 0.5;
         for (int i = 0; i < num_seg; i++) {
