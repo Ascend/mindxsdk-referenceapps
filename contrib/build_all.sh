@@ -48,6 +48,7 @@ SAMPLE_FOLDER=(
     CenterFace/
     YOLOX/
 	PicoDet/
+  SOLOV2/
 )
 
 

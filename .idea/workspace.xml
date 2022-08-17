@@ -5,20 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="34a9d5f2-dc52-494b-9a45-816296721405" name="Changes" comment="add SOLOV2 SDK impl">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deployment.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/mindxsdk-referenceapps.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sshConfigs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webServers.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/SOLOV2/SOLOV2实例分割.md" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/SOLOV2/SOLOV2实例分割.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/SOLOV2/postprocess/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/SOLOV2/postprocess/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/SOLOV2/postprocess/Solov2PostProcess.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/SOLOV2/postprocess/Solov2PostProcess.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/SOLOV2/python/Main/main_eval.py" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/SOLOV2/python/Main/main_eval.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/contrib/SOLOV2/python/Main/main_visualize.py" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/SOLOV2/python/Main/main_visualize.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contrib/build_all.sh" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/build_all.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +44,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660628820775</updated>
-      <workItem from="1660628823894" duration="17156000" />
+      <workItem from="1660628823894" duration="18115000" />
     </task>
     <task id="LOCAL-00001" summary="add SOLOV2 SDK impl">
       <created>1660639952397</created>
@@ -80,7 +67,28 @@
       <option name="project" value="LOCAL" />
       <updated>1660661658663</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add SOLOV2 SDK impl">
+      <created>1660724902193</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1660724902193</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add SOLOV2 SDK impl">
+      <created>1660725030393</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1660725030393</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add SOLOV2 SDK impl">
+      <created>1660725746965</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1660725746965</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
