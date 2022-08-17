@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="34a9d5f2-dc52-494b-9a45-816296721405" name="Changes" comment="add SOLOV2 SDK impl">
-      <change beforePath="$PROJECT_DIR$/contrib/build_all.sh" beforeDir="false" afterPath="$PROJECT_DIR$/contrib/build_all.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +44,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1660628820775</updated>
-      <workItem from="1660628823894" duration="18115000" />
+      <workItem from="1660628823894" duration="18417000" />
     </task>
     <task id="LOCAL-00001" summary="add SOLOV2 SDK impl">
       <created>1660639952397</created>
