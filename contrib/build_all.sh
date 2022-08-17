@@ -46,6 +46,7 @@ SAMPLE_FOLDER=(
     Collision/
     PassengerflowEstimation/
     CenterFace/
+    RefineDet/
 )
 
 
