@@ -26,7 +26,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-IMAGE_PATH = "../test/data/coco/val2017/000000397133.jpg"
+IMAGE_PATH = "../test_img/test.jpg"
 
 def from_colorname_to_bgr(color):
     """
