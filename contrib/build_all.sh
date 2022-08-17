@@ -46,7 +46,8 @@ SAMPLE_FOLDER=(
     Collision/
     PassengerflowEstimation/
     CenterFace/
-    RefineDet/
+    RefineDet/c++
+    RefineDet/python
     YOLOX/
 	PicoDet/
 )
