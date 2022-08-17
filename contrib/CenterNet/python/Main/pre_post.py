@@ -78,16 +78,19 @@ def plot_one_box(origin_img, box, color=None, line_thickness=None):
     tl = line_thickness or int(round(0.001 * max(origin_img.shape[0:2])))  # line thickness
     if tl < 1:
         tl = 1
-    c1, c2 = (int(box['x0']), int(box['y0'])), (int(box['x1']), int(box['y1']))
-    cv2.rectangle(origin_img, c1, c2, color=color, thickness=tl)
-    if box['text']:
-        tf = max(tl - 2, 1)  # font thickness
-        s_size = cv2.getTextSize(str('{:.0%}'.format(box['confidence'])), 0, fontScale=float(tl) / 3, thickness=tf)[0]
-        t_size = cv2.getTextSize(box['text'], 0, fontScale=float(tl) / 3, thickness=tf)[0]
-        c2 = c1[0] + t_size[0] + s_size[0] + 15, c1[1] - t_size[1] - 3
-        cv2.rectangle(origin_img, c1, c2, color, -1)  # filled
-        cv2.putText(origin_img, '{}: {:.0%}'.format(box['text'], box['confidence']), (c1[0], c1[1] - 2), 0,
-                    float(tl) / 3, [0, 0, 0], thickness=tf, lineType=cv2.FONT_HERSHEY_SIMPLEX)
+    try:
+        c1, c2 = (int(box['x0']), int(box['y0'])), (int(box['x1']), int(box['y1']))
+        cv2.rectangle(origin_img, c1, c2, color=color, thickness=tl)
+        if box['text']:
+            tf = max(tl - 2, 1)  # font thickness
+            s_size = cv2.getTextSize(str('{:.0%}'.format(box['confidence'])), 0, fontScale=float(tl) / 3, thickness=tf)[0]
+            t_size = cv2.getTextSize(box['text'], 0, fontScale=float(tl) / 3, thickness=tf)[0]
+            c2 = c1[0] + t_size[0] + s_size[0] + 15, c1[1] - t_size[1] - 3
+            cv2.rectangle(origin_img, c1, c2, color, -1)  # filled
+            cv2.putText(origin_img, '{}: {:.0%}'.format(box['text'], box['confidence']), (c1[0], c1[1] - 2), 0,
+                        float(tl) / 3, [0, 0, 0], thickness=tf, lineType=cv2.FONT_HERSHEY_SIMPLEX)
+    except KeyError:
+        print("error")
 
 if __name__ == '__main__':
     streamManagerApi = StreamManagerApi()
