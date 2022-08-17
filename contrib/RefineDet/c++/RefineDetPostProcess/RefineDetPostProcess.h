@@ -22,6 +22,7 @@
 
 namespace {
 const float DEFAULT_OBJECTNESS_THRESH = 0.01;
+const float DEFAULT_CONFIDENCE_THRESH = 0.1;
 const float DEFAULT_IOU_THRESH = 0.45;
 const int DEFAULT_ANCHOR_DIM = 3;
 const int DEFAULT_BIASES_NUM = 18;
@@ -55,7 +56,7 @@ public:
 
     RefineDetPostProcess(const RefineDetPostProcess &other) = default;
 
-    RefineDetPostProcess &operator=(const RefineDetPostProcess &other);
+    RefineDetPostProcess &operator=(const RefineDetPostProcess &other) = default;
 
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 
@@ -95,6 +96,7 @@ protected:
 
 protected:
     float objectnessThresh_ = DEFAULT_OBJECTNESS_THRESH; // Threshold of objectness value
+    float confidenceThresh_ = DEFAULT_CONFIDENCE_THRESH;
     float iouThresh_ = DEFAULT_IOU_THRESH; // Non-Maximum Suppression threshold
     int anchorDim_ = DEFAULT_ANCHOR_DIM;
     int biasesNum_ = DEFAULT_BIASES_NUM; // RefineDet anchors, generate from train data, coco dataset

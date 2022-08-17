@@ -61,6 +61,5 @@ private:
     MxBase::ModelDesc modelDesc_ = {}; // 模型描述信息
     std::map<int, std::string> labelMap_ = {};
     uint32_t deviceId_ = 0;
-
 };
 #endif

@@ -35,6 +35,7 @@ namespace {
     const uint32_t KEYPOINT_COLOR = 2;
     const uint32_t HINTPOINT_COLOR = 3;
     const uint32_t DIV_TWO = 2;
+    const float TWO = 2.0;
 }
 namespace MxBase {
     RefineDetPostProcess& RefineDetPostProcess::operator=(const RefineDetPostProcess& other)
@@ -90,7 +91,7 @@ namespace MxBase {
                 for (int k = 1; k < classNum_; k++)
                 {
                     float conf = *(asm_begin_Conf + 1) <= 0.01 ? 0 : *(odm_begin_Conf + k);
-                    if(conf > confThresh_
+                    if(conf > confThresh_)
                     {
                         ObjectInfo objInfo;
                         objInfo.confidence = conf;
@@ -193,14 +194,14 @@ namespace MxBase {
 
                     anchor.at<float>(0, LEFTTOPX) = center_x;
                     anchor.at<float>(0, LEFTTOPY) = center_y;
-                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(2.0);
-                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(TWO);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(TWO);
                     anchors.push_back(anchor);
 
                     anchor.at<float>(0, LEFTTOPX) = center_x;
                     anchor.at<float>(0, LEFTTOPY) = center_y;
-                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(2.0);
-                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(TWO);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(TWO);
                     anchors.push_back(anchor);
                 }
             }

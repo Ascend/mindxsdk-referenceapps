@@ -146,8 +146,6 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
 
-        LogInfo << shape[0] << " " << shape[1] << " " << shape[2] << " " << tensors[3].GetShape()[2];
-
         for (uint32_t i = 0; i < batchSize; i++){
             std::vector <ObjectInfo> objectInfo;
             auto asm_dataPtr_Conf = (float *) asm_conf + i * tensors[1].GetByteSize() / batchSize;
@@ -155,22 +153,21 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
 
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* asm_begin_Conf = asm_dataPtr_Conf + j * 2;
-                float* odm_begin_Conf = odm_dataPtr_Conf + j * classNum_; 
+                float* odm_begin_Conf = odm_dataPtr_Conf + j * classNum_;
 
                 for (uint32_t k = 1; k < classNum_; k++)
                 {
                     float conf = *(asm_begin_Conf) <= 0.01 ? 0 : *(odm_begin_Conf + k);
-                    if(conf > 0.1)
+                    if(conf > confidenceThresh_)
                     {
                         ObjectInfo objInfo;
                         objInfo.confidence = conf;
                         objInfo.classId = k;
                         objInfo.className = configData_.GetClassName(k);
-                        objInfo.x0 = res.at<float>(j,LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                        objInfo.y0 = res.at<float>(j,LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                        objInfo.x1 = res.at<float>(j,RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                        objInfo.y1 = res.at<float>(j,RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                        LogInfo << objInfo.classId << ": " << objInfo.confidence << " " << res.at<float>(j,LEFTTOPX) << " " << objInfo.y0 << " " << objInfo.x1 << " " << objInfo.y1;
+                        objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                        objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                        objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                        objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
 
                         objInfo.x0 = objInfo.x0 > 1 ? objInfo.x0 : 1;
                         objInfo.y0 = objInfo.y0 > 1 ? objInfo.y0 : 1;
@@ -181,14 +178,14 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
                 }
             }
             MxBase::NmsSort(objectInfo, iouThresh_);
-            objectInfos.push_back(objectInfo);   
+            objectInfos.push_back(objectInfo);
         }
     }
 
 // 将处理好的推理结果放入ObjectInfo
 void RefineDetPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
-                                              std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                              const std::vector<ResizedImageInfo> &resizedImageInfos) {
+                                                 std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                                 const std::vector<ResizedImageInfo> &resizedImageInfos) {
     LogDebug << "RefineDetPostProcess start to write results.";
     if (tensors.size() == 0) {
         return;
@@ -202,7 +199,7 @@ void RefineDetPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &
     cv::Mat asm_location = cv::Mat(shape[1], shape[2], CV_32FC1, asm_loc);
     cv::Mat odm_location = cv::Mat(shape[1], shape[2], CV_32FC1, odm_loc);
     GeneratePriorBox(PriorBox);
-    cv::Mat res = decode_for_loc(asm_location, PriorBox); 
+    cv::Mat res = decode_for_loc(asm_location, PriorBox);
     res = center_size(res);
     res = decode_for_loc(odm_location, res);
 
@@ -212,9 +209,9 @@ void RefineDetPostProcess::ObjectDetectionOutput(const std::vector<TensorBase> &
 }
 
 APP_ERROR RefineDetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                     std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                     const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                     const std::map<std::string, std::shared_ptr<void>> &paramMap) {
+                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                        const std::map<std::string, std::shared_ptr<void>> &paramMap) {
     LogDebug << "Start to Process RefineDetPostProcess.";
     APP_ERROR ret = APP_ERR_OK;
     if (resizedImageInfos.size() == 0) {
@@ -249,28 +246,28 @@ void RefineDetPostProcess::GeneratePriorBox(cv::Mat &anchors)
             for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
                     int min_size = PRIOR_PARAMETERS[k];
-                    cv::Mat anchor(1, 4, CV_32F);
+                    cv::Mat anchor(1, RECTANGLEPOINT, CV_32F);
                     float center_x = (j + 0.5f) * step / IMAGE_WIDTH;
                     float center_y = (i + 0.5f) * step / IMAGE_HEIGHT;
                     float step_x = min_size / IMAGE_WIDTH;
                     float step_y = min_size / IMAGE_HEIGHT;
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x;
-                    anchor.at<float>(0,3) = step_y;
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x;
+                    anchor.at<float>(0, RIGHTTOPY) = step_y;
                     anchors.push_back(anchor);
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x * sqrtf(2.0);
-                    anchor.at<float>(0,3) = step_y / sqrtf(2.0);
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(2.0);
                     anchors.push_back(anchor);
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x / sqrtf(2.0);
-                    anchor.at<float>(0,3) = step_y * sqrtf(2.0);
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(2.0);
                     anchors.push_back(anchor);
                 }
             }
@@ -289,7 +286,7 @@ void RefineDetPostProcess::GeneratePriorBox(cv::Mat &anchors)
         cv::Mat boxes_first = boxes.colRange(0,2);
         cv::Mat boxes_last = boxes.colRange(2,4);
         cv::Mat ret_boxes;
-        cv::hconcat((boxes_first + boxes_last) / 2, boxes_last - boxes_first, ret_boxes);    
+        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);    
         return ret_boxes;
     }
 
@@ -304,7 +301,7 @@ void RefineDetPostProcess::GeneratePriorBox(cv::Mat &anchors)
         cv::Mat boxes2;
         cv::exp(loc_last * VARIANCE[1], boxes2);
         boxes2 = boxes2.mul(prior_last);
-        boxes1 = boxes1 - boxes2 / 2;
+        boxes1 = boxes1 - boxes2 / DIV_TWO;
         boxes2 = boxes2 + boxes1;
 
         cv::Mat boxes;
@@ -332,7 +329,7 @@ void RefineDetPostProcess::CodeDuplicationSetDet(float &x, float &y, float &widt
 }
 
 void RefineDetPostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo info,
-                                        std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
+                                           std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
             int bIdx = (info.bboxDim + 1 + info.classNum) * stride * k + j;
@@ -376,7 +373,7 @@ void RefineDetPostProcess::SelectClassNCHW(std::shared_ptr<void> netout, NetInfo
 }
 
 void RefineDetPostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInfo info,
-                                         std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
+                                            std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     LogDebug << " out size " << sizeof(netout.get());
     const int offsetY = 1;
     for (int j = 0; j < stride; ++j) {
@@ -440,7 +437,7 @@ void RefineDetPostProcess::SelectClassNCHWC(std::shared_ptr<void> netout, NetInf
  * @param layer Yolo输出层
  */
 void RefineDetPostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo info,
-                                        std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
+                                           std::vector<MxBase::ObjectInfo> &detBoxes, int stride, OutputLayer layer) {
     const int offsetY = 1;
     for (int j = 0; j < stride; ++j) {
         for (int k = 0; k < info.anchorDim; ++k) {
@@ -505,9 +502,9 @@ void RefineDetPostProcess::SelectClassNHWC(std::shared_ptr<void> netout, NetInfo
  * @param detBoxes ObjectInfo容器，其中所有ObjectInfo的置信度都大于阈值
  */
 void RefineDetPostProcess::GenerateBbox(std::vector<std::shared_ptr<void>> featLayerData,
-                                     std::vector<MxBase::ObjectInfo> &detBoxes,
-                                     const std::vector<std::vector<size_t>> &featLayerShapes, const int netWidth,
-                                     const int netHeight) {
+                                        std::vector<MxBase::ObjectInfo> &detBoxes,
+                                        const std::vector<std::vector<size_t>> &featLayerShapes, const int netWidth,
+                                        const int netHeight) {
     NetInfo netInfo;
     netInfo.anchorDim = anchorDim_;
     netInfo.bboxDim = BOX_DIM;

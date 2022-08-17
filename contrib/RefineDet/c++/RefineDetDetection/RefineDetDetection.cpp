@@ -20,10 +20,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-namespace{
+namespace {
     const uint32_t YUV_BYTE_NU = 3;
     const uint32_t YUV_BYTE_DE = 2;
     const uint32_t VPC_H_ALIGN = 2;
+    const uint32_t IMAGE_SIZE = 320;
 }
 
 // 加载标签文件
@@ -138,7 +139,7 @@ APP_ERROR RefineDetDetection::ReadImage(const std::string &imgPath, MxBase::Tens
         return ret;
     }
     // 将数据转为到DEVICE侧，以便后续处理
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     // 对解码后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
@@ -161,8 +162,8 @@ APP_ERROR RefineDetDetection::Resize(const MxBase::TensorBase &inputTensor, MxBa
     input.widthStride = shape[1];
     input.dataSize = inputTensor.GetByteSize();
     input.data = (uint8_t*)inputTensor.GetBuffer();
-    const uint32_t resizeHeight = 320;
-    const uint32_t resizeWidth = 320;
+    const uint32_t resizeHeight = IMAGE_SIZE;
+    const uint32_t resizeWidth = IMAGE_SIZE;
     MxBase::ResizeConfig resize = {};
     resize.height = resizeHeight;
     resize.width = resizeWidth;
@@ -182,13 +183,13 @@ APP_ERROR RefineDetDetection::Resize(const MxBase::TensorBase &inputTensor, MxBa
         return APP_ERR_COMM_INVALID_PARAM;
     }
     shape = {output.heightStride * YUV_BYTE_NU / YUV_BYTE_DE, output.widthStride};
-    outputTensor = MxBase::TensorBase(memoryData, false, shape,MxBase::TENSOR_DTYPE_UINT8);
+    outputTensor = MxBase::TensorBase(memoryData, false, shape, MxBase::TENSOR_DTYPE_UINT8);
     return APP_ERR_OK;
 }
 
 // 模型推理
 APP_ERROR RefineDetDetection::Inference(const std::vector<MxBase::TensorBase> &inputs,
-                                           std::vector<MxBase::TensorBase> &outputs) {
+                                        std::vector<MxBase::TensorBase> &outputs) {
     auto dtypes = model_->GetOutputDataType();
     for (size_t i = 0; i < modelDesc_.outputTensors.size(); ++i) {
         std::vector<uint32_t> shape = {};
@@ -218,23 +219,22 @@ APP_ERROR RefineDetDetection::Inference(const std::vector<MxBase::TensorBase> &i
 }
 
 // 后处理
-APP_ERROR RefineDetDetection::PostProcess(const MxBase::TensorBase &tensor, 
-                                             const std::vector<MxBase::TensorBase> &outputs,
-                                             std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
+APP_ERROR RefineDetDetection::PostProcess(const MxBase::TensorBase &tensor,
+                                          const std::vector<MxBase::TensorBase> &outputs,
+                                          std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     // 通过原始图像tensor构建ResizedImageInfo
     auto shape = tensor.GetShape();
     MxBase::ResizedImageInfo imgInfo;
     imgInfo.widthOriginal = shape[1];
     imgInfo.heightOriginal = shape[0] * YUV_BYTE_DE / YUV_BYTE_NU;
-    imgInfo.widthResize = 320;
-    imgInfo.heightResize = 320;
+    imgInfo.widthResize = IMAGE_SIZE;
+    imgInfo.heightResize = IMAGE_SIZE;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
     std::vector<MxBase::ResizedImageInfo> imageInfoVec = {};
     imageInfoVec.push_back(imgInfo);
-    // use RefineDetPostProcess post_;
-    APP_ERROR ret = post_->Process(outputs, objInfos, imageInfoVec);
 
+    APP_ERROR ret = post_->Process(outputs, objInfos, imageInfoVec);
     if (ret != APP_ERR_OK) {
         LogError << "Process failed, ret=" << ret << ".";
         return ret;
@@ -249,7 +249,7 @@ APP_ERROR RefineDetDetection::PostProcess(const MxBase::TensorBase &tensor,
 }
 
 APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
-                                            const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
+                                          const std::vector<std::vector<MxBase::ObjectInfo>> &objInfos)
 {
     APP_ERROR ret = tensor.ToHost();
     if (ret != APP_ERR_OK) {
@@ -275,30 +275,27 @@ APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
             }
             index = j;
 
-        resultInfo.push_back(objInfos[i][index]);
+            resultInfo.push_back(objInfos[i][index]);
 
-        // 打印置信度最大推理结果
+            // 打印置信度最大推理结果
 
-        int k = resultInfo.size() - 1;
-        LogInfo << "id: " << resultInfo[k].classId << "; label: " << resultInfo[k].className
-                << "; confidence: " << resultInfo[k].confidence
-                << "; box: [ (" << resultInfo[k].x0 << "," << resultInfo[k].y0 << ") "
-                << "(" << resultInfo[k].x1 << "," << resultInfo[k].y1 << ") ]" ;
+            int k = resultInfo.size() - 1;
+            LogInfo << "id: " << resultInfo[k].classId << "; label: " << resultInfo[k].className
+                    << "; confidence: " << resultInfo[k].confidence
+                    << "; box: [ (" << resultInfo[k].x0 << "," << resultInfo[k].y0 << ") "
+                    << "(" << resultInfo[k].x1 << "," << resultInfo[k].y1 << ") ]" ;
 
-        const cv::Scalar green = cv::Scalar(0, 255, 0);
-        const uint32_t thickness = 4;
-        const uint32_t xOffset = 10;
-        const uint32_t yOffset = 10;
-        const uint32_t lineType = 8;
-        const float fontScale = 1.0;
+            const cv::Scalar green = cv::Scalar(0, 255, 0);
+            const uint32_t thickness = 4;
+            const uint32_t xOffset = 10;
+            const uint32_t yOffset = 10;
+            const uint32_t lineType = 8;
+            const float fontScale = 1.0;
 
-        // 在图像上绘制文字
-        // cv::putText(imgBgr, resultInfo[k].className, cv::Point(resultInfo[k].x0 + xOffset, resultInfo[k].y0 + yOffset),
-        //             cv::FONT_HERSHEY_SIMPLEX, fontScale, green, thickness, lineType);
-        // 绘制矩形
-        cv::rectangle(imgBgr,cv::Rect(resultInfo[k].x0, resultInfo[k].y0,
-                                      resultInfo[k].x1 - resultInfo[k].x0, resultInfo[k].y1 - resultInfo[k].y0),
-                      green, thickness);
+            // 绘制矩形
+            cv::rectangle(imgBgr, cv::Rect(resultInfo[k].x0, resultInfo[k].y0,
+                                          resultInfo[k].x1 - resultInfo[k].x0, resultInfo[k].y1 - resultInfo[k].y0),
+                          green, thickness);
         }
     }
     // 把Mat类型的图像矩阵保存为图像到指定位置。

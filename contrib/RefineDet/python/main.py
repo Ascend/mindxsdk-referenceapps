@@ -19,9 +19,9 @@ limitations under the License.
 
 
 
-import numpy as np
-import cv2
 import os
+import cv2
+import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
 from STREAM_MANAGER_API import STREAM_MANAGER_API, MxDataInput, StringVector
@@ -44,10 +44,10 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    image_name = './test.jpg'
+    IMAGE_NAME = './test.jpg'
 
     dataInput = MxDataInput()
-    with open(image_name, 'rb') as f:
+    with open(IMAGE_NAME, 'rb') as f:
         dataInput.data = f.read()
 
     # Inputs data to a specified stream based on STREAM_NAME.
