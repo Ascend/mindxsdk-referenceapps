@@ -28,6 +28,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 IMAGE_PATH = "../test_img/test.jpg"
 
+
 def from_colorname_to_bgr(color):
     """
     convert color name to bgr value
@@ -41,6 +42,7 @@ def from_colorname_to_bgr(color):
     rgb_color = webcolors.name_to_rgb(color)
     result = (rgb_color.blue, rgb_color.green, rgb_color.red)
     return result
+
 
 def standard_to_bgr():
     """
@@ -58,6 +60,7 @@ def standard_to_bgr():
         standard.append(from_colorname_to_bgr(list_color_name[i]))
         
     return standard
+
 
 def plot_one_box(origin_img, box, color=None, line_thickness=None):
     """
@@ -92,8 +95,6 @@ if __name__ == '__main__':
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
-
-
 
     with open("../pipeline/pre_post.pipeline", 'rb') as f:
         pipelineStr = f.read()
