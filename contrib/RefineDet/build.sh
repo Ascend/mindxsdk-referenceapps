@@ -18,7 +18,7 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-/plugin/FaceBoxesPostProcess/
+/plugin/RefineDetPostProcess/
 )
 
 
