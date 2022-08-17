@@ -19,50 +19,51 @@ limitations under the License.
 
 
 
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import numpy as np
-import MxpiDataType_pb2 as MxpiDataType
 import cv2
 import os
-import argparse
+import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
+from STREAM_MANAGER_API import STREAM_MANAGER_API, MxDataInput, StringVector
 
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    STREAM_MANAGER_API = STREAM_MANAGER_API()
+    ret = STREAM_MANAGER_API.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
     # create streams by pipeline config file
 
-    with open("./pipeline/refinedet.pipeline", 'rb') as f:
+    with open("./pipeline/second.pipeline", 'rb') as f:
         pipelineStr = f.read()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    image_name = './test5.jpg'
+    image_name = './test.jpg'
 
     dataInput = MxDataInput()
     with open(image_name, 'rb') as f:
         dataInput.data = f.read()
 
-    # Inputs data to a specified stream based on streamName.
-    streamName = b'RefineDet'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    # Inputs data to a specified stream based on STREAM_NAME.
+    STREAM_NAME = b'RefineDet'
+    IN_PLUGIN_ID = 0
+    uniqueId = STREAM_MANAGER_API.SendData(STREAM_NAME, IN_PLUGIN_ID, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
  
-    inferResult = streamManagerApi.GetResult(streamName,inPluginId)
+    inferResult = STREAM_MANAGER_API.GetResult(STREAM_NAME, IN_PLUGIN_ID)
 
-    with open("./out.jpg", 'wb') as f:
+    FLAGS = os.O_WRONLY | os.O_CREAT
+    MODES = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open('./out.jpg', FLAGS, MODES), 'wb') as f:
         f.write(inferResult.data)
 
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    STREAM_MANAGER_API.DestroyAllStreams()

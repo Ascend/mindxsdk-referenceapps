@@ -64,9 +64,9 @@ namespace MxBase {
     }
 
     void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& tensors,
-                                                std::vector <std::vector<ObjectInfo>>& objectInfos,
-                                                const std::vector <ResizedImageInfo>& resizedImageInfos,
-                                                cv::Mat& res)
+                                                    std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                    const std::vector <ResizedImageInfo>& resizedImageInfos,
+                                                    cv::Mat& res)
     {
         auto asm_loc = tensors[0].GetBuffer();
         auto asm_conf = tensors[1].GetBuffer();
@@ -78,7 +78,7 @@ namespace MxBase {
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
 
-        for (uint32_t i = 0; i < batchSize; i++){
+        for (uint32_t i = 0; i < batchSize; i++) {
             std::vector <ObjectInfo> objectInfo, objectInfoSorted;
             auto asm_dataPtr_Conf = (float *) asm_conf + i * tensors[1].GetByteSize() / batchSize;
             auto odm_dataPtr_Conf = (float *) odm_conf + i * tensors[3].GetByteSize() / batchSize;
@@ -86,20 +86,20 @@ namespace MxBase {
             float maxId = 0, maxConf = 0;
             for (uint32_t j = 0; j < VectorNum; j++) {
                 float* asm_begin_Conf = asm_dataPtr_Conf + j * 2;
-                float* odm_begin_Conf = odm_dataPtr_Conf + j * classNum_; 
+                float* odm_begin_Conf = odm_dataPtr_Conf + j * classNum_;
                 for (int k = 1; k < classNum_; k++)
                 {
                     float conf = *(asm_begin_Conf + 1) <= 0.01 ? 0 : *(odm_begin_Conf + k);
-                    if(conf > 0.05)
+                    if(conf > confThresh_
                     {
                         ObjectInfo objInfo;
                         objInfo.confidence = conf;
                         objInfo.classId = k;
                         objInfo.className = configData_.GetClassName(k);
-                        objInfo.x0 = res.at<float>(j,LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                        objInfo.y0 = res.at<float>(j,LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
-                        objInfo.x1 = res.at<float>(j,RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
-                        objInfo.y1 = res.at<float>(j,RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                        objInfo.x0 = res.at<float>(j, LEFTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                        objInfo.y0 = res.at<float>(j, LEFTTOPY) * IMAGE_HEIGHT / height_resize_scale;
+                        objInfo.x1 = res.at<float>(j, RIGHTTOPX) * IMAGE_WIDTH / width_resize_scale;
+                        objInfo.y1 = res.at<float>(j, RIGHTTOPY) * IMAGE_HEIGHT / height_resize_scale;
 
                         objInfo.x0 = objInfo.x0 > 1 ? objInfo.x0 : 1;
                         objInfo.y0  = objInfo.y0 > 1 ? objInfo.y0 : 1;
@@ -111,12 +111,12 @@ namespace MxBase {
                 }
             }
             MxBase::NmsSort(objectInfo, iouThresh_);
-            objectInfos.push_back(objectInfo);   
+            objectInfos.push_back(objectInfo);
         }
     }
     void RefineDetPostProcess::ObjectDetectionOutput(const std::vector <TensorBase>& tensors,
-                                                 std::vector <std::vector<ObjectInfo>>& objectInfos,
-                                                 const std::vector <ResizedImageInfo>& resizedImageInfos)
+                                                     std::vector <std::vector<ObjectInfo>>& objectInfos,
+                                                     const std::vector <ResizedImageInfo>& resizedImageInfos)
     {
         LogDebug << "RefineDetPostProcess start to write results.";
                 
@@ -137,7 +137,7 @@ namespace MxBase {
         cv::Mat odm_location = cv::Mat(shape[1], shape[2], CV_32FC1, odm_loc);
 
         GeneratePriorBox(PriorBox);
-        cv::Mat res = decode_for_loc(asm_location, PriorBox); 
+        cv::Mat res = decode_for_loc(asm_location, PriorBox);
         res = center_size(res);
         res = decode_for_loc(odm_location, res);
 
@@ -145,9 +145,9 @@ namespace MxBase {
         LogDebug << "RefineDetPostProcess write results successed.";
     }
     APP_ERROR RefineDetPostProcess::Process(const std::vector<TensorBase> &tensors,
-                                        std::vector<std::vector<ObjectInfo>> &objectInfos,
-                                        const std::vector<ResizedImageInfo> &resizedImageInfos,
-                                        const std::map<std::string, std::shared_ptr<void>> &configParamMap)
+                                            std::vector<std::vector<ObjectInfo>> &objectInfos,
+                                            const std::vector<ResizedImageInfo> &resizedImageInfos,
+                                            const std::map<std::string, std::shared_ptr<void>> &configParamMap)
     {
         LogDebug << "Start to Process RefineDetPostProcess.";
         APP_ERROR ret = APP_ERR_OK;
@@ -157,7 +157,6 @@ namespace MxBase {
             LogError << "CheckAndMoveTensors failed. ret=" << ret;
             return ret;
         }
-        LogInfo << *(float*)tensors[0].GetBuffer();
         ObjectDetectionOutput(inputs, objectInfos, resizedImageInfos);
         LogDebug << "End to Process RefineDetPostProcess.";
         return APP_ERR_OK;
@@ -180,28 +179,28 @@ namespace MxBase {
             for (int i = 0; i < f[0]; i++) {
                 for (int j = 0; j < f[1]; j++) {
                     int min_size = PRIOR_PARAMETERS[k];
-                    cv::Mat anchor(1, 4, CV_32F);
+                    cv::Mat anchor(1, RECTANGLEPOINT, CV_32F);
                     float center_x = (j + 0.5f) * step / IMAGE_WIDTH;
                     float center_y = (i + 0.5f) * step / IMAGE_HEIGHT;
                     float step_x = min_size / IMAGE_WIDTH;
                     float step_y = min_size / IMAGE_HEIGHT;
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x;
-                    anchor.at<float>(0,3) = step_y;
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x;
+                    anchor.at<float>(0, RIGHTTOPY) = step_y;
                     anchors.push_back(anchor);
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x * sqrtf(2.0);
-                    anchor.at<float>(0,3) = step_y / sqrtf(2.0);
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(2.0);
                     anchors.push_back(anchor);
 
-                    anchor.at<float>(0,0) = center_x;
-                    anchor.at<float>(0,1) = center_y;
-                    anchor.at<float>(0,2) = step_x / sqrtf(2.0);
-                    anchor.at<float>(0,3) = step_y * sqrtf(2.0);
+                    anchor.at<float>(0, LEFTTOPX) = center_x;
+                    anchor.at<float>(0, LEFTTOPY) = center_y;
+                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(2.0);
                     anchors.push_back(anchor);
                 }
             }
@@ -220,7 +219,7 @@ namespace MxBase {
         cv::Mat boxes_first = boxes.colRange(0, 2);
         cv::Mat boxes_last = boxes.colRange(2, 4);
         cv::Mat ret_boxes;
-        cv::hconcat((boxes_first + boxes_last) / 2, boxes_last - boxes_first, ret_boxes);    
+        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);    
         return ret_boxes;
     }
 
@@ -235,7 +234,7 @@ namespace MxBase {
         cv::Mat boxes2;
         cv::exp(loc_last * VARIANCE[1], boxes2);
         boxes2 = boxes2.mul(prior_last);
-        boxes1 = boxes1 - boxes2 / 2;
+        boxes1 = boxes1 - boxes2 / DIV_TWO;
         boxes2 = boxes2 + boxes1;
 
         cv::Mat boxes;
