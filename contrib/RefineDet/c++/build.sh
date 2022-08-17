@@ -38,6 +38,7 @@ function check_env()
 function build_refinedet()
 {
     cd "$path_cur" || exit
+    export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
     rm -rf build
     mkdir -p build
     cd build || exit
