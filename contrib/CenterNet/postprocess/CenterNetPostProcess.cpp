@@ -426,10 +426,10 @@ namespace MxBase {
         }
         nc::NdArray<float> clses_float  = clses.reshape(K, 1).astype<float>();
         scores.reshape(K, 1);
-	nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), { 0, 1 }) / float(2.0),
-                                                     YS - wh(wh.rSlice(), { 1, 2 }) / float(2.0),
-                                                     XS + wh(wh.rSlice(), { 0, 1 }) / float(2.0),
-					YS + wh(wh.rSlice(), { 1, 2 }) / float(2.0)}, nc::Axis::COL);
+	nc::NdArray<float> bboxes = nc::concatenate({XS - wh(wh.rSlice(), {0, 1}) / float(2.0),
+                                                     YS - wh(wh.rSlice(), {1, 2}) / float(2.0),
+                                                     XS + wh(wh.rSlice(), {0, 1}) / float(2.0),
+					YS + wh(wh.rSlice(), {1, 2}) / float(2.0)}, nc::Axis::COL);
         nc::NdArray<float> detections = nc::concatenate({bboxes, scores, clses_float}, nc::Axis::COL);
 	return detections;
     }
