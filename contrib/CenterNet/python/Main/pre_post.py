@@ -83,7 +83,8 @@ def plot_one_box(origin_img, box, color=None, line_thickness=None):
         cv2.rectangle(origin_img, c1, c2, color=color, thickness=tl)
         if box['text']:
             tf = max(tl - 2, 1)  # font thickness
-            s_size = cv2.getTextSize(str('{:.0%}'.format(box['confidence'])), 0, fontScale=float(tl) / 3, thickness=tf)[0]
+            s_size = cv2.getTextSize(str('{:.0%}'.format(box['confidence'])), 0, fontScale=float(tl) / 3, 
+                                    thickness=tf)[0]
             t_size = cv2.getTextSize(box['text'], 0, fontScale=float(tl) / 3, thickness=tf)[0]
             c2 = c1[0] + t_size[0] + s_size[0] + 15, c1[1] - t_size[1] - 3
             cv2.rectangle(origin_img, c1, c2, color, -1)  # filled
