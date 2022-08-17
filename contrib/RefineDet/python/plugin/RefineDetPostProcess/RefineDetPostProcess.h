@@ -22,7 +22,7 @@
 #define DEFAULT_OBJECT_CONF_TENSOR  1
 #define DEFAULT_OBJECT_INFO_TENSOR  0
 #define DEFAULT_IOU_THRESH  0.45
-#define DEFAULT_CONFIDENCE_THRESH  0.5
+#define DEFAULT_CONFIDENCE_THRESH  0.1
 
 namespace MxBase {
     bool operator<(const ObjectInfo &a, const ObjectInfo &b) {

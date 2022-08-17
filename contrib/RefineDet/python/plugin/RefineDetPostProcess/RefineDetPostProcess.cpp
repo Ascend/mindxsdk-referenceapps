@@ -91,7 +91,7 @@ namespace MxBase {
                 for (int k = 1; k < classNum_; k++)
                 {
                     float conf = *(asm_begin_Conf + 1) <= 0.01 ? 0 : *(odm_begin_Conf + k);
-                    if(conf > confThresh_)
+                    if (conf > confThresh_)
                     {
                         ObjectInfo objInfo;
                         objInfo.confidence = conf;
@@ -220,7 +220,7 @@ namespace MxBase {
         cv::Mat boxes_first = boxes.colRange(0, 2);
         cv::Mat boxes_last = boxes.colRange(2, 4);
         cv::Mat ret_boxes;
-        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);    
+        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);
         return ret_boxes;
     }
 

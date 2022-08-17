@@ -54,9 +54,9 @@ public:
 
     ~RefineDetPostProcess() = default;
 
-    RefineDetPostProcess(const RefineDetPostProcess &other) = default;
+    RefineDetPostProcess(const RefineDetPostProcess &other);
 
-    RefineDetPostProcess &operator=(const RefineDetPostProcess &other) = default;
+    RefineDetPostProcess &operator=(const RefineDetPostProcess &other);
 
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 

@@ -174,7 +174,7 @@ APP_ERROR RefineDetDetection::Resize(const MxBase::TensorBase &inputTensor, MxBa
         LogError << "VpcResize failed, ret=" << ret << ".";
         return ret;
     }
-    MxBase::MemoryData memoryData((void*)output.data, output.dataSize, 
+    MxBase::MemoryData memoryData((void*)output.data, output.dataSize,
 	                            MxBase::MemoryData::MemoryType::MEMORY_DEVICE, deviceId_);
     // 对缩放后图像对齐尺寸进行判定
     if (output.heightStride % VPC_H_ALIGN != 0) {
@@ -269,7 +269,7 @@ APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
         float maxConfidence = 0;
         uint32_t  index;
         for (uint32_t j = 0; j < objInfos[i].size(); j++) {
-            if(objInfos[i][j].confidence > maxConfidence) {
+            if (objInfos[i][j].confidence > maxConfidence) {
                 maxConfidence = objInfos[i][j].confidence;
                 index = j;
             }
@@ -294,7 +294,7 @@ APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
 
             // 绘制矩形
             cv::rectangle(imgBgr, cv::Rect(resultInfo[k].x0, resultInfo[k].y0,
-                                          resultInfo[k].x1 - resultInfo[k].x0, resultInfo[k].y1 - resultInfo[k].y0),
+                                           resultInfo[k].x1 - resultInfo[k].x0, resultInfo[k].y1 - resultInfo[k].y0),
                           green, thickness);
         }
     }

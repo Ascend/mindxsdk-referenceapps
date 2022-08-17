@@ -50,6 +50,7 @@ namespace {
     const uint32_t KEYPOINT_COLOR = 2;
     const uint32_t HINTPOINT_COLOR = 3;
     const uint32_t DIV_TWO = 2;
+    const float TWO = 2.0;
 }
 using namespace MxBase;
 
@@ -146,7 +147,8 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
         uint32_t batchSize = shape[0];
         uint32_t VectorNum = shape[1];
 
-        for (uint32_t i = 0; i < batchSize; i++){
+        for (uint32_t i = 0; i < batchSize; i++)
+        {
             std::vector <ObjectInfo> objectInfo;
             auto asm_dataPtr_Conf = (float *) asm_conf + i * tensors[1].GetByteSize() / batchSize;
             auto odm_dataPtr_Conf = (float *) odm_conf + i * tensors[3].GetByteSize() / batchSize;
@@ -158,7 +160,7 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
                 for (uint32_t k = 1; k < classNum_; k++)
                 {
                     float conf = *(asm_begin_Conf) <= 0.01 ? 0 : *(odm_begin_Conf + k);
-                    if(conf > confidenceThresh_)
+                    if (conf > confidenceThresh_)
                     {
                         ObjectInfo objInfo;
                         objInfo.confidence = conf;
@@ -171,8 +173,8 @@ void RefineDetPostProcess::generate_objectInfos(const std::vector <TensorBase>& 
 
                         objInfo.x0 = objInfo.x0 > 1 ? objInfo.x0 : 1;
                         objInfo.y0 = objInfo.y0 > 1 ? objInfo.y0 : 1;
-                        objInfo.x1 = objInfo.x1 < width_original ? objInfo.x1 : width_original;
-                        objInfo.y1 = objInfo.y1 < height_original ? objInfo.y1 : height_original;
+                        objInfo.x1 = objInfo.x1 < resizedImageInfos[0].widthOriginal ? objInfo.x1 : resizedImageInfos[0].widthOriginal;
+                        objInfo.y1 = objInfo.y1 < resizedImageInfos[0].heightOriginal ? objInfo.y1 : resizedImageInfos[0].heightOriginal;
                         objectInfo.push_back(objInfo);
                     }
                 }
@@ -260,14 +262,14 @@ void RefineDetPostProcess::GeneratePriorBox(cv::Mat &anchors)
 
                     anchor.at<float>(0, LEFTTOPX) = center_x;
                     anchor.at<float>(0, LEFTTOPY) = center_y;
-                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(2.0);
-                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPX) = step_x * sqrtf(TWO);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y / sqrtf(TWO);
                     anchors.push_back(anchor);
 
                     anchor.at<float>(0, LEFTTOPX) = center_x;
                     anchor.at<float>(0, LEFTTOPY) = center_y;
-                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(2.0);
-                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(2.0);
+                    anchor.at<float>(0, RIGHTTOPX) = step_x / sqrtf(TWO);
+                    anchor.at<float>(0, RIGHTTOPY) = step_y * sqrtf(TWO);
                     anchors.push_back(anchor);
                 }
             }
@@ -283,10 +285,10 @@ void RefineDetPostProcess::GeneratePriorBox(cv::Mat &anchors)
 
     cv::Mat RefineDetPostProcess::center_size(cv::Mat boxes)
     {
-        cv::Mat boxes_first = boxes.colRange(0,2);
-        cv::Mat boxes_last = boxes.colRange(2,4);
+        cv::Mat boxes_first = boxes.colRange(0, 2);
+        cv::Mat boxes_last = boxes.colRange(2, 4);
         cv::Mat ret_boxes;
-        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);    
+        cv::hconcat((boxes_first + boxes_last) / DIV_TWO, boxes_last - boxes_first, ret_boxes);
         return ret_boxes;
     }
 
