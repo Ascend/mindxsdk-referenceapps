@@ -41,8 +41,8 @@ def from_colorname_to_bgr(color):
 
     """
     rgb_color = webcolors.name_to_rgb(color)
-    results = (rgb_color.blue, rgb_color.green, rgb_color.red)
-    return results
+    resultss = (rgb_color.blue, rgb_color.green, rgb_color.red)
+    return resultss
 
 
 def standard_to_bgr():
