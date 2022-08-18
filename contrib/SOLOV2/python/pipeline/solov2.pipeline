@@ -34,7 +34,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "./solov2_opencv.om",
+                "modelPath": "../models/solov2_opencv.om",
                 "skipModelCheck": "1"
             },
             "factory": "mxpi_tensorinfer",
@@ -44,7 +44,7 @@
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "../models/solov2.cfg",
-                "labelPath": "models/coco.names",
+                "labelPath": "../models/coco.names",
                 "postProcessLibPath": "../../postprocess/build/libsolov2postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
