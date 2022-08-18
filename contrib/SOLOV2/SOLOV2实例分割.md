@@ -189,11 +189,13 @@ python3 main_visualize.py
 ```
 其中：val2017文件夹下应存放有5000张待测图片。
 
+确定配置文件路径，在之前下载好的SOLOV2源代码路径下：/SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py
+
 2. 修改``python/models``下的文件 solov2.cfg 的参数 SCORE_THRESH=0.0
 
 3. 进入``python/Main``路径，运行 命令：
 ```
-python3 main_eval.py
+python3 main_eval.py --dataset_path = [COCO数据集位置] --anno_path = [COCO标注文件位置] --model_config = [配置文件位置]
 ```
 ![结果图片](./images/eval_result.png)
 
