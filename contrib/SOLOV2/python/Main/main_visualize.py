@@ -40,7 +40,7 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    with open("./solov2.pipeline", 'rb') as f:
+    with open("../pipeline/solov2.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
@@ -96,14 +96,14 @@ if __name__ == '__main__':
         if cur_mask.sum() == 0:
             continue
         color_mask = np.random.randint(0, 256, (1, 3), dtype=np.uint8)
-        cur_mask_bool = cur_mask.astype(np.bool)
+        cur_mask_bool = cur_mask.astype(np.bool_)
         seg_show[cur_mask_bool] = img[cur_mask_bool] * 0.5 + color_mask * 0.5
         cur_cate = result.classVec[0].classId
         cur_score = round(result.classVec[0].confidence, 4)
 
         label_text = result.classVec[0].className
         # center
-        center_y, center_x = ndimage.measurements.center_of_mass(cur_mask)
+        center_y, center_x = ndimage.center_of_mass(cur_mask)
         vis_pos = (max(int(center_x) - 10, 0), int(center_y))
         cv2.putText(seg_show, label_text, vis_pos,
                     cv2.FONT_HERSHEY_COMPLEX, 0.3, (255, 255, 255))  # green

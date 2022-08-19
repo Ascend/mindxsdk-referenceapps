@@ -57,6 +57,7 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
     │   ├── aipp_config
     │   │   └── aipp_opencv.cfg
     │   └── solov2.cfg
+    │   └── #coco.names 下载coco.names放置于此
     └── pipeline
         └── solov2.pipeline
 
@@ -73,17 +74,18 @@ SOLOV2 的后处理插件接收模型推理插件输出的特征图。
 
 ### 1.6 适用场景
 
-经过测试，该项目适用于各类图像。
+经过测试，该项目适用于各类格式图像，但仍有所缺陷：本次测试选用了多种不同的图片进行测试。测试结果表明，模型在大部分情形下可以检测准确。但是在目标数量很多时往往会漏掉几个，对于图片中特征不明显的实例有时难以检测出来。此外，实例的mask有时会失准，存在无法覆盖实例或者超出实例的情况。
 
 ## 2 环境依赖
 
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
-| 软件名称 | 版本  |
-| -------- | ----- |
-| cmake    | 3.5+  |
-| mxVision | 2.0.4 |
-| python   | 3.9.2 |
+| 软件名称      | 版本     |
+| ------------- | -------- |
+| cmake         | 3.5+     |
+| mxVision      | 2.0.4    |
+| python        | 3.9.2    |
+| opencv-python | 4.5.5.64 |
 
 确保环境中正确安装mxVision SDK。
 
@@ -116,17 +118,17 @@ git clone https://github.com/open-mmlab/mmcv -b v0.2.16
 cd mmcv
 python setup.py build_ext
 python setup.py develop
-cd ..
 ```
 
 ```
 // mmdet安装方式（需要先从github上下载源代码库）
+放在在SOLOV2/python/Main 路径下执行git clone https://github.com/WXinlong/SOLO.git
 cd SOLO //源代码仓(https://github.com/WXinlong/SOLO)
 patch -p1 < ../MMDET.diff
 patch -p1 < ../SOLOV2.diff
-pip install -r requirements/build.txt # 可以不用执行这句话
+pip install -r requirements/build.txt
+apt-get install libjpeg-dev
 pip install -v -e .
-cd ..
 ```
 
 
@@ -145,7 +147,7 @@ cd ..
 2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行atc指令：
 
 ```
-atc --framework=5 --model=SOLOv2_sim.onnx --output=solov2_opencv --input_format=NCHW --input_shape="input:1,3,800,1216" --insert_op_conf=aipp_opencv.cfg --log=error --soc_version=Ascend310
+atc --framework=5 --model=SOLOv2_sim.onnx --output=solov2_opencv --input_format=NCHW --input_shape="input:1,3,800,1216" --insert_op_conf=aipp_config/aipp_opencv.cfg --log=error --soc_version=Ascend310
 ```
 
 若终端输出：
@@ -158,7 +160,7 @@ ATC run success, welcome to the next use.
 
 ## 4. 编译与运行
 
-### 4.1 业务流程加图像预处理
+### 4.1 业务流程
 
 **步骤1** 在项目后处理目录执行命令：
 
@@ -166,7 +168,7 @@ ATC run success, welcome to the next use.
 bash build.sh  
 ```
 
-**步骤2** 放入待测图片。将一张图片放在路径``python/Main``下，命名为 test.jpg。
+**步骤2** 放入待测图片。将一张图片放在路径``python/Main``下，命名为 test.jpg。修改``python/models``下的文件 solov2.cfg 的参数 SCORE_THRESH=0.3。
 
 **步骤3** 图片检测。在项目路径``python/Main``下运行命令：
 
@@ -178,7 +180,7 @@ python3 main_visualize.py
 
 **步骤4** 精度测试。
 
-1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/stuff_annotations_trainval2017.zip)，并保存在项目目录``python/``下，此文件夹下的组织形式应如下图所示：
+1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/annotations_trainval2017.zip)，并保存在项目目录``python/``下，此文件夹下的组织形式应如下图所示：
 
 ```                                    
 .                                                               
@@ -189,7 +191,7 @@ python3 main_visualize.py
 ```
 其中：val2017文件夹下应存放有5000张待测图片。
 
-确定配置文件路径，在之前下载好的SOLOV2源代码路径下：/SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py
+确定配置文件路径，若在上文提到的路径下下载SOLOV2源代码，则配置文件路径为：SOLOV2/python/Main/SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py。该配置文件用于评测精度时配置标准数据集。
 
 2. 修改``python/models``下的文件 solov2.cfg 的参数 SCORE_THRESH=0.0
 
