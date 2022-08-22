@@ -20,7 +20,7 @@
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
 #include "opencv2/opencv.hpp"
 
-namespace {
+namespace CONSTANT{
 const float DEFAULT_OBJECTNESS_THRESH = 0.01;
 const float DEFAULT_CONFIDENCE_THRESH = 0.1;
 const float DEFAULT_IOU_THRESH = 0.45;
@@ -46,6 +46,7 @@ struct NetInfo {
     int netHeight;
 };
 }
+using namespace CONSTANT;
 
 
 class RefineDetPostProcess : public MxBase::ObjectPostProcessBase {
