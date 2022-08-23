@@ -53,6 +53,7 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   └── RefineDetPostProcess
 │       ├── build.sh
 │       ├── CMakeLists.txt
+│       ├── old.cpp
 │       ├── RefineDetPostProcess.cpp
 │       └── RefineDetPostProcess.h
 ├── run.sh
@@ -63,7 +64,7 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 
 ### 1.5 技术实现流程图
 
-![image-20220810152501947](C:\Users\Mikochi\AppData\Roaming\Typora\typora-user-images\image-20220810152501947.png)
+![流程图](images/process.png)
 
 
 

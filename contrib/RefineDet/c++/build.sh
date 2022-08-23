@@ -49,7 +49,6 @@ function build_refinedet()
         echo "Failed to build refinedet."
         exit ${ret}
     fi
-    make install
 }
 
 check_env

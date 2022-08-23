@@ -278,7 +278,6 @@ APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
             resultInfo.push_back(objInfos[i][index]);
 
             // 打印置信度最大推理结果
-
             int k = resultInfo.size() - 1;
             LogInfo << "id: " << resultInfo[k].classId << "; label: " << resultInfo[k].className
                     << "; confidence: " << resultInfo[k].confidence
@@ -287,10 +286,6 @@ APP_ERROR RefineDetDetection::WriteResult(MxBase::TensorBase &tensor,
 
             const cv::Scalar green = cv::Scalar(0, 255, 0);
             const uint32_t thickness = 4;
-            const uint32_t xOffset = 10;
-            const uint32_t yOffset = 10;
-            const uint32_t lineType = 8;
-            const float fontScale = 1.0;
 
             // 绘制矩形
             cv::rectangle(imgBgr, cv::Rect(resultInfo[k].x0, resultInfo[k].y0,
