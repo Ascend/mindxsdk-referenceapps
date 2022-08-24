@@ -52,7 +52,7 @@ def get_masks(result_, num_classes_=80):
 parser = argparse.ArgumentParser(description='model')
 parser.add_argument('--dataset_path', default="../coco/val2017/")
 parser.add_argument('--anno_path', default='../coco/annotations/instances_val2017.json')
-parser.add_argument('--model_config', default="SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py")
+parser.add_argument('--model_config', default="./SOLOV2/SOLO/configs/solov2/solov2_r50_fpn_8gpu_1x.py")
 args = parser.parse_args()
 
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.2)
-project(centernetpostprocess)
+project(solov2postprocess)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 add_definitions(-DNUMCPP_NO_USE_BOOST)

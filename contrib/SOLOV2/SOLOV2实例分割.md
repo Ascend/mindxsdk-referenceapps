@@ -41,6 +41,8 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
 本工程名称为 SOLOV2，工程目录如下所示：
 ```
 .
+├── SOLOV2实例分割.md
+├── build.sh
 ├── images
 │   ├── eval_result.png
 │   └── pipeline.png
@@ -51,13 +53,17 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
 │   └── build.sh
 └── python
     ├── Main
+    │   ├── SOLOV2   // 下载的昇腾modelzoo模型
+    │   │   └── SOLO  // 下载的SOLOV2源代码
     │   ├── main_eval.py
     │   └── main_visualize.py
+    ├── coco
     ├── models
+    │   ├── SOLOv2_sim.onnx // 从下载的模型文件中迁移到这里
     │   ├── aipp_config
     │   │   └── aipp_opencv.cfg
+    │   ├── coco.names // 下载的coco.names
     │   └── solov2.cfg
-    │   └── #coco.names 下载coco.names放置于此
     └── pipeline
         └── solov2.pipeline
 
@@ -121,11 +127,14 @@ python setup.py develop
 ```
 
 ```
-// mmdet安装方式（需要先从github上下载源代码库）
-放在在SOLOV2/python/Main 路径下执行git clone https://github.com/WXinlong/SOLO.git
-cd SOLO //源代码仓(https://github.com/WXinlong/SOLO)
-patch -p1 < ../MMDET.diff
-patch -p1 < ../SOLOV2.diff
+// mmdet安装方式（需要先从github上下载源代码库并下载昇腾modelzoo模型）
+下载模型地址：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/f32ed480a95b4686a070fff964b4fceb
+将下载好后的SOLOV2文件夹放在SOLOV2/python/Main路径下。
+在SOLOV2/python/Main/SOLOV2 路径下执行git clone https://github.com/WXinlong/SOLO.git
+
+cd SOLO // 源代码仓(https://github.com/WXinlong/SOLO)
+patch -p1 < ../MMDET.diff // 下载的昇腾模型中包含
+patch -p1 < ../SOLOV2.diff  // 下载的昇腾模型中包含
 pip install -r requirements/build.txt
 apt-get install libjpeg-dev
 pip install -v -e .
@@ -138,7 +147,7 @@ pip install -v -e .
 本项目中采用的模型是SOLOV2 模型，参考实现代码：https://github.com/WXinlong/SOLO ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/f32ed480a95b4686a070fff964b4fceb 。下载地址中包含onnx文件，同时也有对应的om文件，可以直接使用。也可以用ATC模型转换工具将onnx转换为om文件。模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
 
 
-### 3.1 业务流程加图像预处理的模型转换方法
+### 3.1 模型转换方法
 
 
 1. 从上述项目链接中下载 onnx 模型 solov2_sim.onnx 至 ``python/models`` 文件夹下。
@@ -195,7 +204,7 @@ python3 main_visualize.py
 
 2. 修改``python/models``下的文件 solov2.cfg 的参数 SCORE_THRESH=0.0
 
-3. 进入``python/Main``路径，运行 命令：
+3. 进入``python/Main``路径，运行命令（main_eval.py文件中给出了默认参数，若参数对应文件位置有出入，可选择性传参）：
 ```
 python3 main_eval.py --dataset_path = [COCO数据集位置] --anno_path = [COCO标注文件位置] --model_config = [配置文件位置]
 ```
