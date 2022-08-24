@@ -24,12 +24,12 @@ import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
-from STREAM_MANAGER_API import STREAM_MANAGER_API, MxDataInput, StringVector
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
 if __name__ == '__main__':
     # init stream manager
-    STREAM_MANAGER_API = STREAM_MANAGER_API()
+    STREAM_MANAGER_API = StreamManagerApi()
     ret = STREAM_MANAGER_API.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
