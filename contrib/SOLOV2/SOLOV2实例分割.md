@@ -57,7 +57,7 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
     │   │   └── SOLO  // 下载的SOLOV2源代码
     │   ├── main_eval.py
     │   └── main_visualize.py
-    ├── coco
+    ├── coco // 下面存放数据集以及标注文件
     ├── models
     │   ├── SOLOv2_sim.onnx // 从下载的模型文件中迁移到这里
     │   ├── aipp_config
@@ -131,7 +131,6 @@ python setup.py develop
 下载模型地址：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/f32ed480a95b4686a070fff964b4fceb
 将下载好后的SOLOV2文件夹放在SOLOV2/python/Main路径下。
 在SOLOV2/python/Main/SOLOV2 路径下执行git clone https://github.com/WXinlong/SOLO.git
-
 cd SOLO // 源代码仓(https://github.com/WXinlong/SOLO)
 patch -p1 < ../MMDET.diff // 下载的昇腾模型中包含
 patch -p1 < ../SOLOV2.diff  // 下载的昇腾模型中包含
@@ -189,7 +188,7 @@ python3 main_visualize.py
 
 **步骤4** 精度测试。
 
-1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/annotations_trainval2017.zip)，并保存在项目目录``python/``下，此文件夹下的组织形式应如下图所示：
+1. 下载COCO VAL 2017[验证数据集](http://images.cocodataset.org/zips/val2017.zip )和[标注文件](http://images.cocodataset.org/annotations/annotations_trainval2017.zip)，并保存在项目目录``python/coco``下，此文件夹下的组织形式应如下图所示：
 
 ```                                    
 .                                                               
