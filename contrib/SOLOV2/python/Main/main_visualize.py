@@ -47,7 +47,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     dataInput = MxDataInput()
-    if file == None:
+    if file is None:
         print("the image file is None!")
         exit()
     if os.path.exists(file) != 1:
