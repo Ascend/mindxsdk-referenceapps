@@ -247,9 +247,9 @@ with open("./result.json", 'w') as f:
 	f.write(str(ret))
 ````
 
-5、在`eval/precision_analysis/VOC`目录放置`VOC2COCO.py`并运行`python3 VOC2COCO.py`（参考自[网络](https://blog.csdn.net/ouyangfushu/article/details/103635244)）。
+4、将`voc2012trainval.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。
 
-6、在`precision_analysis`目录运行
+5、在`precision_analysis`目录运行
 
 ````
 python main.py --mode test.ssd_mobilenet_fpn.pipeline -data-loading-path ${VOC数据集路径} -label-loading-path ${VOC数据集标签路径} -pipeline-cfg-path ${SDK_pipeline文件路径} -stream-name ${pipeline配置stream名称}
@@ -263,5 +263,5 @@ python main.py --mode test.ssd_mobilenet_fpn.pipeline -data-loading-path ${VOC�
 
 配置 ${pipeline配置stream名称}：运行的pipeline中的stream名称，例如：`RefineDet`
 
-7、在`eval`目录运行`python3 myeval.py`，即可得到结果。
+6、在`eval`目录运行`python3 myeval.py`，即可得到结果。
 
