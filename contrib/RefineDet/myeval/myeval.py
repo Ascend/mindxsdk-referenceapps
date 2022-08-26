@@ -7,11 +7,11 @@ import random
 import signal
 import datetime
 import threading
-import cv2
 import time
 import pickle
-import numpy as np
 from functools import cmp_to_key
+import cv2
+import numpy as np
 
 
 RESULTS_OBJECTS = []
@@ -67,13 +67,9 @@ def calc_single_object(d, class_index, current, fp, tp, ovthresh = 0.5):
         uni = ((bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) +
                (gt_bboxes[:, 2] - gt_bboxes[:, 0]) *
                (gt_bboxes[:, 3] - gt_bboxes[:, 1]) - inters)
-        overlAPS = inters / uni
-        ovmax = np.max(overlAPS)
-        jmax = np.argmax(overlAPS)
-        # if ovmax < 0.1:
-            # print(image, current['category_id'], gt[jmax]['category_id'], ovmax, confidence)
-            # print(bbox, gt_bboxes[jmax])
-
+        overlaps = inters / uni
+        ovmax = np.max(overlaps)
+        jmax = np.argmax(overlaps)
 
     if ovmax > 0.5:
         tp[d] = 1. 
@@ -105,8 +101,8 @@ def calc_each_class(class_index, current_class):
     return ap
 
 
-def mycmp(A, B):
-    return B['score'] - A['score']
+def mycmp(a, b):
+    return b['score'] - a['score']
 
 
 def main(): 
@@ -127,14 +123,14 @@ def main():
     TRUTH_IMAGES = TRUTH_SOURCE['images']
     TRUTH_ANNOTATIONS = TRUTH_SOURCE['annotations']
 
-    RIGHT_RESULTS = []
+    right_results = []
     for each in RESULTS_OBJECTS:
         exist = [e for e in TRUTH_ANNOTATIONS if e['image_id'] == each['image_id']]
         if len(exist) > 0 and each['score'] >= 0.1:
-            RIGHT_RESULTS.append(each)
+            right_results.append(each)
 
-    RIGHT_RESULTS.sort(key = cmp_to_key(lambda A, B: B['score'] - A['score']))
-    RESULTS_OBJECTS = RIGHT_RESULTS
+    right_results.sort(key = cmp_to_key(lambda A, B: B['score'] - A['score']))
+    RESULTS_OBJECTS = right_results
 
     for i, each_class in enumerate(LABELS_MAP):
         ap = calc_each_class(i+1, each_class)
