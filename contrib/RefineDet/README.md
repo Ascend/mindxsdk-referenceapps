@@ -46,6 +46,11 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   ├── RefineDet.om
 │   ├── RefineDet320_VOC_final_no_nms.onnx
 │   └── VOC.names
+├── eval
+│   ├── myeval.py
+│   ├── precision_analysis/		# 精度验证中需要下载
+│   	└── VOC/				# 精度验证中需要下载
+│   └── VOC2COCO.py
 ├── out.jpg
 ├── pipeline
 │   ├── refinedet.pipeline
@@ -129,17 +134,7 @@ ascend-toolkit-path: CANN 安装路径。
 
 模型转换步骤如下：
 
-1、按照2环境依赖设置环境变量，并运行以下命令
-
-````
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-````
-
-
+1、按照2环境依赖设置环境变量
 
 2、`cd`到`models`文件夹，运行
 
@@ -223,3 +218,50 @@ bash run.sh
 ````
 
 最后会得到`out.jpg`即为输出结果
+
+
+
+# 6 精度验证
+
+本模型使用VOC数据集进行训练与精度评估。
+
+1、运行以下命令，进行下载与解压。
+
+````
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
+tar xvf VOCtrainval_11-May-2012.tar
+````
+
+2、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。
+
+3、修改代码
+
+将`./precision_analysis/utils/parser.py`的46行从`bbox = [x0, y0, w, h]`改为`bbox = [x0, y0, x1, y1]`
+
+将`./precision_analysis/utils/parser.py`的86行从`    return class_id`改为`    return k`
+
+将`./precision_analysis/interface/eval.py`的56-57行间插入
+
+````
+with open("./result.json", 'w') as f:
+	f.write(str(ret))
+````
+
+5、在`eval/precision_analysis/VOC`目录放置`VOC2COCO.py`并运行`python3 VOC2COCO.py`（参考自[网络](https://blog.csdn.net/ouyangfushu/article/details/103635244)）。
+
+6、在`precision_analysis`目录运行
+
+````
+python main.py --mode test.ssd_mobilenet_fpn.pipeline -data-loading-path ${VOC数据集路径} -label-loading-path ${VOC数据集标签路径} -pipeline-cfg-path ${SDK_pipeline文件路径} -stream-name ${pipeline配置stream名称}
+````
+
+配置 ${VOC数据集路径}：配置VOC数据集图片路径，例如：`./VOC/VOCdevkit/VOC2012/JPEGImages`
+
+配置 ${VOC数据集标签路径}：配置数据集标签文件路径，例如：`./VOC/VOCdevkit/voc2012trainval.json`
+
+配置 ${SDK_pipeline文件路径}：运行的pipeline的存放路径，例如：`../../pipeline/fortest.pipeline`
+
+配置 ${pipeline配置stream名称}：运行的pipeline中的stream名称，例如：`RefineDet`
+
+7、在`eval`目录运行`python3 myeval.py`，即可得到结果。
+
