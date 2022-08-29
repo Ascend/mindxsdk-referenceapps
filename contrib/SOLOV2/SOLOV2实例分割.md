@@ -205,7 +205,7 @@ python3 main_visualize.py
 
 3. 进入``python/Main``路径，运行命令（main_eval.py文件中给出了默认参数，若参数对应文件位置有出入，可选择性传参）：
 ```
-python3 main_eval.py --dataset_path = [COCO数据集位置] --anno_path = [COCO标注文件位置] --model_config = [配置文件位置]
+python3 main_eval.py --dataset_path [COCO数据集位置] --anno_path [COCO标注文件位置] --model_config [配置文件位置]
 ```
 ![结果图片](./images/eval_result.png)
 
