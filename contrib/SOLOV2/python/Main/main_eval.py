@@ -32,21 +32,21 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import MxDataInput, InProtobufVector, MxProtobufIn, StringVector, StreamManagerApi
 
 
-def get_masks(result_, num_classes_=80):
-    for cur_result in result_:
+def get_case_masks(result_, num_classes_=80):
+    for r in result_:
         masks = [[] for _ in range(num_classes_)]
-        if cur_result is None:
+        if r is None:
             return masks
-        seg_pred = cur_result[0].astype(np.uint8)
-        cate_label = cur_result[1].astype(np.int)
-        cate_score = cur_result[2].astype(np.float)
-        num_ins = seg_pred.shape[0]  # 100
-        for idx in range(num_ins):
-            cur_mask_ = seg_pred[idx, ...]
-            rle = mask_util.encode(
-                np.array(cur_mask_[:, :, np.newaxis], order='F'))[0]
-            rst = (rle, cate_score[idx])
-            masks[cate_label[idx]].append(rst)
+        seg = r[0].astype(np.uint8)
+        label = r[1].astype(np.int)
+        score = r[2].astype(np.float)
+        ans_num = seg.shape[0]  # 100
+        for idx in range(ans_num):
+            current = seg[idx, ...]
+            enc = mask_util.encode(
+                np.array(current[:, :, np.newaxis], order='F'))[0]
+            rst = (enc, score[idx])
+            masks[label[idx]].append(rst)
         return masks
 
 parser = argparse.ArgumentParser(description='model')
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         r_label = np.array(r_label)
         r_score = np.array(r_score)
         result = [r_seg, r_label, r_score]
-        result = get_masks([result], num_classes)
+        result = get_case_masks([result], num_classes)
         results.append(result)
 
     result_files = results2json_segm(dataset, results, "results_solo.pkl")
