@@ -1,4 +1,4 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ import struct
 import re
 import sys
 
-# read onnx model
 onnx_model = onnx.load(sys.argv[1])
 graph = onnx_model.graph
 epsilon = 0.01

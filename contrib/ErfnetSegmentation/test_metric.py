@@ -1,4 +1,15 @@
-
+# Copyright (c) 2022. Huawei Technologies Co., Ltd
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import json
 import os
 from argparse import ArgumentParser
@@ -6,73 +17,15 @@ import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
-import torch
 from tqdm import tqdm
 
-def resize(img, size, interpolation):
-    if isinstance(size, int):
-        w, h = img.size
-        if (w <= h and w == size) or (h <= w and h == size):
-            return img
-        if w < h:
-            ow = size
-            oh = int(size * h / w)
-            return img.resize((ow, oh), interpolation)
-        oh = size
-        ow = int(size * w / h)
-        return img.resize((ow, oh), interpolation)
-    return img.resize(size[::-1], interpolation)
-
-
-def getImgB(img_path_):
-    with open(img_path_, 'rb') as f_:
-        image = Image.open(f_).convert('RGB')
-    image = resize(image, 512, Image.BILINEAR)
-    image = np.array(image).astype(np.float32) / 255
-    image = image.transpose(2, 0, 1)
-    image = np.expand_dims(image, axis=0)
-    print(image.shape)
-    return image.tobytes()
-
-def colormap_cityscapes():
-    cmap = np.zeros([20, 3]).astype(np.uint8)
-    cmap[0, :] = np.array([128, 64, 128])
-    cmap[1, :] = np.array([244, 35, 232])
-    cmap[2, :] = np.array([70, 70, 70])
-    cmap[3, :] = np.array([102, 102, 156])
-    cmap[4, :] = np.array([190, 153, 153])
-    cmap[5, :] = np.array([153, 153, 153])
-
-    cmap[6, :] = np.array([250, 170, 30])
-    cmap[7, :] = np.array([220, 220, 0])
-    cmap[8, :] = np.array([107, 142, 35])
-    cmap[9, :] = np.array([152, 251, 152])
-    cmap[10, :] = np.array([70, 130, 180])
-
-    cmap[11, :] = np.array([220, 20, 60])
-    cmap[12, :] = np.array([255, 0, 0])
-    cmap[13, :] = np.array([0, 0, 142])
-    cmap[14, :] = np.array([0, 0, 70])
-    cmap[15, :] = np.array([0, 60, 100])
-
-    cmap[16, :] = np.array([0, 80, 100])
-    cmap[17, :] = np.array([0, 0, 230])
-    cmap[18, :] = np.array([119, 11, 32])
-    cmap[19, :] = np.array([0, 0, 0])
-    return cmap
-
-
-def load_image(fileName):
-    return Image.open(fileName)
-
+from infer import resize, getImgB, colormap_cityscapes, load_image, infer
 
 def is_image(filename):
     return any(filename.endswith(ext) for ext in ['.jpg', '.png'])
 
-
 def is_label(filename):
     return filename.endswith("_labelTrainIds.png")
-
 
 class iouEval_1:
 
@@ -83,64 +36,59 @@ class iouEval_1:
 
     def reset(self):
         classes = self.nClasses if self.ignoreIndex == -1 else self.nClasses-1
-        self.tp = torch.zeros(classes).double()
-        self.fp = torch.zeros(classes).double()
-        self.fn = torch.zeros(classes).double()
+        self.tp = np.zeros([classes], dtype=np.float32)
+        self.fp = np.zeros([classes], dtype=np.float32)
+        self.fn = np.zeros([classes], dtype=np.float32)
 
-    def addBatch(self, x, y):
+    def addBatch(self, x_, y_):
 
-        if (x.is_cuda or y.is_cuda):
-            x = x.cuda()
-            y = y.cuda()
+        def toOneHot(tensor):
+            if tensor.shape[1] == 1:
+                pixnum = tensor.shape[2] * tensor.shape[3]
+                onehot = np.zeros((self.nClasses, pixnum))
+                onehot[tensor.reshape(-1), np.arange(pixnum)] = 1
+                onehot = onehot.reshape((1, self.nClasses, tensor.shape[2], tensor.shape[3]))
+                onehot = onehot.astype(np.float64)
+            else:
+                onehot = tensor.float()
+            return onehot
 
-        if x.size(1) == 1:
-            x_onehot = torch.zeros(
-                x.size(0), self.nClasses, x.size(2), x.size(3))
-            if x.is_cuda:
-                x_onehot = x_onehot.cuda()
-            x_onehot.scatter_(1, x, 1).float()
-        else:
-            x_onehot = x.float()
-
-        if y.size(1) == 1:
-            y_onehot = torch.zeros(
-                y.size(0), self.nClasses, y.size(2), y.size(3))
-            if y.is_cuda:
-                y_onehot = y_onehot.cuda()
-            y_onehot.scatter_(1, y, 1).float()
-        else:
-            y_onehot = y.float()
+        x_onehot_ = toOneHot(x_)
+        y_onehot_ = toOneHot(y_)
 
         if self.ignoreIndex != -1:
-            ignores = y_onehot[:, self.ignoreIndex].unsqueeze(1)
-            x_onehot = x_onehot[:, :self.ignoreIndex]
-            y_onehot = y_onehot[:, :self.ignoreIndex]
+            ignores_ = np.expand_dims(y_onehot_[:, self.ignoreIndex], 1)
+            x_onehot_ = x_onehot_[:, :self.ignoreIndex]
+            y_onehot_ = y_onehot_[:, :self.ignoreIndex]
         else:
-            ignores = 0
+            ignores_ = 0
 
-        tpmult = x_onehot * y_onehot
-        tp = torch.sum(
-            torch.sum(torch.sum(tpmult, dim=0, keepdim=True),
-                      dim=2, keepdim=True),
-            dim=3, keepdim=True
-        ).squeeze()
-        fpmult = x_onehot * (1-y_onehot-ignores)
-        fp = torch.sum(torch.sum(torch.sum(fpmult, dim=0,
-                                           keepdim=True), dim=2, keepdim=True), dim=3, keepdim=True).squeeze()
-        fnmult = (1-x_onehot) * (y_onehot)
-        fn = torch.sum(torch.sum(torch.sum(fnmult, dim=0,
-                                           keepdim=True), dim=2, keepdim=True), dim=3, keepdim=True).squeeze()
+        def agragate(tensor):
+            res = np.sum(
+                np.sum(np.sum(tensor, axis=0, keepdims=True), 
+                        axis=2, keepdims=True), 
+                axis=3, keepdims=True
+            )
+            return np.squeeze(res)
 
-        self.tp += tp.double().cpu()
-        self.fp += fp.double().cpu()
-        self.fn += fn.double().cpu()
+        tpmult_ = x_onehot_ * y_onehot_
+        tp_ = agragate(tpmult_)
+
+        fpmult_ = x_onehot_ * (1-y_onehot_-ignores_)
+        fp_ = agragate(fpmult_)
+
+        fnmult_ = (1-x_onehot_) * (y_onehot_)
+        fn_ = agragate(fnmult_)
+
+        self.tp += tp_.astype(np.float64)
+        self.fp += fp_.astype(np.float64)
+        self.fn += fn_.astype(np.float64)
 
     def getIoU(self):
         num = self.tp
         den = self.tp + self.fp + self.fn + 1e-15
         iou = num / den
-        return torch.mean(iou), iou
-
+        return np.mean(iou), iou
 
 class cityscapes_val_datapath:
 
@@ -159,8 +107,6 @@ class cityscapes_val_datapath:
         self.filenamesGt = [os.path.join(dp, f) for dp, dn, fn in
                             os.walk(os.path.expanduser(self.labels_root)) for f in fn if is_label(f)]
         self.filenamesGt.sort()
-        # print(len(self.filenames))
-        # print(len(self.filenamesGt))
 
     def __getitem__(self, index):
         filename = self.filenames[index]
@@ -171,51 +117,7 @@ class cityscapes_val_datapath:
     def __len__(self):
         return len(self.filenames)
 
-
-def infer(img_path_, streamManagerApi_):
-    dataInput = MxDataInput()
-
-    streamName = b'erfnet'
-    dataInput.data = getImgB(img_path_)
-    protobufVec = InProtobufVector()
-    visionList = MxpiDataType.MxpiVisionList()
-    visionVec = visionList.visionVec.add()
-    visionVec.visionInfo.format = 1
-    visionVec.visionData.deviceId = 0
-    visionVec.visionData.memType = 0
-    visionVec.visionData.dataStr = dataInput.data
-    protobuf = MxProtobufIn()
-    protobuf.key = b'appsrc0'
-    protobuf.type = b'MxTools.MxpiVisionList'
-    protobuf.protobuf = visionList.SerializeToString()
-    protobufVec.push_back(protobuf)
-    uniqueId = streamManagerApi_.SendProtobuf(streamName, 0, protobufVec)
-
-    if uniqueId < 0:
-        print("Failed to send data to stream.")
-        exit()
-
-    key = b'mxpi_tensorinfer0'
-    keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = streamManagerApi_.GetProtobuf(streamName, 0, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
-        exit()
-    if inferResult[0].errorCode != 0:
-        print("GetResultWithUniqueId error. errorCode=%d" % (
-            inferResult[0].errorCode))
-        exit()
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(inferResult[0].messageBuf)
-    vision_data_ = result.tensorPackageVec[0].tensorVec[0].dataStr
-    vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
-    shape = result.tensorPackageVec[0].tensorVec[0].tensorShape
-    vision_data_ = vision_data_.reshape(shape)
-    return vision_data_
-
 if __name__ == '__main__':
-    # python test_metric.py --pipeline_path erfnet_pipeline.json  --data_path /home/weigang1/gpf/cityscapes/
 
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str)
@@ -233,7 +135,7 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    with open(pipeline_path, "r") as file:
+    with os.open(pipeline_path, "r") as file:
         json_str = file.read()
     pipeline = json.loads(json_str)
 
@@ -246,7 +148,7 @@ if __name__ == '__main__':
     metrics = iouEval_1(nClasses=20)
     datasets = cityscapes_val_datapath(data_path)
     for image_path, target_path in tqdm(datasets):
-        with open(target_path, 'rb') as f:
+        with os.open(target_path, 'rb') as f:
             target = load_image(f).convert('P')
         target = resize(target, 512, Image.NEAREST)
         target = np.array(target).astype(np.uint32)
@@ -256,17 +158,18 @@ if __name__ == '__main__':
 
         res = infer(image_path, streamManagerApi)
         res = res.reshape(1, 20, 512, 1024)
-        preds = torch.Tensor(res.argmax(axis=1).astype(
-            np.int32)).unsqueeze(1).long()
-        labels = torch.Tensor(target.astype(np.int32)).unsqueeze(1).long()
-        metrics.addBatch(preds, labels)
+
+        preds_ = np.expand_dims(res.argmax(axis=1).astype(np.int32), 1).astype(np.int32)
+        labels_ = np.expand_dims(target.astype(np.int32), 1).astype(np.int32)
+        metrics.addBatch(preds_, labels_)
 
     mean_iou, iou_class = metrics.getIoU()
     mean_iou = mean_iou.item()
-    with open("metric.txt", "w") as file:
+    with os.open("metric.txt", "w") as file:
         print("mean_iou: ", mean_iou, file=file)
         print("iou_class: ", iou_class, file=file)
     print("mean_iou: ", mean_iou)
     print("iou_class: ", iou_class)
 
     streamManagerApi.DestroyAllStreams()
+

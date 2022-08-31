@@ -1,17 +1,16 @@
-# Copyright 2022 Huawei Technologies Co., Ltd
+# Copyright 2020 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import sys
 sys.path.append(r"./erfnet_pytorch")
 import torch
@@ -20,6 +19,7 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 import torch.nn.functional as F
+
 
 class DownsamplerBlock (nn.Module):
     def __init__(self, ninput, noutput):
@@ -70,7 +70,7 @@ class non_bottleneck_1d (nn.Module):
         if (self.dropout.p != 0):
             output = self.dropout(output)
         
-        return F.relu(output+input)    #+input = identity (residual connection)
+        return F.relu(output+input)
 
 
 class Encoder(nn.Module):
@@ -82,7 +82,7 @@ class Encoder(nn.Module):
 
         self.layers.append(DownsamplerBlock(16,64))
 
-        for x in range(0, 5):    #5 times
+        for x in range(0, 5):
            self.layers.append(non_bottleneck_1d(64, 0.1, 1))  
 
         self.layers.append(DownsamplerBlock(64,128))
@@ -93,7 +93,6 @@ class Encoder(nn.Module):
             self.layers.append(non_bottleneck_1d(128, 0.1, 8))
             self.layers.append(non_bottleneck_1d(128, 0.1, 16))
 
-        #only for encoder mode:
         self.output_conv = nn.Conv2d(128, num_classes, 1, stride=1, padding=0, bias=True)
 
     def forward(self, input, predict=False):
@@ -147,7 +146,7 @@ class Decoder (nn.Module):
 
 
 class ERFNet(nn.Module):
-    def __init__(self, num_classes, encoder=None):  #use encoder to pass pretrained encoder
+    def __init__(self, num_classes, encoder=None):
         super().__init__()
 
         if (encoder == None):
@@ -160,11 +159,11 @@ class ERFNet(nn.Module):
         if only_encode:
             return self.encoder.forward(input, predict=True)
         else:
-            output = self.encoder(input)    #predict=False by default
+            output = self.encoder(input)
             return self.decoder.forward(output)
 
 
-def load_my_state_dict(model, state_dict):  #custom function to load model when not all dict elements
+def load_my_state_dict(model, state_dict):
     own_state = model.state_dict()
     for name, param in state_dict.items():
         if name not in own_state:
@@ -192,6 +191,6 @@ def convert():
 
 
 if __name__ == "__main__":
-    input_file = sys.argv[1] # "erfnet_pretrained.pth"
-    output_file = sys.argv[2] # "erfnet.onnx"
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
     convert()
