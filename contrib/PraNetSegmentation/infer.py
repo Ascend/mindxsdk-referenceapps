@@ -13,16 +13,32 @@
 import json
 import os
 from argparse import ArgumentParser
-import cv2
 import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
-import torch.nn.functional as F
-import torch
-import torchvision.transforms as transforms
 from tqdm import tqdm
 import imageio
+
+def resize(img, size, interpolation=2, max_size=None):
+    if isinstance(size, int):
+        w, h = img.size
+
+        short, long = (w, h) if w <= h else (h, w)
+        new_short, new_long = size, int(size * long / short)
+
+        if max_size is not None:
+            if new_long > max_size:
+                new_short, new_long = int(max_size * new_short / new_long), max_size
+
+        new_w, new_h = (new_short, new_long) if w <= h else (new_long, new_short)
+
+        if (w, h) == (new_w, new_h):
+            return img
+        else:
+            return img.resize((new_w, new_h), interpolation)
+    else:
+        return img.resize(size[::-1], interpolation)
 
 def infer(data, streamManagerApi_):
     dataInput = MxDataInput()
@@ -74,8 +90,6 @@ def rgb_loader(path):
 
 if __name__ == '__main__':
 
-    # python infer.py --pipeline_path pranet_pipeline.json --data_path=/home/weigang1/gpf/PraNet/TestDataset/Kvasir/images --output_path ./infer_result
-
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str)
     parser.add_argument('--data_path', type=str)
@@ -109,12 +123,8 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    transform = transforms.Compose([
-        transforms.Resize((352, 352)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                            [0.229, 0.224, 0.225])]
-    )
+    mean = np.array([[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
+    std = np.array([[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
 
     if len(os.listdir(data_path)) == 0:
         raise RuntimeError("No Input Image!")
@@ -123,17 +133,21 @@ if __name__ == '__main__':
         image_path = os.path.join(data_path, data)
         image = rgb_loader(image_path)
         shape = image.size
-        image = transform(image).unsqueeze(0)
-        image = np.array(image).astype(np.float32)
-        res = infer(image.tobytes(), streamManagerApi)
-        res = np.reshape(res, (1, 1, 352, 352))
-        res = torch.from_numpy(res)
-        res = F.upsample(res, size=shape, mode='bilinear', align_corners=False)
-        res = res.sigmoid().data.cpu().numpy().squeeze()
-        res = (res - res.min()) / (res.max() - res.min() + 1e-8)
 
+        image = resize(image, (352, 352)) # resize
+        image = np.transpose(image, (2,0,1)).astype(np.float32) # to tensor 1
+        image = image / 255 # to tensor 2
+        image = (image - mean) / std # normalize
+        res = infer(image.tobytes(), streamManagerApi)
+
+        res = res.reshape((352, 352))
+        res = res.T
+        res = np.expand_dims(res, 0)
+        res = np.expand_dims(res, 0)
+        res = 1 / (1 + np.exp(-res))
+        res = res.squeeze()
+        res = (res - res.min()) / (res.max() - res.min() + 1e-8)
         _, name = os.path.split(image_path)
         imageio.imwrite(os.path.join(output_path, name), res)
 
     streamManagerApi.DestroyAllStreams()
-

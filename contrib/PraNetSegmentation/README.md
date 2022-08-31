@@ -14,14 +14,9 @@ Ascend 310
 
 ### 1.2 支持的版本
 
-CANN：5.0.4
-SDK：2.0.4
+CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
 
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```
-npu-smi info
-```
+SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ### 1.3 软件方案介绍
 
@@ -50,6 +45,7 @@ npu-smi info
 ### 1.4 代码目录结构与说明
 
 工程目录如下图所示：
+
 ```
 |-- pranet_pipeline.json    // SDK的推理pipeline配置文件
 |-- PraNet_pth2onnx.py      // 生成onnx模型的脚本 
@@ -69,22 +65,26 @@ npu-smi info
 
 ## 2 环境依赖
 
-环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
-| 软件名称 | 版本   |
-| -------- | ------ |
-| Pytorch  | 1.12.1 |
-| PIL   |     9.0.1   |
-| numpy         |    1.23.2    |
-| onnx         |    1.12.0    |
-| onnxsim         |    0.4.7    |
+| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
+| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
+| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+| python              | 3.9.2       |                               |                                                              |
+| numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
+| opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
+| PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
+| onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
+| onnxsim         |    0.4.7    | 模型转化库                | 服务器中使用pip或conda安装                                   |
 
 ## 3准备工作
 
 ### 生成模型文件
 
 pth权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
-将pth权重文件下载至项目根目录（pth权重文件来源于原作者的github仓库），在项目根目录下键入```bash pth2om.sh```，会在同目录下得到```PraNet-19_bs1.om```文件。
+将pth权重文件下载至项目根目录（pth权重文件来源于原作者的github仓库），在项目根目录下键入` ` ` bash pth2om.sh ` `  `，会在同目录下得到`  ` ` PraNet-19_bs1.om ` ` `文件。
 
 ### 下载数据集
 
@@ -97,14 +97,15 @@ Kvasir
 ```
 
 ## 4SDK推理
+
 在项目根目录下键入
 
 ```bash
 python infer.py --pipeline_path pranet_pipeline.json --data_path /path/to/images --output_path ./infer_result
 ```
 
-其中参数```--pipeline_path```为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
-```--data_path```参数为数据集的路径；```--output_path```参数是推理结果的输出路径。
+其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
+` ` ` --data_path ` `  `参数为数据集的路径；`  ` ` --output_path ` ` `参数是推理结果的输出路径。
 最终用户可以在output_path路径下查看结果。
 
 ## 5测试精度
@@ -115,17 +116,17 @@ python infer.py --pipeline_path pranet_pipeline.json --data_path /path/to/images
 python test_metric.py --pipeline_path pranet_pipeline.json --data_path /path/to/Kvasir
 ```
 
-其中参数```--pipeline_path```为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
-```--data_path```参数为数据集的路径。待脚本运行完毕，会输出以下精度信息。
+其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
+` ` ` --data_path ` ` `参数为数据集的路径。待脚本运行完毕，会输出以下精度信息。
 
 ```
 dataset      meanDic    meanIoU
 ---------  ---------  ---------
 res            0.895      0.836
-#################### End Evaluation ####################
 ```
 
 <!-- 
+
 ## 5 软件依赖说明
 
 如果涉及第三方软件依赖，请详细列出。
@@ -134,7 +135,6 @@ res            0.895      0.836
 | -------- | ----- | ------------------------ |
 | Pytorch      | 1.12.1 | 用于计算指标 |
 |          |       |                          | -->
-
 
 <!-- ## 6 常见问题
 

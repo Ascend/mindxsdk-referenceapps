@@ -200,7 +200,6 @@ def res2net50_v1b_26w_4s(pretrained=False, **kwargs):
     if pretrained:
         model_state = torch.load('/media/nercms/NERCMS/GepengJi/Medical_Seqmentation/CRANet/models/res2net50_v1b_26w_4s-3cf99910.pth')
         model.load_state_dict(model_state)
-        # lib.load_state_dict(model_zoo.load_url(model_urls['res2net50_v1b_26w_4s']))
     return model
 
 

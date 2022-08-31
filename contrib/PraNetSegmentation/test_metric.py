@@ -18,16 +18,13 @@ import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
-import torch.nn.functional as F
-import torch
-import torchvision.transforms as transforms
 from tqdm import tqdm
 from tabulate import tabulate
-
-import numpy as np
 from scipy.ndimage.morphology import distance_transform_edt
 from scipy.ndimage.filters import convolve
 import imageio
+
+from infer import infer, resize
 
 def Object(pred, gt):
     x = np.mean(pred[gt == 1])
@@ -226,18 +223,18 @@ class test_dataset:
         self.gts = [gt_root + f for f in os.listdir(gt_root) if f.endswith('.tif') or f.endswith('.png')]
         self.images = sorted(self.images)
         self.gts = sorted(self.gts)
-        self.transform = transforms.Compose([
-            transforms.Resize((self.testsize, self.testsize)),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406],
-                                 [0.229, 0.224, 0.225])])
-        self.gt_transform = transforms.ToTensor()
         self.size = len(self.images)
         self.index = 0
+        self.mean = np.array([[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
+        self.std = np.array([[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
 
     def load_data(self):
         image = self.rgb_loader(self.images[self.index])
-        image = self.transform(image).unsqueeze(0)
+        image = resize(image, (self.testsize, self.testsize)) # resize
+        image = np.transpose(image, (2,0,1)).astype(np.float32) # to tensor 1
+        image = image / 255 # to tensor 2
+        image = (image - self.mean) / self.std # normalize
+
         gt = self.binary_loader(self.gts[self.index])
         name = self.images[self.index].split('/')[-1]
         if name.endswith('.jpg'):
@@ -256,52 +253,7 @@ class test_dataset:
             img = Image.open(f)
             return img.convert('L')
 
-def infer(data, streamManagerApi_):
-    dataInput = MxDataInput()
-
-    streamName = b'pranet'
-    dataInput.data = data
-    protobufVec = InProtobufVector()
-    visionList = MxpiDataType.MxpiVisionList()
-    visionVec = visionList.visionVec.add()
-    visionVec.visionInfo.format = 1
-    visionVec.visionData.deviceId = 0
-    visionVec.visionData.memType = 0
-    visionVec.visionData.dataStr = dataInput.data
-    protobuf = MxProtobufIn()
-    protobuf.key = b'appsrc0'
-    protobuf.type = b'MxTools.MxpiVisionList'
-    protobuf.protobuf = visionList.SerializeToString()
-    protobufVec.push_back(protobuf)
-    uniqueId = streamManagerApi_.SendProtobuf(streamName, 0, protobufVec)
-
-    if uniqueId < 0:
-        print("Failed to send data to stream.")
-        exit()
-
-    key = b'mxpi_tensorinfer0'
-    keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = streamManagerApi_.GetProtobuf(streamName, 0, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
-        exit()
-    if inferResult[0].errorCode != 0:
-        print("GetResultWithUniqueId error. errorCode=%d" % (
-            inferResult[0].errorCode))
-        exit()
-    
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(inferResult[0].messageBuf)
-    vision_data_ = result.tensorPackageVec[0].tensorVec[3].dataStr
-    vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
-    shape = result.tensorPackageVec[0].tensorVec[3].tensorShape
-    vision_data_ = vision_data_.reshape(shape)
-    return vision_data_
-
 if __name__ == '__main__':
-
-    # python test_metric.py --pipeline_path pranet_pipeline.json --data_path=/home/weigang1/gpf/PraNet/TestDataset/Kvasir
 
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str)
@@ -346,9 +298,13 @@ if __name__ == '__main__':
         image = np.array(image).astype(np.float32)
         res = infer(image.tobytes(), streamManagerApi)
         res = np.reshape(res, (1, 1, 352, 352))
-        res = torch.from_numpy(res)
-        res = F.upsample(res, size=gt.shape, mode='bilinear', align_corners=False)
-        res = res.sigmoid().data.cpu().numpy().squeeze()
+        res = res.reshape((352, 352))
+        res = cv2.resize(res.T, dsize=gt.shape)
+        res = res.T
+        res = np.expand_dims(res, 0)
+        res = np.expand_dims(res, 0)
+        res = 1 / (1 + np.exp(-res))
+        res = res.squeeze()
         res = (res - res.min()) / (res.max() - res.min() + 1e-8)
 
         imageio.imwrite("temp.png", res)
