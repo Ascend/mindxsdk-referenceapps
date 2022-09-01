@@ -299,9 +299,9 @@ if __name__ == '__main__':
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
-    images_path = '{}/images/'.format(data_path)
-    gts_path = '{}/masks/'.format(data_path)
-    dataset = TestDataset(images_path, gts_path, 352)
+    IMAGESPTH = '{}/images/'.format(data_path)
+    GTSPATH = '{}/masks/'.format(data_path)
+    dataset = TestDataset(IMAGESPTH, GTSPATH, 352)
 
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
