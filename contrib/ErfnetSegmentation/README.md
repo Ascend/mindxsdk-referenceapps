@@ -31,7 +31,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | ---- | ------ | ------------ |
 | 1    | pth2om.sh    | 生成om模型的脚本 |
 | 2    | modify_bn_weights.py    | 修正模型参数的脚本 |
-| 3    | ErfNet_pth2onnx.py    | 生成onnx模型的脚本 |
+| 3    | erfnet_pth2onnx.py    | 生成onnx模型的脚本 |
 
 表1.3 SDK推理系统系统方案中各模块功能：
 
@@ -47,7 +47,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ```
 |-- erfnet_pipeline.json    // SDK的推理pipeline配置文件
-|-- ErfNet_pth2onnx.py      // 生成onnx模型的脚本
+|-- erfnet_pth2onnx.py      // 生成onnx模型的脚本
 |-- infer.py                // 实现推理功能的脚本
 |-- test_metric.py          // 测试模型精度的脚本
 |-- modify_bn_weights.py    // 修正模型参数的脚本

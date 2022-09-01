@@ -142,8 +142,11 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         sys.exit()
 
-    with open(pipeline_path, "r") as file:
-        json_str = file.read()
+    fd = os.open(pipeline_path, os.O_RDWR|os.O_CREAT )
+    file = os.fdopen(fd, "r")
+    json_str = file.read()
+    file.close()
+
     pipeline = json.loads(json_str)
 
     pipelineStr = json.dumps(pipeline).encode()
@@ -155,8 +158,11 @@ if __name__ == '__main__':
     metrics = IouEval(num_classes=20)
     datasets = CityscapesValDatapath(data_path)
     for image_path, target_path in tqdm(datasets):
-        with open(target_path, 'rb') as f:
-            target = load_image(f).convert('P')
+        fd = os.open(target_path, os.O_RDWR|os.O_CREAT )
+        file = os.fdopen(fd, 'rb')
+        target = load_image(file).convert('P')
+        file.close()
+
         target = resize(target, 512, Image.NEAREST)
         target = np.array(target).astype(np.uint32)
         target[target == 255] = 19
@@ -173,9 +179,13 @@ if __name__ == '__main__':
 
     mean_iou, iou_class = metrics.get_iou()
     mean_iou = mean_iou.item()
-    with open("metric.txt", "w") as file:
-        print("mean_iou: ", mean_iou, file=file)
-        print("iou_class: ", iou_class, file=file)
+    
+    fd = os.open("metric.txt", os.O_RDWR|os.O_CREAT )
+    file = os.fdopen(fd, "w")
+    print("mean_iou: ", mean_iou, file=file)
+    print("iou_class: ", iou_class, file=file)
+    file.close()
+
     print("mean_iou: ", mean_iou)
     print("iou_class: ", iou_class)
 

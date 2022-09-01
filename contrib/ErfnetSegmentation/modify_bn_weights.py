@@ -22,8 +22,8 @@ onnx_model = onnx.load(sys.argv[1])
 graph = onnx_model.graph
 
 
-def check_string_(re_exp, str):
-    res = re.search(re_exp, str)
+def check_string_(re_exp, str_):
+    res = re.search(re_exp, str_)
     if res:
         return True
     else:
@@ -32,12 +32,12 @@ def check_string_(re_exp, str):
 
 for node in graph.initializer:
     if check_string_('.*bn.*weight', node.name):
-        f = ''
+        F = ''
         for i in range(node.dims[0]):
-            f += 'f'
-        value = np.array(struct.unpack(f, node.raw_data), dtype=np.float32)
+            F += 'f'
+        value = np.array(struct.unpack(F, node.raw_data), dtype=np.float32)
         value = np.where(abs(value) > 0.01, value, 0.01)
-        value = struct.pack(f, *value)
+        value = struct.pack(F, *value)
         node.raw_data = value
 
 onnx.checker.check_model(onnx_model)

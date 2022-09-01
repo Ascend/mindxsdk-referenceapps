@@ -39,8 +39,10 @@ def resize(img, size, interpolation):
 
 
 def get_image_binary(img_path_):
-    with open(img_path_, 'rb') as file_:
-        image = Image.open(file_).convert('RGB')
+    fd = os.open(img_path_, os.O_RDWR|os.O_CREAT )
+    file__ = os.fdopen(fd, 'rb')
+    image = Image.open(file__).convert('RGB')
+    file__.close()
     image = resize(image, 512, Image.BILINEAR)
     image = np.array(image).astype(np.float32) / 255
     image = image.transpose(2, 0, 1)
@@ -141,8 +143,12 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         sys.exit()
 
-    with open(pipeline_path, "r") as file_:
-        json_str = file_.read()
+    
+    fd = os.open(pipeline_path, os.O_RDWR|os.O_CREAT )
+    file = os.fdopen(fd, 'rb')
+    json_str = file.read()
+    file.close()
+
     pipeline = json.loads(json_str)
 
     pipelineStr = json.dumps(pipeline).encode()
