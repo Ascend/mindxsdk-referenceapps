@@ -10,16 +10,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import os
+import sys
+import json
 from argparse import ArgumentParser
 import numpy as np
 from PIL import Image
-import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
+from StreamManagerApi import StreamManagerApi
 from tqdm import tqdm
 
-from infer import resize, getImgB, colormap_cityscapes, load_image, infer
+from infer import resize, load_image, infer
 
 
 def is_image(filename):
@@ -32,38 +32,38 @@ def is_label(filename):
 
 class IouEval:
 
-    def __init__(self, NumClasses, ignoreIndex=19):
-        self.NumClasses = NumClasses
-        self.ignoreIndex = ignoreIndex if NumClasses > ignoreIndex else -1
+    def __init__(self, num_classes, ignore_index=19):
+        self.num_classes = num_classes
+        self.ignore_index = ignore_index if num_classes > ignore_index else -1
         self.reset()
 
     def reset(self):
-        classes = self.NumClasses if self.ignoreIndex == -1 else self.NumClasses-1
-        self.tp = np.zeros([classes], dtype=np.float32)
-        self.fp = np.zeros([classes], dtype=np.float32)
-        self.fn = np.zeros([classes], dtype=np.float32)
+        classes = self.num_classes if self.ignore_index == -1 else self.num_classes-1
+        self.t_p = np.zeros([classes], dtype=np.float32)
+        self.f_p = np.zeros([classes], dtype=np.float32)
+        self.f_n = np.zeros([classes], dtype=np.float32)
 
-    def addBatch(self, x_, y_):
+    def add_batch(self, xing, ying):
 
-        def toOneHot(tensor):
+        def to_one_hot(tensor):
             if tensor.shape[1] == 1:
                 pixnum = tensor.shape[2] * tensor.shape[3]
-                onehot = np.zeros((self.NumClasses, pixnum))
+                onehot = np.zeros((self.num_classes, pixnum))
                 onehot[tensor.reshape(-1), np.arange(pixnum)] = 1
                 onehot = onehot.reshape(
-                    (1, self.NumClasses, tensor.shape[2], tensor.shape[3]))
+                    (1, self.num_classes, tensor.shape[2], tensor.shape[3]))
                 onehot = onehot.astype(np.float64)
             else:
                 onehot = tensor.float()
             return onehot
 
-        x_onehot_ = toOneHot(x_)
-        y_onehot_ = toOneHot(y_)
+        xonehot_ = to_one_hot(xing)
+        yonehot_ = to_one_hot(ying)
 
-        if self.ignoreIndex != -1:
-            ignores_ = np.expand_dims(y_onehot_[:, self.ignoreIndex], 1)
-            x_onehot_ = x_onehot_[:, :self.ignoreIndex]
-            y_onehot_ = y_onehot_[:, :self.ignoreIndex]
+        if self.ignore_index != -1:
+            ignores_ = np.expand_dims(yonehot_[:, self.ignore_index], 1)
+            xonehot_ = xonehot_[:, :self.ignore_index]
+            yonehot_ = yonehot_[:, :self.ignore_index]
         else:
             ignores_ = 0
 
@@ -75,27 +75,27 @@ class IouEval:
             )
             return np.squeeze(res_)
 
-        tpmult_ = x_onehot_ * y_onehot_
+        tpmult_ = xonehot_ * yonehot_
         tp_ = agragate(tpmult_)
 
-        fpmult_ = x_onehot_ * (1-y_onehot_-ignores_)
+        fpmult_ = xonehot_ * (1-yonehot_-ignores_)
         fp_ = agragate(fpmult_)
 
-        fnmult_ = (1-x_onehot_) * (y_onehot_)
+        fnmult_ = (1-xonehot_) * (yonehot_)
         fn_ = agragate(fnmult_)
 
-        self.tp += tp_.astype(np.float64)
-        self.fp += fp_.astype(np.float64)
-        self.fn += fn_.astype(np.float64)
+        self.t_p += tp_.astype(np.float64)
+        self.f_p += fp_.astype(np.float64)
+        self.f_n += fn_.astype(np.float64)
 
-    def getIoU(self):
-        num = self.tp
-        den = self.tp + self.fp + self.fn + 1e-15
+    def get_iou(self):
+        num = self.t_p
+        den = self.t_p + self.f_p + self.f_n + 1e-15
         iou = num / den
         return np.mean(iou), iou
 
 
-class cityscapes_val_datapath:
+class CityscapesValDatapath:
 
     def __init__(self, root):
         self.images_root = os.path.join(root, 'leftImg8bit/')
@@ -109,15 +109,16 @@ class cityscapes_val_datapath:
                           os.walk(os.path.expanduser(self.images_root)) for f in fn if is_image(f)]
         self.filenames.sort()
 
-        self.filenamesGt = [os.path.join(dp, f) for dp, dn, fn in
-                            os.walk(os.path.expanduser(self.labels_root)) for f in fn if is_label(f)]
-        self.filenamesGt.sort()
+        self.filenames_gt = [os.path.join(dp, f) for dp, dn, fn in
+                            os.walk(os.path.expanduser(self.labels_root)) \
+                                for f in fn if is_label(f)]
+        self.filenames_gt.sort()
 
     def __getitem__(self, index):
         filename = self.filenames[index]
-        filenameGt = self.filenamesGt[index]
+        filename_gt = self.filenames_gt[index]
 
-        return filename, filenameGt
+        return filename, filename_gt
 
     def __len__(self):
         return len(self.filenames)
@@ -133,15 +134,15 @@ if __name__ == '__main__':
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
-    datapath = cityscapes_val_datapath(data_path)
+    datapath = CityscapesValDatapath(data_path)
 
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
-    with os.open(pipeline_path, "r") as file:
+    with open(pipeline_path, "r") as file:
         json_str = file.read()
     pipeline = json.loads(json_str)
 
@@ -149,12 +150,12 @@ if __name__ == '__main__':
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
-    metrics = iouEval_1(NumClasses=20)
-    datasets = cityscapes_val_datapath(data_path)
+    metrics = IouEval(num_classes=20)
+    datasets = CityscapesValDatapath(data_path)
     for image_path, target_path in tqdm(datasets):
-        with os.open(target_path, 'rb') as f:
+        with open(target_path, 'rb') as f:
             target = load_image(f).convert('P')
         target = resize(target, 512, Image.NEAREST)
         target = np.array(target).astype(np.uint32)
@@ -168,11 +169,11 @@ if __name__ == '__main__':
         preds_ = np.expand_dims(res.argmax(
             axis=1).astype(np.int32), 1).astype(np.int32)
         labels_ = np.expand_dims(target.astype(np.int32), 1).astype(np.int32)
-        metrics.addBatch(preds_, labels_)
+        metrics.add_batch(preds_, labels_)
 
-    mean_iou, iou_class = metrics.getIoU()
+    mean_iou, iou_class = metrics.get_iou()
     mean_iou = mean_iou.item()
-    with os.open("metric.txt", "w") as file:
+    with open("metric.txt", "w") as file:
         print("mean_iou: ", mean_iou, file=file)
         print("iou_class: ", iou_class, file=file)
     print("mean_iou: ", mean_iou)
