@@ -10,14 +10,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import os
+import sys
+import json
 from argparse import ArgumentParser
 import cv2
 import numpy as np
 from PIL import Image
-import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
+from StreamManagerApi import StreamManagerApi
 from tqdm import tqdm
 from tabulate import tabulate
 from scipy.ndimage.morphology import distance_transform_edt
@@ -27,186 +27,195 @@ import imageio
 from infer import infer, resize
 
 
-def Object(pred, gt):
-    x = np.mean(pred[gt == 1])
-    sigma_x = np.std(pred[gt == 1])
-    score = 2.0 * x / (x ** 2 + 1 + sigma_x + np.finfo(np.float64).eps)
+def my_open(file_path, asdads):
+    fd_asd = os.open(file_path, os.O_RDWR | os.O_CREAT)
+    file__22 = os.fdopen(fd_asd, asdads)
+    return file__22
+
+
+def object_(pred, gting__):
+    xing = np.mean(pred[gting__ == 1])
+    sigma_x = np.std(pred[gting__ == 1])
+    score = 2.0 * xing / (xing ** 2 + 1 + sigma_x + np.finfo(np.float64).eps)
 
     return score
 
 
-def S_Object(pred, gt):
+def s_object(pred, gting_):
     pred_fg = pred.copy()
-    pred_fg[gt != 1] = 0.0
-    O_fg = Object(pred_fg, gt)
+    pred_fg[gting_ != 1] = 0.0
+    oing_fg = object_(pred_fg, gting_)
 
     pred_bg = (1 - pred.copy())
-    pred_bg[gt == 1] = 0.0
-    O_bg = Object(pred_bg, 1-gt)
+    pred_bg[gting_ == 1] = 0.0
+    oing_bg = object_(pred_bg, 1-gting_)
 
-    u = np.mean(gt)
-    Q = u * O_fg + (1 - u) * O_bg
+    uing = np.mean(gting_)
+    qing = uing * oing_fg + (1 - uing) * oing_bg
 
-    return Q
-
-
-def centroid(gt):
-    if np.sum(gt) == 0:
-        return gt.shape[0] // 2, gt.shape[1] // 2
-
-    else:
-        x, y = np.where(gt == 1)
-        return int(np.mean(x).round()), int(np.mean(y).round())
+    return qing
 
 
-def divide(gt, x, y):
-    LT = gt[:x, :y]
-    RT = gt[x:, :y]
-    LB = gt[:x, y:]
-    RB = gt[x:, y:]
-
-    w1 = LT.size / gt.size
-    w2 = RT.size / gt.size
-    w3 = LB.size / gt.size
-    w4 = RB.size / gt.size
-
-    return LT, RT, LB, RB, w1, w2, w3, w4
+def centroid(gting_1):
+    if np.sum(gting_1) == 0:
+        return gting_1.shape[0] // 2, gting_1.shape[1] // 2
+    xing, ying = np.where(gting_1 == 1)
+    return int(np.mean(xing).round()), int(np.mean(ying).round())
 
 
-def ssim(pred, gt):
-    x = np.mean(pred)
-    y = np.mean(gt)
-    N = pred.size
+def divide(gting_2, xing, ying):
+    l_t = gting_2[:xing, :ying]
+    r_t = gting_2[xing:, :ying]
+    l_b = gting_2[:xing, ying:]
+    r_b = gting_2[xing:, ying:]
 
-    sigma_x2 = np.sum((pred - x) ** 2 / (N - 1 + np.finfo(np.float64).eps))
-    sigma_y2 = np.sum((gt - y) ** 2 / (N - 1 + np.finfo(np.float64).eps))
+    wing1 = l_t.size / gting_2.size
+    wing2 = r_t.size / gting_2.size
+    wing3 = l_b.size / gting_2.size
+    wing4 = r_b.size / gting_2.size
 
-    sigma_xy = np.sum((pred - x) * (gt - y) /
-                      (N - 1 + np.finfo(np.float64).eps))
+    return l_t, r_t, l_b, r_b, wing1, wing2, wing3, wing4
 
-    alpha = 4 * x * y * sigma_xy
-    beta = (x ** 2 + y ** 2) * (sigma_x2 + sigma_y2)
+
+def ssim(pred, gting_4):
+    xing = np.mean(pred)
+    ying = np.mean(gting_4)
+    ning_ = pred.size
+
+    sigma_x2 = np.sum((pred - xing) ** 2 /
+                      (ning_ - 1 + np.finfo(np.float64).eps))
+    sigma_y2 = np.sum((gting_4 - ying) ** 2 /
+                      (ning_ - 1 + np.finfo(np.float64).eps))
+
+    sigma_xy = np.sum((pred - xing) * (gting_4 - ying) /
+                      (ning_ - 1 + np.finfo(np.float64).eps))
+
+    alpha = 4 * xing * ying * sigma_xy
+    beta = (xing ** 2 + ying ** 2) * (sigma_x2 + sigma_y2)
 
     if alpha != 0:
-        Q = alpha / (beta + np.finfo(np.float64).eps)
+        qing = alpha / (beta + np.finfo(np.float64).eps)
     elif alpha == 0 and beta == 0:
-        Q = 1
+        qing = 1
     else:
-        Q = 0
+        qing = 0
 
-    return Q
-
-
-def S_Region(pred, gt):
-    x, y = centroid(gt)
-    gt1, gt2, gt3, gt4, w1, w2, w3, w4 = divide(gt, x, y)
-    pred1, pred2, pred3, pred4, _, _, _, _ = divide(pred, x, y)
-
-    Q1 = ssim(pred1, gt1)
-    Q2 = ssim(pred2, gt2)
-    Q3 = ssim(pred3, gt3)
-    Q4 = ssim(pred4, gt4)
-
-    Q = Q1 * w1 + Q2 * w2 + Q3 * w3 + Q4 * w4
-
-    return Q
+    return qing
 
 
-def StructureMeasure(pred, gt):
-    y = np.mean(gt)
+def s_region(pred, gting_5):
+    xing, ying = centroid(gting_5)
+    gt1, gt2, gt3, gt4, wing1, wing2, wing3, wing4 = divide(
+        gting_5, xing, ying)
+    pred1, pred2, pred3, pred4, _, _, _, _ = divide(pred, xing, ying)
 
-    if y == 0:
-        x = np.mean(pred)
-        Q = 1 - x
-    elif y == 1:
-        x = np.mean(pred)
-        Q = x
+    qing1 = ssim(pred1, gt1)
+    qing2 = ssim(pred2, gt2)
+    qing3 = ssim(pred3, gt3)
+    qing4 = ssim(pred4, gt4)
+
+    qing = qing1 * wing1 + qing2 * wing2 + qing3 * wing3 + qing4 * wing4
+
+    return qing
+
+
+def structure_measure(pred, gting_44):
+    ying = np.mean(gting_44)
+
+    if ying == 0:
+        xing = np.mean(pred)
+        qing = 1 - xing
+    elif ying == 1:
+        xing = np.mean(pred)
+        qing = xing
     else:
         alpha = 0.5
-        Q = alpha * S_Object(pred, gt) + (1 - alpha) * S_Region(pred, gt)
-        if Q < 0:
-            Q = 0
+        qing = alpha * s_object(pred, gting_44) + \
+            (1 - alpha) * s_region(pred, gting_44)
+        qing = max(qing, 0)
 
-    return Q
+    return qing
 
 
 def fspecial_gauss(size, sigma):
     """Function to mimic the 'fspecial' gaussian MATLAB function
     """
-    x, y = np.mgrid[-size//2 + 1:size//2 + 1, -size//2 + 1:size//2 + 1]
-    g = np.exp(-((x**2 + y**2)/(2.0*sigma**2)))
-    return g/g.sum()
+    xing, ying = np.mgrid[-size//2 + 1:size//2 + 1, -size//2 + 1:size//2 + 1]
+    g_1 = np.exp(-((xing**2 + ying**2)/(2.0*sigma**2)))
+    return g_1/g_1.sum()
 
 
-def original_WFb(pred, gt):
-    E = np.abs(pred - gt)
-    dst, idst = distance_transform_edt(1 - gt, return_indices=True)
+def original_wfb(pred, gting_55):
+    eing = np.abs(pred - gting_55)
+    dst, idst = distance_transform_edt(1 - gting_55, return_indices=True)
 
-    K = fspecial_gauss(7, 5)
-    Et = E.copy()
-    Et[gt != 1] = Et[idst[:, gt != 1][0], idst[:, gt != 1][1]]
-    EA = convolve(Et, K, mode='nearest')
-    MIN_E_EA = E.copy()
-    MIN_E_EA[(gt == 1) & (EA < E)] = EA[(gt == 1) & (EA < E)]
+    king = fspecial_gauss(7, 5)
+    eting = eing.copy()
+    eting[gting_55 != 1] = eting[idst[:, gting_55 != 1]
+                                 [0], idst[:, gting_55 != 1][1]]
+    eaing = convolve(eting, king, mode='nearest')
+    maisfnasdf = eing.copy()
+    maisfnasdf[(gting_55 == 1) & (eaing < eing)
+               ] = eaing[(gting_55 == 1) & (eaing < eing)]
 
-    B = np.ones_like(gt)
-    B[gt != 1] = 2.0 - 1 * np.exp(np.log(1 - 0.5) / 5 * dst[gt != 1])
-    Ew = MIN_E_EA * B
+    bing = np.ones_like(gting_55)
+    bing[gting_55 != 1] = 2.0 - 1 * \
+        np.exp(np.log(1 - 0.5) / 5 * dst[gting_55 != 1])
+    ewing = maisfnasdf * bing
 
-    TPw = np.sum(gt) - np.sum(Ew[gt == 1])
-    FPw = np.sum(Ew[gt != 1])
+    tpwing = np.sum(gting_55) - np.sum(ewing[gting_55 == 1])
+    fpwing = np.sum(ewing[gting_55 != 1])
 
-    R = 1 - np.mean(Ew[gt == 1])
-    P = TPw / (TPw + FPw + np.finfo(np.float64).eps)
-    Q = 2 * R * P / (R + P + np.finfo(np.float64).eps)
+    ring = 1 - np.mean(ewing[gting_55 == 1])
+    ping = tpwing / (tpwing + fpwing + np.finfo(np.float64).eps)
+    qing = 2 * ring * ping / (ring + ping + np.finfo(np.float64).eps)
 
-    return Q
+    return qing
 
 
-def Fmeasure_calu(pred, gt, threshold):
-    if threshold > 1:
-        threshold = 1
+def fmeasure_calu(pred, gting_66, threshold_1):
+    threshold_1 = min(threshold_1, 1)
 
-    Label3 = np.zeros_like(gt)
-    Label3[pred >= threshold] = 1
+    label3 = np.zeros_like(gting_66)
+    label3[pred >= threshold_1] = 1
 
-    NumRec = np.sum(Label3 == 1)
-    NumNoRec = np.sum(Label3 == 0)
+    num_rec = np.sum(label3 == 1)
+    num_no_rec = np.sum(label3 == 0)
 
-    LabelAnd = (Label3 == 1) & (gt == 1)
-    NumAnd = np.sum(LabelAnd == 1)
-    num_obj = np.sum(gt)
-    num_pred = np.sum(Label3)
+    label_and = (label3 == 1) & (gting_66 == 1)
+    num_and = np.sum(label_and == 1)
+    num_obj = np.sum(gting_66)
+    num_pred = np.sum(label3)
 
-    FN = num_obj - NumAnd
-    FP = NumRec - NumAnd
-    TN = NumNoRec - FN
+    fning = num_obj - num_and
+    fnmdp = num_rec - num_and
+    tning = num_no_rec - fning
 
-    if NumAnd == 0:
-        PreFtem = 0
-        RecallFtem = 0
-        FmeasureF = 0
-        Dice = 0
-        SpecifTem = 0
-        IoU = 0
+    if num_and == 0:
+        pre_ftem = 0
+        recall_ftem = 0
+        f_metric = 0
+        dice = 0
+        speci_ftem = 0
+        iou = 0
 
     else:
-        IoU = NumAnd / (FN + NumRec)
-        PreFtem = NumAnd / NumRec
-        RecallFtem = NumAnd / num_obj
-        SpecifTem = TN / (TN + FP)
-        Dice = 2 * NumAnd / (num_obj + num_pred)
-        FmeasureF = ((2.0 * PreFtem * RecallFtem) / (PreFtem + RecallFtem))
+        iou = num_and / (fning + num_rec)
+        pre_ftem = num_and / num_rec
+        recall_ftem = num_and / num_obj
+        speci_ftem = tning / (tning + fnmdp)
+        dice = 2 * num_and / (num_obj + num_pred)
+        f_metric = ((2.0 * pre_ftem * recall_ftem) / (pre_ftem + recall_ftem))
 
-    return PreFtem, RecallFtem, SpecifTem, Dice, FmeasureF, IoU
+    return pre_ftem, recall_ftem, speci_ftem, dice, f_metric, iou
 
 
-def AlignmentTerm(pred, gt):
+def alignment_term(pred, gtinga):
     mu_pred = np.mean(pred)
-    mu_gt = np.mean(gt)
+    mu_gt = np.mean(gtinga)
 
     align_pred = pred - mu_pred
-    align_gt = gt - mu_gt
+    align_gt = gtinga - mu_gt
 
     align_mat = 2 * (align_gt * align_pred) / (align_gt ** 2 +
                                                align_pred ** 2 + np.finfo(np.float64).eps)
@@ -214,29 +223,31 @@ def AlignmentTerm(pred, gt):
     return align_mat
 
 
-def EnhancedAlighmentTerm(align_mat):
+def enhanced_alighment_term(align_mat):
     enhanced = ((align_mat + 1) ** 2) / 4
     return enhanced
 
 
-def EnhancedMeasure(pred, gt):
-    if np.sum(gt) == 0:
+def enhanced_measure(pred, gtingb):
+    if np.sum(gtingb) == 0:
         enhanced_mat = 1 - pred
-    elif np.sum(1 - gt) == 0:
+    elif np.sum(1 - gtingb) == 0:
         enhanced_mat = pred.copy()
     else:
-        align_mat = AlignmentTerm(pred, gt)
-        enhanced_mat = EnhancedAlighmentTerm(align_mat)
+        align_mat = alignment_term(pred, gtingb)
+        enhanced_mat = enhanced_alighment_term(align_mat)
 
-    score = np.sum(enhanced_mat) / (gt.size - 1 + np.finfo(np.float64).eps)
+    score = np.sum(enhanced_mat) / (gtingb.size - 1 + np.finfo(np.float64).eps)
     return score
 
 
-class test_dataset:
+class TestDataset:
     def __init__(self, image_root, gt_root, testsize):
         self.testsize = testsize
         self.images = [
-            image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
+            image_root + f for f in os.listdir(image_root)
+            if f.endswith('.jpg') or f.endswith('.png')
+        ]
         self.gts = [
             gt_root + f for f in os.listdir(gt_root) if f.endswith('.tif') or f.endswith('.png')]
         self.images = sorted(self.images)
@@ -249,30 +260,30 @@ class test_dataset:
             [[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
 
     def load_data(self):
-        image = self.rgb_loader(self.images[self.index])
-        image = resize(image, (self.testsize, self.testsize))  # resize
-        image = np.transpose(image, (2, 0, 1)).astype(
+        image_1 = self.rgb_loader(self.images[self.index])
+        image_1 = resize(image_1, (self.testsize, self.testsize))  # resize
+        image_1 = np.transpose(image_1, (2, 0, 1)).astype(
             np.float32)  # to tensor 1
-        image = image / 255  # to tensor 2
-        image = (image - self.mean) / self.std  # normalize
+        image_1 = image_1 / 255  # to tensor 2
+        image_1 = (image_1 - self.mean) / self.std  # normalize
 
-        gt = self.binary_loader(self.gts[self.index])
+        gting_222 = self.binary_loader(self.gts[self.index])
         name = self.images[self.index].split('/')[-1]
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
         self.index += 1
 
-        return image, gt, self.images[self.index-1], self.gts[self.index-1]
+        return image_1, gting_222, self.images[self.index-1], self.gts[self.index-1]
 
     def rgb_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('RGB')
+        file_22 = my_open(path, "rb")
+        img = Image.open(file_22)
+        return img.convert('RGB')
 
     def binary_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('L')
+        file_33 = my_open(path, "rb")
+        img = Image.open(file_33)
+        return img.convert('L')
 
 
 if __name__ == '__main__':
@@ -282,29 +293,31 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
-    result_path = "./"
+    RESPATH = "./"
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
     images_path = '{}/images/'.format(data_path)
     gts_path = '{}/masks/'.format(data_path)
-    dataset = test_dataset(images_path, gts_path, 352)
+    dataset = TestDataset(images_path, gts_path, 352)
 
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
-    with open(pipeline_path, "r") as file:
-        json_str = file.read()
+    file = my_open(pipeline_path, "r")
+    json_str = file.read()
+    file.close()
+
     pipeline = json.loads(json_str)
     pipelineStr = json.dumps(pipeline).encode()
 
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
     Thresholds = np.linspace(1, 0, 256)
     threshold_IoU = np.zeros((dataset.size, len(Thresholds)))
@@ -314,14 +327,14 @@ if __name__ == '__main__':
     MAE = np.zeros(dataset.size)
 
     for i in tqdm(range(dataset.size)):
-        image, gt, image_path, gt_path = dataset.load_data()
-        gt = np.asarray(gt, np.float32)
+        image, gting, image_path, gt_path = dataset.load_data()
+        gting = np.asarray(gting, np.float32)
 
         image = np.array(image).astype(np.float32)
         res = infer(image.tobytes(), streamManagerApi)
         res = np.reshape(res, (1, 1, 352, 352))
         res = res.reshape((352, 352))
-        res = cv2.resize(res.T, dsize=gt.shape)
+        res = cv2.resize(res.T, dsize=gting.shape)
         res = res.T
         res = np.expand_dims(res, 0)
         res = np.expand_dims(res, 0)
@@ -343,8 +356,8 @@ if __name__ == '__main__':
         gt_mask = (gt_mask > 0.5).astype(np.float64)
         pred_mask = pred_mask.astype(np.float64) / 255
 
-        Smeasure[i] = StructureMeasure(pred_mask, gt_mask)
-        wFmeasure[i] = original_WFb(pred_mask, gt_mask)
+        Smeasure[i] = structure_measure(pred_mask, gt_mask)
+        wFmeasure[i] = original_wfb(pred_mask, gt_mask)
         MAE[i] = np.mean(np.abs(gt_mask - pred_mask))
 
         threshold_E = np.zeros(len(Thresholds))
@@ -356,12 +369,13 @@ if __name__ == '__main__':
         threshold_Dic = np.zeros(len(Thresholds))
 
         for j, threshold in enumerate(Thresholds):
-            threshold_Pr[j], threshold_Rec[j], threshold_Spe[j], threshold_Dic[j], threshold_F[j], threshold_Iou[j] = Fmeasure_calu(
-                pred_mask, gt_mask, threshold)
+            threshold_Pr[j], threshold_Rec[j], threshold_Spe[j], \
+                threshold_Dic[j], threshold_F[j], threshold_Iou[j] = \
+                fmeasure_calu(pred_mask, gt_mask, threshold)
 
             Bi_pred = np.zeros_like(pred_mask)
             Bi_pred[pred_mask >= threshold] = 1
-            threshold_E[j] = EnhancedMeasure(Bi_pred, gt_mask)
+            threshold_E[j] = enhanced_measure(Bi_pred, gt_mask)
 
         threshold_Dice[i, :] = threshold_Dic
         threshold_IoU[i, :] = threshold_Iou
@@ -380,26 +394,26 @@ if __name__ == '__main__':
     result.extend([meanDic, meanIoU])
     results.append(["res", *result])
 
-    json = os.path.join(result_path, 'result_'+"res"+'.json')
-    json = open(json, 'w')
+    json = os.path.join(RESPATH, 'result_'+"res"+'.json')
+    json = my_open(json, 'w')
 
     headers = ['meanDic', 'meanIoU']
-    csv = os.path.join(result_path, 'result_' + "res" + '.csv')
+    csv = os.path.join(RESPATH, 'result_' + "res" + '.csv')
     if os.path.isfile(csv) is True:
-        csv = open(csv, 'a')
+        csv = my_open(csv, 'a')
     else:
-        csv = open(csv, 'w')
+        csv = my_open(csv, 'w')
         csv.write(', '.join(['method', *headers]) + '\n')
 
-    method = "pranet"
-    out_str = method + ','
+    METHOD = "pranet"
+    OUTSTR = METHOD + ','
     for metric in result:
-        out_str += '{:.4f}'.format(metric) + ','
-    out_str += '\n'
+        OUTSTR += '{:.4f}'.format(metric) + ','
+    OUTSTR += '\n'
 
-    csv.write(out_str)
+    csv.write(OUTSTR)
     csv.close()
-    json.write(out_str)
+    json.write(OUTSTR)
     json.close()
 
     print(tabulate(results, headers=['dataset', *headers], floatfmt=".3f"))

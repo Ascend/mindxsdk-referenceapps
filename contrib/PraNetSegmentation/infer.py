@@ -10,22 +10,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import os
+import sys
+import json
 from argparse import ArgumentParser
 import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProtobufVector, MxProtobufIn
+from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, \
+    InProtobufVector, MxProtobufIn
 from tqdm import tqdm
 import imageio
 
 
+def my_open(file_path, asdads):
+    fd_asd = os.open(file_path, os.O_RDWR|os.O_CREAT )
+    file__22 = os.fdopen(fd_asd, asdads)
+    return file__22
+
+
 def resize(img, size, interpolation=2, max_size=None):
     if isinstance(size, int):
-        w, h = img.size
+        wing, s_h_w = img.size
 
-        short, long = (w, h) if w <= h else (h, w)
+        short, long = (wing, s_h_w) if wing <= s_h_w else (s_h_w, wing)
         new_short, new_long = size, int(size * long / short)
 
         if max_size is not None:
@@ -33,54 +41,52 @@ def resize(img, size, interpolation=2, max_size=None):
                 new_short, new_long = int(
                     max_size * new_short / new_long), max_size
 
-        new_w, new_h = (new_short, new_long) if w <= h else (
+        new_w, new_h = (new_short, new_long) if wing <= s_h_w else (
             new_long, new_short)
 
-        if (w, h) == (new_w, new_h):
+        if (wing, s_h_w) == (new_w, new_h):
             return img
-        else:
-            return img.resize((new_w, new_h), interpolation)
-    else:
-        return img.resize(size[::-1], interpolation)
+        return img.resize((new_w, new_h), interpolation)
+    return img.resize(size[::-1], interpolation)
 
 
-def infer(data, streamManagerApi_):
-    dataInput = MxDataInput()
+def infer(data, stream_manager_api):
+    data_input = MxDataInput()
 
-    streamName = b'pranet'
-    dataInput.data = data
-    protobufVec = InProtobufVector()
-    visionList = MxpiDataType.MxpiVisionList()
-    visionVec = visionList.visionVec.add()
-    visionVec.visionInfo.format = 1
-    visionVec.visionData.deviceId = 0
-    visionVec.visionData.memType = 0
-    visionVec.visionData.dataStr = dataInput.data
+    stream_name = b'pranet'
+    data_input.data = data
+    protobuf_vec = InProtobufVector()
+    vision_list = MxpiDataType.MxpiVisionList()
+    vision_vec = vision_list.visionVec.add()
+    vision_vec.visionInfo.format = 1
+    vision_vec.visionData.deviceId = 0
+    vision_vec.visionData.memType = 0
+    vision_vec.visionData.dataStr = data_input.data
     protobuf = MxProtobufIn()
     protobuf.key = b'appsrc0'
     protobuf.type = b'MxTools.MxpiVisionList'
-    protobuf.protobuf = visionList.SerializeToString()
-    protobufVec.push_back(protobuf)
-    uniqueId = streamManagerApi_.SendProtobuf(streamName, 0, protobufVec)
+    protobuf.protobuf = vision_list.SerializeToString()
+    protobuf_vec.push_back(protobuf)
+    unique_id = stream_manager_api.SendProtobuf(stream_name, 0, protobuf_vec)
 
-    if uniqueId < 0:
+    if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
 
     key = b'mxpi_tensorinfer0'
-    keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = streamManagerApi_.GetProtobuf(streamName, 0, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
+    key_vec = StringVector()
+    key_vec.push_back(key)
+    infer_result = stream_manager_api.GetProtobuf(stream_name, 0, key_vec)
+    if infer_result.size() == 0:
+        print("infer_result is null")
         exit()
-    if inferResult[0].errorCode != 0:
+    if infer_result[0].errorCode != 0:
         print("GetResultWithUniqueId error. errorCode=%d" % (
-            inferResult[0].errorCode))
+            infer_result[0].errorCode))
         exit()
 
     result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(inferResult[0].messageBuf)
+    result.ParseFromString(infer_result[0].messageBuf)
     vision_data_ = result.tensorPackageVec[0].tensorVec[3].dataStr
     vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
     shape = result.tensorPackageVec[0].tensorVec[3].tensorShape
@@ -89,8 +95,9 @@ def infer(data, streamManagerApi_):
 
 
 def rgb_loader(path):
-    with open(path, 'rb') as f:
-        img = Image.open(f)
+    
+    with my_open(path, 'rb') as file_:
+        img = Image.open(file_)
         return img.convert('RGB')
 
 
@@ -102,7 +109,6 @@ if __name__ == '__main__':
     parser.add_argument('--output_path', type=str)
     config = parser.parse_args()
 
-    result_path = "./"
     pipeline_path = config.pipeline_path
     data_path = config.data_path
     output_path = config.output_path
@@ -114,9 +120,9 @@ if __name__ == '__main__':
     ret = streamManagerApi.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
-    with open(pipeline_path, "r") as file:
+    with my_open(pipeline_path, "r") as file:
         json_str = file.read()
     pipeline = json.loads(json_str)
     pipelineStr = json.dumps(pipeline).encode()
@@ -127,7 +133,7 @@ if __name__ == '__main__':
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
-        exit()
+        sys.exit()
 
     mean = np.array([[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
     std = np.array([[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)

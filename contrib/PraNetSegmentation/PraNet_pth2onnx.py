@@ -12,30 +12,30 @@
 # limitations under the License.
 import sys
 import math
+from collections import OrderedDict
 import torch
 import torch.onnx
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
-from collections import OrderedDict
-
 
 class Bottle2neck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, baseWidth=26, scale=4, stype='normal'):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, \
+        base_width=26, scale=4, stype='normal'):
         """ Constructor
         Args:
             inplanes: input channel dimensionality
             planes: output channel dimensionality
             stride: conv stride. Replaces pooling layer.
             downsample: None when stride = 1
-            baseWidth: basic width of conv3x3
+            base_width: basic width of conv3x3
             scale: number of scale.
             type: 'normal': normal set. 'stage': first block of a new stage.
         """
         super(Bottle2neck, self).__init__()
 
-        width = int(math.floor(planes * (baseWidth / 64.0)))
+        width = int(math.floor(planes * (base_width / 64.0)))
         self.conv1 = nn.Conv2d(inplanes, width * scale,
                                kernel_size=1, bias=False)
         self.bn1 = nn.BatchNorm2d(width * scale)
@@ -65,25 +65,25 @@ class Bottle2neck(nn.Module):
         self.scale = scale
         self.width = width
 
-    def forward(self, x):
-        residual = x
+    def forward(self, xing):
+        residual = xing
 
-        out = self.conv1(x)
+        out = self.conv1(xing)
         out = self.bn1(out)
         out = self.relu(out)
 
         spx = torch.split(out, self.width, 1)
         for i in range(self.nums):
             if i == 0 or self.stype == 'stage':
-                sp = spx[i]
+                s_p = spx[i]
             else:
-                sp = sp + spx[i]
-            sp = self.convs[i](sp)
-            sp = self.relu(self.bns[i](sp))
+                s_p = s_p + spx[i]
+            s_p = self.convs[i](s_p)
+            s_p = self.relu(self.bns[i](s_p))
             if i == 0:
-                out = sp
+                out = s_p
             else:
-                out = torch.cat((out, sp), 1)
+                out = torch.cat((out, s_p), 1)
         if self.scale != 1 and self.stype == 'normal':
             out = torch.cat((out, spx[self.nums]), 1)
         elif self.scale != 1 and self.stype == 'stage':
@@ -93,7 +93,7 @@ class Bottle2neck(nn.Module):
         out = self.bn3(out)
 
         if self.downsample is not None:
-            residual = self.downsample(x)
+            residual = self.downsample(xing)
 
         out += residual
         out = self.relu(out)
@@ -103,11 +103,11 @@ class Bottle2neck(nn.Module):
 
 class Res2Net(nn.Module):
 
-    def __init__(self, block, layers, baseWidth=26, scale=4, num_classes=1000):
+    def __init__(self, block, layers, base_width=26, num_classes=1000):
         self.inplanes = 64
         super(Res2Net, self).__init__()
-        self.baseWidth = baseWidth
-        self.scale = scale
+        self.base_width = base_width
+        self.scale = 4
         self.conv1 = nn.Sequential(
             nn.Conv2d(3, 32, 3, 2, 1, bias=False),
             nn.BatchNorm2d(32),
@@ -125,15 +125,15 @@ class Res2Net(nn.Module):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.f_c = nn.Linear(512 * block.expansion, num_classes)
 
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+        for ming in self.modules():
+            if isinstance(ming, nn.Conv2d):
                 nn.init.kaiming_normal_(
-                    m.weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m, nn.BatchNorm2d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
+                    ming.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(ming, nn.BatchNorm2d):
+                nn.init.constant_(ming.weight, 1)
+                nn.init.constant_(ming.bias, 0)
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
@@ -148,68 +148,45 @@ class Res2Net(nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample=downsample,
-                            stype='stage', baseWidth=self.baseWidth, scale=self.scale))
+                            stype='stage', base_width=self.base_width, scale=self.scale))
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes,
-                          baseWidth=self.baseWidth, scale=self.scale))
+                          base_width=self.base_width, scale=self.scale))
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
+    def forward(self, xing):
+        xing = self.conv1(xing)
+        xing = self.bn1(xing)
+        xing = self.relu(xing)
+        xing = self.maxpool(xing)
 
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        xing = self.layer1(xing)
+        xing = self.layer2(xing)
+        xing = self.layer3(xing)
+        xing = self.layer4(xing)
 
-        x = self.avgpool(x)
-        x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        xing = self.avgpool(xing)
+        xing = xing.view(xing.size(0), -1)
+        xing = self.f_c(xing)
 
-        return x
+        return xing
 
 
-def res2net50_v1b(pretrained=False, **kwargs):
-    """Constructs a Res2Net-50_v1b lib.
-    Res2Net-50 refers to the Res2Net-50_v1b_26w_4s.
-    Args:
-        pretrained (bool): If True, returns a lib pre-trained on ImageNet
-    """
-    model = Res2Net(Bottle2neck, [3, 4, 6, 3], baseWidth=26, scale=4, **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['res2net50_v1b_26w_4s']))
+def res2net50_v1b(**kwargs):
+    model = Res2Net(Bottle2neck, [3, 4, 6, 3], base_width=26, **kwargs)
     return model
 
 
-def res2net101_v1b(pretrained=False, **kwargs):
-    """Constructs a Res2Net-50_v1b_26w_4s lib.
-    Args:
-        pretrained (bool): If True, returns a lib pre-trained on ImageNet
-    """
+def res2net101_v1b(**kwargs):
     model = Res2Net(Bottle2neck, [3, 4, 23, 3],
-                    baseWidth=26, scale=4, **kwargs)
-    if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['res2net101_v1b_26w_4s']))
+                    base_width=26, **kwargs)
     return model
 
 
-def res2net50_v1b_26w_4s(pretrained=False, **kwargs):
-    """Constructs a Res2Net-50_v1b_26w_4s lib.
-    Args:
-        pretrained (bool): If True, returns a lib pre-trained on ImageNet
-    """
-    model = Res2Net(Bottle2neck, [3, 4, 6, 3], baseWidth=26, scale=4, **kwargs)
-    if pretrained:
-        model_state = torch.load(
-            '/media/nercms/NERCMS/GepengJi/Medical_Seqmentation/CRANet/models/res2net50_v1b_26w_4s-3cf99910.pth')
-        model.load_state_dict(model_state)
+def res2net50_v1b_26w_4s(**kwargs):
+    model = Res2Net(Bottle2neck, [3, 4, 6, 3], base_width=26, **kwargs)
     return model
 
 
@@ -219,18 +196,18 @@ class BasicConv2d(nn.Module):
         self.conv = nn.Conv2d(in_planes, out_planes,
                               kernel_size=kernel_size, stride=stride,
                               padding=padding, dilation=dilation, bias=False)
-        self.bn = nn.BatchNorm2d(out_planes)
+        self.batch_norm = nn.BatchNorm2d(out_planes)
         self.relu = nn.ReLU(inplace=True)
 
-    def forward(self, x):
-        x = self.conv(x)
-        x = self.bn(x)
-        return x
+    def forward(self, xing):
+        xing = self.conv(xing)
+        xing = self.batch_norm(xing)
+        return xing
 
 
-class RFB_modified(nn.Module):
+class RFBModified(nn.Module):
     def __init__(self, in_channel, out_channel):
-        super(RFB_modified, self).__init__()
+        super(RFBModified, self).__init__()
         self.relu = nn.ReLU(True)
         self.branch0 = nn.Sequential(
             BasicConv2d(in_channel, out_channel, 1),
@@ -262,22 +239,20 @@ class RFB_modified(nn.Module):
         self.conv_cat = BasicConv2d(4*out_channel, out_channel, 3, padding=1)
         self.conv_res = BasicConv2d(in_channel, out_channel, 1)
 
-    def forward(self, x):
-        x0 = self.branch0(x)
-        x1 = self.branch1(x)
-        x2 = self.branch2(x)
-        x3 = self.branch3(x)
-        x_cat = self.conv_cat(torch.cat((x0, x1, x2, x3), 1))
+    def forward(self, xing):
+        xing0 = self.branch0(xing)
+        xing1 = self.branch1(xing)
+        xing2 = self.branch2(xing)
+        xing3 = self.branch3(xing)
+        x_cat = self.conv_cat(torch.cat((xing0, xing1, xing2, xing3), 1))
 
-        x = self.relu(x_cat + self.conv_res(x))
-        return x
+        xing = self.relu(x_cat + self.conv_res(xing))
+        return xing
 
 
-class aggregation(nn.Module):
-    # dense aggregation, it can be replaced by other aggregation previous, such as DSS, amulet, and so on.
-    # used after MSF
+class Aggregation(nn.Module):
     def __init__(self, channel):
-        super(aggregation, self).__init__()
+        super(Aggregation, self).__init__()
         self.relu = nn.ReLU(True)
 
         self.upsample = nn.Upsample(
@@ -293,11 +268,11 @@ class aggregation(nn.Module):
         self.conv4 = BasicConv2d(3*channel, 3*channel, 3, padding=1)
         self.conv5 = nn.Conv2d(3*channel, 1, 1)
 
-    def forward(self, x1, x2, x3):
-        x1_1 = x1
-        x2_1 = self.conv_upsample1(self.upsample(x1)) * x2
-        x3_1 = self.conv_upsample2(self.upsample(self.upsample(x1))) \
-            * self.conv_upsample3(self.upsample(x2)) * x3
+    def forward(self, xing1, xing2, xing3):
+        x1_1 = xing1
+        x2_1 = self.conv_upsample1(self.upsample(xing1)) * xing2
+        x3_1 = self.conv_upsample2(self.upsample(self.upsample(xing1))) \
+            * self.conv_upsample3(self.upsample(xing2)) * xing3
 
         x2_2 = torch.cat((x2_1, self.conv_upsample4(self.upsample(x1_1))), 1)
         x2_2 = self.conv_concat2(x2_2)
@@ -305,10 +280,10 @@ class aggregation(nn.Module):
         x3_2 = torch.cat((x3_1, self.conv_upsample5(self.upsample(x2_2))), 1)
         x3_2 = self.conv_concat3(x3_2)
 
-        x = self.conv4(x3_2)
-        x = self.conv5(x)
+        xing = self.conv4(x3_2)
+        xing = self.conv5(xing)
 
-        return x
+        return xing
 
 
 class PraNet(nn.Module):
@@ -318,11 +293,11 @@ class PraNet(nn.Module):
         # ---- ResNet Backbone ----
         self.resnet = res2net50_v1b_26w_4s(pretrained=False)
         # ---- Receptive Field Block like module ----
-        self.rfb2_1 = RFB_modified(512, channel)
-        self.rfb3_1 = RFB_modified(1024, channel)
-        self.rfb4_1 = RFB_modified(2048, channel)
+        self.rfb2_1 = RFBModified(512, channel)
+        self.rfb3_1 = RFBModified(1024, channel)
+        self.rfb4_1 = RFBModified(2048, channel)
         # ---- Partial Decoder ----
-        self.agg1 = aggregation(channel)
+        self.agg1 = Aggregation(channel)
         # ---- reverse attention branch 4 ----
         self.ra4_conv1 = BasicConv2d(2048, 256, kernel_size=1)
         self.ra4_conv2 = BasicConv2d(256, 256, kernel_size=5, padding=2)
@@ -340,25 +315,25 @@ class PraNet(nn.Module):
         self.ra2_conv3 = BasicConv2d(64, 64, kernel_size=3, padding=1)
         self.ra2_conv4 = BasicConv2d(64, 1, kernel_size=3, padding=1)
 
-    def forward(self, x):
-        x = self.resnet.conv1(x)
-        x = self.resnet.bn1(x)
-        x = self.resnet.relu(x)
-        x = self.resnet.maxpool(x)      # bs, 64, 88, 88
+    def forward(self, xing):
+        xing = self.resnet.conv1(xing)
+        xing = self.resnet.bn1(xing)
+        xing = self.resnet.relu(xing)
+        xing = self.resnet.maxpool(xing)      # bs, 64, 88, 88
         # ---- low-level features ----
-        x1 = self.resnet.layer1(x)      # bs, 256, 88, 88
-        x2 = self.resnet.layer2(x1)     # bs, 512, 44, 44
+        xing1 = self.resnet.layer1(xing)      # bs, 256, 88, 88
+        xing2 = self.resnet.layer2(xing1)     # bs, 512, 44, 44
 
-        x3 = self.resnet.layer3(x2)     # bs, 1024, 22, 22
-        x4 = self.resnet.layer4(x3)     # bs, 2048, 11, 11
-        x2_rfb = self.rfb2_1(x2)        # channel -> 32
-        x3_rfb = self.rfb3_1(x3)        # channel -> 32
-        x4_rfb = self.rfb4_1(x4)        # channel -> 32
+        xing3 = self.resnet.layer3(xing2)     # bs, 1024, 22, 22
+        xing4 = self.resnet.layer4(xing3)     # bs, 2048, 11, 11
+        x2_rfb = self.rfb2_1(xing2)        # channel -> 32
+        x3_rfb = self.rfb3_1(xing3)        # channel -> 32
+        x4_rfb = self.rfb4_1(xing4)        # channel -> 32
 
         ra5_feat = self.agg1(x4_rfb, x3_rfb, x2_rfb)
         ra5_feat = ra5_feat.reshape(ra5_feat.size(1), ra5_feat.size(
             0), ra5_feat.size(2), ra5_feat.size(3))
-        # NOTES: Sup-1 (bs, 1, 44, 44) -> (bs, 1, 352, 352)
+
         lateral_map_5 = F.interpolate(
             ra5_feat, scale_factor=8, mode='bilinear')
         lateral_map_5 = lateral_map_5.reshape(lateral_map_5.size(
@@ -368,15 +343,15 @@ class PraNet(nn.Module):
         crop_4 = F.interpolate(ra5_feat, scale_factor=0.25, mode='bilinear')
         crop_4 = crop_4.reshape(crop_4.size(1), crop_4.size(
             0), crop_4.size(2), crop_4.size(3))
-        x = -1*(torch.sigmoid(crop_4)) + 1
-        x = x.expand(-1, 2048, -1, -1).mul(x4)
-        x = self.ra4_conv1(x)
-        x = F.relu(self.ra4_conv2(x))
-        x = F.relu(self.ra4_conv3(x))
-        x = F.relu(self.ra4_conv4(x))
-        ra4_feat = self.ra4_conv5(x)
-        x = ra4_feat + crop_4
-        temp = x.reshape(x.size(1), x.size(0), x.size(2), x.size(3))
+        xing = -1*(torch.sigmoid(crop_4)) + 1
+        xing = xing.expand(-1, 2048, -1, -1).mul(xing4)
+        xing = self.ra4_conv1(xing)
+        xing = F.relu(self.ra4_conv2(xing))
+        xing = F.relu(self.ra4_conv3(xing))
+        xing = F.relu(self.ra4_conv4(xing))
+        ra4_feat = self.ra4_conv5(xing)
+        xing = ra4_feat + crop_4
+        temp = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
         # NOTES: Sup-2 (bs, 1, 11, 11) -> (bs, 1, 352, 352)
         lateral_map_4 = F.interpolate(temp, scale_factor=32, mode='bilinear')
         lateral_map_4 = lateral_map_4.reshape(lateral_map_4.size(
@@ -386,14 +361,14 @@ class PraNet(nn.Module):
         crop_3 = F.interpolate(temp, scale_factor=2, mode='bilinear')
         crop_3 = crop_3.reshape(crop_3.size(1), crop_3.size(
             0), crop_3.size(2), crop_3.size(3))
-        x = -1*(torch.sigmoid(crop_3)) + 1
-        x = x.expand(-1, 1024, -1, -1).mul(x3)
-        x = self.ra3_conv1(x)
-        x = F.relu(self.ra3_conv2(x))
-        x = F.relu(self.ra3_conv3(x))
-        ra3_feat = self.ra3_conv4(x)
-        x = ra3_feat + crop_3
-        temp1 = x.reshape(x.size(1), x.size(0), x.size(2), x.size(3))
+        xing = -1*(torch.sigmoid(crop_3)) + 1
+        xing = xing.expand(-1, 1024, -1, -1).mul(xing3)
+        xing = self.ra3_conv1(xing)
+        xing = F.relu(self.ra3_conv2(xing))
+        xing = F.relu(self.ra3_conv3(xing))
+        ra3_feat = self.ra3_conv4(xing)
+        xing = ra3_feat + crop_3
+        temp1 = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
         # NOTES: Sup-3 (bs, 1, 22, 22) -> (bs, 1, 352, 352)
         lateral_map_3 = F.interpolate(temp1, scale_factor=16, mode='bilinear')
         lateral_map_3 = lateral_map_3.reshape(lateral_map_3.size(
@@ -403,14 +378,14 @@ class PraNet(nn.Module):
         crop_2 = F.interpolate(temp1, scale_factor=2, mode='bilinear')
         crop_2 = crop_2.reshape(crop_2.size(1), crop_2.size(
             0), crop_2.size(2), crop_2.size(3))
-        x = -1*(torch.sigmoid(crop_2)) + 1
-        x = x.expand(-1, 512, -1, -1).mul(x2)
-        x = self.ra2_conv1(x)
-        x = F.relu(self.ra2_conv2(x))
-        x = F.relu(self.ra2_conv3(x))
-        ra2_feat = self.ra2_conv4(x)
-        x = ra2_feat + crop_2
-        temp2 = x.reshape(x.size(1), x.size(0), x.size(2), x.size(3))
+        xing = -1*(torch.sigmoid(crop_2)) + 1
+        xing = xing.expand(-1, 512, -1, -1).mul(xing2)
+        xing = self.ra2_conv1(xing)
+        xing = F.relu(self.ra2_conv2(xing))
+        xing = F.relu(self.ra2_conv3(xing))
+        ra2_feat = self.ra2_conv4(xing)
+        xing = ra2_feat + crop_2
+        temp2 = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
         # NOTES: Sup-4 (bs, 1, 44, 44) -> (bs, 1, 352, 352)
         lateral_map_2 = F.interpolate(temp2, scale_factor=8, mode='bilinear')
         lateral_map_2 = lateral_map_2.reshape(lateral_map_2.size(
@@ -421,12 +396,12 @@ class PraNet(nn.Module):
 
 def proc_node_module(checkpoint, attr_name):
     new_state_dict = OrderedDict()
-    for k, v in checkpoint[attr_name].items():
+    for k, ving in checkpoint[attr_name].items():
         if k[0:7] == "module.":
             name = k[7:]
         else:
             name = k[0:]
-        new_state_dict[name] = v
+        new_state_dict[name] = ving
     return new_state_dict
 
 
@@ -434,10 +409,10 @@ def convert(pth_file_path, onnx_file_path):
     model = PraNet()
     pretrained_dict = torch.load(pth_file_path, map_location="cpu")
     model.load_state_dict(
-        {k.replace('module.', ''): v for k, v in pretrained_dict.items()})
-    if "fc.weight" in pretrained_dict:
-        pretrained_dict.pop('fc.weight')
-        pretrained_dict.pop('fc.bias')
+        {k.replace('module.', ''): ving for k, ving in pretrained_dict.items()})
+    if "f_c.weight" in pretrained_dict:
+        pretrained_dict.pop('f_c.weight')
+        pretrained_dict.pop('f_c.bias')
     model.load_state_dict(pretrained_dict)
     model.eval()
 
@@ -451,6 +426,6 @@ def convert(pth_file_path, onnx_file_path):
 
 
 if __name__ == "__main__":
-    pth_path = sys.argv[1]
-    onnx_path = sys.argv[2]
-    convert(pth_path, onnx_path)
+    PTHPATH = sys.argv[1]
+    ONNXPATH = sys.argv[2]
+    convert(PTHPATH, ONNXPATH)
