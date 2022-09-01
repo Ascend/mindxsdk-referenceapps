@@ -20,6 +20,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProt
 import cv2
 from tqdm import tqdm
 
+
 def resize(img, size, interpolation):
     if isinstance(size, int):
         w, h = img.size
@@ -34,6 +35,7 @@ def resize(img, size, interpolation):
         return img.resize((ow, oh), interpolation)
     return img.resize(size[::-1], interpolation)
 
+
 def getImgB(img_path_):
     with open(img_path_, 'rb') as f_:
         image = Image.open(f_).convert('RGB')
@@ -43,6 +45,7 @@ def getImgB(img_path_):
     image = np.expand_dims(image, axis=0)
     print(image.shape)
     return image.tobytes()
+
 
 def colormap_cityscapes():
     cmap = np.zeros([20, 3]).astype(np.uint8)
@@ -71,10 +74,12 @@ def colormap_cityscapes():
     cmap[19, :] = np.array([0, 0, 0])
     return cmap
 
-def load_image(fileName):
-    return Image.open(fileName)
 
-def infer(img_path_, streamManagerApi_):
+def load_image(file_name):
+    return Image.open(file_name)
+
+
+def infer(img_path_, stream_manager_api_):
     dataInput = MxDataInput()
 
     streamName = b'erfnet'
@@ -91,7 +96,7 @@ def infer(img_path_, streamManagerApi_):
     protobuf.type = b'MxTools.MxpiVisionList'
     protobuf.protobuf = visionList.SerializeToString()
     protobufVec.push_back(protobuf)
-    uniqueId = streamManagerApi_.SendProtobuf(streamName, 0, protobufVec)
+    uniqueId = stream_manager_api_.SendProtobuf(streamName, 0, protobufVec)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -100,7 +105,7 @@ def infer(img_path_, streamManagerApi_):
     key = b'mxpi_tensorinfer0'
     keyVec = StringVector()
     keyVec.push_back(key)
-    inferResult = streamManagerApi_.GetProtobuf(streamName, 0, keyVec)
+    inferResult = stream_manager_api_.GetProtobuf(streamName, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
@@ -115,6 +120,7 @@ def infer(img_path_, streamManagerApi_):
     shape = result.tensorPackageVec[0].tensorVec[0].tensorShape
     vision_data_ = vision_data_.reshape(shape)
     return vision_data_
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()

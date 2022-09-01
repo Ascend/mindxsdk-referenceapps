@@ -21,21 +21,24 @@ from tqdm import tqdm
 
 from infer import resize, getImgB, colormap_cityscapes, load_image, infer
 
+
 def is_image(filename):
     return any(filename.endswith(ext) for ext in ['.jpg', '.png'])
+
 
 def is_label(filename):
     return filename.endswith("_labelTrainIds.png")
 
-class iouEval_1:
 
-    def __init__(self, nClasses, ignoreIndex=19):
-        self.nClasses = nClasses
-        self.ignoreIndex = ignoreIndex if nClasses > ignoreIndex else -1
+class IouEval:
+
+    def __init__(self, NumClasses, ignoreIndex=19):
+        self.NumClasses = NumClasses
+        self.ignoreIndex = ignoreIndex if NumClasses > ignoreIndex else -1
         self.reset()
 
     def reset(self):
-        classes = self.nClasses if self.ignoreIndex == -1 else self.nClasses-1
+        classes = self.NumClasses if self.ignoreIndex == -1 else self.NumClasses-1
         self.tp = np.zeros([classes], dtype=np.float32)
         self.fp = np.zeros([classes], dtype=np.float32)
         self.fn = np.zeros([classes], dtype=np.float32)
@@ -45,9 +48,10 @@ class iouEval_1:
         def toOneHot(tensor):
             if tensor.shape[1] == 1:
                 pixnum = tensor.shape[2] * tensor.shape[3]
-                onehot = np.zeros((self.nClasses, pixnum))
+                onehot = np.zeros((self.NumClasses, pixnum))
                 onehot[tensor.reshape(-1), np.arange(pixnum)] = 1
-                onehot = onehot.reshape((1, self.nClasses, tensor.shape[2], tensor.shape[3]))
+                onehot = onehot.reshape(
+                    (1, self.NumClasses, tensor.shape[2], tensor.shape[3]))
                 onehot = onehot.astype(np.float64)
             else:
                 onehot = tensor.float()
@@ -64,12 +68,12 @@ class iouEval_1:
             ignores_ = 0
 
         def agragate(tensor):
-            res = np.sum(
-                np.sum(np.sum(tensor, axis=0, keepdims=True), 
-                        axis=2, keepdims=True), 
+            res_ = np.sum(
+                np.sum(np.sum(tensor, axis=0, keepdims=True),
+                       axis=2, keepdims=True),
                 axis=3, keepdims=True
             )
-            return np.squeeze(res)
+            return np.squeeze(res_)
 
         tpmult_ = x_onehot_ * y_onehot_
         tp_ = agragate(tpmult_)
@@ -89,6 +93,7 @@ class iouEval_1:
         den = self.tp + self.fp + self.fn + 1e-15
         iou = num / den
         return np.mean(iou), iou
+
 
 class cityscapes_val_datapath:
 
@@ -116,6 +121,7 @@ class cityscapes_val_datapath:
 
     def __len__(self):
         return len(self.filenames)
+
 
 if __name__ == '__main__':
 
@@ -145,7 +151,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    metrics = iouEval_1(nClasses=20)
+    metrics = iouEval_1(NumClasses=20)
     datasets = cityscapes_val_datapath(data_path)
     for image_path, target_path in tqdm(datasets):
         with os.open(target_path, 'rb') as f:
@@ -159,7 +165,8 @@ if __name__ == '__main__':
         res = infer(image_path, streamManagerApi)
         res = res.reshape(1, 20, 512, 1024)
 
-        preds_ = np.expand_dims(res.argmax(axis=1).astype(np.int32), 1).astype(np.int32)
+        preds_ = np.expand_dims(res.argmax(
+            axis=1).astype(np.int32), 1).astype(np.int32)
         labels_ = np.expand_dims(target.astype(np.int32), 1).astype(np.int32)
         metrics.addBatch(preds_, labels_)
 
@@ -172,4 +179,3 @@ if __name__ == '__main__':
     print("iou_class: ", iou_class)
 
     streamManagerApi.DestroyAllStreams()
-

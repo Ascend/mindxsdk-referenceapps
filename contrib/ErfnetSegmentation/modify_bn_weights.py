@@ -12,30 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import onnx
-import numpy as np
 import struct
 import re
 import sys
+import onnx
+import numpy as np
 
 onnx_model = onnx.load(sys.argv[1])
 graph = onnx_model.graph
-epsilon = 0.01
 
-def check_string(re_exp, str):
+
+def check_string_(re_exp, str):
     res = re.search(re_exp, str)
     if res:
         return True
     else:
         return False
-    
+
+
 for node in graph.initializer:
-    if check_string('.*bn.*weight', node.name):
+    if check_string_('.*bn.*weight', node.name):
         f = ''
         for i in range(node.dims[0]):
             f += 'f'
         value = np.array(struct.unpack(f, node.raw_data), dtype=np.float32)
-        value = np.where(abs(value) > epsilon, value, epsilon)
+        value = np.where(abs(value) > 0.01, value, 0.01)
         value = struct.pack(f, *value)
         node.raw_data = value
 
