@@ -221,7 +221,7 @@ bash run.sh
 
 
 
-# 6 精度验证
+## 6 精度验证
 
 本模型使用VOC数据集进行训练与精度评估。
 
@@ -247,7 +247,7 @@ with open("./result.json", 'w') as f:
 	f.write(str(ret))
 ````
 
-4、将`voc2012trainval.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。
+4、将`voc2012trainval.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。这里`voc2012trainval.json`为`VOC`数据集转`COCO`数据集后的格式文件，具体参考[教程](https://blog.csdn.net/sinat_28371057/article/details/114683354)。这里直接提供`voc2012trainval.json`文件。
 
 5、在`precision_analysis`目录运行
 
