@@ -1,5 +1,5 @@
 
-python PraNet_pth2onnx.py   ./PraNet-19.pth  ./PraNet-19.onnx
+python pranet_pth2onnx.py   ./PraNet-19.pth  ./PraNet-19.onnx
 python -m onnxsim PraNet-19.onnx PraNet-19_dybs_sim.onnx --input-shape=1,3,352,352 --dynamic-input-shape
 export install_path=/usr/local/Ascend/ascend-toolkit/latest
 export PATH=/usr/local/python3.7.5/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH

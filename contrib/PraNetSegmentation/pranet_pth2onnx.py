@@ -18,11 +18,12 @@ import torch.onnx
 from torch import nn
 import torch.nn.functional as F
 
+
 class Bottle2neck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, \
-        base_width=26, scale=4, stype='normal'):
+    def __init__(self, inplanes, planes, stride=1, downsample=None,
+                 base_width=26, scale=4, stype='normal'):
         """ Constructor
         Args:
             inplanes: input channel dimensionality
@@ -135,6 +136,23 @@ class Res2Net(nn.Module):
                 nn.init.constant_(ming.weight, 1)
                 nn.init.constant_(ming.bias, 0)
 
+    def forward(self, xing):
+        xing = self.conv1(xing)
+        xing = self.bn1(xing)
+        xing = self.relu(xing)
+        xing = self.maxpool(xing)
+
+        xing = self.layer1(xing)
+        xing = self.layer2(xing)
+        xing = self.layer3(xing)
+        xing = self.layer4(xing)
+
+        xing = self.avgpool(xing)
+        xing = xing.view(xing.size(0), -1)
+        xing = self.f_c(xing)
+
+        return xing
+
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
@@ -155,23 +173,6 @@ class Res2Net(nn.Module):
                           base_width=self.base_width, scale=self.scale))
 
         return nn.Sequential(*layers)
-
-    def forward(self, xing):
-        xing = self.conv1(xing)
-        xing = self.bn1(xing)
-        xing = self.relu(xing)
-        xing = self.maxpool(xing)
-
-        xing = self.layer1(xing)
-        xing = self.layer2(xing)
-        xing = self.layer3(xing)
-        xing = self.layer4(xing)
-
-        xing = self.avgpool(xing)
-        xing = xing.view(xing.size(0), -1)
-        xing = self.f_c(xing)
-
-        return xing
 
 
 def res2net50_v1b(**kwargs):
@@ -351,7 +352,8 @@ class PraNet(nn.Module):
         xing = F.relu(self.ra4_conv4(xing))
         ra4_feat = self.ra4_conv5(xing)
         xing = ra4_feat + crop_4
-        temp = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
+        temp = xing.reshape(xing.size(1), xing.size(0),
+                            xing.size(2), xing.size(3))
         # NOTES: Sup-2 (bs, 1, 11, 11) -> (bs, 1, 352, 352)
         lateral_map_4 = F.interpolate(temp, scale_factor=32, mode='bilinear')
         lateral_map_4 = lateral_map_4.reshape(lateral_map_4.size(
@@ -368,7 +370,8 @@ class PraNet(nn.Module):
         xing = F.relu(self.ra3_conv3(xing))
         ra3_feat = self.ra3_conv4(xing)
         xing = ra3_feat + crop_3
-        temp1 = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
+        temp1 = xing.reshape(xing.size(1), xing.size(0),
+                             xing.size(2), xing.size(3))
         # NOTES: Sup-3 (bs, 1, 22, 22) -> (bs, 1, 352, 352)
         lateral_map_3 = F.interpolate(temp1, scale_factor=16, mode='bilinear')
         lateral_map_3 = lateral_map_3.reshape(lateral_map_3.size(
@@ -385,13 +388,14 @@ class PraNet(nn.Module):
         xing = F.relu(self.ra2_conv3(xing))
         ra2_feat = self.ra2_conv4(xing)
         xing = ra2_feat + crop_2
-        temp2 = xing.reshape(xing.size(1), xing.size(0), xing.size(2), xing.size(3))
+        temp2 = xing.reshape(xing.size(1), xing.size(0),
+                             xing.size(2), xing.size(3))
         # NOTES: Sup-4 (bs, 1, 44, 44) -> (bs, 1, 352, 352)
         lateral_map_2 = F.interpolate(temp2, scale_factor=8, mode='bilinear')
         lateral_map_2 = lateral_map_2.reshape(lateral_map_2.size(
             1), lateral_map_2.size(0), lateral_map_2.size(2), lateral_map_2.size(3))
 
-        return lateral_map_5, lateral_map_4, lateral_map_3, lateral_map_2
+        return [lateral_map_5, lateral_map_4, lateral_map_3, lateral_map_2]
 
 
 def proc_node_module(checkpoint, attr_name):

@@ -24,7 +24,7 @@ import imageio
 
 
 def my_open(file_path, asdads):
-    fd_asd = os.open(file_path, os.O_RDWR|os.O_CREAT )
+    fd_asd = os.open(file_path, os.O_RDWR | os.O_CREAT)
     file__22 = os.fdopen(fd_asd, asdads)
     return file__22
 
@@ -50,11 +50,11 @@ def resize(img, size, interpolation=2, max_size=None):
     return img.resize(size[::-1], interpolation)
 
 
-def infer(data, stream_manager_api):
+def infer(data_, stream_manager_api):
     data_input = MxDataInput()
 
     stream_name = b'pranet'
-    data_input.data = data
+    data_input.data = data_
     protobuf_vec = InProtobufVector()
     vision_list = MxpiDataType.MxpiVisionList()
     vision_vec = vision_list.visionVec.add()
@@ -89,13 +89,13 @@ def infer(data, stream_manager_api):
     result.ParseFromString(infer_result[0].messageBuf)
     vision_data_ = result.tensorPackageVec[0].tensorVec[3].dataStr
     vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
-    shape = result.tensorPackageVec[0].tensorVec[3].tensorShape
-    vision_data_ = vision_data_.reshape(shape)
+    shape_ = result.tensorPackageVec[0].tensorVec[3].tensorShape
+    vision_data_ = vision_data_.reshape(shape_)
     return vision_data_
 
 
 def rgb_loader(path):
-    
+
     with my_open(path, 'rb') as file_:
         img = Image.open(file_)
         return img.convert('RGB')
@@ -112,9 +112,6 @@ if __name__ == '__main__':
     pipeline_path = config.pipeline_path
     data_path = config.data_path
     output_path = config.output_path
-
-    images_path = '{}/images/'.format(data_path)
-    gts_path = '{}/masks/'.format(data_path)
 
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()

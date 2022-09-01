@@ -32,7 +32,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | 序号 | 子系统 | 功能描述     |
 | ---- | ------ | ------------ |
 | 1    | pth2om.sh    | 生成om模型的脚本 |
-| 2    | PraNet_pth2onnx.py    | 生成onnx模型的脚本 |
+| 2    | pranet_pth2onnx.py    | 生成onnx模型的脚本 |
 
 表1.3 SDK推理系统系统方案中各模块功能：
 
@@ -48,7 +48,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ```
 |-- pranet_pipeline.json    // SDK的推理pipeline配置文件
-|-- PraNet_pth2onnx.py      // 生成onnx模型的脚本 
+|-- pranet_pth2onnx.py      // 生成onnx模型的脚本 
 |-- infer.py                // 实现推理功能的脚本           
 |-- test_metric.py          // 测试模型精度的脚本           
 |-- pth2om.sh               // 生成om模型的脚本             

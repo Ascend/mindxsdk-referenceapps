@@ -74,7 +74,7 @@ def divide(gting_2, xing, ying):
     wing3 = l_b.size / gting_2.size
     wing4 = r_b.size / gting_2.size
 
-    return l_t, r_t, l_b, r_b, wing1, wing2, wing3, wing4
+    return [l_t, r_t, l_b, r_b, wing1, wing2, wing3, wing4]
 
 
 def ssim(pred, gting_4):
@@ -207,7 +207,7 @@ def fmeasure_calu(pred, gting_66, threshold_1):
         dice = 2 * num_and / (num_obj + num_pred)
         f_metric = ((2.0 * pre_ftem * recall_ftem) / (pre_ftem + recall_ftem))
 
-    return pre_ftem, recall_ftem, speci_ftem, dice, f_metric, iou
+    return [pre_ftem, recall_ftem, speci_ftem, dice, f_metric, iou]
 
 
 def alignment_term(pred, gtinga):
@@ -241,6 +241,18 @@ def enhanced_measure(pred, gtingb):
     return score
 
 
+def rgb_loader(path):
+    file_22 = my_open(path, "rb")
+    img = Image.open(file_22)
+    return img.convert('RGB')
+
+
+def binary_loader(path):
+    file_33 = my_open(path, "rb")
+    img = Image.open(file_33)
+    return img.convert('L')
+
+
 class TestDataset:
     def __init__(self, image_root, gt_root, testsize):
         self.testsize = testsize
@@ -260,30 +272,20 @@ class TestDataset:
             [[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
 
     def load_data(self):
-        image_1 = self.rgb_loader(self.images[self.index])
+        image_1 = rgb_loader(self.images[self.index])
         image_1 = resize(image_1, (self.testsize, self.testsize))  # resize
         image_1 = np.transpose(image_1, (2, 0, 1)).astype(
             np.float32)  # to tensor 1
         image_1 = image_1 / 255  # to tensor 2
         image_1 = (image_1 - self.mean) / self.std  # normalize
 
-        gting_222 = self.binary_loader(self.gts[self.index])
+        gting_222 = binary_loader(self.gts[self.index])
         name = self.images[self.index].split('/')[-1]
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
         self.index += 1
 
-        return image_1, gting_222, self.images[self.index-1], self.gts[self.index-1]
-
-    def rgb_loader(self, path):
-        file_22 = my_open(path, "rb")
-        img = Image.open(file_22)
-        return img.convert('RGB')
-
-    def binary_loader(self, path):
-        file_33 = my_open(path, "rb")
-        img = Image.open(file_33)
-        return img.convert('L')
+        return [image_1, gting_222, self.images[self.index-1], self.gts[self.index-1]]
 
 
 if __name__ == '__main__':
