@@ -25,15 +25,8 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | 1    | 模型转换系统    | 本系统包含实现了pth文件到om文件的转换 |
 | 2    | SDK推理系统    | 本系统实现了基于SDK的模型推理 |
 
-表1.2 模型转换系统系统方案中各模块功能：
 
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | pth2om.sh    | 生成om模型的脚本 |
-| 2    | modify_bn_weights.py    | 修正模型参数的脚本 |
-| 3    | erfnet_pth2onnx.py    | 生成onnx模型的脚本 |
-
-表1.3 SDK推理系统系统方案中各模块功能：
+表1.2 SDK推理系统系统方案中各模块功能：
 
 | 序号 | 子系统 | 功能描述     |
 | ---- | ------ | ------------ |
@@ -47,17 +40,14 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ```
 |-- erfnet_pipeline.json    // SDK的推理pipeline配置文件
-|-- erfnet_pth2onnx.py      // 生成onnx模型的脚本
 |-- infer.py                // 实现推理功能的脚本
 |-- test_metric.py          // 测试模型精度的脚本
-|-- modify_bn_weights.py    // 修正模型参数的脚本
-|-- pth2om.sh               // 生成om模型的脚本
 |-- README.md               // 自述文件
 ```
 
 ### 1.5 技术实现流程
 
-本项目首先通过onnx软件将pytorch的预训练模型转化为onnx模型，然后在使用atc工具将其转化为SDK能使用的om模型。最终我们通过构建SDK推理pipeline，实现模型推理。
+本项目通过构建SDK推理pipeline，实现模型推理。
 
 ### 1.6 特性及适用场景
 
@@ -79,10 +69,10 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 
 ## 3准备工作
 
-### 生成模型文件
+### OM模型文件的获取
 
-pth权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)
-将pth权重文件下载至项目根目录（pth权重文件来源于原作者的github仓库），在项目根目录下键入` ` ` bash pth2om.sh ` `  `，会在同目录下得到`  ` ` ErfNet_bs1.om ` ` `文件。
+OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
+获取到```ErfNet_bs1.om```模型后，将其放在项目根目录下。
 
 ### 下载数据集
 
