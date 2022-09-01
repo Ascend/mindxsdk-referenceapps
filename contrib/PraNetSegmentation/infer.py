@@ -20,6 +20,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, InProt
 from tqdm import tqdm
 import imageio
 
+
 def resize(img, size, interpolation=2, max_size=None):
     if isinstance(size, int):
         w, h = img.size
@@ -29,9 +30,11 @@ def resize(img, size, interpolation=2, max_size=None):
 
         if max_size is not None:
             if new_long > max_size:
-                new_short, new_long = int(max_size * new_short / new_long), max_size
+                new_short, new_long = int(
+                    max_size * new_short / new_long), max_size
 
-        new_w, new_h = (new_short, new_long) if w <= h else (new_long, new_short)
+        new_w, new_h = (new_short, new_long) if w <= h else (
+            new_long, new_short)
 
         if (w, h) == (new_w, new_h):
             return img
@@ -39,6 +42,7 @@ def resize(img, size, interpolation=2, max_size=None):
             return img.resize((new_w, new_h), interpolation)
     else:
         return img.resize(size[::-1], interpolation)
+
 
 def infer(data, streamManagerApi_):
     dataInput = MxDataInput()
@@ -74,7 +78,7 @@ def infer(data, streamManagerApi_):
         print("GetResultWithUniqueId error. errorCode=%d" % (
             inferResult[0].errorCode))
         exit()
-    
+
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(inferResult[0].messageBuf)
     vision_data_ = result.tensorPackageVec[0].tensorVec[3].dataStr
@@ -83,10 +87,12 @@ def infer(data, streamManagerApi_):
     vision_data_ = vision_data_.reshape(shape)
     return vision_data_
 
+
 def rgb_loader(path):
     with open(path, 'rb') as f:
         img = Image.open(f)
         return img.convert('RGB')
+
 
 if __name__ == '__main__':
 
@@ -134,10 +140,11 @@ if __name__ == '__main__':
         image = rgb_loader(image_path)
         shape = image.size
 
-        image = resize(image, (352, 352)) # resize
-        image = np.transpose(image, (2,0,1)).astype(np.float32) # to tensor 1
-        image = image / 255 # to tensor 2
-        image = (image - mean) / std # normalize
+        image = resize(image, (352, 352))  # resize
+        image = np.transpose(image, (2, 0, 1)).astype(
+            np.float32)  # to tensor 1
+        image = image / 255  # to tensor 2
+        image = (image - mean) / std  # normalize
         res = infer(image.tobytes(), streamManagerApi)
 
         res = res.reshape((352, 352))

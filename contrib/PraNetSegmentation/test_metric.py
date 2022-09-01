@@ -26,6 +26,7 @@ import imageio
 
 from infer import infer, resize
 
+
 def Object(pred, gt):
     x = np.mean(pred[gt == 1])
     sigma_x = np.std(pred[gt == 1])
@@ -33,11 +34,12 @@ def Object(pred, gt):
 
     return score
 
+
 def S_Object(pred, gt):
     pred_fg = pred.copy()
     pred_fg[gt != 1] = 0.0
     O_fg = Object(pred_fg, gt)
-    
+
     pred_bg = (1 - pred.copy())
     pred_bg[gt == 1] = 0.0
     O_bg = Object(pred_bg, 1-gt)
@@ -47,13 +49,15 @@ def S_Object(pred, gt):
 
     return Q
 
+
 def centroid(gt):
     if np.sum(gt) == 0:
         return gt.shape[0] // 2, gt.shape[1] // 2
-    
+
     else:
         x, y = np.where(gt == 1)
         return int(np.mean(x).round()), int(np.mean(y).round())
+
 
 def divide(gt, x, y):
     LT = gt[:x, :y]
@@ -68,6 +72,7 @@ def divide(gt, x, y):
 
     return LT, RT, LB, RB, w1, w2, w3, w4
 
+
 def ssim(pred, gt):
     x = np.mean(pred)
     y = np.mean(gt)
@@ -76,7 +81,8 @@ def ssim(pred, gt):
     sigma_x2 = np.sum((pred - x) ** 2 / (N - 1 + np.finfo(np.float64).eps))
     sigma_y2 = np.sum((gt - y) ** 2 / (N - 1 + np.finfo(np.float64).eps))
 
-    sigma_xy = np.sum((pred - x) * (gt - y) / (N - 1 + np.finfo(np.float64).eps))
+    sigma_xy = np.sum((pred - x) * (gt - y) /
+                      (N - 1 + np.finfo(np.float64).eps))
 
     alpha = 4 * x * y * sigma_xy
     beta = (x ** 2 + y ** 2) * (sigma_x2 + sigma_y2)
@@ -87,8 +93,9 @@ def ssim(pred, gt):
         Q = 1
     else:
         Q = 0
-    
+
     return Q
+
 
 def S_Region(pred, gt):
     x, y = centroid(gt)
@@ -104,6 +111,7 @@ def S_Region(pred, gt):
 
     return Q
 
+
 def StructureMeasure(pred, gt):
     y = np.mean(gt)
 
@@ -118,15 +126,17 @@ def StructureMeasure(pred, gt):
         Q = alpha * S_Object(pred, gt) + (1 - alpha) * S_Region(pred, gt)
         if Q < 0:
             Q = 0
-    
+
     return Q
 
+
 def fspecial_gauss(size, sigma):
-       """Function to mimic the 'fspecial' gaussian MATLAB function
-       """
-       x, y = np.mgrid[-size//2 + 1:size//2 + 1, -size//2 + 1:size//2 + 1]
-       g = np.exp(-((x**2 + y**2)/(2.0*sigma**2)))
-       return g/g.sum()
+    """Function to mimic the 'fspecial' gaussian MATLAB function
+    """
+    x, y = np.mgrid[-size//2 + 1:size//2 + 1, -size//2 + 1:size//2 + 1]
+    g = np.exp(-((x**2 + y**2)/(2.0*sigma**2)))
+    return g/g.sum()
+
 
 def original_WFb(pred, gt):
     E = np.abs(pred - gt)
@@ -151,6 +161,7 @@ def original_WFb(pred, gt):
     Q = 2 * R * P / (R + P + np.finfo(np.float64).eps)
 
     return Q
+
 
 def Fmeasure_calu(pred, gt, threshold):
     if threshold > 1:
@@ -186,8 +197,9 @@ def Fmeasure_calu(pred, gt, threshold):
         SpecifTem = TN / (TN + FP)
         Dice = 2 * NumAnd / (num_obj + num_pred)
         FmeasureF = ((2.0 * PreFtem * RecallFtem) / (PreFtem + RecallFtem))
-    
+
     return PreFtem, RecallFtem, SpecifTem, Dice, FmeasureF, IoU
+
 
 def AlignmentTerm(pred, gt):
     mu_pred = np.mean(pred)
@@ -196,13 +208,16 @@ def AlignmentTerm(pred, gt):
     align_pred = pred - mu_pred
     align_gt = gt - mu_gt
 
-    align_mat = 2 * (align_gt * align_pred) / (align_gt ** 2 + align_pred ** 2 + np.finfo(np.float64).eps)
-    
+    align_mat = 2 * (align_gt * align_pred) / (align_gt ** 2 +
+                                               align_pred ** 2 + np.finfo(np.float64).eps)
+
     return align_mat
+
 
 def EnhancedAlighmentTerm(align_mat):
     enhanced = ((align_mat + 1) ** 2) / 4
     return enhanced
+
 
 def EnhancedMeasure(pred, gt):
     if np.sum(gt) == 0:
@@ -212,28 +227,34 @@ def EnhancedMeasure(pred, gt):
     else:
         align_mat = AlignmentTerm(pred, gt)
         enhanced_mat = EnhancedAlighmentTerm(align_mat)
-    
+
     score = np.sum(enhanced_mat) / (gt.size - 1 + np.finfo(np.float64).eps)
     return score
+
 
 class test_dataset:
     def __init__(self, image_root, gt_root, testsize):
         self.testsize = testsize
-        self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
-        self.gts = [gt_root + f for f in os.listdir(gt_root) if f.endswith('.tif') or f.endswith('.png')]
+        self.images = [
+            image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
+        self.gts = [
+            gt_root + f for f in os.listdir(gt_root) if f.endswith('.tif') or f.endswith('.png')]
         self.images = sorted(self.images)
         self.gts = sorted(self.gts)
         self.size = len(self.images)
         self.index = 0
-        self.mean = np.array([[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
-        self.std = np.array([[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
+        self.mean = np.array(
+            [[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
+        self.std = np.array(
+            [[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
 
     def load_data(self):
         image = self.rgb_loader(self.images[self.index])
-        image = resize(image, (self.testsize, self.testsize)) # resize
-        image = np.transpose(image, (2,0,1)).astype(np.float32) # to tensor 1
-        image = image / 255 # to tensor 2
-        image = (image - self.mean) / self.std # normalize
+        image = resize(image, (self.testsize, self.testsize))  # resize
+        image = np.transpose(image, (2, 0, 1)).astype(
+            np.float32)  # to tensor 1
+        image = image / 255  # to tensor 2
+        image = (image - self.mean) / self.std  # normalize
 
         gt = self.binary_loader(self.gts[self.index])
         name = self.images[self.index].split('/')[-1]
@@ -252,6 +273,7 @@ class test_dataset:
         with open(path, 'rb') as f:
             img = Image.open(f)
             return img.convert('L')
+
 
 if __name__ == '__main__':
 
@@ -334,7 +356,8 @@ if __name__ == '__main__':
         threshold_Dic = np.zeros(len(Thresholds))
 
         for j, threshold in enumerate(Thresholds):
-            threshold_Pr[j], threshold_Rec[j], threshold_Spe[j], threshold_Dic[j], threshold_F[j], threshold_Iou[j] = Fmeasure_calu(pred_mask, gt_mask, threshold)
+            threshold_Pr[j], threshold_Rec[j], threshold_Spe[j], threshold_Dic[j], threshold_F[j], threshold_Iou[j] = Fmeasure_calu(
+                pred_mask, gt_mask, threshold)
 
             Bi_pred = np.zeros_like(pred_mask)
             Bi_pred[pred_mask >= threshold] = 1
@@ -356,8 +379,8 @@ if __name__ == '__main__':
 
     result.extend([meanDic, meanIoU])
     results.append(["res", *result])
-    
-    json = os.path.join(result_path,'result_'+"res"+'.json')
+
+    json = os.path.join(result_path, 'result_'+"res"+'.json')
     json = open(json, 'w')
 
     headers = ['meanDic', 'meanIoU']
