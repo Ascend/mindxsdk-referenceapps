@@ -25,10 +25,8 @@ from tqdm import tqdm
 
 
 def get_image_binary(img_path_):
-    fd_1 = os.open(img_path_, os.O_RDWR | os.O_CREAT)
-    file__ = os.fdopen(fd_1, 'rb')
-    data = file__.read()
-    image = Image.open(file__)
+    with open(img_path_, 'rb') as file__:
+        image = Image.open(file__)
     output = BytesIO()
     image.save(output, format='JPEG')
     return output
@@ -59,11 +57,6 @@ if __name__ == '__main__':
 
     with open(pipeline_path, 'rb') as f:
         json_str = f.read()
-
-    # fd = os.open(pipeline_path, os.O_RDWR | os.O_CREAT)
-    # file = os.fdopen(fd, 'rb')
-    # json_str = file.read()
-    # file.close()
 
     pipeline = json.loads(json_str)
 

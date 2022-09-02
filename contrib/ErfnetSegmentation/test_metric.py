@@ -27,10 +27,8 @@ def load_image(file_name):
 
 
 def get_image_binary(img_path_):
-    fd_1 = os.open(img_path_, os.O_RDWR | os.O_CREAT)
-    file__ = os.fdopen(fd_1, 'rb')
-    image = Image.open(file__).convert('RGB')
-    file__.close()
+    with open(img_path_, 'rb') as file__:
+        image = Image.open(file__).convert('RGB')
     image = resize(image, 512, Image.BILINEAR)
     image = np.array(image).astype(np.float32) / 255
     image = image.transpose(2, 0, 1)
@@ -218,10 +216,8 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         sys.exit()
 
-    fd = os.open(pipeline_path, os.O_RDWR | os.O_CREAT)
-    file = os.fdopen(fd, "r")
-    json_str = file.read()
-    file.close()
+    with open(pipeline_path, 'r') as file:
+        json_str = file.read()
 
     pipeline = json.loads(json_str)
 
@@ -234,11 +230,8 @@ if __name__ == '__main__':
     metrics = IouEval(num_classes=20)
     datasets = CityscapesValDatapath(data_path)
     for image_path, target_path in tqdm(datasets):
-        fd = os.open(target_path, os.O_RDWR | os.O_CREAT)
-        file = os.fdopen(fd, 'rb')
-        target = load_image(file).convert('P')
-        file.close()
-
+        with open(target_path, 'rb') as file:
+            target = load_image(file).convert('P')
         target = resize(target, 512, Image.NEAREST)
         target = np.array(target).astype(np.uint32)
         target[target == 255] = 19
@@ -256,11 +249,9 @@ if __name__ == '__main__':
     mean_iou, iou_class = metrics.get_iou()
     mean_iou = mean_iou.item()
 
-    fd = os.open("metric.txt", os.O_RDWR | os.O_CREAT)
-    file = os.fdopen(fd, "w")
-    print("mean_iou: ", mean_iou, file=file)
-    print("iou_class: ", iou_class, file=file)
-    file.close()
+    with open("metric.txt", "w") as file:
+        print("mean_iou: ", mean_iou, file=file)
+        print("iou_class: ", iou_class, file=file)
 
     print("mean_iou: ", mean_iou)
     print("iou_class: ", iou_class)
