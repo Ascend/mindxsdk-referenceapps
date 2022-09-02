@@ -48,9 +48,8 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   └── VOC.names
 ├── eval
 │   ├── myeval.py
-│   ├── precision_analysis/		# 精度验证中需要下载
+│   └── precision_analysis/		# 精度验证中需要下载
 │   	└── VOC/				# 精度验证中需要下载
-│   └── VOC2COCO.py
 ├── out.jpg
 ├── pipeline
 │   ├── refinedet.pipeline
@@ -58,7 +57,6 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   └── RefineDetPostProcess
 │       ├── build.sh
 │       ├── CMakeLists.txt
-│       ├── old.cpp
 │       ├── RefineDetPostProcess.cpp
 │       └── RefineDetPostProcess.h
 ├── run.sh
@@ -228,15 +226,15 @@ bash run.sh
 1、运行以下命令，进行下载与解压。
 
 ````
-wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
-tar xvf VOCtrainval_11-May-2012.tar
+wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
+tar xvf VOCtrainval_06-Nov-2007.tar
 ````
 
 2、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。
 
 3、修改代码
 
-将`./precision_analysis/utils/parser.py`的46行从`bbox = [x0, y0, w, h]`改为`bbox = [x0, y0, x1, y1]`
+将`./precision_analysis/utils/parser.py`的47行从`bbox = [x0, y0, w, h]`改为`bbox = [x0, y0, x1, y1]`
 
 将`./precision_analysis/utils/parser.py`的86行从`    return class_id`改为`    return k`
 
@@ -247,21 +245,29 @@ with open("./result.json", 'w') as f:
 	f.write(str(ret))
 ````
 
-4、将`voc2012trainval.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。这里`voc2012trainval.json`为`VOC`数据集转`COCO`数据集后的格式文件，具体参考[教程](https://blog.csdn.net/sinat_28371057/article/details/114683354)。这里直接提供`voc2012trainval.json`文件。
+4、将`voc2007val.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。这里`voc2007val.json`为`VOC`数据集转`COCO`数据集后的格式文件，具体参考[教程](https://blog.csdn.net/sinat_28371057/article/details/114683354)。这里直接提供`voc2007val.json`文件。
 
 5、在`precision_analysis`目录运行
 
 ````
-python main.py --mode test.ssd_mobilenet_fpn.pipeline -data-loading-path ${VOC数据集路径} -label-loading-path ${VOC数据集标签路径} -pipeline-cfg-path ${SDK_pipeline文件路径} -stream-name ${pipeline配置stream名称}
+python main.py --mode test.ssd_mobilenet_fpn.evaluation -data-loading-path ${VOC数据集路径} -label-loading-path ${VOC数据集标签路径} -pipeline-cfg-path ${SDK_pipeline文件路径} -stream-name ${pipeline配置stream名称}
 ````
 
-配置 ${VOC数据集路径}：配置VOC数据集图片路径，例如：`./VOC/VOCdevkit/VOC2012/JPEGImages`
+配置 ${VOC数据集路径}：配置VOC数据集图片路径，例如：`./VOC/VOCdevkit/VOC2007/JPEGImages`
 
-配置 ${VOC数据集标签路径}：配置数据集标签文件路径，例如：`./VOC/VOCdevkit/voc2012trainval.json`
+配置 ${VOC数据集标签路径}：配置数据集标签文件路径，例如：`./VOC/VOCdevkit/voc2007val.json`
 
 配置 ${SDK_pipeline文件路径}：运行的pipeline的存放路径，例如：`../../pipeline/fortest.pipeline`
 
 配置 ${pipeline配置stream名称}：运行的pipeline中的stream名称，例如：`RefineDet`
 
-6、在`eval`目录运行`python3 myeval.py`，即可得到结果。
+这里我们给出参考指令：
+
+````
+python3 main.py --mode test.ssd_mobilenet_fpn.evaluation -data-loading-path ./VOC/VOCdevkit/VOC2007/JPEGImages -label-loading-path ./VOC/VOCdevkit/voc2007val.json -pipeline-cfg-path ../../pipeline/fortest.pipeline -stream-name RefineDet
+````
+
+
+
+6、在`eval`目录运行`python3 myeval.py`，等待一段时间后即可得到结果。
 
