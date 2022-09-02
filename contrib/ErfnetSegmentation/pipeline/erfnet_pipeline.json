@@ -1,0 +1,61 @@
+{
+    "erfnet": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0",
+                "outputDataFormat": "BGR"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+               "dataSource": "mxpi_imagedecoder0",
+               "resizeHeight": "512",
+               "resizeWidth": "1024"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./model/ErfNet_bs1.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "postprocess0"
+        },
+        "postprocess0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0"
+            },
+            "factory": "postprocess",
+            "next": "mxpi_imageencoder0"
+        },
+        "mxpi_imageencoder0": {
+	        "props": {
+                "deviceId": "0",
+                "dataSource": "postprocess0"
+            },
+            "factory": "mxpi_imageencoder",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000",
+                "location":"./testout.jpg"
+            },
+            "factory": "filesink"
+        }
+    }
+}

@@ -13,7 +13,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "appsrc0",
-                "modelPath": "./ErfNet_bs1.om"
+                "modelPath": "./model/ErfNet_bs1_metric.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "appsink0"

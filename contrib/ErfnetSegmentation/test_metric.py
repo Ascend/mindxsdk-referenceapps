@@ -16,10 +16,85 @@ import json
 from argparse import ArgumentParser
 import numpy as np
 from PIL import Image
-from StreamManagerApi import StreamManagerApi
+import MxpiDataType_pb2 as MxpiDataType
+from StreamManagerApi import StreamManagerApi,  MxDataInput, StringVector, \
+    InProtobufVector, MxProtobufIn
 from tqdm import tqdm
 
-from infer import resize, load_image, infer
+
+def load_image(file_name):
+    return Image.open(file_name)
+
+
+def get_image_binary(img_path_):
+    fd_1 = os.open(img_path_, os.O_RDWR | os.O_CREAT)
+    file__ = os.fdopen(fd_1, 'rb')
+    image = Image.open(file__).convert('RGB')
+    file__.close()
+    image = resize(image, 512, Image.BILINEAR)
+    image = np.array(image).astype(np.float32) / 255
+    image = image.transpose(2, 0, 1)
+    image = np.expand_dims(image, axis=0)
+    print(image.shape)
+    return image.tobytes()
+
+
+def infer(img_path_, stream_manager_api_):
+    data_input = MxDataInput()
+
+    stream_name = b'erfnet'
+    data_input.data = get_image_binary(img_path_)
+    proto_buf_vec = InProtobufVector()
+    vision_list = MxpiDataType.MxpiVisionList()
+    vision_vec = vision_list.visionVec.add()
+    vision_vec.visionInfo.format = 1
+    vision_vec.visionData.deviceId = 0
+    vision_vec.visionData.memType = 0
+    vision_vec.visionData.dataStr = data_input.data
+    protobuf = MxProtobufIn()
+    protobuf.key = b'appsrc0'
+    protobuf.type = b'MxTools.MxpiVisionList'
+    protobuf.protobuf = vision_list.SerializeToString()
+    proto_buf_vec.push_back(protobuf)
+    unique_id = stream_manager_api_.SendProtobuf(stream_name, 0, proto_buf_vec)
+
+    if unique_id < 0:
+        print("Failed to send data to stream.")
+        sys.exit()
+
+    key = b'mxpi_tensorinfer0'
+    key_vec = StringVector()
+    key_vec.push_back(key)
+    infer_result = stream_manager_api_.GetProtobuf(stream_name, 0, key_vec)
+    if infer_result.size() == 0:
+        print("infer_result is null")
+        sys.exit()
+    if infer_result[0].errorCode != 0:
+        print('''GetResultWithUniqueId error. errorCode=%d''' % (
+            infer_result[0].errorCode))
+        sys.exit()
+    result = MxpiDataType.MxpiTensorPackageList()
+    result.ParseFromString(infer_result[0].messageBuf)
+    vision_data_ = result.tensorPackageVec[0].tensorVec[0].dataStr
+    vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
+    shape = result.tensorPackageVec[0].tensorVec[0].tensorShape
+    vision_data_ = vision_data_.reshape(shape)
+    return vision_data_
+
+
+def resize(img, size, interpolation):
+    if isinstance(size, int):
+        width, height = img.size
+        if (width <= height and width == size) or (height <= width and height == size):
+            return img
+        if width < height:
+            o_width = size
+            o_height = int(size * height / width)
+            return img.resize((o_width, o_height), interpolation)
+        o_height = size
+        o_width = int(size * width / height)
+        return img.resize((o_width, o_height), interpolation)
+    return img.resize(size[::-1], interpolation)
 
 
 def is_image(filename):
@@ -127,7 +202,8 @@ class CityscapesValDatapath:
 if __name__ == '__main__':
 
     parser = ArgumentParser()
-    parser.add_argument('--pipeline_path', type=str)
+    parser.add_argument('--pipeline_path', type=str,
+                        default="pipeline/erfnet_pipeline_for_metric.json")
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
