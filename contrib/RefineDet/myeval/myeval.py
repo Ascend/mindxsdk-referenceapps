@@ -133,7 +133,7 @@ def main():
     global TRUTH_ANNOTATIONS
 
     filename1 = './precision_analysis/result.json'
-    filename2 = './precision_analysis/VOC/VOCdevkit/voc2012trainval.json'
+    filename2 = './precision_analysis/VOC/VOCdevkit/voc2007val.json'
     
     with open(filename1, "r") as f:
         s = f.read()
