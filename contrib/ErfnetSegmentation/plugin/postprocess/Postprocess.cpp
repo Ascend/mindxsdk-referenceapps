@@ -25,7 +25,9 @@ using namespace MxTools;
 using namespace std;
 using namespace cv;
 namespace {
-
+    const int WIDTH = 1024;
+    const int HEIGHT = 512;
+    const int CITYSACPESCLASS = 20;
     const cv::Vec3b color_map[] = {
       cv::Vec3b(128, 64, 128),
       cv::Vec3b(244, 35, 232),
@@ -96,7 +98,7 @@ void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList, std::vec
 
 //  PostProcess
 APP_ERROR MxpiPostProcess::PostProcess(std::vector<MxBase::TensorBase> &inputTensors,
-                                              uint32_t imgHeight, uint32_t imgWidth, cv::Mat &mask)
+    uint32_t imgHeight, uint32_t imgWidth, cv::Mat &mask)
 {
     LogInfo << "MxpiPostProcess::PostProcess start.";
     MxBase::TensorBase &tensor = inputTensors[0];
@@ -207,22 +209,22 @@ APP_ERROR MxpiPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer,
 }
 
 APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList srcMxpiTensorPackageList,
-                                                           MxpiVisionList& dstMxpiVisionList)
+    MxpiVisionList& dstMxpiVisionList)
 {
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackageList, tensors);
     MxBase::TensorBase *tensor = &tensors[0];
-    cv::Mat imgrgb = cv::Mat(512, 1024, CV_8UC3);
+    cv::Mat imgrgb = cv::Mat(HEIGHT, WIDTH, CV_8UC3);
     // 1 x 20 x 512 x 1024
     auto data = reinterpret_cast<float *>(tensor->GetBuffer());
-    float inferPixel[20];
-    for (size_t x = 0; x < 512; ++x) {
-        for (size_t y = 0; y < 1024; ++y) {
-        for (size_t c = 0; c < 20; ++c) {
-            inferPixel[c] = *(data + c * 1024 * 512 + x * 1024 + y);  // c, x, y
+    float inferPixel[CITYSACPESCLASS];
+    for (size_t x = 0; x < HEIGHT; ++x) {
+        for (size_t y = 0; y < WIDTH; ++y) {
+        for (size_t c = 0; c < CITYSACPESCLASS; ++c) {
+            inferPixel[c] = *(data + c * WIDTH * HEIGHT + x * WIDTH + y);  // c, x, y
         }
-        size_t max_index = std::max_element(inferPixel, inferPixel + 20) - inferPixel;
+        size_t max_index = std::max_element(inferPixel, inferPixel + CITYSACPESCLASS) - inferPixel;
         imgrgb.at<cv::Vec3b>(x, y) = color_map[max_index];
         }
     }

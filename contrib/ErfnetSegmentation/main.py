@@ -14,6 +14,7 @@ import os
 import sys
 import json
 from argparse import ArgumentParser
+from io import BytesIO
 import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
@@ -21,7 +22,6 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector, \
     InProtobufVector, MxProtobufIn
 import cv2
 from tqdm import tqdm
-from io import BytesIO
 
 
 def get_image_binary(img_path_):
@@ -37,8 +37,8 @@ def get_image_binary(img_path_):
 def infer(img_path_, stream_manager_api_):
     data_input = MxDataInput()
     data_input.data = get_image_binary(img_path_).getvalue()
-    uniqueId = stream_manager_api_.SendData(b'erfnet', 0, data_input)
-    if uniqueId < 0:
+    unique_id = stream_manager_api_.SendData(b'erfnet', 0, data_input)
+    if unique_id < 0:
         print("Failed to send data to stream.")
 
 
