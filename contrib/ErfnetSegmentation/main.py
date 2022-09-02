@@ -41,7 +41,6 @@ def infer(img_path_, stream_manager_api_):
     if unique_id < 0:
         print("Failed to send data to stream.")
 
-
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str,
@@ -58,10 +57,13 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         sys.exit()
 
-    fd = os.open(pipeline_path, os.O_RDWR | os.O_CREAT)
-    file = os.fdopen(fd, 'rb')
-    json_str = file.read()
-    file.close()
+    with open(pipeline_path, 'rb') as f:
+        json_str = f.read()
+
+    # fd = os.open(pipeline_path, os.O_RDWR | os.O_CREAT)
+    # file = os.fdopen(fd, 'rb')
+    # json_str = file.read()
+    # file.close()
 
     pipeline = json.loads(json_str)
 

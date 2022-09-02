@@ -177,13 +177,10 @@ APP_ERROR MxpiPostProcess::Mat2MxpiVision(size_t idx, const cv::Mat& mat, MxTool
 APP_ERROR MxpiPostProcess::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
     LogInfo << "MxpiPostProcess::Init start.";
-    LogInfo << "=============================================================================================== Init";
-    LogInfo << "=============================================================================================== Init";
     APP_ERROR ret = APP_ERR_OK;
     // Get the property values by key 插件对应的属性值将通过“configParamMap”入参传入，可通过属性名称获取。
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
-    LogInfo << "=============================================================================================== Init " << parentName_;
     return APP_ERR_OK;
 }
 
@@ -237,7 +234,6 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
 
 APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
 {
-    LogInfo << "=============================================================================================== Process start";
     LogInfo << "MxpiPostProcess::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);     // Get metadata by key
