@@ -369,7 +369,7 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataType", "dataType", "the dataType  float32 or uint8 ", "uint8", "NULL", "NULL"});
     auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int>{
-        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 1, 16}); 
+        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4}); 
     auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
 		            STRING, "option", "option", "OPTION of plugin", "resize", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
