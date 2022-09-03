@@ -248,7 +248,7 @@ if __name__ == '__main__':
             try:
                 preds = Image.open(RESIMAGE).convert('RGB')
                 break
-            except:
+            except (OSError, FileNotFoundError, PIL.UnidentifiedImageError, SyntaxError):
                 continue
             continue
         preds = np.array(preds)
