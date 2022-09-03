@@ -182,9 +182,9 @@ class CityscapesValDatapath:
                              for f in fn if is_label(f)]
         self.filenames_gt.sort()
 
-    def __getitem__(self, index):
-        filename = self.filenames[index]
-        filename_gt = self.filenames_gt[index]
+    def __getitem__(self, index_):
+        filename = self.filenames[index_]
+        filename_gt = self.filenames_gt[index_]
 
         return filename, filename_gt
 
@@ -241,10 +241,10 @@ if __name__ == '__main__':
         target = target.reshape(512, 1024)
         target = target[np.newaxis, :, :]
 
-        res_image = "infer_result/" + str(index) + ".png"
+        RESIMAGE = "infer_result/" + str(index) + ".png"
         while True:  # 轮询, 等待异步线程
             try:
-                preds = Image.open(res_image).convert('RGB')
+                preds = Image.open(RESIMAGE).convert('RGB')
                 break
             except:
                 continue

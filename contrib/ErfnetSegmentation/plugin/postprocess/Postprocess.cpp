@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -230,9 +230,6 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
     }
     LogInfo << INFER_RESULT_PATH + std::to_string(this->index) + ".png" << " saved !";
     cv::imwrite(INFER_RESULT_PATH + std::to_string(this->index++) + ".png", imgrgb);
-    // APP_ERROR ret;
-    // ret = GenerateVisionList(imgrgb, dstMxpiVisionList);
-    // return APP_ERR_OK;
 }
 
 APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
@@ -277,25 +274,6 @@ APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<MxpiVisionList> dstMxpiVisionListSptr = make_shared<MxpiVisionList>();
     APP_ERROR ret = GenerateVisionListOutput(*srcMxpiTensorPackageListSptr, *dstMxpiVisionListSptr);
-    // if (ret != APP_ERR_OK) {
-    //     LogError << GetError(ret, pluginName_) << "MxpiPostProcess gets inference information failed.";
-    //     mxpiErrorInfo.ret = ret;
-    //     mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-    //     SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-    //     return ret;
-    // }
-
-    // // Add Generated data to metedata
-    // ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiVisionListSptr));
-    // if (ret != APP_ERR_OK) {
-    //     ErrorInfo_ << GetError(ret, pluginName_) << "MxpiPostProcess add metadata failed.";
-    //     mxpiErrorInfo.ret = ret;
-    //     mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-    //     SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-    //     return ret;
-    // }
-    // // Send the data to downstream plugin
-    // SendData(0, *buffer);
     LogInfo << "MxpiPostProcess::Process end";
     return APP_ERR_OK;
 }

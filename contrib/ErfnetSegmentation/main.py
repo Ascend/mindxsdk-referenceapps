@@ -70,10 +70,10 @@ if __name__ == '__main__':
         img_path = os.path.join(data_path, img_name)
         print(index, img_path)
         infer(img_path, streamManagerApi)
-        res_image = "infer_result/" + str(index) + ".png"
+        RESIMAGE = "infer_result/" + str(index) + ".png"
         while True:  # 轮询, 等待异步线程
             try:
-                preds = Image.open(res_image).convert('RGB')
+                preds = Image.open(RESIMAGE).convert('RGB')
                 break
             except:
                 continue
