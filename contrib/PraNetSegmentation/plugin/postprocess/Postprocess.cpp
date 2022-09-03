@@ -212,7 +212,6 @@ APP_ERROR MxpiPostProcess::SetMxpiErrorInfo(MxpiBuffer& buffer,
 APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList srcMxpiTensorPackageList,
     MxpiVisionList& dstMxpiVisionList)
 {
-
     // Get Tensor
     std::vector<MxBase::TensorBase> tensors = {};
     GetTensors(srcMxpiTensorPackageList, tensors);
@@ -228,7 +227,7 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
         for (size_t y = 0; y < WIDTH; ++y) {
             pixel = *(data + x * WIDTH + y);
             pixel = 1 / (1 + exp(-pixel)); // sigmoid
-            imgrgbf.at<cv::Vec3f>(y, x) = cv::Vec3f{pixel, pixel, pixel};  // 转置
+            imgrgbf.at<cv::Vec3f>(y, x) = cv::Vec3f {pixel, pixel, pixel};  // 转置
         }
     }
     float max_value = *std::max_element(imgrgbf.begin<float>(), imgrgbf.end<float>());
@@ -239,7 +238,7 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
             pixel = (pixel - min_value) / (max_value - min_value + EPS_); // normalize
             pixel_64bit = static_cast<float64_t>(pixel) * NNN + ZZZ; // 转精度
             pixel_8bit = static_cast<uint8_t>(pixel_64bit);
-            imgrgb.at<cv::Vec3b>(x, y) = cv::Vec3b{pixel_8bit, pixel_8bit, pixel_8bit};
+            imgrgb.at<cv::Vec3b>(x, y) = cv::Vec3b {pixel_8bit, pixel_8bit, pixel_8bit};
         }
     }
     LogInfo << INFER_RESULT_PATH + std::to_string(this->index) + ".png" << " saved !";
@@ -259,7 +258,6 @@ APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-
         ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiSamplePlugin process is not implemented";
         mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -276,8 +274,6 @@ APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-
-
     // check whether the proto struct name is MxpiTensorPackageList
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
@@ -301,8 +297,6 @@ APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return ret;
     }
-
-
     // Add Generated data to metedata
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiVisionListSptr));
     if (ret != APP_ERR_OK) {

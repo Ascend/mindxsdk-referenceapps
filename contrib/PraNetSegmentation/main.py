@@ -71,6 +71,10 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
+    INFER_RESULT = "infer_result/"
+    if not os.path.exists(INFER_RESULT):
+        os.mkdir(INFER_RESULT)
+
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
@@ -90,19 +94,16 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         sys.exit()
 
-    mean = np.array([[[0.485]], [[0.456]], [[0.406]]], dtype=np.float32)
-    std = np.array([[[0.229]], [[0.224]], [[0.225]]], dtype=np.float32)
-
     if len(os.listdir(data_path)) == 0:
         raise RuntimeError("No Input Image!")
 
-    for index, data in tqdm(enumerate(os.listdir(data_path))):
+    for index, data in tqdm(enumerate(sorted(os.listdir(data_path)))):
         image_path = os.path.join(data_path, data)
 
-        print(image_path)
+        print("====", image_path)
         infer(image_path, streamManagerApi)
 
         while True:  # 轮询, 等待异步线程
-            if os.path.exists("infer_result/" + str(index) + ".png"):
+            if os.path.exists(INFER_RESULT + str(index) + ".png"):
                 break
     streamManagerApi.DestroyAllStreams()

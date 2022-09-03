@@ -93,16 +93,6 @@ Kvasir
 ├── masks
 ```
 
-### 创建推理文件目录
-
-在项目根目录下键入
-
-```
-mkdir infer_result
-```
-
-以创建推理输出目录
-
 ## 4SDK推理
 
 在项目根目录下键入
@@ -113,7 +103,7 @@ python main.py --pipeline_path pipeline/pranet_pipeline.json --data_path /path/t
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
 ` ` ` --data_path ` `  `参数为数据集的路径；参数是推理结果的输出路径。
-最终用户可以在output_path路径下查看结果。
+最终用户可以在```./infer_result/```路径下查看结果。
 
 ## 5测试精度
 

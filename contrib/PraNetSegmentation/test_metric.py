@@ -290,13 +290,16 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
-    RESPATH = "./"
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
     IMAGESPTH = '{}/images/'.format(data_path)
     GTSPATH = '{}/masks/'.format(data_path)
     dataset = TestDataset(IMAGESPTH, GTSPATH, 352)
+
+    INFER_RESULT = "infer_result/"
+    if not os.path.exists(INFER_RESULT):
+        os.mkdir(INFER_RESULT)
 
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
@@ -330,12 +333,12 @@ if __name__ == '__main__':
         image = np.array(image).astype(np.float32)
         infer(image_path, streamManagerApi)
 
-        res_path = "infer_result/"+str(i)+".png"
+        RESPATH = INFER_RESULT + str(i) + ".png"
         while True:  # 轮询, 等待异步线程
             try:
-                pred_mask = np.array(Image.open(res_path))
+                pred_mask = np.array(Image.open(RESPATH))
                 break
-            except:
+            except (OSError, FileNotFoundError, PIL.UnidentifiedImageError, SyntaxError):
                 pass
         gt_mask = np.array(Image.open(gt_path))
 
