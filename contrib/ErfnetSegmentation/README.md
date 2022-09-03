@@ -88,16 +88,6 @@ bash onnx2om.sh
   + 下载leftImg8bit.zip以获得RGB图片, 下载gtFine.zip以获得标签.
   + 应使用的标签为"_labelTrainIds"而非"_labelIds", 你可以下载[cityscapes scripts](https://github.com/mcordts/cityscapesScripts)并使用[conversor](https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/preparation/createTrainIdLabelImgs.py)来生成trainIds。
 
-### 创建推理文件目录
-
-在项目根目录下键入
-
-```
-mkdir infer_result
-```
-
-以创建推理输出目录
-
 ## 4SDK推理
 
 在项目根目录下键入
@@ -108,7 +98,7 @@ python main.py --pipeline_path ./pipeline/erfnet_pipeline.json  --data_path ./da
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
 ` ` ` --data_path ` `  `参数为数据所在文件夹的路径，本项目提供了一个样例图片位于```./data/```目录下；
-最终用户可以在项目根目录下找到推理结果```testout.jpg```图片。
+最终用户可以在项目根目录下找到推理结果```./infer_result/```图片。
 
 ## 5测试精度
 

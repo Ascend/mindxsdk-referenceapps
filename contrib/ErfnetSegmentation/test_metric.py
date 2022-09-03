@@ -196,12 +196,16 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str,
-                        default="pipeline/erfnet_pipeline_for_metric.json")
+                        default="pipeline/erfnet_pipeline.json")
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
     pipeline_path = config.pipeline_path
     data_path = config.data_path
+
+    INFER_RESULT = "infer_result/"
+    if not os.path.exists(INFER_RESULT):
+        os.mkdir(INFER_RESULT)
 
     datapath = CityscapesValDatapath(data_path)
 
@@ -228,8 +232,6 @@ if __name__ == '__main__':
     datasets = CityscapesValDatapath(data_path)
     print(len(datasets))
     for index, (image_path, target_path) in tqdm(enumerate(datasets)):
-        # if index != 0:
-        #     continue
         print(index, image_path)
         print(index, target_path)
         infer(image_path, streamManagerApi)
@@ -241,13 +243,14 @@ if __name__ == '__main__':
         target = target.reshape(512, 1024)
         target = target[np.newaxis, :, :]
 
-        RESIMAGE = "infer_result/" + str(index) + ".png"
+        RESIMAGE = INFER_RESULT + str(index) + ".png"
         while True:  # 轮询, 等待异步线程
             try:
                 preds = Image.open(RESIMAGE).convert('RGB')
                 break
             except:
                 continue
+            continue
         preds = np.array(preds)
         preds = preds.transpose(2, 0, 1)
         preds = np.expand_dims(preds, 0).astype(np.uint8)
@@ -259,11 +262,6 @@ if __name__ == '__main__':
 
     mean_iou, iou_class = metrics.get_iou()
     mean_iou = mean_iou.item()
-
-    with open("metric.txt", "w") as file:
-        print("mean_iou: ", mean_iou, file=file)
-        print("iou_class: ", iou_class, file=file)
-
     print("mean_iou: ", mean_iou)
     print("iou_class: ", iou_class)
 

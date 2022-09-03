@@ -40,14 +40,6 @@
                 "dataSource": "mxpi_tensorinfer0"
             },
             "factory": "postprocess",
-            "next": "mxpi_imageencoder0"
-        },
-        "mxpi_imageencoder0": {
-	        "props": {
-                "deviceId": "0",
-                "dataSource": "postprocess0"
-            },
-            "factory": "mxpi_imageencoder",
             "next": "appsink0"
         },
         "appsink0": {

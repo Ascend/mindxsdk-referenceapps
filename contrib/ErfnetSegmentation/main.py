@@ -46,6 +46,10 @@ if __name__ == '__main__':
     pipeline_path = config.pipeline_path
     data_path = config.data_path
 
+    INFER_RESULT = "infer_result/"
+    if not os.path.exists(INFER_RESULT):
+        os.mkdir(INFER_RESULT)
+
     streamManagerApi = StreamManagerApi()
     ret = streamManagerApi.InitManager()
     if ret != 0:
@@ -70,7 +74,7 @@ if __name__ == '__main__':
         img_path = os.path.join(data_path, img_name)
         print(index, img_path)
         infer(img_path, streamManagerApi)
-        RESIMAGE = "infer_result/" + str(index) + ".png"
+        RESIMAGE = INFER_RESULT + str(index) + ".png"
         while True:  # 轮询, 等待异步线程
             try:
                 preds = Image.open(RESIMAGE).convert('RGB')
