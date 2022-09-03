@@ -65,7 +65,6 @@
 .
 ├── image
 │   ├── pipeline.jpg
-│   └── opencv_crop.pipeline
 ├── OpenCVPlugin
 │   ├── build.sh
 │   ├── CMakeLists.txt
@@ -73,7 +72,7 @@
 │   └── mxpisampleplugin.h
 ├── python
 │   ├── main.py
-│   └── opencv_crop.pipeline
+│   └── test.pipeline
 └── README.md
 
 ```
