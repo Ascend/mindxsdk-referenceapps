@@ -392,19 +392,6 @@ if __name__ == '__main__':
     results.append(["res", *result])
 
     headers = ['meanDic', 'meanIoU']
-    csv = os.path.join(RESPATH, 'result_' + "res" + '.csv')
-    with open(csv, 'w') as csv:
-        csv.write(', '.join(['method', *headers]) + '\n')
-        METHOD = "pranet"
-        OUTSTR = METHOD + ','
-        for metric in result:
-            OUTSTR += '{:.4f}'.format(metric) + ','
-        OUTSTR += '\n'
-        csv.write(OUTSTR)
-
-    json = os.path.join(RESPATH, 'result_'+"res"+'.json')
-    with open(json, 'w') as json:
-        json.write(OUTSTR)
     print(tabulate(results, headers=['dataset', *headers], floatfmt=".3f"))
     print("#"*20, "End Evaluation", "#"*20)
 

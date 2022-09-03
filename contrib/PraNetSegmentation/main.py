@@ -97,18 +97,7 @@ if __name__ == '__main__':
         raise RuntimeError("No Input Image!")
 
     for index, data in tqdm(enumerate(os.listdir(data_path))):
-        if index != 0:
-            # continue
-            pass
         image_path = os.path.join(data_path, data)
-
-        # image = rgb_loader(image_path)
-        # image = resize(image, (352, 352))  # resize
-        # image = np.transpose(image, (2, 0, 1)).astype(np.float32)  # to tensor 1
-        # image = image / 255  # to tensor 2
-        # image = (image - mean) / std  # normalize
-        # image = np.expand_dims(image, 0)
-        # res = infer_1(image.tobytes(), streamManagerApi)
 
         print(image_path)
         infer(image_path, streamManagerApi)
@@ -116,16 +105,4 @@ if __name__ == '__main__':
         while True:  # 轮询, 等待异步线程
             if os.path.exists("infer_result/" + str(index) + ".png"):
                 break
-        # break
-
-        # res = res.reshape((352, 352))
-        # res = res.T
-        # res = np.expand_dims(res, 0)
-        # res = np.expand_dims(res, 0)
-        # res = 1 / (1 + np.exp(-res))
-        # res = res.squeeze()
-        # res = (res - res.min()) / (res.max() - res.min() + 1e-8)
-        # _, name = os.path.split(image_path)
-        # imageio.imwrite(os.path.join(output_path, name), res)
-
     streamManagerApi.DestroyAllStreams()
