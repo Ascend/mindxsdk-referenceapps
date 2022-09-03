@@ -16,40 +16,33 @@ CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.
 
 SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
-### 1.3 软件方案介绍
-
-表1.1 系统方案各子系统功能描述：
-
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | 模型转换系统    | 本系统包含实现了pth文件到om文件的转换 |
-| 2    | SDK推理系统    | 本系统实现了基于SDK的模型推理 |
-
-
-表1.2 SDK推理系统系统方案中各模块功能：
-
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | main.py | 实现推理功能的脚本 |
-| 2    | erfnet_pipeline.json   | SDK的推理pipeline配置文件 |
-| 3    |  test_metric.py  | 测试模型精度的脚本 |
-
-### 1.4 代码目录结构与说明
+### 1.3 代码目录结构与说明
 
 工程目录如下图所示：
 
 ```
-|-- erfnet_pipeline.json    // SDK的推理pipeline配置文件
-|-- main.py                // 实现推理功能的脚本
-|-- test_metric.py          // 测试模型精度的脚本
-|-- README.md               // 自述文件
+|-- pipeline
+|   |-- erfnet_pipeline.json // SDK的推理pipeline配置文件
+|-- plugin
+|   |-- postprocess
+|       |-- build.sh          // 编译脚本
+|       |-- CMakeLists.txt    // CMakeLists
+|       |-- Postprocess.cpp   // 插件.cpp文件
+|       |-- Postprocess.h     // 插件.h文件
+|-- model
+|   |-- erfnet.aippconfig     // aippconfig
+|   |-- onnx2om.sh            // 模型转换脚本
+|-- main.py                   // 实现推理功能的脚本
+|-- test_metric.py            // 测试模型精度的脚本
+|-- README.md                 // 自述文件
+|-- env.sh                    // 环境配置
 ```
 
-### 1.5 技术实现流程
+### 1.4 技术实现流程
 
 本项目首先使用atc工具将其转化为SDK能使用的om模型。最终我们通过构建SDK推理pipeline，实现模型推理。
 
-### 1.6 特性及适用场景
+### 1.5 特性及适用场景
 
 ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet的原理并没有根据具体场景设计，所以其他分割任务也都能使用。
 
@@ -67,13 +60,12 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 
-## 4SDK推理
+## 准备
 
-
-### OM模型文件
+### 获取OM模型文件
 
 OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
-获取到```ErfNet.onnx```模型后，将其放在model目录下。在model目录键入以下命令
+获取到```ErfNet.onnx```模型后，将其放在model目录下。首先在根目录执行```source env.sh```激活环境；然后在model目录键入以下命令
 
 ```
 bash onnx2om.sh
@@ -82,12 +74,33 @@ bash onnx2om.sh
 能获得```ErfNet_bs1.om```模型文件。
 
 注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)
-中的模型文件```ErfNet_bs1.om```不能用于推理中。
+中的模型文件```ErfNet_bs1.om```不能用于本项目。
 
-### 推理
+### 编译插件
 
 首先进入文件夹```plugin/postprocess/```，键入```bash build.sh```，对后处理插件进行编译。
-然后在项目根目录下键入
+
+### 下载数据集
+
+[获取cityscapes](https://www.cityscapes-dataset.com/)
+* Download the Cityscapes dataset from https://www.cityscapes-dataset.com/
+
+  + 下载leftImg8bit.zip以获得RGB图片, 下载gtFine.zip以获得标签.
+  + 应使用的标签为"_labelTrainIds"而非"_labelIds", 你可以下载[cityscapes scripts](https://github.com/mcordts/cityscapesScripts)并使用[conversor](https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/preparation/createTrainIdLabelImgs.py)来生成trainIds。
+
+### 创建推理文件目录
+
+在项目根目录下键入
+
+```
+mkdir infer_result
+```
+
+以创建推理输出目录
+
+## 4SDK推理
+
+在项目根目录下键入
 
 ```bash
 python main.py --pipeline_path ./pipeline/erfnet_pipeline.json  --data_path ./data/
@@ -99,27 +112,11 @@ python main.py --pipeline_path ./pipeline/erfnet_pipeline.json  --data_path ./da
 
 ## 5测试精度
 
-### OM模型文件
-
-OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
-获取到```ErfNet_bs1.om```模型后，将其放在model目录下, 重命名为```ErfNet_bs1_metric.om```。
-
-注: 测试精度所使用的模型文件与上一节模型是不同的，主要区别在于推理的模型加入了一些AIPP的预处理操作。
-
-### 下载数据集
-
-[获取cityscapes](https://www.cityscapes-dataset.com/)
-* Download the Cityscapes dataset from https://www.cityscapes-dataset.com/
-
-  + 下载leftImg8bit.zip以获得RGB图片, 下载gtFine.zip以获得标签.
-  + 应使用的标签为"_labelTrainIds"而非"_labelIds", 你可以下载[cityscapes scripts](https://github.com/mcordts/cityscapesScripts)并使用[conversor](https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/preparation/createTrainIdLabelImgs.py)来生成trainIds。
-
-### 测试
 
 在项目根目录下键入
 
 ```bash
-python test_metric.py --pipeline_path ./pipeline/erfnet_pipeline_for_metric.json --data_path /path/to/cityscapes/
+python test_metric.py --pipeline_path ./pipeline/erfnet_pipeline.json --data_path /path/to/cityscapes/
 ```
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
@@ -129,31 +126,6 @@ python test_metric.py --pipeline_path ./pipeline/erfnet_pipeline_for_metric.json
 mean_iou:  0.7219515597801778
 iou_class:  tensor([0.9762, 0.8137, 0.9078, 0.4939, 0.5493, 0.6080, 0.6262, 0.7231, 0.9135,
         0.6096, 0.9339, 0.7612, 0.5345, 0.9291, 0.7274, 0.7886, 0.6375, 0.4646,
-        0.7190], dtype=torch.float64)
+        0.7190], dtype=float64)
 ```
 
-
-<!-- 
-
-## 5 软件依赖说明
-
-如果涉及第三方软件依赖，请详细列出。
-
-| 依赖软件 | 版本  | 说明                     |
-| -------- | ----- | ------------------------ |
-| Pytorch      | 1.12.1 | 用于计算指标 |
-|          |       |                          | -->
-
-<!-- ## 6 常见问题
-
-请按照问题重要程度，详细列出可能要到的问题，和解决方法。
-
-### 6.1 XXX问题
-
-**问题描述：**
-
-截图或报错信息
-
-**解决方案：**
-
-详细描述解决方法。 -->

@@ -101,6 +101,7 @@ namespace MxPlugins {
                                    const MxTools::MxpiErrorInfo mxpiErrorInfo);
         std::string parentName_;
         std::ostringstream ErrorInfo_;
+        int index;
     };
 }
 #endif // SDKMEMORY_MXPIPREPROCESS_H

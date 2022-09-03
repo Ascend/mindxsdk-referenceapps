@@ -50,6 +50,8 @@ namespace {
       cv::Vec3b(119, 11, 32),
       cv::Vec3b(0, 0, 0),
   };
+    const std::string INFER_RESULT_PATH = "./infer_result/";
+
 
     const string TENSOR_KEY = "MxpiTensorPackageList";
     const string VISION_KEY = "MxpiVisionList";
@@ -181,6 +183,7 @@ APP_ERROR MxpiPostProcess::Init(std::map<std::string, std::shared_ptr<void>>& co
     // Get the property values by key 插件对应的属性值将通过“configParamMap”入参传入，可通过属性名称获取。
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
+    this->index = 0;
     return APP_ERR_OK;
 }
 
@@ -225,11 +228,11 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
         imgrgb.at<cv::Vec3b>(x, y) = color_map[max_index];
         }
     }
-    // cv::imwrite("test_cv.png", imgrgb);
-    LogInfo <<"chw_to_hwc failed asdasddasasd " << tensors.size();
-    APP_ERROR ret;
-    ret = GenerateVisionList(imgrgb, dstMxpiVisionList);
-    return APP_ERR_OK;
+    LogInfo << INFER_RESULT_PATH + std::to_string(this->index) + ".png" << " saved !";
+    cv::imwrite(INFER_RESULT_PATH + std::to_string(this->index++) + ".png", imgrgb);
+    // APP_ERROR ret;
+    // ret = GenerateVisionList(imgrgb, dstMxpiVisionList);
+    // return APP_ERR_OK;
 }
 
 APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
@@ -274,27 +277,25 @@ APP_ERROR MxpiPostProcess::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     shared_ptr<MxpiTensorPackageList> srcMxpiTensorPackageListSptr = static_pointer_cast<MxpiTensorPackageList>(metadata);
     shared_ptr<MxpiVisionList> dstMxpiVisionListSptr = make_shared<MxpiVisionList>();
     APP_ERROR ret = GenerateVisionListOutput(*srcMxpiTensorPackageListSptr, *dstMxpiVisionListSptr);
-    if (ret != APP_ERR_OK) {
-        LogError << GetError(ret, pluginName_) << "MxpiPostProcess gets inference information failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
-    }
+    // if (ret != APP_ERR_OK) {
+    //     LogError << GetError(ret, pluginName_) << "MxpiPostProcess gets inference information failed.";
+    //     mxpiErrorInfo.ret = ret;
+    //     mxpiErrorInfo.errorInfo = ErrorInfo_.str();
+    //     SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+    //     return ret;
+    // }
 
-    LogInfo << "---------------------------------------------------------------- fuck3";
-
-    // Add Generated data to metedata
-    ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiVisionListSptr));
-    if (ret != APP_ERR_OK) {
-        ErrorInfo_ << GetError(ret, pluginName_) << "MxpiPostProcess add metadata failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
-        return ret;
-    }
-    // Send the data to downstream plugin
-    SendData(0, *buffer);
+    // // Add Generated data to metedata
+    // ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiVisionListSptr));
+    // if (ret != APP_ERR_OK) {
+    //     ErrorInfo_ << GetError(ret, pluginName_) << "MxpiPostProcess add metadata failed.";
+    //     mxpiErrorInfo.ret = ret;
+    //     mxpiErrorInfo.errorInfo = ErrorInfo_.str();
+    //     SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+    //     return ret;
+    // }
+    // // Send the data to downstream plugin
+    // SendData(0, *buffer);
     LogInfo << "MxpiPostProcess::Process end";
     return APP_ERR_OK;
 }

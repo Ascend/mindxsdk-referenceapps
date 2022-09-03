@@ -24,20 +24,17 @@ import cv2
 from tqdm import tqdm
 
 
-def get_image_binary(img_path_):
-    with open(img_path_, 'rb') as file__:
-        image = Image.open(file__)
-    output = BytesIO()
-    image.save(output, format='JPEG')
-    return output
-
-
 def infer(img_path_, stream_manager_api_):
     data_input = MxDataInput()
-    data_input.data = get_image_binary(img_path_).getvalue()
+    with open(img_path_, 'rb') as file__:
+        image = Image.open(file__)
+        output = BytesIO()
+        image.save(output, format='JPEG')
+        data_input.data = output.getvalue()
     unique_id = stream_manager_api_.SendData(b'erfnet', 0, data_input)
     if unique_id < 0:
         print("Failed to send data to stream.")
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -69,7 +66,15 @@ if __name__ == '__main__':
     if len(os.listdir(data_path)) == 0:
         raise RuntimeError("No Input Image!")
 
-    for img_name in tqdm(os.listdir(data_path)):
+    for index, img_name in tqdm(enumerate(os.listdir(data_path))):
         img_path = os.path.join(data_path, img_name)
+        print(index, img_path)
         infer(img_path, streamManagerApi)
+        res_image = "infer_result/" + str(index) + ".png"
+        while True:  # 轮询, 等待异步线程
+            try:
+                preds = Image.open(res_image).convert('RGB')
+                break
+            except:
+                continue
     streamManagerApi.DestroyAllStreams()

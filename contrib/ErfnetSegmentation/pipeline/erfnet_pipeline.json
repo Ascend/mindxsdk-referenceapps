@@ -52,10 +52,9 @@
         },
         "appsink0": {
             "props": {
-                "blocksize": "4096000",
-                "location":"./testout.jpg"
+                "blocksize": "40960000"
             },
-            "factory": "filesink"
+            "factory": "appsink"
         }
     }
 }

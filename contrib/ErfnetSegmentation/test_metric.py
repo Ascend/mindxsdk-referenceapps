@@ -14,12 +14,38 @@ import os
 import sys
 import json
 from argparse import ArgumentParser
+from io import BytesIO
 import numpy as np
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi,  MxDataInput, StringVector, \
     InProtobufVector, MxProtobufIn
 from tqdm import tqdm
+
+
+def colormap_cityscapes():
+    cmap = np.zeros([255 * 3]).astype(np.uint8)
+    cmap[128 + 64 + 128] = 0
+    cmap[244 + 35 + 232] = 1
+    cmap[70 + 70 + 70] = 2
+    cmap[102 + 102 + 156] = 3
+    cmap[190 + 153 + 153] = 4
+    cmap[153 + 153 + 153] = 5
+    cmap[250 + 170 + 30] = 6
+    cmap[220 + 220 + 0] = 7
+    cmap[107 + 142 + 35] = 8
+    cmap[152 + 251 + 152] = 9
+    cmap[70 + 130 + 180] = 10
+    cmap[220 + 20 + 60] = 11
+    cmap[255 + 0 + 0] = 12
+    cmap[0 + 0 + 142] = 13
+    cmap[0 + 0 + 70] = 14
+    cmap[0 + 60 + 100] = 15
+    cmap[0 + 80 + 100] = 16
+    cmap[0 + 0 + 230] = 17
+    cmap[119 + 11 + 32] = 18
+    cmap[0 + 0 + 0] = 19
+    return cmap
 
 
 def load_image(file_name):
@@ -39,45 +65,14 @@ def get_image_binary(img_path_):
 
 def infer(img_path_, stream_manager_api_):
     data_input = MxDataInput()
-
-    stream_name = b'erfnet'
-    data_input.data = get_image_binary(img_path_)
-    proto_buf_vec = InProtobufVector()
-    vision_list = MxpiDataType.MxpiVisionList()
-    vision_vec = vision_list.visionVec.add()
-    vision_vec.visionInfo.format = 1
-    vision_vec.visionData.deviceId = 0
-    vision_vec.visionData.memType = 0
-    vision_vec.visionData.dataStr = data_input.data
-    protobuf = MxProtobufIn()
-    protobuf.key = b'appsrc0'
-    protobuf.type = b'MxTools.MxpiVisionList'
-    protobuf.protobuf = vision_list.SerializeToString()
-    proto_buf_vec.push_back(protobuf)
-    unique_id = stream_manager_api_.SendProtobuf(stream_name, 0, proto_buf_vec)
-
+    with open(img_path_, 'rb') as file__:
+        image = Image.open(file__)
+        output = BytesIO()
+        image.save(output, format='JPEG')
+        data_input.data = output.getvalue()
+    unique_id = stream_manager_api_.SendData(b'erfnet', 0, data_input)
     if unique_id < 0:
         print("Failed to send data to stream.")
-        sys.exit()
-
-    key = b'mxpi_tensorinfer0'
-    key_vec = StringVector()
-    key_vec.push_back(key)
-    infer_result = stream_manager_api_.GetProtobuf(stream_name, 0, key_vec)
-    if infer_result.size() == 0:
-        print("infer_result is null")
-        sys.exit()
-    if infer_result[0].errorCode != 0:
-        print('''GetResultWithUniqueId error. errorCode=%d''' % (
-            infer_result[0].errorCode))
-        sys.exit()
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(infer_result[0].messageBuf)
-    vision_data_ = result.tensorPackageVec[0].tensorVec[0].dataStr
-    vision_data_ = np.frombuffer(vision_data_, dtype=np.float32)
-    shape = result.tensorPackageVec[0].tensorVec[0].tensorShape
-    vision_data_ = vision_data_.reshape(shape)
-    return vision_data_
 
 
 def resize(img, size, interpolation):
@@ -227,9 +222,17 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         sys.exit()
 
+    color2class = colormap_cityscapes()
+
     metrics = IouEval(num_classes=20)
     datasets = CityscapesValDatapath(data_path)
-    for image_path, target_path in tqdm(datasets):
+    print(len(datasets))
+    for index, (image_path, target_path) in tqdm(enumerate(datasets)):
+        # if index != 0:
+        #     continue
+        print(index, image_path)
+        print(index, target_path)
+        infer(image_path, streamManagerApi)
         with open(target_path, 'rb') as file:
             target = load_image(file).convert('P')
         target = resize(target, 512, Image.NEAREST)
@@ -238,13 +241,21 @@ if __name__ == '__main__':
         target = target.reshape(512, 1024)
         target = target[np.newaxis, :, :]
 
-        res = infer(image_path, streamManagerApi)
-        res = res.reshape(1, 20, 512, 1024)
-
-        preds_ = np.expand_dims(res.argmax(
-            axis=1).astype(np.int32), 1).astype(np.int32)
+        res_image = "infer_result/" + str(index) + ".png"
+        while True:  # 轮询, 等待异步线程
+            try:
+                preds = Image.open(res_image).convert('RGB')
+                break
+            except:
+                continue
+        preds = np.array(preds)
+        preds = preds.transpose(2, 0, 1)
+        preds = np.expand_dims(preds, 0).astype(np.uint8)
+        preds = preds.sum(axis=1)
+        preds = np.expand_dims(preds, 0)
+        preds = color2class[preds]
         labels_ = np.expand_dims(target.astype(np.int32), 1).astype(np.int32)
-        metrics.add_batch(preds_, labels_)
+        metrics.add_batch(preds, labels_)
 
     mean_iou, iou_class = metrics.get_iou()
     mean_iou = mean_iou.item()
