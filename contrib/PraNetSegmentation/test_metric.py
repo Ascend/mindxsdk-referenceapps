@@ -24,13 +24,7 @@ from scipy.ndimage.morphology import distance_transform_edt
 from scipy.ndimage.filters import convolve
 import imageio
 
-from infer import infer, resize
-
-
-def my_open(file_path, asdads):
-    fd_asd = os.open(file_path, os.O_RDWR | os.O_CREAT)
-    file__22 = os.fdopen(fd_asd, asdads)
-    return file__22
+from main import infer, resize
 
 
 def object_(pred, gting__):
@@ -242,15 +236,15 @@ def enhanced_measure(pred, gtingb):
 
 
 def rgb_loader(path):
-    file_22 = my_open(path, "rb")
-    img = Image.open(file_22)
-    return img.convert('RGB')
+    with open(path, "rb") as file_22:
+        img = Image.open(file_22)
+        return img.convert('RGB')
 
 
 def binary_loader(path):
-    file_33 = my_open(path, "rb")
-    img = Image.open(file_33)
-    return img.convert('L')
+    with open(path, "rb") as file_33:
+        img = Image.open(file_33)
+        return img.convert('L')
 
 
 class TestDataset:
@@ -291,7 +285,8 @@ class TestDataset:
 if __name__ == '__main__':
 
     parser = ArgumentParser()
-    parser.add_argument('--pipeline_path', type=str)
+    parser.add_argument('--pipeline_path', type=str,
+                        default="pipeline/pranet_pipeline.json")
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
@@ -309,9 +304,8 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         sys.exit()
 
-    file = my_open(pipeline_path, "r")
-    json_str = file.read()
-    file.close()
+    with open(pipeline_path, "r") as file:
+        json_str = file.read()
 
     pipeline = json.loads(json_str)
     pipelineStr = json.dumps(pipeline).encode()
@@ -332,26 +326,27 @@ if __name__ == '__main__':
         image, gting, image_path, gt_path = dataset.load_data()
         gting = np.asarray(gting, np.float32)
 
+        print(image_path)
         image = np.array(image).astype(np.float32)
-        res = infer(image.tobytes(), streamManagerApi)
-        res = np.reshape(res, (1, 1, 352, 352))
-        res = res.reshape((352, 352))
-        res = cv2.resize(res.T, dsize=gting.shape)
-        res = res.T
-        res = np.expand_dims(res, 0)
-        res = np.expand_dims(res, 0)
-        res = 1 / (1 + np.exp(-res))
-        res = res.squeeze()
-        res = (res - res.min()) / (res.max() - res.min() + 1e-8)
+        infer(image_path, streamManagerApi)
 
-        imageio.imwrite("temp.png", res)
-        pred_mask = np.array(Image.open("temp.png"))
+        res_path = "infer_result/"+str(i)+".png"
+        while True:  # 轮询, 等待异步线程
+            try:
+                pred_mask = np.array(Image.open(res_path))
+                break
+            except:
+                pass
         gt_mask = np.array(Image.open(gt_path))
+
+        pred_mask = cv2.resize(pred_mask, dsize=gting.shape)
+        pred_mask = pred_mask.transpose(1, 0, 2)
 
         if len(pred_mask.shape) != 2:
             pred_mask = pred_mask[:, :, 0]
         if len(gt_mask.shape) != 2:
             gt_mask = gt_mask[:, :, 0]
+
         assert pred_mask.shape == gt_mask.shape
 
         gt_mask = gt_mask.astype(np.float64) / 255
@@ -396,28 +391,20 @@ if __name__ == '__main__':
     result.extend([meanDic, meanIoU])
     results.append(["res", *result])
 
-    json = os.path.join(RESPATH, 'result_'+"res"+'.json')
-    json = my_open(json, 'w')
-
     headers = ['meanDic', 'meanIoU']
     csv = os.path.join(RESPATH, 'result_' + "res" + '.csv')
-    if os.path.isfile(csv) is True:
-        csv = my_open(csv, 'a')
-    else:
-        csv = my_open(csv, 'w')
+    with open(csv, 'w') as csv:
         csv.write(', '.join(['method', *headers]) + '\n')
+        METHOD = "pranet"
+        OUTSTR = METHOD + ','
+        for metric in result:
+            OUTSTR += '{:.4f}'.format(metric) + ','
+        OUTSTR += '\n'
+        csv.write(OUTSTR)
 
-    METHOD = "pranet"
-    OUTSTR = METHOD + ','
-    for metric in result:
-        OUTSTR += '{:.4f}'.format(metric) + ','
-    OUTSTR += '\n'
-
-    csv.write(OUTSTR)
-    csv.close()
-    json.write(OUTSTR)
-    json.close()
-
+    json = os.path.join(RESPATH, 'result_'+"res"+'.json')
+    with open(json, 'w') as json:
+        json.write(OUTSTR)
     print(tabulate(results, headers=['dataset', *headers], floatfmt=".3f"))
     print("#"*20, "End Evaluation", "#"*20)
 

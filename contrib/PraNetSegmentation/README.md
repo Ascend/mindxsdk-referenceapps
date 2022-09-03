@@ -18,39 +18,33 @@ CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.
 
 SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
-### 1.3 软件方案介绍
-
-表1.1 系统方案各子系统功能描述：
-
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | 模型转换系统    | 本系统包含实现了pth文件到om文件的转换 |
-| 2    | SDK推理系统    | 本系统实现了基于SDK的模型推理 |
-
-表1.2 SDK推理系统系统方案中各模块功能：
-
-| 序号 | 子系统 | 功能描述     |
-| ---- | ------ | ------------ |
-| 1    | infer.py | 实现推理功能的脚本 |
-| 2    | pranet_pipeline.json   | SDK的推理pipeline配置文件 |
-| 3    |  test_metric.py  | 测试模型精度的脚本 |
-
-### 1.4 代码目录结构与说明
+### 1.3 代码目录结构与说明
 
 工程目录如下图所示：
 
 ```
-|-- pranet_pipeline.json    // SDK的推理pipeline配置文件
-|-- infer.py                // 实现推理功能的脚本           
-|-- test_metric.py          // 测试模型精度的脚本               
-|-- README.md               // 自述文件           
+|-- pipeline
+|   |-- pranet_pipeline.json // SDK的推理pipeline配置文件
+|-- plugin
+|   |-- postprocess
+|       |-- build.sh          // 编译脚本
+|       |-- CMakeLists.txt    // CMakeLists
+|       |-- Postprocess.cpp   // 插件.cpp文件
+|       |-- Postprocess.h     // 插件.h文件
+|-- model
+|   |-- pranet.aippconfig     // aippconfig
+|   |-- onnx2om.sh            // 模型转换脚本
+|-- main.py                   // 实现推理功能的脚本
+|-- test_metric.py            // 测试模型精度的脚本
+|-- README.md                 // 自述文
+|-- env.sh                    // 环境配置
 ```
 
-### 1.5 技术实现流程图
+### 1.4 技术实现流程图
 
-本项目通过构建SDK推理pipeline，实现模型推理。
+本项目首先通过onnx软件将pytorch的预训练模型转化为onnx模型，然后在使用atc工具将其转化为SDK能使用的om模型。最终通过构建SDK推理pipeline，实现模型推理。
 
-### 1.6 特性及适用场景
+### 1.5 特性及适用场景
 
 在医疗图像处理领域，PraNet针对息肉识别需求而设计。
 
@@ -68,14 +62,26 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
-| onnxsim         |    0.4.7    | 模型转化库                | 服务器中使用pip或conda安装                                   |
 
 ## 3准备工作
 
 ### 获取OM模型文件
 
 OM权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
-将得到的```PraNet-19_bs1.om```模型文件放在项目根目录下。
+获取到```PraNet-19.onnx```模型后，将其放在model目录下。首先在根目录执行```source env.sh```激活环境；然后在model目录键入以下命令
+
+```
+bash onnx2om.sh
+```
+
+能获得```PraNet-19_bs1.om```模型文件。
+
+注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
+中的模型文件```PraNet-19_bs1.om```不能用于本项目。
+
+### 编译插件
+
+首先进入文件夹```plugin/postprocess/```，键入```bash build.sh```，对后处理插件进行编译。
 
 ### 下载数据集
 
@@ -87,16 +93,26 @@ Kvasir
 ├── masks
 ```
 
+### 创建推理文件目录
+
+在项目根目录下键入
+
+```
+mkdir infer_result
+```
+
+以创建推理输出目录
+
 ## 4SDK推理
 
 在项目根目录下键入
 
 ```bash
-python infer.py --pipeline_path pranet_pipeline.json --data_path /path/to/images --output_path ./infer_result
+python main.py --pipeline_path pipeline/pranet_pipeline.json --data_path /path/to/images
 ```
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
-` ` ` --data_path ` `  `参数为数据集的路径；`  ` ` --output_path ` ` `参数是推理结果的输出路径。
+` ` ` --data_path ` `  `参数为数据集的路径；参数是推理结果的输出路径。
 最终用户可以在output_path路径下查看结果。
 
 ## 5测试精度
@@ -104,7 +120,7 @@ python infer.py --pipeline_path pranet_pipeline.json --data_path /path/to/images
 在项目根目录下键入
 
 ```bash
-python test_metric.py --pipeline_path pranet_pipeline.json --data_path /path/to/Kvasir
+python test_metric.py --pipeline_path pipeline/pranet_pipeline.json --data_path /path/to/Kvasir
 ```
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
@@ -115,28 +131,3 @@ dataset      meanDic    meanIoU
 ---------  ---------  ---------
 res            0.895      0.836
 ```
-
-<!-- 
-
-## 5 软件依赖说明
-
-如果涉及第三方软件依赖，请详细列出。
-
-| 依赖软件 | 版本  | 说明                     |
-| -------- | ----- | ------------------------ |
-| Pytorch      | 1.12.1 | 用于计算指标 |
-|          |       |                          | -->
-
-<!-- ## 6 常见问题
-
-请按照问题重要程度，详细列出可能要到的问题，和解决方法。
-
-### 6.1 XXX问题
-
-**问题描述：**
-
-截图或报错信息
-
-**解决方案：**
-
-详细描述解决方法。 -->
