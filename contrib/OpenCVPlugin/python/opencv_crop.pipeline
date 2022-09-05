@@ -1,0 +1,51 @@
+{
+    "detection": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+           "factory": "appsrc",
+           "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0",
+		"cvProcessor":"opencv"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+	
+	"mxpi_imageresize0":{
+	    "props": {
+		"resizeHeight":"350",
+		"resizeWidth":"350",
+		"cvProcessor":"opencv"
+		},
+	"factory":"mxpi_imageresize",
+	"next":"mxpi_plugin"
+	},
+       "mxpi_plugin":{
+            "props":{
+                "dataSource":"mxpi_imageresize0",
+                "descriptionMessage":"This is a plugin",
+                "option":"crop",
+                "startRow":"0",
+                "startCol":"0",
+                "endRow":"300",
+                "endCol":"300"
+            },
+            "factory":"mxpi_sampleplugin",
+            "next":"appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}

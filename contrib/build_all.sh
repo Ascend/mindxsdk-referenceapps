@@ -24,6 +24,7 @@ SAMPLE_FOLDER=(
 	# EdgeDetectionPicture/
     HelmetIdentification/
     Individual/
+    OpenCVPlugin/
     # human_segmentation/
 	# OpenposeKeypointDetection/
 	PersonCount/

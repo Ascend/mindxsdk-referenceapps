@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5.2)
-project(OpenCVPlugin)
+project(mxpi_sampleplugin)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
-set(PLUGIN_NAME "OpenCVPlugin")
+set(PLUGIN_NAME "mxpi_sampleplugin")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
 message(${PROJECT_SOURCE_DIR})
@@ -11,7 +11,7 @@ message(${PROJECT_SOURCE_DIR})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MX_SDK_HOME}/include)
-include_directories(/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/aarch64-linux/include)
+include_directories(/usr/local/Ascend/ascend-toolkit/5.0.4/arm64-linux/aarch64-linux/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
 include_directories(${MX_SDK_HOME}/opensource/include/opencv4)
 include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
@@ -26,10 +26,11 @@ add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")
 
 add_definitions(-DENABLE_DVPP_INTERFACE)
 
-add_library(${TARGET_LIBRARY} SHARED OpenCVPlugin.cpp)
+add_library(${TARGET_LIBRARY} SHARED MxpiSamplePlugin.cpp)
+# add_library(${TARGET_LIBRARY} SHARED test.cpp)
 
 
 target_link_libraries(${TARGET_LIBRARY} glib-2.0 gstreamer-1.0 gobject-2.0 gstbase-1.0 gmodule-2.0 glog opencv_world)
 
 target_link_libraries(${TARGET_LIBRARY} mxpidatatype plugintoolkit mxbase mindxsdk_protobuf)
-target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)
+#target_link_libraries(${TARGET_LIBRARY} -Wl,-z,relro,-z,now,-z,noexecstack -s)

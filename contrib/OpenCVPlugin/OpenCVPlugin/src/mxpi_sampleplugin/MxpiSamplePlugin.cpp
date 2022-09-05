@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-#include "OpenCVPlugin.h"
+#include "MxpiSamplePlugin.h"
 #include "MxBase/Log/Log.h"
 #include "MxBase/Tensor/TensorBase/TensorBase.h"
 using namespace MxBase;
@@ -37,7 +37,7 @@ APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& c
     // Get the property values by key
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
-    std::shared_ptr<string> descriptionMessageProSptr =
+    std::shared_ptr<string> descriptionMessageProSptr = 
     std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     height = *std::static_pointer_cast<float>(configParamMap["height"]);
     width = *std::static_pointer_cast<float>(configParamMap["width"]);
@@ -98,11 +98,13 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     cv::Mat src;
     cv::Mat imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
     if (memorySrc.type == san) {
+	LogInfo << "opencv";
 	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_8UC3,
                memoryDst.ptrData);
     }
     else {
 	LogInfo << memorySrc.type;
+	LogInfo << "dvpp";
 	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
                memoryDst.ptrData);
 	cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
@@ -117,7 +119,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     LogInfo << outputPixelFormat_;
     if (option == "resize") {
 	if (memorySrc.type == er) {
-	    cv::resize(imgBgr, dst, cv::Size(width, height), fx, fy, interpolation);
+	    cv::resize(imgBgr, dst, cv::Size(width,height), fx, fy, interpolation);
 	}
 	else {
 	    cv::resize(src, dst, cv::Size(width, height), fx, fy, interpolation);
@@ -134,6 +136,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     auto ret = APP_ERR_OK;
     if (outputDataFormat == "YUV") {
+	LogInfo << "in yuv";
 	imgYuv = cv::Mat(height, width, CV_8UC1);
         cv::cvtColor(dst, imgYuv, cv::COLOR_BGR2YUV_I420);
         yuv_mat = imgYuv.clone();
@@ -142,11 +145,13 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     else {
 	if (outputDataFormat == "RGB") {
+	LogInfo <<"in rgb";
 	imgRgb = cv::Mat(height, width, CV_8UC3);
         cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
 	else {
+	LogInfo <<"in bgr";
 	auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
 	}
     }
@@ -154,6 +159,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         LogError << "convert mat to mxvision failed!";
         return ret;
     }
+    LogInfo << "opencv done";
     return APP_ERR_OK;
 };
 
@@ -193,6 +199,10 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, M
     visionInfo->set_widthaligned(mat.cols);
 
     auto visionData = vision.mutable_visiondata();
+    LogInfo << "elemSize = " << mat.elemSize();
+    LogInfo << "col = " << mat.cols;
+    LogInfo << "rows = " << mat.rows;
+    LogInfo << "size = " << mat.size();
     visionData->set_datasize(mat.cols * mat.rows * mat.elemSize());
     MemoryData memoryDataDst(visionData->datasize(), MemoryData::MEMORY_DVPP, deviceId_);
     MemoryData memoryDataStr(mat.data, visionData->datasize(), MemoryData::MEMORY_HOST_MALLOC);
@@ -223,6 +233,10 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
     visionInfo->set_width(mat.cols);
     visionInfo->set_widthaligned(mat.cols);
     auto visionData = vision.mutable_visiondata();
+    LogInfo << "elemSize = " << mat.elemSize();
+    LogInfo << "col = " << mat.cols;
+    LogInfo << "rows = " << mat.rows;
+    LogInfo << "size = " << mat.size();
     visionData->set_datasize(mat.cols * mat.rows * mat.elemSize());
     MemoryData memoryDataDst(visionData->datasize(), MemoryData::MEMORY_HOST, deviceId_);
     MemoryData memoryDataStr(mat.data, visionData->datasize(), MemoryData::MEMORY_HOST_MALLOC);
@@ -247,6 +261,7 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
 APP_ERROR MxpiSamplePlugin::GenerateVisionList(const MxpiVisionList srcMxpiVisionList,
                                                MxpiVisionList& dstMxpiVisionList)
 {
+    LogInfo <<"input type:" <<srcMxpiVisionList.visionvec(0).visiondata().datatype();
     for (int i = 0; i< srcMxpiVisionList.visionvec_size();i++) {
         auto srcMxpiVision = srcMxpiVisionList.visionvec(i);
         MxTools::MxpiVision dstVision;
@@ -290,7 +305,7 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_)
+        ErrorInfo_<< GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
         << "Proto struct name is not MxpiVisionList, failed with:" << desc->name();
         mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -329,33 +344,33 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_imageresize0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
-    auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
 	DOUBLE, "startRow", "startRow", "the start_row of crop image", 0, 0.0, 8192.0});
-    auto startCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto startCol = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
 	DOUBLE, "startCol", "startCol", "the start_col of crop  image", 0, 0, 8192});
-    auto endRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto endRow = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
 	DOUBLE, "endRow", "endRow", "the end_row of crop image", 256, 0, 8192});
-    auto endCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto endCol = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
 	DOUBLE, "endCol", "endCol", "the end_col of crop image", 256, 0, 8192});
-    auto height = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
+    auto height = std::make_shared<ElementProperty<float>>(ElementProperty<float>{
         FLOAT, "height", "height", "the height of image", 256, 0, 8192});
-    auto width = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
+    auto width = std::make_shared<ElementProperty<float>>(ElementProperty<float>{
         FLOAT, "width", "width", "the width of image", 256, 0, 8192});
-    auto fx = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto fx = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
         DOUBLE, "fx", "fx", "the fx ratio  of image", 0, 0, 1});
-    auto fy = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+    auto fy = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
         DOUBLE, "fy", "fy", "the fy ratio  of image", 0, 0, 1});
-    auto outputDataFormat = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto outputDataFormat = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "outputDataFormat", "outputDataFormat", "the format of the output  RGB or BGR or YUV", "YUV", "NULL", "NULL"});
-    auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "dataType", "dataType", "the dataType  float32 or uint8 ", "uint8", "NULL", "NULL"});
-    auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int> {
-        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4});
-    auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+    auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int>{
+        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 1, 16}); 
+    auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
 		            STRING, "option", "option", "OPTION of plugin", "resize", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
