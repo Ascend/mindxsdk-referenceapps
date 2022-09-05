@@ -37,7 +37,7 @@ APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& c
     // Get the property values by key
     std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
     parentName_ = *parentNamePropSptr.get();
-    std::shared_ptr<string> descriptionMessageProSptr = 
+    std::shared_ptr<string> descriptionMessageProSptr =
     std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     height = *std::static_pointer_cast<float>(configParamMap["height"]);
     width = *std::static_pointer_cast<float>(configParamMap["width"]);
@@ -119,7 +119,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     LogInfo << outputPixelFormat_;
     if (option == "resize") {
 	if (memorySrc.type == er) {
-	    cv::resize(imgBgr, dst, cv::Size(width,height), fx, fy, interpolation);
+	    cv::resize(imgBgr, dst, cv::Size(width, height), fx, fy, interpolation);
 	}
 	else {
 	    cv::resize(src, dst, cv::Size(width, height), fx, fy, interpolation);
@@ -305,7 +305,7 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {
-        ErrorInfo_<< GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
+        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
         << "Proto struct name is not MxpiVisionList, failed with:" << desc->name();
         mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -344,33 +344,33 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_imageresize0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
-    auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
 	DOUBLE, "startRow", "startRow", "the start_row of crop image", 0, 0.0, 8192.0});
-    auto startCol = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto startCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
 	DOUBLE, "startCol", "startCol", "the start_col of crop  image", 0, 0, 8192});
-    auto endRow = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto endRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
 	DOUBLE, "endRow", "endRow", "the end_row of crop image", 256, 0, 8192});
-    auto endCol = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto endCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
 	DOUBLE, "endCol", "endCol", "the end_col of crop image", 256, 0, 8192});
-    auto height = std::make_shared<ElementProperty<float>>(ElementProperty<float>{
+    auto height = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
         FLOAT, "height", "height", "the height of image", 256, 0, 8192});
-    auto width = std::make_shared<ElementProperty<float>>(ElementProperty<float>{
+    auto width = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
         FLOAT, "width", "width", "the width of image", 256, 0, 8192});
-    auto fx = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto fx = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
         DOUBLE, "fx", "fx", "the fx ratio  of image", 0, 0, 1});
-    auto fy = std::make_shared<ElementProperty<double>>(ElementProperty<double>{
+    auto fy = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
         DOUBLE, "fy", "fy", "the fy ratio  of image", 0, 0, 1});
-    auto outputDataFormat = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto outputDataFormat = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "outputDataFormat", "outputDataFormat", "the format of the output  RGB or BGR or YUV", "YUV", "NULL", "NULL"});
-    auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataType", "dataType", "the dataType  float32 or uint8 ", "uint8", "NULL", "NULL"});
-    auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int>{
+    auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int> {
         INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4}); 
-    auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
 		            STRING, "option", "option", "OPTION of plugin", "resize", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);

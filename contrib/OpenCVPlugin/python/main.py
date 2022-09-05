@@ -51,10 +51,10 @@ if __name__ == '__main__':
     with open("person.jpg", 'rb') as f:
         dataInput.data = f.read()
 
-    StreamName = b'detection'
-    InPluginId = 0
+    STREAM_NAME = b'detection'
+    INPLUGIN_ID = 0
   
-    uniqueId = streamManagerApi.SendData(StreamName, InPluginId, dataInput)
+    uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
     if uniqueId < 0:
         print("Failed to send data to stream.")
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     for key in keys:
         keyVec.push_back(key)
 
-    infer_result = streamManagerApi.GetProtobuf(StreamName, 0, keyVec)
+    infer_result = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
 
     if infer_result.size() == 0:
         print("infer_result is null")
