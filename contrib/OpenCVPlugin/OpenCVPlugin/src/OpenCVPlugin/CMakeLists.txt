@@ -11,7 +11,7 @@ message(${PROJECT_SOURCE_DIR})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MX_SDK_HOME}/include)
-include_directories(/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/aarch64-linux/include)
+include_directories(/usr/local/Ascend/ascend-toolkit/latest/runtime/include)
 include_directories(${MX_SDK_HOME}/opensource/include)
 include_directories(${MX_SDK_HOME}/opensource/include/opencv4)
 include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
