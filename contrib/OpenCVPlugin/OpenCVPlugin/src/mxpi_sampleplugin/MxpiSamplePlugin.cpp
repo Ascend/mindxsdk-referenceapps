@@ -305,7 +305,7 @@ APP_ERROR MxpiSamplePlugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_) 
+        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_)
         << "Proto struct name is not MxpiVisionList, failed with:" << desc->name();
         mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -369,7 +369,7 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     auto dataType = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "dataType", "dataType", "the dataType  float32 or uint8 ", "uint8", "NULL", "NULL"});
     auto interpolation = std::make_shared<ElementProperty<int>>(ElementProperty<int> {
-        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4}); 
+        INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4});
     auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
 		            STRING, "option", "option", "OPTION of plugin", "resize", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
