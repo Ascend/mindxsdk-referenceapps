@@ -10,4 +10,4 @@ else ()
     message(STATUS "env MX_SDK_HOME: ${MX_SDK_HOME}")
 endif()
 
-add_subdirectory("./src/mxpi_sampleplugin")
+add_subdirectory("./src/OpenCVPlugin")

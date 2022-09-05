@@ -98,13 +98,11 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     cv::Mat src;
     cv::Mat imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
     if (memorySrc.type == san) {
-	LogInfo << "opencv";
 	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_8UC3,
                memoryDst.ptrData);
     }
     else {
 	LogInfo << memorySrc.type;
-	LogInfo << "dvpp";
 	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
                memoryDst.ptrData);
 	cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
@@ -136,7 +134,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     auto ret = APP_ERR_OK;
     if (outputDataFormat == "YUV") {
-	LogInfo << "in yuv";
 	imgYuv = cv::Mat(height, width, CV_8UC1);
         cv::cvtColor(dst, imgYuv, cv::COLOR_BGR2YUV_I420);
         yuv_mat = imgYuv.clone();
@@ -145,13 +142,11 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     else {
 	if (outputDataFormat == "RGB") {
-	LogInfo <<"in rgb";
 	imgRgb = cv::Mat(height, width, CV_8UC3);
         cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
 	else {
-	LogInfo <<"in bgr";
 	auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
 	}
     }
@@ -159,7 +154,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         LogError << "convert mat to mxvision failed!";
         return ret;
     }
-    LogInfo << "opencv done";
     return APP_ERR_OK;
 };
 
@@ -199,10 +193,6 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, M
     visionInfo->set_widthaligned(mat.cols);
 
     auto visionData = vision.mutable_visiondata();
-    LogInfo << "elemSize = " << mat.elemSize();
-    LogInfo << "col = " << mat.cols;
-    LogInfo << "rows = " << mat.rows;
-    LogInfo << "size = " << mat.size();
     visionData->set_datasize(mat.cols * mat.rows * mat.elemSize());
     MemoryData memoryDataDst(visionData->datasize(), MemoryData::MEMORY_DVPP, deviceId_);
     MemoryData memoryDataStr(mat.data, visionData->datasize(), MemoryData::MEMORY_HOST_MALLOC);
@@ -233,10 +223,6 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
     visionInfo->set_width(mat.cols);
     visionInfo->set_widthaligned(mat.cols);
     auto visionData = vision.mutable_visiondata();
-    LogInfo << "elemSize = " << mat.elemSize();
-    LogInfo << "col = " << mat.cols;
-    LogInfo << "rows = " << mat.rows;
-    LogInfo << "size = " << mat.size();
     visionData->set_datasize(mat.cols * mat.rows * mat.elemSize());
     MemoryData memoryDataDst(visionData->datasize(), MemoryData::MEMORY_HOST, deviceId_);
     MemoryData memoryDataStr(mat.data, visionData->datasize(), MemoryData::MEMORY_HOST_MALLOC);
@@ -261,7 +247,6 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
 APP_ERROR MxpiSamplePlugin::GenerateVisionList(const MxpiVisionList srcMxpiVisionList,
                                                MxpiVisionList& dstMxpiVisionList)
 {
-    LogInfo <<"input type:" <<srcMxpiVisionList.visionvec(0).visiondata().datatype();
     for (int i = 0; i< srcMxpiVisionList.visionvec_size();i++) {
         auto srcMxpiVision = srcMxpiVisionList.visionvec(i);
         MxTools::MxpiVision dstVision;

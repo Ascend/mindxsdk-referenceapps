@@ -169,7 +169,7 @@ ascend-toolkit-path: CANN 安装路径
 
 **步骤1** **修改CMakeLists.txt文件** 
 
-第**10**行 将“/usr/local/Ascend/ascend-toolkit/5.0.4/arm64-linux/aarch64-linux/include”替换为实际include路径。
+第**10**行 将“/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/aarch64-linux/include”替换为实际include路径。
 
 **步骤2** **编译**  
 
