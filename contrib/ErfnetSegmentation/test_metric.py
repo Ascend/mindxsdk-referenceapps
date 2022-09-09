@@ -16,6 +16,7 @@ import json
 from argparse import ArgumentParser
 from io import BytesIO
 import numpy as np
+import PIL
 from PIL import Image
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi,  MxDataInput, StringVector, \

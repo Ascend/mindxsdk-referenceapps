@@ -60,12 +60,14 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 
+在根目录下执行```source env.sh```以激活环境。
+
 ## 准备
 
 ### 获取OM模型文件
 
 OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
-获取到```ErfNet.onnx```模型后，将其放在model目录下。首先在根目录执行```source env.sh```激活环境；然后在model目录键入以下命令
+获取到```ErfNet.onnx```模型后，将其放在model目录下。在model目录键入以下命令
 
 ```
 bash onnx2om.sh
