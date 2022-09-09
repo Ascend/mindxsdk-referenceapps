@@ -63,12 +63,14 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
 
+在根目录下执行```source env.sh```以激活环境。
+
 ## 3准备工作
 
 ### 获取OM模型文件
 
 OM权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
-获取到```PraNet-19.onnx```模型后，将其放在model目录下。首先在根目录执行```source env.sh```激活环境；然后在model目录键入以下命令
+获取到```PraNet-19.onnx```模型后，将其放在model目录下。在model目录键入以下命令
 
 ```
 bash onnx2om.sh
