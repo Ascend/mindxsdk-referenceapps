@@ -3,6 +3,7 @@ project(OpenCVPlugin)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 set(PLUGIN_NAME "OpenCVPlugin")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../../lib/plugins)
