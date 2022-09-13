@@ -173,14 +173,10 @@ ascend-toolkit-path: CANN 安装路径
 
 **步骤2** **编译**  
 
-进入到src/mxpi_sampleplugin路径：
+进入到主路径：
 
 ```
-mkdir build
-cd build
-cmake ..
-make -j4
-cp ../lib/plugins/xxx.so ${MX_SDK_HOME}/lib/plugins
+bash build.sh
 ```
 
 **步骤3** **运行**
