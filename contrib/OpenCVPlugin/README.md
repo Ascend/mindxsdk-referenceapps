@@ -66,10 +66,13 @@
 ├── image
 │   ├── pipeline.jpg
 ├── OpenCVPlugin
-│   ├── build.sh
-│   ├── CMakeLists.txt
-│   ├── OpenCVPlugin.cpp
-│   └── OpenCVPlugin.h
+│   ├──lib （编译后生成）
+│   ├──src
+│   │   ├──OpenCVPlugin
+│   │   ├── build.sh
+│   │   ├── CMakeLists.txt
+│   │   ├── OpenCVPlugin.cpp
+│   │   └── OpenCVPlugin.h
 ├── python
 │   ├── main.py
 │   └── test.pipeline
@@ -187,5 +190,7 @@ bash build.sh
 python3 main.py
 ```
 
-注：由于dvpp的resize功能有约束，如使用resize插件，输入宽高分别需要16、2对齐。
-
+注：由于dvpp的resize功能有约束，如使用resize插件，输入宽高分别需要16、2对齐。   
+插件使用yuv格式输出时，将main.py 87、89、91行保持注释;94、95行注释打开。   
+插件使用rgb格式输出时，将main.py 87、89行注释打开;91、94、95行保持注释。     
+插件使用bgr格式输出时，将main.py 87、91行注释打开;89、94、95行保持注释。      
