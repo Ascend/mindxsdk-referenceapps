@@ -68,10 +68,10 @@ public:
                                  MxTools::MxpiVisionList& dstMxpiVisionListptr);
     APP_ERROR openCV(size_t idx, const MxTools::MxpiVision srcMxpiVision,
         		    MxTools::MxpiVision& dstMxpiVision);
-    APP_ERROR Bgr2Yuv(cv::Mat &yuv_mat, cv::Mat &img_nv12);
+    APP_ERROR Bgr2Yuv(cv::Mat src, cv::Mat &dst);
     APP_ERROR Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat, MxTools::MxpiVision& vision);
-	
     APP_ERROR Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, MxTools::MxpiVision& vision);
+    void swapYUV_I420toNV12(unsigned char* i420bytes, unsigned char* nv12bytes, int width, int height);
 private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);

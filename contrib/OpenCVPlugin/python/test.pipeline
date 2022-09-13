@@ -15,9 +15,9 @@
                 "deviceId": "0"
             },
             "factory": "mxpi_imagedecoder",
-            "next": "mxpi_plugin"
+            "next": "mxpi_OpenCVPlugin"
         },
-       "mxpi_plugin":{
+       "mxpi_OpenCVPlugin":{
             "props":{
 		"dataSource":"mxpi_imagedecoder0",
                 "descriptionMessage":"This is a plugin",
@@ -26,7 +26,7 @@
 		"width":"128", 
 		"outputDataFormat":"YUV"
 	    },
-            "factory":"mxpi_sampleplugin",
+            "factory":"mxpi_OpenCVPlugin",
             "next":"mxpi_imageresize0"
         },
 	"mxpi_imageresize0":{

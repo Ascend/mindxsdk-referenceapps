@@ -60,7 +60,7 @@ if __name__ == '__main__':
         print("Failed to send data to stream.")
         exit()
 
-    keys = [b"mxpi_plugin"]
+    keys = [b"mxpi_OpenCVPlugin"]
     keyVec = StringVector()
     for key in keys:
         keyVec.push_back(key)

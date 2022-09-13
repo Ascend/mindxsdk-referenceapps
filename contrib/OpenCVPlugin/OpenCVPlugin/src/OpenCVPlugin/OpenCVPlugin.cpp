@@ -134,11 +134,15 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     auto ret = APP_ERR_OK;
     if (outputDataFormat == "YUV") {
+	//imgYuv = cv::Mat(height, width, CV_8UC1);
+        //cv::cvtColor(dst, imgYuv, cv::COLOR_BGR2YUV_I420);
+        //yuv_mat = imgYuv.clone();
+        //Bgr2Yuv(yuv_mat, img_nv12);
+	height = dst.rows;
+	width = dst.cols;
 	imgYuv = cv::Mat(height, width, CV_8UC1);
-        cv::cvtColor(dst, imgYuv, cv::COLOR_BGR2YUV_I420);
-        yuv_mat = imgYuv.clone();
-        Bgr2Yuv(yuv_mat, img_nv12);
-	auto ret = Mat2MxpiVisionDvpp(idx, img_nv12, dstMxpiVision);
+        Bgr2Yuv(dst,imgYuv);
+	auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
     }
     else {
 	if (outputDataFormat == "RGB") {
@@ -155,28 +159,32 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         return ret;
     }
     return APP_ERR_OK;
-};
+}
 
-APP_ERROR MxpiSamplePlugin::Bgr2Yuv(cv::Mat &yuv_mat, cv::Mat &img_nv12)
+APP_ERROR MxpiSamplePlugin::Bgr2Yuv(cv::Mat src, cv::Mat &dst)
 {
-    double y_height = yuv_mat.rows;
-    double y_width = yuv_mat.cols;
-    uint8_t *yuv = yuv_mat.ptr<uint8_t>();
-    img_nv12 = cv::Mat(y_height * YUV_V / YUV_U, y_width, CV_8UC1);
-    uint8_t *ynv12 = img_nv12.ptr<uint8_t>();
-    int32_t uv_height = y_height / 2;
-    int32_t uv_width = y_width / 2;
-    int32_t y_size = y_height * y_width;
-    memcpy(ynv12, yuv, y_size);
-    uint8_t *nv12 = ynv12 + y_size;
-    uint8_t *u_data = yuv + y_size;
-    uint8_t *v_data = u_data + uv_height * uv_width;
-    for (int32_t i = 0; i < uv_width * uv_height; i++) {
-	*nv12++ = *u_data++;
-	*nv12++ = *v_data++;
-    }
+    int w_img = src.cols;
+    int h_img = src.rows;
+    dst = cv::Mat(h_img*1.5, w_img, CV_8UC1);
+    cv::Mat src_YUV_I420(h_img*1.5, w_img, CV_8UC1);  //YUV_I420
+    cvtColor(src, src_YUV_I420, cv::COLOR_BGR2YUV_I420);
+    swapYUV_I420toNV12(src_YUV_I420.data, dst.data, w_img, h_img);
     return APP_ERR_OK;
-};
+}
+
+void  MxpiSamplePlugin::swapYUV_I420toNV12(unsigned char* i420bytes, unsigned char* nv12bytes, int width, int height)
+{
+    int nLenY = width * height;
+    int nLenU = nLenY / 4;
+
+    memcpy(nv12bytes, i420bytes, width * height);
+
+    for (int i = 0; i < nLenU; i++)
+    {
+        nv12bytes[nLenY + 2 * i] = i420bytes[nLenY + i];                    // U
+        nv12bytes[nLenY + 2 * i + 1] = i420bytes[nLenY + nLenU + i];        // V
+    }
+}
 
 APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, MxTools::MxpiVision& vision)
 {
