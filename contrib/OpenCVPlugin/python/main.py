@@ -84,15 +84,15 @@ if __name__ == '__main__':
     visionInfo = visionList.visionVec[0].visionInfo
     #img_yuv = np.frombuffer(vision_data, np.float32)
     img_yuv = np.frombuffer(vision_data, np.uint8) 
-    #img_bgr = img_yuv.reshape(visionInfo.heightAligned, visionInfo.widthAligned,3)
+    img_bgr = img_yuv.reshape(visionInfo.heightAligned, visionInfo.widthAligned,3)
     #RGB
-    #img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_BGR2RGB"))
+    img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_BGR2RGB"))
     #BGR
     #img = cv2.cvtColor(img_bgr,getattr(cv2, "COLOR_BGR2BGRA"))
 
     #dvpp
-    img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
-    img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
+    #img_bgr = img_yuv.reshape(visionInfo.heightAligned * YUV_BYTES_NU // YUV_BYTES_DE, visionInfo.widthAligned)
+    #img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
 
     cv2.imwrite("./result.jpg", img)
     # destroy streams

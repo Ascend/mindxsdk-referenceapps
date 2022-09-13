@@ -24,7 +24,7 @@
                 "option":"resize",
 		"height":"160",
 		"width":"128", 
-		"outputDataFormat":"YUV"
+		"outputDataFormat":"RGB"
 	    },
             "factory":"mxpi_OpenCVPlugin",
             "next":"mxpi_imageresize0"
@@ -33,7 +33,8 @@
 	    "props":{
 	        "deviceId":"0",
 		"resizeHeight":"256",
-		"resizeWidth":"256"
+		"resizeWidth":"256",
+		"cvProcessor":"opencv"
 	    },
 	    "factory":"mxpi_imageresize",
 	    "next":"appsink0"
