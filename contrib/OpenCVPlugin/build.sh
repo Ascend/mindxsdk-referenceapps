@@ -1,3 +1,4 @@
+rm -rf OpenCVPlugin/src/OpenCVPlugin/build
 mkdir OpenCVPlugin/src/OpenCVPlugin/build
 cd OpenCVPlugin/src/OpenCVPlugin/build
 cmake ..

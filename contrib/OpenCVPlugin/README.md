@@ -68,8 +68,8 @@
 ├── OpenCVPlugin
 │   ├── build.sh
 │   ├── CMakeLists.txt
-│   ├── mxpisampleplugin.cpp
-│   └── mxpisampleplugin.h
+│   ├── OpenCVPlugin.cpp
+│   └── OpenCVPlugin.h
 ├── python
 │   ├── main.py
 │   └── test.pipeline
