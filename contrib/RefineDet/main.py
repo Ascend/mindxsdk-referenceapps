@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
 
-    with open("./pipeline/RefineDet.pipeline", 'rb') as f:
+    with open("./pipeline/refinedet.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = STREAM_MANAGER_API.CreateMultipleStreams(pipelineStr)
     if ret != 0:
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     IMAGE_NAME = './test.jpg'
 
     dataInput = MxDataInput()
-    try
+    try:
         with open(IMAGE_NAME, 'rb') as f:
             dataInput.data = f.read()
     except Exception:

@@ -14,7 +14,6 @@
 # limitations under the License.mitations under the License.
 
 set -e 
-
 current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 function build_plugin() {
@@ -28,6 +27,8 @@ function build_plugin() {
     cd "$build_path"
     cmake ..
     make -j
+    make install
+    chmod 640 "$MX_SDK_HOME/lib/modelpostprocessors/librefinedetpostprocess.so"
     cd ..
     exit 0
 }

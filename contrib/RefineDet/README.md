@@ -53,14 +53,14 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 ├── out.jpg
 ├── pipeline
 │   ├── refinedet.pipeline
+│   └── fortest.pipeline
 ├── plugin
 │   └── RefineDetPostProcess
 │       ├── build.sh
 │       ├── CMakeLists.txt
 │       ├── RefineDetPostProcess.cpp
 │       └── RefineDetPostProcess.h
-├── run.sh
-├── test.jpg
+└── test.jpg
 ````
 
 
@@ -189,31 +189,13 @@ aipp_op {
 
 `main.py`：用来生成单张图片推理的可视化结果，以提供推理模型的应用实例。
 
-1、编译后处理插件
-
-`cd`到`plugin/RefineDetPostProcess`目录，`mkdir`新建文件夹`build`
-
-`cd`到`build`，运行
-
-````
-cmake ..
-make -j
-make install
-````
-
-如果权限问题，`cd`到MindSDK安装路径的`lib/modelpostprocessors`目录，将`librefinedetpostprocess.so`的权限更改为`640`。
+1、`cd`到`plugin/RefineDetPostProcess`目录，运行`bash build.sh`，编译后处理插件
 
 2、`config/refine_det.cfg` 确认权限`640`。
 
 3、准备好测试图片`test.jpg`，放置在项目根目录。
 
-4、运行`main.py`程序
-
-在根目录，运行
-
-````
-bash run.sh
-````
+4、在主目录，运行`python3 main.py`
 
 最后会得到`out.jpg`即为输出结果
 
