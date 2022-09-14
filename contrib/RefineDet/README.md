@@ -46,10 +46,13 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   ├── RefineDet.om
 │   ├── RefineDet320_VOC_final_no_nms.onnx
 │   └── VOC.names
-├── eval
+├── myeval
 │   ├── myeval.py
-│   └── precision_analysis/		# 精度验证步骤2中下载
-│   	└── VOC/				# 精度验证步骤1中下载
+│   └── precision_analysis		# 精度验证步骤2中下载
+│   	├── ……					# 精度工具包中的具体文件
+│   	└── VOC					# 需要自己新建文件夹
+│   		└── VOCdevkit				# 精度验证步骤1中下载
+│   			└── VOC2007/
 ├── out.jpg
 ├── pipeline
 │   ├── refinedet.pipeline
@@ -229,7 +232,7 @@ tar xvf VOCtrainval_06-Nov-2007.tar
         exit()
 ````
 
-4、将`voc2007val.json`移动到`eval/precision_analysis/VOC/VOCdevkit`目录。这里`voc2007val.json`为`VOC`数据集转`COCO`数据集后的格式文件，具体参考[教程](https://blog.csdn.net/sinat_28371057/article/details/114683354)。这里直接提供`voc2007val.json`文件。
+4、将`voc2007val.json`移动到`myeval/precision_analysis/VOC/VOCdevkit`目录。这里`voc2007val.json`为`VOC`数据集转`COCO`数据集后的格式文件，具体参考[教程](https://blog.csdn.net/sinat_28371057/article/details/114683354)。这里直接提供`voc2007val.json`文件。
 
 5、在`precision_analysis`目录运行
 
@@ -253,5 +256,5 @@ python3 main.py --mode test.ssd_mobilenet_fpn.evaluation -data-loading-path ./VO
 
 运行结束后，会在该目录下生成`result.json`，即为正常执行结束。
 
-6、在`eval`目录运行`python3 myeval.py`，等待一段时间后即可得到结果。
+6、在`myeval`目录运行`python3 myeval.py`，等待一段时间后即可得到结果。
 
