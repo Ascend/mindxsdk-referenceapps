@@ -48,8 +48,8 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   └── VOC.names
 ├── eval
 │   ├── myeval.py
-│   └── precision_analysis/		# 精度验证中需要下载
-│   	└── VOC/				# 精度验证中需要下载
+│   └── precision_analysis/		# 精度验证步骤2中下载
+│   	└── VOC/				# 精度验证步骤1中下载
 ├── out.jpg
 ├── pipeline
 │   ├── refinedet.pipeline
@@ -212,7 +212,7 @@ wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
 tar xvf VOCtrainval_06-Nov-2007.tar
 ````
 
-2、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。
+2、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。上述两个下载的文件，按照代码目录结构中放置。
 
 3、修改代码
 
