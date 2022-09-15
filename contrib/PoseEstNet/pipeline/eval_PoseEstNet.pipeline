@@ -1,0 +1,52 @@
+{
+    "PoseEstNetProcess": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_preprocess1"
+        },
+        "mxpi_preprocess1": {
+            "props":{
+                "dataSource":"mxpi_imagedecoder0",
+                "outputFormat": "RGB"
+            },
+            "factory": "mxpi_pnetpreprocessplugin",
+            "next": "mxpi_tensorinfer2"
+        },
+        "mxpi_tensorinfer2":{
+            "props": {
+                "dataSource": "mxpi_preprocess1",
+                "modelPath": "models/PoseEstNet.om(这里根据你的命名或路径进行更改)"
+            },
+            "factory":"mxpi_tensorinfer",
+            "next":"mxpi_postprocess1"
+        },
+        "mxpi_postprocess1":{
+            "props": {
+                "dataSource":"mxpi_tensorinfer2",
+                "InfoSource":"mxpi_imagedecoder0",
+                "descriptionMessage": "Don’t panic!"
+            },
+            "factory":"mxpi_pnetpostprocessplugin",
+            "next":"appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
