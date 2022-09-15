@@ -48,10 +48,10 @@ RefineDet基于MindXSDK开发，在昇腾芯片上进行目标检测，并实现
 │   └── VOC.names
 ├── myeval
 │   ├── myeval.py
-│   └── precision_analysis		# 精度验证步骤2中下载
+│   └── precision_analysis		# 精度验证步骤1中下载
 │   	├── ……					# 精度工具包中的具体文件
 │   	└── VOC					# 需要自己新建文件夹
-│   		└── VOCdevkit				# 精度验证步骤1中下载
+│   		└── VOCdevkit				# 精度验证步骤2中下载
 │   			└── VOC2007/
 ├── out.jpg
 ├── pipeline
@@ -116,7 +116,7 @@ CANN 环境变量：
 - 环境变量介绍
 
 ```
-SDK-path: mxVision SDK 安装路径
+SDK-path: SDK mxVision 安装路径
 ascend-toolkit-path: CANN 安装路径
 ```
 
@@ -208,14 +208,16 @@ aipp_op {
 
 本模型使用VOC数据集进行训练与精度评估。
 
-1、运行以下命令，进行下载与解压。
+1、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。
+
+2、运行以下命令，进行下载与解压。
 
 ````
 wget http://host.robots.ox.ac.uk/pascal/VOC/voc2007/VOCtrainval_06-Nov-2007.tar
 tar xvf VOCtrainval_06-Nov-2007.tar
 ````
 
-2、根据[精度评估工具](https://gitee.com/mikochi13/mindxsdk-referenceapps/tree/master/tools/precision_analysis)进行安装与使用。上述两个下载的文件，按照代码目录结构中放置。
+上述两个下载的文件，按照代码目录结构中放置。
 
 3、修改代码
 
@@ -257,4 +259,6 @@ python3 main.py --mode test.ssd_mobilenet_fpn.evaluation -data-loading-path ./VO
 运行结束后，会在该目录下生成`result.json`，即为正常执行结束。
 
 6、在`myeval`目录运行`python3 myeval.py`，等待一段时间后即可得到结果。
+
+7、最后结果应为`mAP=0.82917`，原模型精度为`mAp=0.798`，结果符合精度要求（不低于原精度1%）。
 
