@@ -196,9 +196,9 @@ bash build.sh
 6.6 切换到插件目录更新权限
 ```
 cd ${MX_SDK_HOME}/lib/plugins
-chmod 640 libmxpi_pnetpostprocessplugin.so
-chmod 640 libmxpi_pnetpreprocessplugin.so
 ```
+将libmxpi_pnetpostprocessplugin.so和libmxpi_pnetpreprocessplugin.so权限更改为640
+
 6.7 切换回根目录，创建文件夹
 ```
 cd (项目根目录)

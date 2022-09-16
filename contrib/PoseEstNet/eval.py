@@ -20,9 +20,9 @@ limitations under the License.
 import argparse
 import os
 import stat
-import numpy as np
 import csv
 import math
+import numpy as np
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -104,12 +104,12 @@ def get_result(input_path, label_path, stream_api):
             print('Input image only support jpg')
             exit()
         img_path = os.path.join(input_path, image_name)
-        queryDataInput = MxDataInput()
+        query_data_input = MxDataInput()
         with open(img_path, 'rb') as f:
-            queryDataInput.data = f.read()
+            query_data_input.data = f.read()
 
         # send the prepared data to the stream
-        unique_id = stream_api.SendData(POSEESTNET_STREAM_NAME, IN_PLUGIN_ID, queryDataInput)
+        unique_id = stream_api.SendData(POSEESTNET_STREAM_NAME, IN_PLUGIN_ID, query_data_input)
         if unique_id < 0:
             error_message = 'Failed to send data to queryImageProcess stream.'
             print(error_message)
@@ -214,7 +214,7 @@ def evaluate(label_path):
     jnt_count = np.sum(jnt_visible, axis=1)
     less_than_threshold = np.multiply((scaled_uv_err <= threshold),
                                       jnt_visible)
-    PCKh = np.divide(100. * np.sum(less_than_threshold, axis=1), jnt_count)
+    pckh = np.divide(100. * np.sum(less_than_threshold, axis=1), jnt_count)
 
     # save
     rng = np.arange(0, 0.5 + 0.01, 0.01)
@@ -228,20 +228,20 @@ def evaluate(label_path):
         pck_all[r, :] = np.divide(100. * np.sum(less_than_threshold, axis=1),
                                  jnt_count)
 
-    PCKh = np.ma.array(PCKh, mask=False)
+    pckh = np.ma.array(pckh, mask=False)
     jnt_count = np.ma.array(jnt_count, mask=False)
     jnt_ratio = jnt_count / np.sum(jnt_count).astype(np.float64)
 
     name_value = {
-        'Wheel': (1.0 / 4.0) * (PCKh[0] + PCKh[1] + PCKh[18] + PCKh[19]),
-        'Fender': (1.0 / 16.0) * (PCKh[2] + PCKh[3] + PCKh[4] + PCKh[5] + PCKh[6] + PCKh[7] + PCKh[8] +
-                                  PCKh[9] + PCKh[20] + PCKh[21] + PCKh[22] + PCKh[23] + PCKh[24] +
-                                  PCKh[25] + PCKh[26] + PCKh[27]),
-        'Back': (1.0 / 4.0) * (PCKh[10] + PCKh[11] + PCKh[28] + PCKh[29]),
-        'Front': (1.0 / 4.0) * (PCKh[16] + PCKh[17] + PCKh[34] + PCKh[35]),
-        'WindshieldBack': (1.0 / 4.0) * (PCKh[12] + PCKh[13] + PCKh[30] + PCKh[31]),
-        'WindshieldFront': (1.0 / 4.0) * (PCKh[14] + PCKh[15] + PCKh[32] + PCKh[33]),
-        'Mean': np.sum(PCKh * jnt_ratio),
+        'Wheel': (1.0 / 4.0) * (pckh[0] + pckh[1] + pckh[18] + pckh[19]),
+        'Fender': (1.0 / 16.0) * (pckh[2] + pckh[3] + pckh[4] + pckh[5] + pckh[6] + pckh[7] + pckh[8] +
+                                  pckh[9] + pckh[20] + pckh[21] + pckh[22] + pckh[23] + pckh[24] +
+                                  pckh[25] + pckh[26] + pckh[27]),
+        'Back': (1.0 / 4.0) * (pckh[10] + pckh[11] + pckh[28] + pckh[29]),
+        'Front': (1.0 / 4.0) * (pckh[16] + pckh[17] + pckh[34] + pckh[35]),
+        'WindshieldBack': (1.0 / 4.0) * (pckh[12] + pckh[13] + pckh[30] + pckh[31]),
+        'WindshieldFront': (1.0 / 4.0) * (pckh[14] + pckh[15] + pckh[32] + pckh[33]),
+        'Mean': np.sum(pckh * jnt_ratio),
         'Mean@0.1': np.sum(pck_all[11, :] * jnt_ratio)
     }
 

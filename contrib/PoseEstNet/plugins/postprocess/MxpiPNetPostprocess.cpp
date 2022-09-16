@@ -103,7 +103,7 @@ APP_ERROR MxpiPNetPostprocess::GenerateHeadPoseInfo(const MxpiTensorPackageList 
     GetTensors(srcMxpiTensorPackage, tensors);
 
     auto tensor_size = tensors.size();
-    for (int i = 0; i < tensor_size; i++){
+    for (int i = 0; i < tensor_size; i++) {
         auto dataPtr = (float *)tensors[i].GetBuffer();
         auto tensor_shape = tensors[i].GetShape();
 
@@ -119,10 +119,10 @@ APP_ERROR MxpiPNetPostprocess::GenerateHeadPoseInfo(const MxpiTensorPackageList 
         nc::NdArray<float32_t> maxval;
         maxval = nc::zeros<float32_t>(keypoint_nums, 1);
 
-        for (auto j = 0; j < keypoint_nums; j++){
+        for (auto j = 0; j < keypoint_nums; j++) {
             nc::NdArray<float32_t> heatmap;
             heatmap = nc::zeros<float32_t>(1, hm_h*hm_w);
-            for (auto k = 0; k < hm_h*hm_w; k++){
+            for (auto k = 0; k < hm_h*hm_w; k++) {
                 heatmap(0, k) = dataPtr[j*hm_h*hm_w + k];
             }
             auto index = nc::argmax(heatmap);
@@ -137,19 +137,19 @@ APP_ERROR MxpiPNetPostprocess::GenerateHeadPoseInfo(const MxpiTensorPackageList 
             auto py = floor(coordinate(j, 1) + 0.5);
             heatmap = heatmap.reshape(hm_h, hm_w);
 
-            if ((1 < px < hm_w - 1) and (1 < py < hm_h - 1)){
+            if ((1 < px < hm_w - 1) and (1 < py < hm_h - 1)) {
                 auto diff_x = heatmap(py, px + 1) - heatmap(py, px - 1);
                 auto diff_y = heatmap(py + 1, px) - heatmap(py - 1, px);
-                if( diff_x > 0) {
+                if (diff_x > 0) {
                     coordinate(j, 0) = coordinate(j, 0) + LING_DIAN_ER_WU;
-                } else if( diff_x < 0 ) {
+                } else if(diff_x < 0) {
                     coordinate(j, 0) = coordinate(j, 0) - LING_DIAN_ER_WU;
                 } else {
                     coordinate(j, 0) = coordinate(j, 0);
                 }
-                if ( diff_y > 0) {
+                if (diff_y > 0) {
                     coordinate(j, 1) = coordinate(j, 1) + LING_DIAN_ER_WU;
-                } else if ( diff_y < 0 ) {
+                } else if (diff_y < 0) {
                     coordinate(j, 1) = coordinate(j, 1) - LING_DIAN_ER_WU;
                 } else {
                     coordinate(j, 1) = coordinate(j, 1);
@@ -164,7 +164,7 @@ APP_ERROR MxpiPNetPostprocess::GenerateHeadPoseInfo(const MxpiTensorPackageList 
         int w_h[2] = { hm_w, hm_h };
         nc::NdArray<float> final_coordinate = transform_preds(coordinate, center, scale, w_h);
 
-        for (auto it = 0; it < keypoint_nums; it++){
+        for (auto it = 0; it < keypoint_nums; it++) {
             auto dstMxpiHObjectInfoPtr = dstMxpiObjectListSptr.add_objectvec();
             MxpiMetaHeader* dstMxpiMetaHeaderList = dstMxpiHObjectInfoPtr->add_headervec();
             dstMxpiMetaHeaderList->set_datasource(parentName_);
@@ -205,7 +205,7 @@ nc::NdArray<float> MxpiPNetPostprocess::affine_transform(nc::NdArray<float> pt, 
     nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
     new_pt = new_pt.transpose();
     nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-    nc::NdArray<float> my_pt_dot = new_pt_dot({0, 2}, 0);
+    nc::NdArray<float> my_pt_dot = new_pt_dot({ 0, 2 }, 0);
     return my_pt_dot;
 }
 
@@ -366,11 +366,11 @@ std::vector<std::shared_ptr<void>> MxpiPNetPostprocess::DefineProperties() {
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string>{
+    auto parentNameProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
         STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorinfer2", "NULL", "NULL"});
-    auto infoPlugProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string>{
+    auto infoPlugProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
         STRING, "InfoSource", "name", "the name of needed decoder/crop plugin", "mxpi_imagedecoder0", "NULL", "NULL"});
-    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string>{
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
     properties.push_back(infoPlugProSptr);
