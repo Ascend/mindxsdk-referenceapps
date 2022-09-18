@@ -1,0 +1,25 @@
+{
+	"detection3d": {
+		"stream_config": {
+			"deviceId": "0"
+		},
+		"appsrc0": {
+			"props": {
+				"blocksize": "409600"
+			},
+			"factory": "appsrc",
+			"next": "mxpi_tensorinfer1"
+		},
+		"mxpi_tensorinfer1": {
+			"props": {
+				"dataSource":"appsrc0",
+				"modelPath": "./model/keypoint/3DMPPE-ROOTNET_bs1.om"
+			},
+			"factory": "mxpi_tensorinfer",
+			"next": "appsink0"
+		},
+		"appsink0": {
+			"factory": "appsink"
+		}
+	}
+}  
