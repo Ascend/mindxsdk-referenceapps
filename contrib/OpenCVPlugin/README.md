@@ -143,7 +143,7 @@ ascend-toolkit-path: CANN 安装路径
 | 4    | endRow           | 抠图选定区域的结束纵坐标，默认为"256"  ，取值为0~8192 | 否           | 是         |
 | 5    | endCol           | 抠图选定区域的结束横坐标，默认为"256" ，取值为0~8192  | 否           | 是         |
 | 6    | outputDataFormat | 插件输出的数据格式，可选值为"RGB" "BGR" "YUV"         | 是           | 是         |
-| 7    | datatype         | 插件输出的数据类型，可选值为"uint8"和"float32"        | 否           | 是         |
+| 7    | dataType         | 插件输出的数据类型，可选值为"uint8"和"float32"        | 否           | 是         |
 
 ### 3.2 缩放功能的pipeline属性
 
@@ -156,7 +156,7 @@ ascend-toolkit-path: CANN 安装路径
 | 4    | fy               | height方向缩放比例，默认为"0"，取值为0~1       | 否           | 是         |
 | 5    | interpolation    | 图片插值方式，默认为"1"，取值为0~4                   | 否           | 是         |
 | 6    | outputDataFormat | 插件输出的数据格式，可选值为"RGB" "BGR" "YUV"        | 是           | 是         |
-| 7    | datatype         | 插件输出的数据类型，可选值为"uint8"和"float32"       | 否           | 是         |
+| 7    | dataType         | 插件输出的数据类型，可选值为"uint8"和"float32"       | 否           | 是         |
 
 插值方式的取值具体描述：   
 
@@ -191,6 +191,6 @@ python3 main.py
 ```
 
 注：由于dvpp的resize功能有约束，如使用resize插件，输入宽高分别需要16、2对齐。   
-插件使用YUV格式输出时，将main.py 87、89、91行保持注释;94、95行注释打开。   
+插件使用YUV格式输出时，将main.py 87、89、91行保持注释;94、95行注释打开。    同时将下游插件的"cvProcessor"属性删除。     
 插件使用RGB格式输出时，将main.py 87、89行注释打开;91、94、95行保持注释。     
 插件使用BGR格式输出时，将main.py 87、91行注释打开;89、94、95行保持注释。      
