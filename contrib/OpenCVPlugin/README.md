@@ -69,13 +69,13 @@
 │   ├──lib （编译后生成）
 │   ├──src
 │   │   ├──OpenCVPlugin
-│   │   ├── build.sh
-│   │   ├── CMakeLists.txt
-│   │   ├── OpenCVPlugin.cpp
-│   │   └── OpenCVPlugin.h
+│   │       ├── CMakeLists.txt
+│   │       ├── OpenCVPlugin.cpp
+│   │       └── OpenCVPlugin.h
 ├── python
 │   ├── main.py
 │   └── test.pipeline
+├── build.sh
 └── README.md
 
 ```
