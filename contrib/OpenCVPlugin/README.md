@@ -144,6 +144,7 @@ ascend-toolkit-path: CANN 安装路径
 | 5    | Width            | 抠图选定区域的宽，默认为"256" ，取值为32~8192，且必须为16的倍数  | 否           | 是         |
 | 6    | outputDataFormat | 插件输出的数据格式，可选值为"RGB" "BGR" "YUV"        | 是           | 是         |
 | 7    | dataType         | 插件输出的数据类型，可选值为"uint8"和"float32"，默认为“uint8”        | 否           | 是         |
+   
 注：如果抠图的尺寸大于原图尺寸，插件会补边，出现绿色边框。
 
 ### 3.2 缩放功能的pipeline属性
