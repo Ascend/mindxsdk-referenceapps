@@ -1,7 +1,7 @@
 {
     "detection": {
         "stream_config": {
-            "deviceId": "0"
+        "deviceId": "0"
         },
         "appsrc0": {
             "props": {
@@ -19,12 +19,12 @@
         },
        "mxpi_OpenCVPlugin":{
             "props":{
-		"dataSource":"mxpi_imagedecoder0",
+		        "dataSource":"mxpi_imagedecoder0",
                 "descriptionMessage":"This is a plugin",
                 "option":"resize",
-		"height":"160",
-		"width":"128", 
-		"outputDataFormat":"RGB"
+		        "height":"160",
+		        "width":"128", 
+		        "outputDataFormat":"RGB"
 	    },
             "factory":"mxpi_OpenCVPlugin",
             "next":"mxpi_imageresize0"
@@ -32,9 +32,9 @@
 	"mxpi_imageresize0":{
 	    "props":{
 	        "deviceId":"0",
-		"resizeHeight":"256",
-		"resizeWidth":"256",
-		"cvProcessor":"opencv"
+		    "resizeHeight":"256",
+		    "resizeWidth":"256",
+		    "cvProcessor":"opencv"
 	    },
 	    "factory":"mxpi_imageresize",
 	    "next":"appsink0"
