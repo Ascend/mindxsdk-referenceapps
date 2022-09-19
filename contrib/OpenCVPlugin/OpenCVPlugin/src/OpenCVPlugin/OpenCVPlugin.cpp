@@ -45,9 +45,9 @@ APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& c
     fy = *std::static_pointer_cast<double>(configParamMap["fy"]);
     interpolation = *std::static_pointer_cast<int>(configParamMap["interpolation"]); 
     startRow = *std::static_pointer_cast<double>(configParamMap["startRow"]);
-    endRow = *std::static_pointer_cast<double>(configParamMap["endRow"]);
+    endRow = *std::static_pointer_cast<double>(configParamMap["Height"]);
     startCol = *std::static_pointer_cast<double>(configParamMap["startCol"]);
-    endCol = *std::static_pointer_cast<double>(configParamMap["endCol"]);
+    endCol = *std::static_pointer_cast<double>(configParamMap["Width"]);
     outputDataFormat = *std::static_pointer_cast<string>(configParamMap["outputDataFormat"]);
     dataType = *std::static_pointer_cast<string>(configParamMap["dataType"]);
     option = *std::static_pointer_cast<string>(configParamMap["option"]);
@@ -86,7 +86,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     MxBase::MemoryData memorySrc = {};
     memorySrc.deviceId = visionData.deviceid();
     memorySrc.type = (MxBase::MemoryData::MemoryType) visionData.memtype();
-    LogInfo << memorySrc.type;
     memorySrc.size = visionData.datasize();
     memorySrc.ptrData = (void*)visionData.dataptr();
     MxBase::MemoryData memoryDst(visionData.datasize(), MxBase::MemoryData::MEMORY_HOST_NEW);
@@ -102,7 +101,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
                memoryDst.ptrData);
     }
     else {
-	LogInfo << memorySrc.type;
 	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
                memoryDst.ptrData);
 	cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
@@ -114,7 +112,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     cv::Mat img_nv12;
     MxBase::MemoryData memoryNewDst(dst.data, MxBase::MemoryData::MEMORY_HOST_NEW);
     outputPixelFormat_ = (MxBase::MxbasePixelFormat)srcMxpiVision.visioninfo().format();
-    LogInfo << outputPixelFormat_;
     if (option == "resize") {
 	if (memorySrc.type == er) {
 	    cv::resize(imgBgr, dst, cv::Size(width, height), fx, fy, interpolation);
@@ -134,10 +131,6 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     auto ret = APP_ERR_OK;
     if (outputDataFormat == "YUV") {
-	//imgYuv = cv::Mat(height, width, CV_8UC1);
-        //cv::cvtColor(dst, imgYuv, cv::COLOR_BGR2YUV_I420);
-        //yuv_mat = imgYuv.clone();
-        //Bgr2Yuv(yuv_mat, img_nv12);
 	height = dst.rows;
 	width = dst.cols;
 	imgYuv = cv::Mat(height, width, CV_8UC1);
@@ -150,8 +143,11 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
-	else {
+	else if (outputDataFormat == "BGR") {
 	auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
+	}
+	else {
+	LogError << "outputDataFormat not in RGB,BGR,YUV";
 	}
     }
     if (ret != APP_ERR_OK) {
@@ -212,7 +208,15 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, M
     visionData->set_dataptr((uint64)memoryDataDst.ptrData);
     visionData->set_deviceid(deviceId_);
     visionData->set_memtype(MxTools::MXPI_MEMORY_DVPP);
-    visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_UINT8);
+    if (dataType == "float32") {
+        visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32);
+    }
+    else if (dataType == "uint8") {
+        visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_UINT8);
+    }
+    else {
+	LogError << "dataType must in flost32,uint8";
+    }
     LogInfo << "Mat2MxpiVision done";
     return APP_ERR_OK;
 };
@@ -245,8 +249,11 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
     if (dataType == "float32") {
 	visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32);
     }
-    else {
+    else if (dataType == "uint8") {
 	visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_UINT8);
+    }
+    else {
+        LogError << "dataType must in flost32,uint8";
     }
     LogInfo << "Mat2MxpiVision done";
     return APP_ERR_OK;
@@ -342,17 +349,17 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
     auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
-	DOUBLE, "startRow", "startRow", "the start_row of crop image", 0, 0.0, 8192.0});
+	DOUBLE, "startRow", "startRow", "the start_row of crop image", 1, 0.0, 8192.0});
     auto startCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
-	DOUBLE, "startCol", "startCol", "the start_col of crop  image", 0, 0, 8192});
-    auto endRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
-	DOUBLE, "endRow", "endRow", "the end_row of crop image", 256, 0, 8192});
-    auto endCol = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
-	DOUBLE, "endCol", "endCol", "the end_col of crop image", 256, 0, 8192});
+	DOUBLE, "startCol", "startCol", "the start_col of crop  image", 1, 0.0, 8192.0});
+    auto Height = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+	DOUBLE, "Height", "Height", "the Height of crop image", 256, 1.0, 8192.0});
+    auto Width = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
+	DOUBLE, "Width", "Width", "the Width of crop image", 256, 1.0, 8192.0});
     auto height = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
-        FLOAT, "height", "height", "the height of image", 256, 0, 8192});
+        FLOAT, "height", "height", "the height of image", 256, 1, 8192});
     auto width = std::make_shared<ElementProperty<float>>(ElementProperty<float> {
-        FLOAT, "width", "width", "the width of image", 256, 0, 8192});
+        FLOAT, "width", "width", "the width of image", 256, 1, 8192});
     auto fx = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
         DOUBLE, "fx", "fx", "the fx ratio  of image", 0, 0, 1});
     auto fy = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
@@ -369,8 +376,8 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     properties.push_back(descriptionMessageProSptr);
     properties.push_back(startRow);
     properties.push_back(startCol);
-    properties.push_back(endRow);
-    properties.push_back(endCol);
+    properties.push_back(Height);
+    properties.push_back(Width);
     properties.push_back(height);
     properties.push_back(width);
     properties.push_back(fx);
