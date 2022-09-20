@@ -121,5 +121,5 @@ python test_metric.py --pipeline_path pipeline/pranet_pipeline.json --data_path 
 ```
 dataset      meanDic    meanIoU
 ---------  ---------  ---------
-res            0.895      0.836
+res            0.890      0.828
 ```
