@@ -280,57 +280,36 @@ APP_ERROR MxpiPNetPostprocess::Process(std::vector<MxpiBuffer*>& mxpiBuffer) {
     LogInfo << "MxpiPNetPostprocess::Process start";
     MxpiBuffer* buffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*buffer);
-    MxpiErrorInfo mxpiErrorInfo;
-    ErrorInfo_.str("");
     auto errorInfoPtr = mxpiMetadataManager.GetErrorInfo();
     if (errorInfoPtr != nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_COMM_FAILURE, pluginName_) << "MxpiPNetPostprocess process is not implemented";
-        mxpiErrorInfo.ret = APP_ERR_COMM_FAILURE;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         LogError << "MxpiPNetPostprocess process is not implemented";
         return APP_ERR_COMM_FAILURE;
     }
     // Get the data (infer tensor) from buffer
     shared_ptr<void> metadata = mxpiMetadataManager.GetMetadata(parentName_);
     if (metadata == nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, pluginName_) << "Metadata of tensor is NULL, failed";
-        mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+        LogError << "Metadata of tensor is NULL, failed";
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
     // Check the proto struct name
     google::protobuf::Message* msg = (google::protobuf::Message*)metadata.get();
     const google::protobuf::Descriptor* desc = msg->GetDescriptor();
     if (desc->name() != SAMPLE_KEY) {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, pluginName_)
-        << "Proto struct name is not MxpiTensorPackageList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+        LogError << "Proto struct name is not MxpiTensorPackageList, failed";
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
-    LogInfo << "MxpiPNetPostprocess::Get Tensor Completed";
 
     // Get the data (image information) from buffer
     shared_ptr<void> Info_metadata = mxpiMetadataManager.GetMetadata(infoPlugName_);
     if (Info_metadata == nullptr) {
-        ErrorInfo_ << GetError(APP_ERR_METADATA_IS_NULL, infoPlugName_) << "Metadata of original image is NULL, failed";
-        mxpiErrorInfo.ret = APP_ERR_METADATA_IS_NULL;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, infoPlugName_, mxpiErrorInfo);
+        LogError << "Metadata of original image is NULL, failed";
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
     // Check the proto struct name
     google::protobuf::Message* info_msg = (google::protobuf::Message*)Info_metadata.get();
     const google::protobuf::Descriptor* info_desc = info_msg->GetDescriptor();
     if (info_desc->name() != INFO_KEY) {
-        ErrorInfo_ << GetError(APP_ERR_PROTOBUF_NAME_MISMATCH, infoPlugName_)
-        << "Proto struct name is not MxpiTensorPackageList, failed";
-        mxpiErrorInfo.ret = APP_ERR_PROTOBUF_NAME_MISMATCH;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, infoPlugName_, mxpiErrorInfo);
+        LogError << "Proto struct name is not MxpiTensorPackageList, failed";
         return APP_ERR_PROTOBUF_NAME_MISMATCH; // self define the error code
     }
     LogInfo << "MxpiPNetPostprocess::Get Image Info Completed";
@@ -341,24 +320,18 @@ APP_ERROR MxpiPNetPostprocess::Process(std::vector<MxpiBuffer*>& mxpiBuffer) {
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
     APP_ERROR ret = GenerateHeadPoseInfo(*srcMxpiTensorPackageListSptr, *srcMxpiVisionListSptr, *dstMxpiObjectListSptr);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret, pluginName_) << "MxpiPNetPostprocess gets inference information failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+        LogError << "MxpiPNetPostprocess gets inference information failed.";
         return ret;
     }
 
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr));
     if (ret != APP_ERR_OK) {
-        ErrorInfo_ << GetError(ret, pluginName_) << "MxpiPNetPostprocess add metadata failed.";
-        mxpiErrorInfo.ret = ret;
-        mxpiErrorInfo.errorInfo = ErrorInfo_.str();
-        SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
+        LogError << "MxpiPNetPostprocess add metadata failed.";
         return ret;
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
-    LogInfo << "MxpiPNetPostprocess::Process end";
+    LogError << "MxpiPNetPostprocess::Process end";
     return APP_ERR_OK;
 }
 

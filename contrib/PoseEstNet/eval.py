@@ -29,6 +29,11 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
+JOINTS_NUM = 36
+SAN = 3
+SI = 4
+WU = 5
+BATCH_NUM = 31
 
 POSEESTNET_STREAM_NAME = b'PoseEstNetProcess'
 IN_PLUGIN_ID = 0
@@ -88,11 +93,11 @@ def get_result(input_path, label_path, stream_api):
         width = int(row[1])
         height = int(row[2])
         joints = []
-        for j in range(36):
-            joint = [int(row[j * 3 + 3]), int(row[j * 3 + 4]), int(row[j * 3 + 5])]
+        for j in range(JOINTS_NUM):
+            joint = [int(row[j * SAN + SAN]), int(row[j * SAN + SI]), int(row[j * SAN + WU])]
             joints.append(joint)
         hash_annot[img_name] = (width, height, joints)
-    all_preds = np.zeros((len(hash_annot), 36, 3), dtype=np.float32)
+    all_preds = np.zeros((len(hash_annot), JOINTS_NUM, SAN), dtype=np.float32)
     batch_count = 0
     idx = 0
     image_names = []
@@ -139,8 +144,8 @@ def get_result(input_path, label_path, stream_api):
             all_preds[idx + batch_count, index, 1] = y
             all_preds[idx + batch_count, index, 2] = vision
 
-        if batch_count == 31:
-            print(f'-------- Test: [{int((idx+1)/32 + 1)}/{int(len(hash_annot)/32)}] ---------')
+        if batch_count == BATCH_NUM:
+            print(f'-------- Test: [{int((idx+1)/(BATCH_NUM + 1) + 1)}/{int(len(hash_annot)/(BATCH_NUM + 1))}] ---------')
             idx += batch_count + 1
             batch_count = 0
         else:
@@ -171,8 +176,8 @@ def evaluate(label_path):
         reader = csv.reader(annot_file, delimiter=',')
         for row in reader:
             joints = []
-            for j in range(36):
-                joint = [float(row[j * 3 + 1]), float(row[j * 3 + 2]), float(row[j * 3 + 3])]
+            for j in range(JOINTS_NUM):
+                joint = [float(row[j * SAN + 1]), float(row[j * SAN + 2]), float(row[j * SAN + SAN])]
                 joints.append(joint)
             preds_read.append(joints)
     gts = []
@@ -184,8 +189,8 @@ def evaluate(label_path):
             joints = []
             vis = []
             top_lft = btm_rgt = [int(row[3]), int(row[4])]
-            for j in range(36):
-                joint = [int(row[j * 3 + 3]), int(row[j * 3 + 4]), int(row[j * 3 + 5])]
+            for j in range(JOINTS_NUM):
+                joint = [int(row[j * SAN + SAN]), int(row[j * SAN + SI]), int(row[j * SAN + WU])]
                 joints.append(joint)
                 vis.append(joint[2])
                 if joint[0] < top_lft[0]:
@@ -218,7 +223,7 @@ def evaluate(label_path):
 
     # save
     rng = np.arange(0, 0.5 + 0.01, 0.01)
-    pck_all = np.zeros((len(rng), 36))
+    pck_all = np.zeros((len(rng), JOINTS_NUM))
 
     length_rng = len(rng)
     for r in range(length_rng):

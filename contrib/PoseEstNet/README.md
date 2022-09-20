@@ -58,15 +58,9 @@ apt-get install libpython3.9
 
 **步骤3** .om模型转换  
 以下操作均在“项目所在目录/models”路径下进行：  
-- 设置环境变量（请确认install_path路径是否正确）
+- 设置环境变量，进入根目录，执行如下命令后返回原目录
 ```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest    
-
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest/
+source usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
 - 使用ATC将.pb文件转成为.om文件
 ```
@@ -104,9 +98,13 @@ ATC run success, welcome to the next use.
 
 **步骤1** .pth模型转.onnx模型
 
-***1*** 获取.pth权重文件：[下载链接](https://docs.google.com/uc?export=download&id=1vD08fh-za3mgTJ9UkK1ASCTJAqypW0RL)
-
-&ensp;models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
+***1*** 获取.pth权重文件：&ensp;models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
+```
+wget --no-check-certificate -r 'https://docs.google.com/uc?export=download&id=1vD08fh-za3mgTJ9UkK1ASCTJAqypW0RL' -O models.zip
+unzip models.zip
+rm models.zip
+```
+[Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
 
 ***2*** 获取PoseEstNet_pth2onnx.py 
 &ensp; 下载PoseEstNet源码并创建项目，将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
@@ -160,20 +158,10 @@ ATC run success, welcome to the next use.
 ----------------------------------------------------
 ## 6 测试
 
-6.1 配置环境变量
+6.1 配置环境变量  
 
 运行cann和sdk的set_env.sh脚本
-```   
-export MX_SDK_HOME=${SDK安装路径}/mxVision
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export PYTHONPATH=${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-```
 6.2 获取om模型
 ```
 步骤详见4： 模型转换
@@ -278,5 +266,13 @@ python3 eval.py --inputPath data_eval/images/ --labelPath data_eval/labels/label
 ![项目精度](image/output_eval.png)
 
 目标精度：
-![目标精度](image/oral_eval.png)
 
+| Train set | VeRi   |
+| :--------: | :------: |
+|Wheel|85.10   |
+|Fender|81.14|
+|Back SDK|69.20|
+|Front| 77.44|
+|WindshieldBack | 85.67 |
+|WindshieldFront|89.92|  
+|Mean|82.15| 

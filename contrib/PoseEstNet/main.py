@@ -26,6 +26,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 YUV_BYTES_NU = 3
 YUV_BYTES_DE = 2
+JOINTS_NUM = 36
 
 POSTESTNET_STREAM_NAME = b'PoseEstNetProcess'
 IN_PLUGIN_ID = 0
@@ -132,15 +133,15 @@ def process(input_path, stream_api):
             keypoint_object_list = MxpiDataType.MxpiObjectList()
             keypoint_object_list.ParseFromString(infer_result[1].messageBuf)
             keypoint_num = len(keypoint_object_list.objectVec)
-            if keypoint_num // car_num != 36:
+            if keypoint_num // car_num != JOINTS_NUM:
                 error_message = 'Failed to map the inferred key points to the detected cars.'
                 print(error_message)
                 exit()
 
             original_img = cv2.imread(file_path)
             for index in range(len(keypoint_object_list.objectVec)):
-                original_x = int(car_object_list.objectVec[index // 36].x0) + keypoint_object_list.objectVec[index].x0
-                original_y = int(car_object_list.objectVec[index // 36].y0) + keypoint_object_list.objectVec[index].y0
+                original_x = int(car_object_list.objectVec[index // JOINTS_NUM].x0) + keypoint_object_list.objectVec[index].x0
+                original_y = int(car_object_list.objectVec[index // JOINTS_NUM].y0) + keypoint_object_list.objectVec[index].y0
                 visible = keypoint_object_list.objectVec[index].x1
                 if round(visible):
                     cv2.circle(original_img, (int(original_x), int(original_y)), 2, [255, 0, 0], 2)
