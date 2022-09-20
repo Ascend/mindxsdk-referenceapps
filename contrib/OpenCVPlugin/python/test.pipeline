@@ -7,8 +7,8 @@
             "props": {
                 "blocksize": "409600"
             },
-           "factory": "appsrc",
-           "next": "mxpi_imagedecoder0"
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
         },
         "mxpi_imagedecoder0": {
             "props": {
@@ -17,27 +17,27 @@
             "factory": "mxpi_imagedecoder",
             "next": "mxpi_OpenCVPlugin"
         },
-       "mxpi_OpenCVPlugin":{
-            "props":{
-		        "dataSource":"mxpi_imagedecoder0",
-                "descriptionMessage":"This is a plugin",
-                "option":"resize",
-		        "height":"160",
-		        "width":"128", 
-		        "outputDataFormat":"RGB"
-	    },
-            "factory":"mxpi_OpenCVPlugin",
-            "next":"mxpi_imageresize0"
-        },
-        "mxpi_imageresize0":{
-            "props":{
-                "deviceId":"0",
-                "resizeHeight":"256",
-                "resizeWidth":"256",
-                "cvProcessor":"opencv"
+        "mxpi_OpenCVPlugin": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "descriptionMessage": "This is a plugin",
+                "option": "resize",
+                "height": "160",
+                "width": "128",
+                "outputDataFormat": "RGB"
             },
-            "factory":"mxpi_imageresize",
-            "next":"appsink0"
+            "factory": "mxpi_OpenCVPlugin",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "deviceId": "0",
+                "resizeHeight": "256",
+                "resizeWidth": "256",
+                "cvProcessor": "opencv"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "appsink0"
         },
         "appsink0": {
             "props": {
@@ -47,3 +47,4 @@
         }
     }
 }
+
