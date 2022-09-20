@@ -134,13 +134,18 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	height = dst.rows;
 	width = dst.cols;
 	imgYuv = cv::Mat(height, width, CV_8UC1);
-        Bgr2Yuv(dst,imgYuv);
+    Bgr2Yuv(dst,imgYuv);
 	auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
     }
     else {
 	if (outputDataFormat == "RGB") {
-	imgRgb = cv::Mat(height, width, CV_8UC3);
-        cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
+        if (dataType == 'float32') {
+            imgRgb = cv::Mat(height, width, CV_32FC3);
+        }
+        else {
+            imgRgb = cv::Mat(height, width, CV_8UC3);
+        }
+    cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
 	else if (outputDataFormat == "BGR") {
