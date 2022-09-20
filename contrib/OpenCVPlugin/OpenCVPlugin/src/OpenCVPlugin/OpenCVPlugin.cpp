@@ -215,7 +215,7 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, M
         visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_UINT8);
     }
     else {
-	LogError << "dataType must in flost32,uint8";
+	LogError << "dataType must in float32,uint8";
     }
     LogInfo << "Mat2MxpiVision done";
     return APP_ERR_OK;
@@ -253,7 +253,7 @@ APP_ERROR MxpiSamplePlugin::Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat,
 	visionData->set_datatype(MxTools::MxpiDataType::MXPI_DATA_TYPE_UINT8);
     }
     else {
-        LogError << "dataType must in flost32,uint8";
+        LogError << "dataType must in float32,uint8";
     }
     LogInfo << "Mat2MxpiVision done";
     return APP_ERR_OK;
