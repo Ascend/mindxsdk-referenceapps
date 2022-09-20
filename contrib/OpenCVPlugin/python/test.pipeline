@@ -29,16 +29,16 @@
             "factory":"mxpi_OpenCVPlugin",
             "next":"mxpi_imageresize0"
         },
-	"mxpi_imageresize0":{
-	    "props":{
-	        "deviceId":"0",
-		    "resizeHeight":"256",
-		    "resizeWidth":"256",
-		    "cvProcessor":"opencv"
-	    },
-	    "factory":"mxpi_imageresize",
-	    "next":"appsink0"
-	},
+        "mxpi_imageresize0":{
+            "props":{
+                "deviceId":"0",
+                "resizeHeight":"256",
+                "resizeWidth":"256",
+                "cvProcessor":"opencv"
+            },
+            "factory":"mxpi_imageresize",
+            "next":"appsink0"
+        },
         "appsink0": {
             "props": {
                 "blocksize": "4096000"
