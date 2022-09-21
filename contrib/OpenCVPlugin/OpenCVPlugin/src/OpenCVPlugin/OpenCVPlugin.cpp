@@ -135,6 +135,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	width = dst.cols;
 	imgYuv = cv::Mat(height, width, CV_8UC1);
     Bgr2Yuv(dst,imgYuv);
+    outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
 	auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
     }
     else {
@@ -146,10 +147,18 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
             imgRgb = cv::Mat(height, width, CV_8UC3);
         }
     cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
+    outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_RGB_888;
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
 	else if (outputDataFormat == "BGR") {
-	auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
+        if (dataType == "float32") {
+            dst = cv::Mat(height, width, CV_32FC3);
+        }
+        else {
+            dst = cv::Mat(height, width, CV_8UC3);
+        }
+        outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_BGR_888;
+	    auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
 	}
 	else {
 	LogError << "outputDataFormat not in RGB,BGR,YUV";
