@@ -75,18 +75,18 @@ APP_ERROR MxpiPNetPreprocess::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::st
 
 APP_ERROR MxpiPNetPreprocess::GenerateVisionList(const MxpiVisionList srcMxpiVisionList,
                                                  MxpiVisionList& dstMxpiVisionList) {
-    LogInfo <<"input type:" <<srcMxpiVisionList.visionvec(0).visiondata().datatype();
+    LogInfo << "input type:" << srcMxpiVisionList.visionvec(0).visiondata().datatype();
     for (int i = 0; i< srcMxpiVisionList.visionvec_size();i++) {
         auto srcMxpiVision = srcMxpiVisionList.visionvec(i);
         MxTools::MxpiVision dstVision;
         APP_ERROR ret = DoAffineTransform(i, srcMxpiVision, dstVision);
         if (ret != APP_ERR_OK) {
-            LogWarn << "element("<< elementName_<<") normailze failed";
+            LogWarn << "element(" << elementName_ << ") normailze failed";
         }
         dstMxpiVisionList.add_visionvec()->CopyFrom(dstVision);
     }
     if (dstMxpiVisionList.visionvec_size() == 0) {
-        LogError <<  "element("<< elementName_<<") dst vision vec size is 0!";
+        LogError <<  "element(" << elementName_ << ") dst vision vec size is 0!";
         return APP_ERR_COMM_FAILURE;
     }
     LogInfo << "Generate done";
@@ -175,10 +175,10 @@ APP_ERROR MxpiPNetPreprocess::DoAffineTransform(size_t idx,
         ret = Mat2MxpiVisionDvpp(idx, img_nv12, dstMxpiVision);
     } else {
         if (outputDataFormat == "RGB") {
-            LogInfo <<"output in rgb";
+            LogInfo << "output in rgb";
             ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
         } else {
-            LogInfo <<"output in bgr";
+            LogInfo << "output in bgr";
             imgBGR = cv::Mat(ER_WU_LIU, ER_WU_LIU, CV_8UC3);
             cv::cvtColor(dst, imgBGR, cv::COLOR_RGB2BGR);
             ret = Mat2MxpiVisionOpencv(idx, imgBGR, dstMxpiVision);
