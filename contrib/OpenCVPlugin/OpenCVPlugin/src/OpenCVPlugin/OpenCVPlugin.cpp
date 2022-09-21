@@ -142,6 +142,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	if (outputDataFormat == "RGB") {
         if (dataType == "float32") {
             imgRgb = cv::Mat(height, width, CV_32FC3);
+            dst.convertTo(imgRgb, CV_32FC3);
         }
         else {
             imgRgb = cv::Mat(height, width, CV_8UC3);
@@ -152,7 +153,8 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	}
 	else if (outputDataFormat == "BGR") {
         if (dataType == "float32") {
-            dst = cv::Mat(height, width, CV_32FC3);
+            imgRgb = cv::Mat(height, width, CV_32FC3);
+            dst.convertTo(imgRgb, CV_32FC3);
         }
         else {
             dst = cv::Mat(height, width, CV_8UC3);
