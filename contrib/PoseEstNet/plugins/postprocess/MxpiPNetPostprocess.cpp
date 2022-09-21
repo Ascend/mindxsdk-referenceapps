@@ -142,7 +142,7 @@ APP_ERROR MxpiPNetPostprocess::GenerateHeadPoseInfo(const MxpiTensorPackageList 
                 auto diff_y = heatmap(py + 1, px) - heatmap(py - 1, px);
                 if (diff_x > 0) {
                     coordinate(j, 0) = coordinate(j, 0) + LING_DIAN_ER_WU;
-                } else if(diff_x < 0) {
+                } else if (diff_x < 0) {
                     coordinate(j, 0) = coordinate(j, 0) - LING_DIAN_ER_WU;
                 } else {
                     coordinate(j, 0) = coordinate(j, 0);
@@ -205,7 +205,7 @@ nc::NdArray<float> MxpiPNetPostprocess::affine_transform(nc::NdArray<float> pt, 
     nc::NdArray<float> new_pt = {pt(0, 0), pt(0, 1), 1.0};
     new_pt = new_pt.transpose();
     nc::NdArray<float> new_pt_dot = nc::dot(t, new_pt);
-    nc::NdArray<float> my_pt_dot = new_pt_dot({ 0, 2 }, 0);
+    nc::NdArray<float> my_pt_dot = new_pt_dot( { 0, 2 }, 0);
     return my_pt_dot;
 }
 

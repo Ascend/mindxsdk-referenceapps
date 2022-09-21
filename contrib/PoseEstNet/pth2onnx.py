@@ -1,23 +1,8 @@
-# ------------------------------------------------------------------------------
-# pose.pytorch
-# Copyright (c) 2018-present Microsoft
-# Licensed under The Apache-2.0 License [see LICENSE for details]
-# Written by Bin Xiao (Bin.Xiao@microsoft.com)
-# ------------------------------------------------------------------------------
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 import os
 
 import torch
-import torch.nn.parallel
 import torch.backends.cudnn as cudnn
-import torch.optim
-import torch.utils.data
-import torch.utils.data.distributed
 
 from config import cfg
 from config import update_config
@@ -27,7 +12,6 @@ import models
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train keypoints network')
-    # general
     parser.add_argument('--cfg',
                         help='experiment configure file name',
                         required=True,

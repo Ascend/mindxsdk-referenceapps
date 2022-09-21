@@ -145,7 +145,7 @@ def get_result(input_path, label_path, stream_api):
             all_preds[idx + batch_count, index, 2] = vision
 
         if batch_count == BATCH_NUM:
-            print(f'-------- Test: [{int((idx+1)/(BATCH_NUM + 1) + 1)}/{int(len(hash_annot)/(BATCH_NUM + 1))}] ---------')
+            print(f'--- Test: [{int((idx+1)/(BATCH_NUM + 1) + 1)}/{int(len(hash_annot)/(BATCH_NUM + 1))}] ---')
             idx += batch_count + 1
             batch_count = 0
         else:

@@ -125,24 +125,24 @@ def process(input_path, stream_api):
                 exit()
 
             # get the output information of "mxpi_objectpostprocessor0" plugin
-            car_object_list = MxpiDataType.MxpiObjectList()
-            car_object_list.ParseFromString(infer_result[0].messageBuf)
-            car_num = len(car_object_list.objectVec)
+            car_obj_list = MxpiDataType.MxpiObjectList()
+            car_obj_list.ParseFromString(infer_result[0].messageBuf)
+            car_num = len(car_obj_list.objectVec)
 
             # get the output information of "mxpi_objectpostprocessor0" plugin
-            keypoint_object_list = MxpiDataType.MxpiObjectList()
-            keypoint_object_list.ParseFromString(infer_result[1].messageBuf)
-            keypoint_num = len(keypoint_object_list.objectVec)
+            keypoint_obj_list = MxpiDataType.MxpiObjectList()
+            keypoint_obj_list.ParseFromString(infer_result[1].messageBuf)
+            keypoint_num = len(keypoint_obj_list.objectVec)
             if keypoint_num // car_num != JOINTS_NUM:
                 error_message = 'Failed to map the inferred key points to the detected cars.'
                 print(error_message)
                 exit()
 
             original_img = cv2.imread(file_path)
-            for index in range(len(keypoint_object_list.objectVec)):
-                original_x = int(car_object_list.objectVec[index // JOINTS_NUM].x0) + keypoint_object_list.objectVec[index].x0
-                original_y = int(car_object_list.objectVec[index // JOINTS_NUM].y0) + keypoint_object_list.objectVec[index].y0
-                visible = keypoint_object_list.objectVec[index].x1
+            for index in range(len(keypoint_obj_list.objectVec)):
+                original_x = int(car_obj_list.objectVec[index // JOINTS_NUM].x0) + keypoint_obj_list.objectVec[index].x0
+                original_y = int(car_obj_list.objectVec[index // JOINTS_NUM].y0) + keypoint_obj_list.objectVec[index].y0
+                visible = keypoint_obj_list.objectVec[index].x1
                 if round(visible):
                     cv2.circle(original_img, (int(original_x), int(original_y)), 2, [255, 0, 0], 2)
             cv2.imwrite("output/result_{}".format(str(file)), original_img)
