@@ -95,14 +95,32 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         return res;
     }
     cv::Mat src;
-    cv::Mat imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
-    if (memorySrc.type == san) {
-	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_8UC3,
-               memoryDst.ptrData);
+    cv::Mat imgBgr;
+    if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+	imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3);	    
     }
     else {
-	src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
+	imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
+    }
+    if (memorySrc.type == san) {
+	if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_32FC3,
+               memoryDst.ptrData);		
+	}
+	else {
+	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_8UC3,
                memoryDst.ptrData);
+	}
+    }
+    else {
+	if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_32FC1,
+               memoryDst.ptrData);
+	}
+	else {
+	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
+               memoryDst.ptrData);
+	}
 	cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
     }
     cv::Mat dst;
@@ -134,8 +152,10 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	height = dst.rows;
 	width = dst.cols;
 	imgYuv = cv::Mat(height, width, CV_8UC1);
-    Bgr2Yuv(dst,imgYuv);
-    outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
+    	dst.convertTo(dst, CV_8UC3);
+	Bgr2Yuv(dst,imgYuv);
+	cv::imwrite("yuv.jpg", imgYuv);
+	outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
 	auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
     }
     else {
@@ -146,8 +166,9 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
         }
         else {
             imgRgb = cv::Mat(height, width, CV_8UC3);
+	    dst.convertTo(imgRgb, CV_8UC3);
         }
-    cv::cvtColor(dst, imgRgb, cv::COLOR_BGR2RGB);
+    cv::cvtColor(imgRgb, imgRgb, cv::COLOR_BGR2RGB);
     outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_RGB_888;
 	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
@@ -157,10 +178,11 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
             dst.convertTo(imgRgb, CV_32FC3);
         }
         else {
-            dst = cv::Mat(height, width, CV_8UC3);
+            imgRgb = cv::Mat(height, width, CV_8UC3);
+	    dst.convertTo(imgRgb, CV_8UC3); 
         }
         outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_BGR_888;
-	    auto ret = Mat2MxpiVisionOpencv(idx, dst, dstMxpiVision);
+	    auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
 	}
 	else {
 	LogError << "outputDataFormat not in RGB,BGR,YUV";
