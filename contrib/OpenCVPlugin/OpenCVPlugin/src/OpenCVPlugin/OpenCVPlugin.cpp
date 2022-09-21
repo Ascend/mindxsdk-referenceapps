@@ -139,7 +139,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     else {
 	if (outputDataFormat == "RGB") {
-        if (dataType == 'float32') {
+        if (dataType == "float32") {
             imgRgb = cv::Mat(height, width, CV_32FC3);
         }
         else {
