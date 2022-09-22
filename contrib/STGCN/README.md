@@ -1,0 +1,132 @@
+# 城市道路交通预测
+
+## 1 介绍
+
+STGCN主要用于交通预测领域，是一种时空卷积网络，解决在交通领域的时间序列预测问题。在定义图上的问题，并用纯卷积结构建立模型，这使得使用更少的参数能带来更快的训练速度。本样例基于MindxSDK开发，是在STGCN模型的基础上对SZ-Taxi数据集进行训练转化，可以对一定未来一定时段内的交通速度进行预测。
+
+论文原文：https://arxiv.org/abs/1709.04875
+
+STGCN模型Github仓库：https://github.com/hazdzz/STGCN
+
+SZ-Taxi数据集：https://github.com/lehaifeng/T-GCN/tree/master/data	
+
+SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和道路交通速度信息。
+
+### 1.1 支持的产品
+本项目以昇腾Atlas310卡为主要的硬件平台。
+
+### 1.2 软件方案介绍
+
+基于MindX SDK的城市道路交通预测模型的推理流程为：
+
+首先读取已有的交通速度数据集（csv格式）通过Python API转化为protobuf的格式传送给appsrc插件输入，然后输入模型推理插件mxpi_tensorinfer，最后通过输出插件mxpi_dataserialize和appsink进行输出。本系统的各模块及功能如表1所示：
+
+表1.1 系统方案各子系统功能描述：
+
+| 序号 | 子系统 | 功能描述     |
+| ---- | ------ | ------------ |
+| 1    | 数据输入 | 调用pythonAPI的SendProtobuf()函数和MindX SDK的appsrc输入数据|
+| 2    | 模型推理 | 调用MindX SDK的mxpi_tensorinfer对输入张量进行推理 |
+| 3    | 结果输出 | 调用MindX SDK的mxpi_dataserialize和appsink以及pythonAPI的GetProtobuf()函数输出结果 |
+
+
+### 1.3 代码目录结构与说明
+
+eg：本sample工程名称为stgcn_sdk_test，工程目录如下图所示：
+```
+├── config              # MindX SDK configuration file
+│   └── logging.conf    
+│   └── sdk.conf
+├── data                # 数据目录
+├── models              # 模型目录
+├── pipeline
+│   └── stgcn.pipeline
+├── main.py
+├── README.md
+├── run_sdk_infer.sh    # 运行脚本
+└── convert_om.sh       # 模型转换脚本
+```
+
+## 2 环境依赖
+
+eg：推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| mxVision | 2.0.4 |
+| Python | 3.9 |
+| CANN | 5.1.RC1 |
+
+- 环境变量介绍
+在编译运行项目前，需要设置环境变量：
+```
+bash ${SDK安装路径}/set_env.sh
+bash ${CANN安装路径}/../set_env.sh
+```
+
+## 3 模型转换
+本项目推理模型权重采用Github仓库中Pytorch框架的STGCN模型训练SZ-Taxi数据集得到的权重转化得到。经过以下两步模型转化：
+1、pth转化为onnx
+转化代码参考如下：
+```
+import torch
+import torch.nn
+import onnx
+
+model = torch.load('${pth文件路径}')
+input_names = ['input']
+output_names = ['output']
+x = torch.randn(64, 1, 12, 156,device='cpu')  #输入大小
+torch.onnx.export(model, x, 'stgcn10.onnx', opset_version = 12, input_names=input_names, output_names=output_names, verbose='True')
+```
+2、onnx转化为om
+转化指令参考如下：
+```
+/home/chongqin1/Ascend/ascend-toolkit/5.1.RC1/atc/bin/atc  # atc安装路径
+--input_shape="input:64,1,12,156"                          # 输入数据的shape
+--check_report=/home/chongqin1/modelzoo/stgcn10_2/Ascend310/network_analysis.report 
+--input_format=NCHW -
+-output="/home/chongqin1/modelzoo/stgcn10_2/Ascend310/stgcn10_2"   # 转换后输出的om模型存放路径以及名称
+--soc_version=Ascend310                                     # 模型转换时指定芯片版本
+--framework=5 
+--model="/home/chongqin1/MindStudioProjects/convertModels/stgcn10.onnx"
+```
+也可以根据实际路径修改cnvert_om.sh
+```
+bash convert_om.sh [model_path] [output_model_name]
+参数说明：
+model_path：onnx文件路径。
+output_model_name：生成的om模型文件名，转换脚本会在此基础上添加.om后缀。
+```
+
+## 4 城市道路交通预测推理流程开发实现
+### 4.1 pipeline编排
+```
+    appsrc # 输入
+    mxpi_tensorinfer # 模型推理
+    mxpi_dataserialize
+    appsink # 输出
+```
+### 4.2 主程序流程
+
+1、初始化流管理。
+2、读取数据集。
+3、向流发送数据，进行推理。
+4、获取pipeline各插件输出结果。
+5、销毁流。
+
+## 5 运行
+执行脚本run_sdk_infer.sh，指令如下：
+```
+bash run_sdk_infer.sh [image_path] [result_dir] [n_pred]
+
+参数说明：
+image_path：验证集文件，如“../data/sz_speed.csv”
+result_dir：推理结果保存路径，如“./results”
+n_pred：预测时段，如9
+```
+最后推理预测的结果会保存在resultspredictions.txt文件中
+推理精度会直接显示在界面上。
+```
+MAE 2.85 | RMSE 4.32
+```
