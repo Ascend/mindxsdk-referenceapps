@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="Remote Python 3.7.5" project-jdk-type="Python SDK">
+    <output url="file://$PROJECT_DIR$/../../ST-GCN_for_MindSpore_code/out" />
+  </component>
+  <component name="com.huawei.mind.studio.ssh.deploy.persistent.DeploySettingsState">
+    <option name="deployModels">
+      <list>
+        <DeployModel>
+          <option name="name" value="chongqin1@192.168.88.57:22" />
+          <option name="uuid" value="aca366ae-7de2-4717-a9bc-8ccfaf154889" />
+          <option name="deployConnectionModel" value="{&quot;deployConnectionType&quot;:&quot;SFTP&quot;,&quot;sshConnectionModel&quot;:{&quot;uuid&quot;:&quot;b1314d74-3616-4de2-86a4-f9ff0ec47ea2&quot;}}" />
+          <option name="deployMappingModels" value="[{&quot;deploymentPath&quot;:&quot;/home/chongqin1/MindStudio-WorkSpace/stgcn_sdk_test&quot;,&quot;localPath&quot;:&quot;D:/MindstudioProjects/STGCN_SDK/stgcn_sdk_test&quot;}]" />
+        </DeployModel>
+        <DeployModel>
+          <option name="default" value="true" />
+          <option name="name" value="192.168.88.109" />
+          <option name="uuid" value="3c4e9043-cf87-4be2-9609-5bf92b3146b0" />
+          <option name="deployConnectionModel" value="{&quot;deployConnectionType&quot;:&quot;SFTP&quot;,&quot;sshConnectionModel&quot;:{&quot;uuid&quot;:&quot;f596edd0-9ce2-49aa-8e7b-f0be4c3884e4&quot;}}" />
+          <option name="deployMappingModels" value="[{&quot;deploymentPath&quot;:&quot;/home/liukai2/MindStudio-WorkSpace/stgcn_sdk_test&quot;,&quot;localPath&quot;:&quot;D:\\MindstudioProjects\\STGCN_SDK\\stgcn_sdk_test&quot;}]" />
+        </DeployModel>
+        <DeployModel>
+          <option name="name" value="192.168.88.57" />
+          <option name="uuid" value="56029cf0-9e4f-4071-a3f5-7a6c11c42906" />
+          <option name="deployConnectionModel" value="{&quot;deployConnectionType&quot;:&quot;SFTP&quot;,&quot;sshConnectionModel&quot;:{&quot;uuid&quot;:&quot;b1314d74-3616-4de2-86a4-f9ff0ec47ea2&quot;}}" />
+          <option name="deployMappingModels" value="[{&quot;deploymentPath&quot;:&quot;/tmp/16700c1c-2f44-459d-beac-c6ff47f71584&quot;,&quot;localPath&quot;:&quot;D:\\MindstudioProjects\\STGCN_SDK\\stgcn_sdk_test&quot;}]" />
+          <option name="deployExcludePathModels" value="[{&quot;excludePath&quot;:&quot;D:\\MindstudioProjects\\STGCN_SDK\\stgcn_sdk_test\\.idea&quot;,&quot;pathType&quot;:&quot;LOCAL_PATH&quot;}]" />
+        </DeployModel>
+        <DeployModel>
+          <option name="name" value="ascend-x86_64-linux (b78c2fe1-270f-4726-ba77-87608f6904a4)" />
+          <option name="relationToolChainsUuid" value="b78c2fe1-270f-4726-ba77-87608f6904a4" />
+          <option name="uuid" value="b8b4796e-1d99-4181-9cac-ad50c4c9290a" />
+          <option name="deployConnectionModel" value="{&quot;deployConnectionType&quot;:&quot;SFTP&quot;,&quot;sshConnectionModel&quot;:{&quot;uuid&quot;:&quot;b1314d74-3616-4de2-86a4-f9ff0ec47ea2&quot;}}" />
+          <option name="deployMappingModels" value="[{&quot;deploymentPath&quot;:&quot;/tmp/b8b4796e-1d99-4181-9cac-ad50c4c9290a&quot;,&quot;localPath&quot;:&quot;D:\\MindstudioProjects\\STGCN_SDK\\stgcn_sdk_test&quot;}]" />
+        </DeployModel>
+      </list>
+    </option>
+  </component>
+</project>
