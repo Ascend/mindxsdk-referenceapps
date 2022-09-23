@@ -128,7 +128,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 }
 
 void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, MxBase::MemoryData memorySrc,
-                                  cv::Mat &src, MxBase::MemoryData memoryDst)
+                             cv::Mat &src, MxBase::MemoryData memoryDst)
 {
     if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
         imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3);
@@ -139,21 +139,21 @@ void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr
     if (memorySrc.type == san) {
         if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
             src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3,
-                memoryDst.ptrData);
+                          memoryDst.ptrData);
         }
         else {
             src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3,
-                memoryDst.ptrData);
+                          memoryDst.ptrData);
         }
     }
     else {
         if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
             src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_32FC1,
-                memoryDst.ptrData);
+                          memoryDst.ptrData);
         }
         else {
             src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_8UC1,
-                memoryDst.ptrData);
+                          memoryDst.ptrData);
         }
         cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
     }
