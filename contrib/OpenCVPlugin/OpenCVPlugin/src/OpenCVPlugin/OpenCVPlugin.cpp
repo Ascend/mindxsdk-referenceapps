@@ -127,7 +127,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     return APP_ERR_OK;
 }
 
-void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, MxBase::MemoryData memorySrc, 
+void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, MxBase::MemoryData memorySrc,
                                   cv::Mat &src, MxBase::MemoryData memoryDst)
 {
     if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
@@ -139,21 +139,21 @@ void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr
     if (memorySrc.type == san) {
         if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
             src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3,
-                   memoryDst.ptrData);
+                memoryDst.ptrData);
         }
         else {
             src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3,
-                   memoryDst.ptrData);
+                memoryDst.ptrData);
         }
     }
     else {
         if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
             src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_32FC1,
-         memoryDst.ptrData);
+                memoryDst.ptrData);
         }
         else {
             src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_8UC1,
-         memoryDst.ptrData);
+                memoryDst.ptrData);
         }
         cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
     }
@@ -209,7 +209,7 @@ APP_ERROR MxpiSamplePlugin::Bgr2Yuv(cv::Mat src, cv::Mat &dst)
     int w_img = src.cols;
     int h_img = src.rows;
     dst = cv::Mat(h_img * yiwu, w_img, CV_8UC1);
-    cv::Mat src_YUV_I420(h_img * yiwu, w_img, CV_8UC1);  //YUV_I420
+    cv::Mat src_YUV_I420(h_img * yiwu, w_img, CV_8UC1);
     cvtColor(src, src_YUV_I420, cv::COLOR_BGR2YUV_I420);
     swapYUV_I420toNV12(src_YUV_I420.data, dst.data, w_img, h_img);
     return APP_ERR_OK;
