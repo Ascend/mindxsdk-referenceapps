@@ -20,6 +20,8 @@ model = torch.load('model/save/sz-taxis/stgcn_sym_norm_lap_45_mins.pth')
 input_names = ['input']
 output_names = ['output']
 
-x = torch.randn(64, 1, 12, 156,device='cpu')
+x = torch.randn(64, 1, 12, 156, device='cpu')
 
-torch.onnx.export(model, x, 'stgcn10.onnx', opset_version = 12, input_names=input_names, output_names=output_names, verbose='True')
+torch.onnx.export(model, x, 'stgcn10.onnx',\
+ opset_version = 12, input_names=input_names, \
+ output_names=output_names, verbose='True')
