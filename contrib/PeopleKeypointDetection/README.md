@@ -208,7 +208,7 @@ ATC run success, welcome to the next use.
 
 **步骤3** 按照第 2.3 小节 **模型转换** 中的步骤获得 om 模型文件，分别放置在 ``./model/people/`` 和 ``./model/keypoint/`` 目录下。
 
-**步骤4** 在http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip下载使用的MuPoTS数据集，将整个MultiPersonTestSet数据集和MuPoTS-3D.json放在pic文件夹下。然后在untils中找到ini.py运行生成需要的ini文件数据。生成的xxx.ini数据会存放在MultiPersonTestSet数据集文件夹内。在pic文件夹内新建test文件夹，将MultiPersonTestSet数据集文件夹内其中任意一组xxx.png和xxx.ini数据拷贝到test文件夹下。
+**步骤4** 在[http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip)下载使用的MuPoTS数据集，将整个MultiPersonTestSet数据集和MuPoTS-3D.json放在pic文件夹下。然后在untils中找到ini.py运行生成需要的ini文件数据。生成的xxx.ini数据会存放在MultiPersonTestSet数据集文件夹内。在pic文件夹内新建test文件夹，将MultiPersonTestSet数据集文件夹内其中任意一组xxx.png和xxx.ini数据拷贝到test文件夹下。
 
 **步骤5** 图片检测。对图片上进行检测，执行命令：
 
