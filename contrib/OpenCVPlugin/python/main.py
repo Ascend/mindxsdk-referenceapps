@@ -84,7 +84,7 @@ if __name__ == '__main__':
     visionInfo = visionList.visionVec[0].visionInfo
     #img_yuv = np.frombuffer(vision_data, np.float32)
     img_yuv = np.frombuffer(vision_data, np.uint8) 
-    img_bgr = img_yuv.reshape(visionInfo.heightAligned, visionInfo.widthAligned,3)
+    img_bgr = img_yuv.reshape(visionInfo.heightAligned, visionInfo.widthAligned, 3)
     #RGB
     img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_BGR2RGB"))
     #BGR
