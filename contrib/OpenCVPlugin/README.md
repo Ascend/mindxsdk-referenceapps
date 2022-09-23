@@ -160,6 +160,8 @@ ascend-toolkit-path: CANN 安装路径
 | 7    | outputDataFormat | 插件输出的数据格式，可选值为"RGB" "BGR" "YUV"       | 是           | 是         |
 | 8    | dataType         | 插件输出的数据类型，可选值为"uint8"和"float32"，默认为“uint8”       | 否           | 是         |
 
+注：fx和fy参数在height与width参数被赋值时失效，如有需要，可自行更改插件代码中resize部分。
+
 插值方式的取值具体描述：   
 
 | interpolation选项 | 插值方式                   | int值 |
