@@ -106,17 +106,8 @@
 #在CANN以及MindX SDK的安装目录找到set_env.sh,并运行脚本：
 bash ${SDK安装路径}/set_env.sh
 bash ${CANN安装路径}/set_env.sh
-打开set_env.sh文件，修改MX_SDK_HOME路径。
 #查看环境变量：
 env
-```
-
-- 环境变量介绍
-
-```
-# MX_SDK_HOME: mxVision SDK 安装路径
-# LD_LIBRARY_PATH: lib库路径
-# PYTHONPATH: python环境路径
 ```
 
 ### 2.3 模型转换
@@ -136,7 +127,7 @@ YOLOv3 模型参考实现代码：https://www.hiascend.com/zh/software/modelzoo/
 在`./model/people/`目录下执行以下命令：
 
 ```bash
-atc --model=yolov3_tf.pb --framework=3 --output=yolov3_tf_aipp  --input_format=NHWC --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --insert_op_conf=yolov3_tf_aipp.cfg --log=info
+atc --model=yolov3_tf.pb --framework=3 --output=yolov3_tf_aipp  --input_format=NHWC --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --insert_op_conf=yolov3_tf_aipp.cfg
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 yolov3_tf_aipp.om。执行后终端输出为：
@@ -161,7 +152,7 @@ ATC run success, welcome to the next use.
 在`./model/keypoint/`目录下，执行以下命令：
 
 ```bash
-atc --framework=5 --model=3DMPPE-ROOTNET.onnx --output=3DMPPE-ROOTNET_bs1 --input_format=NCHW --input_shape="image:1,3,256,256;cam_param:1,1" --log=error --soc_version=Ascend310
+atc --framework=5 --model=3DMPPE-ROOTNET.onnx --output=3DMPPE-ROOTNET_bs1 --input_format=NCHW --input_shape="image:1,3,256,256;cam_param:1,1" --soc_version=Ascend310
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 3DMPPE-ROOTNET_bs1.om。执行后终端输出为：
