@@ -139,7 +139,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	}
     }
     else {
-      cv::Rect ori(startRow, startCol, endRow, endCol);
+      cv::Rect ori(startRow, startCol, endCol, endRow);
       if (memorySrc.type == san) {
 	dst = src(ori).clone();
 	}
