@@ -41,10 +41,8 @@ eg：本sample工程名称为stgcn_sdk_test，工程目录如下图所示：
 ├── main.py             # 展示推理精度
 ├── predict.py          # 根据输入的数据集输出未来一定时段的交通速度
 ├── README.md
+├── convert_om.sh       # onnx文件转化为om文件
 ├── results             # 预测结果存放
-├── run_sdk_test.sh     # 运行main.py脚本
-├── run_sdk_predict.sh  # 运行predict.py脚本
-│── convert_om.sh       # 将onnx文件转化成om文件
 └── train_need
     └── export_onnx.py  # 将pth文件转化成onnx文件，添加进训练项目
 ```
@@ -117,25 +115,13 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 1、pth转化为onnx
 可以根据实际的路径和输入大小修改export_onnx.py（该文件需要依赖于项目结构目录，请放到训练代码所在的文件夹中再运行）
 
-
 转换好的onnx文件连接如下：
 ```
 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/STGCN/stgcn10.onnx
 ```
 
 2、onnx转化为om
-转化指令参考如下：
-```
-/home/chongqin1/Ascend/ascend-toolkit/5.1.RC1/atc/bin/atc  # atc安装路径
---input_shape="input:64,1,12,156"                          # 输入数据的shape
---check_report=/home/chongqin1/modelzoo/stgcn10_2/Ascend310/network_analysis.report 
---input_format=NCHW -
--output="/home/chongqin1/modelzoo/stgcn10_2/Ascend310/stgcn10_2"   # 转换后输出的om模型存放路径以及名称
---soc_version=Ascend310                                     # 模型转换时指定芯片版本
---framework=5 
---model="/home/chongqin1/MindStudioProjects/convertModels/stgcn10.onnx"
-```
-也可以根据实际路径修改cnvert_om.sh
+根据实际路径修改cnvert_om.sh
 ```
 bash convert_om.sh [model_path] [output_model_name]
 参数说明：
@@ -160,9 +146,9 @@ output_model_name：生成的om模型文件名，转换脚本会在此基础上�
 5、销毁流。
 
 ## 5 运行
-执行脚本run_sdk_test.sh可以获得推理精度，指令如下：
+运行main.py可以获得推理精度，指令如下：
 ```
-bash run_sdk_test.sh [image_path] [result_dir] [n_pred]
+python main.py [image_path] [result_dir] [n_pred]
 
 参数说明：
 image_path：验证集文件，如“data/sz_speed.csv”
@@ -174,9 +160,9 @@ n_pred：预测时段，如9
 ```
 MAE 2.81 | RMSE 4.29
 ```
-如果需要推理自定义的数据集，运行run_sdk_predict.sh，指令如下：
+如果需要推理自定义的数据集，运行predict.py，指令如下：
 ```
-bash run_sdk_predict.sh [image_path] [result_dir]
+python predict.py [image_path] [result_dir]
 
 参数说明：
 image_path：验证集文件，如“data/sz_speed.csv”

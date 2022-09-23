@@ -49,92 +49,84 @@ def send_source_data(appsrc_id, tensor, stream_name, stream_manager):
     return ret
 
 
-def run():
-    """
-    read pipeline and do infer
-    """
+def load_data(dir_name, n_his):
+    data_frame = pd.read_csv(dir_name, header=None)
+    data = data_frame
+
+    zscore.fit(data_frame[:])
+    data = zscore.transform(data)
+
+    n_route = data.shape[1]
+    dayslot = len(data)
+    n_slot = dayslot - n_his
+
+    x = np.zeros([n_slot, 1, n_his, n_route], np.float32)
+
+    for i in range(n_slot):
+        first = i
+        last = i + n_his
+        x[i, :, :, :] = data[first: last].reshape(1, n_his, n_route)
+    return x, n_slot
+
+
+def get_infer_result(stream_name, inplugin_id):
+    start_time = datetime.datetime.now()
+
+    key_vec = StringVector()
+    key_vec.push_back(b'mxpi_tensorinfer0')
+    pipeline_result = stream_manager_api.GetProtobuf(stream_name, inplugin_id, key_vec)
+
+    end_time = datetime.datetime.now()
+    print('sdk run time: {}'.format((end_time - start_time).microseconds))
+
+    if pipeline_result[0].errorCode != 0:
+        print("GetProtobuf error. errorCode=%d" % (pipeline_result[0].errorCode))
+        sys.exit()
+    # get infer result
+    out_result = MxpiDataType.MxpiTensorPackageList()
+    out_result.ParseFromString(pipeline_result[0].messageBuf)
+
+    return out_result
+
+
+if __name__ == '__main__':
     if len(sys.argv) == 3:
         dir_name = sys.argv[1]
         res_dir_name = sys.argv[2]
     else:
-        print("Please enter Dataset path| Inference result path "
-              "such as ../data ./result 9")
+        print("ERROR, please enter again.")
         exit(1)
     stream_manager_api = StreamManagerApi()
     ret = stream_manager_api.InitManager()
-    if ret != 0:
-        print("Failed to init Stream manager, ret=%s" % str(ret))
-        return
-
     # create streams by pipeline config file
     with open("./pipeline/stgcn.pipeline", 'rb') as f:
-        pipeline_str = f.read()
-    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
-
-    if ret != 0:
-        print("Failed to create Stream, ret=%s" % str(ret))
-        return
+        pipeline_string = f.read()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_string)
 
     # Construct the input of the stream
     n_his = 12
     zscore = preprocessing.StandardScaler()
-    # read dataset
-    df = pd.read_csv(dir_name, header=None)
-    dataset = df
-    zscore.fit(df[:])
-    dataset = zscore.transform(dataset)
-
-    n_vertex = dataset.shape[1]
-    len_record = len(dataset)
-    num = len_record - n_his
-
-    x = np.zeros([num, 1, n_his, n_vertex], np.float32)
-
-    for i in range(num):
-        head = i
-        tail = i + n_his
-        x[i, :, :, :] = dataset[head: tail].reshape(1, n_his, n_vertex)
-
-    predcitions = []
+    # 读数据集
+    x, n_slot = load_data(dir_name, n_his)
+    predictions = []
     stream_name = b'im_stgcn'
-    # start infer
-    for i in range(num):
-        inpluginid = 0
+    #start infer
+    for i in range(n_slot):
+        inplugin_id = 0
         tensor = np.expand_dims(x[i], axis=0)
         uniqueid = send_source_data(0, tensor, stream_name, stream_manager_api)
         if uniqueid < 0:
-            print("Failed to send data to stream.")
-            return
+            print("UniqueID ERROR")
+            sys.exit()
 
-        # Obtain the inference result by specifying stream_name and uniqueid.
-        start_time = datetime.datetime.now()
+        # Obtain the inference result by specifying stream_name and uniqueId.
+        out_result = get_infer_result(stream_name, inplugin_id)
 
-        keyvec = StringVector()
-        keyvec.push_back(b'mxpi_tensorinfer0')
-        infer_result = stream_manager_api.GetProtobuf(stream_name, inpluginid, keyvec)
-
-        end_time = datetime.datetime.now()
-        print('sdk run time: {}'.format((end_time - start_time).microseconds))
-
-        if infer_result.size() == 0:
-            print("inferResult is null")
-            return
-        if infer_result[0].errorCode != 0:
-            print("GetProtobuf error. errorCode=%d" % (infer_result[0].errorCode))
-            return
-        # get infer result
-        result = MxpiDataType.MxpiTensorPackageList()
-        result.ParseFromString(infer_result[0].messageBuf)
         # convert the inference result to Numpy array
-        res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        res = np.frombuffer(out_result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        predictions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
 
-        predcitions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
-
-    np.savetxt(res_dir_name + 'predcitions.txt', np.array(predcitions))
+    np.savetxt(res_dir_name + 'predcitions.txt', np.array(predictions))
 
     # destroy streams
     stream_manager_api.DestroyAllStreams()
-
-
-if __name__ == '__main__':
-    run()
