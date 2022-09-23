@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-# 将 pth 模型转换成为.om模型
+# 将 onnx 模型转换成为.om模型
 
 
 # 设置环境变量，注意install_path，即{CANN安装路径}改用自己的。
