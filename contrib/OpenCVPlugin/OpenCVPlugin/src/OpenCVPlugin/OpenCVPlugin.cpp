@@ -28,6 +28,7 @@ namespace {
     const int san = 3;
     const int er = 2;
     const int yi = 1;
+    const float yiwu = 1.5;
 }
 
 APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
@@ -79,7 +80,6 @@ APP_ERROR MxpiSamplePlugin::SetMxpiErrorInfo(MxpiBuffer& buffer, const std::stri
 APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpiVision,
                                    MxTools::MxpiVision& dstMxpiVision)
 {
-    // init
     LogInfo << "opencv begin";
     auto& visionInfo = srcMxpiVision.visioninfo();
     auto& visionData = srcMxpiVision.visiondata();
@@ -96,40 +96,11 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     cv::Mat src;
     cv::Mat imgBgr;
-    if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
-	imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3);	    
-    }
-    else {
-	imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
-    }
-    if (memorySrc.type == san) {
-	if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
-	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_32FC3,
-               memoryDst.ptrData);		
-	}
-	else {
-	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned(), srcMxpiVision.visioninfo().widthaligned(), CV_8UC3,
-               memoryDst.ptrData);
-	}
-    }
-    else {
-	if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
-	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_32FC1,
-               memoryDst.ptrData);
-	}
-	else {
-	    src = cv::Mat(srcMxpiVision.visioninfo().heightaligned()* YUV_V / YUV_U, srcMxpiVision.visioninfo().widthaligned(), CV_8UC1,
-               memoryDst.ptrData);
-	}
-	cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
-    }
+    APP_ERROR ret = Judge(visionData, visionInfo, imgBgr, src, memoryDst);
     cv::Mat dst;
     cv::Mat imgYuv;
     cv::Mat imgRgb;
-    cv::Mat yuv_mat;
-    cv::Mat img_nv12;
     MxBase::MemoryData memoryNewDst(dst.data, MxBase::MemoryData::MEMORY_HOST_NEW);
-    outputPixelFormat_ = (MxBase::MxbasePixelFormat)srcMxpiVision.visioninfo().format();
     if (option == "resize") {
 	if (memorySrc.type == er) {
 	    cv::resize(imgBgr, dst, cv::Size(width, height), fx, fy, interpolation);
@@ -147,50 +118,90 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	dst = imgBgr(ori).clone();
       }
     }
+    APP_ERROR ret = Output(dst, idx)
     auto ret = APP_ERR_OK;
-    if (outputDataFormat == "YUV") {
-	height = dst.rows;
-	width = dst.cols;
-	imgYuv = cv::Mat(height, width, CV_8UC1);
-    	dst.convertTo(dst, CV_8UC3);
-	Bgr2Yuv(dst,imgYuv);
-	cv::imwrite("yuv.jpg", imgYuv);
-	outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
-	auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
-    }
-    else {
-	if (outputDataFormat == "RGB") {
-        if (dataType == "float32") {
-            imgRgb = cv::Mat(height, width, CV_32FC3);
-            dst.convertTo(imgRgb, CV_32FC3);
-        }
-        else {
-            imgRgb = cv::Mat(height, width, CV_8UC3);
-	    dst.convertTo(imgRgb, CV_8UC3);
-        }
-    cv::cvtColor(imgRgb, imgRgb, cv::COLOR_BGR2RGB);
-    outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_RGB_888;
-	auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
-	}
-	else if (outputDataFormat == "BGR") {
-        if (dataType == "float32") {
-            imgRgb = cv::Mat(height, width, CV_32FC3);
-            dst.convertTo(imgRgb, CV_32FC3);
-        }
-        else {
-            imgRgb = cv::Mat(height, width, CV_8UC3);
-	    dst.convertTo(imgRgb, CV_8UC3); 
-        }
-        outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_BGR_888;
-	    auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
-	}
-	else {
-	LogError << "outputDataFormat not in RGB,BGR,YUV";
-	}
-    }
     if (ret != APP_ERR_OK) {
         LogError << "convert mat to mxvision failed!";
         return ret;
+    }
+    return APP_ERR_OK;
+}
+
+APP_ERROR MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, 
+                                  cv::Mat &src, MxBase::MemoryData memoryDst)
+{
+    if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+        imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3);
+    }
+    else {
+        imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3);
+    }
+    if (memorySrc.type == san) {
+        if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+            src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_32FC3,
+                   memoryDst.ptrData);
+        }
+        else {
+            src = cv::Mat(visionInfo.heightaligned(), visionInfo().widthaligned(), CV_8UC3,
+                   memoryDst.ptrData);
+        }
+    }
+    else {
+        if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
+            src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_32FC1,
+         memoryDst.ptrData);
+        }
+        else {
+            src = cv::Mat(visionInfo.heightaligned()* YUV_V / YUV_U, visionInfo.widthaligned(), CV_8UC1,
+         memoryDst.ptrData);
+        }
+        cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
+    }
+    return APP_ERR_OK;
+}
+
+APP_ERROR MxpiSamplePlugin::Output(cv::Mat dst, size_t idx)
+{
+    cv::Mat imgYuv;
+    cv::Mat imgRgb;
+    if (outputDataFormat == "YUV") {
+        height = dst.rows;
+        width = dst.cols;
+        imgYuv = cv::Mat(height, width, CV_8UC1);
+        dst.convertTo(dst, CV_8UC3);
+        Bgr2Yuv(dst, imgYuv);
+        outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_YUV_SEMIPLANAR_420;
+        auto ret = Mat2MxpiVisionDvpp(idx, imgYuv, dstMxpiVision);
+    }
+    else {
+        if (outputDataFormat == "RGB") {
+        if (dataType == "float32") {
+            imgRgb = cv::Mat(height, width, CV_32FC3);
+            dst.convertTo(imgRgb, CV_32FC3);
+        }
+        else {
+            imgRgb = cv::Mat(height, width, CV_8UC3);
+            dst.convertTo(imgRgb, CV_8UC3);
+        }
+    cv::cvtColor(imgRgb, imgRgb, cv::COLOR_BGR2RGB);
+    outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_RGB_888;
+        auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
+        }
+        else if (outputDataFormat == "BGR") {
+        if (dataType == "float32") {
+            imgRgb = cv::Mat(height, width, CV_32FC3);
+            dst.convertTo(imgRgb, CV_32FC3);
+        }
+        else {
+            imgRgb = cv::Mat(height, width, CV_8UC3);
+            dst.convertTo(imgRgb, CV_8UC3);
+        }
+        outputPixelFormat_ = MxBase::MxbasePixelFormat::MXBASE_PIXEL_FORMAT_BGR_888;
+            auto ret = Mat2MxpiVisionOpencv(idx, imgRgb, dstMxpiVision);
+        }
+        else {
+        LogError << "outputDataFormat not in RGB,BGR,YUV";
+        }
     }
     return APP_ERR_OK;
 }
@@ -199,8 +210,8 @@ APP_ERROR MxpiSamplePlugin::Bgr2Yuv(cv::Mat src, cv::Mat &dst)
 {
     int w_img = src.cols;
     int h_img = src.rows;
-    dst = cv::Mat(h_img*1.5, w_img, CV_8UC1);
-    cv::Mat src_YUV_I420(h_img*1.5, w_img, CV_8UC1);  //YUV_I420
+    dst = cv::Mat(h_img * yiwu, w_img, CV_8UC1);
+    cv::Mat src_YUV_I420(h_img * yiwu, w_img, CV_8UC1);  //YUV_I420
     cvtColor(src, src_YUV_I420, cv::COLOR_BGR2YUV_I420);
     swapYUV_I420toNV12(src_YUV_I420.data, dst.data, w_img, h_img);
     return APP_ERR_OK;
@@ -215,8 +226,8 @@ void  MxpiSamplePlugin::swapYUV_I420toNV12(unsigned char* i420bytes, unsigned ch
 
     for (int i = 0; i < nLenU; i++)
     {
-        nv12bytes[nLenY + 2 * i] = i420bytes[nLenY + i];                    // U
-        nv12bytes[nLenY + 2 * i + 1] = i420bytes[nLenY + nLenU + i];        // V
+        nv12bytes[nLenY + er * i] = i420bytes[nLenY + i];                    // U
+        nv12bytes[nLenY + er * i + 1] = i420bytes[nLenY + nLenU + i];        // V
     }
 }
 
