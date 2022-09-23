@@ -6,7 +6,7 @@ STGCN主要用于交通预测领域，是一种时空卷积网络，解决在交
 
 论文原文：https://arxiv.org/abs/1709.04875
 
-STGCN模型Github仓库：https://github.com/hazdzz/STGCN
+STGCN模型GitHub仓库：https://github.com/hazdzz/STGCN
 
 SZ-Taxi数据集：https://github.com/lehaifeng/T-GCN/tree/master/data	
 
@@ -34,17 +34,19 @@ SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和�
 
 eg：本sample工程名称为stgcn_sdk_test，工程目录如下图所示：
 ```
-├── config              # MindX SDK configuration file
-│   └── logging.conf    
-│   └── sdk.conf
 ├── data                # 数据目录
 ├── models              # 模型目录
 ├── pipeline
 │   └── stgcn.pipeline
-├── main.py
+├── main.py             # 展示推理精度
+├── predict.py          # 根据输入的数据集输出未来一定时段的交通速度
 ├── README.md
-├── run_sdk_infer.sh    # 运行脚本
-└── convert_om.sh       # 模型转换脚本
+├── results             # 预测结果存放
+├── run_sdk_test.sh     # 运行main.py脚本
+├── run_sdk_predict.sh  # 运行predict.py脚本
+│── convert_om.sh       # 将onnx文件转化成om文件
+└── train_need
+    └── export_onnx.py  # 将pth文件转化成onnx文件，添加进训练项目
 ```
 
 ## 2 环境依赖
@@ -64,21 +66,63 @@ bash ${SDK安装路径}/set_env.sh
 bash ${CANN安装路径}/../set_env.sh
 ```
 
-## 3 模型转换
+## 3 城市道路交通预测开发实现
+总体流程如下：
+```
+模型训练->模型转化->模型推理
+```
+### 3.1 模型训练
+首先需要使用STGCN对SZ-Taxi数据集进行训练，使用的模型代码和数据集获取方式如下。
+```
+STGCN模型GitHub仓库：https://github.com/hazdzz/STGCN
+
+SZ-Taxi数据集：https://github.com/lehaifeng/T-GCN/tree/master/data	
+```
+自行参照GitHub项目中的README.md和requiremments.txt文件配置训练所需环境。
+为训练SZ-Taxi数据集，主要需要修改两个部分：
+```
+1、stgcn.py部分
+（1）训练参数如下：
+'learning_rate': 0.001,
+'epochs': 1000,
+'batch_size': 8,
+'gamma': 0.95,
+'drop_rate': 0.5,
+'weight_decay_rate': 0.0005
+（2）将数据集放到指定文件夹后增加
+args.dataset == 'sz-taxis'
+
+2、dataloader.py部分
+（1）load_adj()
+读取邻接矩阵部分改为
+my_data = np.genfromtxt('data/sz-taxis/sz_adj.csv', delimiter=',') # 邻接矩阵路径
+smy_data = sp.csr_matrix(my_data)
+adj = smy_data.tocsc()
+并且增加
+elif dataset_name == 'sz-taxis':
+        n_vertex = 156
+（2）load_data()
+train的划分改为：
+train = vel[: len_train + len_val]
+```
+将SZ-Taxi数据集放在指定文件夹后即可开始训练，训练获得pth文件可通过export_onnx.py转换成onnx文件。
+
+训练好的pth文件连接如下：
+```
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/STGCN/stgcn_sym_norm_lap_45_mins.pth
+```
+
+### 3.2 模型转化
 本项目推理模型权重采用Github仓库中Pytorch框架的STGCN模型训练SZ-Taxi数据集得到的权重转化得到。经过以下两步模型转化：
 1、pth转化为onnx
-转化代码参考如下：
-```
-import torch
-import torch.nn
-import onnx
+可以根据实际的路径和输入大小修改export_onnx.py（该文件需要依赖于项目结构目录，请放到训练代码所在的文件夹中再运行）
 
-model = torch.load('${pth文件路径}')
-input_names = ['input']
-output_names = ['output']
-x = torch.randn(64, 1, 12, 156,device='cpu')  #输入大小
-torch.onnx.export(model, x, 'stgcn10.onnx', opset_version = 12, input_names=input_names, output_names=output_names, verbose='True')
+
+转换好的onnx文件连接如下：
 ```
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/STGCN/stgcn10.onnx
+```
+
 2、onnx转化为om
 转化指令参考如下：
 ```
@@ -99,7 +143,7 @@ model_path：onnx文件路径。
 output_model_name：生成的om模型文件名，转换脚本会在此基础上添加.om后缀。
 ```
 
-## 4 城市道路交通预测推理流程开发实现
+## 4 模型推理
 ### 4.1 pipeline编排
 ```
     appsrc # 输入
@@ -116,17 +160,25 @@ output_model_name：生成的om模型文件名，转换脚本会在此基础上�
 5、销毁流。
 
 ## 5 运行
-执行脚本run_sdk_infer.sh，指令如下：
+执行脚本run_sdk_test.sh可以获得推理精度，指令如下：
 ```
-bash run_sdk_infer.sh [image_path] [result_dir] [n_pred]
+bash run_sdk_test.sh [image_path] [result_dir] [n_pred]
 
 参数说明：
-image_path：验证集文件，如“../data/sz_speed.csv”
-result_dir：推理结果保存路径，如“./results”
+image_path：验证集文件，如“data/sz_speed.csv”
+result_dir：推理结果保存路径，如“results/”
 n_pred：预测时段，如9
 ```
-最后推理预测的结果会保存在resultspredictions.txt文件中
+最后推理预测的结果会保存在results/predictions.txt文件中
 推理精度会直接显示在界面上。
 ```
-MAE 2.85 | RMSE 4.32
+MAE 2.81 | RMSE 4.29
+```
+如果需要推理自定义的数据集，运行run_sdk_predict.sh，指令如下：
+```
+bash run_sdk_predict.sh [image_path] [result_dir]
+
+参数说明：
+image_path：验证集文件，如“data/sz_speed.csv”
+result_dir：推理结果保存路径，如“results/”
 ```

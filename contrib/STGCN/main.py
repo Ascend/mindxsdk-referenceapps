@@ -48,6 +48,7 @@ def send_source_data(appsrc_id, tensor, stream_name, stream_manager):
     ret = stream_manager.SendProtobuf(stream_name, appsrc_id, protobuf_vec)
     return ret
 
+
 def run():
     """
     read pipeline and do infer
@@ -79,7 +80,7 @@ def run():
 
     n_his = 12
     zscore = preprocessing.StandardScaler()
-    #读数据集
+    # read dataset
     df = pd.read_csv(dir_name, header=None)
     data_col = df.shape[0]
     val_and_test_rate = 0.15
@@ -90,7 +91,7 @@ def run():
 
     dataset = df[len_train + len_val:]
 
-    zscore.fit(df[: len_train])
+    zscore.fit(df[: len_train + len_val])
     dataset = zscore.transform(dataset)
 
     n_vertex = dataset.shape[1]
@@ -109,21 +110,21 @@ def run():
     labels = []
     predcitions = []
     stream_name = b'im_stgcn'
-    #start infer
+    # start infer
     for i in range(num):
-        inPluginId = 0
+        inpluginid = 0
         tensor = np.expand_dims(x[i], axis=0)
-        uniqueId = send_source_data(0, tensor, stream_name, stream_manager_api)
-        if uniqueId < 0:
+        uniqueid = send_source_data(0, tensor, stream_name, stream_manager_api)
+        if uniqueid < 0:
             print("Failed to send data to stream.")
             return
 
-        # Obtain the inference result by specifying stream_name and uniqueId.
+        # Obtain the inference result by specifying stream_name and uniqueid.
         start_time = datetime.datetime.now()
 
-        keyVec = StringVector()
-        keyVec.push_back(b'mxpi_tensorinfer0')
-        infer_result = stream_manager_api.GetProtobuf(stream_name, inPluginId, keyVec)
+        keyvec = StringVector()
+        keyvec.push_back(b'mxpi_tensorinfer0')
+        infer_result = stream_manager_api.GetProtobuf(stream_name, inpluginid, keyvec)
 
         end_time = datetime.datetime.now()
         print('sdk run time: {}'.format((end_time - start_time).microseconds))
@@ -143,22 +144,20 @@ def run():
         labels.append(zscore.inverse_transform(np.expand_dims(y[i], axis=0)).reshape(-1))
         predcitions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
 
-    # np.savetxt(res_dir_name+'labels.txt', np.array(labels))
+    np.savetxt(res_dir_name+'labels.txt', np.array(labels))
     np.savetxt(res_dir_name+'predcitions.txt', np.array(predcitions))
-    # print(type(labels))
+
     mae, mape, mse = [], [], []
     for predcition, label in zip(np.array(predcitions), np.array(labels)):
         d = np.abs(predcition - label)
         mae += d.tolist()
-        # mape += (d / label).tolist()
         mse += (d ** 2).tolist()
-    # Accuracy = num_correct/len(labels)
-    MAE = np.array(mae).mean()
-    # MAPE = np.array(mape).mean()
-    RMSE = np.sqrt(np.array(mse).mean())
-    print(f'MAE {MAE:.2f} | RMSE {RMSE:.2f} ')
+    mae_relust = np.array(mae).mean()
+    rmse_result = np.sqrt(np.array(mse).mean())
+    print(f'MAE {mae_relust:.2f} | RMSE {rmse_result:.2f} ')
     # destroy streams
     stream_manager_api.DestroyAllStreams()
+
 
 if __name__ == '__main__':
     run()
