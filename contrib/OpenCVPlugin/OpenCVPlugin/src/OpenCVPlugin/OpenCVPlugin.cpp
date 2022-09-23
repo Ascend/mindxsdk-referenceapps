@@ -96,7 +96,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     }
     cv::Mat src;
     cv::Mat imgBgr;
-    APP_ERROR ret = Judge(visionData, visionInfo, imgBgr, src, memoryDst);
+    Judge(visionData, visionInfo, imgBgr, memorySrc, src, memoryDst);
     cv::Mat dst;
     cv::Mat imgYuv;
     cv::Mat imgRgb;
@@ -118,7 +118,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
 	dst = imgBgr(ori).clone();
       }
     }
-    APP_ERROR ret = Output(dst, idx)
+    Output(dst, idx, dstMxpiVision);
     auto ret = APP_ERR_OK;
     if (ret != APP_ERR_OK) {
         LogError << "convert mat to mxvision failed!";
@@ -127,7 +127,7 @@ APP_ERROR MxpiSamplePlugin::openCV(size_t idx, const MxTools::MxpiVision srcMxpi
     return APP_ERR_OK;
 }
 
-APP_ERROR MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, 
+void MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, MxBase::MemoryData memorySrc, 
                                   cv::Mat &src, MxBase::MemoryData memoryDst)
 {
     if (visionData.datatype() == MxTools::MxpiDataType::MXPI_DATA_TYPE_FLOAT32) {
@@ -142,7 +142,7 @@ APP_ERROR MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &i
                    memoryDst.ptrData);
         }
         else {
-            src = cv::Mat(visionInfo.heightaligned(), visionInfo().widthaligned(), CV_8UC3,
+            src = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3,
                    memoryDst.ptrData);
         }
     }
@@ -157,10 +157,9 @@ APP_ERROR MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &i
         }
         cv::cvtColor(src, imgBgr, cv::COLOR_YUV2BGR_NV12);
     }
-    return APP_ERR_OK;
 }
 
-APP_ERROR MxpiSamplePlugin::Output(cv::Mat dst, size_t idx)
+void MxpiSamplePlugin::Output(cv::Mat dst, size_t idx, MxTools::MxpiVision& dstMxpiVision)
 {
     cv::Mat imgYuv;
     cv::Mat imgRgb;
@@ -203,7 +202,6 @@ APP_ERROR MxpiSamplePlugin::Output(cv::Mat dst, size_t idx)
         LogError << "outputDataFormat not in RGB,BGR,YUV";
         }
     }
-    return APP_ERR_OK;
 }
 
 APP_ERROR MxpiSamplePlugin::Bgr2Yuv(cv::Mat src, cv::Mat &dst)

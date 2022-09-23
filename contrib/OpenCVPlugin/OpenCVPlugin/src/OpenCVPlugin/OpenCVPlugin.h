@@ -72,9 +72,9 @@ public:
     APP_ERROR Mat2MxpiVisionOpencv(size_t idx, const cv::Mat& mat, MxTools::MxpiVision& vision);
     APP_ERROR Mat2MxpiVisionDvpp(size_t idx, const cv::Mat& mat, MxTools::MxpiVision& vision);
     void swapYUV_I420toNV12(unsigned char* i420bytes, unsigned char* nv12bytes, int width, int height);
-    APP_ERROR MxpiSamplePlugin::Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, 
+    void Judge(auto& visionData, auto& visionInfo, cv::Mat &imgBgr, MxBase::MemoryData memorySrc,
                                       cv::Mat &src, MxBase::MemoryData memoryDst);
-    APP_ERROR MxpiSamplePlugin::Output(cv::Mat dst, size_t idx);
+    void Output(cv::Mat dst, size_t idx, MxTools::MxpiVision& dstMxpiVision);
 private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);
