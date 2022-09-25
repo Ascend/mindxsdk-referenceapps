@@ -22,31 +22,31 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector
 
 
-def send_source_data(appsrc_id, tensor, stream_name, stream_manager):
+def send_data(appsrc_id, tensor, stream_name, stream_manager):
     """
     Construct the input of the stream,
     send inputs data to a specified stream based on streamName.
     """
-    tensor_package_list = MxpiDataType.MxpiTensorPackageList()
-    tensor_package = tensor_package_list.tensorPackageVec.add()
+    tpackage_list = MxpiDataType.MxpiTensorPackageList()
     array_bytes = tensor.tobytes()
-    tensor_vec = tensor_package.tensorVec.add()
-    tensor_vec.deviceId = 0
-    tensor_vec.memType = 0
+    tpackage = tpackage_list.tensorPackageVec.add()
+    tvec = tpackage.tensorVec.add()
+    tvec.deviceId = 0
+    tvec.memType = 0
     for i in tensor.shape:
-        tensor_vec.tensorShape.append(i)
-    tensor_vec.dataStr = array_bytes
-    tensor_vec.tensorDataSize = len(array_bytes)
+        tvec.tensorShape.append(i)
+    tvec.dataStr = array_bytes
+    tvec.tensorDataSize = len(array_bytes)
     key = "appsrc{}".format(appsrc_id).encode('utf-8')
-    protobuf_vec = InProtobufVector()
-    protobuf = MxProtobufIn()
-    protobuf.key = key
-    protobuf.type = b'MxTools.MxpiTensorPackageList'
-    protobuf.protobuf = tensor_package_list.SerializeToString()
-    protobuf_vec.push_back(protobuf)
+    pf_vec = InProtobufVector()
+    pf = MxProtobufIn()
+    pf.key = key
+    pf.type = b'MxTools.MxpiTensorPackageList'
+    pf.protobuf = tpackage_list.SerializeToString()
+    pf_vec.push_back(pf)
 
-    ret = stream_manager.SendProtobuf(stream_name, appsrc_id, protobuf_vec)
-    return ret
+    tmp = stream_manager.SendProtobuf(stream_name, appsrc_id, pf_vec)
+    return tmp
 
 
 def load_data(dir_name, n_his, n_pred):
@@ -67,16 +67,18 @@ def load_data(dir_name, n_his, n_pred):
 
     x = np.zeros([n_slot, 1, n_his, n_route], np.float32)
     y = np.zeros([n_slot, n_route], np.float32)
+    a = 0
+    while a < n_slot:
+        first = a
+        last = a + n_his
+        x[a, :, :, :] = data[first: last].reshape(1, n_his, n_route)
+        y[a] = data[last + n_pred - 1]
+        a += 1
 
-    for i in range(n_slot):
-        first = i
-        last = i + n_his
-        x[i, :, :, :] = data[first: last].reshape(1, n_his, n_route)
-        y[i] = data[last + n_pred - 1]
     return x, y, n_slot
 
 
-def get_infer_result(stream_name, inplugin_id):
+def get_infer_result(stream_name, inplugin_id, stream_manager_api):
     start_time = datetime.datetime.now()
 
     key_vec = StringVector()
@@ -96,10 +98,10 @@ def get_infer_result(stream_name, inplugin_id):
     return out_result
 
 
-def test(predictions, labels):
+def test(x, y):
     mae, mse = [], []
-    for prediction, label in zip(np.array(predictions), np.array(labels)):
-        d = np.abs(prediction - label)
+    for pre, label in zip(np.array(x), np.array(y)):
+        d = np.abs(pre - label)
         mae += d.tolist()
         mse += (d ** 2).tolist()
     mae_result = np.array(mae).mean()
@@ -109,47 +111,47 @@ def test(predictions, labels):
 
 if __name__ == '__main__':
     if len(sys.argv) == 4:
-        dir_name = sys.argv[1]
-        res_dir_name = sys.argv[2]
-        n_pred = int(sys.argv[3])
+        dirname = sys.argv[1]
+        resdirname = sys.argv[2]
+        npred = int(sys.argv[3])
     else:
         print("ERROR, please enter again.")
         exit(1)
-    stream_manager_api = StreamManagerApi()
-    ret = stream_manager_api.InitManager()
+    streaminput_manager_api = StreamManagerApi()
+    ret = streaminput_manager_api.InitManager()
     # create streams by pipeline config file
     with open("./pipeline/stgcn.pipeline", 'rb') as f:
         pipeline_string = f.read()
-    ret = stream_manager_api.CreateMultipleStreams(pipeline_string)
+    ret = streaminput_manager_api.CreateMultipleStreams(pipeline_string)
 
     # Construct the input of the stream
-    n_his = 12
+    NHIS = 12
     zscore = preprocessing.StandardScaler()
     # 读数据集
-    x, y, n_slot = load_data(dir_name, n_his, n_pred)
+    x_pre, y_lab, nslot = load_data(dirname, NHIS, npred)
     labels = []
     predictions = []
-    stream_name = b'im_stgcn'
     #start infer
-    for i in range(n_slot):
-        inplugin_id = 0
-        tensor = np.expand_dims(x[i], axis=0)
-        uniqueid = send_source_data(0, tensor, stream_name, stream_manager_api)
+    k = 0
+    while k < nslot:
+        tensor_input = np.expand_dims(x_pre[k], axis=0)
+        uniqueid = send_data(0, tensor_input, b'im_stgcn', streaminput_manager_api)
         if uniqueid < 0:
             print("UniqueID ERROR")
             sys.exit()
 
         # Obtain the inference result by specifying stream_name and uniqueId.
-        out_result = get_infer_result(stream_name, inplugin_id)
+        result = get_infer_result(b'im_stgcn', 0, streaminput_manager_api)
 
         # convert the inference result to Numpy array
-        res = np.frombuffer(out_result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-        labels.append(zscore.inverse_transform(np.expand_dims(y[i], axis=0)).reshape(-1))
+        res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        labels.append(zscore.inverse_transform(np.expand_dims(y_lab[k], axis=0)).reshape(-1))
         predictions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
+        k += 1
 
-    np.savetxt(res_dir_name+'labels.txt', np.array(labels))
-    np.savetxt(res_dir_name+'predcitions.txt', np.array(predictions))
+    np.savetxt(resdirname+'labels.txt', np.array(labels))
+    np.savetxt(resdirname+'predcitions.txt', np.array(predictions))
 
     test(predictions, labels)
     # destroy streams
-    stream_manager_api.DestroyAllStreams()
+    streaminput_manager_api.DestroyAllStreams()
