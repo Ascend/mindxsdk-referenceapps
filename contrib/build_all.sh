@@ -49,8 +49,8 @@ SAMPLE_FOLDER=(
     YOLOX/
 	PicoDet/
   SOLOV2/
+  OpenCVPlugin/
 )
-
 
 err_flag=0
 for sample in ${SAMPLE_FOLDER[@]};do
