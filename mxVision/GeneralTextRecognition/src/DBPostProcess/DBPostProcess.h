@@ -35,6 +35,7 @@ const int POINT1 = 0;
 const int POINT2 = 1;
 const int POINT3 = 2;
 const int POINT4 = 3;
+const int VECTOR_FIFTH_INDEX = 4;
 const int POINTNUM = 4;
 const int INDEX2 = 2;
 const int CURRENT_VERSION = 2000001;
