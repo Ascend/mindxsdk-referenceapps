@@ -24,7 +24,6 @@ SAMPLE_FOLDER=(
 	# EdgeDetectionPicture/
     HelmetIdentification/
     Individual/
-    OpenCVPlugin/
     # human_segmentation/
 	# OpenposeKeypointDetection/
 	PersonCount/
@@ -48,8 +47,10 @@ SAMPLE_FOLDER=(
     PassengerflowEstimation/
     CenterFace/
     YOLOX/
+	PicoDet/
+  SOLOV2/
+  OpenCVPlugin/
 )
-
 
 err_flag=0
 for sample in ${SAMPLE_FOLDER[@]};do
