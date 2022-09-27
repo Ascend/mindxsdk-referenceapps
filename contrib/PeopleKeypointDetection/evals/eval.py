@@ -24,7 +24,7 @@ if __name__ == '__main__':
     OUTPUT_PATH_W = 'bbox_root_mupots_output.json'
     ANNOT_PATH_W = 'MuPoTS-3D.json'
     # 测试数据数量
-    PIC_NUM = 8400
+    PIC_NUM = 8370
     with open(OUTPUT_PATH_W, 'r') as f:
         output = json.load(f)
 

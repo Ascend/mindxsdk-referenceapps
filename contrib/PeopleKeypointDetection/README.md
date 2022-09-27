@@ -216,7 +216,7 @@ python3 main.py
 python3 eval_pic.py
 ```
 
-结果在主目录下生成bbox_root_mupots_output.json，注意记录控制台最后显示的数量，即为测试数据的数量。并且会在MultiPersonTestSet数据集文件夹内生成结果图。然后将bbox_root_mupots_output.json和MuPoTS-3D.json放在项目的evals目录下，进行精度验证，注意修改eval.py中测试数据的数量，执行命令：
+结果在主目录下生成bbox_root_mupots_output.json，注意记录控制台最后显示的数量，即为测试数据的数量（默认为MultiPersonTestSet数据集的数量为8370，无需修改）。并且会在MultiPersonTestSet数据集文件夹内生成结果图。然后将bbox_root_mupots_output.json和MuPoTS-3D.json放在项目的evals目录下，进行精度验证，注意修改eval.py中测试数据的数量，执行命令：
 
 ```
 python3 eval.py
