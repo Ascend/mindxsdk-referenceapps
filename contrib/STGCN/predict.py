@@ -51,6 +51,9 @@ def send_data(appsrc_id, tensor, stream_name, stream_manager):
 
 def load_data(dir_name, n_his):
     data_frame = pd.read_csv(dir_name, header=None)
+    if data_frame.shape[1] != 156:
+        print("The data set format does not meet the requirements!")
+        sys.exit()
     data = data_frame
 
     zscore.fit(data_frame[:])
@@ -99,6 +102,7 @@ if __name__ == '__main__':
     else:
         print("ERROR, please enter again.")
         exit(1)
+    start_time_all = datetime.datetime.now()
     streaminput_manager_api = StreamManagerApi()
     ret = streaminput_manager_api.InitManager()
     # create streams by pipeline config file
@@ -128,6 +132,7 @@ if __name__ == '__main__':
         predictions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
 
     np.savetxt(resdirname + 'predcitions.txt', np.array(predictions))
-
+    end_time_all = datetime.datetime.now()
+    print('total time: {}'.format((end_time_all - start_time_all).microseconds))
     # destroy streams
     streaminput_manager_api.DestroyAllStreams()

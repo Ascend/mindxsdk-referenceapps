@@ -52,6 +52,9 @@ def send_data(appsrc_id, tensor, stream_name, stream_manager):
 def load_data(dir_name, n_his, n_pred):
     data_frame = pd.read_csv(dir_name, header=None)
     data_col = data_frame.shape[0]
+    if data_frame.shape[1] != 156:
+        print("The data set format does not meet the requirements!")
+        sys.exit()
     split_rate = 0.15
     val_len = int(math.floor(data_col * split_rate))
     test_len = int(math.floor(data_col * split_rate))
@@ -101,9 +104,13 @@ def get_infer_result(stream_name, inplugin_id, stream_manager_api):
 def test(x, y):
     mae, mse = [], []
     for pre, label in zip(np.array(x), np.array(y)):
-        d = np.abs(pre - label)
-        mae += d.tolist()
-        mse += (d ** 2).tolist()
+        if np.isnan(label).sum() > 0:
+            continue
+        else:
+            d = np.abs(pre - label)
+            mae += d.tolist()
+            mse += (d ** 2).tolist()
+
     mae_result = np.array(mae).mean()
     rmse_result = np.sqrt(np.array(mse).mean())
     print(f'MAE {mae_result:.2f} | RMSE {rmse_result:.2f} ')
@@ -117,6 +124,8 @@ if __name__ == '__main__':
     else:
         print("ERROR, please enter again.")
         exit(1)
+
+    start_time_all = datetime.datetime.now()
     streaminput_manager_api = StreamManagerApi()
     ret = streaminput_manager_api.InitManager()
     # create streams by pipeline config file
@@ -153,5 +162,8 @@ if __name__ == '__main__':
     np.savetxt(resdirname+'predcitions.txt', np.array(predictions))
 
     test(predictions, labels)
+
+    end_time_all = datetime.datetime.now()
+    print('total time: {}'.format((end_time_all - start_time_all).microseconds))
     # destroy streams
     streaminput_manager_api.DestroyAllStreams()

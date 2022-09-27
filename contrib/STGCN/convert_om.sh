@@ -15,7 +15,7 @@
 input_path=$1
 output_om_path=$2
 
-/home/chongqin1/Ascend/ascend-toolkit/5.1.RC1/atc/bin/atc \
+atc \
     --framework=5 \
     --model="${input_path}" \
     --input_shape="input:64,1,12,156"  \

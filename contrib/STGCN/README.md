@@ -154,8 +154,10 @@ python main.py [image_path] [result_dir] [n_pred]
 image_path：验证集文件，如“data/sz_speed.csv”
 result_dir：推理结果保存路径，如“results/”
 n_pred：预测时段，如9
+
+完整指令 python main.py data/sz_speed.csv results/ 9
 ```
-最后推理预测的结果会保存在results/predictions.txt文件中
+最后sz_speed.csv测试集的推理预测的结果会保存在results/predictions.txt文件中，实际数据会保存在results/labels.txt文件中。
 推理精度会直接显示在界面上。
 ```
 MAE 2.81 | RMSE 4.29
