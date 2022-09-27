@@ -502,25 +502,27 @@ def second_model(ned_bboxs, k_value_ns, keypoints_cam_ms, keypoints_img_ns, intr
 
 
 def get_data_path(data_path):
-    t = []
-    for path, dir1, filelist in os.walk(data_path):
-        for filename in filelist:
-            if filename.endswith(str('.jpg')):
-                temp = list(map(str, path))
-                if temp[-1] == '/':
-                    temp = temp[:-1]
-                temp = ''.join(temp)
-                t.append(temp + '/' + filename)
-
     t1 = []
+    NAME_LEN = 14;
     for path, dir2, filelist in os.walk(data_path):
         for filename in filelist:
+            NAME_LEN = len(filename)
             if filename.endswith(str('.ini')):
                 temp = list(map(str, path))
                 if temp[-1] == '/':
                     temp = temp[:-1]
                 temp = ''.join(temp)
                 t1.append(temp + '/' + filename)  # t1空的
+
+    t = []
+    for path, dir1, filelist in os.walk(data_path):
+        for filename in filelist:
+            if filename.endswith(str('.jpg')) and len(filename) ==NAME_LEN:
+                temp = list(map(str, path))
+                if temp[-1] == '/':
+                    temp = temp[:-1]
+                temp = ''.join(temp)
+                t.append(temp + '/' + filename)
     im = natsort.natsorted(list(set(t).difference(set(t1))))
     gt = natsort.natsorted(t1)
     return im, gt
@@ -528,6 +530,9 @@ def get_data_path(data_path):
 
 if __name__ == '__main__':
     PIC_PATH = './pic/test'
+    if os.path.exists('bbox_root_mupots_output.json'):
+        print("bbox_root_mupots_output.json is exist")
+        exit()
     IMG_PATHC, Config_FileC = get_data_path(PIC_PATH)
     if len(IMG_PATHC) != len(Config_FileC) or len(IMG_PATHC) == 0 or len(Config_FileC) == 0:
         print("IMG_PATHC and Config_FileC count is error")
