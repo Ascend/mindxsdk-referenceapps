@@ -50,6 +50,9 @@
 ```
 .
 ├── main.py
+├── main.sh
+├── eval_pic.py
+├── eval_pic.sh
 ├── img
 │   ├── 1.1.png
 │   └── 2.1.png
@@ -67,7 +70,6 @@
 │   └── keypoint
 │       
 ├── evals
-│   ├── eval_pic.py
 │   └── eval.py
 ├── untils
 │   └── ini.py
@@ -76,11 +78,11 @@
 
 ### 1.5 技术实现流程图
 
-系统实现流程参见图1.1：![1.1](img/1.1.png)
+系统实现流程参见下图：![1.1](img/1.1.png)
 
 
 
-<center>图1.1 技术流程图</center>
+
 
 ## 2 环境依赖
 
@@ -114,11 +116,9 @@ env
 
 #### 2.3.1 YOLOv3模型转换
 
-YOLOv3 模型参考实现代码：https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4
+YOLOv3 模型参考[实现代码](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)。使用模型转换工具 ATC 将pb模型转换为 om 模型，模型转换工具相关介绍[参考链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)。
 
-使用模型转换工具 ATC 将pb模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
-
-**步骤1** 在ModelZoo上下载YOLOv3模型。下载地址：https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/model/2021-12-30_tf/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310/zh/1.1/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip
+**步骤1** 在ModelZoo上下载[YOLOv3模型](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/model/2021-12-30_tf/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310/zh/1.1/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)。
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./model/people/`文件夹下，文件名为：yolov3_tf.pb 。
 
@@ -141,9 +141,9 @@ ATC run success, welcome to the next use.
 
 #### 2.3.2 3DMPPE-ROOTNET模型转换
 
-3DMPPE-ROOTNET 模型参考实现代码：https://www.hiascend.com/zh/software/modelzoo/detail/1/c7f19abfe57146bd8ec494c0b377517c。
+3DMPPE-ROOTNET 模型参考[实现代码](https://www.hiascend.com/zh/software/modelzoo/detail/1/c7f19abfe57146bd8ec494c0b377517c)。
 
-**步骤1** 在ModelZoo上下载格式为onnx的3DMPPE-ROOTNET模型。下载地址：https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/model/22.1.12/ATC%203DMPPE%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip ，使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
+**步骤1** 在ModelZoo上下载格式为onnx的[3DMPPE-ROOTNET模型](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/model/22.1.12/ATC%203DMPPE%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)，使用模型转换工具 ATC 将 onnx 模型转换为 om 模型 。
 
 **步骤2** 将获取到的 onnx 文件存放至`./model/keypoint/`文件夹下，文件名为：3DMPPE-ROOTNET.onnx。
 
@@ -193,40 +193,50 @@ ATC run success, welcome to the next use.
 
 ## 4 编译与运行
 
-**步骤1** 根据环境SDK的安装路径配置detection_yolov3.pipeline和detection_yolov3_crop.pipeline中的{$MX_SDK_HOME}。
+**步骤1** 按照第 2.2 小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤2** 按照第 2.2 小节 **环境依赖** 中的步骤设置环境变量。
+**步骤2** 按照第 2.3 小节 **模型转换** 中的步骤获得 om 模型文件，分别放置在 ``./model/people/`` 和 ``./model/keypoint/`` 目录下。
 
-**步骤3** 按照第 2.3 小节 **模型转换** 中的步骤获得 om 模型文件，分别放置在 ``./model/people/`` 和 ``./model/keypoint/`` 目录下。
+**步骤3** 下载[MuPoTS数据集]([http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip))MultiPersonTestSet，并将数据集解压在pic文件夹下。
 
-**步骤4** 在[http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip)下载使用的MuPoTS数据集，将整个MultiPersonTestSet数据集和MuPoTS-3D.json放在pic文件夹下。然后在untils中找到ini.py运行生成需要的ini文件数据。生成的xxx.ini数据会存放在MultiPersonTestSet数据集文件夹内。在pic文件夹内新建test文件夹，将MultiPersonTestSet数据集文件夹内其中任意一组xxx.png和xxx.ini数据拷贝到test文件夹下。
+**步骤4** 生成ini配置文件。在untils文件夹中，执行命令：
 
-**步骤5** 图片检测。对图片上进行检测，执行命令：
+```
+python ini.py
+```
+
+生成的ini配置文件将存放在数据集文件夹内。
+
+**步骤5** 图片检测。在pic文件夹内新建test文件夹，将MuPoTS数据集内任意一张xxx.png及其对应的xxx.ini拷贝到test文件夹下，其分别对应IMG_PATHC 和Config_FileC路径。对图片进行检测，执行命令：
 
 ```
 pip install natsort
-python3 main.py
+bash main.sh
 ```
 
-命令执行成功后在test文件夹内的数据集目录下会·生成检测结果文件 output_root_2d_x.jpg（x为0，1，2...n，n为人体的数量）、output_root_2d_pose.jpg、output_root_3d_pose.png。在主目录下会生成次组测试数据的bbox_root_mupots_output.json结果文件。
+命令执行成功后，在test目录下会生成检测结果文件，即 output_root_2d_x.jpg（x为0，1，2...n，n为人体的序列号）、output_root_2d_pose.jpg、output_root_3d_pose.png。在主目录下会生成此组测试数据的bbox_root_mupots_output.json结果文件。
 
-**步骤6** 精度验证。删除test文件夹和主目录下的bbox_root_mupots_output.json。将evals文件夹中的eval_pic.py移至主目录下（不移动需要修改其中的图片和pipeline的路径），运行eval_pic.py。
+## 5 精度验证
+
+**步骤1** 执行以下命令：
 
 ```
-python3 eval_pic.py
+bash eval_pic.sh
 ```
 
-结果在主目录下生成bbox_root_mupots_output.json，注意记录控制台最后显示的数量，即为测试数据的数量（默认为MultiPersonTestSet数据集的数量为8370，无需修改）。并且会在MultiPersonTestSet数据集文件夹内生成结果图。然后将bbox_root_mupots_output.json和MuPoTS-3D.json放在项目的evals目录下，进行精度验证，注意修改eval.py中测试数据的数量，执行命令：
+运行完成后，在主目录下会生成的bbox_root_mupots_output.json，在数据集文件夹内会生成结果图，注意记录控制台最后显示的测试数据数量。
+
+**步骤2** 将bbox_root_mupots_output.json和MuPoTS-3D.json放在项目的evals目录下，进行精度验证，执行命令：
 
 ```
 python3 eval.py
 ```
 
-命令执行成功后在控制台查看精度结果。
+命令执行成功后，在控制台查看精度结果为32.26%，要求精度为31.87%，符合要求。
 
-## 5 常见问题
+## 6 常见问题
 
-### 5.1 环境变量配置错误
+### 6.1 环境变量配置错误
 
 **问题描述：**
 
@@ -236,7 +246,7 @@ python3 eval.py
 
 重新配置环境变量后问题解决。
 
-### 5.2 图片格式问题
+### 6.2 图片格式问题
 
 **问题描述：**
 
@@ -246,17 +256,7 @@ python3 eval.py
 
 输入图片不是真正的jpg格式，由png等文件强制转后缀而来，ACL不支持，需要转存为原生jpg格式。
 
-### 5.3 未修改pipeline中后处理插件的postProcessLibPath属性
-
-**问题描述：**
-
-提示 The postProcessing DLL does not exist。
-
-**解决方案：**
-
-修改pipeline文件中**mxpi_objectpostprocessor0**插件的`postProcessLibPath`属性，修改为`{SDK安装路径}/lib/modelpostprocessors/libYOLOv3postprocess.so`。
-
-### 5.4 缺失依赖包问题
+### 6.3 缺失依赖包问题
 
 **问题描述：**
 
@@ -266,7 +266,7 @@ python3 eval.py
 
 cv2包引入失败是由于缺少opencv依赖包，执行`pip install opencv-python-headless`后安装成功。然后安装google依赖包。
 
-### 5.5 C++环境问题
+### 6.4 C++环境问题
 
 **问题描述：**
 

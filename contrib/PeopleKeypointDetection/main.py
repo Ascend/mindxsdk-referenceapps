@@ -531,12 +531,10 @@ def get_data_path(data_path):
 if __name__ == '__main__':
     PIC_PATH = './pic/test'
     if os.path.exists('bbox_root_mupots_output.json'):
-        print("bbox_root_mupots_output.json is exist")
-        exit()
+        raise Exception("bbox_root_mupots_output.json is exist")
     IMG_PATHC, Config_FileC = get_data_path(PIC_PATH)
     if len(IMG_PATHC) != len(Config_FileC) or len(IMG_PATHC) == 0 or len(Config_FileC) == 0:
-        print("IMG_PATHC and Config_FileC count is error")
-        exit()
+        raise Exception("IMG_PATHC or Config_FileC count is error")
     keypoints_cam_list = []
     keypoints_img_list = []
     intrinsic_list = []
