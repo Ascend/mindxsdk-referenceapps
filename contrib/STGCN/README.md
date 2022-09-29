@@ -61,7 +61,7 @@ eg：推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 在编译运行项目前，需要设置环境变量：
 ```
 bash ${SDK安装路径}/set_env.sh
-bash ${CANN安装路径}/../set_env.sh
+bash ${CANN安装路径}/set_env.sh
 ```
 
 ## 3 城市道路交通预测开发实现
@@ -169,4 +169,7 @@ python predict.py [image_path] [result_dir]
 参数说明：
 image_path：验证集文件，如“data/sz_speed.csv”
 result_dir：推理结果保存路径，如“results/”
+
+例如： python predict.py data/sz_speed.csv results/
 ```
+则会在results文件夹下生成代表预测的交通数据prediction.txt文件

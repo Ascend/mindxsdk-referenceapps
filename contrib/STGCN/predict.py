@@ -54,8 +54,10 @@ def load_data(dir_name, n_his):
     if data_frame.shape[1] != 156:
         print("The data set format does not meet the requirements!")
         sys.exit()
+    if data_frame.shape[0] <= 12:
+        print("The number of data is less than 12!")
+        sys.exit()
     data = data_frame
-
     zscore.fit(data_frame[:])
     data = zscore.transform(data)
 
@@ -83,6 +85,7 @@ def get_infer_result(stream_name, inplugin_id, stream_manager_api):
     pipeline_result = stream_manager_api.GetProtobuf(stream_name, inplugin_id, key_vec)
 
     end_time = datetime.datetime.now()
+    run_time = (end_time - start_time).microseconds
     print('sdk run time: {}'.format((end_time - start_time).microseconds))
 
     if pipeline_result[0].errorCode != 0:
@@ -92,7 +95,7 @@ def get_infer_result(stream_name, inplugin_id, stream_manager_api):
     out_result = MxpiDataType.MxpiTensorPackageList()
     out_result.ParseFromString(pipeline_result[0].messageBuf)
 
-    return out_result
+    return out_result, run_time
 
 
 if __name__ == '__main__':
@@ -102,7 +105,6 @@ if __name__ == '__main__':
     else:
         print("ERROR, please enter again.")
         exit(1)
-    start_time_all = datetime.datetime.now()
     streaminput_manager_api = StreamManagerApi()
     ret = streaminput_manager_api.InitManager()
     # create streams by pipeline config file
@@ -116,6 +118,7 @@ if __name__ == '__main__':
     # 读数据集
     x_pre, nslot = load_data(dirname, NHIS)
     predictions = []
+    run_time_mean = []
     #start infer
     for k in range(nslot):
         tensor_input = np.expand_dims(x_pre[k], axis=0)
@@ -125,14 +128,15 @@ if __name__ == '__main__':
             sys.exit()
 
         # Obtain the inference result by specifying stream_name and uniqueId.
-        result = get_infer_result(b'im_stgcn', 0, streaminput_manager_api)
-
+        result, r_time = get_infer_result(b'im_stgcn', 0, streaminput_manager_api)
+        run_time_mean.append(r_time)
         # convert the inference result to Numpy array
         res = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
         predictions.append(zscore.inverse_transform(np.expand_dims(res, axis=0)).reshape(-1))
 
     np.savetxt(resdirname + 'predcitions.txt', np.array(predictions))
-    end_time_all = datetime.datetime.now()
-    print('total time: {}'.format((end_time_all - start_time_all).microseconds))
+    print('The number of sdk is: {}'.format(len(run_time_mean)))
+    print('The prediction is saved in results!')
+    print('mean time: {}'.format(np.mean(run_time_mean)))
     # destroy streams
     streaminput_manager_api.DestroyAllStreams()
