@@ -67,3 +67,26 @@ if [ ${err_flag} -eq 1 ]; then
     exit 1
 fi
 exit 0
+<<<<<<< HEAD
+=======
+
+	PicoDet/
+  SOLOV2/
+  OpenCVPlugin/
+)
+
+err_flag=0
+for sample in ${SAMPLE_FOLDER[@]};do
+    cd ${current_folder}/${sample}
+    bash build.sh || {
+        echo -e "Failed to build ${sample}"
+		err_flag=1
+    }
+done
+
+
+if [ ${err_flag} -eq 1 ]; then
+	exit 1
+fi
+exit 0
+>>>>>>> 515cf51749a227c1871c514c2ee53573a59247a6
