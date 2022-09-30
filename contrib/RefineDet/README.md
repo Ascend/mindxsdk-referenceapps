@@ -143,7 +143,7 @@ ascend-toolkit-path: CANN 安装路径
 atc --framework=5 --model=RefineDet320_VOC_final_no_nms.onnx --output=RefineDet --input_format=NCHW --input_shape="image:1,3,320,320" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/RefineDet.aippconfig --precision_mode=force_fp32
 ````
 
-3、执行该命令后会在指定输出.om模型路径生成项目指定模型文件RefineDet.om`。若模型转换成功则输出：
+3、执行该命令后会在指定输出.om模型路径生成项目指定模型文件`RefineDet.om`。若模型转换成功则输出：
 
 ```
 ATC start working now, please wait for a moment.
