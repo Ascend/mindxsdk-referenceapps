@@ -70,10 +70,9 @@ bash ${CANN安装路径}/set_env.sh
 ```
 CANN软件包获取地址：https://www.hiascend.com/software/cann/commercial
 SDK官方下载地址：https://www.hiascend.com/zh/software/mindx-sdk
-我的安装步骤是本地下载好对应版本的安装包然后上传到服务器，接着执行如下指令：
-1、设置可执行权限
-chmod +x *.run
-2、安装
+我的安装步骤是本地下载好对应版本的安装包然后上传到服务器，然后再完成以下两个步骤
+1、给.run安装包设置可执行权限
+2、执行安装指令
 ./ *.run --install
 ```
 
