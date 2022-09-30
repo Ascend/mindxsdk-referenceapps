@@ -110,10 +110,6 @@ APP_ERROR X3DPostProcess::Process(const std::vector<TensorBase>& tensors,
             clsInfo.classId = idx[j];
             clsInfo.confidence = softmax[idx[j]];
             clsInfo.className = configData_.GetClassName(idx[j]);
-            // cout<<i<<endl;
-            // cout<<idx[j]<<endl;
-            // cout<<clsInfo.className<<endl;
-            // cout<<clsInfo.confidence<<endl<<endl;
             topkClassInfos.push_back(clsInfo);
         }
         classInfos.push_back(topkClassInfos);

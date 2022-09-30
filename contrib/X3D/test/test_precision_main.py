@@ -31,7 +31,9 @@ parser.add_argument("--PROCESS_NUM",type=int)
 parser.add_argument("--DEVICE_NUM",type=int)
 args = parser.parse_args()
 
-TEST_NUM = 19761
+START_IDX = 0
+END_IDX = 19761
+TEST_NUM = END_IDX-START_IDX
 
 
 if not os.path.exists(args.RESULT_SAVE_PATH):
@@ -51,11 +53,11 @@ with open(args.FRAME_LENGTH_PATH,"r") as fp:
 
 start_time = time.time()
 
-def test_func(thread_id,index_list,cross_process_num,cross_process_Lock):
-    print(f"thread {thread_id} start")
-    device_id = thread_id%args.DEVICE_NUM
+def test_func(process_id,index_list,cross_process_num,cross_process_Lock):
+    print(f"process {process_id} start")
+    device_id = process_id%args.DEVICE_NUM
     for idx in index_list:
-        if idx>=TEST_NUM:
+        if idx>=END_IDX:
             break
         frame = frame_length_dict[idx]
         remain = frame-13*5;
@@ -70,17 +72,17 @@ def test_func(thread_id,index_list,cross_process_num,cross_process_Lock):
         cross_process_Lock.acquire()
         cross_process_num.value+=1
         cost_time = int(time.time()-start_time)
-        print(f"thread_id: {thread_id:<5} device_id: {device_id:<4} idx: {idx:<8} num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}h{(cost_time%3600)//60:>2}m{cost_time%60:>2}s")
+        print(f"process_id: {process_id:<5} device_id: {device_id:<4} idx: {idx:<8} num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}h{(cost_time%3600)//60:>2}m{cost_time%60:>2}s")
         cross_process_Lock.release()
 
-idx_list = [i for i in range(TEST_NUM)]
+idx_list = [i for i in range(START_IDX,END_IDX)]
 block_size = (TEST_NUM+args.PROCESS_NUM)//args.PROCESS_NUM
 idx_block_list = [idx_list[i:i+block_size] for i in range(0,TEST_NUM,block_size) if idx_list[i:i+block_size]!=[]]
 processed_num = multiprocessing.Value('i', 0)
 processed_lock = multiprocessing.Lock()
-thread_pool = [multiprocessing.Process(target=test_func,args=(idx_block,idx_block_list[idx_block],processed_num,processed_lock)) for idx_block in range(args.PROCESS_NUM)]
+process_pool = [multiprocessing.Process(target=test_func,args=(idx_block,idx_block_list[idx_block],processed_num,processed_lock)) for idx_block in range(args.PROCESS_NUM)]
 
-for process in thread_pool:
+for process in process_pool:
     process.start()
-for process in thread_pool:
+for process in process_pool:
     process.join()

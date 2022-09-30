@@ -5,7 +5,7 @@
         },
         "mxpi_rtspsrc0": {
             "props": {
-                "rtspUrl": "rtsp://192.168.88.107:8554/F_008.264"
+                "rtspUrl": "rtsp_Url"
             },
             "factory": "mxpi_rtspsrc",
             "next": "mxpi_videodecoder0"
@@ -78,7 +78,8 @@
         "mxpi_stackframe0":{
             "props": {
                 "visionSource": "mxpi_imagecrop0",
-                "trackSource": "mxpi_motsimplesort0"
+                "trackSource": "mxpi_motsimplesort0",
+                "framenum": 5
                 },
             "factory": "mxpi_stackframe",
             "next": "mxpi_tensorinfer1"

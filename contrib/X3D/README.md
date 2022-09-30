@@ -62,12 +62,14 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 ├── models
 │   ├── x3d
 │   │   ├── kinetics400.names //kinetics400标签文件
-│   │   ├── x3d_aipp.cfg
-│   │   ├── x3d_post_work.cfg
+│   │   ├── x3d_aipp.cfg //业务流程中导出om模型所需aipp文件
+│   │   ├── x3d_aipp_test.cfg //测试流程中导出om模型所需aipp文件
+│   │   ├── x3d_post.cfg //业务流程中后处理配置文件
+│   │   ├── x3d_post_test.cfg //测试流程中后处理配置文件
 │   │   └── X3d_pth2onnx.py //x3d onnx导出脚本
 │   └── yolov3
 │       ├── coco.names //coco标签文件
-│       └── x3d_post_work.cfg
+│       └── yolov3_tf_bs1_fp16.cfg 
 ├── pipelines
 │   └── actionrecognition.pipeline //业务流程pipeline
 ├── plugins
@@ -95,8 +97,10 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 │   ├── get_video_length.py //获取所有视频帧长度脚本
 │   ├── K400_label.txt //kinetics400标签文件(带下划线版)
 │   ├── requirements.txt
-│   ├── test_precision_main.py //测试流程启动脚本
+│   ├── test_precision_main.py //测试精度流程启动脚本
 │   └── test_precision_sub.py
+│   └── test_fps.py //性能测试启动脚本
+│   └── calculate_fps.py //性能测试计算结果脚本
 └── X3D动作检测.md
 
 ```
@@ -191,8 +195,9 @@ patch -p1 < x3d.patch
 pip3.7 install -e . -i
 cd ..
 mv ../X3d_pth2onnx.py X3d_pth2onnx.py 
-mv ../x3d_aipp_yuv.cfg x3d_aipp_yuv.cfg
 ```
+
+
 
 在导出onnx模型前，由于版本限制，请进入当前python环境中的site-packages文件夹，将
 
@@ -203,12 +208,22 @@ site-packages/torchvision/models/quantization/mobilenetv3.py
 
 文件中的torch.ao替换为torch.quantization以保证onnx正常导出。
 
-回到X3D/models/x3d/X3D路径，执行
+
+
+回到X3D/models/x3d/X3D路径，执行以下命令导出onnx文件：
 
 ```
 python3.7 X3d_pth2onnx.py --cfg SlowFast/configs/Kinetics/X3D_S.yaml     X3D_PTH2ONNX.ENABLE True TEST.BATCH_SIZE 1 TEST.CHECKPOINT_FILE_PATH  "x3d_s.pyth" X3D_PTH2ONNX.ONNX_OUTPUT_PATH "x3d_s.onnx"
-atc --framework=5 --model=x3d_s.onnx --output=x3d_s1 --input_format=NCHW --input_shape="image:13,3,182,182" --log=error --soc_version=Ascend310 --precision_mode allow_mix_precision --insert_op_conf=x3d_aipp.cfg
+```
+
+因为测试流程与业务流程所接收的数据格式不同，请分别执行以下两条指令导出业务流程与测试流程所需om文件：
+
+```
+atc --framework=5 --model=x3d_s.onnx --output=x3d_s1 --input_format=NCHW --input_shape="image:13,3,182,182" --log=error --soc_version=Ascend310 --precision_mode allow_mix_precision --insert_op_conf=../x3d_aipp.cfg
 mv x3d_s1.om ../x3d_s1.om
+
+atc --framework=5 --model=x3d_s.onnx --output=x3d_s1_test --input_format=NCHW --input_shape="image:13,3,182,182" --log=error --soc_version=Ascend310 --precision_mode allow_mix_precision --insert_op_conf=../x3d_aipp_test.cfg
+mv x3d_s1_test.om ../x3d_s1_test.om
 ```
 
 转换完毕的om模型会放置在X3D/models/x3d/ 目录下。
@@ -301,6 +316,8 @@ python3.7 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video
 - **video_path** 原始数据集路径
 - **save_path ** 生成的视频长度清单存放路径，用于后续精度测试
 
+在将所有视频转换完毕后，请将路径../Knetics-400/val/下的所有h.264视频放到rtsp服务器文件夹中，以便后续拉流使用。
+
 ### 5.3 运行精度测试
 
 为了提高精度测试效率，我们采用了多进程。test_precision_main.py文件会生成多个子进程并行测试精度，而test_precision_sub.py主要负责具体的精度推理流程的执行。具体操作如下：
@@ -324,7 +341,7 @@ python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LO
 执行下列命令：
 
 ```
-python3.7 calculate_precision.py --RESULT_PATH="test_precision_log" --LABEL_PATH="video2label.txt"
+python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_PATH="video2label.txt"
 ```
 
 参数
@@ -332,8 +349,45 @@ python3.7 calculate_precision.py --RESULT_PATH="test_precision_log" --LABEL_PATH
 - **RESULT_PATH** 精度中间结果保存目录
 - **LABEL_PATH** cvt_video2h264.py生成的视频列别清单存放路径
 
-执行该指令后，其会生成模型的top1与top5精度。值得注意的一点是它也会输出一个错误数据列表，因为Knetics400测试集中存在少量无法解码的视频，产生少量错误数据是正常的，它们不会被计算到最终精度结果中。
+执行该指令后，其会生成模型的top1与top5精度。值得注意的一点是它也会输出一个错误数据列表，因为Knetics400测试集中存在少量无法解码的视频，它们不会被计算到最终精度结果中。
 
 目标精度：[Top1：73.1%](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/contrib/cv/classfication/X3D)
 
 实际精度：Top1：%，Top5：%
+
+
+
+## 6 性能测试
+
+本章将介绍如何测试业务流程性能。请选取若干分辨率为1920*1080，帧率为25的视频作为性能测试数据，视频长度请不小于10s。
+
+测试性能前请参考[MindSDK性能测试工具使用指南](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/3d688c94)，在sdk.conf文件中设置enable_ps=true，ps_interval_time=1。在开启性能测试前，请删除${SDK-path}/logs内的所有文件，以免对性能测试结果产生干扰。
+
+请在X3D/test文件夹下创建test_fps_video.txt文件，请将要测试的所有视频rtsp链接放入此文件中，不同链接以换行符分隔。
+
+执行
+
+```
+cd test
+python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt"
+```
+
+参数
+
+- **VIDEO_LIST_PATH** 视频rtsp url清单文件
+
+
+
+当程序执行完毕后，所有视频的性能分析日志均会保存在${SDK-path}/logs中，执行如下命令即可输出推理性能
+
+```
+python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/
+```
+
+参数
+
+- **LOG_SAVE_PATH** ${SDK-path}/logs文件路径
+
+
+
+最终性能结果为 fps

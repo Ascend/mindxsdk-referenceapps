@@ -75,8 +75,8 @@ try:
             },
             "mxpi_tensorinfer0":{
                 "props": {
-                    "dataSource": "prec_process0",
-                    "modelPath": "./../models/x3d/x3d_s1.om",
+                    "dataSource": "mxpi_x3dpreprocess0",
+                    "modelPath": "../models/x3d/x3d_s1_test.om",
                     "singleBatchInfer": "1",
                     "waitingTime":"250000"
                     },
@@ -86,9 +86,9 @@ try:
             "mxpi_classpostprocessor0":{
                 "props": {
                     "dataSource": "mxpi_tensorinfer0",
-                    "postProcessConfigPath": "../models/x3d/x3d_post.cfg",
+                    "postProcessConfigPath": "../models/x3d/x3d_post_test.cfg",
                     "labelPath": "../models/x3d/kinetics400.names",
-                    "postProcessLibPath": "../../../lib/modelpostprocessors/libpreccheckresult.so"
+                    "postProcessLibPath": "../../../lib/modelpostprocessors/libx3dpostprocess.so"
                 },
                 "factory": "mxpi_classpostprocessor",
                 "next": "mxpi_dataserialize0"
