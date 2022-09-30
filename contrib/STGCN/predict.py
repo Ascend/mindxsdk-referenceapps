@@ -58,7 +58,11 @@ def load_data(dir_name, n_his):
         print("The number of data is less than 12!")
         sys.exit()
     data = data_frame
-    zscore.fit(data_frame[:])
+    try:
+        zscore.fit(data_frame[:])
+    except (ValueError):
+        print("The data contains illegal characters, please check the dataset!")
+        sys.exit()
     data = zscore.transform(data)
 
     n_route = data.shape[1]

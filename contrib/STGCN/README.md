@@ -29,8 +29,10 @@ SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和�
 | 2    | 模型推理 | 调用MindX SDK的mxpi_tensorinfer对输入张量进行推理 |
 | 3    | 结果输出 | 调用MindX SDK的mxpi_dataserialize和appsink以及pythonAPI的GetProtobuf()函数输出结果 |
 
+### 1.3 特性及适用场景
+模型的原始训练是基于SZ-Taxi数据集训练的，读取的图为深圳罗湖区156条主要道路的交通连接情况。因此对于针对罗湖区的自定义交通速度数据（大小为N×156，N>12），都能给出具有参考价值的未来一定时段的交通速度，从而有助于判断未来一段时间内道路的拥堵情况等。
 
-### 1.3 代码目录结构与说明
+### 1.4 代码目录结构与说明
 
 eg：本sample工程名称为stgcn_sdk_test，工程目录如下图所示：
 ```
@@ -62,6 +64,17 @@ eg：推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 ```
 bash ${SDK安装路径}/set_env.sh
 bash ${CANN安装路径}/set_env.sh
+```
+
+## 依赖安装
+```
+CANN软件包获取地址：https://www.hiascend.com/software/cann/commercial
+SDK官方下载地址：https://www.hiascend.com/zh/software/mindx-sdk
+我的安装步骤是本地下载好对应版本的安装包然后上传到服务器，接着执行如下指令：
+1、设置可执行权限
+chmod +x *.run
+2、安装
+./ *.run --install
 ```
 
 ## 3 城市道路交通预测开发实现
@@ -155,7 +168,7 @@ image_path：验证集文件，如“data/sz_speed.csv”
 result_dir：推理结果保存路径，如“results/”
 n_pred：预测时段，如9
 
-完整指令 python main.py data/sz_speed.csv results/ 9
+例如： python main.py data/sz_speed.csv results/ 9
 ```
 最后sz_speed.csv测试集的推理预测的结果会保存在results/predictions.txt文件中，实际数据会保存在results/labels.txt文件中。
 推理精度会直接显示在界面上。
@@ -173,3 +186,9 @@ result_dir：推理结果保存路径，如“results/”
 例如： python predict.py data/sz_speed.csv results/
 ```
 则会在results文件夹下生成代表预测的交通数据prediction.txt文件
+
+## 6 常见问题
+1、服务器上进行推理的时候出现coredump报错
+```
+原因：因为服务器上安装了好几个版本的mxVision，使用RC2版本的时候出现了这个问题，2.0.4版本的时候就可以了，是版本不匹配导致的。运行前可以先运行一下对应版本的set_env.sh
+```

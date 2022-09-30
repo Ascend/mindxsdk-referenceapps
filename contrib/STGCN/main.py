@@ -63,8 +63,11 @@ def load_data(dir_name, n_his, n_pred):
     test_len = int(math.floor(data_col * split_rate))
     train_len = int(data_col - val_len - test_len)
     data = data_frame[train_len + val_len:]
-
-    zscore.fit(data_frame[: train_len + val_len])
+    try:
+        zscore.fit(data_frame[: train_len + val_len])
+    except (ValueError):
+        print("The data contains illegal characters, please check the dataset!")
+        sys.exit()
     data = zscore.transform(data)
 
     n_route = data.shape[1]
