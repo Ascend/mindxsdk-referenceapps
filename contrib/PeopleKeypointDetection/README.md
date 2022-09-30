@@ -80,9 +80,9 @@
 
 系统实现流程参见下图：![1.1](img/1.1.png)
 
+### 1.6 特性及使用场景
 
-
-
+本方案采取YOLOv3与3DMPPE-ROOTNET模型，将待检测图片输入模型进行推理，推理得到包含人体关键点的根节点信息，以及预先提供的其他16类关键点，然后结合人体信息特征将不同的关键点组合连接成为人体骨架，再将所有人体骨架连接组成不同的人体，最后将关键点和骨架信息标注在输入图像上，描绘人体姿态。本方案可以对遮挡人体、小人体、密集分布人体等进行检测，还适用于不同姿态（蹲坐、俯卧等）、不同方向（正面、侧面、背面等）以及模糊人体关键点检测等多种复杂场景。可以在不同背景，不同数量的人体下进行测试，测试结果表明，模型在二维的结果中可以的检测十分准确，在三维的结果中误差稍微较大。
 
 ## 2 环境依赖
 
@@ -214,7 +214,7 @@ pip install natsort
 bash main.sh
 ```
 
-命令执行成功后，在test目录下会生成检测结果文件，即 output_root_2d_x.jpg（x为0，1，2...n，n为人体的序列号）、output_root_2d_pose.jpg、output_root_3d_pose.png。在主目录下会生成此组测试数据的bbox_root_mupots_output.json结果文件。
+命令执行成功后，在test目录下会生成检测结果文件，即 img_xxxxxxoutput_root_2d_n.jpg（n为0，1，2...n，即人体的序列号）、img_xxxxxxoutput_root_2d_pose.jpg、img_xxxxxxoutput_root_3d_pose.png。在主目录下会生成此组测试数据的bbox_root_mupots_output.json结果文件。
 
 ## 5 精度验证
 
@@ -275,3 +275,13 @@ cv2包引入失败是由于缺少opencv依赖包，执行`pip install opencv-pyt
 **解决方案：**
 
 安装pycocotools包需要服务器端的C++编译环境，而服务器gcc版本不适应。故尝试在本地安装C++环境后问题解决，eval.py成功执行。
+
+### 6.5 ini文件已存在问题
+
+**问题描述：**
+
+运行ini.py时报错：“with os.fdopen(os.open(save_path, FLAG_NUM, MODE_NUM), 'w', encoding='utf-8') as f: FileExistsError: [Errno 17] File exists: '../pic/MultiPersonTestSet/TS17/img_000000.ini'”
+
+**解决方案：**
+
+删除所有生成的ini文件后，重新运行

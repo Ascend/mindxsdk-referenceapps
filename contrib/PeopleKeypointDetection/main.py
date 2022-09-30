@@ -503,11 +503,11 @@ def second_model(ned_bboxs, k_value_ns, keypoints_cam_ms, keypoints_img_ns, intr
 
 def get_data_path(data_path):
     t1 = []
-    NAME_LEN = 14
+    name_len = 14
     for path, dir2, filelist in os.walk(data_path):
         for filename in filelist:
-            NAME_LEN = len(filename)
             if filename.endswith(str('.ini')):
+                name_len = len(filename)
                 temp = list(map(str, path))
                 if temp[-1] == '/':
                     temp = temp[:-1]
@@ -517,7 +517,7 @@ def get_data_path(data_path):
     t = []
     for path, dir1, filelist in os.walk(data_path):
         for filename in filelist:
-            if filename.endswith(str('.jpg')) and len(filename) == NAME_LEN:
+            if filename.endswith(str('.jpg')) and len(filename) == name_len:
                 temp = list(map(str, path))
                 if temp[-1] == '/':
                     temp = temp[:-1]
