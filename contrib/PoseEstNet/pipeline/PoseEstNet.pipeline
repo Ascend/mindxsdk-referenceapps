@@ -26,7 +26,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "models/yolov3.om(这里根据你的命名或路径进行更改)"
+                "modelPath": "models/yolov3.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_objectpostprocessor0"
@@ -34,9 +34,9 @@
         "mxpi_objectpostprocessor0": {
            "props": {
                     "dataSource": "mxpi_tensorinfer0",
-                    "postProcessConfigPath": "models/yolov3.cfg(这里根据你的命名或路径进行更改)",
+                    "postProcessConfigPath": "models/yolov3.cfg",
                     "labelPath": "models/coco.names",
-                    "postProcessLibPath": "\${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
+                    "postProcessLibPath": "libyolov3postprocess.so"
                 },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"
@@ -68,7 +68,7 @@
         "mxpi_tensorinfer2":{
             "props": {
                 "dataSource": "mxpi_preprocess1",
-                "modelPath": "models/PoseEstNet.om(这里根据你的命名或路径进行更改)"
+                "modelPath": "models/PoseEstNet.om"
             },
             "factory":"mxpi_tensorinfer",
             "next":"mxpi_postprocess1"

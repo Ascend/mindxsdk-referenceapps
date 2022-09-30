@@ -331,7 +331,7 @@ APP_ERROR MxpiPNetPostprocess::Process(std::vector<MxpiBuffer*>& mxpiBuffer) {
     }
     // Send the data to downstream plugin
     SendData(0, *buffer);
-    LogError << "MxpiPNetPostprocess::Process end";
+    LogInfo << "MxpiPNetPostprocess::Process end";
     return APP_ERR_OK;
 }
 

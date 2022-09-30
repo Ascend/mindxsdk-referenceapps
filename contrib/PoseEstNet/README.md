@@ -40,13 +40,21 @@ PoseEstNet
 |numpy | 1.22.4 |
 |opencv_python|4.6.0|  
 |cmake|3.5+| 
-请注意MindX SDK使用python版本为3.9.12，如出现无法找到python对应lib库请在root下安装python3.9开发库  
+注：MindX SDK使用python版本为3.9.12，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 ```
 apt-get install libpython3.9
 ```
 
 ## 4 模型转换
 车辆姿态识别先采用了yolov3模型将图片中的车辆检测出来，然后利用PoseEstNet模型预测车辆36个关键点坐标。
+
+###环境依赖：
+
+设置环境变量
+```
+./usr/local/Ascend/ascend-toolkit/set_env.sh
+```
+
 
 4.1 yolov3的模型转换：  
 
@@ -58,15 +66,12 @@ apt-get install libpython3.9
 
 **步骤3** .om模型转换  
 以下操作均在“项目所在目录/models”路径下进行：  
-- 设置环境变量，进入根目录，执行如下命令后返回原目录
-```
-source usr/local/Ascend/ascend-toolkit/set_env.sh
-```
-- 使用ATC将.pb文件转成为.om文件
+
+***1*** 使用ATC将.pb文件转成为.om文件
 ```
 atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
 ```
-- 执行完模型转换脚本后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
+***2*** 执行完模型转换脚本后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
 （可以通过修改output参数来重命名这个.om文件）
 ```
 ATC run success, welcome to the next use.
@@ -78,23 +83,7 @@ ATC run success, welcome to the next use.
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet论文地址](https://arxiv.org/pdf/2005.00673.pdf)
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet代码地址](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet)
 
-4.2.2 模型转换环境需求
-```
-- 框架需求
-  CANN == 5.0.4
-  torch == 1.5.0
-  torchvision == 0.6.0
-  onnx == 1.11.1
-
-- python第三方库
-  numpy == 1.22.4
-  opencv-python == 4.6.0
-  Pillow == 8.2.0
-  yacs == 0.1.8
-  pytorch-ignite == 0.4.5
-```
-
-4.2.3 模型转换步骤
+4.2.2 模型转换步骤
 
 **步骤1** .pth模型转.onnx模型
 
@@ -107,7 +96,8 @@ rm models.zip
 [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
 
 ***2*** 获取PoseEstNet_pth2onnx.py 
-&ensp; 下载PoseEstNet源码并创建项目，将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
+
+下载PoseEstNet源码并创建项目，源码地址详见4.2.1，将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
 ```
 python3 tools/PoseEstNet_pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.yaml TEST.MODEL_FILE models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
 ```
@@ -120,16 +110,11 @@ python3 tools/PoseEstNet_pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_ad
 
 **步骤2** .onnx模型转.om模型
 
-***1*** 设置环境变量，进入根目录，执行如下命令后返回原目录
-```
-source usr/local/Ascend/ascend-toolkit/set_env.sh
-```
-
-***2*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(注意文件路径)
+***1*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(aipp_hrnet_256_256.aippconfig在本项目models目录下，需要自行复制到转模型环境的目录，注意文件路径）
 ```
 atc --framework=5 --model=PoseEstNet.onnx --output=PoseEstNet --input_format=NCHW --input_shape="image:1,3,256,256" --insert_op_conf=aipp_hrnet_256_256.aippconfig --log=debug --soc_version=Ascend310
 ```
-- 执行完模型转换脚本后，若提示如下信息说明模型转换成功（同样的，可以通过修改output参数来重命名这个.om文件）
+***2*** 执行完模型转换脚本后，若提示如下信息说明模型转换成功（同样的，可以通过修改output参数来重命名这个.om文件）
 ```
 ATC run success, welcome to the next use.
 ```  
@@ -142,7 +127,9 @@ ATC run success, welcome to the next use.
 ## 5 数据集  
 5.1 原始VeRi数据集  
 
-&ensp;&ensp;&ensp;&ensp;&ensp; [Github下载链接](https://vehiclereid.github.io/VeRi/)
+&ensp;&ensp;&ensp;&ensp;&ensp; [Github官网链接](https://vehiclereid.github.io/VeRi/)
+&ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/images.zip)
+
 原数据集images文件夹下面分为images_train和images_test，需要自己将这两个文件夹里的图片复制到data_eval/images文件夹下面
 目录结构如下：
 ```
@@ -153,7 +140,7 @@ ATC run success, welcome to the next use.
     ├── labels
     |   ├── label_test.csv
 ```
-其中data/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
+5.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
 
 ----------------------------------------------------
 ## 6 测试
@@ -181,21 +168,8 @@ cp -r  NumCpp/include/NumCpp ./include/
 ```
 bash build.sh
 ```
-6.6 切换到插件目录更新权限
-```
-cd ${MX_SDK_HOME}/lib/plugins
-```
-将libmxpi_pnetpostprocessplugin.so和libmxpi_pnetpreprocessplugin.so权限更改为640
 
-6.7 切换回根目录，创建文件夹
-```
-cd (项目根目录)
-mkdir data
-mkdir data_eval
-mkdir output
-mkdir output_eval
-```
-6.8 配置pipeline  
+6.6 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
 
 PoseEstNet.pipeline:
@@ -248,7 +222,7 @@ eval_PoseEstNet.pipeline:
         },
 ```
 
-6.9 执行
+6.7 执行
 
 业务代码main.py结果在output文件夹
 ```
@@ -261,6 +235,8 @@ python3 eval.py --inputPath data_eval/images/ --labelPath data_eval/labels/label
 
 
 ## 7 精度对比
+
+由下面两个图表可以看出，本项目的精度与源码精度相差在1%以内
 
 项目精度：
 ![项目精度](image/output_eval.png)

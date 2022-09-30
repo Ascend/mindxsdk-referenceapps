@@ -31,8 +31,8 @@ namespace {
     const int YUV_U = 2;
     const int YUV_V = 3;
     const int ER = 2;
-    const int ER_WU_LIU = 256
-    const float LING_DIAN_WU = 0.5
+    const int ER_WU_LIU = 256;
+    const float LING_DIAN_WU = 0.5;
 }
 
 

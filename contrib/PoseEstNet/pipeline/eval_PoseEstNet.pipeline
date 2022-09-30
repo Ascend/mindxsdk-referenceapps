@@ -28,7 +28,7 @@
         "mxpi_tensorinfer2":{
             "props": {
                 "dataSource": "mxpi_preprocess1",
-                "modelPath": "models/PoseEstNet.om(这里根据你的命名或路径进行更改)"
+                "modelPath": "models/PoseEstNet.om"
             },
             "factory":"mxpi_tensorinfer",
             "next":"mxpi_postprocess1"

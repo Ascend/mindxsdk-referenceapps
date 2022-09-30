@@ -31,8 +31,20 @@ for sample in ${SAMPLE_FOLDER[@]};do
     }
 done
 
+cd ${MX_SDK_HOME}/lib/plugins
+chmod 640 libmxpi_pnetpostprocessplugin.so
+chmod 640 libmxpi_pnetpreprocessplugin.so
+
+cd ${current_folder}
+cd ..
+mkdir data
+mkdir data_eval
+mkdir output
+mkdir output_eval
 
 if [ ${err_flag} -eq 1 ]; then
 	exit 1
 fi
 exit 0
+
+
