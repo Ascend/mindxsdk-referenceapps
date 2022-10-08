@@ -18,20 +18,20 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
-	# ActionRecognition/
-	# CrowdCounting/
+    # ActionRecognition/
+    # CrowdCounting/
     # mxBase_wheatDetection/
-	# EdgeDetectionPicture/
+    # EdgeDetectionPicture/
     HelmetIdentification/
     Individual/
     # human_segmentation/
-	# OpenposeKeypointDetection/
-	PersonCount/
-	FatigueDrivingRecognition/
-	# CartoonGANPicture/
-	# HeadPoseEstimation/
-	FaceBoxes/
-	BertTextClassification/
+    # OpenposeKeypointDetection/
+    PersonCount/
+    FatigueDrivingRecognition/
+    # CartoonGANPicture/
+    # HeadPoseEstimation/
+    FaceBoxes/
+    BertTextClassification/
     # RTM3DTargetDetection/
     EfficientDet/
     SentimentAnalysis/
@@ -47,6 +47,29 @@ SAMPLE_FOLDER=(
     PassengerflowEstimation/
     CenterFace/
     YOLOX/
+    PicoDet/
+  SOLOV2/
+  OpenCVPlugin/
+    RefineDet/
+)
+
+err_flag=0
+for sample in ${SAMPLE_FOLDER[@]};do
+    cd ${current_folder}/${sample}
+    bash build.sh || {
+        echo -e "Failed to build ${sample}"
+        err_flag=1
+    }
+done
+
+
+if [ ${err_flag} -eq 1 ]; then
+    exit 1
+fi
+exit 0
+<<<<<<< HEAD
+=======
+
 	PicoDet/
   SOLOV2/
   OpenCVPlugin/
@@ -66,3 +89,4 @@ if [ ${err_flag} -eq 1 ]; then
 	exit 1
 fi
 exit 0
+>>>>>>> 515cf51749a227c1871c514c2ee53573a59247a6

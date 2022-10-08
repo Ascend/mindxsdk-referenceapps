@@ -1,0 +1,103 @@
+{
+    "RefineDet": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "imageFormat": "jpg"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "tee0"
+        },
+        "tee0":{
+            "factory":"tee",
+            "next":[
+                "queue1",
+                "queue2"
+            ]
+        },
+        "queue1":{
+            "props":{
+                "max-size-buffers":"20000"
+            },
+            "factory":"queue",
+            "next":"mxpi_tensorinfer0"
+        },
+        "queue2":{
+            "props":{
+                "max-size-buffers":"20000"
+            },
+            "factory":"queue",
+            "next":"mxpi_opencvosd0:0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "modelPath": "./models/RefineDet.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "./config/refine_det.cfg",
+                "labelPath": "./models/VOC.names",
+                "postProcessLibPath": "librefinedetpostprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_object2osdinstances0"
+        },
+        "mxpi_object2osdinstances0":{
+            "props":{
+                "fontFace":"16",
+                "fontScale":"0.4",
+                "fontThickness":"1",
+                "fontLineType":"16",
+                "rectThickness":"2",
+                "rectLineType":"16",
+                "createText":"1"
+            },
+            "factory":"mxpi_object2osdinstances",
+            "next":"mxpi_opencvosd0:1"
+        },
+        "mxpi_opencvosd0":{
+            "props":{
+                "dataSourceImage":"mxpi_imagedecoder0",
+                "dataSourceOsd":"mxpi_object2osdinstances0"
+            },
+            "factory":"mxpi_opencvosd",
+            "next":"mxpi_imageresize1"
+        },
+        "mxpi_imageresize1": {
+            "props": {
+                "dataSource": "mxpi_opencvosd0",
+                "resizeHeight": "1080",
+                "resizeWidth": "1920",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "mxpi_imageencoder0"
+        },
+        "mxpi_imageencoder0":{
+            "factory":"mxpi_imageencoder",
+            "next":"appsink0"
+        },
+        "appsink0": {
+            "factory": "appsink"
+        }
+
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "RefineDet": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "imageFormat": "jpg",
+                "dataType": "float32"
+            },
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "320",
+                "resizeWidth": "320",
+                "deviceId": "0"
+            },
+            "factory": "mxpi_imageresize",
+            "next": "queue1"
+        },
+        "queue1":{
+            "props":{
+                "max-size-buffers":"20000"
+            },
+            "factory":"queue",
+            "next":"mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "modelPath": "../../models/RefineDet.om"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_objectpostprocessor0"
+        },
+        "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "../../config/refine_det.cfg",
+                "labelPath": "../../models/VOC.names",
+                "postProcessLibPath": "librefinedetpostprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                 "outputDataKeys": "mxpi_objectpostprocessor0"
+              },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "factory": "appsink"
+        }
+
+    }
+}
