@@ -1,7 +1,7 @@
 # MindXSDK 车辆姿态识别
 
 ## 1 简介
-本开发样例基于MindX SDK实现了姿态估计网络(PoseEstNet)，用于检测并预测车辆36个关键点坐标以及生成热点图。
+本开发样例基于MindX SDK实现了姿态估计网络(PoseEstNet)，用于检测并预测车辆36个关键点坐标，包括4个wheel，16个Fender，4个Back，4个Front，4个WindshieldBack以及4个WindshieldFront。
 
 ## 2 目录结构
 本工程名称为PoseEstNet，工程目录如下图所示：
@@ -31,15 +31,16 @@ PoseEstNet
 ```
 
 ## 3 依赖
+
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+
 | 软件名称 | 版本   |
-| :--------: | :------: |
-|ubuntu 18.04|18.04.1 LTS   |
-|CANN|5.0.4|
-|MindX SDK|2.0.4|
-|Python| 3.9.12|
-|numpy | 1.22.4 |
-|opencv_python|4.6.0|  
-|cmake|3.5+| 
+| :--------: | :------:    |
+|cmake       | 3.5+        | 
+|mxVision    | 2.0.4       |
+|CANN        | 5.0.4       |
+|Python      | 3.9.12      |
+
 注：MindX SDK使用python版本为3.9.12，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 ```
 apt-get install libpython3.9
@@ -95,15 +96,15 @@ rm models.zip
 ```
 [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
 
-***2*** 获取PoseEstNet_pth2onnx.py 
+***2*** 获取PoseEstNet_pth2onnx.py ：该文件在本项目工程里
 
-下载PoseEstNet源码并创建项目，源码地址详见4.2.1，将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
+将本项目工程里的PoseEstNet_pth2onnx.py提前下载下来，然后下载PoseEstNet源码并创建项目（源码地址详见4.2.1），将下载好的PoseEstNet_pth2onnx.py放在源码项目的tools目录下，执行下列命令，生成.onnx模型文件
 ```
 python3 tools/PoseEstNet_pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.yaml TEST.MODEL_FILE models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
 ```
 > 注意目前ATC支持的onnx算子版本为11  
 
-此时在“项目所在目录/models”路径下会出现PoseEstNet.onnx模型，到此步骤1已完成  
+此时会得到PoseEstNet.onnx模型，到此步骤1已完成  
 如果在线环境中无法安装pytorch，你可以在本地环境中进行上述.pth模型转.onnx模型操作，然后将得到的.onnx模型放在“项目所在目录/models”即可
 
 本项目提供onnx模型：[Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/PoseEstNet.onnx)
@@ -122,7 +123,9 @@ ATC run success, welcome to the next use.
 经过上述操作，可以在“项目所在目录/models”找到yolov3.om模型和PoseEstNet.om模型，模型转换操作已全部完成
 
 4.3 参考链接
-> 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+> 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/1afd5b7d)
+
+
 
 ## 5 数据集  
 5.1 原始VeRi数据集  
@@ -130,8 +133,7 @@ ATC run success, welcome to the next use.
 &ensp;&ensp;&ensp;&ensp;&ensp; [Github官网链接](https://vehiclereid.github.io/VeRi/)
 &ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/images.zip)
 
-原数据集images文件夹下面分为images_train和images_test，需要自己将这两个文件夹里的图片复制到data_eval/images文件夹下面
-目录结构如下：
+原数据集images文件夹下面分为images_train和images_test，需要自己将这两个文件夹里的图片复制到data_eval/images文件夹下面，目录结构如下：
 ```
 ├── data_eval
     ├── images
@@ -141,6 +143,14 @@ ATC run success, welcome to the next use.
     |   ├── label_test.csv
 ```
 5.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
+
+5.3 创建data文件夹，里面放入自己准备的测试图片，目录结构如下：
+```
+├── data
+    ├── test_01.jpg
+    ├── test_02.jpg
+    ├── ...
+```
 
 ----------------------------------------------------
 ## 6 测试
@@ -191,7 +201,7 @@ PoseEstNet.pipeline:
                     "dataSource": "mxpi_tensorinfer0",
                     "postProcessConfigPath": "models/yolov3.cfg(这里根据你的命名或路径进行更改)",
                     "labelPath": "models/coco.names",
-                    "postProcessLibPath": "${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
+                    "postProcessLibPath": "libyolov3postprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
                 "next": "mxpi_imagecrop0"
@@ -224,11 +234,11 @@ eval_PoseEstNet.pipeline:
 
 6.7 执行
 
-业务代码main.py结果在output文件夹
+业务代码main.py结果在output文件夹，保证在执行前已创建好data文件夹并放入待检测图片
 ```
 python3 main.py --inputPath data
 ```
-评估代码的具体结果在output_eval文件夹
+评估代码的具体结果在output_eval文件夹，保证在执行前已创建好data_eval文件夹并放入veri数据集图片
 ```
 python3 eval.py --inputPath data_eval/images/ --labelPath data_eval/labels/label_test.csv 
 ```

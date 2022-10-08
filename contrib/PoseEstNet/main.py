@@ -64,24 +64,15 @@ def initialize_stream():
 
 
 def process(input_path, stream_api):
-    """
-    :arg:
-        queryPath: the directory of query images
-        streamApi: stream api
 
-    :return:
-        queryFeatures: the vectors of queryFeatures
-        queryPid: the vectors of queryPid
-    """
-
-    # constructing the results returned by the queryImageProcess stream
+    # constructing the results returned by the PoseEstNet stream
     plugin_names = [b"mxpi_distributor0_0", b"mxpi_postprocess1"]
 
     plugin_name_vector = StringVector()
     for key in plugin_names:
         plugin_name_vector.push_back(key)
 
-    # check the query file
+    # check the input file
     if os.path.exists(input_path) != 1:
         error_message = 'The file of input images does not exist.'
         print(error_message)
@@ -91,33 +82,35 @@ def process(input_path, stream_api):
         print(error_message)
         exit()
 
-    # extract the features for all images in query file
+    # extract the features for all images in input file
     for root, dirs, files in os.walk(input_path):
         for file in files:
             if not file.endswith('.jpg'):
                 print('Input image only support jpg')
                 exit()
 
-            query_data_input = MxDataInput()
+            data_input = MxDataInput()
             file_path = os.path.join(root, file)
             with open(file_path, 'rb') as f:
-                query_data_input.data = f.read()
+                data_input.data = f.read()
+                original_img = cv2.imread(file_path)
 
             # send the prepared data to the stream
-            unique_id = stream_api.SendData(POSTESTNET_STREAM_NAME, IN_PLUGIN_ID, query_data_input)
+            unique_id = stream_api.SendData(POSTESTNET_STREAM_NAME, IN_PLUGIN_ID, data_input)
             if unique_id < 0:
-                error_message = 'Failed to send data to queryImageProcess stream.'
+                error_message = 'Failed to send data to PoseEstNet stream.'
                 print(error_message)
                 exit()
 
             # get infer result
             infer_result = stream_api.GetProtobuf(POSTESTNET_STREAM_NAME, IN_PLUGIN_ID, plugin_name_vector)
 
-            # checking whether the infer results is valid or not
+            # checking whether the infer result is valid or not
             if infer_result.size() == 0:
-                error_message = 'Unable to get effective infer results, please check the stream log for details'
+                error_message = 'Unable to get car objects for this image: ' + file
                 print(error_message)
-                exit()
+                cv2.imwrite("output/result_no_car_detected_{}".format(str(file)), original_img)
+                continue
             if infer_result[0].errorCode != 0:
                 error_message = "GetProtobuf error. errorCode=%d, error_message=%s" % (infer_result[0].errorCode,
                                                                                      infer_result[0].messageName)
@@ -138,7 +131,6 @@ def process(input_path, stream_api):
                 print(error_message)
                 exit()
 
-            original_img = cv2.imread(file_path)
             for index in range(len(keypoint_obj_list.objectVec)):
                 original_x = int(car_obj_list.objectVec[index // JOINTS_NUM].x0) + keypoint_obj_list.objectVec[index].x0
                 original_y = int(car_obj_list.objectVec[index // JOINTS_NUM].y0) + keypoint_obj_list.objectVec[index].y0

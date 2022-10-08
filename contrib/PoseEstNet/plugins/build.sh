@@ -37,8 +37,7 @@ chmod 640 libmxpi_pnetpreprocessplugin.so
 
 cd ${current_folder}
 cd ..
-mkdir data
-mkdir data_eval
+rm -rf output output_eval
 mkdir output
 mkdir output_eval
 
