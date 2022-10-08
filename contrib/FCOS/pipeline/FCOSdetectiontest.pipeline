@@ -1,0 +1,45 @@
+{
+        "detection": {
+            "stream_config": {
+                "deviceId": "0"
+            },
+            "appsrc0": {
+                "props": {
+                    "blocksize": "409600"
+                },
+                "factory": "appsrc",
+                "next": "mxpi_tensorinfer0"
+            },
+            "mxpi_tensorinfer0": {
+                "props": {
+                    "dataSource": "appsrc0",
+                    "modelPath": "./models/fcos_bs1.om"
+                },
+                "factory": "mxpi_tensorinfer",
+                "next": "mxpi_objectpostprocessor0"
+            },
+            "mxpi_objectpostprocessor0":{
+                "props": {
+                    "dataSource" : "mxpi_tensorinfer0",
+                    "postProcessConfigPath": "./models/Fcos_tf_bs.cfg",
+                    "postProcessLibPath": "libFCOSDetectionPostProcess.so",
+                    "labelPath": "models/coco.names"
+                },
+                "factory": "mxpi_objectpostprocessor",
+                "next": "mxpi_dataserialize0"
+            },
+            "mxpi_dataserialize0": {
+                "props": {
+                    "outputDataKeys": "mxpi_objectpostprocessor0"
+                },
+                "factory": "mxpi_dataserialize",
+                "next": "appsink0"
+            },
+            "appsink0": {
+                "props": {
+                    "blocksize": "4096000"
+                },
+                "factory": "appsink"
+        }
+        }
+}
