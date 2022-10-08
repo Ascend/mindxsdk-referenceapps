@@ -49,13 +49,10 @@ apt-get install libpython3.9
 ## 4 模型转换
 车辆姿态识别先采用了yolov3模型将图片中的车辆检测出来，然后利用PoseEstNet模型预测车辆36个关键点坐标。
 
-###环境依赖：
-
-设置环境变量
+设置环境变量：
 ```
 ./usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
-
 
 4.1 yolov3的模型转换：  
 
@@ -96,7 +93,7 @@ rm models.zip
 ```
 [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
 
-***2*** 获取PoseEstNet_pth2onnx.py ：该文件在本项目工程里
+***2*** 获取PoseEstNet_pth2onnx.py ：该文件已上传在本项目工程里
 
 将本项目工程里的PoseEstNet_pth2onnx.py提前下载下来，然后下载PoseEstNet源码并创建项目（源码地址详见4.2.1），将下载好的PoseEstNet_pth2onnx.py放在源码项目的tools目录下，执行下列命令，生成.onnx模型文件
 ```
