@@ -196,7 +196,7 @@ ATC run success, welcome to the next use.
 
 **步骤2** 按照第 2.3 小节 **模型转换** 中的步骤获得 om 模型文件，分别放置在 ``./model/people/`` 和 ``./model/keypoint/`` 目录下。
 
-**步骤3** 下载[coco.names]([yolo_objectDetection_imagesCPU/coco.names at master · misbah4064/yolo_objectDetection_imagesCPU · GitHub](https://github.com/misbah4064/yolo_objectDetection_imagesCPU/blob/master/coco.names))，放置在 ``./model/people/``  目录下。
+**步骤3** 下载[coco.names]([yolo_objectDetection_imagesCPU/coco.names at master · misbah4064/yolo_objectDetection_imagesCPU · GitHub](https://github.com/misbah4064/yolo_objectDetection_imagesCPU/blob/master/coco.names))，重命名为coco_people.names并放置在 ``./model/people/``  目录下。
 
 **步骤4** 下载[MuPoTS数据集]([http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip))MultiPersonTestSet，并将数据集解压在pic文件夹下。
 
