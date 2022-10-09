@@ -64,7 +64,6 @@
 │   └── MuPoTS-3D.json
 ├── model
 │   ├── people
-│   │   ├── coco.names
 │   │   ├── yolov3_tf_aipp.cfg
 │   │   └── people.cfg
 │   └── keypoint
@@ -197,9 +196,11 @@ ATC run success, welcome to the next use.
 
 **步骤2** 按照第 2.3 小节 **模型转换** 中的步骤获得 om 模型文件，分别放置在 ``./model/people/`` 和 ``./model/keypoint/`` 目录下。
 
-**步骤3** 下载[MuPoTS数据集]([http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip))MultiPersonTestSet，并将数据集解压在pic文件夹下。
+**步骤3** 下载[coco.names]([yolo_objectDetection_imagesCPU/coco.names at master · misbah4064/yolo_objectDetection_imagesCPU · GitHub](https://github.com/misbah4064/yolo_objectDetection_imagesCPU/blob/master/coco.names))，放置在 ``./model/people/``  目录下。
 
-**步骤4** 生成ini配置文件。在untils文件夹中，执行命令：
+**步骤4** 下载[MuPoTS数据集]([http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip](http://gvv.mpi-inf.mpg.de/projects/SingleShotMultiPerson/MultiPersonTestSet.zip))MultiPersonTestSet，并将数据集解压在pic文件夹下。
+
+**步骤5** 生成ini配置文件。在untils文件夹中，执行命令：
 
 ```
 python ini.py
@@ -207,7 +208,7 @@ python ini.py
 
 生成的ini配置文件将存放在数据集文件夹内。
 
-**步骤5** 图片检测。在pic文件夹内新建test文件夹，将MuPoTS数据集内任意一张xxx.png及其对应的xxx.ini拷贝到test文件夹下，其分别对应IMG_PATHC 和Config_FileC路径。对图片进行检测，执行命令：
+**步骤6** 图片检测。在pic文件夹内新建test文件夹，将MuPoTS数据集内任意一张xxx.png及其对应的xxx.ini拷贝到test文件夹下，其分别对应IMG_PATHC 和Config_FileC路径。对图片进行检测，执行命令：
 
 ```
 pip install natsort
@@ -233,6 +234,8 @@ python3 eval.py
 ```
 
 命令执行成功后，在控制台查看精度结果为32.26%，要求精度为31.87%，符合要求。
+
+![1.1](img/2.3.png)
 
 ## 6 常见问题
 
