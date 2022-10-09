@@ -55,7 +55,8 @@
 ├── eval_pic.sh
 ├── img
 │   ├── 1.1.png
-│   └── 2.1.png
+│   ├── 2.1.png
+│   └── 3.1.png
 ├── pipeline
 │   ├── detection_3d.pipeline
 │   ├── detection_yolov3_crop.pipeline
@@ -235,7 +236,7 @@ python3 eval.py
 
 命令执行成功后，在控制台查看精度结果为32.26%，要求精度为31.87%，符合要求。
 
-![1.1](img/2.3.png)
+![1.1](img/3.1.png)
 
 ## 6 常见问题
 
