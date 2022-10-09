@@ -67,7 +67,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ## 3准备工作
 
-### 获取OM模型文件
+### 3.1 获取OM模型文件
 
 OM权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
 获取到```PraNet-19.onnx```模型后，将其放在model目录下。在model目录键入以下命令
@@ -81,11 +81,11 @@ bash onnx2om.sh
 注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
 中的模型文件```PraNet-19_bs1.om```不能用于本项目。
 
-### 编译插件
+### 3.2 编译插件
 
 首先进入文件夹```plugin/postprocess/```，键入```bash build.sh```，对后处理插件进行编译。
 
-### 下载数据集
+### 3.3 下载数据集
 
 本模型支持Kvasir的验证集。请用户需自行获取Kvasir数据集，上传数据集到服务器任意目录并解压（如：/root/datasets）。
 
