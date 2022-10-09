@@ -62,9 +62,9 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 
 在根目录下执行```source env.sh```以激活环境。
 
-## 准备
+## 3 准备
 
-### 获取OM模型文件
+### 3.1 获取OM模型文件
 
 OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
 获取到```ErfNet.onnx```模型后，将其放在model目录下。在model目录键入以下命令
@@ -78,11 +78,11 @@ bash onnx2om.sh
 注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)
 中的模型文件```ErfNet_bs1.om```不能用于本项目。
 
-### 编译插件
+### 3.2 编译插件
 
 首先进入文件夹```plugin/postprocess/```，键入```bash build.sh```，对后处理插件进行编译。
 
-### 下载数据集
+### 3.3 下载数据集
 
 [获取cityscapes](https://www.cityscapes-dataset.com/)
 * Download the Cityscapes dataset from https://www.cityscapes-dataset.com/
