@@ -51,6 +51,7 @@ SAMPLE_FOLDER=(
   SOLOV2/
   OpenCVPlugin/
     RefineDet/
+    FCOS/
 )
 
 err_flag=0
