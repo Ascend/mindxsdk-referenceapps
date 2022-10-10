@@ -46,15 +46,24 @@ PoseEstNet
 apt-get install libpython3.9
 ```
 
-## 4 模型转换
+## 4 特性及适应场景
+车辆姿态过程主要存在两个阶段的模型检测：①yolov3车辆检测②PoseEstNet车辆姿态识别检测，因此检测效果也与这两个模型精度、检测结果密不可分。在经过不断测试与验证之后，模型在大部分情形下可以准确检测，但针对输入有以下限定：
+
+1、针对MindX SDK固有插件的输入限制，输入图片应为JPEG编码格式，后缀为(.jpg)且宽高均在[32, 8192]区间内。当输入图片为空、输入图片格式不正确、图片尺寸不符合要求时，系统能够输出相应的错误信息。
+
+2、由于输入图片可能存在特征表现不明显，例如非标准规格的卡车或车辆俯视图等情况导致yolov3模型检测不到车辆从而无法进行车辆姿态识别；
+
+3、由于Dvpp的crop插件对图片尺寸有限制，所以图片中的车辆不应过小；
+
+## 5 模型转换
 车辆姿态识别先采用了yolov3模型将图片中的车辆检测出来，然后利用PoseEstNet模型预测车辆36个关键点坐标。
 
 设置环境变量：
 ```
-./usr/local/Ascend/ascend-toolkit/set_env.sh
+. /usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
 
-4.1 yolov3的模型转换：  
+5.1 yolov3的模型转换：  
 
 **步骤1** 获取yolov3的原始模型(.pb文件)和相应的配置文件(.cfg文件)  
 &ensp;&ensp;&ensp;&ensp;&ensp; [原始模型下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/yolov3_tensorflow_1.5.pb)
@@ -75,13 +84,13 @@ atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type
 ATC run success, welcome to the next use.
 ```  
 
-4.2 PoseEstNet的模型转换
+5.2 PoseEstNet的模型转换
 
-4.2.1 模型概述  
+5.2.1 模型概述  
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet论文地址](https://arxiv.org/pdf/2005.00673.pdf)
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet代码地址](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet)
 
-4.2.2 模型转换步骤
+5.2.2 模型转换步骤
 
 **步骤1** .pth模型转.onnx模型
 
@@ -119,13 +128,13 @@ ATC run success, welcome to the next use.
 
 经过上述操作，可以在“项目所在目录/models”找到yolov3.om模型和PoseEstNet.om模型，模型转换操作已全部完成
 
-4.3 参考链接
+5.3 参考链接
 > 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/1afd5b7d)
 
 
 
-## 5 数据集  
-5.1 原始VeRi数据集  
+## 6 数据集  
+6.1 原始VeRi数据集  
 
 &ensp;&ensp;&ensp;&ensp;&ensp; [Github官网链接](https://vehiclereid.github.io/VeRi/)
 &ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/images.zip)
@@ -139,9 +148,9 @@ ATC run success, welcome to the next use.
     ├── labels
     |   ├── label_test.csv
 ```
-5.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
+6.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
 
-5.3 创建data文件夹，里面放入自己准备的测试图片，目录结构如下：
+6.3 创建data文件夹，里面放入自己准备的测试图片，目录结构如下：
 ```
 ├── data
     ├── test_01.jpg
@@ -150,33 +159,33 @@ ATC run success, welcome to the next use.
 ```
 
 ----------------------------------------------------
-## 6 测试
+## 7 测试
 
-6.1 配置环境变量  
+7.1 配置环境变量  
 
 运行cann和sdk的set_env.sh脚本
 
-6.2 获取om模型
+7.2 获取om模型
 ```
 步骤详见4： 模型转换
 ```
-6.3 准备数据集
+7.3 准备数据集
 ```
 步骤详见5： 数据集
 ```
-6.4 安装插件编译所需要的NumCpp库
+7.4 安装插件编译所需要的NumCpp库
 ```
 cd plugins
 git clone https://github.com/dpilger26/NumCpp
 mkdir include
 cp -r  NumCpp/include/NumCpp ./include/
 ```
-6.5 编译插件
+7.5 编译插件
 ```
 bash build.sh
 ```
 
-6.6 配置pipeline  
+7.6 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
 
 PoseEstNet.pipeline:
@@ -229,7 +238,7 @@ eval_PoseEstNet.pipeline:
         },
 ```
 
-6.7 执行
+7.7 执行
 
 业务代码main.py结果在output文件夹，保证在执行前已创建好data文件夹并放入待检测图片
 ```
@@ -241,7 +250,7 @@ python3 eval.py --inputPath data_eval/images/ --labelPath data_eval/labels/label
 ```
 
 
-## 7 精度对比
+## 8 精度对比
 
 由下面两个图表可以看出，本项目的精度与源码精度相差在1%以内
 

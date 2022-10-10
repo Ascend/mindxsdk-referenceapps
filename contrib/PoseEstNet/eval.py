@@ -180,62 +180,61 @@ def evaluate(label_path):
                 joint = [float(row[j * SAN + 1]), float(row[j * SAN + 2]), float(row[j * SAN + SAN])]
                 joints.append(joint)
             preds_read.append(joints)
-    gts = []
-    viss = []
+    ground_truths = []
+    visuals = []
     area_sqrts = []
     with open(label_path) as annot_file:
         reader = csv.reader(annot_file, delimiter=',')
         for row in reader:
             joints = []
-            vis = []
-            top_lft = btm_rgt = [int(row[3]), int(row[4])]
+            visual = []
+            top_left = bottom_right = [int(row[3]), int(row[4])]
             for j in range(JOINTS_NUM):
                 joint = [int(row[j * SAN + SAN]), int(row[j * SAN + SI]), int(row[j * SAN + WU])]
                 joints.append(joint)
-                vis.append(joint[2])
-                if joint[0] < top_lft[0]:
-                    top_lft[0] = joint[0]
-                if joint[1] < top_lft[1]:
-                    top_lft[1] = joint[1]
-                if joint[0] > btm_rgt[0]:
-                    btm_rgt[0] = joint[0]
-                if joint[1] > btm_rgt[1]:
-                    btm_rgt[1] = joint[1]
-            gts.append(joints)
-            viss.append(vis)
-            area_sqrts.append(math.sqrt((btm_rgt[0] - top_lft[0] + 1) * (btm_rgt[1] - top_lft[1] + 1)))
+                visual.append(joint[2])
+                if joint[0] < top_left[0]:
+                    top_left[0] = joint[0]
+                if joint[1] < top_left[1]:
+                    top_left[1] = joint[1]
+                if joint[0] > bottom_right[0]:
+                    bottom_right[0] = joint[0]
+                if joint[1] > bottom_right[1]:
+                    bottom_right[1] = joint[1]
+            ground_truths.append(joints)
+            visuals.append(visual)
+            area_sqrts.append(math.sqrt((bottom_right[0] - top_left[0] + 1) * (bottom_right[1] - top_left[1] + 1)))
 
-    jnt_visible = np.array(viss, dtype=int)
-    jnt_visible = np.transpose(jnt_visible)
-    pos_pred_src = np.transpose(preds_read, [1, 2, 0])
-    pos_gt_src = np.transpose(gts, [1, 2, 0])
-    uv_error = pos_pred_src - pos_gt_src
+    joint_visible = np.array(visuals, dtype=int)
+    joint_visible = np.transpose(joint_visible)
+    pred_pos = np.transpose(preds_read, [1, 2, 0])
+    ground_truth_pos = np.transpose(ground_truths, [1, 2, 0])
+    uv_error = pred_pos - ground_truth_pos
     uv_err = np.linalg.norm(uv_error, axis=1)
     area_sqrts = np.linalg.norm(area_sqrts, axis=0)
     area_sqrts *= sc_bias
     scale = np.multiply(area_sqrts, np.ones((len(uv_err), 1)))
-    scaled_uv_err = np.divide(uv_err, scale)
-    scaled_uv_err = np.multiply(scaled_uv_err, jnt_visible)
-    jnt_count = np.sum(jnt_visible, axis=1)
-    less_than_threshold = np.multiply((scaled_uv_err <= threshold),
-                                      jnt_visible)
-    pckh = np.divide(100. * np.sum(less_than_threshold, axis=1), jnt_count)
+    scaled_uv_error = np.divide(uv_err, scale)
+    scaled_uv_error = np.multiply(scaled_uv_error, joint_visible)
+    joint_count = np.sum(joint_visible, axis=1)
+    less_threshold = np.multiply((scaled_uv_error <= threshold),
+                                      joint_visible)
+    pckh = np.divide(100. * np.sum(less_threshold, axis=1), joint_count)
 
-    # save
     rng = np.arange(0, 0.5 + 0.01, 0.01)
     pck_all = np.zeros((len(rng), JOINTS_NUM))
 
     length_rng = len(rng)
     for r in range(length_rng):
         threshold = rng[r]
-        less_than_threshold = np.multiply((scaled_uv_err <= threshold),
-                                          jnt_visible)
-        pck_all[r, :] = np.divide(100. * np.sum(less_than_threshold, axis=1),
-                                 jnt_count)
+        less_threshold = np.multiply((scaled_uv_error <= threshold),
+                                          joint_visible)
+        pck_all[r, :] = np.divide(100. * np.sum(less_threshold, axis=1),
+                                 joint_count)
 
     pckh = np.ma.array(pckh, mask=False)
-    jnt_count = np.ma.array(jnt_count, mask=False)
-    jnt_ratio = jnt_count / np.sum(jnt_count).astype(np.float64)
+    joint_count = np.ma.array(joint_count, mask=False)
+    joint_ratio = joint_count / np.sum(joint_count).astype(np.float64)
 
     name_value = {
         'Wheel': (1.0 / 4.0) * (pckh[0] + pckh[1] + pckh[18] + pckh[19]),
@@ -246,9 +245,10 @@ def evaluate(label_path):
         'Front': (1.0 / 4.0) * (pckh[16] + pckh[17] + pckh[34] + pckh[35]),
         'WindshieldBack': (1.0 / 4.0) * (pckh[12] + pckh[13] + pckh[30] + pckh[31]),
         'WindshieldFront': (1.0 / 4.0) * (pckh[14] + pckh[15] + pckh[32] + pckh[33]),
-        'Mean': np.sum(pckh * jnt_ratio),
-        'Mean@0.1': np.sum(pck_all[11, :] * jnt_ratio)
+        'Mean': np.sum(pckh * joint_ratio),
+        'Mean@0.1': np.sum(pck_all[11, :] * joint_ratio)
     }
+
 
     _print_name_value(name_value, 'PoseEstNet')
 
