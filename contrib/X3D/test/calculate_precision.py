@@ -43,16 +43,16 @@ with open(args.LABEL_PATH, "r") as fp:
         idx, label = d.split()
         video_label_dict[int(idx)] = int(label)
 
-top1 = 0
-top5 = 0
-total = 0
+TOP1 = 0
+TOP5 = 0
+TOTAL = 0
 
 UNWORK_LIST = set()
 ERROR_count_dict = {}
 
 for v in trange(TEST_NUM):
     try:
-        total += 1
+        TOTAL += 1
         score_sum_dict = {}
         for j in range(10):
             with open(f"{args.RESULT_PATH}/{v}_{j}.json", "r") as fp:
@@ -71,11 +71,11 @@ for v in trange(TEST_NUM):
 
         for i in range(5):
             if score_sum_list[i][0] == video_label_dict.get(v, 0):
-                top5 += 1
+                TOP5 += 1
                 if i == 0:
-                    top1 += 1
+                    TOP1 += 1
                 break
     except (FileNotFoundError):
         UNWORK_LIST.add(v)
-print("Top1:", top1/total)
-print("Top5:", top5/total)
+print("TOP1:", TOP1/TOTAL)
+print("TOP5:", TOP5/TOTAL)

@@ -39,9 +39,9 @@ for file in os.listdir(args.LOG_SAVE_PATH):
                     throughput_data.append(data)
             total += throughput_data
 
-frequency = 0
+FREQUENCY = 0
 for data in total:
     freq = int(data["frequency"])
-    frequency += freq
+    FREQUENCY += freq
 
-print(f"fps:{frequency/len(total)}")
+print(f"fps:{FREQUENCY/len(total)}")

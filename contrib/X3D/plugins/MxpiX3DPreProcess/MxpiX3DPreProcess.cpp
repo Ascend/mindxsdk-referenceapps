@@ -229,13 +229,13 @@ std::vector<std::shared_ptr<void>> MxpiX3DPreProcess::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
     auto dataSource = std::make_shared<ElementProperty<string>>(
-        ElementProperty<string>{
+        ElementProperty<string> {
             STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
     auto skipFrameNum = std::make_shared<ElementProperty<uint>>(
-        ElementProperty<uint>{
+        ElementProperty<uint> {
             UINT, "skipFrameNum", "skipFrameNum", "the number of skip frame", 5, 1, 10});
     auto windowStride = std::make_shared<ElementProperty<uint>>(
-        ElementProperty<uint>{
+        ElementProperty<uint> {
             UINT, "windowStride", "windowStride", "the number of window stride", 1, 1, MAX_WINDOW_STRIDE});
     properties.push_back(dataSource);
     properties.push_back(skipFrameNum);
