@@ -40,11 +40,13 @@ for file in os.listdir(args.LOG_SAVE_PATH):
                 if data["elementName"]=="mxpi_imagecrop0":
                     throughput_data.append(data)
                     print(data["frequency"])
-            total += throughput_data[1:-1]
+            total += throughput_data
 
 sum_freqyency = 0
+sum_count = 0
 for data in total:
-    # print(data["frequency"])
-    sum_freqyency+=int(data["frequency"])
+    freq = int(data["frequency"])
+    sum_freqyency+=freq
+    sum_count+=1
 
-print(f"fps:{sum_freqyency/len(total)}")
+print(f"fps:{sum_freqyency/sum_count}")

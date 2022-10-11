@@ -111,6 +111,8 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 
 ### 1.5 技术实现流程图
 
+左图为业务流程，右图为测试流程
+
 ![图片](./images/pipeline.png)
 
 
@@ -353,7 +355,7 @@ python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_P
 
 目标精度：[Top1：73.1%](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/contrib/cv/classfication/X3D)
 
-实际精度：Top1：%，Top5：%
+实际精度：Top1：73.2%，Top5：91.0%
 
 
 
@@ -369,12 +371,13 @@ python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_P
 
 ```
 cd test
-python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt"
+python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt" --MAX_COUNT_IDX=50
 ```
 
 参数
 
 - **VIDEO_LIST_PATH** 视频rtsp url清单文件
+- **MAX_COUNT_IDX** 性能采样次数
 
 
 
@@ -390,4 +393,5 @@ python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/
 
 
 
-最终性能结果为 fps
+最终性能结果为 fps：
+

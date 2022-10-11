@@ -54,18 +54,25 @@
                 "classIds": "0"
             },
             "factory": "mxpi_distributor",
+            "next": "mxpi_objectfilter0"
+        },
+        "mxpi_objectfilter0":{
+            "props": {
+                "dataSource": "mxpi_distributor0_0"
+            },
+            "factory": "mxpi_objectfilter",
             "next": "mxpi_motsimplesort0"
         },
         "mxpi_motsimplesort0": {
              "props": {
-                "dataSourceDetection": "mxpi_distributor0_0"
+                "dataSourceDetection": "mxpi_objectfilter0"
             },
             "factory": "mxpi_motsimplesort",
             "next": "mxpi_imagecrop0"
         },
         "mxpi_imagecrop0": {
             "props": {
-                "dataSource": "mxpi_distributor0_0",
+                "dataSource": "mxpi_objectfilter0",
                 "dataSourceImage": "mxpi_videodecoder0",
                 "resizeHeight": "192",
                 "resizeWidth": "192",
@@ -79,7 +86,7 @@
             "props": {
                 "visionSource": "mxpi_imagecrop0",
                 "trackSource": "mxpi_motsimplesort0",
-                "framenum": 5
+                "frameNum": "5"
                 },
             "factory": "mxpi_stackframe",
             "next": "mxpi_tensorinfer1"

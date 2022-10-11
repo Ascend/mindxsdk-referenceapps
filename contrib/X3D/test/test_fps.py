@@ -27,9 +27,8 @@ parser.add_argument("--VIDEO_LIST_PATH",type=str,default="")
 parser.add_argument("--LOG_SAVE_PATH",type=str,default="fps_test_log")
 parser.add_argument("--TYPE",type=str,default="main")
 parser.add_argument("--URL",type=str,default="")
+parser.add_argument("--MAX_COUNT_IDX",type=int,default=50)
 args = parser.parse_args()
-
-MAX_COUNT_IDX = 100
 
 def main():
     with open(args.VIDEO_LIST_PATH,"r") as fp:
@@ -38,7 +37,7 @@ def main():
         os.makedirs(args.LOG_SAVE_PATH)
     print("fps test start!")
     for idx,url in enumerate(url_list):
-        p = subprocess.Popen(f'python3.9 test_fps.py --TYPE sub --URL {url}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen(f'python3.9 test_fps.py --TYPE sub --URL {url} --MAX_COUNT_IDX {args.MAX_COUNT_IDX}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         with open(f"{args.LOG_SAVE_PATH}/{idx}.log","w") as fp:
             for line in p.stdout.readlines():
                 fp.write(line.decode('UTF-8'))
@@ -107,18 +106,25 @@ def sub():
                     "classIds": "0"
                 },
                 "factory": "mxpi_distributor",
+                "next": "mxpi_objectfilter0"
+            },
+            "mxpi_objectfilter0":{
+                "props": {
+                    "dataSource": "mxpi_distributor0_0"
+                },
+                "factory": "mxpi_objectfilter",
                 "next": "mxpi_motsimplesort0"
             },
             "mxpi_motsimplesort0": {
                 "props": {
-                    "dataSourceDetection": "mxpi_distributor0_0"
+                    "dataSourceDetection": "mxpi_objectfilter0"
                 },
                 "factory": "mxpi_motsimplesort",
                 "next": "mxpi_imagecrop0"
             },
             "mxpi_imagecrop0": {
                 "props": {
-                    "dataSource": "mxpi_distributor0_0",
+                    "dataSource": "mxpi_objectfilter0",
                     "dataSourceImage": "mxpi_videodecoder0",
                     "resizeHeight": "192",
                     "resizeWidth": "192",
@@ -132,7 +138,7 @@ def sub():
                 "props": {
                     "visionSource": "mxpi_imagecrop0",
                     "trackSource": "mxpi_motsimplesort0",
-                    "framenum": 5
+                    "frameNum": "5"
                     },
                 "factory": "mxpi_stackframe",
                 "next": "mxpi_tensorinfer1"
@@ -179,7 +185,7 @@ def sub():
         exit()
     streamName = b'detection+action recognition'
     idx = 0
-    while idx<MAX_COUNT_IDX:
+    while idx<args.MAX_COUNT_IDX:
         inferResult = streamManagerApi.GetResult(streamName, 0, 1000000)
         if inferResult is None:
             break

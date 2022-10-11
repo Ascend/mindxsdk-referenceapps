@@ -79,4 +79,3 @@ for v in trange(TEST_NUM):
         UNWORK_LIST.add(v)
 print("Top1:",top1_count/total_count)
 print("Top5:",top5_count/total_count)
-print("UNWORK_LIST",UNWORK_LIST)

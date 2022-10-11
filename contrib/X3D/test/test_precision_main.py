@@ -33,6 +33,7 @@ args = parser.parse_args()
 
 START_IDX = 0
 END_IDX = 19761
+ERROR_IDX = [3908] # broken data
 TEST_NUM = END_IDX-START_IDX
 
 
@@ -59,6 +60,8 @@ def test_func(process_id,index_list,cross_process_num,cross_process_Lock):
     for idx in index_list:
         if idx>=END_IDX:
             break
+        if idx in ERROR_IDX:
+            continue
         frame = frame_length_dict[idx]
         remain = frame-13*5;
         window_stride = 1
