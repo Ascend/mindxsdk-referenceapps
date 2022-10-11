@@ -395,3 +395,13 @@ python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/
 
 最终性能结果为 fps：27.5
 
+
+
+## 7 常见问题
+
+### 7.1 出现FileExistsError: [Errno 17] File exists xxxx
+
+**解决方案**
+
+请删除旧的已存在文件再执行指令
+
