@@ -45,9 +45,9 @@ with open(args.label_path, "r") as fp:
 if not os.path.exists(args.target_path):
     os.makedirs(args.target_path)
 
-flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-modes = stat.S_IWUSR | stat.S_IRUSR
-with os.fdopen(os.open(args.save_path, flags, modes), 'w') as fout:
+FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+MODES = stat.S_IWUSR | stat.S_IRUSR
+with os.fdopen(os.open(args.save_path, FLAGS, MODES), 'w') as fout:
     i = 0
     for f in file_list:
         print(f)

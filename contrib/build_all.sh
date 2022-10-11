@@ -50,6 +50,7 @@ SAMPLE_FOLDER=(
 	PicoDet/
   SOLOV2/
   OpenCVPlugin/
+  X3D/
 )
 
 err_flag=0

@@ -73,6 +73,11 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 ├── pipelines
 │   └── actionrecognition.pipeline //业务流程pipeline
 ├── plugins
+│   ├── MxpiObjectFilter
+│   │   ├── build.sh
+│   │   ├── CMakeLists.txt
+│   │   ├── MxpiObjectFilter.cpp
+│   │   └── MxpiObjectFilter.h
 │   ├── MxpiStackFrame
 │   │   ├── BlockingMap.cpp
 │   │   ├── BlockingMap.h
@@ -101,11 +106,13 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 │   └── test_precision_sub.py
 │   └── test_fps.py //性能测试启动脚本
 │   └── calculate_fps.py //性能测试计算结果脚本
-└── X3D动作检测.md
+└── README.md
 
 ```
 
+备注：
 
+- coco.names 文件可从https://github.com/pjreddie/darknet/blob/master/data/coco.names获取
 
 
 

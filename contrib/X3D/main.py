@@ -35,12 +35,12 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    # Inputs data to a specified stream based on streamName.
-    streamName = b'detection+action recognition'
+    # Inputs data to a specified stream based on STREAM_NAME.
+    STREAM_NAME = b'detection+action recognition'
 
     while True:
-        # Obtain the inference result by specifying streamName and uniqueId.
-        inferResult = streamManagerApi.GetResult(streamName, 0, 1000000)
+        # Obtain the inference result by specifying STREAM_NAME and uniqueId.
+        inferResult = streamManagerApi.GetResult(STREAM_NAME, 0, 1000000)
         if inferResult is None:
             break
         if inferResult.errorCode != 0:

@@ -58,8 +58,8 @@ start_time = time.time()
 def test_func(process_id, index_list, cross_process_num, cross_process_Lock):
     print(f"process {process_id} start")
     device_id = process_id % args.DEVICE_NUM
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    modes = stat.S_IWUSR | stat.S_IRUSR
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    MODES = stat.S_IWUSR | stat.S_IRUSR
     for idx in index_list:
         if idx >= END_IDX:
             break
@@ -72,7 +72,7 @@ def test_func(process_id, index_list, cross_process_num, cross_process_Lock):
             window_stride = int(remain/9)
         p = subprocess.Popen(["python3.9", "test_precision_sub.py", "--RESULT_SAVE_PATH", args.RESULT_SAVE_PATH, "--TEST_VIDEO_IDX", str(idx), "--DEVICE", str(device_id), "--WINDOW_STRIDE", str(window_stride)],
                              shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", flags, modes), 'w') as fout:
+        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAGS, MODES), 'w') as fout:
             for line in p.stdout.readlines():
                 fout.write(line.decode('UTF-8'))
         cross_process_Lock.acquire()

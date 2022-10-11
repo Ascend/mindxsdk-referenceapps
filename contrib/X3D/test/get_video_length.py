@@ -32,9 +32,9 @@ for root, dirs, files in os.walk(args.video_path):
     for f in files:
         file_list.append(os.path.join(root, f))
 
-flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-modes = stat.S_IWUSR | stat.S_IRUSR
-with os.fdopen(os.open(args.save_path, flags, modes), 'w') as fout:
+FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+MODES = stat.S_IWUSR | stat.S_IRUSR
+with os.fdopen(os.open(args.save_path, FLAGS, MODES), 'w') as fout:
     i = 0
     error_list = []
     for f in tqdm(file_list):

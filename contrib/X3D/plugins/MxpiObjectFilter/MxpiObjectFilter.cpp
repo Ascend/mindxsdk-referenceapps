@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ APP_ERROR MxpiObjectFilter::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     MxpiBuffer *inputMxpiBuffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*inputMxpiBuffer);
     APP_ERROR ret = CheckDataSource(mxpiMetadataManager);
-
     if (ret != APP_ERR_OK)
     {
         SendData(0, *inputMxpiBuffer);
@@ -67,9 +66,11 @@ APP_ERROR MxpiObjectFilter::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     shared_ptr<void> srcObjectList = mxpiMetadataManager.GetMetadata(dataSource_);
     std::shared_ptr<MxpiObjectList> srcObjectListSptr = std::static_pointer_cast<MxpiObjectList>(srcObjectList);
     shared_ptr<MxpiObjectList> dstMxpiObjectListSptr = make_shared<MxpiObjectList>();
-    for(uint32_t i=0;i<srcObjectListSptr->objectvec_size();i++){
+    for (uint32_t i = 0; i < srcObjectListSptr->objectvec_size(); i++)
+    {
         auto srcMxpiObject = srcObjectListSptr->objectvec(i);
-        if(srcMxpiObject.x1()-srcMxpiObject.x0()>MIN_DIP && srcMxpiObject.y1()-srcMxpiObject.y0()>MIN_DIP){
+        if (srcMxpiObject.x1() - srcMxpiObject.x0() > MIN_DIP && srcMxpiObject.y1() - srcMxpiObject.y0() > MIN_DIP)
+        {
             auto dstMxpiObject = dstMxpiObjectListSptr->add_objectvec();
             dstMxpiObject->set_x0(srcMxpiObject.x0());
             dstMxpiObject->set_y0(srcMxpiObject.y0());
@@ -82,7 +83,8 @@ APP_ERROR MxpiObjectFilter::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
         }
     }
     ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, static_pointer_cast<void>(dstMxpiObjectListSptr)); // Add Generated data to metedata
-    if (ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK)
+    {
         SendData(0, *inputMxpiBuffer);
         return ret;
     }
@@ -94,12 +96,7 @@ std::vector<std::shared_ptr<void>> MxpiObjectFilter::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
     auto dataSource = std::make_shared<ElementProperty<string>>(
-        ElementProperty<string>{
-        STRING, 
-        "dataSource", 
-        "dataSource", 
-        "data source",
-        "defalut", "NULL", "NULL"});
+        ElementProperty<string>{STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
     properties.push_back(dataSource);
     return properties;
 }

@@ -33,10 +33,12 @@
 
 /**
  * This is a thread safe map. All functions use std::lock_guard<std::mutex>.
-*/
+ */
 
-namespace MxPlugins {
-    class BlockingMap {
+namespace MxPlugins
+{
+    class BlockingMap
+    {
     public:
         /**
          * @api
@@ -61,14 +63,14 @@ namespace MxPlugins {
         void Reinsert(const uint32_t &id, std::shared_ptr<MxTools::MxpiVisionList> &mxpiVisionList);
 
         std::pair<std::chrono::high_resolution_clock::time_point, std::shared_ptr<MxTools::MxpiVisionList>>
-        Get(const uint32_t &id);  // get std::pair instance
-        void Clear(const uint32_t &id);  // erase map and id
-        std::vector<uint32_t> Keys(); // save tackId into keys set
+        Get(const uint32_t &id);        // get std::pair instance
+        void Clear(const uint32_t &id); // erase map and id
+        std::vector<uint32_t> Keys();   // save tackId into keys set
         size_t Size() const;
 
-        std::uint32_t count(const uint32_t &id);   // return the number of elements of this id
+        std::uint32_t count(const uint32_t &id); // return the number of elements of this id
         std::shared_ptr<MxTools::MxpiVisionList>
-        copyList(const MxBase::MemoryData newData);     // set MxpiVisionInfo and MxpiVisionData
+        copyList(const MxBase::MemoryData newData); // set MxpiVisionInfo and MxpiVisionData
         BlockingMap();
 
         ~BlockingMap();
@@ -78,9 +80,9 @@ namespace MxPlugins {
     private:
         std::mutex mtx_ = {};
         std::map<uint32_t, std::pair<std::chrono::high_resolution_clock::time_point,
-                std::shared_ptr<MxTools::MxpiVisionList>>> blockingMap_ = {};
+                                     std::shared_ptr<MxTools::MxpiVisionList>>>
+            blockingMap_ = {};
         std::set<uint32_t> keys_ = {};
     };
 }
 #endif
-

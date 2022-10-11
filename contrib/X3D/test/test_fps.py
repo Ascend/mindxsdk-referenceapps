@@ -38,12 +38,12 @@ def main():
     if not os.path.exists(args.LOG_SAVE_PATH):
         os.makedirs(args.LOG_SAVE_PATH)
     print("fps test start!")
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    modes = stat.S_IWUSR | stat.S_IRUSR
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    MODES = stat.S_IWUSR | stat.S_IRUSR
     for idx, url in enumerate(url_list):
         p = subprocess.Popen(['python3.9', 'test_fps.py', '--TYPE', 'sub', '--URL', url, '--MAX_COUNT_IDX',
                              str(args.MAX_COUNT_IDX)], shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", flags, modes), 'w') as fout:
+        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAGS, MODES), 'w') as fout:
             for line in p.stdout.readlines():
                 fout.write(line.decode('UTF-8'))
         print(f"idx: {idx}, url: {url} test done!")

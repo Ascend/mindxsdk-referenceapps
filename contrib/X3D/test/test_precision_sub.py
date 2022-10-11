@@ -29,19 +29,19 @@ parser.add_argument("--RESULT_SAVE_PATH", type=str)
 parser.add_argument("--TEST_VIDEO_IDX", type=int)
 parser.add_argument("--DEVICE", type=int, default=0)
 parser.add_argument("--WINDOW_STRIDE", type=int, default=1)
-flags = parser.parse_args()
+args = parser.parse_args()
 
 streamManagerApi = StreamManagerApi()
 ret = streamManagerApi.InitManager()
 pipeline = {
     "prec_verify": {
         "stream_config": {
-            "deviceId": f"{flags.DEVICE}"
+            "deviceId": f"{args.DEVICE}"
         },
         "mxpi_rtspsrc0": {
             "factory": "mxpi_rtspsrc",
             "props": {
-                "rtspUrl": f"rtsp://192.168.88.107:8554/{flags.TEST_VIDEO_IDX}.264",
+                "rtspUrl": f"rtsp://192.168.88.107:8554/{args.TEST_VIDEO_IDX}.264",
                 "channelId": "0",
                 "timeout": "1"
             },
@@ -62,7 +62,7 @@ pipeline = {
             "props": {
                 "dataSource": "mxpi_videodecoder0",
                 "skipFrameNum": "5",
-                "windowStride": f"{flags.WINDOW_STRIDE}"
+                "windowStride": f"{args.WINDOW_STRIDE}"
             },
             "factory": "mxpi_x3dpreprocess",
             "next": "mxpi_tensorinfer0"
@@ -106,8 +106,8 @@ pipelineStr = json.dumps(pipeline).encode()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 
 streamName = b'prec_verify'
-flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-modes = stat.S_IWUSR | stat.S_IRUSR
+FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+MODES = stat.S_IWUSR | stat.S_IRUSR
 for i in range(SAMPLE_NUM):
     # Obtain the inference result by specifying streamName and uniqueId.
     inferResult = streamManagerApi.GetResult(streamName, 0, 1000000)
@@ -118,7 +118,7 @@ for i in range(SAMPLE_NUM):
             inferResult.errorCode, inferResult.data.decode()))
         break
     retStr = inferResult.data.decode()
-    with os.fdopen(os.open(f"{flags.RESULT_SAVE_PATH}//{flags.TEST_VIDEO_IDX}_{i}.json", flags, modes), 'w') as fout:
+    with os.fdopen(os.open(f"{args.RESULT_SAVE_PATH}//{args.TEST_VIDEO_IDX}_{i}.json", FLAGS, MODES), 'w') as fout:
         retJson = json.dump(retStr, fout)
     print(i, retStr)
 streamManagerApi.DestroyAllStreams()
