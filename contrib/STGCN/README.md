@@ -19,7 +19,7 @@ SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和�
 
 基于MindX SDK的城市道路交通预测模型的推理流程为：
 
-首先读取已有的交通速度数据集（csv格式）通过Python API转化为protobuf的格式传送给appsrc插件输入，然后输入模型推理插件mxpi_tensorinfer，最后通过输出插件mxpi_dataserialize和appsink进行输出。本系统的各模块及功能如表1所示：
+首先读取已有的交通速度数据集（csv格式）通过Python API转化为protobuf的格式传送给appsrc插件输入，然后输入模型推理插件mxpi_tensorinfer，最后通过输出插件mxpi_dataserialize和appsink进行输出。本系统的各模块及功能如表1.1所示：
 
 表1.1 系统方案各子系统功能描述：
 
@@ -34,10 +34,10 @@ SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和�
 
 ### 1.4 代码目录结构与说明
 
-eg：本sample工程名称为stgcn_sdk_test，工程目录如下图所示：
+eg：本sample工程名称为STGCN，工程目录如下图所示：
 ```
 ├── data                # 数据目录
-├── models              # 模型目录
+├── stgcn10.om          # 转化得到的om模型
 ├── pipeline
 │   └── stgcn.pipeline
 ├── main.py             # 展示推理精度
@@ -62,8 +62,8 @@ eg：推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 - 环境变量介绍
 在编译运行项目前，需要设置环境变量：
 ```
-bash ${SDK安装路径}/set_env.sh
-bash ${CANN安装路径}/set_env.sh
+. ${SDK安装路径}/set_env.sh
+. ${CANN安装路径}/set_env.sh
 ```
 
 ## 依赖安装
@@ -126,19 +126,22 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 本项目推理模型权重采用Github仓库中Pytorch框架的STGCN模型训练SZ-Taxi数据集得到的权重转化得到。经过以下两步模型转化：
 1、pth转化为onnx
 可以根据实际的路径和输入大小修改export_onnx.py（该文件需要依赖于项目结构目录，请放到训练代码所在的文件夹中再运行）
-
+运行指令如下：
+```
+python export_onnx.py
+```
 转换好的onnx文件连接如下：
 ```
 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/STGCN/stgcn10.onnx
 ```
 
 2、onnx转化为om
-根据实际路径修改cnvert_om.sh
+根据实际路径修改convert_om.sh
 ```
-bash convert_om.sh [model_path] [output_model_name]
+bash convert_om.sh [model_path] stgcn10
 参数说明：
-model_path：onnx文件路径。
-output_model_name：生成的om模型文件名，转换脚本会在此基础上添加.om后缀。
+model_path：onnx文件路径.须自行输入。
+stgcn10：生成的om模型文件名，转换脚本会在此基础上添加.om后缀。
 ```
 
 ## 4 模型推理

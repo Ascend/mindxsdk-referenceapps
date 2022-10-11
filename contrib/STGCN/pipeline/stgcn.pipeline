@@ -13,7 +13,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "appsrc0",
-                "modelPath": "./models/stgcn10.om",
+                "modelPath": "./stgcn10.om",
                 "outputDeviceId": "-1"
             },
             "factory": "mxpi_tensorinfer",
