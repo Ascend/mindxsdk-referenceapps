@@ -31,11 +31,26 @@ import models
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Train network')
+    parser = argparse.ArgumentParser(description='Transform model')
     parser.add_argument('--cfg',
-                        help='experiment configure file name',
                         required=True,
                         type=str)
+
+    parser.add_argument('opts',
+                        default=None,
+                        nargs=argparse.REMAINDER)
+
+    parser.add_argument('--modelDir',
+                        type=str,
+                        default='')
+
+    parser.add_argument('--logDir',
+                        type=str,
+                        default='')
+
+    parser.add_argument('--dataDir',
+                        type=str,
+                        default='')
 
     args = parser.parse_args()
     update_config(cfg, args)

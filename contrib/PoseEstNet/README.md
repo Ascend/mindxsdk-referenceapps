@@ -75,7 +75,7 @@ apt-get install libpython3.9
 . /usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
 
-###5.1 yolov3的模型转换  
+### 5.1 yolov3的模型转换  
 
 **步骤1** 获取yolov3的原始模型(.pb文件)和相应的配置文件(.cfg文件)  
 &ensp;&ensp;&ensp;&ensp;&ensp; [原始模型下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/yolov3_tensorflow_1.5.pb)
@@ -96,13 +96,13 @@ atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type
 ATC run success, welcome to the next use.
 ```  
 
-###5.2 PoseEstNet的模型转换
+### 5.2 PoseEstNet的模型转换
 
-####5.2.1 模型概述  
+#### 5.2.1 模型概述  
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet论文地址](https://arxiv.org/pdf/2005.00673.pdf)
 &ensp;&ensp;&ensp;&ensp;&ensp; [PoseEstNet代码地址](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet)
 
-####5.2.2 模型转换步骤
+#### 5.2.2 模型转换步骤
 
 **步骤1** .pth模型转.onnx模型
 
@@ -140,13 +140,13 @@ ATC run success, welcome to the next use.
 
 经过上述操作，可以在“项目所在目录/models”找到yolov3.om模型和PoseEstNet.om模型，模型转换操作已全部完成
 
-###5.3 参考链接
+### 5.3 参考链接
 > 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/1afd5b7d)
 
 
 
 ## 6 数据集  
-###6.1 原始VeRi数据集  
+### 6.1 原始VeRi数据集  
 
 &ensp;&ensp;&ensp;&ensp;&ensp; [Github官网链接](https://vehiclereid.github.io/VeRi/)
 &ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/images.zip)
@@ -160,9 +160,9 @@ ATC run success, welcome to the next use.
     ├── labels
     |   ├── label_test.csv
 ```
-###6.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
+### 6.2 data_eval/labels中的csv文件：[Github下载链接](https://github.com/NVlabs/PAMTRI/tree/master/PoseEstNet/data/veri/annot)
 
-###6.3 创建data文件夹，里面放入自己准备的测试图片，目录结构如下：
+### 6.3 创建data文件夹，里面放入自己准备的测试图片，目录结构如下：
 ```
 ├── data
     ├── test_01.jpg
@@ -173,31 +173,31 @@ ATC run success, welcome to the next use.
 ----------------------------------------------------
 ## 7 测试
 
-###7.1 配置环境变量  
+### 7.1 配置环境变量  
 
 运行cann和sdk的set_env.sh脚本
 
-###7.2 获取om模型
+### 7.2 获取om模型
 ```
 步骤详见4： 模型转换
 ```
-###7.3 准备数据集
+### 7.3 准备数据集
 ```
 步骤详见5： 数据集
 ```
-###7.4 安装插件编译所需要的NumCpp库
+### 7.4 安装插件编译所需要的NumCpp库
 ```
 cd plugins
 git clone https://github.com/dpilger26/NumCpp
 mkdir include
 cp -r  NumCpp/include/NumCpp ./include/
 ```
-###7.5 编译插件
+### 7.5 编译插件
 ```
 bash build.sh
 ```
 
-###7.6 配置pipeline  
+### 7.6 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
 
 PoseEstNet.pipeline:
@@ -250,7 +250,7 @@ eval_PoseEstNet.pipeline:
         },
 ```
 
-###7.7 执行
+### 7.7 执行
 
 业务代码main.py结果在output文件夹，保证在执行前已创建好data文件夹并放入待检测图片
 ```
