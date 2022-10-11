@@ -106,7 +106,7 @@ pipelineStr = json.dumps(pipeline).encode()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 
 streamName = b'prec_verify'
-flags = os.O_WRONLY | os.O_CREATE | os.O_EXCL
+flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
 modes = stat.S_IWUSR | stat.S_IRUSR
 for i in range(SAMPLE_NUM):
     # Obtain the inference result by specifying streamName and uniqueId.

@@ -38,7 +38,7 @@ def main():
     if not os.path.exists(args.LOG_SAVE_PATH):
         os.makedirs(args.LOG_SAVE_PATH)
     print("fps test start!")
-    flags = os.O_WRONLY | os.O_CREATE | os.O_EXCL
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     modes = stat.S_IWUSR | stat.S_IRUSR
     for idx, url in enumerate(url_list):
         p = subprocess.Popen(['python3.9', 'test_fps.py', '--TYPE', 'sub', '--URL', url, '--MAX_COUNT_IDX',

@@ -58,7 +58,7 @@ start_time = time.time()
 def test_func(process_id, index_list, cross_process_num, cross_process_Lock):
     print(f"process {process_id} start")
     device_id = process_id % args.DEVICE_NUM
-    flags = os.O_WRONLY | os.O_CREATE | os.O_EXCL
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     modes = stat.S_IWUSR | stat.S_IRUSR
     for idx in index_list:
         if idx >= END_IDX:
