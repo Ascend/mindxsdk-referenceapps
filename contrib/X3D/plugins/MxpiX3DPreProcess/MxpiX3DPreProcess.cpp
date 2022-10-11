@@ -27,6 +27,8 @@ namespace
     const uint32_t IMAGE_SHORT_LENGTH = 182;
     const uint32_t MAX_WINDOW_STRIDE = 28;
     const uint32_t SAMPLE_NUM = 3;
+    const uint32_t HALF_DIV = 2;
+    const uint32_t INPUT_CHANNEL = 3;
     cv::Mat visionQueue[SAMPLE_NUM*TENSOR_LENGTH*MAX_WINDOW_STRIDE];
     uint32_t visionQueueHeadIdx = 0;
     uint32_t visionQueueLength;
@@ -99,22 +101,22 @@ APP_ERROR MxpiX3DPreProcess::PreProcessVision(MxTools::MxpiVision srcMxpiVision,
         w_resize = IMAGE_SHORT_LENGTH;
         h_resize = (uint32_t)h*1.0*w_resize/w;
         clip0 = cv::Rect(0, 0, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
-        clip1 = cv::Rect(0, (h_resize-IMAGE_SHORT_LENGTH)/2, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
+        clip1 = cv::Rect(0, (h_resize-IMAGE_SHORT_LENGTH)/HALF_DIV, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
         clip2 = cv::Rect(0, h_resize-IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
     }else{
         h_resize = IMAGE_SHORT_LENGTH;
         w_resize = (uint32_t)h_resize*1.0*w/h;
         clip0 = cv::Rect(0, 0, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
-        clip1 = cv::Rect((w_resize-IMAGE_SHORT_LENGTH)/2, 0, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
+        clip1 = cv::Rect((w_resize-IMAGE_SHORT_LENGTH)/HALF_DIV, 0, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
         clip2 = cv::Rect(w_resize-IMAGE_SHORT_LENGTH, 0, IMAGE_SHORT_LENGTH, IMAGE_SHORT_LENGTH);
     }
     cv::resize(imgRgb, imgRgb, cv::Size(w_resize, h_resize), cv::INTER_LINEAR);
     cv::Mat dstImg0 = imgRgb(clip0).clone();
     cv::Mat dstImg1 = imgRgb(clip1).clone();
     cv::Mat dstImg2 = imgRgb(clip2).clone();
-    visionQueue[insert_idx] = dstImg0;
-    visionQueue[insert_idx+1] = dstImg1;
-    visionQueue[insert_idx+2] = dstImg2;
+    visionQueue[insert_idx++] = dstImg0;
+    visionQueue[insert_idx++] = dstImg1;
+    visionQueue[insert_idx] = dstImg2;
     return APP_ERR_OK;
 }
 
@@ -161,7 +163,7 @@ std::shared_ptr<MxpiTensorPackageList> MxpiX3DPreProcess::StackFrame(uint32_t st
         tensorVector->add_tensorshape(TENSOR_LENGTH);
         tensorVector->add_tensorshape(IMAGE_SHORT_LENGTH);
         tensorVector->add_tensorshape(IMAGE_SHORT_LENGTH);
-        tensorVector->add_tensorshape(3);
+        tensorVector->add_tensorshape(INPUT_CHANNEL);
     }
     return tensorPackageList;
 }
@@ -181,7 +183,7 @@ APP_ERROR MxpiX3DPreProcess::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     std::shared_ptr<void> data_source = mxpiMetadataManager.GetMetadata(dataSource_);
     std::shared_ptr<MxpiVisionList> visionList = std::static_pointer_cast<MxpiVisionList>(data_source);
     
-    PreProcessVision(visionList->visionvec(0),visionQueueHeadIdx*3);
+    PreProcessVision(visionList->visionvec(0),visionQueueHeadIdx*SAMPLE_NUM);
     visionQueueHeadIdx += 1;
     visionQueueHeadIdx = visionQueueHeadIdx % visionQueueLength;
 

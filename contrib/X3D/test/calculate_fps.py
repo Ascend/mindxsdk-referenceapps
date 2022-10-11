@@ -22,7 +22,7 @@ import argparse
 import json
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--LOG_SAVE_PATH",type=str)
+parser.add_argument("--LOG_SAVE_PATH", type=str)
 args = parser.parse_args()
 
 SKIP_INIT_NUM = 1
@@ -32,12 +32,12 @@ total = []
 for file in os.listdir(args.LOG_SAVE_PATH):
     if file.startswith("performance-statistics.log.plugin"):
         path = f"{args.LOG_SAVE_PATH}/{file}"
-        with open(path,"r") as fp:
+        with open(path, "r") as fp:
             throughput_data = []
             print(path)
             for json_line in fp.readlines():
                 data = json.loads(json_line)
-                if data["elementName"]=="mxpi_imagecrop0":
+                if data["elementName"] == "mxpi_imagecrop0":
                     throughput_data.append(data)
             total += throughput_data
 
@@ -45,7 +45,7 @@ sum_freqyency = 0
 sum_count = 0
 for data in total:
     freq = int(data["frequency"])
-    sum_freqyency+=freq
-    sum_count+=1
+    sum_freqyency += freq
+    sum_count += 1
 
 print(f"fps:{sum_freqyency/sum_count}")

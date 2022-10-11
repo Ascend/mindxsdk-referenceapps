@@ -21,6 +21,7 @@ from slowfast.utils import checkpoint as cu
 from slowfast.utils.parser import load_config, parse_args
 from slowfast.config.defaults import assert_and_infer_cfg
 from slowfast.utils.misc import launch_job
+
 def perform_x3d_pth2onnx(output_path, cfg):
     model = build_model(cfg)
 
@@ -50,7 +51,6 @@ def x3d_pth2onnx(cfg):
 
 if __name__== '__main__':
     args = parse_args()
-    cfg = load_config(args)
-    cfg = assert_and_infer_cfg(cfg)
-
-    launch_job(cfg=cfg, init_method=args.init_method, func=x3d_pth2onnx)
+    config = load_config(args)
+    config = assert_and_infer_cfg(config)
+    launch_job(cfg=config, init_method=args.init_method, func=x3d_pth2onnx)

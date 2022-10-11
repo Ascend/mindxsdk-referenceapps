@@ -26,7 +26,7 @@ public:
 
     ~X3DPostProcess() = default;
 
-    X3DPostProcess(const X3DPostProcess &other) = default;
+    X3DPostProcess(const X3DPostProcess &other);
 
     APP_ERROR Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) override;
 

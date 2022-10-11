@@ -26,6 +26,8 @@ namespace {
     const uint32_t X3D_INPUT_H = 192;
     const uint32_t X3D_INPUT_W = 192;
     const uint32_t X3D_INPUT_C = 3;
+    const uint32_t MILLI_BASE = 1000;
+    const float REUSE_RATIO = 2;
     bool isStop_ = true;
     std::map<uint32_t,uint32_t> trackCount;
     std::shared_ptr<BlockingMap> ObjectFrame = std::make_shared<BlockingMap>();
@@ -85,8 +87,7 @@ APP_ERROR MxpiStackFrame::CheckDataSource(MxTools::MxpiMetadataManager &mxpiMeta
 
 void MxpiStackFrame::StackFrame(const std::shared_ptr<MxTools::MxpiVisionList> &visionList,
                                 const std::shared_ptr<MxTools::MxpiTrackLetList> &trackLetList,
-                                std::shared_ptr<BlockingMap> &blockingMap) {
-    //FOX: trackLetList->trackletvec_size()=1;                    
+                                std::shared_ptr<BlockingMap> &blockingMap) {                
     for (int32_t i = 0; i < (int32_t) trackLetList->trackletvec_size(); i++) {
         auto &trackObject = trackLetList->trackletvec(i);
         uint32_t trackId = trackObject.trackid();
@@ -118,7 +119,6 @@ void MxpiStackFrame::StackFrame(const std::shared_ptr<MxTools::MxpiVisionList> &
             auto time_visionlist = blockingMap->Get(trackId);
             LogInfo << "time_visionlist.second->visionvec_size() " << time_visionlist.second->visionvec_size();
             if (time_visionlist.second->visionvec_size() >= TIME_FRAME_LENGTH) {
-                //FOX:似乎不会被执行
                 continue;
             } else {
                 uint32_t check_count = trackCount[trackId];
@@ -206,7 +206,7 @@ void MxpiStackFrame::CheckFrames(std::shared_ptr<BlockingMap> &blockingMap) {
     LogInfo << "Begin to check frames";
     using Time = std::chrono::high_resolution_clock;
     using Duration = std::chrono::duration<float>;
-    using Millisecond = std::chrono::duration<double, std::ratio<1, 1000>>;
+    using Millisecond = std::chrono::duration<double, std::ratio<1, MILLI_BASE>>;
     auto currentTime = Time::now();
     std::vector<uint32_t> keys = blockingMap->Keys();
     for (uint32_t key : keys) {            // key <-> trackId
@@ -233,7 +233,7 @@ void MxpiStackFrame::CheckFrames(std::shared_ptr<BlockingMap> &blockingMap) {
             for (uint32_t i = 0; i < size; i++) {
                 auto mxpiVision = dstMxpiVisionLitsSptr->visionvec(i);
                 auto mxpiVisionData = mxpiVision.visiondata();
-                if (i < size / 2) {
+                if (i < size / REUSE_RATIO) {
                     MxBase::MemoryData memoryData = ConvertMemoryData(mxpiVisionData);
                     APP_ERROR ret = MemoryHelper::MxbsFree(memoryData);
                     if (ret != APP_ERR_OK) {

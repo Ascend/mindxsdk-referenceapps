@@ -16,15 +16,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import os
 import argparse
+import os
+import stat
 from tqdm import tqdm
 from moviepy.editor import VideoFileClip
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--video_path",type=str)
-parser.add_argument("--save_path",type=str)
+parser.add_argument("--video_path", type=str)
+parser.add_argument("--save_path", type=str)
 args = parser.parse_args()
 
 file_list = []
@@ -32,16 +32,17 @@ for root, dirs, files in os.walk(args.video_path):
     for f in files:
         file_list.append(os.path.join(root, f))
 
-with open(args.save_path, "w") as fp:
+flags = os.O_WRONLY | os.O_CREATE | os.O_EXCL
+modes = stat.S_IWUSR | stat.S_IRUSR
+with os.fdopen(os.open(args.save_path, flags, modes), 'w') as fout:
     i = 0
     error_list = []
     for f in tqdm(file_list):
         try:
             cap = VideoFileClip(f)
-            # print(cap.duration)
             frame_num = int(cap.duration*25)
-            fp.write(f'{i} {frame_num}\n')
-        except:
+            fout.write(f'{i} {frame_num}\n')
+        except (IndexError, OSError):
             error_list.append(i)
         i += 1
-    print(error_list) #note:data 3908 is broken.
+    print(error_list)  # note:some data is broken.

@@ -117,7 +117,7 @@ namespace MxPlugins {
     }
 
     std::shared_ptr<MxTools::MxpiVisionList> BlockingMap::copyList(MxBase::MemoryData newData) {
-        // new shared_ptr MxpiVisionList;
+        // create new shared_ptr MxpiVisionList;
         std::shared_ptr<MxTools::MxpiVisionList> dstMxpiVisionListSptr(new MxTools::MxpiVisionList,
                                                                        MxTools::g_deleteFuncMxpiVisionList);
         MxTools::MxpiVision *dstMxpivision = dstMxpiVisionListSptr->add_visionvec();

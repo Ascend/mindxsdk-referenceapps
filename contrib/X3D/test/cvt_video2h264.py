@@ -18,13 +18,14 @@ limitations under the License.
 """
 
 import os
+import stat
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--source_path",type=str)
-parser.add_argument("--target_path",type=str)
-parser.add_argument("--label_path",type=str,default="K400_label.txt")
-parser.add_argument("--save_path",type=str,default="video2label.txt")
+parser.add_argument("--source_path", type=str)
+parser.add_argument("--target_path", type=str)
+parser.add_argument("--label_path", type=str, default="K400_label.txt")
+parser.add_argument("--save_path", type=str, default="video2label.txt")
 args = parser.parse_args()
 
 
@@ -44,12 +45,14 @@ with open(args.label_path, "r") as fp:
 if not os.path.exists(args.target_path):
     os.makedirs(args.target_path)
 
-with open(args.save_path, "w") as fp:
+flags = os.O_WRONLY | os.O_CREATE | os.O_EXCL
+modes = stat.S_IWUSR | stat.S_IRUSR
+with os.fdopen(os.open(args.save_path, flags, modes), 'w') as fout:
     i = 0
     for f in file_list:
         print(f)
         label = K400_label_map[f.split("/")[-2]]
         cmd = f'ffmpeg -i {f} -vcodec h264 -bf 0 -r 25 -an -f h264 {args.target_path}\\{i}.264 -y'
         result = os.popen(cmd).read().strip()
-        fp.write(f'{i} {label}\n')
+        fout.write(f'{i} {label}\n')
         i += 1
