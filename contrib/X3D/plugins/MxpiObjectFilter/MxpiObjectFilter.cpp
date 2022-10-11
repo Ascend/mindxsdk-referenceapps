@@ -96,7 +96,8 @@ std::vector<std::shared_ptr<void>> MxpiObjectFilter::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
     auto dataSource = std::make_shared<ElementProperty<string>>(
-        ElementProperty<string>{STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
+        ElementProperty<string> {
+            STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
     properties.push_back(dataSource);
     return properties;
 }

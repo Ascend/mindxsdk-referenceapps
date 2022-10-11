@@ -39,49 +39,51 @@
 
 /**
  * This plugin is to stack frames based on detected objects.
-*/
+ */
 
-namespace MxPlugins {
-    class MxpiStackFrame : public MxTools::MxPluginBase {
+namespace MxPlugins
+{
+    class MxpiStackFrame : public MxTools::MxPluginBase
+    {
     public:
         /**
-        * @description: Init configs.
-        * @param configParamMap: config.
-        * @return: Error code.
-        */
+         * @description: Init configs.
+         * @param configParamMap: config.
+         * @return: Error code.
+         */
         APP_ERROR Init(std::map<std::string, std::shared_ptr<void>> &configParamMap) override;
 
         /**
-        * @description: DeInit device.
-        * @return: Error code.
-        */
+         * @description: DeInit device.
+         * @return: Error code.
+         */
         APP_ERROR DeInit() override;
 
         /**
-        * @description: MxpiStackFrame plugin process.
-        * @param mxpiBuffer: data receive from the previous.
-        * @return: Error code.
-        */
+         * @description: MxpiStackFrame plugin process.
+         * @param mxpiBuffer: data receive from the previous.
+         * @return: Error code.
+         */
         APP_ERROR Process(std::vector<MxTools::MxpiBuffer *> &mxpiBuffer) override;
 
         /**
-        * @description: MxpiStackFrame plugin define properties.
-        * @return: properties.
-        */
+         * @description: MxpiStackFrame plugin define properties.
+         * @return: properties.
+         */
         static std::vector<std::shared_ptr<void>> DefineProperties();
 
         /**
-        * @api
-        * @brief Define the number and data type of input ports.
-        * @return MxTools::MxpiPortInfo.
-        */
+         * @api
+         * @brief Define the number and data type of input ports.
+         * @return MxTools::MxpiPortInfo.
+         */
         static MxTools::MxpiPortInfo DefineInputPorts();
 
         /**
-        * @api
-        * @brief Define the number and data type of output ports.
-        * @return MxTools::MxpiPortInfo.
-        */
+         * @api
+         * @brief Define the number and data type of output ports.
+         * @return MxTools::MxpiPortInfo.
+         */
         static MxTools::MxpiPortInfo DefineOutputPorts();
 
         /**
@@ -131,18 +133,18 @@ namespace MxPlugins {
         // Check Thread function; Check whether a object is 8 frames
         void CheckFrames(std::shared_ptr<BlockingMap> &blockingMap);
 
-        void CreateThread();       // create CheckFrame thread
-        void WatchThread();        // Watch CheckFrame thread
+        void CreateThread();            // create CheckFrame thread
+        void WatchThread();             // Watch CheckFrame thread
         std::string visionsource_ = ""; // cropped image from crop plugin
         std::string tracksource_ = "";  // track result
         uint32_t skipFrameNum_ = 0;
         uint32_t count = 1;
-        double timeout_ = 500.; //Millisecond
+        double timeout_ = 500.; // Millisecond
         uint32_t sleepTime_ = 0;
         std::ostringstream ErrorInfo_;
         std::unique_ptr<std::thread> thread_ = nullptr;
         bool stopFlag_ = false;
-        MxTools::InputParam inputParam;      // to create buffer
+        MxTools::InputParam inputParam; // to create buffer
     };
 }
 #endif

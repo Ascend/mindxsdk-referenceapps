@@ -51,7 +51,7 @@ with os.fdopen(os.open(args.save_path, FLAGS, MODES), 'w') as fout:
     i = 0
     for f in file_list:
         print(f)
-        label = K400_label_map[f.split("/")[-2]]
+        label = K400_label_map.get(f.split("/")[-2], -1)
         cmd = f'ffmpeg -i {f} -vcodec h264 -bf 0 -r 25 -an -f h264 {args.target_path}\\{i}.264 -y'
         result = os.popen(cmd).read().strip()
         fout.write(f'{i} {label}\n')

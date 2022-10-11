@@ -25,8 +25,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--LOG_SAVE_PATH", type=str)
 args = parser.parse_args()
 
-SKIP_INIT_NUM = 1
-
 total = []
 
 for file in os.listdir(args.LOG_SAVE_PATH):
@@ -42,10 +40,8 @@ for file in os.listdir(args.LOG_SAVE_PATH):
             total += throughput_data
 
 sum_freqyency = 0
-sum_count = 0
 for data in total:
     freq = int(data["frequency"])
     sum_freqyency += freq
-    sum_count += 1
 
-print(f"fps:{sum_freqyency/sum_count}")
+print(f"fps:{sum_freqyency/len(total)}")

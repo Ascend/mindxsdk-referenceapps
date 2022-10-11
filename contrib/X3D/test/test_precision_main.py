@@ -55,31 +55,36 @@ with open(args.FRAME_LENGTH_PATH, "r") as fp:
 start_time = time.time()
 
 
-def test_func(process_id, index_list, cross_process_num, cross_process_Lock):
+def test_func(process_id, index_list, cross_process_num, cross_process_lock):
     print(f"process {process_id} start")
     device_id = process_id % args.DEVICE_NUM
-    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    MODES = stat.S_IWUSR | stat.S_IRUSR
+    FLAG = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    MODE = stat.S_IWUSR | stat.S_IRUSR
     for idx in index_list:
         if idx >= END_IDX:
             break
         if idx not in frame_length_dict:
             continue
-        frame = frame_length_dict[idx]
+        frame = frame_length_dict.get(idx, 0)
         remain = frame-13*5
         window_stride = 1
         if remain > 9:
             window_stride = int(remain/9)
-        p = subprocess.Popen(["python3.9", "test_precision_sub.py", "--RESULT_SAVE_PATH", args.RESULT_SAVE_PATH, "--TEST_VIDEO_IDX", str(idx), "--DEVICE", str(device_id), "--WINDOW_STRIDE", str(window_stride)],
+        p = subprocess.Popen(["python3.9", "test_precision_sub.py", "--RESULT_SAVE_PATH", args.RESULT_SAVE_PATH,
+                              "--TEST_VIDEO_IDX", str(idx), "--DEVICE", str(
+                                  device_id), "--WINDOW_STRIDE",
+                              str(window_stride)],
                              shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAGS, MODES), 'w') as fout:
+        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAG, MODE), 'w') as fout:
             for line in p.stdout.readlines():
                 fout.write(line.decode('UTF-8'))
-        cross_process_Lock.acquire()
+        cross_process_lock.acquire()
         cross_process_num.value += 1
         cost_time = int(time.time()-start_time)
-        print(f"process_id: {process_id:<5} device_id: {device_id:<4} idx: {idx:<8} num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}h{(cost_time%3600)//60:>2}m{cost_time%60:>2}s")
-        cross_process_Lock.release()
+        print(f"process_id: {process_id:<5} device_id: {device_id:<4} idx: {idx:<8} \
+            num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}\
+                h{(cost_time%3600)//60:>2}m{cost_time%60:>2}s")
+        cross_process_lock.release()
 
 
 idx_list = [i for i in range(START_IDX, END_IDX)]

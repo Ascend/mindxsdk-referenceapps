@@ -51,8 +51,8 @@ def main():
 
 def sub():
     from StreamManagerApi import StreamManagerApi
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = StreamManagerApi()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -184,25 +184,25 @@ def sub():
             }
         }
     }
-    pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    pipeline_str = json.dumps(pipeline).encode()
+    ret = stream_manager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
-    streamName = b'detection+action recognition'
+    STREAM_NAME = b'detection+action recognition'
     idx = 0
     while idx < args.MAX_COUNT_IDX:
-        inferResult = streamManagerApi.GetResult(streamName, 0, 1000000)
-        if inferResult is None:
+        infer_result = stream_manager_api.GetResult(STREAM_NAME, 0, 1000000)
+        if infer_result is None:
             break
-        if inferResult.errorCode != 0:
+        if infer_result.errorCode != 0:
             print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
-                inferResult.errorCode, inferResult.data.decode()))
+                infer_result.errorCode, infer_result.data.decode()))
             break
-        retStr = inferResult.data.decode()
+        retStr = infer_result.data.decode()
         idx += 1
         print(retStr)
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()
 
 
 if __name__ == "__main__":

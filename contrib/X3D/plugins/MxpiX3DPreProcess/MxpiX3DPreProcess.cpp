@@ -184,7 +184,6 @@ APP_ERROR MxpiX3DPreProcess::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     MxpiBuffer *inputMxpiBuffer = mxpiBuffer[0];
     MxpiMetadataManager mxpiMetadataManager(*inputMxpiBuffer);
     APP_ERROR ret = CheckDataSource(mxpiMetadataManager);
-
     if (ret != APP_ERR_OK)
     {
         SendData(0, *inputMxpiBuffer);
@@ -192,11 +191,9 @@ APP_ERROR MxpiX3DPreProcess::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     }
     std::shared_ptr<void> data_source = mxpiMetadataManager.GetMetadata(dataSource_);
     std::shared_ptr<MxpiVisionList> visionList = std::static_pointer_cast<MxpiVisionList>(data_source);
-
     PreProcessVision(visionList->visionvec(0), visionQueueHeadIdx * SAMPLE_NUM);
     visionQueueHeadIdx += 1;
     visionQueueHeadIdx = visionQueueHeadIdx % visionQueueLength;
-
     process_count += 1;
     if (process_count >= visionQueueLength)
     {

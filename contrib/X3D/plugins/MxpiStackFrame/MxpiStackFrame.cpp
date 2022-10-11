@@ -368,17 +368,17 @@ std::vector<std::shared_ptr<void>> MxpiStackFrame::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
     // the cropped image
-    auto visionsource = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto visionsource = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "visionSource", "imageSource", "the name of cropped image source", "default", "NULL", "NULL"});
     // the tracklet information
-    auto tracksource = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
+    auto tracksource = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "trackSource", "objectSource", "tracklelist to get the responding id", "defalut", "NULL", "NULL"});
     // skip frame number
-    auto framenum = std::make_shared<ElementProperty<uint>>(ElementProperty<uint>{
+    auto framenum = std::make_shared<ElementProperty<uint>>(ElementProperty<uint> {
         UINT, "frameNum", "frameNum", "the number of skip frame", 1, 1, 10});
-    auto timeout = std::make_shared<ElementProperty<std::double_t>>(ElementProperty<std::double_t>{
+    auto timeout = std::make_shared<ElementProperty<std::double_t>>(ElementProperty<std::double_t> {
         DOUBLE, "timeOut", "timeOut", "Time to discard the frames", 5000., 500., 10000.});
-    auto sleeptime = std::make_shared<ElementProperty<uint>>(ElementProperty<uint>{
+    auto sleeptime = std::make_shared<ElementProperty<uint>>(ElementProperty<uint> {
         UINT, "sleepTime", "sleepTime", "The Time CheckFrames thread hangs", 100, 100, 1000});
     properties.push_back(visionsource);
     properties.push_back(tracksource);
