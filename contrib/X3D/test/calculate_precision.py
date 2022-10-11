@@ -70,12 +70,12 @@ for v in trange(TEST_NUM):
                                 key=lambda t: t[1], reverse=True)
 
         for i in range(5):
-            if score_sum_list[i][0] == video_label_dict[v]:
+            if score_sum_list[i][0] == video_label_dict.get(v, 0):
                 top5 += 1
                 if i == 0:
                     top1 += 1
                 break
-    except (FileNotFoundError, KeyError):
+    except (FileNotFoundError):
         UNWORK_LIST.add(v)
 print("Top1:", top1/total)
 print("Top5:", top5/total)

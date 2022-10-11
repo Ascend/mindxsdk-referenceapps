@@ -199,9 +199,9 @@ def sub():
             print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
                 infer_result.errorCode, infer_result.data.decode()))
             break
-        retStr = infer_result.data.decode()
+        ret_str = infer_result.data.decode()
         idx += 1
-        print(retStr)
+        print(ret_str)
     stream_manager_api.DestroyAllStreams()
 
 
