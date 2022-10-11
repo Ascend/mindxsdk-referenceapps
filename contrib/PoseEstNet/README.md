@@ -102,11 +102,11 @@ rm models.zip
 ```
 [Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
 
-***2*** 获取PoseEstNet_pth2onnx.py ：该文件已上传在本项目工程里
+***2*** 获取pth2onnx.py ：该文件已上传在本项目工程里
 
-将本项目工程里的PoseEstNet_pth2onnx.py提前下载下来，然后下载PoseEstNet源码并创建项目（源码地址详见4.2.1），将下载好的PoseEstNet_pth2onnx.py放在源码项目的tools目录下，执行下列命令，生成.onnx模型文件
+将本项目工程里的pth2onnx.py提前下载下来，然后下载PoseEstNet源码并创建项目（源码地址详见4.2.1），将下载好的pth2onnx.py放在源码项目的tools目录下，执行下列命令，生成.onnx模型文件
 ```
-python3 tools/PoseEstNet_pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.yaml TEST.MODEL_FILE models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
+python3 tools/pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.yaml TEST.MODEL_FILE models/veri/pose_hrnet/w32_256x256_adam_lr1e-3/model_best.pth
 ```
 > 注意目前ATC支持的onnx算子版本为11  
 
