@@ -39,7 +39,6 @@ for file in os.listdir(args.LOG_SAVE_PATH):
                 data = json.loads(json_line)
                 if data["elementName"]=="mxpi_imagecrop0":
                     throughput_data.append(data)
-                    print(data["frequency"])
             total += throughput_data
 
 sum_freqyency = 0

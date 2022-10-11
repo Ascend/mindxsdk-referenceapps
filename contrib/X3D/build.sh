@@ -18,6 +18,7 @@ current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
 
 
 SAMPLE_FOLDER=(
+/plugins/MxpiObjectFilter/
 /plugins/MxpiStackFrame/
 /plugins/MxpiX3DPreProcess/
 /plugins/X3DPostProcess/

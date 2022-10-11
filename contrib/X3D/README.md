@@ -393,5 +393,5 @@ python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/
 
 
 
-最终性能结果为 fps：
+最终性能结果为 fps：27.5
 
