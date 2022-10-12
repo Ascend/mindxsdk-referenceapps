@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ee20fc0c-97c7-4bfc-9a54-55e2b49cf37e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pth2onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/pth2onnx.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +44,7 @@
       <option name="presentableId" value="Default" />
       <updated>1665388509949</updated>
       <workItem from="1665388511456" duration="5584000" />
-      <workItem from="1665468271304" duration="8533000" />
+      <workItem from="1665468271304" duration="9264000" />
     </task>
     <servers />
   </component>

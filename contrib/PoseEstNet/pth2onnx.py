@@ -63,7 +63,7 @@ def main():
         cfg, is_train=False
     )
 
-    net.load_state_dict(torch.load(cfg.TEST.MODEL_FILE), map_location="cpu", strict=False)
+    net.load_state_dict(torch.load(cfg.TEST.MODEL_FILE, map_location="cpu"), strict=False)
     net.eval()
 
     device = torch.device("cpu")
