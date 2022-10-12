@@ -2,7 +2,7 @@
 
 ## 1 介绍
 
-STGCN主要用于交通预测领域，是一种时空卷积网络，解决在交通领域的时间序列预测问题。在定义图上的问题，并用纯卷积结构建立模型，这使得使用更少的参数能带来更快的训练速度。本样例基于MindxSDK开发，是在STGCN模型的基础上对SZ-Taxi数据集进行训练转化，可以对未来一定时段内的交通速度进行预测。
+STGCN主要用于交通预测领域，是一种时空卷积网络，解决在交通领域的时间序列预测问题。在定义图上的问题，并用纯卷积结构建立模型，这使得使用更少的参数能带来更快的训练速度。本样例基于MindxSDK开发，是在STGCN模型的基础上对SZ-Taxi数据集进行训练转化，可以对未来一定时段内的交通速度进行预测。通过在SZ-Taxis的测试集上进行推理测试，精度可以达到 MAE 2.81 | RMSE 4.29
 
 论文原文：https://arxiv.org/abs/1709.04875
 
@@ -115,7 +115,7 @@ elif dataset_name == 'sz-taxis':
 train的划分改为：
 train = vel[: len_train + len_val]
 ```
-将SZ-Taxi数据集放在指定文件夹后即可开始训练，训练获得pth文件可通过export_onnx.py转换成onnx文件。
+修改完毕后将SZ-Taxi数据集中的sz_adj.csv和sz_speed.csv文件放在'data/sz-taxis/'目录下（如果没有自行创建），运行STGCN模型GitHub仓库中的main.py文件即可开始训练。训练获得pth文件可通过export_onnx.py转换成onnx文件。
 
 训练好的pth文件连接如下：
 ```
@@ -125,7 +125,7 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 ### 3.2 模型转化
 本项目推理模型权重采用Github仓库中Pytorch框架的STGCN模型训练SZ-Taxi数据集得到的权重转化得到。经过以下两步模型转化：
 1、pth转化为onnx
-可以根据实际的路径和输入大小修改export_onnx.py（该文件需要依赖于项目结构目录，请放到训练代码所在的文件夹中再运行）
+可以根据实际的路径和输入大小修改export_onnx.py（该文件需要依赖于项目结构目录，请放到训练代码项目主目录下再运行）
 运行指令如下：
 ```
 python export_onnx.py
@@ -140,7 +140,7 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 ```
 bash convert_om.sh [model_path] stgcn10
 参数说明：
-model_path：onnx文件路径.须自行输入。
+model_path：onnx文件路径须自行输入。
 stgcn10：生成的om模型文件名，转换脚本会在此基础上添加.om后缀。
 ```
 
@@ -161,7 +161,8 @@ stgcn10：生成的om模型文件名，转换脚本会在此基础上添加.om�
 5、销毁流。
 
 ## 5 运行
-运行main.py可以获得推理精度，指令如下：
+### 5.1 运行main.py
+运行main.py可以在sz_speed.csv的测试集上获得推理精度，指令如下：
 ```
 python main.py [image_path] [result_dir] [n_pred]
 
@@ -171,13 +172,15 @@ result_dir：推理结果保存路径，如“results/”
 n_pred：预测时段，如9
 
 例如： python main.py data/sz_speed.csv results/ 9
+注意：sz_speed.csv文件的第一行数据为异常数据，需要手动删除
 ```
 最后sz_speed.csv测试集的推理预测的结果会保存在results/predictions.txt文件中，实际数据会保存在results/labels.txt文件中。
 推理精度会直接显示在界面上。
 ```
 MAE 2.81 | RMSE 4.29
 ```
-如果需要推理自定义的数据集，运行predict.py，指令如下：
+### 5.2 运行predict.py
+如果需要推理自定义的数据集(行数大于12行，列数为156列的csv文件)，运行predict.py，指令如下：
 ```
 python predict.py [image_path] [result_dir]
 
@@ -187,7 +190,10 @@ result_dir：推理结果保存路径，如“results/”
 
 例如： python predict.py data/sz_speed.csv results/
 ```
-则会在results文件夹下生成代表预测的交通数据prediction.txt文件
+则会在results文件夹下生成代表预测的交通速度数据prediction.txt文件
+这是通过已知数据集里过去时段的交通速度数据预测未来一定时间内的交通速度，无标准参考，所以只会输出代表预测的交通速度数据的prediction.txt文件，而没有MAE和RMSE等精度。
+另外和main.py的运行指令相比少一个n_pred参数，因为已在代码中定义了确定数值，无需额外输入。
+
 
 ## 6 常见问题
 1、服务器上进行推理的时候出现coredump报错

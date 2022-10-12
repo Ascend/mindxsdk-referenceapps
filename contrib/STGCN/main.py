@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     test(predictions, labels)
 
-    print('The number of sdk is: {}'.format(len(run_time_mean)))
-    print('mean time: {}'.format(np.mean(run_time_mean)))
+    print('The number of sdk is: {} groups'.format(len(run_time_mean)))
+    print('mean time: {:.2f} ms'.format(np.mean(run_time_mean)))
     # destroy streams
     streaminput_manager_api.DestroyAllStreams()
