@@ -112,7 +112,7 @@ wget --no-check-certificate -r 'https://docs.google.com/uc?export=download&id=1v
 unzip models.zip
 rm models.zip
 ```
-[Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/model_best.pth)
+[Huawei Cloud下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PoseEstNet/models.rar)
 
 ***2*** 下载PoseEstNet源码并创建项目（源码地址详见5.2.1），将根目录切换为PAMTRI-master/PoseEstNet目录，将步骤1下载的models文件夹放进根目录
 
