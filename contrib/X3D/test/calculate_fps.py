@@ -23,25 +23,19 @@ import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--LOG_SAVE_PATH", type=str)
+parser.add_argument("--MUL_FACTOR", type=int, default=6)
 args = parser.parse_args()
 
 total = []
 
 for file in os.listdir(args.LOG_SAVE_PATH):
-    if file.startswith("performance-statistics.log.plugin"):
+    if file.startswith("performance-statistics.log.e2e"):
         path = f"{args.LOG_SAVE_PATH}/{file}"
         with open(path, "r") as fp:
-            throughput_data = []
-            print(path)
             for json_line in fp.readlines():
                 data = json.loads(json_line)
-                if data["elementName"] == "mxpi_imagecrop0":
-                    throughput_data.append(data)
-            total += throughput_data
+                freq = int(data["frequency"])
+                if freq > 1:  # 0 or 1 is unstable state
+                    total.append(freq)
 
-FREQUENCY = 0
-for data in total:
-    freq = int(data["frequency"])
-    FREQUENCY += freq
-
-print(f"fps:{FREQUENCY/len(total)}")
+print(f"fps:{sum(total)*args.MUL_FACTOR/len(total)}")

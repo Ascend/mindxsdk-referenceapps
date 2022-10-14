@@ -382,7 +382,7 @@ python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_P
 
 ## 6 性能测试
 
-本章将介绍如何测试业务流程性能。请选取若干分辨率为1920*1080，帧率为25的视频作为性能测试数据，视频长度请不小于10s，可从[此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/performance_test_video.zip)获取样例视频。
+本章将介绍如何测试业务流程性能。请选取若干分辨率为1920*1080，帧率为25的视频作为性能测试数据，视频长度请不小于10s。由于视频内目标增多时，X3D检测开销线性增加，为了保证性能测试准确性，请确保视频内只有一个人物。可从[此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/performance_test_video.zip)获取样例视频。
 
 测试性能前请参考[MindSDK性能测试工具使用指南](https://support.huawei.com/enterprise/zh/doc/EDOC1100234263/3d688c94)，在sdk.conf文件中设置enable_ps=true，ps_interval_time=1。在开启性能测试前，请删除${SDK-path}/logs内的所有文件，以免对性能测试结果产生干扰。
 
@@ -405,16 +405,19 @@ python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt" --MAX_COUNT_IDX=50
 当程序执行完毕后，所有视频的性能分析日志均会保存在${SDK-path}/logs中，执行如下命令即可输出推理性能
 
 ```
-python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/
+python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/ --MUL_FACTOR=6
 ```
 
 参数
 
 - **LOG_SAVE_PATH** ${SDK-path}/logs文件路径
+- **MUL_FACTOR** 性能校正倍数
 
+备注：
 
+在性能测试时，stackframe插件的跳帧系数frameNum被设置为1。根据堆帧逻辑，当数据积累够X3D所需的13帧后会将整个数据包发送出去，然后删去前一半数据(6帧)，剩下的数据仍被保存以供后续使用。这在输入稳定后等效于每6帧输出1个检测结果，故需要在计算性能时用6作为性能校正倍数。
 
-最终性能结果为 fps：27.5
+最终性能结果为 fps：24.4
 
 
 
