@@ -76,6 +76,8 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 │       └── yolov3_tf_bs1_fp16.om //所用的yolov3推理om文件
 ├── pipelines
 │   └── actionrecognition.pipeline //业务流程pipeline
+│   └── testperformance.pipeline //性能流程pipeline
+│   └── testprecision.pipeline //精度流程pipeline
 ├── plugins
 │   ├── MxpiObjectFilter
 │   │   ├── build.sh
