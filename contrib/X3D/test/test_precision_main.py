@@ -43,7 +43,7 @@ if not os.path.exists(args.RESULT_SAVE_PATH):
 
 if not os.path.exists(args.LOG_SAVE_PATH):
     os.makedirs(args.LOG_SAVE_PATH)
-    
+
 if not args.RTSP_URL.endswith("/"):
     args.RTSP_URL = args.RTSP_URL+"/"
 frame_length_dict = {}
@@ -61,8 +61,8 @@ start_time = time.time()
 def test_func(process_id, index_list, cross_process_num, cross_process_lock):
     print(f"process {process_id} start")
     device_id = process_id % args.DEVICE_NUM
-    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    MODES = stat.S_IWUSR | stat.S_IRUSR
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
     for idx in index_list:
         if idx >= END_IDX:
             break
@@ -78,7 +78,7 @@ def test_func(process_id, index_list, cross_process_num, cross_process_lock):
                                   idx), "--DEVICE", str(device_id),
                               "--WINDOW_STRIDE", str(window_stride), "--RTSP_URL", args.RTSP_URL],
                              shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAGS, MODES), 'w') as fout:
+        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", flags, modes), 'w') as fout:
             for line in p.stdout.readlines():
                 fout.write(line.decode('UTF-8'))
         cross_process_lock.acquire()

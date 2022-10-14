@@ -36,7 +36,7 @@ for file in os.listdir(args.LOG_SAVE_PATH):
             for json_line in fp.readlines():
                 data = json.loads(json_line)
                 freq = int(data["frequency"])
-                if freq > 1: # 0, 1 is unstable state.
+                if freq > 1:  # 0 or 1 is unstable state.
                     frequency.append(freq)
-            total+=frequency[2:-1] # remove start or end data.
+            total += frequency[2:-1]  # remove start or end data.
 print(f"fps:{sum(total)*args.MUL_FACTOR/len(total)}")
