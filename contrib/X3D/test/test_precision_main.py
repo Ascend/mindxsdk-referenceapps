@@ -30,6 +30,7 @@ parser.add_argument("--LOG_SAVE_PATH", type=str)
 parser.add_argument("--FRAME_LENGTH_PATH", type=str)
 parser.add_argument("--PROCESS_NUM", type=int)
 parser.add_argument("--DEVICE_NUM", type=int)
+parser.add_argument("--RTSP_URL", type=str)
 args = parser.parse_args()
 
 START_IDX = 0
@@ -42,7 +43,9 @@ if not os.path.exists(args.RESULT_SAVE_PATH):
 
 if not os.path.exists(args.LOG_SAVE_PATH):
     os.makedirs(args.LOG_SAVE_PATH)
-
+    
+if not args.RTSP_URL.endswith("/"):
+    args.RTSP_URL = args.RTSP_URL+"/"
 frame_length_dict = {}
 with open(args.FRAME_LENGTH_PATH, "r") as fp:
     data = fp.read().split("\n")
@@ -58,8 +61,8 @@ start_time = time.time()
 def test_func(process_id, index_list, cross_process_num, cross_process_lock):
     print(f"process {process_id} start")
     device_id = process_id % args.DEVICE_NUM
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    flags = stat.S_IWUSR | stat.S_IRUSR
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    MODES = stat.S_IWUSR | stat.S_IRUSR
     for idx in index_list:
         if idx >= END_IDX:
             break
@@ -71,11 +74,11 @@ def test_func(process_id, index_list, cross_process_num, cross_process_lock):
         if remain > 9:
             window_stride = int(remain/9)
         p = subprocess.Popen(["python3.9", "test_precision_sub.py", "--RESULT_SAVE_PATH", args.RESULT_SAVE_PATH,
-                              "--TEST_VIDEO_IDX", str(idx), "--DEVICE", str(
-                                  device_id), "--WINDOW_STRIDE",
-                              str(window_stride)],
+                              "--TEST_VIDEO_IDX", str(
+                                  idx), "--DEVICE", str(device_id),
+                              "--WINDOW_STRIDE", str(window_stride), "--RTSP_URL", args.RTSP_URL],
                              shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", flags, flags), 'w') as fout:
+        with os.fdopen(os.open(f"{args.LOG_SAVE_PATH}/{idx}.log", FLAGS, MODES), 'w') as fout:
             for line in p.stdout.readlines():
                 fout.write(line.decode('UTF-8'))
         cross_process_lock.acquire()

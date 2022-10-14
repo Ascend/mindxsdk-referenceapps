@@ -274,7 +274,25 @@ bash build.sh
 bash run.sh
 ```
 
+### 4.1 插件介绍
 
+- MxpiStackFrame
+
+| 参数名称     | 参数解释             |
+| ------------ | -------------------- |
+| visionSource | 抠图插件名称         |
+| trackSource  | 跟踪插件名称         |
+| frameNum     | 跳帧间隔（为1不跳）  |
+| timeOut      | 某个目标堆帧超时时间 |
+| sleepTime    | 检查线程休眠时间     |
+
+- MxpiX3DPreprocess
+
+| 参数名称     | 参数解释             |
+| ------------ | -------------------- |
+| dataSource   | 数据源名称           |
+| skipFrameNum | 跳帧间隔             |
+| windowStride | 相邻检测窗口滑动距离 |
 
 ## 5 精度测试
 
@@ -346,7 +364,7 @@ python3.7 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video
 
 ```
 cd test
-python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4
+python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp://192.168.88.107:8554"
 ```
 
 参数
@@ -356,6 +374,7 @@ python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LO
 - **FRAME_LENGTH_PATH** 之前生成的视频长度清单存放路径
 - **PROCESS_NUM** 并行进程数
 - **DEVICE_NUM** 设备可用卡数
+- **RTSP_URL** RTSP服务器地址，形如"rtsp://IP:端口"
 
 最终，该程序会在RESULT_SAVE_PATH路径生成精度验证的中间结果。
 
@@ -417,7 +436,9 @@ python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/ --MUL_FACTOR=6
 
 在性能测试时，stackframe插件的跳帧系数frameNum被设置为1。根据堆帧逻辑，当数据积累够X3D所需的13帧后会将整个数据包发送出去，然后删去前一半数据(6帧)，剩下的数据仍被保存以供后续使用。这在输入稳定后等效于每6帧输出1个检测结果，故需要在计算性能时用6作为性能校正倍数。
 
-最终性能结果为 fps：24.4
+值得注意的是，一段视频在刚开始测量或结束测量时，由于插件初始化/销毁开销与堆桢插件数据积累影响，性能测量值可能偏低。在计算性能时，我们只选取性能稳定后的数据。选取更长的视频片段会减少该影响。
+
+最终性能结果为 fps：25.0
 
 
 

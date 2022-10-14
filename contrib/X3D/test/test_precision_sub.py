@@ -29,83 +29,28 @@ parser.add_argument("--RESULT_SAVE_PATH", type=str)
 parser.add_argument("--TEST_VIDEO_IDX", type=int)
 parser.add_argument("--DEVICE", type=int, default=0)
 parser.add_argument("--WINDOW_STRIDE", type=int, default=1)
+parser.add_argument("--RTSP_URL", type=str)
 args = parser.parse_args()
 
 streamManagerApi = StreamManagerApi()
 ret = streamManagerApi.InitManager()
-pipeline = {
-    "prec_verify": {
-        "stream_config": {
-            "deviceId": f"{args.DEVICE}"
-        },
-        "mxpi_rtspsrc0": {
-            "factory": "mxpi_rtspsrc",
-            "props": {
-                "rtspUrl": f"rtsp://192.168.88.107:8554/{args.TEST_VIDEO_IDX}.264",
-                "channelId": "0",
-                "timeout": "1"
-            },
-            "next": "mxpi_videodecoder0"
-        },
-        "mxpi_videodecoder0": {
-            "factory": "mxpi_videodecoder",
-            "props": {
-                "inputVideoFormat": "H264",
-                "outputImageFormat": "YUV420SP_NV21",
-                "vdecChannelId": "0",
-                "outMode": "1"
-            },
-            "former": "mxpi_rtspsrc0",
-            "next": "mxpi_x3dpreprocess0"
-        },
-        "mxpi_x3dpreprocess0": {
-            "props": {
-                "dataSource": "mxpi_videodecoder0",
-                "skipFrameNum": "5",
-                "windowStride": f"{args.WINDOW_STRIDE}"
-            },
-            "factory": "mxpi_x3dpreprocess",
-            "next": "mxpi_tensorinfer0"
-        },
-        "mxpi_tensorinfer0": {
-            "props": {
-                "dataSource": "mxpi_x3dpreprocess0",
-                "modelPath": "../models/x3d/x3d_s1_test.om",
-                "singleBatchInfer": "1",
-                "waitingTime": "250000"
-            },
-            "factory": "mxpi_tensorinfer",
-            "next": "mxpi_classpostprocessor0"
-        },
-        "mxpi_classpostprocessor0": {
-            "props": {
-                "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "../models/x3d/x3d_post_test.cfg",
-                "labelPath": "../models/x3d/kinetics400.names",
-                "postProcessLibPath": "../../../lib/modelpostprocessors/libx3dpostprocess.so"
-            },
-            "factory": "mxpi_classpostprocessor",
-            "next": "mxpi_dataserialize0"
-        },
-        "mxpi_dataserialize0": {
-            "props": {
-                "outputDataKeys": "mxpi_classpostprocessor0"
-            },
-            "factory": "mxpi_dataserialize",
-            "next": "appsink0"
-        },
-        "appsink0": {
-            "props": {
-                "blocksize": "4096000"
-            },
-            "factory": "appsink"
-        }
-    }
-}
-pipelineStr = json.dumps(pipeline).encode()
-ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+if ret != 0:
+    print("Failed to init Stream manager, ret=%s" % str(ret))
+    exit()
 
-STREAM_NAME = b'prec_verify'
+with open("../pipelines/testprecision.pipeline", 'rb') as f:
+    pipeline_str = f.read()
+pipeline = json.loads(pipeline_str)
+pipeline["test_precision"]["stream_config"]["deviceId"] = str(args.DEVICE)
+pipeline["test_precision"]["mxpi_rtspsrc0"]["props"]["rtspUrl"] = f"{args.RTSP_URL}{args.TEST_VIDEO_IDX}.264"
+pipeline["test_precision"]["mxpi_x3dpreprocess0"]["props"]["windowStride"] = str(args.WINDOW_STRIDE)
+pipeline_str = json.dumps(pipeline).encode()
+ret = streamManagerApi.CreateMultipleStreams(pipeline_str)
+if ret != 0:
+    print("Failed to create Stream, ret=%s" % str(ret))
+    exit()
+
+STREAM_NAME = b'test_precision'
 FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
 MODES = stat.S_IWUSR | stat.S_IRUSR
 for i in range(SAMPLE_NUM):
