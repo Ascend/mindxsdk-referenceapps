@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MxpiObjectFilter)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(PLUGIN_NAME "mxpi_objectfilter")
 set(TARGET_LIBRARY ${PLUGIN_NAME})

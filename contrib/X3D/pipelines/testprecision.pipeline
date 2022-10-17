@@ -47,7 +47,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "../models/x3d/x3d_post_test.cfg",
                 "labelPath": "../models/x3d/kinetics400.names",
-                "postProcessLibPath": "../../../lib/modelpostprocessors/libx3dpostprocess.so"
+                "postProcessLibPath": "libx3dpostprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"

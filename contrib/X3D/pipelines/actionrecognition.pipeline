@@ -32,7 +32,7 @@
         "mxpi_tensorinfer0":{
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "./models/yolov3/yolov3_tf_bs1_fp16.om"
+                "modelPath": "models/yolov3/yolov3_tf_bs1_fp16.om"
                 },
             "factory": "mxpi_tensorinfer",
              "next": "mxpi_objectpostprocessor0"
@@ -41,9 +41,9 @@
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
                 "funcLanguage":"c++",
-                "postProcessConfigPath": "./models/yolov3/yolov3_tf_bs1_fp16.cfg",
-                "labelPath": "./models/yolov3/coco.names",
-                "postProcessLibPath": "../../lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessConfigPath": "models/yolov3/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "models/yolov3/coco.names",
+                "postProcessLibPath": "libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"
@@ -94,7 +94,7 @@
         "mxpi_tensorinfer1":{
             "props": {
                 "dataSource": "mxpi_stackframe0",
-                "modelPath": "./models/x3d/x3d_s1.om",
+                "modelPath": "models/x3d/x3d_s1.om",
                 "singleBatchInfer": "1",
                 "waitingTime":"250000"
                 },
@@ -104,9 +104,9 @@
         "mxpi_classpostprocessor0":{
             "props": {
                 "dataSource": "mxpi_tensorinfer1",
-                "postProcessConfigPath": "./models/x3d/x3d_post.cfg",
-                "labelPath": "./models/x3d/kinetics400.names",
-                "postProcessLibPath": "../../lib/modelpostprocessors/libresnet50postprocess.so"
+                "postProcessConfigPath": "models/x3d/x3d_post.cfg",
+                "labelPath": "models/x3d/kinetics400.names",
+                "postProcessLibPath": "libresnet50postprocess.so"
                 },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"

@@ -118,8 +118,8 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 
 备注：
 
-- coco.names 文件可从https://github.com/pjreddie/darknet/blob/master/data/coco.names获取
-- kinetics400.names 文件可从https://github.com/kenshohara/video-classification-3d-cnn/blob/master/class_names_list获取。请将class_names_list重命名为kinetics400.names。
+- coco.names 文件可从[此处](https://github.com/pjreddie/darknet/blob/master/data/coco.names)获取
+- kinetics400.names 文件可从[此处](https://github.com/kenshohara/video-classification-3d-cnn/blob/master/class_names_list)获取。请将class_names_list重命名为kinetics400.names。
 
 - yolov3_tf_bs1_fp16.om，x3d_s1.onnx，x3d_s1_test.om，x3d_s1.om可从[此](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/models.zip)获取，或遵照第三节流程转换。
 
@@ -174,7 +174,9 @@ ascend-toolkit-path: CANN 安装路径
 
 ## 3 模型转换
 
-本项目采用yolov3与x3d_s模型，模型转换指导如下：
+本项目采用yolov3与x3d_s模型，模型转换方法如下文所示，也可以选取已转换好的[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/models.zip)。
+
+模型转换部分的操作请在python3.7环境下完成。
 
 ### 3.1 yolov3模型转换
 
@@ -276,7 +278,7 @@ bash build.sh
 bash run.sh
 ```
 
-### 4.1 插件介绍
+### 4.1 插件属性介绍
 
 - MxpiStackFrame
 
@@ -331,13 +333,13 @@ bash run.sh
 
 ```
 cd test
-pip3.7 install requirements.txt
+pip3 install requirements.txt
 ```
 
 转换视频格式
 
 ```
-python3.7 cvt_video2h264.py --source_path=../Knetics-400/val/ --target_path=../Knetics-400/val264/ --label_path=K400_label.txt --save_path=video2label.txt
+python3 cvt_video2h264.py --source_path=../Knetics-400/val/ --target_path=../Knetics-400/val264/ --label_path=K400_label.txt --save_path=video2label.txt
 ```
 
 参数
@@ -350,7 +352,7 @@ python3.7 cvt_video2h264.py --source_path=../Knetics-400/val/ --target_path=../K
 获取视频长度
 
 ```
-python3.7 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video2framenum.txt
+python3 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video2framenum.txt
 ```
 
 参数
@@ -366,7 +368,7 @@ python3.7 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video
 
 ```
 cd test
-python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp://192.168.88.107:8554"
+python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp://IP:端口"
 ```
 
 参数
@@ -385,7 +387,7 @@ python3.7 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LO
 执行下列命令：
 
 ```
-python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_PATH="video2label.txt"
+python3 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_PATH="video2label.txt"
 ```
 
 参数
@@ -413,7 +415,7 @@ python3.7 calculate_precision.py --RESULT_PATH="test_precision_result" --LABEL_P
 
 ```
 cd test
-python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt" --MAX_COUNT_IDX=50
+python3 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt" --MAX_COUNT_IDX=50
 ```
 
 参数
@@ -426,7 +428,7 @@ python3.7 test_fps.py --VIDEO_LIST_PATH="test_fps_video.txt" --MAX_COUNT_IDX=50
 当程序执行完毕后，所有视频的性能分析日志均会保存在${SDK-path}/logs中，执行如下命令即可输出推理性能
 
 ```
-python3.7 calculate_fps.py --LOG_SAVE_PATH=../../../logs/ --MUL_FACTOR=6
+python3 calculate_fps.py --LOG_SAVE_PATH=${SDK-path}/logs --MUL_FACTOR=6
 ```
 
 参数

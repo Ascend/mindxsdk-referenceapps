@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(MxpiStackFrame)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 set(PLUGIN_NAME "mxpi_stackframe")
 set(TARGET_LIBRARY ${PLUGIN_NAME})

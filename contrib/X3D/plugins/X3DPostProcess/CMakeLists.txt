@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 3.5.2)
-project(Prec_Checkresult)
+project(X3DPostProcess)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 add_definitions(-Dgoogle=mindxsdk_private)
 
 set(PLUGIN_NAME "x3dpostprocess")
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${PROJECT_SOURCE_DIR}/../../../../lib/modelpostprocessors)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  ${MX_SDK_HOME}/lib/modelpostprocessors)
 
+include_directories(${MX_SDK_HOME}/include)
+include_directories(${MX_SDK_HOME}/opensource/include)
+include_directories(${MX_SDK_HOME}/opensource/include/gstreamer-1.0)
+include_directories(${MX_SDK_HOME}/opensource/include/glib-2.0)
+include_directories(${MX_SDK_HOME}/opensource/lib/glib-2.0/include)
 
-include_directories(${PROJECT_SOURCE_DIR}/../../../../include)
-include_directories(${PROJECT_SOURCE_DIR}/../../../../opensource/include)
-include_directories(${PROJECT_SOURCE_DIR}/../../../../opensource/include/gstreamer-1.0)
-include_directories(${PROJECT_SOURCE_DIR}/../../../../opensource/include/glib-2.0)
-include_directories(${PROJECT_SOURCE_DIR}/../../../../opensource/lib/glib-2.0/include)
-
-link_directories(${PROJECT_SOURCE_DIR}/../../../../opensource/lib/)
-link_directories(${PROJECT_SOURCE_DIR}/../../../../lib)
+link_directories(${MX_SDK_HOME}/opensource/lib)
+link_directories(${MX_SDK_HOME}/lib)
 
 add_compile_options(-std=c++11 -fPIC -fstack-protector-all -pie -Wno-deprecated-declarations)
 add_compile_options("-DPLUGIN_NAME=${PLUGIN_NAME}")

@@ -41,6 +41,7 @@ def perform_x3d_pth2onnx(output_path, cfg):
 
         def forward(self, x):
             x = x.unsqueeze(0)
+            # convert input shape 1x13x3x182x182 to is1x3x13x182x182
             x = x.permute(0, 2, 1, 3, 4)
             return self.outer_model([x])
 
@@ -48,6 +49,7 @@ def perform_x3d_pth2onnx(output_path, cfg):
     input_names = ["image"]
     output_names = ["class"]
     dynamic_axes = {'image': {0: '-1'}, 'class': {0: '-1'}}
+    # input data shape is 13, 3, 182, 182
     dummy_input = torch.randn(13, 3, 182, 182)
     torch.onnx.export(tmodel, dummy_input, output_path, input_names=input_names,
                       dynamic_axes=dynamic_axes, output_names=output_names, opset_version=11, verbose=True)

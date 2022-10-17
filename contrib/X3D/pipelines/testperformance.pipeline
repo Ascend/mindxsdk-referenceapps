@@ -43,7 +43,7 @@
                 "funcLanguage": "c++",
                 "postProcessConfigPath": "../models/yolov3/yolov3_tf_bs1_fp16.cfg",
                 "labelPath": "../models/yolov3/coco.names",
-                "postProcessLibPath": "../../../lib/modelpostprocessors/libyolov3postprocess.so"
+                "postProcessLibPath": "libyolov3postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_distributor0"
@@ -106,7 +106,7 @@
                 "dataSource": "mxpi_tensorinfer1",
                 "postProcessConfigPath": "../models/x3d/x3d_post.cfg",
                 "labelPath": "../models/x3d/kinetics400.names",
-                "postProcessLibPath": "../../../lib/modelpostprocessors/libresnet50postprocess.so"
+                "postProcessLibPath": "libresnet50postprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "mxpi_dataserialize0"
