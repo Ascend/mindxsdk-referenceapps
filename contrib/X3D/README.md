@@ -459,3 +459,11 @@ python3 calculate_fps.py --LOG_SAVE_PATH=${SDK-path}/logs --MUL_FACTOR=6
 **解决方案**
 
 这说明视频内不存在人类目标，导致后续插件无法获取数据，为正常现象。
+
+### 7.3 后处理库权限问题
+
+提示Check Owner permission failed: Current permission is 7, but required no greater than 6.
+
+**解决方案：**
+
+后处理库so文件权限太高，需要降低权限至540：chmod 540 ./lib/libvehiclepostprocess.so
