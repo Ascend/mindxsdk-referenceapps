@@ -319,15 +319,11 @@ bash run.sh
 
 数据集大小为12G，请预留至少25G磁盘空间。
 
-备注:
-
-- 由于服务器限制，在服务器上运行视频转换是十分缓慢的，故上文给出的数据集压缩包内**Knetics-400/val264**路径下已经包含了转换好的h.264视频，且在**Knetics-400/test_file**路径下存在精度测试需要用的video2framenum.txt，video2label.txt文件。如果你选用这个压缩包，你只需将Knetics-400/val264下的所有视频放在rtsp服务器文件夹中，并将video2framenum.txt，video2label.txt文件放在X3D/test文件夹下，然后可以跳过5.2的所有步骤。
+> 由于服务器限制，在服务器上运行视频转换是十分缓慢的，故上文给出的数据集压缩包内**Knetics-400/val264**路径下已经包含了转换好的h.264视频，且在**Knetics-400/test_file**路径下存在精度测试需要用的video2framenum.txt，video2label.txt文件。如果你选用这个压缩包，你只需将Knetics-400/val264下的所有视频放在rtsp服务器文件夹中，并将video2framenum.txt，video2label.txt文件放在X3D/test文件夹下，然后可以跳过5.2的所有步骤。
 
 ### 5.2 数据转换并生成辅助信息
 
-备注:
-
-- 如果选用5.1给出的数据压缩包作为数据来源，本节可以跳过。
+> 如果选用5.1给出的数据压缩包作为数据来源，本节可以跳过。
 
 因为本项目仅支持h.264视频格式，我们需要将Knetics400中所有视频转换为h.264格式，并获取所有视频的对应动作类别与桢数以便测试。注意：请提前安装ffmpeg。
 
@@ -436,7 +432,7 @@ python3 calculate_fps.py --LOG_SAVE_PATH=${SDK-path}/logs --MUL_FACTOR=6
 - **LOG_SAVE_PATH** ${SDK-path}/logs文件路径
 - **MUL_FACTOR** 性能校正倍数
 
-备注：
+
 
 在性能测试时，stackframe插件的跳帧系数frameNum被设置为1。根据堆帧逻辑，当数据积累够X3D所需的13帧后会将整个数据包发送出去，然后删去前一半数据(6帧)，剩下的数据仍被保存以供后续使用。这在输入稳定后等效于每6帧输出1个检测结果，故需要在计算性能时用6作为性能校正倍数。
 
