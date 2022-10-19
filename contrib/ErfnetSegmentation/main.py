@@ -82,4 +82,5 @@ if __name__ == '__main__':
                 break
             except (OSError, FileNotFoundError, PIL.UnidentifiedImageError, SyntaxError):
                 continue
+        os.rename(RESIMAGE, os.path.join(INFER_RESULT, "result_"+img_name))
     streamManagerApi.DestroyAllStreams()
