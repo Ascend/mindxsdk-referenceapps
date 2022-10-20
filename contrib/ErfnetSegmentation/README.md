@@ -22,7 +22,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ```
 |-- pipeline
-|   |-- erfnet_pipeline.json // SDK的推理pipeline配置文件
+|   |-- erfnet_pipeline.pipeline // SDK的推理pipeline配置文件
 |-- plugin
 |   |-- postprocess
 |       |-- build.sh          // 编译脚本
@@ -87,12 +87,23 @@ bash onnx2om.sh
   + 下载leftImg8bit.zip以获得RGB图片, 下载gtFine.zip以获得标签.
   + 应使用的标签为"_labelTrainIds"而非"_labelIds", 你可以下载[cityscapes scripts](https://github.com/mcordts/cityscapesScripts)并使用[conversor](https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/preparation/createTrainIdLabelImgs.py)来生成trainIds。
 
+
+为了方便可以直接下载已经处理好的数据, 链接：https://pan.baidu.com/s/1jH9GUDX4grcEoDNLsWPKGw. 提取码：aChQ.
+
+将数据集下载到项目根目录下，解压gtFine.zip文件，得到以下目录：
+
+```
+cityscapes
+|  └── gtFine
+|  └── leftImg8bit
+```
+
 ## 4 SDK推理
 
 在项目根目录下键入
 
 ```bash
-python main.py --pipeline_path ./pipeline/erfnet_pipeline.json  --data_path ./data/
+python main.py --pipeline_path ./pipeline/erfnet_pipeline.pipeline  --data_path ./data/
 ```
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
@@ -105,7 +116,7 @@ python main.py --pipeline_path ./pipeline/erfnet_pipeline.json  --data_path ./da
 在项目根目录下键入
 
 ```bash
-python test_metric.py --pipeline_path ./pipeline/erfnet_pipeline.json --data_path /path/to/cityscapes/
+python test_metric.py --pipeline_path ./pipeline/erfnet_pipeline.pipeline --data_path ./cityscapes/
 ```
 
 其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；

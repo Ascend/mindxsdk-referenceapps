@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     parser.add_argument('--pipeline_path', type=str,
-                        default="pipeline/erfnet_pipeline.json")
+                        default="pipeline/erfnet_pipeline.pipeline")
     parser.add_argument('--data_path', type=str)
     config = parser.parse_args()
 
