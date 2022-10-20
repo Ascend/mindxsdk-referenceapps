@@ -84,7 +84,6 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
 MX_SDK_HOME：MindX SDK mxVision的根安装路径，用于包含MindX SDK提供的所有库和头文件。
-LD_LIBRARY_PATH：提供了MindX SDK已开发的插件和相关的库信息。
 install_path：ascend-toolkit的安装路径。
 PATH：添加python的执行路径和atc转换工具的执行路径。
 LD_LIBRARY_PATH：添加ascend-toolkit和MindX SDK提供的库目录路径。
