@@ -29,6 +29,8 @@ def infer(img_path_, stream_manager_api_):
     data_input = MxDataInput()
     with open(img_path_, 'rb') as file__:
         image = Image.open(file__)
+        if image.mode == "P":
+            image = image.convert('RGB')
         output = BytesIO()
         image.save(output, format='JPEG')
         data_input.data = output.getvalue()
