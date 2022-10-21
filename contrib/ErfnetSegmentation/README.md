@@ -45,6 +45,13 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet的原理并没有根据具体场景设计，所以其他分割任务也都能使用。
 
+在CityScapes数据集上，该项目精度能够达到原论文的水平。不过在一些场景上的效果还不够理想:
+
++ 1. 当图片来源于车载录像，图片中会包含本车的一部分，网络对这部分的分割结果有所缺陷，表现为，轮廓模糊，分类不准确等。
++ 2. 图片中场景过于复杂时，街道和物体交织在一起，网络对这类场景的分割结果也不够理想。
++ 3. 轻微的精度损失：该模型相比于原模型精度稍有下降，这是因为mindsdk只提供了jpg格式图片的解码，而原数据集中的图片为png格式，所以为了将模型迁移到mindsdk，需要将数据全部转换为jpg格式。而jpg格式压缩图片是有损失的，所以造成了一定的精度下降。
+
+
 ## 2 环境依赖
 
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
@@ -87,8 +94,7 @@ bash onnx2om.sh
   + 下载leftImg8bit.zip以获得RGB图片, 下载gtFine.zip以获得标签.
   + 应使用的标签为"_labelTrainIds"而非"_labelIds", 你可以下载[cityscapes scripts](https://github.com/mcordts/cityscapesScripts)并使用[conversor](https://github.com/mcordts/cityscapesScripts/blob/master/cityscapesscripts/preparation/createTrainIdLabelImgs.py)来生成trainIds。
 
-
-为了方便可以直接下载已经处理好的数据, 链接：https://pan.baidu.com/s/1jH9GUDX4grcEoDNLsWPKGw. 提取码：aChQ.
+在官网上下载数据集：gtFine_trainvaltest.zip (241MB) , leftImg8bit_trainvaltest.zip (11GB).
 
 将数据集下载到项目根目录下，解压gtFine.zip文件，得到以下目录：
 
@@ -96,6 +102,32 @@ bash onnx2om.sh
 cityscapes
 |  └── gtFine
 |  └── leftImg8bit
+```
+
+原数据集标签有34类别，而我们需要使用19类，为了应用数据集，需要对标签文件进行转换。首先键入
+
+```bash
+git clone https://github.com/mcordts/cityscapesScripts.git
+```
+
+下载cityscapes数据集工具包，然后键入
+
+```bash
+cd cityscapesScripts
+export CITYSCAPES_DATASET="The Path You Save the Dataset"
+```
+
+环境变量CITYSCAPES_DATASET用于标识数据集的位置，键入
+
+```bash
+python cityscapesscripts/preparation/createTrainIdLabelImgs.py
+```
+
+出现以下标识，说明转换成功。
+
+```bash
+Processing 500 annotation files
+Progress: 100.0 % 
 ```
 
 ## 4 SDK推理
@@ -130,4 +162,4 @@ iou_class:  [0.9736657  0.7985532  0.90132016 0.43224114 0.5292813  0.5920671
  0.7017194 ]
 ```
 
-目标精度为原论文所达到的精度，为68.0。该项目达到的指标为70.4，超过了目标精度。
+目标精度为原论文所达到的精度，为68.0%。该项目达到的指标为70.4%，超过了目标精度。
