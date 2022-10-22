@@ -102,17 +102,17 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 │       ├── X3DPostProcess.cpp
 │       └── X3DPostProcess.h
 ├── run.sh //业务流程执行脚本
-├── test
-│   ├── calculate_precision.py //测试流程精度最终精度计算脚本
-│   ├── cvt_video2h264.py //数据集视频格式转换脚本
-│   ├── get_video_length.py //获取所有视频帧长度脚本
-│   ├── K400_label.txt //kinetics400标签文件(带下划线版)
-│   ├── requirements.txt
-│   ├── test_precision_main.py //测试精度流程启动脚本
-│   └── test_precision_sub.py
-│   └── test_fps.py //性能测试启动脚本
-│   └── calculate_fps.py //性能测试计算结果脚本
 └── README.md
+└── test
+    ├── calculate_fps.py  //性能测试计算结果脚本
+    ├── calculate_precision.py  //测试流程精度最终精度计算脚本
+    ├── cvt_video2h264.py  //数据集视频格式转换脚本
+    ├── get_video_length.py  //获取所有视频帧长度脚本
+    ├── K400_label.txt  //kinetics400标签文件(带下划线版)
+    ├── requirements.txt
+    ├── test_fps.py  //性能测试启动脚本
+    ├── test_precision_main.py  //测试精度流程启动脚本
+    └── test_precision_sub.py
 
 ```
 
@@ -121,7 +121,7 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 - coco.names 文件可从[此处](https://github.com/pjreddie/darknet/blob/master/data/coco.names)获取
 - kinetics400.names 文件可从[此处](https://github.com/kenshohara/video-classification-3d-cnn/blob/master/class_names_list)获取。请将class_names_list重命名为kinetics400.names。
 
-- yolov3_tf_bs1_fp16.om，x3d_s1.onnx，x3d_s1_test.om，x3d_s1.om可从[此](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/models.zip)获取，或遵照第三节流程转换。
+- yolov3_tf_bs1_fp16.om，x3d_s1.onnx，x3d_s1_test.om，x3d_s1.om可从[此](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/models.zip)获取，或遵照第三节模型转换。
 
 ### 1.5 技术实现流程图
 
@@ -148,8 +148,15 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 | python        | 3.9.2    |
 | opencv-python | 4.5.5.64 |
 | ffmpeg        | 3.4.11   |
+| live555       | 1.10     |
 
-确保环境中正确安装mxVision SDK。
+>  确保环境中正确安装mxVision SDK。
+>
+> live555为离线视频rtsp推流工具，可参考[Live555离线视频转RTSP说明文档](https://gitee.com/link?target=https%3A%2F%2Fbbs.huaweicloud.com%2Fforum%2Fthread-68720-1-1.html)安装。
+>
+> ubuntu安装ffmpeg可参考[该指南](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu)。
+
+
 
 在编译运行项目前，需要设置环境变量：
 
@@ -180,7 +187,7 @@ ascend-toolkit-path: CANN 安装路径
 
 ### 3.1 yolov3模型转换
 
-yolov3模型下载参考华为昇腾社区[ModelZoo](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fzh%2Fsoftware%2Fmodelzoo%2Fdetail%2F1%2Fba2a4c054a094ef595da288ecbc7d7b4)
+yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 
 请将下载的ATC YOLOv3(FP16) from TensorFlow - Ascend310.zip文件置于 X3D/models/yolov3/ 文件夹下并输入如下指令即可完成模型转换。
 
@@ -270,7 +277,7 @@ bash build.sh
 },
 ```
 
-中请用待测试的rtsp视频流地址替换rtsp_Url字段。其中rtsp_Url格式为 rtsp:://host:port/Data，具体操作可以参考[live555链接](https://gitee.com/link?target=https%3A%2F%2Fbbs.huaweicloud.com%2Fforum%2Fthread-68720-1-1.html)。视频仅支持h.264格式。
+中请用待测试的rtsp视频流地址替换rtsp_Url字段。其中rtsp_Url格式为 rtsp:://host:port/Data。视频仅支持h.264格式。
 
 **步骤3** 执行推理
 
