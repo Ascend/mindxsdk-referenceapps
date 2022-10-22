@@ -141,18 +141,33 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
+| 软件名称                  | 版本   |
+| ------------------------- | ------ |
+| cmake                     | 3.5+   |
+| mxVision                  | 2.0.4  |
+| python                    | 3.9.2  |
+| ffmpeg                    | 3.4.11 |
+| live555                   | 1.10   |
+对于x3d的om导出，所需的环境配置为
 | 软件名称      | 版本     |
 | ------------- | -------- |
-| cmake         | 3.5+     |
-| mxVision      | 2.0.4    |
-| python        | 3.9.2    |
-| opencv-python | 4.5.5.64 |
-| ffmpeg        | 3.4.11   |
-| live555       | 1.10     |
+| python        | 3.7      |
+| torch         | 1.8.0    |
+| torchvision   | 0.13.1   |
+| onnx          | 1.12.0   |
+| numpy         | 1.20.3   |
+| pillow        | 8.2.0    |
+| opencv_python | 4.5.3.56 |
+| simplejson    | 3.17.5   |
+| av            | 10.0.0   |
+| pandas        | 1.3.3    |
+| scipy         | 1.7.1    |
+
+
 
 >  确保环境中正确安装mxVision SDK。
 >
-> live555为离线视频rtsp推流工具，可参考[Live555离线视频转RTSP说明文档](https://gitee.com/link?target=https%3A%2F%2Fbbs.huaweicloud.com%2Fforum%2Fthread-68720-1-1.html)安装。
+> live555为离线视频rtsp推流工具，可参考[Live555离线视频转RTSP说明文档](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)安装。
 >
 > ubuntu安装ffmpeg可参考[该指南](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu)。
 
@@ -209,15 +224,14 @@ x3d模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/so
 ```
 unzip "ATC X3D (FP16) from Pytorch - Ascend310.zip"
 cd X3D
-pip3.7 install -r requirements.txt
 git clone https://github.com/facebookresearch/detectron2 detectron2_repo
-pip3.7 install -e detectron2_repo
+pip install -e detectron2_repo
 git clone https://github.com/facebookresearch/SlowFast -b main
 cd SlowFast
 git reset 9839d1318c0ae17bd82c6a121e5640aebc67f126 --hard
 mv ../x3d.patch ./
 patch -p1 < x3d.patch
-pip3.7 install -e . -i
+pip install -e .
 cd ..
 mv ../x3d_pth_to_onnx.py x3d_pth_to_onnx.py
 ```
@@ -231,14 +245,14 @@ site-packages/torchvision/models/quantization/mobilenetv2.py
 site-packages/torchvision/models/quantization/mobilenetv3.py
 ```
 
-文件中的torch.ao替换为torch.quantization以保证onnx正常导出。
+文件中的torch.ao.quantization替换为torch.quantization以保证onnx正常导出。
 
 
 
 回到X3D/models/x3d/X3D路径，执行以下命令导出onnx文件：
 
 ```
-python3.7 x3d_pth_to_onnx.py --cfg SlowFast/configs/Kinetics/X3D_S.yaml     X3D_PTH2ONNX.ENABLE True TEST.BATCH_SIZE 1 TEST.CHECKPOINT_FILE_PATH  "x3d_s.pyth" X3D_PTH2ONNX.ONNX_OUTPUT_PATH "x3d_s.onnx"
+python x3d_pth_to_onnx.py --cfg SlowFast/configs/Kinetics/X3D_S.yaml     X3D_PTH2ONNX.ENABLE True TEST.BATCH_SIZE 1 TEST.CHECKPOINT_FILE_PATH  "x3d_s.pyth" X3D_PTH2ONNX.ONNX_OUTPUT_PATH "x3d_s.onnx"
 ```
 
 因为测试流程与业务流程所接收的数据格式不同，请分别执行以下两条指令导出业务流程与测试流程所需om文件：
@@ -264,6 +278,8 @@ mv x3d_s1_test.om ../x3d_s1_test.om
 ```
 bash build.sh
 ```
+
+请在编译完成后，将生成的libx3dpostprocess.so，libmxpi_x3dpreprocess.so，libmxpi_stackframe.so， libmxpi_objectfilter.so插件权限改为640。
 
 **步骤2** 修改X3D/pipelines/actionrecognition.pipeline文件，在
 
@@ -371,7 +387,7 @@ python3 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video2f
 
 ```
 cd test
-python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp://IP:端口"
+python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp:://IP:端口"
 ```
 
 参数
@@ -381,7 +397,7 @@ python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_
 - **FRAME_LENGTH_PATH** 之前生成的视频长度清单存放路径
 - **PROCESS_NUM** 并行进程数
 - **DEVICE_NUM** 设备可用卡数
-- **RTSP_URL** RTSP服务器地址，形如"rtsp://IP:端口"
+- **RTSP_URL** RTSP服务器地址，形如"rtsp:://IP:端口"
 
 最终，该程序会在RESULT_SAVE_PATH路径生成精度验证的中间结果。
 
@@ -469,4 +485,4 @@ python3 calculate_fps.py --LOG_SAVE_PATH=${SDK-path}/logs --MUL_FACTOR=6
 
 **解决方案：**
 
-后处理库so文件权限太高，需要降低权限至540：chmod 540 ./lib/libvehiclepostprocess.so
+后处理库so文件权限太高，需要降低所需so权限至640。
