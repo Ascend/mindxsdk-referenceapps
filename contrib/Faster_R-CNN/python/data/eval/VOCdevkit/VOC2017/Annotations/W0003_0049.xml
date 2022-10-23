@@ -1,0 +1,501 @@
+<annotation>
+	<folder>W0003</folder>
+	<filename>W0003_0049.jpg</filename>
+	<source>
+		
+		
+		<database>Unknown</database>
+		
+	
+	</source>
+	<size>
+		
+		
+		<width>3169</width>
+		
+		
+		<height>600</height>
+		
+		
+		<depth>1</depth>
+		
+	
+	</size>
+	<segmented>0</segmented>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>12</xmin>
+			
+			
+			<ymin>392</ymin>
+			
+			
+			<xmax>87</xmax>
+			
+			
+			<ymax>421</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>136</xmin>
+			
+			
+			<ymin>390</ymin>
+			
+			
+			<xmax>185</xmax>
+			
+			
+			<ymax>420</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>210</xmin>
+			
+			
+			<ymin>394</ymin>
+			
+			
+			<xmax>283</xmax>
+			
+			
+			<ymax>425</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>349</xmin>
+			
+			
+			<ymin>388</ymin>
+			
+			
+			<xmax>404</xmax>
+			
+			
+			<ymax>420</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>608</xmin>
+			
+			
+			<ymin>394</ymin>
+			
+			
+			<xmax>645</xmax>
+			
+			
+			<ymax>425</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>694</xmin>
+			
+			
+			<ymin>398</ymin>
+			
+			
+			<xmax>744</xmax>
+			
+			
+			<ymax>433</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>798</xmin>
+			
+			
+			<ymin>396</ymin>
+			
+			
+			<xmax>855</xmax>
+			
+			
+			<ymax>431</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>920</xmin>
+			
+			
+			<ymin>392</ymin>
+			
+			
+			<xmax>987</xmax>
+			
+			
+			<ymax>435</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1108</xmin>
+			
+			
+			<ymin>410</ymin>
+			
+			
+			<xmax>1167</xmax>
+			
+			
+			<ymax>443</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1353</xmin>
+			
+			
+			<ymin>400</ymin>
+			
+			
+			<xmax>1442</xmax>
+			
+			
+			<ymax>435</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1667</xmin>
+			
+			
+			<ymin>412</ymin>
+			
+			
+			<xmax>1744</xmax>
+			
+			
+			<ymax>451</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2281</xmin>
+			
+			
+			<ymin>418</ymin>
+			
+			
+			<xmax>2342</xmax>
+			
+			
+			<ymax>449</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2714</xmin>
+			
+			
+			<ymin>416</ymin>
+			
+			
+			<xmax>2757</xmax>
+			
+			
+			<ymax>445</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>chengxbl</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2965</xmin>
+			
+			
+			<ymin>404</ymin>
+			
+			
+			<xmax>3091</xmax>
+			
+			
+			<ymax>443</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	</annotation>

@@ -1,0 +1,195 @@
+<annotation>
+	<folder>W0003</folder>
+	<filename>W0003_0068.jpg</filename>
+	<source>
+		
+		
+		<database>Unknown</database>
+		
+	
+	</source>
+	<size>
+		
+		
+		<width>1879</width>
+		
+		
+		<height>600</height>
+		
+		
+		<depth>1</depth>
+		
+	
+	</size>
+	<segmented>0</segmented>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>383</xmin>
+			
+			
+			<ymin>92</ymin>
+			
+			
+			<xmax>405</xmax>
+			
+			
+			<ymax>117</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>698</xmin>
+			
+			
+			<ymin>242</ymin>
+			
+			
+			<xmax>724</xmax>
+			
+			
+			<ymax>273</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1653</xmin>
+			
+			
+			<ymin>139</ymin>
+			
+			
+			<xmax>1669</xmax>
+			
+			
+			<ymax>164</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1514</xmin>
+			
+			
+			<ymin>205</ymin>
+			
+			
+			<xmax>1530</xmax>
+			
+			
+			<ymax>228</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1803</xmin>
+			
+			
+			<ymin>222</ymin>
+			
+			
+			<xmax>1827</xmax>
+			
+			
+			<ymax>246</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	</annotation>

@@ -1,0 +1,467 @@
+<annotation>
+	<folder>W0003</folder>
+	<filename>W0003_0048.jpg</filename>
+	<source>
+		
+		
+		<database>Unknown</database>
+		
+	
+	</source>
+	<size>
+		
+		
+		<width>3069</width>
+		
+		
+		<height>600</height>
+		
+		
+		<depth>1</depth>
+		
+	
+	</size>
+	<segmented>0</segmented>
+	<object>
+		
+		
+		<name>weirh</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>988</xmin>
+			
+			
+			<ymin>382</ymin>
+			
+			
+			<xmax>1438</xmax>
+			
+			
+			<ymax>459</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>1438</xmin>
+
+
+			<ymin>382</ymin>
+
+
+			<xmax>1888</xmax>
+
+
+			<ymax>459</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>1888</xmin>
+
+
+			<ymin>382</ymin>
+
+
+			<xmax>2338</xmax>
+
+
+			<ymax>459</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>2338</xmin>
+
+
+			<ymin>382</ymin>
+
+
+			<xmax>2788</xmax>
+
+
+			<ymax>459</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>2788</xmin>
+
+
+			<ymin>382</ymin>
+
+
+			<xmax>3056</xmax>
+
+
+			<ymax>459</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2321</xmin>
+			
+			
+			<ymin>273</ymin>
+			
+			
+			<xmax>2353</xmax>
+			
+			
+			<ymax>320</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2344</xmin>
+			
+			
+			<ymin>222</ymin>
+			
+			
+			<xmax>2379</xmax>
+			
+			
+			<ymax>248</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2374</xmin>
+			
+			
+			<ymin>264</ymin>
+			
+			
+			<xmax>2412</xmax>
+			
+			
+			<ymax>337</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2130</xmin>
+			
+			
+			<ymin>474</ymin>
+			
+			
+			<xmax>2154</xmax>
+			
+			
+			<ymax>498</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1542</xmin>
+			
+			
+			<ymin>352</ymin>
+			
+			
+			<xmax>1566</xmax>
+			
+			
+			<ymax>378</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>697</xmin>
+			
+			
+			<ymin>156</ymin>
+			
+			
+			<xmax>717</xmax>
+			
+			
+			<ymax>187</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>738</xmin>
+			
+			
+			<ymin>161</ymin>
+			
+			
+			<xmax>780</xmax>
+			
+			
+			<ymax>189</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>jiazha</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>1215</xmin>
+			
+			
+			<ymin>204</ymin>
+			
+			
+			<xmax>1241</xmax>
+			
+			
+			<ymax>240</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	</annotation>

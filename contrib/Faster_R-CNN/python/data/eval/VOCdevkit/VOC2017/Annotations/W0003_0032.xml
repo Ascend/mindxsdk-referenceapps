@@ -1,0 +1,263 @@
+<annotation>
+	<folder>W0003</folder>
+	<filename>W0003_0032.jpg</filename>
+	<source>
+		
+		
+		<database>Unknown</database>
+		
+	
+	</source>
+	<size>
+		
+		
+		<width>2583</width>
+		
+		
+		<height>600</height>
+		
+		
+		<depth>1</depth>
+		
+	
+	</size>
+	<segmented>0</segmented>
+	<object>
+		
+		
+		<name>weirh</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>96</xmin>
+			
+			
+			<ymin>111</ymin>
+			
+			
+			<xmax>546</xmax>
+			
+			
+			<ymax>211</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>546</xmin>
+
+
+			<ymin>111</ymin>
+
+
+			<xmax>996</xmax>
+
+
+			<ymax>211</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>996</xmin>
+
+
+			<ymin>111</ymin>
+
+
+			<xmax>1446</xmax>
+
+
+			<ymax>211</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>1446</xmin>
+
+
+			<ymin>111</ymin>
+
+
+			<xmax>1896</xmax>
+
+
+			<ymax>211</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>1896</xmin>
+
+
+			<ymin>111</ymin>
+
+
+			<xmax>2346</xmax>
+
+
+			<ymax>211</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+
+
+		<name>weirh</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>2346</xmin>
+
+
+			<ymin>111</ymin>
+
+
+			<xmax>2521</xmax>
+
+
+			<ymax>211</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2338</xmin>
+			
+			
+			<ymin>402</ymin>
+			
+			
+			<xmax>2426</xmax>
+			
+			
+			<ymax>449</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	</annotation>

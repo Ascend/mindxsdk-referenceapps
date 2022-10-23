@@ -1,0 +1,549 @@
+<annotation>
+	<folder>W0003</folder>
+	<filename>W0003_0008.jpg</filename>
+	<source>
+		
+		
+		<database>Unknown</database>
+		
+	
+	</source>
+	<size>
+		
+		
+		<width>4964</width>
+		
+		
+		<height>600</height>
+		
+		
+		<depth>1</depth>
+		
+	
+	</size>
+	<segmented>0</segmented>
+	<object>
+
+
+		<name>qikong</name>
+
+
+		<pose>Unspecified</pose>
+
+
+		<truncated>0</truncated>
+
+
+		<difficult>0</difficult>
+
+
+		<bndbox>
+
+
+			<xmin>666</xmin>
+
+
+			<ymin>415</ymin>
+
+
+			<xmax>682</xmax>
+
+
+			<ymax>436</ymax>
+
+
+		</bndbox>
+
+
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2361</xmin>
+			
+			
+			<ymin>304</ymin>
+			
+			
+			<xmax>2444</xmax>
+			
+			
+			<ymax>373</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2740</xmin>
+			
+			
+			<ymin>422</ymin>
+			
+			
+			<xmax>2777</xmax>
+			
+			
+			<ymax>453</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>2934</xmin>
+			
+			
+			<ymin>232</ymin>
+			
+			
+			<xmax>2989</xmax>
+			
+			
+			<ymax>363</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>3252</xmin>
+			
+			
+			<ymin>359</ymin>
+			
+			
+			<xmax>3305</xmax>
+			
+			
+			<ymax>410</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>3824</xmin>
+			
+			
+			<ymin>306</ymin>
+			
+			
+			<xmax>3907</xmax>
+			
+			
+			<ymax>395</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>4034</xmin>
+			
+			
+			<ymin>228</ymin>
+			
+			
+			<xmax>4073</xmax>
+			
+			
+			<ymax>275</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>4097</xmin>
+			
+			
+			<ymin>426</ymin>
+			
+			
+			<xmax>4140</xmax>
+			
+			
+			<ymax>467</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>4112</xmin>
+			
+			
+			<ymin>291</ymin>
+			
+			
+			<xmax>4138</xmax>
+			
+			
+			<ymax>324</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>4089</xmin>
+			
+			
+			<ymin>338</ymin>
+			
+			
+			<xmax>4118</xmax>
+			
+			
+			<ymax>369</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>4367</xmin>
+			
+			
+			<ymin>363</ymin>
+			
+			
+			<xmax>4401</xmax>
+			
+			
+			<ymax>428</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>834</xmin>
+			
+			
+			<ymin>405</ymin>
+			
+			
+			<xmax>868</xmax>
+			
+			
+			<ymax>444</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>859</xmin>
+			
+			
+			<ymin>251</ymin>
+			
+			
+			<xmax>897</xmax>
+			
+			
+			<ymax>284</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		
+		
+		<name>qikong</name>
+		
+		
+		<pose>Unspecified</pose>
+		
+		
+		<truncated>0</truncated>
+		
+		
+		<difficult>0</difficult>
+		
+		
+		<bndbox>
+			
+			
+			<xmin>71</xmin>
+			
+			
+			<ymin>300</ymin>
+			
+			
+			<xmax>116</xmax>
+			
+			
+			<ymax>344</ymax>
+			
+		
+		</bndbox>
+		
+	
+	</object>
+	<object>
+		<name>qikong</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3564</xmin>
+			<ymin>334</ymin>
+			<xmax>3622</xmax>
+			<ymax>425</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>qikong</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1936</xmin>
+			<ymin>432</ymin>
+			<xmax>1956</xmax>
+			<ymax>456</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>qikong</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>2489</xmin>
+			<ymin>355</ymin>
+			<xmax>2540</xmax>
+			<ymax>405</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>qikong</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>4669</xmin>
+			<ymin>263</ymin>
+			<xmax>4733</xmax>
+			<ymax>313</ymax>
+		</bndbox>
+	</object>
+</annotation>
