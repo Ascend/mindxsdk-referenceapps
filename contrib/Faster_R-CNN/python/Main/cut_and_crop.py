@@ -10,9 +10,13 @@ def cut(img_path, anno_path, cut_path):
     annolist = os.listdir(anno_path)
     for image in imagelist:
         image_pre, ext = os.path.splitext(image)
+        if ext != ".jpg" and ext != ".JPG":
+            raise TypeError("only support jpg image!")
         img_file = img_path + image
         img = Image.open(img_file)
         xmlfile = anno_path + image_pre + ".xml"
+        if not os.path.exists(xmlfile):
+            raise FileNotFoundError("xmlfile does not exit！")
         DOMTree = xml.dom.minidom.parse(xmlfile)
         collection = DOMTree.documentElement
         objects = collection.getElementsByTagName("object")
