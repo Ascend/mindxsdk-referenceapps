@@ -15,8 +15,8 @@
 import os
 
 
-dataset_path = '../data/test'
-label_path = '../labels'
+dataset_path = '../dataset'
+label_path = '../label'
 
 if __name__ == '__main__':
     with open('kinetics_label_map.txt') as f:
