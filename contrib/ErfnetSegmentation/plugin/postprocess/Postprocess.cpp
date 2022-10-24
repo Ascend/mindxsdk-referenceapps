@@ -20,7 +20,7 @@
 #include "MxBase/Log/Log.h"
 #include "MxBase/Tensor/TensorBase/TensorBase.h"
 using namespace MxBase;
-using namespace MxPlugins;
+using namespace mx_plugins;
 using namespace MxTools;
 using namespace std;
 using namespace cv;
@@ -139,11 +139,11 @@ APP_ERROR MxpiPostProcess::GenerateVisionList(const cv::Mat mask, MxpiVisionList
     MxTools::MxpiVision dstVision;
     APP_ERROR ret = Mat2MxpiVision(0, mask, dstVision);
     if (ret != APP_ERR_OK) {
-        LogWarn << "element("<< elementName_<<")  ImageFusion failed";
+        LogWarn << "element(" << elementName_ << ")  ImageFusion failed";
     }
     dstMxpiVisionList.add_visionvec()->CopyFrom(dstVision);
     if (dstMxpiVisionList.visionvec_size() == 0) {
-        LogError <<  "element("<< elementName_<<") dst vision vec size is 0!";
+        LogError <<  "element(" << elementName_ << ") dst vision vec size is 0!";
         return APP_ERR_COMM_FAILURE;
     }
     return APP_ERR_OK;
