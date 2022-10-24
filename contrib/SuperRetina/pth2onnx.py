@@ -38,5 +38,5 @@ if __name__ == '__main__':
     CHECKPOINT = './SuperRetina.pth' # checkpoint path
     ONNX = './SuperRetina.onnx' # onnx path
     inputs = torch.randn(2, 1, 768, 768)
-    pth_to_onnx(inputs, CHECKPOINT, ONNX)
+    pth2onnx(inputs, CHECKPOINT, ONNX)
 
