@@ -140,7 +140,7 @@ APP_ERROR MxpiPostProcess::GenerateVisionList(const cv::Mat mask, MxpiVisionList
     MxTools::MxpiVision dstVision;
     APP_ERROR ret = Mat2MxpiVision(0, mask, dstVision);
     if (ret != APP_ERR_OK) {
-        LogWarn << "element(" << elementName_<< ")  ImageFusion failed";
+        LogWarn << "element(" << elementName_ << ")  ImageFusion failed";
     }
     dstMxpiVisionList.add_visionvec()->CopyFrom(dstVision);
     if (dstMxpiVisionList.visionvec_size() == 0) {
