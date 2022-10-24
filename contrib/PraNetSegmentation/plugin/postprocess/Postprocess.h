@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#pragma once
 #ifndef SDKMEMORY_MXPIPREPROCESS_H
 #define SDKMEMORY_MXPIPREPROCESS_H
 #include <algorithm>
@@ -31,7 +31,7 @@
 * @api
 * @brief Definition of MxpiPostProcess class.
 */
-namespace MxPlugins {
+namespace mx_plugins {
     struct ImageInfo {
             int modelWidth;
             int modelHeight;
