@@ -19,7 +19,7 @@ import subprocess
 from multiprocessing import Pool
 from tqdm import tqdm
 
-n_thread = 100
+N_THREAD = 100
 
 
 def vid2jpg(file_name, class_path, dst_class_path):
@@ -43,7 +43,8 @@ def vid2jpg(file_name, class_path, dst_class_path):
     except:
         print(dst_directory_path)
         return
-    cmd = 'ffmpeg -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format(video_file_path, dst_directory_path)
+    cmd = 'ffmpeg -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format(video_file_path, \
+          dst_directory_path)
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -61,7 +62,7 @@ def class_process(dir_path, dst_dir_path, class_name):
 
     vid_list = os.listdir(class_path)
     vid_list.sort()
-    p = Pool(n_thread)
+    p = Pool(N_THREAD)
     from functools import partial
     worker = partial(vid2jpg, class_path=class_path, dst_class_path=dst_class_path)
     for _ in tqdm(p.imap_unordered(worker, vid_list), total=len(vid_list)):
