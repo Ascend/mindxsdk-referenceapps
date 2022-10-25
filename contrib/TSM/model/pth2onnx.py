@@ -17,6 +17,7 @@ import torch.onnx
 import torch.nn.parallel
 from ops.models import TSN
 
+
 def pth_to_onnx(input_shape, checkpoint, onnx_path, input_names=['video'], output_names=['class']):
     if not onnx_path.endswith('.onnx'):
         print('Warning! The onnx model name is not correct,\
@@ -44,8 +45,8 @@ def pth_to_onnx(input_shape, checkpoint, onnx_path, input_names=['video'], outpu
     print("Exporting .pth model to onnx model has been successful!")
 
 if __name__ == '__main__':
-    pth = './TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
-    onnx_path = './TSM.onnx'
-    input_shape = torch.randn(1, 8, 3, 224, 224)
-    pth_to_onnx(input_shape, pth, onnx_path)
+    PTH = './TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
+    ONNX_PATH = './TSM.onnx'
+    INPUT_SHAPE = torch.randn(1, 8, 3, 224, 224)
+    pth_to_onnx(INPUT_SHAPE, PTH, ONNX_PATH)
 
