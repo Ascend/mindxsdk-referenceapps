@@ -1,3 +1,19 @@
+# Copyright 2022 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+
 from PIL import Image
 import xml.dom.minidom
 import os
@@ -10,13 +26,9 @@ def cut(img_path, anno_path, cut_path):
     annolist = os.listdir(anno_path)
     for image in imagelist:
         image_pre, ext = os.path.splitext(image)
-        if ext != ".jpg" and ext != ".JPG":
-            raise TypeError("only support jpg image!")
         img_file = img_path + image
         img = Image.open(img_file)
         xmlfile = anno_path + image_pre + ".xml"
-        if not os.path.exists(xmlfile):
-            raise FileNotFoundError("xmlfile does not exit！")
         DOMTree = xml.dom.minidom.parse(xmlfile)
         collection = DOMTree.documentElement
         objects = collection.getElementsByTagName("object")
@@ -44,7 +56,6 @@ def cut(img_path, anno_path, cut_path):
                         ymin_d = ((int(ymin_data) + int(ymax_data)) / 2 - 300)
                         ymax_d = ((int(ymin_data) + int(ymax_data)) / 2 + 300)
                         img_cut = img.crop((int(xmin_data), int(ymin_d), int(xmax_data), int(ymax_d)))
-                        # img_cut = img.crop((int(xmin_data), int(ymin_data), int(xmax_data), int(ymax_data)))
                     else:
                         ymin_d = ((int(ymin_data) + int(ymax_data)) / 2 - 300)
                         ymax_d = ((int(ymin_data) + int(ymax_data)) / 2 + 300)
@@ -74,9 +85,6 @@ def crop_on_slide(cut_path, crop_img_path, stride):
             y = 0
             if x + newwidth <= width:
                 while y < height:
-                    # 裁剪为output_shape*output_shape
-                    # newheight = output_shape
-                    # newwidth = output_shape
                     if y + newheight <= height:
                         hmin = y
                         hmax = y + newheight
@@ -93,16 +101,10 @@ def crop_on_slide(cut_path, crop_img_path, stride):
                             img.split('.')[0] + '_' + str(wmax) + '_' + str(hmax) + '_' + str(output_shape) + '.jpg'))
                     cv2.imwrite(cropImg1, origin_image[hmin: hmax, wmin: wmax])
                     y = y + stride
-                    if y + output_shape == height:  # 第一张图就已经涵盖了height*height
+                    if y + output_shape == height:
                         y = height
-                    # if y + newheight > height:
-                    #     break
             else:
                 while y < height:
-                    # 裁剪为output_shape*output_shape
-                    # newheight = output_shape
-                    # newwidth = output_shape
-
                     if y + newheight <= height:
                         hmin = y
                         hmax = y + newheight
@@ -120,23 +122,19 @@ def crop_on_slide(cut_path, crop_img_path, stride):
                         output_shape) + '.jpg'))
                     cv2.imwrite(cropImg1, origin_image[hmin: hmax, wmin: wmax])
                     y = y + stride
-                    # if y + newheight > height:
-                    #     break
                 x = width
             x = x + stride
-            if x + output_shape == width:  # 第一张图就已经涵盖了height*height
+            if x + output_shape == width:
                 x = width
-            # if x + newwidth > width:
-            #     break
 
 
 if __name__ == '__main__':
-    img_path = "../data/test/origin_img/"
-    xml_path = "../data/test/origin_xml/"
-    cut_path = "../data/test/cut/"
-    cut(img_path, xml_path, cut_path)
+    IMG_PATH = "../data/test/origin_img/"
+    XML_PATH = "../data/test/origin_xml/"
+    CUT_PATH = "../data/test/cut/"
+    cut(IMG_PATH, XML_PATH, CUT_PATH)
 
-    cut_path = "../data/test/cut/"
+    CUT_PATH = "../data/test/cut/"
     crop_img_path = "../data/test/crop/"
     stride = 450
-    crop_on_slide(cut_path, crop_img_path, stride)
+    crop_on_slide(CUT_PATH, crop_img_path, stride)
