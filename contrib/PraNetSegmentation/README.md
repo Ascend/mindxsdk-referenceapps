@@ -63,9 +63,16 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
 
-在根目录下执行```source env.sh```以激活环境。
+键入
 
-## 3准备工作
+```bash
+source ${SDK−path}/setenv.sh
+source ${ascend-toolkit-path}/set_env.sh
+```
+
+以激活环境，其中```SDK-path```是SDK mxVision安装路径，```ascend-toolkit-path```是CANN安装路径。
+
+## 3 准备工作
 
 ### 3.1 获取OM模型文件
 
@@ -87,36 +94,39 @@ bash onnx2om.sh
 
 ### 3.3 下载数据集
 
-本模型支持Kvasir的验证集。请用户需自行获取Kvasir数据集，上传数据集到服务器任意目录并解压（如：/root/datasets）。
+数据集下载地址:
+https://drive.google.com/file/d/1o8OfBvYE6K-EpDyvzsmMPndnUMwb540R/view
+
+本模型使用Kvasir的验证集。请用户需自行获取Kvasir数据集，上传数据集到项目根目录并解压（如：/root/datasets）。
 
 ```
-Kvasir
-├── images
-├── masks
+TestDataset
+├── Kvasir
+    ├── images
+    ├── masks
 ```
 
-## 4SDK推理
+## 4 SDK推理
 
 在项目根目录下键入
 
 ```bash
-python main.py --pipeline_path pipeline/pranet_pipeline.json --data_path /path/to/images
+python main.py --pipeline_path pipeline/pranet_pipeline.json --data_path ./TestDataset/Kvasir/images/
 ```
 
-其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
-` ` ` --data_path ` `  `参数为数据集的路径；参数是推理结果的输出路径。
-最终用户可以在```./infer_result/```路径下查看结果。
+其中参数``` --pipeline_path ```为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
+``` --data_path ```参数为推理图片的路径。最终用户可以在```./infer_result/```路径下查看结果。
 
-## 5测试精度
+## 5 测试精度
 
 在项目根目录下键入
 
 ```bash
-python test_metric.py --pipeline_path pipeline/pranet_pipeline.json --data_path /path/to/Kvasir
+python test_metric.py --pipeline_path pipeline/pranet_pipeline.json --data_path ./TestDataset/Kvasir/
 ```
 
-其中参数` ` ` --pipeline_path ` ` `为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
-` ` ` --data_path ` ` `参数为数据集的路径。待脚本运行完毕，会输出以下精度信息。
+其中参数```--pipeline_path```为pipeline配置文件的路径，项目中已经给出该文件，所以直接使用相对路径即可；
+```--data_path```参数为数据集的路径。待脚本运行完毕，会输出以下精度信息。
 
 ```
 dataset      meanDic    meanIoU
