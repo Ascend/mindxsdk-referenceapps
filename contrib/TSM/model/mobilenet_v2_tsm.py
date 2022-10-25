@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
 import torch.nn as nn
 import torch
-import math
 
 
 def conv_bn(inp, oup, stride):
@@ -77,6 +77,7 @@ class InvertedResidual(nn.Module):
             return x + self.conv(x)
         else:
             return self.conv(x)
+
 
 class InvertedResidualWithShift(nn.Module):
     def __init__(self, inp, oup, stride, expand_ratio):
