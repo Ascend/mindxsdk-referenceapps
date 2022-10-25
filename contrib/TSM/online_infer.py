@@ -12,23 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import numpy as np
 import os
-import io
 import time
-from typing import Tuple
-from PIL import Image, ImageOps
-import mindx.sdk as sdk
 import subprocess
 import threading
 import shutil
+import numpy as np
+from PIL import Image, ImageOps
+import mindx.sdk as sdk
 from multiprocessing import Manager
 from multiprocessing import Process
 
-SOFTMAX_THRES = 0
-HISTORY_LOGIT = True
 REFINE_OUTPUT = True
-filepath = "./model/jester.om"
+file_path = "./model/jester.om"
 device_id = 0
 
 if not os.path.exists('./image'):
@@ -136,7 +132,7 @@ def main():
         sdk.Tensor(np.zeros([1, 20, 7, 7],dtype=np.float32))]
     for t in buffer:
         t.to_device(device_id)
-    md = sdk.model(filepath, device_id) 
+    md = sdk.model(file_path, device_id) 
     i_frame = -2
     history = [2]
     history_logit = []
