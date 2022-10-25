@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from PIL import Image
 from pycocotools.coco import COCO
 
 import config as cfg
-from util import VOC_eval, results2json
+from util import results2json
 
 
 def get_img_size(file_name):
