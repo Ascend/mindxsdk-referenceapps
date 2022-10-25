@@ -364,8 +364,8 @@ class TSN(nn.Module):
             new_kernels = params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()
         else:
             new_kernel_size = kernel_size[:1] + (3 * self.new_length,) + kernel_size[2:]
-            new_kernels = torch.cat((params[0].data, params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()),
-                                    1)
+            new_kernels = torch.cat((params[0].data, \
+                          params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()),1)
             new_kernel_size = kernel_size[:1] + (3 + 3 * self.new_length,) + kernel_size[2:]
 
         new_conv = nn.Conv2d(new_kernel_size[1], conv_layer.out_channels,
