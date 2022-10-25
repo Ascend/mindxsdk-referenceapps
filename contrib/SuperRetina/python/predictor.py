@@ -81,7 +81,7 @@ def clahe_equalized(images):
 def adjust_gamma(images, gamma=1.0):
     inv_gamma = 1.0 / gamma
     table = np.array([((i / 255.0) ** inv_gamma) * 255
-                      for i in np.arange(0, 256)]).astype("uint8")
+                      for i in np.arange(0, 256)]).astype("uint8") # Zoom pixels from 0-255 to 0-1
     new_images = np.empty(images.shape)
     new_images[:, :] = cv2.LUT(np.array(images[:, :],
                                         dtype=np.uint8), table)
@@ -257,8 +257,8 @@ def evaluate(query_path, refer_path, infer_model, query_is_image=False):
     infer_data_descriptor = np.array(infer_data_descriptor)
 
     # get the infer result
-    detector_pred = np.reshape(infer_data_detector, (2, 1, 768, 768))
-    descriptor_pred = np.reshape(infer_data_descriptor, (2, 256, 94, 94))
+    detector_pred = np.reshape(infer_data_detector, (2, 1, 768, 768)) # Size of model input is 2x1x768x768
+    descriptor_pred = np.reshape(infer_data_descriptor, (2, 256, 94, 94)) # Size of another input to the model is 2x256x94x94
 
     scores = simple_nms(detector_pred, nms_radius=nms_size)
     _, _, h_detector, w_detector = detector_pred.shape
