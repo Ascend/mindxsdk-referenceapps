@@ -90,7 +90,7 @@ def adjust_gamma(images, gamma=1.0):
 
 def transform(image):
     img = Image.fromarray(image)
-    img = img.resize((768, 768), resample=Image.BILINEAR)
+    img = img.resize((768, 768), resample=Image.BILINEAR) # input image size must be 768x768
     img = np.array(img)
     img = np.expand_dims(img, axis=0)
     img = img.astype(np.float64) / 255.0
