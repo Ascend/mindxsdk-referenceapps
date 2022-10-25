@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import torch.utils.data as data
-
-from PIL import Image
 import os
+import torch.utils.data as data
+from PIL import Image
 import numpy as np
 from numpy.random import randint
 
@@ -127,7 +126,7 @@ class TSNDataSet(data.Dataset):
         else:  # normal sample
             average_duration = (record.num_frames - self.new_length + 1) // self.num_segments
             if average_duration > 0:
-                offsets = np.multiply(list(range(self.num_segments)), average_duration) + randint(average_duration,
+                offsets = np.multiply(list(range(self.num_segments)), average_duration) + randint(average_duration,\
                                                                                                   size=self.num_segments)
             elif record.num_frames > self.num_segments:
                 offsets = np.sort(randint(record.num_frames - self.new_length + 1, size=self.num_segments))
