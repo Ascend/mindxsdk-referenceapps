@@ -16,6 +16,7 @@ import json
 from argparse import ArgumentParser
 import cv2
 import numpy as np
+import PIL
 from PIL import Image
 from StreamManagerApi import StreamManagerApi
 from tqdm import tqdm
