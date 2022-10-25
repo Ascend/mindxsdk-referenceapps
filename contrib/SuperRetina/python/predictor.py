@@ -420,5 +420,6 @@ if __name__ == '__main__':
     if os.path.exists(F1) and os.path.exists(F2):
         align_merged = align_image_pair(F1, F2, model, show=True)
     else:
-        raise FileNotFoundError("F1 or F2 File doesn't Exist")
+        print("F1 or F2 File doesn't Exist")
+        exit()
    
