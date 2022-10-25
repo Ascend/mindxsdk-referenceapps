@@ -65,6 +65,7 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 | numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
+| pyquaternion | | |服务器中使用pip或conda安装 |
 
 ## 3 准备
 
@@ -96,7 +97,7 @@ bash onnx2om.sh
 
 在官网上下载数据集：gtFine_trainvaltest.zip (241MB) , leftImg8bit_trainvaltest.zip (11GB).
 
-将数据集下载到项目根目录下，解压gtFine.zip文件，得到以下目录：
+在根目录下创建文件夹cityscapes，将数据集解压到cityscapes下，得到以下目录：
 
 ```
 cityscapes
@@ -110,16 +111,29 @@ cityscapes
 git clone https://github.com/mcordts/cityscapesScripts.git
 ```
 
+在cityscapesscripts/preparation/createTrainIdLabelImgs.py脚本中
+
+```
+import os, glob, sys 
+```
+
+此行后增加如下2行
+
+```
+import pdb
+sys.path.append('cityscapesScripts的绝对路径')
+```
+
 下载cityscapes数据集工具包，然后键入
 
 ```bash
-cd cityscapesScripts
-export CITYSCAPES_DATASET="The Path You Save the Dataset"
+export CITYSCAPES_DATASET="cityscapes文件夹的绝对路径"
 ```
 
 环境变量CITYSCAPES_DATASET用于标识数据集的位置，键入
 
 ```bash
+cd cityscapesScripts
 python cityscapesscripts/preparation/createTrainIdLabelImgs.py
 ```
 
