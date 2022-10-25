@@ -53,8 +53,8 @@ parser.add_argument('--max_num', type=int, default=-1)
 parser.add_argument('--input_size', type=int, default=224)
 parser.add_argument('--crop_fusion_type', type=str, default='avg')
 parser.add_argument('--gpus', nargs='+', type=int, default=None)
-parser.add_argument('--img_feature_dim',type=int, default=256)
-parser.add_argument('--num_set_segments',type=int, default=1,help='TODO: select multiply set of n-frames from a video')
+parser.add_argument('--img_feature_dim', type=int, default=256)
+parser.add_argument('--num_set_segments', type=int, default=1, help='TODO: select multiply set of n-frames from a video')
 parser.add_argument('--pretrain', type=str, default='imagenet')
 
 args = parser.parse_args()
@@ -78,11 +78,11 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def accuracy(output, target, topk=(1,)):
+def accuracy(outputs, target, topk=(1,)):
     """Computes the precision@k for the specified values of k"""
     maxk = max(topk)
     batch_size = target.size(0)
-    _, pred = output.topk(maxk, 1, True, True)
+    _, pred = outputs.topk(maxk, 1, True, True)
     pred = pred.t()
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     res = []
@@ -90,6 +90,7 @@ def accuracy(output, target, topk=(1,)):
          correct_k = correct[:k].view(-1).float().sum(0)
          res.append(correct_k.mul_(100.0 / batch_size))
     return res
+
 
 def parse_shift_option_from_log_name(log_name):
     if 'shift' in log_name:
@@ -131,10 +132,10 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
     modality_list.append(modality)
     num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, modality)
     
-    input_size = 224
+    INPUT_SIZE = 224
     cropping = torchvision.transforms.Compose([
             GroupScale(256),
-            GroupCenterCrop(input_size),
+            GroupCenterCrop(INPUT_SIZE),
         ])    
     
     data_loader = torch.utils.data.DataLoader(
@@ -169,6 +170,7 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
 
     data_iter_list.append(data_gen)
 
+
 def eval_video(video_data, this_test_segments, modality):
     with torch.no_grad():
         i, data, label = video_data
@@ -187,7 +189,7 @@ def eval_video(video_data, this_test_segments, modality):
         elif modality == 'RGBDiff':
             length = 18
         else:
-            raise ValueError("Unknown modality "+ modality)
+            raise ValueError("Unknown modality " +  modality)
 
         data_in = data.view(-1, length, data.size(2), data.size(3))
         if is_shift:
@@ -233,22 +235,22 @@ for i, data_label_pairs in enumerate(zip(*data_iter_list)):
         if i >= max_num:
             break
         this_rst_list = []
-        this_label = None
+        THIS_LABEL = None
         for n_seg, (_, (data, label)), modality in zip(test_segments_list, data_label_pairs, modality_list):
             rst = eval_video((i, data, label), n_seg, modality)
             this_rst_list.append(rst[1])
-            this_label = label
+            THIS_LABEL = label
         assert len(this_rst_list) == len(coeff_list)
         for i_coeff in range(len(this_rst_list)):
             this_rst_list[i_coeff] *= coeff_list[i_coeff]
         ensembled_predict = sum(this_rst_list) / len(this_rst_list)
 
-        for p, g in zip(ensembled_predict, this_label.cpu().numpy()):
+        for p, g in zip(ensembled_predict, THIS_LABEL.cpu().numpy()):
             output.append([p[None, ...], g])
         cnt_time = time.time() - proc_start_time
-        prec1, prec5 = accuracy(torch.from_numpy(ensembled_predict), this_label, topk=(1, 5))
-        top1.update(prec1.item(), this_label.numel())
-        top5.update(prec5.item(), this_label.numel())
+        prec1, prec5 = accuracy(torch.from_numpy(ensembled_predict), THIS_LABEL, topk=(1, 5))
+        top1.update(prec1.item(), THIS_LABEL.numel())
+        top5.update(prec5.item(), THIS_LABEL.numel())
         print('video {} done, total {}/{}, average {:.3f} sec/video, '
               'moving Prec@1 {:.3f} Prec@5 {:.3f}'.format(i * args.batch_size, i * args.batch_size, total_num,
                                                         float(cnt_time) / (i+1), top1.avg, top5.avg))
