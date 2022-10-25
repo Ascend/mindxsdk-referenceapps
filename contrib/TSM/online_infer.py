@@ -17,15 +17,15 @@ import time
 import subprocess
 import threading
 import shutil
+from multiprocessing import Manager
+from multiprocessing import Process
 import numpy as np
 from PIL import Image, ImageOps
 import mindx.sdk as sdk
-from multiprocessing import Manager
-from multiprocessing import Process
 
 REFINE_OUTPUT = True
-file_path = "./model/jester.om"
-device_id = 0
+FILE_PATH = "./model/jester.om"
+DEVICE_ID = 0
 
 if not os.path.exists('./image'):
     os.makedirs('./image')
@@ -64,8 +64,6 @@ catigories = [
 ]
 
 
-n_still_frame = 0
-
 def process_output(idx_, history):
     # idx_: the output of current frame
     # history: a list containing the history of predictions
@@ -95,18 +93,24 @@ def process_output(idx_, history):
 
 imgs = []
 
+
 def video2img():
-    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('rtsp://192.168.88.110:1240/jester.264', './image')
+    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format(
+          'rtsp://192.168.88.110:1240/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
 def readimg():
     global imgs
     while True:
         for filename in os.listdir(r"./image"):
             if filename not in imgs:
                 imgs.append(filename)
-def crop_image(re_img,new_height,new_width):
-    re_img=Image.fromarray(np.uint8(re_img))
+
+
+def crop_image(re_img, new_height, new_width):
+    re_img = Image.fromarray(np.uint8(re_img))
     width, height = re_img.size
     left = (width - new_width)/2
     top = (height - new_height)/2
@@ -116,23 +120,24 @@ def crop_image(re_img,new_height,new_width):
     crop_im = np.asarray(crop_im)
     return crop_im
 
+
 def main():
     index = 0
     time.sleep(10)
     buffer = [
-        sdk.Tensor(np.zeros([1, 3, 56, 56],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 4, 28, 28],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 4, 28, 28],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 8, 14, 14],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 8, 14, 14],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 8, 14, 14],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 12, 14, 14],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 12, 14, 14],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 20, 7, 7],dtype=np.float32)),
-        sdk.Tensor(np.zeros([1, 20, 7, 7],dtype=np.float32))]
+        sdk.Tensor(np.zeros([1, 3, 56, 56], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 4, 28, 28], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 4, 28, 28], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 8, 14, 14], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 8, 14, 14], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 8, 14, 14], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 12, 14, 14], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 12, 14, 14], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 20, 7, 7], dtype=np.float32)),
+        sdk.Tensor(np.zeros([1, 20, 7, 7], dtype=np.float32))]
     for t in buffer:
-        t.to_device(device_id)
-    md = sdk.model(file_path, device_id) 
+        t.to_device(DEVICE_ID)
+    md = sdk.model(FILE_PATH, DEVICE_ID) 
     i_frame = -2
     history = [2]
     history_logit = []
@@ -142,20 +147,20 @@ def main():
         time.sleep(0.2)        
         filename = imgs[i_frame]
         img = Image.open("./image/" + filename).convert('RGB')
-        if img.width>img.height:
-            frame_pil = img.resize((round(256*img.width/img.height),256))
+        if img.width > img.height:
+            frame_pil = img.resize((round(256 * img.width / img.height), 256))
         else:
-            frame_pil = img.resize((256,round(256*img.height/img.width)))
-        image = crop_image(frame_pil,224,224).transpose(2,0,1)
-        img_tran = [0,0,0]
+            frame_pil = img.resize((256, round(256 * img.height / img.width)))
+        image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
+        img_tran = [0, 0, 0]
         for i in range(3):
-            img_tran[0]=(image[0]/255-0.485)/0.229
-            img_tran[1]=(image[1]/255-0.456)/0.224
-            img_tran[2]=(image[2]/255-0.406)/0.225
+            img_tran[0] = (image[0] / 255-0.485) / 0.229
+            img_tran[1] = (image[1] / 255-0.456) / 0.224
+            img_tran[2] = (image[2] / 255-0.406) / 0.225
         img_tran = np.array(img_tran).astype(np.float32)
         img_tran = sdk.Tensor(img_tran)
-        img_tran.to_device(device_id)
-        inputs = [img_tran,] + buffer
+        img_tran.to_device(DEVICE_ID)
+        inputs = [img_tran, ] + buffer
         outputs = md.infer(inputs)
         buffer = outputs[1:]
         outputs[0].to_host()
