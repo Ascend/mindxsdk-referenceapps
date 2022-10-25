@@ -1,3 +1,19 @@
+# Copyright 2022 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
+
 import os
 import json
 import shutil
@@ -9,7 +25,6 @@ from pycocotools.coco import COCO
 import shutil
 import xml.etree.ElementTree as ET
 import argparse
-
 
 parser = argparse.ArgumentParser(description="FasterRcnn evaluation")
 parser.add_argument("--ann_file", type=str,
@@ -26,36 +41,35 @@ args_opt = parser.parse_args()
 
 
 def VOC_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
-    savetxt_path = os.path.join(voc_dir, "VOC2017/image_txt")
-    valtxt_path = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
-    coco_to_txt(ann_file, result_json_file, valtxt_path, savetxt_path, cat_id=cat_id)
+    TXT_SAVE_PATH = os.path.join(voc_dir, "VOC2017/image_txt")
+    VAL_TXT_PATH = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
+    coco_to_txt(ann_file, result_json_file, VAL_TXT_PATH, TXT_SAVE_PATH, cat_id=cat_id)
 
-    txtPath = savetxt_path
-    saveTxtPath = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
-    removeTxtPath = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
-    cut_path = valtxt_path
-    hebing_txt(txtPath, saveTxtPath, removeTxtPath, cut_path)
+    TXT_PATH = TXT_SAVE_PATH
+    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
+    NMS_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
+    CUT_PATH = VAL_TXT_PATH
+    hebing_txt(TXT_PATH, ALL_TXT_PATH, NMS_TXT_PATH, CUT_PATH)
 
-    cut_path = os.path.join(voc_dir, "VOC2017/JPEGImages")
+    CUT_PATH = os.path.join(voc_dir, "VOC2017/JPEGImages")
     imagesavePath = os.path.join(voc_dir, "VOC2017/images1")
-    txtPath = removeTxtPath
-    nms_box(cut_path, imagesavePath, txtPath, thresh=0)
+    TXT_PATH = NMS_TXT_PATH
+    nms_box(CUT_PATH, imagesavePath, TXT_PATH, thresh=0)
 
-    txtPath = removeTxtPath
-    saveTxtPath = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
-    write_huizong(txtPath, saveTxtPath)
+    TXT_PATH = NMS_TXT_PATH
+    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
+    write_huizong(TXT_PATH, ALL_TXT_PATH)
 
-    aps = []  # 保存各类ap
-    recs = []  # 保存recall
-    precs = []  # 保存精度
-    # annopath = './VOCdevkit/VOC2017/Annotations/' + '{:s}.xml'  # annotations的路径，{:s}.xml方便后面根据图像名字读取对应的xml文件
-    annopath = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'  # annotations的路径，{:s}.xml方便后面根据图像名字读取对应的xml文件
-    imagesetfile = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")  # 读取图像名字列表文件
+    aps = []
+    recs = []
+    precs = []
+    ANNO_PATH = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
+    imagesetfile = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
     cachedir = os.path.join(voc_dir, "VOC2017/demo")
     filename = os.path.join(voc_dir, "VOC2017/obj_txt_huizong/qikong.txt")
 
-    rec, prec, ap = voc_eval(  # 调用voc_eval.py计算cls类的recall precision ap
-        filename, annopath, imagesetfile, object_name, cachedir, ovthresh=0,
+    rec, prec, ap = voc_eval(
+        filename, ANNO_PATH, imagesetfile, object_name, cachedir, ovthresh=0,
         use_07_metric=False)
 
     aps += [ap]
@@ -78,7 +92,7 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
             os.remove(os.path.join(savetxt_path, file))
 
     data = []
-    for line in open(valtxt_path, "r"):  # 设置文件对象并读取每一行文件
+    for line in open(valtxt_path, "r"):
         data.append(line.strip('\n'))
 
     image_ids = coco_res.getImgIds()
@@ -88,7 +102,6 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         origin_file_name = file_name.split('_')[0] + '_' + file_name.split('_')[1] + '.jpg'
         txt_file_name = file_name.split('.')[0] + ".txt"
 
-        # temp = int(file_name.split('_')[3]) - 640
         temp = int(file_name.split('_')[2]) - 600
         f = open(os.path.join(savetxt_path, txt_file_name), "w")
 
@@ -120,16 +133,14 @@ def hebing_txt(txtPath, saveTxtPath, removeTxtPath, val_txt_path):
     for filename in fileroot:
         os.remove(os.path.join(saveTxtPath, filename))
     data = []
-    # for line in open("/mmdetection/data\VOCdevkit\VOC2007\ImageSets\\test.txt", "r"):  # 设置文件对象并读取每一行文件
-    for line in open(val_txt_path, "r"):  # 设置文件对象并读取每一行文件
+    for line in open(val_txt_path, "r"):
         data.append(line.strip('\n'))
     txtList = os.listdir(txtPath)
     for txtfile in txtList:
         for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                # print(image.split('_')[1])
-                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')  # w覆盖，a追加
-                for line in open(os.path.join(txtPath, txtfile), "r"):  # 设置文件对象并读取每一行文件
+                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')
+                for line in open(os.path.join(txtPath, txtfile), "r"):
                     fw.write(line)
                 fw.close()
 
@@ -138,7 +149,7 @@ def hebing_txt(txtPath, saveTxtPath, removeTxtPath, val_txt_path):
         print(file)
         oldname = os.path.join(saveTxtPath, file)
         newname = os.path.join(removeTxtPath, file)
-        shutil.copyfile(oldname, newname)  # 将需要的文件从oldname复制到newname
+        shutil.copyfile(oldname, newname)
     print("finish")
 
 
@@ -185,9 +196,6 @@ def plot_bbox(dets, c='k'):
     plt.title(" nms")
 
 
-# plt.figure(1)
-# ax1 = plt.subplot(1, 2, 1)
-# ax2 = plt.subplot(1, 2, 2)
 def nms_box(imagePath, imagesavePath, txtPath, thresh):
     txtList = os.listdir(txtPath)
     for txtfile in tqdm.tqdm(txtList):
@@ -196,14 +204,8 @@ def nms_box(imagePath, imagesavePath, txtPath, thresh):
         if boxes.size > 5:
             fw = open(os.path.join(txtPath, txtfile), 'w')
             print(boxes.size)
-            # plt.sca(ax1)
-            # plot_bbox(boxes, 'k')  # before nms
             print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
-            # print(keep)
-            # plt.sca(ax2)
-            # plot_bbox(boxes[keep], 'r')  # after nms
-            # plt.show()
             img = cv.imread(os.path.join(imagePath, txtfile[:-3] + 'jpg'), 0)
             for label in boxes[keep]:
                 fw.write(str(int(label[0])) + ',' + str(int(label[1])) + ',' + str(int(label[2])) + ',' + str(
@@ -226,9 +228,9 @@ def nms_box(imagePath, imagesavePath, txtPath, thresh):
 def write_huizong(txtPath, saveTxtPath):
     data = []
     txtList = os.listdir(txtPath)
-    fw = open(os.path.join(saveTxtPath, 'qikong.txt'), 'w')  # w覆盖，a追加
+    fw = open(os.path.join(saveTxtPath, 'qikong.txt'), 'w')
     for txtfile in txtList:
-        for line in open(os.path.join(txtPath, txtfile), 'r'):  # 设置文件对象并读取每一行文件
+        for line in open(os.path.join(txtPath, txtfile), 'r'):
             line = line.strip('\n')
             fw.write(txtfile[:-4] + ' ' +
                      line.split(',')[4] + ' ' +
@@ -295,15 +297,13 @@ def voc_ap(rec, prec, use_07_metric=False):  # voc2007的计算方式和voc2012�
     return ap
 
 
-## 程序入口
-
-def voc_eval(detpath,  # 保存检测到的目标框的文件路径，每一类的目标框单独保存在一个文件
-             annopath,  # Annotations的路径
-             imagesetfile,  # 测试图片名字列表
-             classname,  # 类别名称
-             cachedir,  # 缓存文件夹
-             ovthresh=0.5,  # IoU阈值
-             use_07_metric=False):  # mAP计算方法
+def voc_eval(detpath,
+             annopath,
+             imagesetfile,
+             classname,
+             cachedir,
+             ovthresh=0.5,
+             use_07_metric=False):
     """rec, prec, ap = voc_eval(detpath,
                                 annopath,
                                 imagesetfile,
@@ -327,11 +327,6 @@ def voc_eval(detpath,  # 保存检测到的目标框的文件路径，每一类�
     # assumes imagesetfile is a text file with each line an image name
     # cachedir caches the annotations in a pickle file
 
-    # first load gt   获取真实目标框
-    # 当程序第一次运行时，会读取Annotations下的xml文件获取每张图片中真实的目标框
-    # 然后把获取的结果保存在annotations_cache文件夹中
-    # 以后再次运行时直接从缓存文件夹中读取真实目标
-
     if not os.path.isdir(cachedir):
         os.mkdir(cachedir)
     cachefile = os.path.join(cachedir, 'annots.pkl')
@@ -346,49 +341,49 @@ def voc_eval(detpath,  # 保存检测到的目标框的文件路径，每一类�
         if i % 100 == 0:
             print('Reading annotation for {:d}/{:d}'.format(
                 i + 1, len(imagenames)))
-    # extract gt objects for this class 提取该类的真实目标
+    # extract gt objects for this class
     class_recs = {}
-    npos = 0  # 保存该类一共有多少真实目标
+    npos = 0
     for imagename in imagenames:
-        R = [obj for obj in recs[imagename] if obj['name'] == classname]  # 保存名字为imagename的图片中，类别为classname的目标框的信息
-        bbox = np.array([x['bbox'] for x in R])  # 目标框的坐标
-        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)  # 是否是难以识别的目标
-        det = [False] * len(R)  # 每一个目标框对应一个det[i]，用来判断该目标框是否已经处理过
-        npos = npos + sum(~difficult)  # 计算总的目标个数
-        class_recs[imagename] = {'bbox': bbox,  # 把每一张图像中的目标框信息放到class_recs中
+        R = [obj for obj in recs[imagename] if obj['name'] == classname]
+        bbox = np.array([x['bbox'] for x in R])
+        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
+        det = [False] * len(R)
+        npos = npos + sum(~difficult)
+        class_recs[imagename] = {'bbox': bbox,
                                  'difficult': difficult,
                                  'det': det}
 
     # read dets
-    detfile = detpath.format(classname)  # 打开classname类别检测到的目标框文件
+    detfile = detpath.format(classname)
     with open(detfile, 'r') as f:
         lines = f.readlines()
 
     splitlines = [x.strip().split(' ') for x in lines]
-    image_ids = [x[0] for x in splitlines]  # 图像名字
-    confidence = np.array([float(x[1]) for x in splitlines])  # 置信度
-    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])  # 目标框坐标
+    image_ids = [x[0] for x in splitlines]
+    confidence = np.array([float(x[1]) for x in splitlines])
+    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
 
-    # sort by confidence  按照置信度排序
+    # sort by confidence
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
     BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 
     # go down dets and mark TPs and FPs
-    nd = len(image_ids)  # 统计检测到的目标框个数
-    tp = np.zeros(nd)  # 创建tp列表，列表长度为目标框个数
-    fp = np.zeros(nd)  # 创建fp列表，列表长度为目标框个数
+    nd = len(image_ids)
+    tp = np.zeros(nd)
+    fp = np.zeros(nd)
 
     for d in range(nd):
         print(nd)
-        R = class_recs[image_ids[d]]  # 得到图像名字为image_ids[d]真实的目标框信息
-        bb = BB[d, :].astype(float)  # 得到图像名字为image_ids[d]检测的目标框坐标
+        R = class_recs[image_ids[d]]
+        bb = BB[d, :].astype(float)
         ovmax = -np.inf
-        BBGT = R['bbox'].astype(float)  # 得到图像名字为image_ids[d]真实的目标框坐标
+        BBGT = R['bbox'].astype(float)
 
         if BBGT.size > 0:
-            # compute overlaps  计算IoU
+            # compute overlaps
             # intersection
             ixmin = np.maximum(BBGT[:, 0], bb[0])
             iymin = np.maximum(BBGT[:, 1], bb[1])
@@ -404,33 +399,30 @@ def voc_eval(detpath,  # 保存检测到的目标框的文件路径，每一类�
                    (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
 
             overlaps = inters / uni
-            ovmax = np.max(overlaps)  # 检测到的目标框可能预若干个真实目标框都有交集，选择其中交集最大的
+            ovmax = np.max(overlaps)
             jmax = np.argmax(overlaps)
 
-        if ovmax > ovthresh:  # IoU是否大于阈值
-            if not R['difficult'][jmax]:  # 真实目标框是否难以识别
-                if not R['det'][jmax]:  # 该真实目标框是否已经统计过
-                    tp[d] = 1.  # 将tp对应第d个位置变成1
-                    R['det'][jmax] = 1  # 将该真实目标框做标记
+        if ovmax > ovthresh:
+            if not R['difficult'][jmax]:
+                if not R['det'][jmax]:
+                    tp[d] = 1.
+                    R['det'][jmax] = 1
                 else:
-                    fp[d] = 1.  # 否则将fp对应的位置变为1
+                    fp[d] = 1.
         else:
-            fp[d] = 1.  # 否则将fp对应的位置变为1
+            fp[d] = 1.
 
-    # compute precision recall
-    fp = np.cumsum(fp)  # 按列累加，最大值即为tp数量
-    tp = np.cumsum(tp)  # 按列累加，最大值即为fp数量
-    rec = tp / float(npos)  # 计算recall
+            # compute precision recall
+    fp = np.cumsum(fp)
+    tp = np.cumsum(tp)
+    rec = tp / float(npos)
     # avoid divide by zero in case the first detection matches a difficult
     # ground truth
-    prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)  # 计算精度
-    ap = voc_ap(rec, prec, use_07_metric)  # 计算ap
+    prec = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
+    ap = voc_ap(rec, prec, use_07_metric)
 
     return rec, prec, ap
 
 
 if __name__ == '__main__':
-    # ann_file = '/home/mijianxun1/work/AscendProjects/Faster_Rcnn_App2/data/eval/cocodataset/annotations/instances_val2017.json'
-    # result_json_file = './results.pkl.bbox.json'
-    # voc_dir = '/home/mijianxun1/work/AscendProjects/Faster_Rcnn_App2/data/eval/VOCdevkit/'
     VOC_eval(args_opt.ann_file, args_opt.result_json_file, args_opt.voc_dir, args_opt.cat_id, args_opt.object_name)

@@ -1,4 +1,4 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright 2022 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,13 +35,14 @@ def parser_args():
 
     parser.add_argument("--img_path",
                         type=str,
-                        required=True,
+                        required=False,
+                        default="../data/test/crop/",
                         help="image directory.")
     parser.add_argument(
         "--pipeline_path",
         type=str,
         required=False,
-        default="config/maskrcnn_ms.pipeline",
+        default="../pipeline/fasterrcnn_ms_dvpp.pipeline",
         help="image file path. The default is 'config/maskrcnn_ms.pipeline'. ")
     parser.add_argument(
         "--model_type",

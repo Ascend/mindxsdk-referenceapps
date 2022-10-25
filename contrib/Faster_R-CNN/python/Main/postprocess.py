@@ -1,3 +1,18 @@
+# Copyright 2022 Huawei Technologies Co., Ltd
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ============================================================================
+
 import os
 import json
 import shutil
@@ -32,7 +47,8 @@ def json_to_txt(infer_result_path, savetxt_path):
 
                         if xmax - xmin >= 5 and ymax - ymin >= 5:
                             f.write(
-                                str(xmin + temp) + ',' + str(ymin) + ',' + str(xmax + temp) + ',' + str(ymax) + ',' + str(
+                                str(xmin + temp) + ',' + str(ymin) + ',' + str(xmax + temp) + ',' + str(
+                                    ymax) + ',' + str(
                                     round(confidence, 2)) + ',' + str(class_id) + '\n')
 
 
@@ -148,19 +164,19 @@ def nms_box(imagePath, imagesavePath, txtPath, thresh, obj_list):
 
 
 if __name__ == '__main__':
-    infer_result_path = "../data/test/infer_result"
-    savetxt_path = "../data/test/img_txt"
-    json_to_txt(infer_result_path, savetxt_path)
+    INFER_RESULT_PATH = "../data/test/infer_result"
+    TXT_SAVE_PATH = "../data/test/img_txt"
+    json_to_txt(INFER_RESULT_PATH, TXT_SAVE_PATH)
 
-    txtPath = "../data/test/img_txt"
-    saveTxtPath = "../data/test/img_huizong_txt"
-    removeTxtPath = "../data/test/img_huizong_txt_nms"
-    cut_path = "../data/test/cut"
-    hebing_txt(txtPath, saveTxtPath, removeTxtPath, cut_path)
+    TXT_PATH = "../data/test/img_txt"
+    ALL_TXT_PATH = "../data/test/img_huizong_txt"
+    NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
+    CUT_PATH = "../data/test/cut"
+    hebing_txt(TXT_PATH, ALL_TXT_PATH, NMS_TXT_PATH, CUT_PATH)
 
-    cut_path = "../data/test/cut"
-    imagesavePath = "../data/test/draw_result"
-    txtPath = "../data/test/img_huizong_txt_nms"
-    obj_list = ['qikong', 'jiazha', 'liewen', 'yaobian',
-                'weirh', 'weiht', 'chengxbl', 'neiao']
-    nms_box(cut_path, imagesavePath, txtPath, thresh=0, obj_list=obj_list)
+    CUT_PATH = "../data/test/cut"
+    IMAGE_SAVE_PATH = "../data/test/draw_result"
+    NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
+    obj_lists = ['qikong', 'jiazha', 'liewen', 'yaobian',
+                 'weirh', 'weiht', 'chengxbl', 'neiao']
+    nms_box(CUT_PATH, IMAGE_SAVE_PATH, NMS_TXT_PATH, thresh=0, obj_list=obj_lists)
