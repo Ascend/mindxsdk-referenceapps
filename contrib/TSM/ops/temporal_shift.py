@@ -83,10 +83,6 @@ class TemporalPool(nn.Module):
         self.net = net
         self.n_segment = n_segment
 
-    def forward(self, b):
-        b = self.temporal_pool(b, n_segment=self.n_segment)
-        return self.net(b)
-
     @staticmethod
     def temporal_pool(d, n_segment):
         nt, c, h, w = d.size()
@@ -95,6 +91,10 @@ class TemporalPool(nn.Module):
         d = F.max_pool3d(d, kernel_size=(3, 1, 1), stride=(2, 1, 1), padding=(1, 0, 0))
         d = d.transpose(1, 2).contiguous().view(nt // 2, c, h, w)
         return d
+    
+    def forward(self, b):
+        b = self.temporal_pool(b, n_segment=self.n_segment)
+        return self.net(b)
 
 
 def make_temporal_shift(net, n_segment, n_div=8, place='blockres', temporal_pool=False):
@@ -111,8 +111,8 @@ def make_temporal_shift(net, n_segment, n_div=8, place='blockres', temporal_pool
             def make_block_temporal(stage, this_segment):
                 blocks = list(stage.children())
                 print('=> Processing stage with {} blocks'.format(len(blocks)))
-                for i, b in enumerate(blocks):
-                    blocks[i] = TemporalShift(b, n_segment=this_segment, n_div=n_div)
+                for k, b in enumerate(blocks):
+                    blocks[k] = TemporalShift(b, n_segment=this_segment, n_div=n_div)
                 return nn.Sequential(*(blocks))
 
             net.layer1 = make_block_temporal(net.layer1, n_segment_list[0])
@@ -129,9 +129,9 @@ def make_temporal_shift(net, n_segment, n_div=8, place='blockres', temporal_pool
             def make_block_temporal(stage, this_segment):
                 blocks = list(stage.children())
                 print('=> Processing stage with {} blocks residual'.format(len(blocks)))
-                for i, b in enumerate(blocks):
-                    if i % n_round == 0:
-                        blocks[i].conv1 = TemporalShift(b.conv1, n_segment=this_segment, n_div=n_div)
+                for v, b in enumerate(blocks):
+                    if v % n_round == 0:
+                        blocks[v].conv1 = TemporalShift(b.conv1, n_segment=this_segment, n_div=n_div)
                 return nn.Sequential(*blocks)
 
             net.layer1 = make_block_temporal(net.layer1, n_segment_list[0])
