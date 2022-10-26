@@ -92,8 +92,26 @@ class TSN(nn.Module):
 
         self._enable_pbn = partial_bn
         if partial_bn:
-            self.partialBN(True)
+            self.partial_bns(True)
 
+    def train(self, mode=True):
+        """
+        Override the default train() to freeze the BN parameters
+        :return:
+        """
+        super(TSN, self).train(mode)
+        count = 0
+        if self._enable_pbn and mode:
+            print("Freezing BatchNorm2D except the first one.")
+            for m in self.base_model.modules():
+                if isinstance(m, nn.BatchNorm2d):
+                    count += 1
+                    if count >= (2 if self._enable_pbn else 1):
+                        m.eval()
+                        # shutdown update in frozen mode
+                        m.weight.requires_grad = False
+                        m.bias.requires_grad = False
+    
     def _prepare_base_model(self, base_model):
         print('=> base model: {}'.format(base_model))
 
@@ -166,23 +184,8 @@ class TSN(nn.Module):
         else:
             raise ValueError('Unknown base model: {}'.format(base_model))
 
-    def train(self, mode=True):
-        """
-        Override the default train() to freeze the BN parameters
-        :return:
-        """
-        super(TSN, self).train(mode)
-        count = 0
-        if self._enable_pbn and mode:
-            print("Freezing BatchNorm2D except the first one.")
-            for m in self.base_model.modules():
-                if isinstance(m, nn.BatchNorm2d):
-                    count += 1
-                    if count >= (2 if self._enable_pbn else 1):
-                        m.eval()
-                        # shutdown update in frozen mode
-                        m.weight.requires_grad = False
-                        m.bias.requires_grad = False
+    def partial_bns(self, enable):
+        self._enable_pbn = enable
 
     def _prepare_tsn(self, num_class):
         feature_dim = getattr(self.base_model, self.base_model.last_layer_name).in_features
@@ -202,9 +205,6 @@ class TSN(nn.Module):
                 normal_(self.new_fc.weight, 0, std)
                 constant_(self.new_fc.bias, 0)
         return feature_dim
-
-    def partialBN(self, enable):
-        self._enable_pbn = enable
 
     def get_optim_policies(self):
         first_conv_weight = []
@@ -282,11 +282,11 @@ class TSN(nn.Module):
 
             if self.modality == 'RGBDiff':
                 sample_len = 3 * self.new_length
-                input = self._get_diff(input2)
+                input2 = self._get_diff(input2)
 
             base_out = self.base_model(input2.view((-1, sample_len) + input2.size()[-2:]))
         else:
-            base_out = self.base_model(input)
+            base_out = self.base_model(input2)
 
         if self.dropout > 0:
             base_out = self.new_fc(base_out)
@@ -318,6 +318,14 @@ class TSN(nn.Module):
                 new_data[:, :, x - 1, :, :, :] = input_view[:, :, x, :, :, :] - input_view[:, :, x - 1, :, :, :]
 
         return new_data
+
+    @property
+    def crop_size(self):
+        return self.input_size
+
+    @property
+    def scale_size(self):
+        return self.input_size * 256 // 224
 
     def _construct_flow_model(self, base_model):
         # modify the convolution layers
@@ -353,10 +361,6 @@ class TSN(nn.Module):
         else:
             print('#' * 30, 'Warning! No Flow pretrained model is found')
         return base_model
-
-    @property
-    def crop_size(self):
-        return self.input_size
     
     def _construct_diff_model(self, base_model, keep_rgb=False):
         # modify the convolution layers
@@ -390,10 +394,6 @@ class TSN(nn.Module):
         # replace the first convolution layer
         setattr(container, layer_name, new_conv)
         return base_model
-
-    @property
-    def scale_size(self):
-        return self.input_size * 256 // 224
 
     def get_augmentation(self, flip=True):
         if self.modality == 'RGB':
