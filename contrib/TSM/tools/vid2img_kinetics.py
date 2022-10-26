@@ -29,20 +29,16 @@ def vid2jpg(file_name, class_path, dst_class_path):
     dst_directory_path = os.path.join(dst_class_path, name)
 
     video_file_path = os.path.join(class_path, file_name)
-    try:
-        if os.path.exists(dst_directory_path):
-            if not os.path.exists(os.path.join(dst_directory_path, 'img_00001.jpg')):
-                subprocess.call('rm -r \"{}\"'.format(dst_directory_path), shell=True)
-                print('remove {}'.format(dst_directory_path))
-                os.mkdir(dst_directory_path)
-            else:
-                print('*** convert has been done: {}'.format(dst_directory_path))
-                return
-        else:
+    if os.path.exists(dst_directory_path):
+        if not os.path.exists(os.path.join(dst_directory_path, 'img_00001.jpg')):
+            subprocess.call('rm -r \"{}\"'.format(dst_directory_path), shell=True)
+            print('remove {}'.format(dst_directory_path))
             os.mkdir(dst_directory_path)
-    except:
-        print(dst_directory_path)
-        return
+        else:
+            print('*** convert has been done: {}'.format(dst_directory_path))
+            return
+    else:
+        os.mkdir(dst_directory_path)
     cmd = 'ffmpeg -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format(video_file_path, \
           dst_directory_path)
     subprocess.call(cmd, shell=True,
@@ -74,10 +70,10 @@ def class_process(dir_path, dst_dir_path, class_name):
 
 
 if __name__ == "__main__":
-    dir_path = sys.argv[1]
-    dst_dir_path = sys.argv[2]
+    dir_paths = sys.argv[1]
+    dst_dir_paths = sys.argv[2]
 
-    class_list = os.listdir(dir_path)
+    class_list = os.listdir(dir_paths)
     class_list.sort()
-    for class_name in class_list:
-        class_process(dir_path, dst_dir_path, class_name)
+    for class_names in class_list:
+        class_process(dir_paths, dst_dir_paths, class_names)
