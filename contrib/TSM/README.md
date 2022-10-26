@@ -50,7 +50,7 @@ npu-smi info
     ├── online_infer.py                  // 在线推理精度脚本
     ├── offline_infer.py                 // 离线推理精度脚本
     ├── speed.py                         // 离线推理NPU性能脚本
-    ├── speed_GPU.py                      // 离线推理GPU性能脚本
+    ├── speed_gpu.py                     // 离线推理GPU性能脚本
 ```
 
 ## 2 环境依赖
@@ -153,7 +153,7 @@ def main():
 GPU性能
 
 ```shell
-python3 speed_GPU.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
+python3 speed_gpu.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
 ```
 
 SDK性能
