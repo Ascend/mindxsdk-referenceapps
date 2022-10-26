@@ -28,50 +28,44 @@ class TemporalShift(nn.Module):
             print('=> Using in-place shift...')
         print('=> Using fold div: {}'.format(self.fold_div))
 
-    def forward(self, x):
-        x = self.shift(x, self.n_segment, fold_div=self.fold_div, inplace=self.inplace)
-        return self.net(x)
-
     @staticmethod
-    def shift(x, n_segment, fold_div=3, inplace=False):
-        nt, c, h, w = x.size()
+    def shift(z, n_segment, fold_div=3, inplace=False):
+        nt, c, h, w = z.size()
         n_batch = nt // n_segment
-        x = x.view(n_batch, n_segment, c, h, w)
+        z = z.view(n_batch, n_segment, c, h, w)
 
         fold = c // fold_div
         if inplace:
-            # Due to some out of order error when performing parallel computing. 
-            # May need to write a CUDA kernel.
             raise NotImplementedError  
-            # out = InplaceShift.apply(x, fold)
         else:
-            out = torch.zeros_like(x)
-            out[:, :-1, :fold] = x[:, 1:, :fold]  # shift left
-            out[:, 1:, fold: 2 * fold] = x[:, :-1, fold: 2 * fold]  # shift right
-            out[:, :, 2 * fold:] = x[:, :, 2 * fold:]  # not shift
+            out = torch.zeros_like(z)
+            out[:, :-1, :fold] = z[:, 1:, :fold]  # shift left
+            out[:, 1:, fold: 2 * fold] = z[:, :-1, fold: 2 * fold]  # shift right
+            out[:, :, 2 * fold:] = z[:, :, 2 * fold:]  # not shift
 
         return out.view(nt, c, h, w)
+
+    def forward(self, y):
+        y = self.shift(y, self.n_segment, fold_div=self.fold_div, inplace=self.inplace)
+        return self.net(y)
 
 
 class InplaceShift(torch.autograd.Function):
     # Special thanks to @raoyongming for the help to this function
     @staticmethod
-    def forward(ctx, input, fold):
-        # not support higher order gradient
-        # input = input.detach_()
+    def forward(ctx, inputs, fold):
         ctx.fold_ = fold
-        n, t, c, h, w = input.size()
-        buffer = input.data.new(n, t, fold, h, w).zero_()
-        buffer[:, :-1] = input.data[:, 1:, :fold]
-        input.data[:, :, :fold] = buffer
+        n, t, c, h, w = inputs.size()
+        buffer = inputs.data.new(n, t, fold, h, w).zero_()
+        buffer[:, :-1] = inputs.data[:, 1:, :fold]
+        inputs.data[:, :, :fold] = buffer
         buffer.zero_()
-        buffer[:, 1:] = input.data[:, :-1, fold: 2 * fold]
-        input.data[:, :, fold: 2 * fold] = buffer
-        return input
+        buffer[:, 1:] = inputs.data[:, :-1, fold: 2 * fold]
+        inputs.data[:, :, fold: 2 * fold] = buffer
+        return inputs
 
     @staticmethod
     def backward(ctx, grad_output):
-        # grad_output = grad_output.detach_()
         fold = ctx.fold_
         n, t, c, h, w = grad_output.size()
         buffer = grad_output.data.new(n, t, fold, h, w).zero_()
@@ -89,18 +83,18 @@ class TemporalPool(nn.Module):
         self.net = net
         self.n_segment = n_segment
 
-    def forward(self, x):
-        x = self.temporal_pool(x, n_segment=self.n_segment)
-        return self.net(x)
+    def forward(self, b):
+        b = self.temporal_pool(b, n_segment=self.n_segment)
+        return self.net(b)
 
     @staticmethod
-    def temporal_pool(x, n_segment):
-        nt, c, h, w = x.size()
+    def temporal_pool(d, n_segment):
+        nt, c, h, w = d.size()
         n_batch = nt // n_segment
-        x = x.view(n_batch, n_segment, c, h, w).transpose(1, 2)  # n, c, t, h, w
-        x = F.max_pool3d(x, kernel_size=(3, 1, 1), stride=(2, 1, 1), padding=(1, 0, 0))
-        x = x.transpose(1, 2).contiguous().view(nt // 2, c, h, w)
-        return x
+        d = d.view(n_batch, n_segment, c, h, w).transpose(1, 2)  # n, c, t, h, w
+        d = F.max_pool3d(d, kernel_size=(3, 1, 1), stride=(2, 1, 1), padding=(1, 0, 0))
+        d = d.transpose(1, 2).contiguous().view(nt // 2, c, h, w)
+        return d
 
 
 def make_temporal_shift(net, n_segment, n_div=8, place='blockres', temporal_pool=False):
