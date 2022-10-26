@@ -18,7 +18,7 @@ import torch.nn.parallel
 from ops.models import TSN
 
 
-def pth_to_onnx(input_shape, checkpoint, onnx_path, input_names=['video'], output_names=['class']):
+def pth_to_onnx(input_shape, checkpoint, onnx_path):
     if not onnx_path.endswith('.onnx'):
         print('Warning! The onnx model name is not correct,\
               please give a name that ends with \'.onnx\'!')
@@ -41,7 +41,7 @@ def pth_to_onnx(input_shape, checkpoint, onnx_path, input_names=['video'], outpu
             base_dict[v] = base_dict.pop(k)
     net.load_state_dict(base_dict)
     net.eval()
-    torch.onnx.export(net, input_shape, onnx_path, input_names=input_names, output_names=output_names, opset_version=11)
+    torch.onnx.export(net, input_shape, onnx_path, opset_version=11)
     print("Exporting .pth model to onnx model has been successful!")
 
 if __name__ == '__main__':
