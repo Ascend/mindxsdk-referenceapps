@@ -214,8 +214,8 @@ def eval_video(video_data, test_segments, mol):
         rsts = rsts.reshape(batch_size, num_crop, -1).mean(1)
         if args.softmax:
             # take the softmax to normalize the output to probability
-            rst = F.softmax(rst, dim=1)
-        rsts = torch.Tensor(rst)
+            rsts = F.softmax(rsts, dim=1)
+        rsts = torch.Tensor(rsts)
         rsts = rsts.datas.cpu().numpy().copy()
 
         if is_shift:
