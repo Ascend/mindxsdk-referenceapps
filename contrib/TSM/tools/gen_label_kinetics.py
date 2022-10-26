@@ -62,9 +62,10 @@ if __name__ == '__main__':
                 missing_folders.append(img_dir)
             else:
                 dir_files = os.listdir(img_dir)
-                output.append('%s %d %d'%(os.path.join('test',os.path.join(categories_list[i], curFolder)), len(dir_files), curIDX))
-            print('%d/%d, missing %d'%(i, len(folders), len(missing_folders)))
-        with open(os.path.join(LABEL_PATH, filename_output),'w') as f:
+                output.append('%s %d %d' % (os.path.join('test', os.path.join(categories_list[i], curFolder)),\
+                              len(dir_files), curIDX))
+            print('%d/%d, missing %d' % (i, len(folders), len(missing_folders)))
+        with open(os.path.join(LABEL_PATH, filename_output), 'w') as f:
             f.write('\n'.join(output))
         with open(os.path.join(LABEL_PATH, 'missing_' + filename_output),'w') as f:
             f.write('\n'.join(missing_folders))
