@@ -85,7 +85,6 @@ class TSNDataSet(data.Dataset):
                                                 format(int(directory), 'y', idx))).convert('L')
             else:
                 try:
-                    # idx_skip = 1 + (idx-1)*5
                     flow = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(idx))).convert(
                         'RGB')
                 except Exception:
@@ -98,6 +97,7 @@ class TSNDataSet(data.Dataset):
                 y_img = flow_y.convert('L')
 
             return [x_img, y_img]
+        return None
 
     def _parse_list(self):
         # check the frame number is large >3:
@@ -127,7 +127,7 @@ class TSNDataSet(data.Dataset):
             average_duration = (record.num_frames - self.new_length + 1) // self.num_segments
             if average_duration > 0:
                 offsets = np.multiply(list(range(self.num_segments)), average_duration) + randint(average_duration,\
-                                                                                                  size=self.num_segments)
+                                      size=self.num_segments)
             elif record.num_frames > self.num_segments:
                 offsets = np.sort(randint(record.num_frames - self.new_length + 1, size=self.num_segments))
             else:
@@ -147,27 +147,6 @@ class TSNDataSet(data.Dataset):
                 offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segments)])
             else:
                 offsets = np.zeros((self.num_segments,))
-            return offsets + 1
-
-    def _get_test_indices(self, record):
-        if self.dense_sample:
-            sample_pos = max(1, 1 + record.num_frames - 64)
-            t_stride = 64 // self.num_segments
-            start_list = np.linspace(0, sample_pos - 1, num=10, dtype=int)
-            offsets = []
-            for start_idx in start_list.tolist():
-                offsets += [(idx * t_stride + start_idx) % record.num_frames for idx in range(self.num_segments)]
-            return np.array(offsets) + 1
-        elif self.twice_sample:
-            tick = (record.num_frames - self.new_length + 1) / float(self.num_segments)
-
-            offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segments)] +
-                               [int(tick * x) for x in range(self.num_segments)])
-
-            return offsets + 1
-        else:
-            tick = (record.num_frames - self.new_length + 1) / float(self.num_segments)
-            offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segments)])
             return offsets + 1
 
     def __getitem__(self, index):
@@ -203,9 +182,31 @@ class TSNDataSet(data.Dataset):
         else:
             segment_indices = self._get_test_indices(record)
         return self.get(record, segment_indices)
+    def _get_test_indices(self, record):
+        if self.dense_sample:
+            sample_pos = max(1, 1 + record.num_frames - 64)
+            t_stride = 64 // self.num_segments
+            start_list = np.linspace(0, sample_pos - 1, num=10, dtype=int)
+            offsets = []
+            for start_idx in start_list.tolist():
+                offsets += [(idx * t_stride + start_idx) % record.num_frames for idx in range(self.num_segments)]
+            return np.array(offsets) + 1
+        elif self.twice_sample:
+            tick = (record.num_frames - self.new_length + 1) / float(self.num_segments)
 
+            offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segments)] +
+                               [int(tick * x) for x in range(self.num_segments)])
+
+            return offsets + 1
+        else:
+            tick = (record.num_frames - self.new_length + 1) / float(self.num_segments)
+            offsets = np.array([int(tick / 2.0 + tick * x) for x in range(self.num_segments)])
+            return offsets + 1
+
+    def __len__(self):
+        return len(self.video_list)
+    
     def get(self, record, indices):
-
         images = list()
         for seg_ind in indices:
             p = int(seg_ind)
@@ -217,6 +218,3 @@ class TSNDataSet(data.Dataset):
 
         process_data = self.transform(images)
         return process_data, record.label
-
-    def __len__(self):
-        return len(self.video_list)
