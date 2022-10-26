@@ -234,10 +234,6 @@ class GroupMultiScaleCrop(object):
 
         return crop_pair[0], crop_pair[1], w_offset, h_offset
 
-    def _sample_fix_offset(self, image_w, image_h, crop_w, crop_h):
-        offsets = self.fill_fix_offset(self.more_fix_crop, image_w, image_h, crop_w, crop_h)
-        return random.choice(offsets)
-
     @staticmethod
     def fill_fix_offset(more_fix_crop, image_w, image_h, crop_w, crop_h):
         w_step = (image_w - crop_w) // 4
@@ -263,6 +259,9 @@ class GroupMultiScaleCrop(object):
 
         return ret
 
+    def _sample_fix_offset(self, image_w, image_h, crop_w, crop_h):
+        offsets = self.fill_fix_offset(self.more_fix_crop, image_w, image_h, crop_w, crop_h)
+        return random.choice(offsets)
 
 class GroupRandomSizedCrop(object):
     """Random crop the given PIL.Image to a random size of (0.08 to 1.0) of the original size
@@ -324,11 +323,11 @@ class Stack(object):
                 return np.concatenate([np.array(x)[:, :, ::-1] for x in img_group], axis=2)
             else:
                 return np.concatenate(img_group, axis=2)
+        return None
 
 
 class ToTorchFormatTensor(object):
-    """ Converts a PIL.Image (RGB) or numpy.ndarray (H x W x C) in the range [0, 255]
-    to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0] """
+
     def __init__(self, div=True):
         self.div = div
 
