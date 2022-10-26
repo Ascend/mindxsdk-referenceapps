@@ -38,6 +38,7 @@ def pth_to_onnx(input_shape, checkpoint, onnx_path):
     torch.onnx.export(net, input_shape, onnx_path, input_names=input_names, 
                       output_names=["o" + str(i) for i in range(len(input_shape))], opset_version=10)
     print("Exporting .pth model to onnx model has been successful!")
+    return None
 
 if __name__ == '__main__':
     PTH = './mobilenetv2_jester_online.pth.tar'
