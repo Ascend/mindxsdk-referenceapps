@@ -82,7 +82,7 @@ def process_output(idx_, history):
     
     # history smoothing
     if idx_ != history[-1]:
-        if not (history[-1] == history[-2]): #  and history[-2] == history[-3]):
+        if not (history[-1] == history[-2]): 
             idx_ = history[-1]
     
 
@@ -91,7 +91,7 @@ def process_output(idx_, history):
 
     return history[-1], history
 
-imgs = []
+IMGS = []
 
 
 def video2img():
@@ -102,11 +102,11 @@ def video2img():
 
 
 def readimg():
-    global imgs
+    global IMGS
     while True:
         for filename in os.listdir(r"./image"):
-            if filename not in imgs:
-                imgs.append(filename)
+            if filename not in IMGS:
+                IMGS.append(filename)
 
 
 def crop_image(re_img, new_height, new_width):
@@ -145,7 +145,7 @@ def main():
     while True:
         i_frame += 2
         time.sleep(0.2)        
-        filename = imgs[i_frame]
+        filename = IMGS[i_frame]
         img = Image.open("./image/" + filename).convert('RGB')
         if img.width > img.height:
             frame_pil = img.resize((round(256 * img.width / img.height), 256))
