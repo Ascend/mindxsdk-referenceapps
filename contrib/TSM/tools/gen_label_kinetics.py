@@ -54,8 +54,8 @@ if __name__ == '__main__':
         assert len(idx_categories) == len(folders)
         missing_folders = []
         output = []
-        for i in range(len(folders)):
-            curFolder = folders[i]
+        for i, folder in enumerate(folders):
+            curFolder = folder
             curIDX = idx_categories[i]
             # counting the number of frames in each video folders
             img_dir = os.path.join(DATASET_PATH, categories_list[i], curFolder)
