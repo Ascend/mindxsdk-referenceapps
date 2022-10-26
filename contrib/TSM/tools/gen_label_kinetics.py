@@ -25,8 +25,8 @@ if __name__ == '__main__':
                       for c in categories]
     assert len(set(categories)) == 400
     dict_categories = {}
-    for i, category in enumerate(categories):
-        dict_categories[category] = i
+    for j, category in enumerate(categories):
+        dict_categories[category] = j
 
     print(dict_categories)
 
@@ -43,7 +43,8 @@ if __name__ == '__main__':
             line = line.rstrip()
             items = line.split(',')
             folders.append(items[1])
-            this_catergory = items[0].replace(' ', '_').replace('"', '').replace('(', '').replace(')', '').replace("'", '')
+            this_catergory = items[0].replace(' ', '_').replace('"', '').replace('(', '').replace(')', '').replace(
+                             "'", '')
             categories_list.append(this_catergory)
             idx_categories.append(dict_categories[this_catergory])
             count_cat[this_catergory] += 1
@@ -67,5 +68,5 @@ if __name__ == '__main__':
             print('%d/%d, missing %d' % (i, len(folders), len(missing_folders)))
         with open(os.path.join(LABEL_PATH, filename_output), 'w') as f:
             f.write('\n'.join(output))
-        with open(os.path.join(LABEL_PATH, 'missing_' + filename_output),'w') as f:
+        with open(os.path.join(LABEL_PATH, 'missing_' + filename_output), 'w') as f:
             f.write('\n'.join(missing_folders))
