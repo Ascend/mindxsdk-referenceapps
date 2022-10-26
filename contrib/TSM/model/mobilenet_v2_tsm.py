@@ -33,9 +33,9 @@ def conv_1x1_bn(inp, oup):
     )
 
 
-def make_divisible(x, divisible_by=8):
+def make_divisible(a, divisible_by=8):
     import numpy as np
-    return int(np.ceil(x * 1. / divisible_by) * divisible_by)
+    return int(np.ceil(a * 1. / divisible_by) * divisible_by)
 
 
 class InvertedResidual(nn.Module):
@@ -72,11 +72,11 @@ class InvertedResidual(nn.Module):
                 nn.BatchNorm2d(oup),
             )
 
-    def forward(self, x):
+    def forward(self, y):
         if self.use_res_connect:
-            return x + self.conv(x)
+            return y + self.conv(y)
         else:
-            return self.conv(x)
+            return self.conv(y)
 
 
 class InvertedResidualWithShift(nn.Module):
@@ -105,10 +105,10 @@ class InvertedResidualWithShift(nn.Module):
             nn.BatchNorm2d(oup),
         )
 
-    def forward(self, x, shift_buffer):
-        c = x.size(1)
-        x1, x2 = x[:, : c // 8], x[:, c // 8:]
-        return x + self.conv(torch.cat((shift_buffer, x2), dim=1)), x1
+    def forward(self, z, shift_buffers):
+        c = z.size(1)
+        x1, x2 = z[:, : c // 8], z[:, c // 8:]
+        return z + self.conv(torch.cat((shift_buffers, x2), dim=1)), x1
 
 
 class MobileNetV2(nn.Module):
@@ -129,7 +129,8 @@ class MobileNetV2(nn.Module):
 
         # building first layer
         assert input_size % 32 == 0
-        # input_channel = make_divisible(input_channel * width_mult)  # first channel is always 32!
+        # input_channel = make_divisible(input_channel * width_mult)
+        # first channel is always 32!
         self.last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
         self.features = [conv_bn(3, input_channel, 2)]
         # building inverted residual blocks
@@ -157,19 +158,19 @@ class MobileNetV2(nn.Module):
 
         self._initialize_weights()
 
-    def forward(self, x, *shift_buffer):
+    def forward(self, q, *shift_buffer1):
         shift_buffer_idx = 0
         out_buffer = []
         for f in self.features:
             if isinstance(f, InvertedResidualWithShift):
-                x, s = f(x, shift_buffer[shift_buffer_idx])
+                q, s = f(q, shift_buffer1[shift_buffer_idx])
                 shift_buffer_idx += 1
                 out_buffer.append(s)
             else:
-                x = f(x)
-        x = x.mean(3).mean(2)
-        x = self.classifier(x)
-        return (x, *out_buffer)
+                q = f(q)
+        q = q.mean(3).mean(2)
+        q = self.classifier(q)
+        return (q, *out_buffer)
 
     def _initialize_weights(self):
         for m in self.modules():
