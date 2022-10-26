@@ -72,11 +72,11 @@ class InvertedResidual(nn.Module):
                 nn.BatchNorm2d(oup),
             )
 
-    def forward(self, y):
+    def forward(self, g):
         if self.use_res_connect:
-            return y + self.conv(y)
+            return g + self.conv(g)
         else:
-            return self.conv(y)
+            return self.conv(g)
 
 
 class InvertedResidualWithShift(nn.Module):
@@ -130,7 +130,6 @@ class MobileNetV2(nn.Module):
         # building first layer
         assert input_size % 32 == 0
         # input_channel = make_divisible(input_channel * width_mult)
-        # first channel is always 32!
         self.last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
         self.features = [conv_bn(3, input_channel, 2)]
         # building inverted residual blocks
