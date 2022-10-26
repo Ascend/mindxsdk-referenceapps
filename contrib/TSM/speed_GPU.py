@@ -53,10 +53,11 @@ cls_text = ['abseiling', 'air drumming', 'answering questions', 'applauding', 'a
             'gymnastics tumbling', 'hammer throw', 'headbanging', 'headbutting', 'high jump', 'high kick', 
             'hitting baseball', 'hockey stop', 'holding snake', 'hopscotch', 'hoverboarding', 'hugging', 
             'hula hooping', 'hurdling', 'hurling (sport)', 'ice climbing', 'ice fishing', 'ice skating', 
-            'ironing', 'javelin throw', 'jetskiing', 'jogging', 'juggling balls', 'juggling fire', 'juggling soccer ball', 
-            'jumping into pool', 'jumpstyle dancing', 'kicking field goal', 'kicking soccer ball', 'kissing', 
-            'kitesurfing', 'knitting', 'krumping', 'laughing', 'laying bricks', 'long jump', 'lunge', 'making a cake', 
-            'making a sandwich', 'making bed', 'making jewelry', 'making pizza', 'making snowman', 'making sushi', 
+            'ironing', 'javelin throw', 'jetskiing', 'jogging', 'juggling balls', 'juggling fire', 
+            'juggling soccer ball', 'jumping into pool', 'jumpstyle dancing', 'kicking field goal', 
+            'kicking soccer ball', 'kissing', 'kitesurfing', 'knitting', 'krumping', 'laughing', 
+            'laying bricks', 'long jump', 'lunge', 'making a cake', 'making a sandwich', 'making bed', 
+            'making jewelry', 'making pizza', 'making snowman', 'making sushi', 
             'making tea', 'marching', 'massaging back', 'massaging feet', 'massaging legs', 
             "massaging person's head", 'milking cow', 'mopping floor', 'motorcycling', 'moving furniture', 
             'mowing lawn', 'news anchoring', 'opening bottle', 'opening present', 'paragliding', 'parasailing', 
@@ -117,8 +118,6 @@ checkpoint = torch.load(RESUME)
 model.load_state_dict(checkpoint['state_dict'])
 model.eval()
 
-STATE = 400 
-
 
 def crop_image(re_img, new_height, new_width):
     re_img = Image.fromarray(np.uint8(re_img))
@@ -142,6 +141,7 @@ def main():
     offsets = np.array([int(tick / 2.0 + tick * x) for x in range(8)])
     pil_img_list = list()
     i = 0
+    s = 400 
     for i in range(8):
         filename = files[int(offsets[i])]
         img = Image.open("./image/" + filename).convert('RGB')
@@ -152,10 +152,9 @@ def main():
             frame_pil = img.resize((256, round(256 * img.height / img.width)))
         image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
         imgs = [0, 0, 0]
-        for i in range(3):
-            imgs[0] = (image[0] / 255-0.485) / 0.229
-            imgs[1] = (image[1] / 255-0.456) / 0.224
-            imgs[2] = (image[2] / 255-0.406) / 0.225
+        imgs[0] = (image[0] / 255-0.485) / 0.229
+        imgs[1] = (image[1] / 255-0.456) / 0.224
+        imgs[2] = (image[2] / 255-0.406) / 0.225
         pil_img_list.extend([imgs])
     this_rst_list = []
     pil_img_list = torch.Tensor(np.array(pil_img_list))
@@ -165,8 +164,8 @@ def main():
     cnt_time = time.time() - start_time
     this_rst_list.append(out)
     output_index = int(np.argmax(out.cpu().detach().numpy()))
-    STATE = output_index
-    print(cls_text[STATE])
+    s = output_index
+    print(cls_text[s])
     print('average {:.3f} sec/video'.format(float(cnt_time)))
 
 if __name__ == '__main__':
