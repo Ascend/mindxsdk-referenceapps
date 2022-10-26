@@ -16,7 +16,12 @@
 from torch import nn
 
 from ops.basic_ops import ConsensusModule
-from ops.transforms import *
+import torchvision
+from ops.transforms import GroupScale
+from ops.transforms import GroupCenterCrop
+from ops.transforms import Stack
+from ops.transforms import ToTorchFormatTensor
+from ops.transforms import GroupNormalize
 from torch.nn.init import normal_, constant_
 
 
@@ -64,7 +69,8 @@ class TSN(nn.Module):
         consensus_module:   {}
         dropout_ratio:      {}
         img_feature_dim:    {}
-            """.format(base_model, self.modality, self.num_segments, self.new_length, consensus_type, self.dropout, self.img_feature_dim)))
+            """.format(base_model, self.modality, self.num_segments, self.new_length, consensus_type,\
+                       self.dropout, self.img_feature_dim)))
 
         self._prepare_base_model(base_model)
 
@@ -87,25 +93,6 @@ class TSN(nn.Module):
         self._enable_pbn = partial_bn
         if partial_bn:
             self.partialBN(True)
-
-    def _prepare_tsn(self, num_class):
-        feature_dim = getattr(self.base_model, self.base_model.last_layer_name).in_features
-        if self.dropout == 0:
-            setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(feature_dim, num_class))
-            self.new_fc = None
-        else:
-            setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
-            self.new_fc = nn.Linear(feature_dim, num_class)
-
-        std = 0.001
-        if self.new_fc is None:
-            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
-            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
-        else:
-            if hasattr(self.new_fc, 'weight'):
-                normal_(self.new_fc.weight, 0, std)
-                constant_(self.new_fc.bias, 0)
-        return feature_dim
 
     def _prepare_base_model(self, base_model):
         print('=> base model: {}'.format(base_model))
@@ -196,6 +183,25 @@ class TSN(nn.Module):
                         # shutdown update in frozen mode
                         m.weight.requires_grad = False
                         m.bias.requires_grad = False
+
+    def _prepare_tsn(self, num_class):
+        feature_dim = getattr(self.base_model, self.base_model.last_layer_name).in_features
+        if self.dropout == 0:
+            setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(feature_dim, num_class))
+            self.new_fc = None
+        else:
+            setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
+            self.new_fc = nn.Linear(feature_dim, num_class)
+
+        std = 0.001
+        if self.new_fc is None:
+            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
+            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
+        else:
+            if hasattr(self.new_fc, 'weight'):
+                normal_(self.new_fc.weight, 0, std)
+                constant_(self.new_fc.bias, 0)
+        return feature_dim
 
     def partialBN(self, enable):
         self._enable_pbn = enable
