@@ -43,6 +43,7 @@ def pth_to_onnx(input_shape, checkpoint, onnx_path):
     net.eval()
     torch.onnx.export(net, input_shape, onnx_path, opset_version=11)
     print("Exporting .pth model to onnx model has been successful!")
+    return None
 
 if __name__ == '__main__':
     PTH = './TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
