@@ -19,7 +19,12 @@ import torch.nn.parallel
 import torch.optim
 import numpy as np
 from ops.dataset import TSNDataSet
-from ops.transforms import *
+import torchvision
+from ops.transforms import GroupScale
+from ops.transforms import GroupCenterCrop
+from ops.transforms import Stack
+from ops.transforms import ToTorchFormatTensor
+from ops.transforms import GroupNormalize
 from ops import dataset_config
 from torch.nn import functional as F
 from sklearn.metrics import confusion_matrix
@@ -65,6 +70,8 @@ class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
         self.reset()
+        self.val = None
+        self.avg = None
 
     def reset(self):
         self.val = 0
@@ -88,18 +95,18 @@ def accuracy(outputs, target, topk=(1,)):
     correct = pred.eq(target.view(1, -1).expand_as(pred))
     res = []
     for k in topk:
-         correct_k = correct[:k].view(-1).float().sum(0)
-         res.append(correct_k.mul_(100.0 / batch_size))
+        correct_k = correct[:k].view(-1).float().sum(0)
+        res.append(correct_k.mul_(100.0 / batch_size))
     return res
 
 
 def parse_shift_option_from_log_name(log_name):
     if 'shift' in log_name:
         strings = log_name.split('_')
-        for i, s in enumerate(strings):
+        for t, s in enumerate(strings):
             if 'shift' in s:
                 break
-        return True, int(strings[i].replace('shift', '')), strings[i + 1]
+        return True, int(strings[t].replace('shift', '')), strings[t + 1]
     else:
         return False, None, None
 
@@ -122,16 +129,16 @@ data_iter_list = []
 net_list = []
 modality_list = []
 
-total_num = None
+TOTAL_NUM = None
 for this_weights, this_test_segments, test_file in zip(weights_list, test_segments_list, test_file_list):
     is_shift, shift_div, shift_place = parse_shift_option_from_log_name(this_weights)
     if 'RGB' in this_weights:
-        modality = 'RGB'
+        MODALITY = 'RGB'
     else:
-        modality = 'Flow'
+        MODALITY = 'Flow'
     this_arch = this_weights.split('TSM_')[1].split('_')[2]
-    modality_list.append(modality)
-    num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, modality)
+    modality_list.append(MODALITY)
+    num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, MODALITY)
     
     INPUT_SIZE = 224
     cropping = torchvision.transforms.Compose([
@@ -141,8 +148,8 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
     
     data_loader = torch.utils.data.DataLoader(
             TSNDataSet(root_path, test_file if test_file is not None else val_list, num_segments=this_test_segments,
-                       new_length=1 if modality == "RGB" else 5,
-                       modality=modality,
+                       new_length=1 if MODALITY == "RGB" else 5,
+                       modality=MODALITY,
                        image_tmpl=prefix,
                        test_mode=True,
                        remove_missing = len(weights_list) == 1,
@@ -164,18 +171,18 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
 
     data_gen = enumerate(data_loader)
 
-    if total_num is None:
-        total_num = len(data_loader.dataset)
+    if TOTAL_NUM is None:
+        TOTAL_NUM = len(data_loader.dataset)
     else:
-        assert total_num == len(data_loader.dataset)
+        assert TOTAL_NUM == len(data_loader.dataset)
 
     data_iter_list.append(data_gen)
 
 
-def eval_video(video_data, this_test_segments, modality):
+def eval_video(video_data, test_segments, mol):
     with torch.no_grad():
-        i, data, label = video_data
-        batch_size = label.numel()
+        j, datas, labels = video_data
+        batch_size = labels.numel()
         num_crop = args.test_crops
         if args.dense_sample:
             num_crop *= 10  # 10 clips for testing when using dense sample
@@ -183,46 +190,44 @@ def eval_video(video_data, this_test_segments, modality):
         if args.twice_sample:
             num_crop *= 2
 
-        if modality == 'RGB':
+        if mol == 'RGB':
             length = 3
-        elif modality == 'Flow':
+        elif mol == 'Flow':
             length = 10
-        elif modality == 'RGBDiff':
+        elif mol == 'RGBDiff':
             length = 18
         else:
-            raise ValueError("Unknown modality " +  modality)
+            raise ValueError("Unknown modality " +  mol)
 
-        data_in = data.view(-1, length, data.size(2), data.size(3))
+        data_in = datas.view(-1, length, datas.size(2), datas.size(3))
         if is_shift:
-            data_in = data_in.view(batch_size * num_crop, this_test_segments, length, data_in.size(2), data_in.size(3))
+            data_in = data_in.view(batch_size * num_crop, test_segments, length, data_in.size(2), data_in.size(3))
         filepath = "./model/TSM.om"
         device_id = 0                          
         m = sdk.model(filepath, device_id)
         t = sdk.Tensor(np.array(data_in))
         t.to_device(0)
-        rst = m.infer(t)
-        rst[0].to_host()
-        rst = rst[0]
-        rst = np.array(rst)
-        rst = rst.reshape(batch_size, num_crop, -1).mean(1)
-        print(data_in)
-        print(rst)
+        rsts = m.infer(t)
+        rsts[0].to_host()
+        rsts = rsts[0]
+        rsts = np.array(rsts)
+        rsts = rsts.reshape(batch_size, num_crop, -1).mean(1)
         if args.softmax:
             # take the softmax to normalize the output to probability
             rst = F.softmax(rst, dim=1)
-        rst = torch.Tensor(rst)
-        rst = rst.data.cpu().numpy().copy()
+        rsts = torch.Tensor(rst)
+        rsts = rsts.datas.cpu().numpy().copy()
 
         if is_shift:
-            rst = rst.reshape(batch_size, num_class)
+            rsts = rsts.reshape(batch_size, num_class)
         else:
-            rst = rst.reshape((batch_size, -1, num_class)).mean(axis=1).reshape((batch_size, num_class))
+            rsts = rsts.reshape((batch_size, -1, num_class)).mean(axis=1).reshape((batch_size, num_class))
 
-        return i, rst, label
+        return j, rsts, labels
 
 output = []
 proc_start_time = time.time()
-max_num = args.max_num if args.max_num > 0 else total_num
+max_num = args.max_num if args.max_num > 0 else TOTAL_NUM
 
 top1 = AverageMeter()
 top5 = AverageMeter()
@@ -242,8 +247,8 @@ for i, data_label_pairs in enumerate(zip(*data_iter_list)):
             this_rst_list.append(rst[1])
             THIS_LABEL = label
         assert len(this_rst_list) == len(coeff_list)
-        for i_coeff in range(len(this_rst_list)):
-            this_rst_list[i_coeff] *= coeff_list[i_coeff]
+        for i_coeff, this_rst in enumerate(this_rst_list):
+            this_rst *= coeff_list[i_coeff]
         ensembled_predict = sum(this_rst_list) / len(this_rst_list)
 
         for p, g in zip(ensembled_predict, THIS_LABEL.cpu().numpy()):
@@ -253,7 +258,7 @@ for i, data_label_pairs in enumerate(zip(*data_iter_list)):
         top1.update(prec1.item(), THIS_LABEL.numel())
         top5.update(prec5.item(), THIS_LABEL.numel())
         print('video {} done, total {}/{}, average {:.3f} sec/video, '
-              'moving Prec@1 {:.3f} Prec@5 {:.3f}'.format(i * args.batch_size, i * args.batch_size, total_num,
+              'moving Prec@1 {:.3f} Prec@5 {:.3f}'.format(i * args.batch_size, i * args.batch_size, TOTAL_NUM,
                                                         float(cnt_time) / (i+1), top1.avg, top5.avg))
 
 print('-----Evaluation is finished------')
