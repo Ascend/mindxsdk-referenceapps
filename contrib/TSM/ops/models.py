@@ -276,15 +276,15 @@ class TSN(nn.Module):
              'name': "lr10_bias"},
         ]
 
-    def forward(self, input, no_reshape=False):
+    def forward(self, input2, no_reshape=False):
         if not no_reshape:
             sample_len = (3 if self.modality == "RGB" else 2) * self.new_length
 
             if self.modality == 'RGBDiff':
                 sample_len = 3 * self.new_length
-                input = self._get_diff(input)
+                input = self._get_diff(input2)
 
-            base_out = self.base_model(input.view((-1, sample_len) + input.size()[-2:]))
+            base_out = self.base_model(input2.view((-1, sample_len) + input2.size()[-2:]))
         else:
             base_out = self.base_model(input)
 
@@ -301,10 +301,11 @@ class TSN(nn.Module):
                 base_out = base_out.view((-1, self.num_segments) + base_out.size()[1:])
             output = self.consensus(base_out)
             return output.squeeze(1)
+        return None
 
-    def _get_diff(self, input, keep_rgb=False):
+    def _get_diff(self, input1, keep_rgb=False):
         input_c = 3 if self.modality in ["RGB", "RGBDiff"] else 2
-        input_view = input.view((-1, self.num_segments, self.new_length + 1, input_c,) + input.size()[2:])
+        input_view = input1.view((-1, self.num_segments, self.new_length + 1, input_c,) + input1.size()[2:])
         if keep_rgb:
             new_data = input_view.clone()
         else:
