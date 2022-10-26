@@ -353,6 +353,10 @@ class TSN(nn.Module):
             print('#' * 30, 'Warning! No Flow pretrained model is found')
         return base_model
 
+    @property
+    def crop_size(self):
+        return self.input_size
+    
     def _construct_diff_model(self, base_model, keep_rgb=False):
         # modify the convolution layers
         # Torch models are usually defined in a hierarchical way.
@@ -366,13 +370,13 @@ class TSN(nn.Module):
         params = [x.clone() for x in conv_layer.parameters()]
         kernel_size = params[0].size()
         if not keep_rgb:
-            new_kernel_size = kernel_size[:1] + (3 * self.new_length,) + kernel_size[2:]
+            new_kernel_size = kernel_size[:1] + (3 * self.new_length, ) + kernel_size[2:]
             new_kernels = params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()
         else:
-            new_kernel_size = kernel_size[:1] + (3 * self.new_length,) + kernel_size[2:]
+            new_kernel_size = kernel_size[:1] + (3 * self.new_length, ) + kernel_size[2:]
             new_kernels = torch.cat((params[0].data, \
-                          params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()),1)
-            new_kernel_size = kernel_size[:1] + (3 + 3 * self.new_length,) + kernel_size[2:]
+                          params[0].data.mean(dim=1, keepdim=True).expand(new_kernel_size).contiguous()), 1)
+            new_kernel_size = kernel_size[:1] + (3 + 3 * self.new_length, ) + kernel_size[2:]
 
         new_conv = nn.Conv2d(new_kernel_size[1], conv_layer.out_channels,
                              conv_layer.kernel_size, conv_layer.stride, conv_layer.padding,
@@ -385,10 +389,6 @@ class TSN(nn.Module):
         # replace the first convolution layer
         setattr(container, layer_name, new_conv)
         return base_model
-
-    @property
-    def crop_size(self):
-        return self.input_size
 
     @property
     def scale_size(self):
@@ -408,3 +408,4 @@ class TSN(nn.Module):
         elif self.modality == 'RGBDiff':
             return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75]),
                                                    GroupRandomHorizontalFlip(is_flow=False)])
+        return None
