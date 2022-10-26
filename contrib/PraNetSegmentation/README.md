@@ -37,7 +37,6 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 |-- main.py                   // 实现推理功能的脚本
 |-- test_metric.py            // 测试模型精度的脚本
 |-- README.md                 // 自述文
-|-- env.sh                    // 环境配置
 ```
 
 ### 1.4 技术实现流程图
@@ -76,7 +75,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 键入
 
 ```bash
-source ${SDK−path}/setenv.sh
+source ${SDK−path}/set_env.sh
 source ${ascend-toolkit-path}/set_env.sh
 ```
 
@@ -143,3 +142,13 @@ dataset      meanDic    meanIoU
 ---------  ---------  ---------
 res            0.890      0.828
 ```
+ 
+原模型的精度为：
+
+```
+dataset      meanDic    meanIoU
+---------  ---------  ---------
+res            0.895      0.836
+```
+ 
+精度符合要求。
