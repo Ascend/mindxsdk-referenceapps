@@ -217,7 +217,9 @@ cp ${h264视频} ./
 cp ${live_path}/mediaServer/live555MediaServer ./
 
 chmod +x startNvr.sh
+```
 
+```shell
 # ${port}：开启的端口号
 # ${nums}：从${port}开始创建nums+1个视频流
 # 可用的端口范围是${port}~${port}+${nums}
