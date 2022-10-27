@@ -36,7 +36,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 |   |-- onnx2om.sh            // 模型转换脚本
 |-- main.py                   // 实现推理功能的脚本
 |-- test_metric.py            // 测试模型精度的脚本
-|-- README.md                 // 自述文
+|-- README.md                 // 自述文件
 ```
 
 ### 1.4 技术实现流程图
@@ -66,7 +66,7 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 | Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 | python              | 3.9.2       |                               |                                                              |
 | numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
-| opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
+| opencv-python       | 4.5.5.64       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
 | tabulate         |    0.8.10    | 格式化输出                | 服务器中使用pip或conda安装                                   |
