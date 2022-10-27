@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 output.append('%s %d %d' % (os.path.join('test', os.path.join(categories_list[i], curFolder)),\
                               len(dir_files), curIDX))
             print('%d/%d, missing %d' % (i, len(folders), len(missing_folders)))
-        f = os.open(os.path.join(LABEL_PATH, filename_output), 'w')
+        f = os.open(os.path.join(LABEL_PATH, filename_output), os.O_RDWR)
         f.write('\n'.join(output))
-        g = os.open(os.path.join(LABEL_PATH, 'missing_' + filename_output), 'w')
+        g = os.open(os.path.join(LABEL_PATH, 'missing_' + filename_output), os.O_RDWR)
         g.write('\n'.join(missing_folders))
