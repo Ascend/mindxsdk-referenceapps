@@ -138,8 +138,9 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
         MODALITY = 'Flow'
     this_arch = this_weights.split('TSM_')[1].split('_')[2]
     modality_list.append(MODALITY)
-    num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, MODALITY)
-    
+    args.train_list, val_list, root_path = dataset_config.return_dataset(args.dataset, MODALITY)
+    num_class = 400
+    prefix = 'img_{:05d}.jpg'
     INPUT_SIZE = 224
     cropping = torchvision.transforms.Compose([
             GroupScale(256),
