@@ -14,13 +14,13 @@
 
 import os
 
-ROOT_DATASET = './dataset/'
+ROOT_DATASET = '../dataset/'
 
 
 def return_dataset(dataset, modality):
     file_categories = 400
-    file_imglist_train = './label/train_videofolder.txt'
-    file_imglist_val = './label/val_videofolder.txt'
+    file_imglist_train = '../label/train_videofolder.txt'
+    file_imglist_val = '../label/val_videofolder.txt'
     root_data = ROOT_DATASET
     prefix = 'img_{:05d}.jpg'
     file_imglist_train = os.path.join(ROOT_DATASET, file_imglist_train)
