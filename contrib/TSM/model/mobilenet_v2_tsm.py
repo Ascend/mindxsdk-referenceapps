@@ -127,12 +127,9 @@ class MobileNetV2(nn.Module):
             [6, 320, 1, 1],
         ]
 
-        # building first layer
         assert input_size % 32 == 0
-        # input_channel = make_divisible(input_channel * width_mult)
         self.last_channel = make_divisible(last_channel * width_mult) if width_mult > 1.0 else last_channel
         self.features = [conv_bn(3, input_channel, 2)]
-        # building inverted residual blocks
         global_idx = 0
         shift_block_idx = [2, 4, 5, 7, 8, 9, 11, 12, 14, 15]
         for t, c, n, s in interverted_residual_setting:
