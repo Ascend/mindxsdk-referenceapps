@@ -293,7 +293,7 @@ bash build.sh
 },
 ```
 
-中请用待测试的rtsp视频流地址替换rtsp_Url字段。其中rtsp_Url格式为 rtsp:://host:port/Data。视频仅支持h.264格式。
+中请用待测试的rtsp视频流地址替换rtsp_Url字段。其中rtsp_Url格式为 rtsp://host:port/Data。视频仅支持h.264格式。
 
 **步骤3** 执行推理
 
@@ -387,7 +387,7 @@ python3 get_video_length.py --video_path=../Knetics-400/val/ --save_path=video2f
 
 ```
 cd test
-python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp:://IP:端口"
+python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_SAVE_PATH="test_precision_log" --FRAME_LENGTH_PATH="video2framenum.txt" --PROCESS_NUM=8 --DEVICE_NUM=4 --RTSP_URL="rtsp://IP:端口"
 ```
 
 参数
@@ -397,7 +397,7 @@ python3 test_precision_main.py --RESULT_SAVE_PATH="test_precision_result" --LOG_
 - **FRAME_LENGTH_PATH** 之前生成的视频长度清单存放路径
 - **PROCESS_NUM** 并行进程数
 - **DEVICE_NUM** 设备可用卡数
-- **RTSP_URL** RTSP服务器地址，形如"rtsp:://IP:端口"
+- **RTSP_URL** RTSP服务器地址，形如"rtsp://IP:端口"
 
 最终，该程序会在RESULT_SAVE_PATH路径生成精度验证的中间结果。
 
