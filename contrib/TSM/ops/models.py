@@ -115,7 +115,74 @@ class TSN(nn.Module):
     def partial_bns(self, enable):
         self._enable_pbn = enable
 
-    def _prepare_base_model(self, base_model):
+    def get_optim_policies(self):
+        first_conv_weight = []
+        first_conv_bias = []
+        normal_weight = []
+        normal_bias = []
+        lr5_weight = []
+        lr10_bias = []
+        bn = []
+        custom_ops = []
+
+        conv_cnt = 0
+        bn_cnt = 0
+        for m in self.modules():
+            if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Conv1d) or isinstance(m, torch.nn.Conv3d):
+                ps = list(m.parameters())
+                conv_cnt += 1
+                if conv_cnt == 1:
+                    first_conv_weight.append(ps[0])
+                    if len(ps) == 2:
+                        first_conv_bias.append(ps[1])
+                else:
+                    normal_weight.append(ps[0])
+                    if len(ps) == 2:
+                        normal_bias.append(ps[1])
+            elif isinstance(m, torch.nn.Linear):
+                ps = list(m.parameters())
+                if self.fc_lr5:
+                    lr5_weight.append(ps[0])
+                else:
+                    normal_weight.append(ps[0])
+                if len(ps) == 2:
+                    if self.fc_lr5:
+                        lr10_bias.append(ps[1])
+                    else:
+                        normal_bias.append(ps[1])
+
+            elif isinstance(m, torch.nn.BatchNorm2d):
+                bn_cnt += 1
+                # later BN's are frozen
+                if not self._enable_pbn or bn_cnt == 1:
+                    bn.extend(list(m.parameters()))
+            elif isinstance(m, torch.nn.BatchNorm3d):
+                bn_cnt += 1
+                # later BN's are frozen
+                if not self._enable_pbn or bn_cnt == 1:
+                    bn.extend(list(m.parameters()))
+
+        return [
+            {'params': first_conv_weight, 'lr_mult': 5 if self.modality == 'Flow' else 1, 'decay_mult': 1,
+             'name': "first_conv_weight"},
+            {'params': first_conv_bias, 'lr_mult': 10 if self.modality == 'Flow' else 2, 'decay_mult': 0,
+             'name': "first_conv_bias"},
+            {'params': normal_weight, 'lr_mult': 1, 'decay_mult': 1,
+             'name': "normal_weight"},
+            {'params': normal_bias, 'lr_mult': 2, 'decay_mult': 0,
+             'name': "normal_bias"},
+            {'params': bn, 'lr_mult': 1, 'decay_mult': 0,
+             'name': "BN scale/shift"},
+            {'params': custom_ops, 'lr_mult': 1, 'decay_mult': 1,
+             'name': "custom_ops"},
+            # for fc
+            {'params': lr5_weight, 'lr_mult': 5, 'decay_mult': 1,
+             'name': "lr5_weight"},
+            {'params': lr10_bias, 'lr_mult': 10, 'decay_mult': 0,
+             'name': "lr10_bias"},
+        ]
+
+     def _prepare_base_model(self, base_model):
         print('=> base model: {}'.format(base_model))
 
         if 'resnet' in base_model:
@@ -186,92 +253,14 @@ class TSN(nn.Module):
                     self.num_segments, is_temporal_shift=self.shift_place, shift_div=self.shift_div)
         else:
             raise ValueError('Unknown base model: {}'.format(base_model))
+        
+    @property
+    def crop_size(self):
+        return self.input_size
 
-    def get_optim_policies(self):
-        first_conv_weight = []
-        first_conv_bias = []
-        normal_weight = []
-        normal_bias = []
-        lr5_weight = []
-        lr10_bias = []
-        bn = []
-        custom_ops = []
-
-        conv_cnt = 0
-        bn_cnt = 0
-        for m in self.modules():
-            if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Conv1d) or isinstance(m, torch.nn.Conv3d):
-                ps = list(m.parameters())
-                conv_cnt += 1
-                if conv_cnt == 1:
-                    first_conv_weight.append(ps[0])
-                    if len(ps) == 2:
-                        first_conv_bias.append(ps[1])
-                else:
-                    normal_weight.append(ps[0])
-                    if len(ps) == 2:
-                        normal_bias.append(ps[1])
-            elif isinstance(m, torch.nn.Linear):
-                ps = list(m.parameters())
-                if self.fc_lr5:
-                    lr5_weight.append(ps[0])
-                else:
-                    normal_weight.append(ps[0])
-                if len(ps) == 2:
-                    if self.fc_lr5:
-                        lr10_bias.append(ps[1])
-                    else:
-                        normal_bias.append(ps[1])
-
-            elif isinstance(m, torch.nn.BatchNorm2d):
-                bn_cnt += 1
-                # later BN's are frozen
-                if not self._enable_pbn or bn_cnt == 1:
-                    bn.extend(list(m.parameters()))
-            elif isinstance(m, torch.nn.BatchNorm3d):
-                bn_cnt += 1
-                # later BN's are frozen
-                if not self._enable_pbn or bn_cnt == 1:
-                    bn.extend(list(m.parameters()))
-
-        return [
-            {'params': first_conv_weight, 'lr_mult': 5 if self.modality == 'Flow' else 1, 'decay_mult': 1,
-             'name': "first_conv_weight"},
-            {'params': first_conv_bias, 'lr_mult': 10 if self.modality == 'Flow' else 2, 'decay_mult': 0,
-             'name': "first_conv_bias"},
-            {'params': normal_weight, 'lr_mult': 1, 'decay_mult': 1,
-             'name': "normal_weight"},
-            {'params': normal_bias, 'lr_mult': 2, 'decay_mult': 0,
-             'name': "normal_bias"},
-            {'params': bn, 'lr_mult': 1, 'decay_mult': 0,
-             'name': "BN scale/shift"},
-            {'params': custom_ops, 'lr_mult': 1, 'decay_mult': 1,
-             'name': "custom_ops"},
-            # for fc
-            {'params': lr5_weight, 'lr_mult': 5, 'decay_mult': 1,
-             'name': "lr5_weight"},
-            {'params': lr10_bias, 'lr_mult': 10, 'decay_mult': 0,
-             'name': "lr10_bias"},
-        ]
-
-    def _prepare_tsn(self, num_class):
-        feature_dim = getattr(self.base_model, self.base_model.last_layer_name).in_features
-        if self.dropout == 0:
-            setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(feature_dim, num_class))
-            self.new_fc = None
-        else:
-            setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
-            self.new_fc = nn.Linear(feature_dim, num_class)
-
-        std = 0.001
-        if self.new_fc is None:
-            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
-            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
-        else:
-            if hasattr(self.new_fc, 'weight'):
-                normal_(self.new_fc.weight, 0, std)
-                constant_(self.new_fc.bias, 0)
-        return feature_dim
+    @property
+    def scale_size(self):
+        return self.input_size * 256 // 224
 
     def forward(self, input2, no_reshape=False):
         if not no_reshape:
@@ -300,9 +289,24 @@ class TSN(nn.Module):
             return output.squeeze(1)
         return None
     
-    @property
-    def crop_size(self):
-        return self.input_size
+    def _prepare_tsn(self, num_class):
+        feature_dim = getattr(self.base_model, self.base_model.last_layer_name).in_features
+        if self.dropout == 0:
+            setattr(self.base_model, self.base_model.last_layer_name, nn.Linear(feature_dim, num_class))
+            self.new_fc = None
+        else:
+            setattr(self.base_model, self.base_model.last_layer_name, nn.Dropout(p=self.dropout))
+            self.new_fc = nn.Linear(feature_dim, num_class)
+
+        std = 0.001
+        if self.new_fc is None:
+            normal_(getattr(self.base_model, self.base_model.last_layer_name).weight, 0, std)
+            constant_(getattr(self.base_model, self.base_model.last_layer_name).bias, 0)
+        else:
+            if hasattr(self.new_fc, 'weight'):
+                normal_(self.new_fc.weight, 0, std)
+                constant_(self.new_fc.bias, 0)
+        return feature_dim
 
     def _get_diff(self, input1, keep_rgb=False):
         input_c = 3 if self.modality in ["RGB", "RGBDiff"] else 2
@@ -320,10 +324,22 @@ class TSN(nn.Module):
 
         return new_data
 
-    @property
-    def scale_size(self):
-        return self.input_size * 256 // 224
-
+    def get_augmentation(self, flip=True):
+        if self.modality == 'RGB':
+            if flip:
+                return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75, .66]),
+                                                       GroupRandomHorizontalFlip(is_flow=False)])
+            else:
+                print('#' * 20, 'NO FLIP!!!')
+                return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75, .66])])
+        elif self.modality == 'Flow':
+            return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75]),
+                                                   GroupRandomHorizontalFlip(is_flow=True)])
+        elif self.modality == 'RGBDiff':
+            return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75]),
+                                                   GroupRandomHorizontalFlip(is_flow=False)])
+        return None
+    
     def _construct_flow_model(self, base_model):
         # modify the convolution layers
         # Torch models are usually defined in a hierarchical way.
@@ -358,22 +374,6 @@ class TSN(nn.Module):
         else:
             print('#' * 30, 'Warning! No Flow pretrained model is found')
         return base_model
-
-    def get_augmentation(self, flip=True):
-        if self.modality == 'RGB':
-            if flip:
-                return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75, .66]),
-                                                       GroupRandomHorizontalFlip(is_flow=False)])
-            else:
-                print('#' * 20, 'NO FLIP!!!')
-                return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75, .66])])
-        elif self.modality == 'Flow':
-            return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75]),
-                                                   GroupRandomHorizontalFlip(is_flow=True)])
-        elif self.modality == 'RGBDiff':
-            return torchvision.transforms.Compose([GroupMultiScaleCrop(self.input_size, [1, .875, .75]),
-                                                   GroupRandomHorizontalFlip(is_flow=False)])
-        return None
 
     def _construct_diff_model(self, base_model, keep_rgb=False):
         # modify the convolution layers
