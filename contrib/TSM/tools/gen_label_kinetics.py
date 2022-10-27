@@ -46,7 +46,7 @@ if __name__ == '__main__':
             this_catergory = items[0].replace(' ', '_').replace('"', '').replace('(', '').replace(')', '').replace(
                              "'", '')
             categories_list.append(this_catergory)
-            idx_categories.append(dict_categories[this_catergory])
+            idx_categories.append(dict_categories.get(this_catergory))
             count_cat[this_catergory] += 1
         print(max(count_cat.values()))
         
@@ -66,7 +66,7 @@ if __name__ == '__main__':
                 output.append('%s %d %d' % (os.path.join('test', os.path.join(categories_list[i], curFolder)),\
                               len(dir_files), curIDX))
             print('%d/%d, missing %d' % (i, len(folders), len(missing_folders)))
-        with open(os.path.join(LABEL_PATH, filename_output), 'w') as f:
-            f.write('\n'.join(output))
-        with open(os.path.join(LABEL_PATH, 'missing_' + filename_output), 'w') as f:
-            f.write('\n'.join(missing_folders))
+        f = os.open(os.path.join(LABEL_PATH, filename_output), 'w')
+        f.write('\n'.join(output))
+        g = os.open(os.path.join(LABEL_PATH, 'missing_' + filename_output), 'w')
+        g.write('\n'.join(missing_folders))
