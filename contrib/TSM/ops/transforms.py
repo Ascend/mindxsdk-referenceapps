@@ -210,30 +210,6 @@ class GroupMultiScaleCrop(object):
                          for img in crop_img_group]
         return ret_img_group
 
-    def _sample_crop_size(self, im_size):
-        image_w, image_h = im_size[0], im_size[1]
-
-        # find a crop size
-        base_size = min(image_w, image_h)
-        crop_sizes = [int(base_size * x) for x in self.scales]
-        crop_h = [self.input_size[1] if abs(x - self.input_size[1]) < 3 else x for x in crop_sizes]
-        crop_w = [self.input_size[0] if abs(x - self.input_size[0]) < 3 else x for x in crop_sizes]
-
-        pairs = []
-        for i, h in enumerate(crop_h):
-            for j, w in enumerate(crop_w):
-                if abs(i - j) <= self.max_distort:
-                    pairs.append((w, h))
-
-        crop_pair = random.choice(pairs)
-        if not self.fix_crop:
-            w_offset = random.randint(0, image_w - crop_pair[0])
-            h_offset = random.randint(0, image_h - crop_pair[1])
-        else:
-            w_offset, h_offset = self._sample_fix_offset(image_w, image_h, crop_pair[0], crop_pair[1])
-
-        return crop_pair[0], crop_pair[1], w_offset, h_offset
-
     @staticmethod
     def fill_fix_offset(more_fix_crop, image_w, image_h, crop_w, crop_h):
         w_step = (image_w - crop_w) // 4
@@ -259,9 +235,34 @@ class GroupMultiScaleCrop(object):
 
         return ret
 
+    def _sample_crop_size(self, im_size):
+        image_w, image_h = im_size[0], im_size[1]
+
+        # find a crop size
+        base_size = min(image_w, image_h)
+        crop_sizes = [int(base_size * x) for x in self.scales]
+        crop_h = [self.input_size[1] if abs(x - self.input_size[1]) < 3 else x for x in crop_sizes]
+        crop_w = [self.input_size[0] if abs(x - self.input_size[0]) < 3 else x for x in crop_sizes]
+
+        pairs = []
+        for i, h in enumerate(crop_h):
+            for j, w in enumerate(crop_w):
+                if abs(i - j) <= self.max_distort:
+                    pairs.append((w, h))
+
+        crop_pair = random.choice(pairs)
+        if not self.fix_crop:
+            w_offset = random.randint(0, image_w - crop_pair[0])
+            h_offset = random.randint(0, image_h - crop_pair[1])
+        else:
+            w_offset, h_offset = self._sample_fix_offset(image_w, image_h, crop_pair[0], crop_pair[1])
+
+        return crop_pair[0], crop_pair[1], w_offset, h_offset
+
     def _sample_fix_offset(self, image_w, image_h, crop_w, crop_h):
         offsets = self.fill_fix_offset(self.more_fix_crop, image_w, image_h, crop_w, crop_h)
         return random.choice(offsets)
+
 
 class GroupRandomSizedCrop(object):
     """Random crop the given PIL.Image to a random size of (0.08 to 1.0) of the original size
