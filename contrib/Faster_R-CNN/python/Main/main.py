@@ -17,6 +17,8 @@ import argparse
 import json
 import logging
 import os
+import stat
+import shutil
 import time
 
 import cv2
@@ -149,7 +151,12 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
             result = sdk_api.get_result(s_name)
             end_time = time.time() - start_time
 
-            with open(save_path, "w") as fp:
+            # with open(save_path, "w") as fp:
+            if os.path.exists(save_path):
+                os.remove(save_path)
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            with os.fdopen(os.open((save_path), flags, modes), 'w') as fp:
                 fp.write(json.dumps(result))
             print(
                 f"End-2end inference, file_name: {file_path}, {img_id + 1}/{total_len}, elapsed_time: {end_time}.\n"
@@ -158,6 +165,7 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
             draw_label(save_path, file_path, result_dir)
         except Exception as ex:
             logging.exception("Unknown error, msg(%s).", ex)
+
 
 if __name__ == "__main__":
     args = parser_args()

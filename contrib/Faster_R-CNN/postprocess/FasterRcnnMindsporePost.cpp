@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <boost/property_tree/json_parser.hpp>
 #include <opencv4/opencv2/core.hpp>
 #include <opencv4/opencv2/opencv.hpp>

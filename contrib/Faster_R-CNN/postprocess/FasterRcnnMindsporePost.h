@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #ifndef FASTERRCNN_MINSPORE_PORT_H
 #define FASTERRCNN_MINSPORE_PORT_H
 #include <algorithm>

@@ -14,6 +14,7 @@
 # ============================================================================
 
 import os
+import stat
 import json
 import shutil
 import numpy as np
@@ -23,18 +24,22 @@ import matplotlib.pyplot as plt
 
 
 def json_to_txt(infer_result_path, savetxt_path):
+    if os.path.exists(savetxt_path):
+        shutil.rmtree(savetxt_path)
+    os.mkdir(savetxt_path)
     files = os.listdir(infer_result_path)
     for file in files:
         if file.endswith(".json"):
-
             json_path = os.path.join(infer_result_path, file)
             with open(json_path, 'r') as fp:
                 result = json.loads(fp.read())
             if result:
                 data = result.get("MxpiObject")
                 txt_file = file.split(".")[0] + ".txt"
-                with open(os.path.join(savetxt_path, txt_file), "w") as f:
-
+                # with open(os.path.join(savetxt_path, txt_file), "w") as f:
+                flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                modes = stat.S_IWUSR | stat.S_IRUSR
+                with os.fdopen(os.open(os.path.join(savetxt_path, txt_file), flags, modes), 'w') as f:
                     temp = int(file.split("_")[2]) - 600
                     for bbox in data:
                         class_vec = bbox.get("classVec")[0]
@@ -44,7 +49,6 @@ def json_to_txt(infer_result_path, savetxt_path):
                         ymin = bbox["y0"]
                         xmax = bbox["x1"]
                         ymax = bbox["y1"]
-
                         if xmax - xmin >= 5 and ymax - ymin >= 5:
                             f.write(
                                 str(xmin + temp) + ',' + str(ymin) + ',' + str(xmax + temp) + ',' + str(
@@ -66,8 +70,11 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
     for txtfile in txt_list:
         for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                fw = open(os.path.join(save_txt_path, image + '.txt'), 'a')  # w覆盖，a追加
-                for line in open(os.path.join(txt_path, txtfile), "r"):  # 设置文件对象并读取每一行文件
+                # flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                # modes = stat.S_IWUSR | stat.S_IRUSR
+                # fw = os.fdopen(os.open(os.path.join(save_txt_path, image + '.txt'), flags, modes), 'a')
+                fw = open(os.path.join(save_txt_path, image + '.txt'), 'a')
+                for line in open(os.path.join(txt_path, txtfile), "r"):
                     fw.write(line)
                 fw.close()
 
@@ -76,7 +83,7 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
         print(file)
         oldname = os.path.join(save_txt_path, file)
         newname = os.path.join(remove_txt_path, file)
-        shutil.copyfile(oldname, newname)  # 将需要的文件从oldname复制到newname
+        shutil.copyfile(oldname, newname)
     print("finish")
 
 
@@ -123,14 +130,18 @@ def plot_bbox(dets, c='k'):
     plt.title(" nms")
 
 
-
 def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
     txt_list = os.listdir(txt_path)
     for txtfile in tqdm.tqdm(txt_list):
         boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
                            delimiter=',')
         if boxes.size > 5:
-            fw = open(os.path.join(txt_path, txtfile), 'w')
+            if os.path.exists(os.path.join(txt_path, txtfile)):
+                os.remove(os.path.join(txt_path, txtfile))
+            # fw = open(os.path.join(txt_path, txtfile), 'w')
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
             print(boxes.size)
 
             print(txtfile)

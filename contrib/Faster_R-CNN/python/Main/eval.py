@@ -15,6 +15,7 @@
 
 
 import os
+import stat
 import json
 import shutil
 import xml.etree.ElementTree as ET
@@ -42,7 +43,7 @@ args_opt = parser.parse_args()
 def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     txt_save_path = os.path.join(voc_dir, "VOC2017/image_txt")
     val_txt_path = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
-    coco_to_txt(ann_file, result_json_file, VAL_TXT_PATH, TXT_SAVE_PATH, cat_id=cat_id)
+    coco_to_txt(ann_file, result_json_file, val_txt_path, txt_save_path, cat_id=cat_id)
 
     txt_path = txt_save_path
     all_txt_path = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
@@ -62,7 +63,7 @@ def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     aps = []
     recs = []
     precs = []
-    annot_path = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
+    anno_path = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
     imagesetfile = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
     cachedir = os.path.join(voc_dir, "VOC2017/demo")
     filename = os.path.join(voc_dir, "VOC2017/obj_txt_huizong/qikong.txt")
@@ -102,7 +103,10 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         txt_file_name = file_name.split('.')[0] + ".txt"
 
         temp = int(file_name.split('_')[2]) - 600
-        f = open(os.path.join(savetxt_path, txt_file_name), "w")
+        # f = open(os.path.join(savetxt_path, txt_file_name), "w")
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        f = os.fdopen(os.open(os.path.join(savetxt_path, txt_file_name), flags, modes), 'w')
 
         ann_ids = coco_res.getAnnIds(imgIds=image_id, iscrowd=None)
         anns = coco_res.loadAnns(ann_ids)
@@ -146,7 +150,7 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, val_txt_path):
     fileroot = os.listdir(save_txt_path)
     for file in fileroot:
         print(file)
-        oldname = os.path.join(save_txt_Path, file)
+        oldname = os.path.join(save_txt_path, file)
         newname = os.path.join(remove_txt_path, file)
         shutil.copyfile(oldname, newname)
     print("finish")
@@ -201,7 +205,12 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
         boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
                            delimiter=',')
         if boxes.size > 5:
-            fw = open(os.path.join(txt_path, txtfile), 'w')
+            if os.path.exists(os.path.join(txt_path, txtfile)):
+                os.remove(os.path.join(txt_path, txtfile))
+            # fw = open(os.path.join(txt_path, txtfile), 'w')
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
             print(boxes.size)
             print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
@@ -226,7 +235,12 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
 
 def write_huizong(txt_path, save_txt_path):
     txt_list = os.listdir(txt_path)
-    fw = open(os.path.join(save_txt_path, 'qikong.txt'), 'w')
+    # fw = open(os.path.join(save_txt_path, 'qikong.txt'), 'w')
+    if os.path.exists(os.path.join(save_txt_path, 'qikong.txt')):
+        os.remove(os.path.join(save_txt_path, 'qikong.txt'))
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    fw = os.fdopen(os.open(os.path.join(save_txt_path, 'qikong.txt'), flags, modes), 'w')
     for txtfile in txt_list:
         for line in open(os.path.join(txt_path, txtfile), 'r'):
             line = line.strip('\n')
@@ -296,12 +310,12 @@ def voc_ap(rec, prec, use_07_metric=False):  # voc2007的计算方式和voc2012�
 
 
 def voc_to_eval(detpath,
-             annopath,
-             imagesetfile,
-             classname,
-             cachedir,
-             ovthresh=0.5,
-             use_07_metric=False):
+                annopath,
+                imagesetfile,
+                classname,
+                cachedir,
+                ovthresh=0.5,
+                use_07_metric=False):
     """rec, prec, ap = voc_eval(detpath,
                                 annopath,
                                 imagesetfile,
@@ -343,10 +357,10 @@ def voc_to_eval(detpath,
     class_recs = {}
     npos = 0
     for imagename in imagenames:
-        r = [obj for obj in recs[imagename] if obj['name'] == classname]
-        bbox = np.array([x['bbox'] for x in r])
-        difficult = np.array([x['difficult'] for x in r]).astype(np.bool)
-        det = [False] * len(r)
+        R = [obj for obj in recs[imagename] if obj.get('name', "the name does not exits!") == classname]  # obj['name']
+        bbox = np.array([x['bbox'] for x in R])
+        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
+        det = [False] * len(R)
         npos = npos + sum(~difficult)
         class_recs[imagename] = {'bbox': bbox,
                                  'difficult': difficult,
@@ -360,12 +374,12 @@ def voc_to_eval(detpath,
     splitlines = [x.strip().split(' ') for x in lines]
     image_ids = [x[0] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
-    bb = np.array([[float(z) for z in x[2:]] for x in splitlines])
+    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
 
     # sort by confidence
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
-    bb = bb[sorted_ind, :]
+    BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 
     # go down dets and mark TPs and FPs
@@ -375,36 +389,36 @@ def voc_to_eval(detpath,
 
     for d in range(nd):
         print(nd)
-        r = class_recs[image_ids[d]]
-        bb = bb[d, :].astype(float)
+        R = class_recs.get(image_ids[d], "no")  # class_recs[image_ids[d]]
+        bb = BB[d, :].astype(float)
         ovmax = -np.inf
-        bbgt = r['bbox'].astype(float)
+        BBGT = R['bbox'].astype(float)
 
-        if bbgt.size > 0:
+        if BBGT.size > 0:
             # compute overlaps
             # intersection
-            ixmin = np.maximum(bbgt[:, 0], bb[0])
-            iymin = np.maximum(bbgt[:, 1], bb[1])
-            ixmax = np.minimum(bbgt[:, 2], bb[2])
-            iymax = np.minimum(bbgt[:, 3], bb[3])
+            ixmin = np.maximum(BBGT[:, 0], bb[0])
+            iymin = np.maximum(BBGT[:, 1], bb[1])
+            ixmax = np.minimum(BBGT[:, 2], bb[2])
+            iymax = np.minimum(BBGT[:, 3], bb[3])
             iw = np.maximum(ixmax - ixmin + 1., 0.)
             ih = np.maximum(iymax - iymin + 1., 0.)
             inters = iw * ih
 
             # union
             uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
-                   (bbgt[:, 2] - bbgt[:, 0] + 1.) *
-                   (bbgt[:, 3] - bbgt[:, 1] + 1.) - inters)
+                   (BBGT[:, 2] - BBGT[:, 0] + 1.) *
+                   (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
 
             overlaps = inters / uni
             ovmax = np.max(overlaps)
             jmax = np.argmax(overlaps)
 
         if ovmax > ovthresh:
-            if not r['difficult'][jmax]:
-                if not r['det'][jmax]:
+            if not R['difficult'][jmax]:
+                if not R['det'][jmax]:
                     tp[d] = 1.
-                    r['det'][jmax] = 1
+                    R['det'][jmax] = 1
                 else:
                     fp[d] = 1.
         else:

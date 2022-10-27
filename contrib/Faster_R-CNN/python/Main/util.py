@@ -27,7 +27,6 @@ import tqdm
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
 
-
 _init_value = np.array(0.0)
 summary_init = {
     'Precision/mAP': _init_value,
@@ -157,5 +156,5 @@ def results2json(dataset, results, out_file):
     json_results = det2json(dataset, results)
     result_files['bbox'] = '{}.{}.json'.format(out_file, 'bbox')
     result_files['proposal'] = '{}.{}.json'.format(out_file, 'bbox')
-    mmcv.dump(json_results, result_files['bbox'])
+    mmcv.dump(json_results, result_files.get('bbox', "bbox not exist!"))  # result_files['bbox']
     return result_files

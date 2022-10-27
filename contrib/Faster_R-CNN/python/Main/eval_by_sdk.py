@@ -77,6 +77,7 @@ def get_eval_result(ann_file, path):
     result_files = results2json(dataset_coco, outputs, "./results.pkl")
     result_json_file = "/home/mijianxun1/work/AscendProjects/Faster_Rcnn_App2/sdk2/sdk/results.pkl.bbox.json"
 
+
 if __name__ == '__main__':
     RESULT_PATH = "./result"
     parser = argparse.ArgumentParser(description="maskrcnn inference")
