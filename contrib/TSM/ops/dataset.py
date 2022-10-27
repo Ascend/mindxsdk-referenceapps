@@ -99,14 +99,6 @@ class TSNDataSet(data.Dataset):
             return [x_img, y_img]
         return None
 
-    def _parse_list(self):
-        # check the frame number is large >3:
-        tmp = [x.strip().split(' ') for x in open(self.list_file)]
-        if not self.test_mode or self.remove_missing:
-            tmp = [item for item in tmp if int(item[1]) >= 3]
-        self.video_list = [VideoRecord(item) for item in tmp]
-        print('video number:%d' % (len(self.video_list)))
-
     def __getitem__(self, index):
         record = self.video_list[index]
         # check this is a legit video folder
@@ -141,6 +133,17 @@ class TSNDataSet(data.Dataset):
             segment_indices = self._get_test_indices(record)
         return self.get(record, segment_indices)
 
+    def _parse_list(self):
+        # check the frame number is large >3:
+        tmp = [x.strip().split(' ') for x in open(self.list_file)]
+        if not self.test_mode or self.remove_missing:
+            tmp = [item for item in tmp if int(item[1]) >= 3]
+        self.video_list = [VideoRecord(item) for item in tmp]
+        print('video number:%d' % (len(self.video_list)))
+
+    def __len__(self):
+        return len(self.video_list)
+
     def _sample_indices(self, record):
         """
 
@@ -163,9 +166,19 @@ class TSNDataSet(data.Dataset):
             else:
                 offsets = np.zeros((self.num_segments,))
             return offsets + 1
+    
+    def get(self, record, indices):
+        images = list()
+        for seg_ind in indices:
+            p = int(seg_ind)
+            for i in range(self.new_length):
+                seg_imgs = self._load_image(record.path, p)
+                images.extend(seg_imgs)
+                if p < record.num_frames:
+                    p += 1
 
-    def __len__(self):
-        return len(self.video_list)
+        process_data = self.transform(images)
+        return process_data, record.label
 
     def _get_val_indices(self, record):
         if self.dense_sample:  # i3d dense sample
@@ -181,19 +194,6 @@ class TSNDataSet(data.Dataset):
             else:
                 offsets = np.zeros((self.num_segments,))
             return offsets + 1
-    
-    def get(self, record, indices):
-        images = list()
-        for seg_ind in indices:
-            p = int(seg_ind)
-            for i in range(self.new_length):
-                seg_imgs = self._load_image(record.path, p)
-                images.extend(seg_imgs)
-                if p < record.num_frames:
-                    p += 1
-
-        process_data = self.transform(images)
-        return process_data, record.label
 
     def _get_test_indices(self, record):
         if self.dense_sample:
