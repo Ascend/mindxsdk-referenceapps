@@ -17,14 +17,13 @@
 import os
 import json
 import shutil
+import xml.etree.ElementTree as ET
+import argparse
 import numpy as np
 import cv2 as cv
 import tqdm
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
-import shutil
-import xml.etree.ElementTree as ET
-import argparse
 
 parser = argparse.ArgumentParser(description="FasterRcnn evaluation")
 parser.add_argument("--ann_file", type=str,
@@ -40,36 +39,36 @@ parser.add_argument("--object_name", type=str, default="qikong", help="the objec
 args_opt = parser.parse_args()
 
 
-def VOC_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
-    TXT_SAVE_PATH = os.path.join(voc_dir, "VOC2017/image_txt")
-    VAL_TXT_PATH = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
+def VocEval(ann_file, result_json_file, voc_dir, cat_id, object_name):
+    txt_save_path = os.path.join(voc_dir, "VOC2017/image_txt")
+    val_txt_path = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
     coco_to_txt(ann_file, result_json_file, VAL_TXT_PATH, TXT_SAVE_PATH, cat_id=cat_id)
 
-    TXT_PATH = TXT_SAVE_PATH
-    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
-    NMS_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
-    CUT_PATH = VAL_TXT_PATH
-    hebing_txt(TXT_PATH, ALL_TXT_PATH, NMS_TXT_PATH, CUT_PATH)
+    txt_path = txt_save_path
+    all_txt_path = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
+    nms_txt_path = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
+    cut_path = val_txt_path
+    hebing_txt(txt_path, all_txt_path, nms_txt_path, cut_path)
 
-    CUT_PATH = os.path.join(voc_dir, "VOC2017/JPEGImages")
-    imagesavePath = os.path.join(voc_dir, "VOC2017/images1")
-    TXT_PATH = NMS_TXT_PATH
-    nms_box(CUT_PATH, imagesavePath, TXT_PATH, thresh=0)
+    cut_path = os.path.join(voc_dir, "VOC2017/JPEGImages")
+    image_save_path = os.path.join(voc_dir, "VOC2017/images1")
+    txt_path = nms_txt_path
+    nms_box(cut_path, image_save_path, txt_path, thresh=0)
 
-    TXT_PATH = NMS_TXT_PATH
-    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
-    write_huizong(TXT_PATH, ALL_TXT_PATH)
+    txt_path = nms_txt_path
+    all_txt_path = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
+    write_huizong(txt_path, all_txt_path)
 
     aps = []
     recs = []
     precs = []
-    ANNO_PATH = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
+    annot_path = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
     imagesetfile = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
     cachedir = os.path.join(voc_dir, "VOC2017/demo")
     filename = os.path.join(voc_dir, "VOC2017/obj_txt_huizong/qikong.txt")
 
     rec, prec, ap = voc_eval(
-        filename, ANNO_PATH, imagesetfile, object_name, cachedir, ovthresh=0,
+        filename, anno_path, imagesetfile, object_name, cachedir, ovthresh=0,
         use_07_metric=False)
 
     aps += [ap]
@@ -105,8 +104,8 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         temp = int(file_name.split('_')[2]) - 600
         f = open(os.path.join(savetxt_path, txt_file_name), "w")
 
-        annIds = coco_res.getAnnIds(imgIds=image_id, iscrowd=None)
-        anns = coco_res.loadAnns(annIds)
+        ann_ids = coco_res.getAnnIds(imgIds=image_id, iscrowd=None)
+        anns = coco_res.loadAnns(ann_ids)
         for ann in anns:
             category_id = ann['category_id']
             if category_id == cat_id:
@@ -125,30 +124,30 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         f.close()
 
 
-def hebing_txt(txtPath, saveTxtPath, removeTxtPath, val_txt_path):
-    fileroot = os.listdir(saveTxtPath)
-    removeList = os.listdir(removeTxtPath)
+def hebing_txt(txt_path, save_txt_path, remove_txt_path, val_txt_path):
+    fileroot = os.listdir(save_txt_path)
+    removeList = os.listdir(remove_txt_path)
     for filename in removeList:
-        os.remove(os.path.join(removeTxtPath, filename))
+        os.remove(os.path.join(remove_txt_path, filename))
     for filename in fileroot:
-        os.remove(os.path.join(saveTxtPath, filename))
+        os.remove(os.path.join(save_txt_path, filename))
     data = []
     for line in open(val_txt_path, "r"):
         data.append(line.strip('\n'))
-    txtList = os.listdir(txtPath)
-    for txtfile in txtList:
+    txt_list = os.listdir(txt_path)
+    for txtfile in txt_list:
         for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')
-                for line in open(os.path.join(txtPath, txtfile), "r"):
+                fw = open(os.path.join(save_txt_path, image + '.txt'), 'a')
+                for line in open(os.path.join(txt_path, txtfile), "r"):
                     fw.write(line)
                 fw.close()
 
-    fileroot = os.listdir(saveTxtPath)
+    fileroot = os.listdir(save_txt_path)
     for file in fileroot:
         print(file)
-        oldname = os.path.join(saveTxtPath, file)
-        newname = os.path.join(removeTxtPath, file)
+        oldname = os.path.join(save_txt_Path, file)
+        newname = os.path.join(remove_txt_path, file)
         shutil.copyfile(oldname, newname)
     print("finish")
 
@@ -196,41 +195,40 @@ def plot_bbox(dets, c='k'):
     plt.title(" nms")
 
 
-def nms_box(imagePath, imagesavePath, txtPath, thresh):
-    txtList = os.listdir(txtPath)
-    for txtfile in tqdm.tqdm(txtList):
-        boxes = np.loadtxt(os.path.join(txtPath, txtfile), dtype=np.float32,
+def nms_box(image_path, image_save_path, txt_path, thresh):
+    txt_list = os.listdir(txt_path)
+    for txtfile in tqdm.tqdm(txt_list):
+        boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
                            delimiter=',')
         if boxes.size > 5:
-            fw = open(os.path.join(txtPath, txtfile), 'w')
+            fw = open(os.path.join(txt_path, txtfile), 'w')
             print(boxes.size)
             print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
-            img = cv.imread(os.path.join(imagePath, txtfile[:-3] + 'jpg'), 0)
+            img = cv.imread(os.path.join(image_path, txtfile[:-3] + 'jpg'), 0)
             for label in boxes[keep]:
                 fw.write(str(int(label[0])) + ',' + str(int(label[1])) + ',' + str(int(label[2])) + ',' + str(
                     int(label[3])) + ',' + str(round((label[4]), 2)) + '\n')
-                Xmin = int(label[0])
-                Ymin = int(label[1])
-                Xmax = int(label[2])
-                Ymax = int(label[3])
+                x_min = int(label[0])
+                y_min = int(label[1])
+                x_max = int(label[2])
+                y_max = int(label[3])
                 color = (0, 0, 255)
-                if Xmax - Xmin >= 5 and Ymax - Ymin >= 5:
-                    cv.rectangle(img, (Xmin, Ymin), (Xmax, Ymax), color, 1)
+                if x_max - x_min >= 5 and y_max - y_min >= 5:
+                    cv.rectangle(img, (x_min, y_min), (x_max, y_max), color, 1)
                     font = cv.FONT_HERSHEY_SIMPLEX
-                    cv.putText(img, str(round((label[4]), 2)), (Xmin, Ymin - 7), font, 0.2, (6, 230, 230),
+                    cv.putText(img, str(round((label[4]), 2)), (x_min, y_min - 7), font, 0.2, (6, 230, 230),
                                1)
-            print(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'))
-            cv.imwrite(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'), img)
+            print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
+            cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()
 
 
-def write_huizong(txtPath, saveTxtPath):
-    data = []
-    txtList = os.listdir(txtPath)
-    fw = open(os.path.join(saveTxtPath, 'qikong.txt'), 'w')
+def write_huizong(txt_path, save_txt_path):
+    txtList = os.listdir(txt_path)
+    fw = open(os.path.join(save_txt_path, 'qikong.txt'), 'w')
     for txtfile in txtList:
-        for line in open(os.path.join(txtPath, txtfile), 'r'):
+        for line in open(os.path.join(txt_path, txtfile), 'r'):
             line = line.strip('\n')
             fw.write(txtfile[:-4] + ' ' +
                      line.split(',')[4] + ' ' +
@@ -425,4 +423,4 @@ def voc_eval(detpath,
 
 
 if __name__ == '__main__':
-    VOC_eval(args_opt.ann_file, args_opt.result_json_file, args_opt.voc_dir, args_opt.cat_id, args_opt.object_name)
+    VocEval(args_opt.ann_file, args_opt.result_json_file, args_opt.voc_dir, args_opt.cat_id, args_opt.object_name)

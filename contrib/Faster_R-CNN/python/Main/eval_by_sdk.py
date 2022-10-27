@@ -60,29 +60,25 @@ def parse_result(result_file, num_classes):
     return [np.asarray(box) for box in all_box]
 
 
-def get_eval_result(ann_file, result_path):
+def get_eval_result(ann_file, path):
     outputs = []
 
     dataset_coco = COCO(ann_file)
     img_ids = dataset_coco.getImgIds()
 
     for img_id in img_ids:
-        # file_id = str(img_id).zfill(12)
-        # result_json = os.path.join(result_path, f"{file_id}.json")
         image = dataset_coco.loadImgs(img_id)[0]
         file_name = image['file_name'].split('.')[0]
-        result_json = os.path.join(result_path, f"{file_name}.json")
+        result_json = os.path.join(path, f"{file_name}.json")
         bbox_results = parse_result(result_json, cfg.NUM_CLASSES)
         outputs.append(bbox_results)
 
     eval_types = ["bbox"]
     result_files = results2json(dataset_coco, outputs, "./results.pkl")
-    # coco_eval(result_files, eval_types, dataset_coco, single_result=False)
     result_json_file = "/home/mijianxun1/work/AscendProjects/Faster_Rcnn_App2/sdk2/sdk/results.pkl.bbox.json"
-    # VOC_eval(ann_file, result_json_file, voc_dir)
 
 if __name__ == '__main__':
-    result_path = "./result"
+    RESULT_PATH = "./result"
     parser = argparse.ArgumentParser(description="maskrcnn inference")
     parser.add_argument("--ann_file",
                         type=str,
@@ -97,4 +93,4 @@ if __name__ == '__main__':
                         required=True,
                         help="the path of VOCdevkit")
     args = parser.parse_args()
-    get_eval_result(args.ann_file, result_path)
+    get_eval_result(args.ann_file, RESULT_PATH)

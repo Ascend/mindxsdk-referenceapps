@@ -130,8 +130,8 @@ def draw_box(boxes, img_path, label_img_dir):
     fig.savefig(label_path)
 
 
-def draw_label(res_tmp_file, img_path, label_img_dir):
-    with open(res_tmp_file, "r") as fp:
+def draw_label(res_file, img_path, label_img_dir):
+    with open(res_file, "r") as fp:
         result = json.loads(fp.read())
     if not result:
         logging.error("The result data is error, img_path(%s).", img_path)
@@ -165,5 +165,5 @@ if __name__ == "__main__":
     parser.add_argument('--image', type=str, required=True, help="The origin image.")
     parser.add_argument('--pipeline', type=str, required=True, help="The pipeline file.")
     args_opt = parser.parse_args()
-    res_tmp_file = "predict_result.json"
-    draw_label(res_tmp_file, args_opt.image, './img_label')
+    RES_TMP_FILE = "predict_result.json"
+    draw_label(RES_TMP_FILE, args_opt.image, './img_label')

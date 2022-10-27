@@ -40,7 +40,6 @@ const int BBOX_INDEX_SCALE_NUM = 5;
 }  // namespace
 
 namespace MxBase {
-
 FasterRcnnMindsporePost &FasterRcnnMindsporePost::operator=(const FasterRcnnMindsporePost &other) {
     if (this == &other) {
         return *this;
@@ -82,8 +81,7 @@ APP_ERROR FasterRcnnMindsporePost::ReadConfigParams() {
             << "  MAX_PER_IMG: " << maxPerImg_ << " \n";
 }
 
-APP_ERROR
-FasterRcnnMindsporePost::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) {
+APP_ERROR FasterRcnnMindsporePost::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig) {
     LogInfo << "Begin to initialize FasterRcnnMindsporePost.";
     APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
     if (ret != APP_ERR_OK) {
@@ -267,5 +265,4 @@ std::shared_ptr<MxBase::FasterRcnnMindsporePost> GetObjectInstance() {
     return instance;
 }
 }
-
 }  // namespace MxBase
