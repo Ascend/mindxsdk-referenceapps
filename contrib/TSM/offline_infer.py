@@ -139,8 +139,8 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
     this_arch = this_weights.split('TSM_')[1].split('_')[2]
     modality_list.append(MODALITY)
     args.train_list, val_list, root_path = dataset_config.return_dataset(args.dataset, MODALITY)
-    num_class = 400
-    prefix = 'img_{:05d}.jpg'
+    NUM_CLASS = 400
+    PREFIX = 'img_{:05d}.jpg'
     INPUT_SIZE = 224
     cropping = torchvision.transforms.Compose([
             GroupScale(256),
@@ -151,7 +151,7 @@ for this_weights, this_test_segments, test_file in zip(weights_list, test_segmen
             TSNDataSet(root_path, test_file if test_file is not None else val_list, num_segments=this_test_segments,
                        new_length=1 if MODALITY == "RGB" else 5,
                        modality=MODALITY,
-                       image_tmpl=prefix,
+                       image_tmpl=PREFIX,
                        test_mode=True,
                        remove_missing = len(weights_list) == 1,
                        transform=torchvision.transforms.Compose([
@@ -220,9 +220,9 @@ def eval_video(video_data, test_segments, mol):
         rsts = rsts.datas.cpu().numpy().copy()
 
         if is_shift:
-            rsts = rsts.reshape(batch_size, num_class)
+            rsts = rsts.reshape(batch_size, NUM_CLASS)
         else:
-            rsts = rsts.reshape((batch_size, -1, num_class)).mean(axis=1).reshape((batch_size, num_class))
+            rsts = rsts.reshape((batch_size, -1, NUM_CLASS)).mean(axis=1).reshape((batch_size, NUM_CLASS))
 
         return j, rsts, labels
 
