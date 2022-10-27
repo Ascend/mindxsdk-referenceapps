@@ -66,51 +66,51 @@ def coco_eval(result_files,
         gt_img_ids = coco.getImgIds()
         det_img_ids = coco_dets.getImgIds()
         iou_type = 'bbox' if res_type == 'proposal' else res_type
-        coco_eval = COCOeval(coco, coco_dets, iou_type)
+        coco_to_eval = COCOeval(coco, coco_dets, iou_type)
         if res_type == 'proposal':
-            coco_eval.params.useCats = 0
-            coco_eval.params.maxDets = list(max_dets)
+            coco_to_eval.params.useCats = 0
+            coco_to_eval.params.maxDets = list(max_dets)
 
         tgt_ids = gt_img_ids if not single_result else det_img_ids
 
         if single_result:
             res_dict = dict()
             for id_i in tgt_ids:
-                coco_eval = COCOeval(coco, coco_dets, iou_type)
+                coco_to_eval = COCOeval(coco, coco_dets, iou_type)
                 if res_type == 'proposal':
-                    coco_eval.params.useCats = 0
-                    coco_eval.params.maxDets = list(max_dets)
+                    coco_to_eval.params.useCats = 0
+                    coco_to_eval.params.maxDets = list(max_dets)
 
-                coco_eval.params.imgIds = [id_i]
-                coco_eval.evaluate()
-                coco_eval.accumulate()
-                coco_eval.summarize()
+                coco_to_eval.params.imgIds = [id_i]
+                coco_to_eval.evaluate()
+                coco_to_eval.accumulate()
+                coco_to_eval.summarize()
                 res_dict.update(
-                    {coco.imgs[id_i]['file_name']: coco_eval.stats[1]})
+                    {coco.imgs[id_i]['file_name']: coco_to_eval.stats[1]})
 
-        coco_eval = COCOeval(coco, coco_dets, iou_type)
+        coco_to_eval = COCOeval(coco, coco_dets, iou_type)
         if res_type == 'proposal':
-            coco_eval.params.useCats = 0
-            coco_eval.params.maxDets = list(max_dets)
+            coco_to_eval.params.useCats = 0
+            coco_to_eval.params.maxDets = list(max_dets)
 
-        coco_eval.params.imgIds = tgt_ids
-        coco_eval.evaluate()
-        coco_eval.accumulate()
-        coco_eval.summarize()
+        coco_to_eval.params.imgIds = tgt_ids
+        coco_to_eval.evaluate()
+        coco_to_eval.accumulate()
+        coco_to_eval.summarize()
 
         summary_metrics = {
-            'Precision/mAP': coco_eval.stats[0],
-            'Precision/mAP@.50IOU': coco_eval.stats[1],
-            'Precision/mAP@.75IOU': coco_eval.stats[2],
-            'Precision/mAP (small)': coco_eval.stats[3],
-            'Precision/mAP (medium)': coco_eval.stats[4],
-            'Precision/mAP (large)': coco_eval.stats[5],
-            'Recall/AR@1': coco_eval.stats[6],
-            'Recall/AR@10': coco_eval.stats[7],
-            'Recall/AR@100': coco_eval.stats[8],
-            'Recall/AR@100 (small)': coco_eval.stats[9],
-            'Recall/AR@100 (medium)': coco_eval.stats[10],
-            'Recall/AR@100 (large)': coco_eval.stats[11],
+            'Precision/mAP': coco_to_eval.stats[0],
+            'Precision/mAP@.50IOU': coco_to_eval.stats[1],
+            'Precision/mAP@.75IOU': coco_to_eval.stats[2],
+            'Precision/mAP (small)': coco_to_eval.stats[3],
+            'Precision/mAP (medium)': coco_to_eval.stats[4],
+            'Precision/mAP (large)': coco_to_eval.stats[5],
+            'Recall/AR@1': coco_to_eval.stats[6],
+            'Recall/AR@10': coco_to_eval.stats[7],
+            'Recall/AR@100': coco_to_eval.stats[8],
+            'Recall/AR@100 (small)': coco_to_eval.stats[9],
+            'Recall/AR@100 (medium)': coco_to_eval.stats[10],
+            'Recall/AR@100 (large)': coco_to_eval.stats[11],
         }
 
     print(json.dumps(summary_metrics, indent=2))
