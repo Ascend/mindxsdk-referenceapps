@@ -150,7 +150,7 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
                     cv.rectangle(img, (x_min, y_min), (x_max, y_max), color, 1)
                     font = cv.FONT_HERSHEY_SIMPLEX
                     cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))),
-                               (x_min, y_min - 7), font, 0.4,(6, 230, 230), 1)
+                               (x_min, y_min - 7), font, 0.4, (6, 230, 230), 1)
             print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
             cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()

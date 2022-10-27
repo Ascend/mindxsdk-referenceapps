@@ -17,7 +17,7 @@
 
 版本号查询方法，在Atlas产品环境下，运行命令：
 
-```
+```shell
 npu-smi info
 ```
 
@@ -127,13 +127,13 @@ npu-smi info
 
 MindSDK 环境变量:
 
-```
+```shell
 . ${SDK-path}/set_env.sh
 ```
 
 CANN 环境变量：
 
-```
+```shell
 . ${ascend-toolkit-path}/set_env.sh
 ```
 
@@ -154,7 +154,7 @@ ascend-toolkit-path: CANN 安装路径。
 
 2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行指令：
 
-```
+```shell
 bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp.cfg conversion-scripts/fasterrcnn_mindspore_dvpp
 或：
 bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp_rgb.cfg conversion-scripts/fasterrcnn_mindspore_rgb
@@ -167,7 +167,7 @@ bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp
 
 切换到``postprocess``目录下，执行命令：
 
-```
+```shell
 bash build.sh
 chmod 640 ./build/libfasterrcnn_mindspore_post.so
 ```
@@ -180,7 +180,7 @@ chmod 640 ./build/libfasterrcnn_mindspore_post.so
 
 切换到``python/Main``目录下，执行命令：
 
-```
+```python
 # 进行焊缝裁剪和滑窗裁剪处理
 python3 cut_and_crop.py
 
@@ -197,13 +197,13 @@ python3 postprocess.py
 
 1. 使用rgb模型对图片进行推理，切换到``python/Main``目录下，执行命令：
 
-   ```
+   ```python
    python3 main.py --img_path ../data/eval/cocodataset/val2017/ --pipeline_path ../pipeline/fasterrcnn_ms_acc_test.pipeline --model_type rgb --infer_mode eval --ann_file ../data/eval/cocodataset/annotations/instances_val2017.json
    ```
 
 2. 因为涉及到去重处理，每种缺陷需要分开评估精度，切换到``python/Main``目录下，执行命令：
 
-   ```
+   ```python
    python3 eval.py --cat_id 1 --object_name "qikong"
    ```
 
@@ -235,7 +235,7 @@ python3 postprocess.py
 
 切换到``postprocess``目录下，执行命令：
 
-```
+```shell
 chmod 640 ./build/libfasterrcnn_mindspore_post.so
 ```
 

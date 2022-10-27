@@ -99,6 +99,23 @@ class SdkApi:
         buf_type = b"MxTools.MxpiVisionList"
         return self._send_protobuf(stream_name, plugin_id, element_name,
                                    buf_type, vision_list)
+    @staticmethod
+    def _convert_infer_result(infer_result):
+        data = infer_result.get('MxpiObject')
+        if not data:
+            logging.error("The result data is error.")
+            return
+
+        for bbox in data:
+            if 'imageMask' not in bbox:
+                continue
+            mask_info = json_format.ParseDict(bbox["imageMask"],
+                                              MxpiDataType.MxpiImageMask())
+            mask_data = np.frombuffer(mask_info.dataStr, dtype=np.uint8)
+
+            bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
+            bbox['imageMask'].pop("dataStr")
+        return infer_result
 
     def _send_protobuf(self, stream_name, plugin_id, element_name, buf_type,
                        pkg_list):
@@ -117,24 +134,6 @@ class SdkApi:
                 element_name, buf_type, err_code)
             return False
         return True
-
-    @staticmethod
-    def _convert_infer_result(infer_result):
-        data = infer_result.get('MxpiObject')
-        if not data:
-            logging.error("The result data is error.")
-            return
-
-        for bbox in data:
-            if 'imageMask' not in bbox:
-                continue
-            mask_info = json_format.ParseDict(bbox["imageMask"],
-                                              MxpiDataType.MxpiImageMask())
-            mask_data = np.frombuffer(mask_info.dataStr, dtype=np.uint8)
-
-            bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
-            bbox['imageMask'].pop("dataStr")
-        return infer_result
 
     def send_tensor_input(self, stream_name, plugin_id, element_name,
                           input_data, input_shape, data_type):
