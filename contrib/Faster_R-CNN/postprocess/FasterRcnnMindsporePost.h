@@ -25,9 +25,8 @@
 #include "MxBase/PostProcessBases/ObjectPostProcessBase.h"
 
 namespace MxBase {
-
 class FasterRcnnMindsporePost : public ObjectPostProcessBase {
-   public:
+    public:
     FasterRcnnMindsporePost() = default;
 
     ~FasterRcnnMindsporePost() = default;
@@ -46,7 +45,7 @@ class FasterRcnnMindsporePost : public ObjectPostProcessBase {
 
     bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
 
-   private:
+    private:
     void ObjectDetectionOutput(const std::vector<TensorBase> &tensors,
                                std::vector<std::vector<ObjectInfo>> &objectInfos,
                                const std::vector<ResizedImageInfo> &resizedImageInfos);
@@ -58,7 +57,7 @@ class FasterRcnnMindsporePost : public ObjectPostProcessBase {
 
     APP_ERROR ReadConfigParams();
 
-   private:
+    private:
     const uint32_t DEFAULT_CLASS_NUM_MS = 8;
     const float DEFAULT_SCORE_THRESH_MS = 0.7;
     const float DEFAULT_IOU_THRESH_MS = 0.5;

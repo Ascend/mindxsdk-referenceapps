@@ -118,23 +118,6 @@ class SdkApi:
             return False
         return True
 
-    def send_tensor_input(self, stream_name, plugin_id, element_name,
-                          input_data, input_shape, data_type):
-        tensor_list = MxpiDataType.MxpiTensorPackageList()
-        tensor_pkg = tensor_list.tensorPackageVec.add()
-        # init tensor vector
-        tensor_vec = tensor_pkg.tensorVec.add()
-        tensor_vec.deviceId = self._device_id
-        tensor_vec.memType = 0
-        tensor_vec.tensorShape.extend(input_shape)
-        tensor_vec.tensorDataType = data_type
-        tensor_vec.dataStr = input_data
-        tensor_vec.tensorDataSize = len(input_data)
-
-        buf_type = b"MxTools.MxpiTensorPackageList"
-        return self._send_protobuf(stream_name, plugin_id, element_name,
-                                   buf_type, tensor_list)
-
     @staticmethod
     def _convert_infer_result(infer_result):
         data = infer_result.get('MxpiObject')
@@ -152,6 +135,23 @@ class SdkApi:
             bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
             bbox['imageMask'].pop("dataStr")
         return infer_result
+
+    def send_tensor_input(self, stream_name, plugin_id, element_name,
+                          input_data, input_shape, data_type):
+        tensor_list = MxpiDataType.MxpiTensorPackageList()
+        tensor_pkg = tensor_list.tensorPackageVec.add()
+        # init tensor vector
+        tensor_vec = tensor_pkg.tensorVec.add()
+        tensor_vec.deviceId = self._device_id
+        tensor_vec.memType = 0
+        tensor_vec.tensorShape.extend(input_shape)
+        tensor_vec.tensorDataType = data_type
+        tensor_vec.dataStr = input_data
+        tensor_vec.tensorDataSize = len(input_data)
+
+        buf_type = b"MxTools.MxpiTensorPackageList"
+        return self._send_protobuf(stream_name, plugin_id, element_name,
+                                   buf_type, tensor_list)
 
     def get_result(self, stream_name, out_plugin_id=0):
         infer_res = self._stream_api.GetResult(stream_name, out_plugin_id,

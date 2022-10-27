@@ -31,10 +31,10 @@ def cut(img_path, anno_path, cut_path):
         dom_tree = xml.dom.minidom.parse(xmlfile)
         collection = dom_tree.documentElement
         object_list = collection.getElementsByTagName("object")
-        for object in object_list:
-            obj_name = object.getElementsByTagName('name')[0].childNodes[0].data
+        for obj in object_list:
+            obj_name = obj.getElementsByTagName('name')[0].childNodes[0].data
             if obj_name == "hanfeng":
-                bndbox = object.getElementsByTagName('bndbox')[0]
+                bndbox = obj.getElementsByTagName('bndbox')[0]
                 xmin = bndbox.getElementsByTagName('xmin')[0]
                 xmin_data = xmin.childNodes[0].data
                 ymin = bndbox.getElementsByTagName('ymin')[0]

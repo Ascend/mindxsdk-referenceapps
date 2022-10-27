@@ -52,30 +52,30 @@ def json_to_txt(infer_result_path, savetxt_path):
                                     round(confidence, 2)) + ',' + str(class_id) + '\n')
 
 
-def hebing_txt(txtPath, saveTxtPath, removeTxtPath, cut_path):
-    fileroot = os.listdir(saveTxtPath)
-    remove_list = os.listdir(removeTxtPath)
+def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
+    fileroot = os.listdir(save_txt_path)
+    remove_list = os.listdir(remove_txt_path)
     for filename in remove_list:
-        os.remove(os.path.join(removeTxtPath, filename))
+        os.remove(os.path.join(remove_txt_path, filename))
     for filename in fileroot:
-        os.remove(os.path.join(saveTxtPath, filename))
+        os.remove(os.path.join(save_txt_path, filename))
     data = []
     for file in os.listdir(cut_path):
         data.append(file.split(".")[0])
-    txt_list = os.listdir(txtPath)
+    txt_list = os.listdir(txt_path)
     for txtfile in txt_list:
         for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')  # w覆盖，a追加
-                for line in open(os.path.join(txtPath, txtfile), "r"):  # 设置文件对象并读取每一行文件
+                fw = open(os.path.join(save_txt_path, image + '.txt'), 'a')  # w覆盖，a追加
+                for line in open(os.path.join(txt_path, txtfile), "r"):  # 设置文件对象并读取每一行文件
                     fw.write(line)
                 fw.close()
 
-    fileroot = os.listdir(saveTxtPath)
+    fileroot = os.listdir(save_txt_path)
     for file in fileroot:
         print(file)
-        oldname = os.path.join(saveTxtPath, file)
-        newname = os.path.join(removeTxtPath, file)
+        oldname = os.path.join(save_txt_path, file)
+        newname = os.path.join(remove_txt_path, file)
         shutil.copyfile(oldname, newname)  # 将需要的文件从oldname复制到newname
     print("finish")
 
@@ -124,7 +124,7 @@ def plot_bbox(dets, c='k'):
 
 
 
-def nms_box(image_path, image_save_path, txtPath, thresh, obj_list):
+def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
     txt_list = os.listdir(txt_path)
     for txtfile in tqdm.tqdm(txt_list):
         boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
@@ -149,8 +149,8 @@ def nms_box(image_path, image_save_path, txtPath, thresh, obj_list):
                 if x_max - x_min >= 5 and y_max - y_min >= 5:
                     cv.rectangle(img, (x_min, y_min), (x_max, y_max), color, 1)
                     font = cv.FONT_HERSHEY_SIMPLEX
-                    cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))), (x_min, y_min - 7), font, 0.4,
-                               (6, 230, 230), 1)
+                    cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))),
+                               (x_min, y_min - 7), font, 0.4,(6, 230, 230), 1)
             print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
             cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()
