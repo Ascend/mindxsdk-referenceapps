@@ -33,7 +33,7 @@ else:
     shutil.rmtree('./image')
     os.makedirs('./image')   
     
-catigories = ["Doing other things", "Drumming Fingers", "No gesture","Pulling Hand In",
+catigories = ["Doing other things", "Drumming Fingers", "No gesture","Pulling Hand In" ,
               "Pulling Two Fingers In", "Pushing Hand Away", "Pushing Two Fingers Away",
               "Rolling Hand Backward", "Rolling Hand Forward", "Shaking Hand", "Sliding Two Fingers Down",
               "Sliding Two Fingers Left", "Sliding Two Fingers Right", "Sliding Two Fingers Up",
@@ -50,6 +50,7 @@ def video2img():
           'rtsp://192.168.88.110:1240/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 
 def process_output(idx_, history):
     if not REFINE_OUTPUT:
@@ -69,6 +70,7 @@ def process_output(idx_, history):
     history = history[-max_hist_len:]
 
     return history[-1], history
+
 
 def readimg():
     global IMGS
