@@ -207,28 +207,9 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 //-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
 ```
 
-生成视频流
+使用live555生成视频流。
 
-```shell
-mkdir ${your_video_path}
-cd ${your_video_path}
-cp ${解压路径}/startNvr.sh ./
-cp ${h264视频} ./
-cp ${live_path}/mediaServer/live555MediaServer ./
 
-chmod +x startNvr.sh
-```
-
-```shell
-# ${port}：开启的端口号
-# ${nums}：从${port}开始创建nums+1个视频流
-# 可用的端口范围是${port}~${port}+${nums}
-# 例如./startNvr.sh 1220 5 开启1220~1225个rtsp端口
-./startNvr.sh ${port} ${nums}
-
-#检查是否起流，若出现./live555MediaServer xxxx说明正常起流
-ps -ef | grep live555MediaServer
-```
 
 **步骤3** 模型转换
 
