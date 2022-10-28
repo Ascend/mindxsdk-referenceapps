@@ -125,7 +125,7 @@ python3 gen_label_kinetics.py
 
 将下载好的模型放在“/TSM/model”目录下。
 
-将模型转换为onnx模型，在“/TSM/model/”目录下，运行脚本生成onnx模型
+将模型转换为onnx模型，在“/TSM/model/”目录下，运行脚本将pth模型转换为onnx模型
 
 ```shell
 python3 pth2onnx.py  kinetics  RGB
@@ -151,7 +151,7 @@ bash onnx2om.sh
         ├── transforms.py
 ```
 
-修改dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train和filename_imglist_val设置。
+修改dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
 
 ```shell
 import os
@@ -230,7 +230,7 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 
 将下载好的模型放在“/TSM/model”目录下。
 
-将模型转换为onnx模型，在“/TSM/model/”目录下，运行脚本生成onnx模型
+将模型转换为onnx模型，在“/TSM/model/”目录下，运行脚本将pth模型转成onnx模型
 
 ```shell
 python3 pth2onnx1.py
