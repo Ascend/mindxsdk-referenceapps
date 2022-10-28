@@ -19,27 +19,23 @@ from ops.models import TSN
 
 
 def pth_to_onnx(input_shape, checkpoint, onnx_path):
-    if not onnx_path.endswith('.onnx'):
-        print('Warning! The onnx model name is not correct,\
-              please give a name that ends with \'.onnx\'!')
-        return 0
-    net = TSN(400, 8, 'RGB',
-                base_model='resnet50',
-                consensus_type='avg' ,
-                img_feature_dim=256,
-                pretrain='imagenet',
-                is_shift=True, shift_div=8, shift_place='blockres',
-                non_local=False,)
-    checkpoint = torch.load(checkpoint)
-    checkpoint = checkpoint['state_dict']
-    base_dict = {'.'.join(k.split('.')[1:]): v for k, v in list(checkpoint.items())}
-    replace_dict = {'base_model.classifier.weight': 'new_fc.weight',
+    ckpt = torch.load(checkpoint)
+    ckpt = ckpt['state_dict']
+    base = {'.'.join(k.split('.')[1:]): v for k, v in list(ckpt.items())}
+    replace = {'base_model.classifier.weight': 'new_fc.weight',
                     'base_model.classifier.bias': 'new_fc.bias',
                     }
-    for k, v in replace_dict.items():
-        if k in base_dict:
-            base_dict[v] = base_dict.pop(k)
-    net.load_state_dict(base_dict)
+    net = TSN(400, 8, 'RGB',
+            base_model='resnet50',
+            consensus_type='avg' ,
+            img_feature_dim=256,
+            pretrain='imagenet',
+            is_shift=True, shift_div=8, shift_place='blockres',
+            non_local=False,)
+    for k, v in replace.items():
+        if k in base:
+            base[v] = base.pop(k)
+    net.load_state_dict(base)
     net.eval()
     torch.onnx.export(net, input_shape, onnx_path, opset_version=11)
     print("Exporting .pth model to onnx model has been successful!")
