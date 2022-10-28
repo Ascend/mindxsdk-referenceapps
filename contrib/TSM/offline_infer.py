@@ -101,7 +101,7 @@ def eval_video(video_data, test_segments, mol):
 
         data_in = datas.view(-1, length, datas.size(2), datas.size(3))
         data_in = data_in.view(batch_size * num_crop, test_segments, length, data_in.size(2), data_in.size(3))
-        filepath = "../model/TSM.om"
+        filepath = "./model/TSM.om"
         device_id = 0                          
         m = sdk.model(filepath, device_id)
         t = sdk.Tensor(np.array(data_in))
