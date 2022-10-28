@@ -33,7 +33,7 @@ else:
     shutil.rmtree('./image')
     os.makedirs('./image')   
     
-catigories = ["Doing other things", "Drumming Fingers", "No gesture","Pulling Hand In", 
+catigories = ["Doing other things", "Drumming Fingers", "No gesture", "Pulling Hand In", 
               "Pulling Two Fingers In", "Pushing Hand Away", "Pushing Two Fingers Away", 
               "Rolling Hand Backward", "Rolling Hand Forward", "Shaking Hand", "Sliding Two Fingers Down", 
               "Sliding Two Fingers Left", "Sliding Two Fingers Right", "Sliding Two Fingers Up", 
