@@ -13,14 +13,13 @@
             "next": "mxpi_videodecoder0"
         },
         "mxpi_videodecoder0": {
-            "factory": "mxpi_videodecoder",
             "props": {
                 "inputVideoFormat": "H264",
                 "outputImageFormat": "YUV420SP_NV21",
                 "vdecChannelId": "0",
                 "outMode": "1"
             },
-            "former": "mxpi_rtspsrc0",
+            "factory": "mxpi_videodecoder",
             "next": "mxpi_x3dpreprocess0"
         },
         "mxpi_x3dpreprocess0": {
