@@ -175,7 +175,7 @@ def return_kinetics(modality):
 在“/TSM/”目录下，运行精度测试脚本
 
 ```shell
-python3 offline_infer.py kinetics --test_segments=8 --test_crops=1 --batch_size=1 --full_res
+python3 offline_infer.py kinetics
 ```
 
 **步骤5** 性能测试
