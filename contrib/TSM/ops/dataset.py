@@ -65,40 +65,6 @@ class TSNDataSet(data.Dataset):
 
         self._parse_list()
 
-    def _load_image(self, directory, idx):
-        if self.modality == 'RGB' or self.modality == 'RGBDiff':
-            try:
-                return [Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(idx))).convert('RGB')]
-            except Exception:
-                print('error loading image:', os.path.join(self.root_path, directory, self.image_tmpl.format(idx)))
-                return [Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(1))).convert('RGB')]
-        elif self.modality == 'Flow':
-            if self.image_tmpl == 'flow_{}_{:05d}.jpg':  # ucf
-                x_img = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format('x', idx))).convert(
-                    'L')
-                y_img = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format('y', idx))).convert(
-                    'L')
-            elif self.image_tmpl == '{:06d}-{}_{:05d}.jpg':  # something v1 flow
-                x_img = Image.open(os.path.join(self.root_path, '{:06d}'.format(int(directory)), self.image_tmpl.
-                                                format(int(directory), 'x', idx))).convert('L')
-                y_img = Image.open(os.path.join(self.root_path, '{:06d}'.format(int(directory)), self.image_tmpl.
-                                                format(int(directory), 'y', idx))).convert('L')
-            else:
-                try:
-                    flow = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(idx))).convert(
-                        'RGB')
-                except Exception:
-                    print('error loading flow file:',
-                          os.path.join(self.root_path, directory, self.image_tmpl.format(idx)))
-                    flow = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(1))).convert('RGB')
-                # the input flow file is RGB image with (flow_x, flow_y, blank) for each channel
-                flow_x, flow_y, _ = flow.split()
-                x_img = flow_x.convert('L')
-                y_img = flow_y.convert('L')
-
-            return [x_img, y_img]
-        return None
-
     def __getitem__(self, index):
         record = self.video_list[index]
         # check this is a legit video folder
@@ -133,6 +99,43 @@ class TSNDataSet(data.Dataset):
             segment_indices = self._get_test_indices(record)
         return self.get(record, segment_indices)
 
+    def _load_image(self, directory, idx):
+        if self.modality == 'RGB' or self.modality == 'RGBDiff':
+            try:
+                return [Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(idx))).convert('RGB')]
+            except Exception:
+                print('error loading image:', os.path.join(self.root_path, directory, self.image_tmpl.format(idx)))
+                return [Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(1))).convert('RGB')]
+        elif self.modality == 'Flow':
+            if self.image_tmpl == 'flow_{}_{:05d}.jpg':  # ucf
+                x_img = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format('x', idx))).convert(
+                    'L')
+                y_img = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format('y', idx))).convert(
+                    'L')
+            elif self.image_tmpl == '{:06d}-{}_{:05d}.jpg':  # something v1 flow
+                x_img = Image.open(os.path.join(self.root_path, '{:06d}'.format(int(directory)), self.image_tmpl.
+                                                format(int(directory), 'x', idx))).convert('L')
+                y_img = Image.open(os.path.join(self.root_path, '{:06d}'.format(int(directory)), self.image_tmpl.
+                                                format(int(directory), 'y', idx))).convert('L')
+            else:
+                try:
+                    flow = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(idx))).convert(
+                        'RGB')
+                except Exception:
+                    print('error loading flow file:',
+                          os.path.join(self.root_path, directory, self.image_tmpl.format(idx)))
+                    flow = Image.open(os.path.join(self.root_path, directory, self.image_tmpl.format(1))).convert('RGB')
+                # the input flow file is RGB image with (flow_x, flow_y, blank) for each channel
+                flow_x, flow_y, _ = flow.split()
+                x_img = flow_x.convert('L')
+                y_img = flow_y.convert('L')
+
+            return [x_img, y_img]
+        return None
+
+    def __len__(self):
+        return len(self.video_list)
+
     def _parse_list(self):
         # check the frame number is large >3:
         tmp = [x.strip().split(' ') for x in open(self.list_file)]
@@ -141,8 +144,18 @@ class TSNDataSet(data.Dataset):
         self.video_list = [VideoRecord(item) for item in tmp]
         print('video number:%d' % (len(self.video_list)))
 
-    def __len__(self):
-        return len(self.video_list)
+    def get(self, record, indices):
+        images = list()
+        for seg_ind in indices:
+            p = int(seg_ind)
+            for i in range(self.new_length):
+                seg_imgs = self._load_image(record.path, p)
+                images.extend(seg_imgs)
+                if p < record.num_frames:
+                    p += 1
+
+        process_data = self.transform(images)
+        return process_data, record.label
 
     def _sample_indices(self, record):
         """
@@ -166,19 +179,6 @@ class TSNDataSet(data.Dataset):
             else:
                 offsets = np.zeros((self.num_segments,))
             return offsets + 1
-    
-    def get(self, record, indices):
-        images = list()
-        for seg_ind in indices:
-            p = int(seg_ind)
-            for i in range(self.new_length):
-                seg_imgs = self._load_image(record.path, p)
-                images.extend(seg_imgs)
-                if p < record.num_frames:
-                    p += 1
-
-        process_data = self.transform(images)
-        return process_data, record.label
 
     def _get_val_indices(self, record):
         if self.dense_sample:  # i3d dense sample
