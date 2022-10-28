@@ -106,15 +106,18 @@ python3 vid2img_kinetics.py ../data ../dataset/
 python3 gen_label_kinetics.py
 ```
 
-修改gen_label_kinetics.py 中参数dataset_path和label_path分别为放视频抽帧后的图片路径和存放label路径。
-
-```python
-import os
+修改gen_label_kinetics.py 内容。
 
 
-dataset_path = '../dataset'           # 放视频抽帧后的图片路径
-label_path = '../label'               # 存放label路径
-```
+```txt
+
+# 18行 dataset_path = '../dataset'           # 放视频抽帧后的图片路径
+# 19行 label_path = '../label'               # 存放label路径
+# 32行 files_input = ['kinetics_val.csv']
+# 33行 files_output = ['val_videofolder.txt']
+# 64行 output.append('%s %d %d'%(os.path.join('../dataset/',os.path.join(categories_list[i], curFolder)), len(dir_files), curIDX))
+
+``` 
 
 **步骤3** 模型转换
 
@@ -153,7 +156,7 @@ bash onnx2om.sh
 ```shell
 import os
 
-ROOT_DATASET = '../dataset/'
+ROOT_DATASET = './labels/'
 
 ...
 
@@ -161,8 +164,8 @@ def return_kinetics(modality):
     filename_categories = 400
     if modality == 'RGB':
         root_data = ROOT_DATASET
-        filename_imglist_train = '../label/train_videofolder.txt'
-        filename_imglist_val = '../label/val_videofolder.txt'
+        filename_imglist_train = 'train_videofolder.txt'
+        filename_imglist_val = 'val_videofolder.txt'
         prefix = 'img_{:05d}.jpg'
     else:
         raise NotImplementedError('no such modality:' + modality)
