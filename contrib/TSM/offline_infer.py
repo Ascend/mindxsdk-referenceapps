@@ -66,7 +66,7 @@ def eval_video(video_data, test_segments, mol):
 
         data_in = datas.view(-1, length, datas.size(2), datas.size(3))
         data_in = data_in.view(batch_size * num_crop, test_segments, length, data_in.size(2), data_in.size(3))
-        filepath = "./model/TSM.om"
+        filepath = "../model/TSM.om"
         device_id = 0                          
         m = sdk.model(filepath, device_id)
         t = sdk.Tensor(np.array(data_in))
@@ -77,13 +77,10 @@ def eval_video(video_data, test_segments, mol):
         rsts = np.array(rsts)
         rsts = rsts.reshape(batch_size, num_crop, -1).mean(1)
         rsts = torch.Tensor(rsts)
-        rsts = rsts.datas.cpu().numpy().copy()
-
-        
-        rsts = rsts.reshape(batch_size, NUM_CLASS)
+        rsts = rsts.data.cpu().numpy().copy()
+        rsts = rsts.reshape(batch_size, num_class)
 
         return j, rsts, labels
-
 
 def accuracy(outputs, target, topk=(1,)):
     maxk = max(topk)
@@ -107,8 +104,7 @@ test_file_list = [None] * len(weights_list)
 for this_weights, test_file in zip(weights_list, test_file_list):
     MODALITY = 'RGB'
     modality_list.append(MODALITY)
-    args.train_list, val_list, root_path = dataset_config.return_dataset(args.dataset, MODALITY)
-    NUM_CLASS = 400
+    num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, MODALITY)
     cropping = torchvision.transforms.Compose([
             GroupScale(256),
             GroupCenterCrop(224),
