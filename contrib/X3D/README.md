@@ -194,8 +194,6 @@ ascend-toolkit-path: CANN 安装路径
 
 本项目采用yolov3与x3d_s模型，模型转换方法如下文所示，也可以选取已转换好的[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/X3D/models.zip)。
 
-模型转换部分的操作请在python3.7环境下完成。
-
 ### 3.1 yolov3模型转换
 
 yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
