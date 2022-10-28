@@ -30,13 +30,48 @@ from torch.nn import functional as F
 from sklearn.metrics import confusion_matrix
 import mindx.sdk as sdk
 
+weights = 'TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
+weights_list = weights.split(',')
+coeff_list = [1] * len(weights_list)
+test_file_list = [None] * len(weights_list)
+modality_list = []
+data_iter_list = []
+TOTAL_NUM = None
+for this_weights, test_file in zip(weights_list, test_file_list):
+    MODALITY = 'RGB'
+    modality_list.append(MODALITY)
+    num_class, train_list, val_list, root_path, prefix = dataset_config.return_dataset('kinetics', MODALITY)
+    cropping = torchvision.transforms.Compose([
+            GroupScale(256),
+            GroupCenterCrop(224),
+        ])    
+    
+    data_loader = torch.utils.data.DataLoader(
+            TSNDataSet(root_path, test_file if test_file is not None else val_list, num_segments=8,
+                       new_length=1 if MODALITY == "RGB" else 5,
+                       modality='RGB',
+                       image_tmpl='img_{:05d}.jpg',
+                       test_mode=True,
+                       remove_missing = len(weights_list) == 1,
+                       transform=torchvision.transforms.Compose([
+                           cropping,
+                           Stack(roll=('resnet50' in ['BNInception', 'InceptionV3'])),
+                           ToTorchFormatTensor(div=('resnet50' not in ['BNInception', 'InceptionV3'])),
+                           GroupNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+                       ]), dense_sample=False, twice_sample=False),
+            batch_size=1, shuffle=False,
+            num_workers=8, pin_memory=True,
+    )
 
-parser = argparse.ArgumentParser(description="TSM testing on the full validation set")
-parser.add_argument('dataset', type=str)
-parser.add_argument('--weights', type=str, default='TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth')
+    data_gen = enumerate(data_loader)
 
-args = parser.parse_args()
+    if TOTAL_NUM is None:
+        TOTAL_NUM = len(data_loader.dataset)
+    else:
+        assert TOTAL_NUM == len(data_loader.dataset)
 
+    data_iter_list.append(data_gen)
+ 
 
 class AverageMeter(object):
     def __init__(self):
@@ -78,6 +113,8 @@ def eval_video(video_data, test_segments, mol):
         rsts = rsts.reshape(batch_size, num_crop, -1).mean(1)
         rsts = torch.Tensor(rsts)
         rsts = rsts.data.cpu().numpy().copy()
+
+        
         rsts = rsts.reshape(batch_size, num_class)
 
         return j, rsts, labels
@@ -93,49 +130,6 @@ def accuracy(outputs, target, topk=(1,)):
         correct_k = correct[:k].view(-1).float().sum(0)
         res.append(correct_k.mul_(100.0 / batch_size))
     return res
-
-data_iter_list = []
-modality_list = []
-TOTAL_NUM = None
-weights_list = args.weights.split(',')
-coeff_list = [1] * len(weights_list)
-test_file_list = [None] * len(weights_list)
-
-for this_weights, test_file in zip(weights_list, test_file_list):
-    MODALITY = 'RGB'
-    modality_list.append(MODALITY)
-    num_class, args.train_list, val_list, root_path, prefix = dataset_config.return_dataset(args.dataset, MODALITY)
-    cropping = torchvision.transforms.Compose([
-            GroupScale(256),
-            GroupCenterCrop(224),
-        ])    
-    
-    data_loader = torch.utils.data.DataLoader(
-            TSNDataSet(root_path, test_file if test_file is not None else val_list, num_segments=8,
-                       new_length=1 if MODALITY == "RGB" else 5,
-                       modality='RGB',
-                       image_tmpl='img_{:05d}.jpg',
-                       test_mode=True,
-                       remove_missing = len(weights_list) == 1,
-                       transform=torchvision.transforms.Compose([
-                           cropping,
-                           Stack(roll=('resnet50' in ['BNInception', 'InceptionV3'])),
-                           ToTorchFormatTensor(div=('resnet50' not in ['BNInception', 'InceptionV3'])),
-                           GroupNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                       ]), dense_sample=False, twice_sample=False),
-            batch_size=1, shuffle=False,
-            num_workers=8, pin_memory=True,
-    )
-
-    data_gen = enumerate(data_loader)
-
-    if TOTAL_NUM is None:
-        TOTAL_NUM = len(data_loader.dataset)
-    else:
-        assert TOTAL_NUM == len(data_loader.dataset)
-
-    data_iter_list.append(data_gen)
-
 
 output = []
 proc_start_time = time.time()
