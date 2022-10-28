@@ -24,8 +24,8 @@ from ops.transforms import GroupNormalize
 from ops import dataset_config
 import mindx.sdk as sdk
 
-weight = 'TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
-weights = weight.split(',')
+WEIGHT = 'TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
+weights = WEIGHT.split(',')
 coeff = [1] * len(weights)
 test_file = [None] * len(weights)
 modalities = []
@@ -63,11 +63,12 @@ for test in test_file:
             TSNDataSet(path, val_list, num_segments=8, new_length=1, modality='RGB',
                        image_tmpl='img_{:05d}.jpg', test_mode=True, remove_missing = 1,
                        transform=torchvision.transforms.Compose([
-                           torchvision.transforms.Compose([GroupScale(256), GroupCenterCrop(224),]),
+                           torchvision.transforms.Compose([GroupScale(256), GroupCenterCrop(224), ]),
                            Stack(roll=('resnet50' in ['BNInception', 'InceptionV3'])),
                            ToTorchFormatTensor(div=('resnet50' not in ['BNInception', 'InceptionV3'])),
                            GroupNormalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                       ]), dense_sample=False, twice_sample=False), batch_size=1, shuffle=False, num_workers=8, pin_memory=True, )
+                       ]), dense_sample=False, twice_sample=False), batch_size=1, shuffle=False, num_workers=8, 
+                       pin_memory=True, )
     data_gen = enumerate(dataset)
     TOTAL = len(dataset.dataset)
     data_list.append(data_gen)
@@ -90,6 +91,7 @@ class Meter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
 
 def acc(outputs, target, topk=(1,)):
     max1 = max(topk)
