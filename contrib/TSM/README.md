@@ -118,7 +118,7 @@ label_path = '../label'               # 存放label路径
 
 **步骤3** 模型转换
 
-下载模型，模型连接 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/online_models.zip
+下载模型，模型连接 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip
 
 将下载好的模型放在“/TSM/model”目录下。
 
