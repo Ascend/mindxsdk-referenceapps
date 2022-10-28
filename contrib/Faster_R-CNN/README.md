@@ -15,8 +15,6 @@ Welds集中W0003 包括了68张焊接公司的X射线图像。本文基于W0003�
 
 数据集下载地址：https://domingomery.ing.puc.cl/material/gdxray/
 
-注：
-
 ### 1.2 支持的产品
 
 本项目以昇腾Atlas310卡为主要的硬件平台。

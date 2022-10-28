@@ -70,9 +70,6 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
     for txtfile in txt_list:
         for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                # flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-                # modes = stat.S_IWUSR | stat.S_IRUSR
-                # fw = os.fdopen(os.open(os.path.join(save_txt_path, image + '.txt'), flags, modes), 'a')
                 fw = open(os.path.join(save_txt_path, image + '.txt'), 'a')
                 for line in open(os.path.join(txt_path, txtfile), "r"):
                     fw.write(line)
@@ -138,7 +135,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
         if boxes.size > 5:
             if os.path.exists(os.path.join(txt_path, txtfile)):
                 os.remove(os.path.join(txt_path, txtfile))
-            # fw = open(os.path.join(txt_path, txtfile), 'w')
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             modes = stat.S_IWUSR | stat.S_IRUSR
             fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')

@@ -103,7 +103,6 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         txt_file_name = file_name.split('.')[0] + ".txt"
 
         temp = int(file_name.split('_')[2]) - 600
-        # f = open(os.path.join(savetxt_path, txt_file_name), "w")
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
         modes = stat.S_IWUSR | stat.S_IRUSR
         f = os.fdopen(os.open(os.path.join(savetxt_path, txt_file_name), flags, modes), 'w')
@@ -207,7 +206,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
         if boxes.size > 5:
             if os.path.exists(os.path.join(txt_path, txtfile)):
                 os.remove(os.path.join(txt_path, txtfile))
-            # fw = open(os.path.join(txt_path, txtfile), 'w')
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             modes = stat.S_IWUSR | stat.S_IRUSR
             fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
@@ -235,7 +233,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
 
 def write_huizong(txt_path, save_txt_path):
     txt_list = os.listdir(txt_path)
-    # fw = open(os.path.join(save_txt_path, 'qikong.txt'), 'w')
     if os.path.exists(os.path.join(save_txt_path, 'qikong.txt')):
         os.remove(os.path.join(save_txt_path, 'qikong.txt'))
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
@@ -357,10 +354,10 @@ def voc_to_eval(detpath,
     class_recs = {}
     npos = 0
     for imagename in imagenames:
-        R = [obj for obj in recs[imagename] if obj.get('name', "the name does not exits!") == classname]  # obj['name']
-        bbox = np.array([x['bbox'] for x in R])
-        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
-        det = [False] * len(R)
+        r = [obj for obj in recs[imagename] if obj.get('name', "the name does not exits!") == classname]  # obj['name']
+        bbox = np.array([x['bbox'] for x in r])
+        difficult = np.array([x['difficult'] for x in r]).astype(np.bool)
+        det = [False] * len(r)
         npos = npos + sum(~difficult)
         class_recs[imagename] = {'bbox': bbox,
                                  'difficult': difficult,
@@ -374,12 +371,12 @@ def voc_to_eval(detpath,
     splitlines = [x.strip().split(' ') for x in lines]
     image_ids = [x[0] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
-    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
+    bb1 = np.array([[float(z) for z in x[2:]] for x in splitlines])
 
     # sort by confidence
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
-    BB = BB[sorted_ind, :]
+    bb1 = bb1[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 
     # go down dets and mark TPs and FPs
@@ -389,36 +386,36 @@ def voc_to_eval(detpath,
 
     for d in range(nd):
         print(nd)
-        R = class_recs.get(image_ids[d], "no")  # class_recs[image_ids[d]]
-        bb = BB[d, :].astype(float)
+        r = class_recs.get(image_ids[d], "no")  # class_recs[image_ids[d]]
+        bb = bb1[d, :].astype(float)
         ovmax = -np.inf
-        BBGT = R['bbox'].astype(float)
+        bbgt = r['bbox'].astype(float)
 
-        if BBGT.size > 0:
+        if bbgt.size > 0:
             # compute overlaps
             # intersection
-            ixmin = np.maximum(BBGT[:, 0], bb[0])
-            iymin = np.maximum(BBGT[:, 1], bb[1])
-            ixmax = np.minimum(BBGT[:, 2], bb[2])
-            iymax = np.minimum(BBGT[:, 3], bb[3])
+            ixmin = np.maximum(bbgt[:, 0], bb[0])
+            iymin = np.maximum(bbgt[:, 1], bb[1])
+            ixmax = np.minimum(bbgt[:, 2], bb[2])
+            iymax = np.minimum(bbgt[:, 3], bb[3])
             iw = np.maximum(ixmax - ixmin + 1., 0.)
             ih = np.maximum(iymax - iymin + 1., 0.)
             inters = iw * ih
 
             # union
             uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
-                   (BBGT[:, 2] - BBGT[:, 0] + 1.) *
-                   (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
+                   (bbgt[:, 2] - bbgt[:, 0] + 1.) *
+                   (bbgt[:, 3] - bbgt[:, 1] + 1.) - inters)
 
             overlaps = inters / uni
             ovmax = np.max(overlaps)
             jmax = np.argmax(overlaps)
 
         if ovmax > ovthresh:
-            if not R['difficult'][jmax]:
-                if not R['det'][jmax]:
+            if not r['difficult'][jmax]:
+                if not r['det'][jmax]:
                     tp[d] = 1.
-                    R['det'][jmax] = 1
+                    r['det'][jmax] = 1
                 else:
                     fp[d] = 1.
         else:

@@ -73,16 +73,6 @@ class SdkApi:
 
         return True
 
-    def send_data_input(self, stream_name, plugin_id, input_data):
-        data_input = MxDataInput()
-        data_input.data = input_data
-        unique_id = self._stream_api.SendData(stream_name, plugin_id,
-                                              data_input)
-        if unique_id < 0:
-            logging.error("Fail to send data to stream.")
-            return False
-        return True
-
     @staticmethod
     def _convert_infer_result(infer_result):
         infer_results = infer_result
@@ -101,6 +91,16 @@ class SdkApi:
             bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
             bbox['imageMask'].pop("dataStr")
         return infer_results
+
+    def send_data_input(self, stream_name, plugin_id, input_data):
+        data_input = MxDataInput()
+        data_input.data = input_data
+        unique_id = self._stream_api.SendData(stream_name, plugin_id,
+                                              data_input)
+        if unique_id < 0:
+            logging.error("Fail to send data to stream.")
+            return False
+        return True
 
     def send_img_input(self, stream_name, plugin_id, element_name, input_data,
                        img_size):
@@ -136,6 +136,17 @@ class SdkApi:
         return self._send_protobuf(stream_name, plugin_id, element_name,
                                    buf_type, tensor_list)
 
+    def get_result(self, stream_name, out_plugin_id=0):
+        infer_res = self._stream_api.GetResult(stream_name, out_plugin_id,
+                                               self.INFER_TIMEOUT)
+        if infer_res.errorCode != 0:
+            print('GetResultWithUniqueId error, errorCode=%s, errMsg=%s' %
+                  (infer_res.errorCode, infer_res.data.decode()))
+            return None
+
+        res_dict = json.loads(infer_res.data.decode())
+        return self._convert_infer_result(res_dict)
+
     def _send_protobuf(self, stream_name, plugin_id, element_name, buf_type,
                        pkg_list):
         protobuf = MxProtobufIn()
@@ -153,14 +164,3 @@ class SdkApi:
                 element_name, buf_type, err_code)
             return False
         return True
-
-    def get_result(self, stream_name, out_plugin_id=0):
-        infer_res = self._stream_api.GetResult(stream_name, out_plugin_id,
-                                               self.INFER_TIMEOUT)
-        if infer_res.errorCode != 0:
-            print('GetResultWithUniqueId error, errorCode=%s, errMsg=%s' %
-                  (infer_res.errorCode, infer_res.data.decode()))
-            return None
-
-        res_dict = json.loads(infer_res.data.decode())
-        return self._convert_infer_result(res_dict)
