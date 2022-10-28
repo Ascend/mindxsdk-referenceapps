@@ -30,8 +30,8 @@ from torch.nn import functional as F
 from sklearn.metrics import confusion_matrix
 import mindx.sdk as sdk
 
-weights = 'TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
-weights_list = weights.split(',')
+WEIGHTS = 'TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth'
+weights_list = WEIGHTS.split(',')
 coeff_list = [1] * len(weights_list)
 test_file_list = [None] * len(weights_list)
 modality_list = []
@@ -118,6 +118,7 @@ def eval_video(video_data, test_segments, mol):
         rsts = rsts.reshape(batch_size, num_class)
 
         return j, rsts, labels
+
 
 def accuracy(outputs, target, topk=(1,)):
     maxk = max(topk)
