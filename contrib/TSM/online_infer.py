@@ -33,63 +33,14 @@ else:
     shutil.rmtree('./image')
     os.makedirs('./image')   
     
-catigories = [
-    "Doing other things",  # 0
-    "Drumming Fingers",  # 1
-    "No gesture",  # 2
-    "Pulling Hand In",  # 3
-    "Pulling Two Fingers In",  # 4
-    "Pushing Hand Away",  # 5
-    "Pushing Two Fingers Away",  # 6
-    "Rolling Hand Backward",  # 7
-    "Rolling Hand Forward",  # 8
-    "Shaking Hand",  # 9
-    "Sliding Two Fingers Down",  # 10
-    "Sliding Two Fingers Left",  # 11
-    "Sliding Two Fingers Right",  # 12
-    "Sliding Two Fingers Up",  # 13
-    "Stop Sign",  # 14
-    "Swiping Down",  # 15
-    "Swiping Left",  # 16
-    "Swiping Right",  # 17
-    "Swiping Up",  # 18
-    "Thumb Down",  # 19
-    "Thumb Up",  # 20
-    "Turning Hand Clockwise",  # 21
-    "Turning Hand Counterclockwise",  # 22
-    "Zooming In With Full Hand",  # 23
-    "Zooming In With Two Fingers",  # 24
-    "Zooming Out With Full Hand",  # 25
-    "Zooming Out With Two Fingers"  # 26
-]
-
-
-def process_output(idx_, history):
-    # idx_: the output of current frame
-    # history: a list containing the history of predictions
-    if not REFINE_OUTPUT:
-        return idx_, history
-
-    max_hist_len = 20  # max history buffer
-
-    # mask out illegal action
-    if idx_ in [7, 8, 21, 22, 3]:
-        idx_ = history[-1]
-
-    # use only single no action class
-    if idx_ == 0:
-        idx_ = 2
-    
-    # history smoothing
-    if idx_ != history[-1]:
-        if not (history[-1] == history[-2]): 
-            idx_ = history[-1]
-    
-
-    history.append(idx_)
-    history = history[-max_hist_len:]
-
-    return history[-1], history
+catigories = ["Doing other things", "Drumming Fingers", "No gesture","Pulling Hand In",
+              "Pulling Two Fingers In", "Pushing Hand Away", "Pushing Two Fingers Away",
+              "Rolling Hand Backward", "Rolling Hand Forward", "Shaking Hand", "Sliding Two Fingers Down",
+              "Sliding Two Fingers Left", "Sliding Two Fingers Right", "Sliding Two Fingers Up",
+              "Stop Sign", "Swiping Down", "Swiping Left", "Swiping Right", "Swiping Up",
+              "Thumb Down", "Thumb Up", "Turning Hand Clockwise", "Turning Hand Counterclockwise",
+              "Zooming In With Full Hand", "Zooming In With Two Fingers", "Zooming Out With Full Hand",
+              "Zooming Out With Two Fingers"]
 
 IMGS = []
 
@@ -100,6 +51,24 @@ def video2img():
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def process_output(idx_, history):
+    if not REFINE_OUTPUT:
+        return idx_, history
+
+    max_hist_len = 20
+
+    if idx_ in [7, 8, 21, 22, 3]:
+        idx_ = history[-1]
+    if idx_ == 0:
+        idx_ = 2
+    if idx_ != history[-1]:
+        if not (history[-1] == history[-2]): 
+            idx_ = history[-1]
+
+    history.append(idx_)
+    history = history[-max_hist_len:]
+
+    return history[-1], history
 
 def readimg():
     global IMGS
