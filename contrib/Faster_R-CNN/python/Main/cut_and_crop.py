@@ -13,11 +13,12 @@
 # limitations under the License.
 # ============================================================================
 
+
+from PIL import Image
 import xml.dom.minidom
 import os
-import xml.etree.ElementTree as ET
-from PIL import Image
 import cv2
+import xml.etree.ElementTree as ET
 
 
 def cut(img_path, anno_path, cut_path):
@@ -28,13 +29,13 @@ def cut(img_path, anno_path, cut_path):
         img_file = img_path + image
         img = Image.open(img_file)
         xmlfile = anno_path + image_pre + ".xml"
-        dom_tree = xml.dom.minidom.parse(xmlfile)
-        collection = dom_tree.documentElement
-        object_list = collection.getElementsByTagName("object")
-        for obj in object_list:
-            obj_name = obj.getElementsByTagName('name')[0].childNodes[0].data
-            if obj_name == "hanfeng":
-                bndbox = obj.getElementsByTagName('bndbox')[0]
+        DOMTree = xml.dom.minidom.parse(xmlfile)
+        collection = DOMTree.documentElement
+        objects = collection.getElementsByTagName("object")
+        for object in objects:
+            ObjName = object.getElementsByTagName('name')[0].childNodes[0].data
+            if ObjName == "hanfeng":
+                bndbox = object.getElementsByTagName('bndbox')[0]
                 xmin = bndbox.getElementsByTagName('xmin')[0]
                 xmin_data = xmin.childNodes[0].data
                 ymin = bndbox.getElementsByTagName('ymin')[0]
@@ -63,9 +64,9 @@ def cut(img_path, anno_path, cut_path):
                 img_cut.save(cut_path + image_pre + '.jpg')
 
 
-def crop_on_slide(cut_path, crop_path, stride):
-    if not os.path.exists(crop_path):
-        os.mkdir(crop_path)
+def crop_on_slide(cut_path, crop_img_path, stride):
+    if not os.path.exists(crop_img_path):
+        os.mkdir(crop_img_path)
 
     output_shape = 600
     imgs = os.listdir(cut_path)
@@ -96,9 +97,9 @@ def crop_on_slide(cut_path, crop_path, stride):
                         wmax = x + newwidth
                         y = height  # test
 
-                    crop_img = os.path.join(crop_path, (
+                    cropImg1 = os.path.join(crop_img_path, (
                             img.split('.')[0] + '_' + str(wmax) + '_' + str(hmax) + '_' + str(output_shape) + '.jpg'))
-                    cv2.imwrite(crop_img, origin_image[hmin: hmax, wmin: wmax])
+                    cv2.imwrite(cropImg1, origin_image[hmin: hmax, wmin: wmax])
                     y = y + stride
                     if y + output_shape == height:
                         y = height
@@ -116,10 +117,10 @@ def crop_on_slide(cut_path, crop_path, stride):
                         wmax = width
                         y = height  # test
 
-                    crop_img = os.path.join(crop_path, (
+                    cropImg1 = os.path.join(crop_img_path, (
                             img.split('.')[0] + '_' + str(wmax) + '_' + str(hmax) + '_' + str(
                         output_shape) + '.jpg'))
-                    cv2.imwrite(crop_img, origin_image[hmin: hmax, wmin: wmax])
+                    cv2.imwrite(cropImg1, origin_image[hmin: hmax, wmin: wmax])
                     y = y + stride
                 x = width
             x = x + stride
@@ -134,6 +135,6 @@ if __name__ == '__main__':
     cut(IMG_PATH, XML_PATH, CUT_PATH)
 
     CUT_PATH = "../data/test/cut/"
-    CROP_IMG_PATH = "../data/test/crop/"
-    STRIDE = 450
-    crop_on_slide(CUT_PATH, CROP_IMG_PATH, STRIDE)
+    crop_img_path = "../data/test/crop/"
+    stride = 450
+    crop_on_slide(CUT_PATH, crop_img_path, stride)

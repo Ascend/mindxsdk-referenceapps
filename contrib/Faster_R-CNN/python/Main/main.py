@@ -17,8 +17,6 @@ import argparse
 import json
 import logging
 import os
-import stat
-import shutil
 import time
 
 import cv2
@@ -72,8 +70,8 @@ def parser_args():
                         required=False,
                         help="eval ann_file.")
 
-    arg = parser.parse_args()
-    return arg
+    args = parser.parse_args()
+    return args
 
 
 def get_img_metas(file_name):
@@ -103,8 +101,8 @@ def process_img(img_file):
     return pad_img
 
 
-def image_inference(pipeline_path, s_name, img_dir, result_dir,
-                    rp_last, model_type):
+def image_inference(pipeline_path, stream_name, img_dir, result_dir,
+                    replace_last, model_type):
     sdk_api = SdkApi(pipeline_path)
     if not sdk_api.init():
         exit(-1)
@@ -124,7 +122,7 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
         file_path = os.path.join(img_dir, file_name)
         save_path = os.path.join(result_dir,
                                  f"{os.path.splitext(file_name)[0]}.json")
-        if not rp_last and os.path.exists(save_path):
+        if not replace_last and os.path.exists(save_path):
             print(
                 f"The infer result json({save_path}) has existed, will be skip."
             )
@@ -134,29 +132,24 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
             if model_type == 'dvpp':
                 with open(file_path, "rb") as fp:
                     data = fp.read()
-                sdk_api.send_data_input(s_name, img_data_plugin_id, data)
+                sdk_api.send_data_input(stream_name, img_data_plugin_id, data)
             else:
                 img_np = process_img(file_path)
-                sdk_api.send_img_input(s_name,
+                sdk_api.send_img_input(stream_name,
                                        img_data_plugin_id, "appsrc0",
                                        img_np.tobytes(), img_np.shape)
 
             # set image data
             img_metas = get_img_metas(file_path).astype(np.float32)
-            sdk_api.send_tensor_input(s_name, img_metas_plugin_id,
+            sdk_api.send_tensor_input(stream_name, img_metas_plugin_id,
                                       "appsrc1", img_metas.tobytes(), [1, 4],
                                       cfg.TENSOR_DTYPE_FLOAT32)
 
             start_time = time.time()
-            result = sdk_api.get_result(s_name)
+            result = sdk_api.get_result(stream_name)
             end_time = time.time() - start_time
 
-            # with open(save_path, "w") as fp:
-            if os.path.exists(save_path):
-                os.remove(save_path)
-            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            modes = stat.S_IWUSR | stat.S_IRUSR
-            with os.fdopen(os.open((save_path), flags, modes), 'w') as fp:
+            with open(save_path, "w") as fp:
                 fp.write(json.dumps(result))
             print(
                 f"End-2end inference, file_name: {file_path}, {img_id + 1}/{total_len}, elapsed_time: {end_time}.\n"
@@ -170,10 +163,10 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
 if __name__ == "__main__":
     args = parser_args()
 
-    REPLACE_LAST = True
-    STREAM_NAME = cfg.STREAM_NAME.encode("utf-8")
-    image_inference(args.pipeline_path, STREAM_NAME, args.img_path,
-                    args.infer_result_dir, REPLACE_LAST, args.model_type)
+    replace_last = True
+    stream_name = cfg.STREAM_NAME.encode("utf-8")
+    image_inference(args.pipeline_path, stream_name, args.img_path,
+                    args.infer_result_dir, replace_last, args.model_type)
     if args.infer_mode == "eval":
         print("Infer end.")
         print("Begin to eval...")
