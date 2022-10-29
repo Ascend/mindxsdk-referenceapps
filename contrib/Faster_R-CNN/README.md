@@ -180,7 +180,6 @@ bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp
 
 ```shell
 bash build.sh
-chmod 640 ./build/libfasterrcnn_mindspore_post.so
 ```
 
 注：运行完成后需修改`./build/libfasterrcnn_mindspore_post.so`文件权限为640。
