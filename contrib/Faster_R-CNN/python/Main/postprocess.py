@@ -14,6 +14,7 @@
 # ============================================================================
 
 import os
+import stat
 import json
 import shutil
 import numpy as np
@@ -23,18 +24,22 @@ import matplotlib.pyplot as plt
 
 
 def json_to_txt(infer_result_path, savetxt_path):
+    if os.path.exists(savetxt_path):
+        shutil.rmtree(savetxt_path)
+    os.mkdir(savetxt_path)
     files = os.listdir(infer_result_path)
     for file in files:
         if file.endswith(".json"):
-
             json_path = os.path.join(infer_result_path, file)
             with open(json_path, 'r') as fp:
                 result = json.loads(fp.read())
             if result:
                 data = result.get("MxpiObject")
                 txt_file = file.split(".")[0] + ".txt"
-                with open(os.path.join(savetxt_path, txt_file), "w") as f:
-
+                # with open(os.path.join(savetxt_path, txt_file), "w") as f:
+                flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                modes = stat.S_IWUSR | stat.S_IRUSR
+                with os.fdopen(os.open(os.path.join(savetxt_path, txt_file), flags, modes), 'w') as f:
                     temp = int(file.split("_")[2]) - 600
                     for bbox in data:
                         class_vec = bbox.get("classVec")[0]
@@ -44,7 +49,6 @@ def json_to_txt(infer_result_path, savetxt_path):
                         ymin = bbox["y0"]
                         xmax = bbox["x1"]
                         ymax = bbox["y1"]
-
                         if xmax - xmin >= 5 and ymax - ymin >= 5:
                             f.write(
                                 str(xmin + temp) + ',' + str(ymin) + ',' + str(xmax + temp) + ',' + str(
@@ -52,32 +56,34 @@ def json_to_txt(infer_result_path, savetxt_path):
                                     round(confidence, 2)) + ',' + str(class_id) + '\n')
 
 
-def hebing_txt(txtPath, saveTxtPath, removeTxtPath, cut_path):
-    fileroot = os.listdir(saveTxtPath)
-    removeList = os.listdir(removeTxtPath)
-    for filename in removeList:
-        os.remove(os.path.join(removeTxtPath, filename))
+def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
+    fileroot = os.listdir(save_txt_path)
+    remove_list = os.listdir(remove_txt_path)
+    for filename in remove_list:
+        os.remove(os.path.join(remove_txt_path, filename))
     for filename in fileroot:
-        os.remove(os.path.join(saveTxtPath, filename))
+        os.remove(os.path.join(save_txt_path, filename))
     data = []
     for file in os.listdir(cut_path):
         data.append(file.split(".")[0])
-    txtList = os.listdir(txtPath)
-    for txtfile in txtList:
-        for image in data:
-            if image.split('_')[1] == txtfile.split('_')[1]:
-                # print(image.split('_')[1])
-                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')  # w覆盖，a追加
-                for line in open(os.path.join(txtPath, txtfile), "r"):  # 设置文件对象并读取每一行文件
-                    fw.write(line)
-                fw.close()
+    txt_list = os.listdir(txt_path)
 
-    fileroot = os.listdir(saveTxtPath)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    for image in data:
+        fw = os.fdopen(os.open(os.path.join(save_txt_path, image + '.txt'), flags, modes), 'w')
+        for txtfile in txt_list:
+            if image.split('_')[1] == txtfile.split('_')[1]:
+                for line in open(os.path.join(txt_path, txtfile), "r"):
+                    fw.write(line)
+        fw.close()
+
+    fileroot = os.listdir(save_txt_path)
     for file in fileroot:
         print(file)
-        oldname = os.path.join(saveTxtPath, file)
-        newname = os.path.join(removeTxtPath, file)
-        shutil.copyfile(oldname, newname)  # 将需要的文件从oldname复制到newname
+        oldname = os.path.join(save_txt_path, file)
+        newname = os.path.join(remove_txt_path, file)
+        shutil.copyfile(oldname, newname)
     print("finish")
 
 
@@ -124,42 +130,39 @@ def plot_bbox(dets, c='k'):
     plt.title(" nms")
 
 
-# plt.figure(1)
-# ax1 = plt.subplot(1, 2, 1)
-# ax2 = plt.subplot(1, 2, 2)
-def nms_box(imagePath, imagesavePath, txtPath, thresh, obj_list):
-    txtList = os.listdir(txtPath)
-    for txtfile in tqdm.tqdm(txtList):
-        boxes = np.loadtxt(os.path.join(txtPath, txtfile), dtype=np.float32,
+def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
+    txt_list = os.listdir(txt_path)
+    for txtfile in tqdm.tqdm(txt_list):
+        boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
                            delimiter=',')
         if boxes.size > 5:
-            fw = open(os.path.join(txtPath, txtfile), 'w')
+            if os.path.exists(os.path.join(txt_path, txtfile)):
+                os.remove(os.path.join(txt_path, txtfile))
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
             print(boxes.size)
-            # plt.sca(ax1)
-            # plot_bbox(boxes, 'k')  # before nms
+
             print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
-            # print(keep)
-            # plt.sca(ax2)
-            # plot_bbox(boxes[keep], 'r')  # after nms
-            # plt.show()
-            img = cv.imread(os.path.join(imagePath, txtfile[:-3] + 'jpg'), 0)
+
+            img = cv.imread(os.path.join(image_path, txtfile[:-3] + 'jpg'), 0)
             for label in boxes[keep]:
                 fw.write(str(int(label[0])) + ',' + str(int(label[1])) + ',' + str(int(label[2])) + ',' + str(
                     int(label[3])) + ',' + str(round((label[4]), 2)) + ',' + str(int(label[5])) + '\n')
-                Xmin = int(label[0])
-                Ymin = int(label[1])
-                Xmax = int(label[2])
-                Ymax = int(label[3])
+                x_min = int(label[0])
+                y_min = int(label[1])
+                x_max = int(label[2])
+                y_max = int(label[3])
 
                 color = (0, 0, 255)
-                if Xmax - Xmin >= 5 and Ymax - Ymin >= 5:
-                    cv.rectangle(img, (Xmin, Ymin), (Xmax, Ymax), color, 1)
+                if x_max - x_min >= 5 and y_max - y_min >= 5:
+                    cv.rectangle(img, (x_min, y_min), (x_max, y_max), color, 1)
                     font = cv.FONT_HERSHEY_SIMPLEX
-                    cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))), (Xmin, Ymin - 7), font, 0.4,
-                               (6, 230, 230), 1)
-            print(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'))
-            cv.imwrite(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'), img)
+                    cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))),
+                               (x_min, y_min - 7), font, 0.4, (6, 230, 230), 1)
+            print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
+            cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()
 
 
