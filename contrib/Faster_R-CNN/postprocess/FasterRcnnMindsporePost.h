@@ -31,7 +31,7 @@ public:
 
     ~FasterRcnnMindsporePost() = default;
 
-    FasterRcnnMindsporePost(const FasterRcnnMindsporePost &other) = default;
+    FasterRcnnMindsporePost(const FasterRcnnMindsporePost &other);
 
     FasterRcnnMindsporePost &operator=(const FasterRcnnMindsporePost &other);
 
