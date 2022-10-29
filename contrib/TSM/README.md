@@ -65,7 +65,7 @@ npu-smi info
 | torch    | 1.10.0 |
 | ffmpeg   | 3.4.8  |
 
-- 环境变量介绍
+- 环境变量搭建
 
 ```Shell
 export PYTHONPATH=${SDK路径}/MindX_SDK/mxVision-3.0.RC2/python:$PYTHONPATH
