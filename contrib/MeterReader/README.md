@@ -169,7 +169,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 
 
   <center>
-      <img src="./README_img/det_pipeline.png">
+      <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/det_pipeline.png">
       <br>
       <div style="color:orange;
       display: inline-block;
@@ -179,7 +179,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
   
 
   <center>
-        <img src="./README_img/seg_pipeline.png">
+        <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/seg_pipeline.png">
         <br>
         <div style="color:orange;
         display: inline-block;
@@ -383,7 +383,7 @@ python main.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 ```
 执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及 通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。
 <center>
-    <img src="./README_img/main_result.png">
+    <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/main_result.png">
     <br>
     <div style="color:orange;
     display: inline-block;
