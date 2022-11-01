@@ -41,113 +41,67 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 本工程名称为工业指针型表计读数，工程目录如下图所示：
 
 ```
+│  .bashrc
+│  README.md
 │  set.sh
-├─images        #默认保存结果的文件
+│
+├─images
+│  │  det_res.jpg
 │  │  seg_test.jpg
 │  │  test.jpg
-│  └─det_res
-│          test.jpg
-│          test0.jpg
-│          test1.jpg
-├─infer     #推理文件，运行main.py
+│  │
+│  ├─det_res
+│  │      test.jpg
+│  │      test0.jpg
+│  │      test1.jpg
+│  │
+│  └─readme
+│          det_pipeline.png
+│          main_result.png
+│          seg_pipeline.png
+│
+├─infer
 │      det_test.py
 │      fusion_result.json
 │      main.py
 │      main.sh
 │      seg.py
+│
 ├─models
-│  ├─deeplabv3      
-│  │      seg.om
-|  │      seg.onnx
-│  │      seg_aipp.cfg      #deeplabv3的onnx模型转换成om模型的配置文件
-│  │      
+│  ├─deeplabv3
+│  │      seg_aipp.cfg     #deeplabv3的onnx模型转换成om模型的配置文件
+│  │
 │  └─yolov5
-|  │       det.om
-│  │       det.onnx
-│  │       det_aipp.cfg     #yolov5的onnx模型转换成om模型的配置文件
+│          det_aipp.cfg     #yolov5的onnx模型转换成om模型的配置文件
+│
 ├─pipeline      #pipeline文件
-│  ├─deeplabv3      #deeplabv3的pipeline文件
+│  ├─deeplabv3
 │  │      deeplabv3.cfg
 │  │      deeplabv3.names
 │  │      seg.pipeline
-│  │      
-│  └─yolov5     #yolov5的pipeline文件
+│  │
+│  └─yolov5
 │          det.pipeline
-├─plugins       #读数后处理插件
+│
+├─plugins       #开发读数后处理插件代码
 │  └─process3
-│      │  CMakeLists.txt
-│      │  Myplugin.cpp
-│      │  Myplugin.h
-│      │  postprocess.cpp
-│      │  postprocess.h
-│      │  run.sh
-│      ├─build
-│      │  │  CMakeCache.txt
-│      │  │  cmake_install.cmake
-│      │  │  Makefile
-│      │  └─CMakeFiles
-│      │      │  cmake.check_cache
-│      │      │  CMakeDirectoryInformation.cmake
-│      │      │  CMakeOutput.log
-│      │      │  feature_tests.bin
-│      │      │  feature_tests.c
-│      │      │  feature_tests.cxx
-│      │      │  Makefile.cmake
-│      │      │  Makefile2
-│      │      │  progress.marks
-│      │      │  TargetDirectories.txt
-│      │      ├─3.10.2
-│      │      │  │  CMakeCCompiler.cmake
-│      │      │  │  CMakeCXXCompiler.cmake
-│      │      │  │  CMakeDetermineCompilerABI_C.bin
-│      │      │  │  CMakeDetermineCompilerABI_CXX.bin
-│      │      │  │  CMakeSystem.cmake
-│      │      │  ├─CompilerIdC
-│      │      │  │  │  a.out
-│      │      │  │  │  CMakeCCompilerId.c
-│      │      │  │  └─tmp
-│      │      │  └─CompilerIdCXX
-│      │      │      │  a.out
-│      │      │      │  CMakeCXXCompilerId.cpp
-│      │      │      └─tmp
-│      │      ├─CMakeTmp
-│      │      └─mxpi_sampleplugin.dir
-│      │              build.make
-│      │              cmake_clean.cmake
-│      │              CXX.includecache
-│      │              depend.internal
-│      │              depend.make
-│      │              DependInfo.cmake
-│      │              flags.make
-│      │              link.txt
-│      │              Myplugin.cpp.o
-│      │              postprocess.cpp.o
-│      │              progress.make
-│      └─lib
-│          └─plugins
-│                  libmxpi_sampleplugin.so
-└─python
+│          CMakeLists.txt
+│          Myplugin.cpp
+│          Myplugin.h
+│          postprocess.cpp
+│          postprocess.h
+│          run.sh
+│
+└─python    #验证精度代码
     ├─deeplabv3_val     #deeplabv3模型测试精度
-    │  │  seg_evaluate.py       #计算语义分割om模型的miou
-    │  └─seg_val_img
-    │      ├─seg_test_img       #语义分割模型的测试数据
-    │      └─seg_test_img_groundtruth       #语义分割onnx模型得到的结果   
+    │      seg_evaluate.py
+    │
     └─yolov5_val        #yolov5模型测试精度
-        │  computer_mAP.py      #4.就算模型的mAP
-        │  mAP_det.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
-        │  no_det.py        #3.检测是否有的图像没有目标
-        │  yolo2voc.py      #2.将得到的检测结果yolo数据格式转换成voc格式
-        ├─det_res       #存放测试的结果文件夹
-        ├─det_temp_files        #测试中所需要的暂时文件夹
-        ├─det_val_data      #测试数据
-            ├─det_sdk_img       #经过om模型检测获得的图像
-            ├─det_sdk_txt       #将om模型检测的yolo格式结果保存成txt文件
-            ├─det_sdk_voc       #将om模型保存的yolo格式结果的txt文件内容转成voc格式
-            ├─det_val_img       #需要检测的原图像
-            ├─det_val_voc       #原图像的voc格式数据
-            └─pre_voc       #onnx原模型的voc格式数据，用于对比om模型与原模型的精度
+            computer_mAP.py      #4.就算模型的mAP
+            mAP_det.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
+            no_det.py        #3.检测是否有的图像没有目标
+            yolo2voc.py      #2.将得到的检测结果yolo数据格式转换成voc格式
 ```
-
 
 
 ### 1.5 技术实现流程图
@@ -189,8 +143,6 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 </ol>
 
 
-
-
 ### 1.6 特性及适用场景
 
 在电力能源厂区需要定期监测表计读数，以保证设备正常运行及厂区安全。但厂区分布分散，人工巡检耗时长，无法实时监测表计，且部分工作环境危险导致人工巡检无法触达。针对上述问题，希望通过摄像头拍照后利用计算机智能读数的方式高效地完成此任务。
@@ -212,9 +164,9 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 |     numpy     |   1.23.4    |
 | opencv-python |    4.6.0    |
 
-环境依赖：
 
 ### 2.2 基础环境变量——env.sh
+
 ```
 export MX_SDK_HOME="${SDK安装路径}/mxVision"
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
@@ -237,7 +189,9 @@ export ASCEND_OPP_PATH=${install_path}/opp
 使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[CANN 社区版](前言_昇腾CANN社区版(5.0.4.alpha002)(推理)_ATC模型转换_华为云 (huaweicloud.com)) 。
 
 1、YOLOv5模型转换：
-下载训练好的onnx模型(存放在models/yolov5路径下，文件名为det.onxx),使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型：
+
+下载训练好的onnx模型，存放在MeterReader/models/yolov5路径下，文件名为det.onxx,使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型：
+
   ```bash
   atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg --soc_version=Ascend310 
   ```
@@ -252,7 +206,18 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 
 2、DeepLabv3模型转换：
-下载训练好的onnx模型(存放在models/deeplabv3路径下，文件名为seg.onxx)，使用命令语句跳转到models/deeplabv3文件路径下，将模型用以下语句转换成om模型：
+
+在python中安装paddle2onnx库，下载训练好的pdmodel模型(下载链接https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，存放在MeterReader/models/deeplabv3路径下，文件名为meter_seg_model，使用命令语句跳转到models/deeplabv3文件路径下，将模型用以下语句转换成onnx模型：
+
+  ```bash
+ paddle2onnx --model_dir saved_inference_model \
+            --model_filename model.pdmodel \
+            --params_filename model.pdiparams \
+            --save_file seg.onnx \
+            --enable_dev_version True
+  ```
+
+使用命令语句跳转到MeterReader/models/deeplabv3文件路径下，使用配置文件和将模型用以下语句转换成om模型：
 
   ```bash
   atc --model=seg.onnx --framework=5  --output=seg insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
@@ -409,8 +374,7 @@ python seg.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 
 分别对yolo模型与deeplabv3模型进行精度测试。
 
-YOLOv5模型精度测试。
-
+1、YOLOv5模型精度测试。
 
 ```bash
 # 在命令行中跳转到meter_reader/python/yolov5_val文件路径下
@@ -428,15 +392,17 @@ python no_det.py
 #使用下面命令运行脚本，计算得到det.om在验证集上的mAP，并保存在meter_reader/python/yolov5_val/det_res路径文件下。
 python computer_mAP.py
 ```
-经过测试，YOLOv5模型的mAP为100%
+经过测试，YOLOv5模型的mAP为100%。
 
 
 
-deeplabv3模型精度测试。采取Miou指标评价精度
+2、deeplabv3模型精度测试。采取Miou指标评价精度。
+
 ```bash
 cd python/deeplabv3_val/
 python seg_evaluate.py
 ```
+
 输出各个图的Miou指标，并求得平均值作为deeplabv3模型的精度指标。经测试，deeplabv3的模型的Miou为66.53%
 
 
