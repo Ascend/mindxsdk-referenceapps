@@ -9,9 +9,9 @@
 
 ### 1.2 支持的版本
 
-CANN:3.0RC2
+CANN:5.1RC2
 
-SDK:mxvision 5.1RC2(可通过cat SDK目录下的version.info查看)
+SDK:mxvision 3.0RC2(可通过cat SDK目录下的version.info查看)
 
 eg：版本号查询方法，在Atlas产品环境下，运行命令：
 
