@@ -254,7 +254,7 @@ bash onnx2om1.sh
 python3 online_infer.py
 ```
 
-修改参数，'rtsp://192.168.88.110:1240/jester.264'为测试视频流
+修改参数，'ip:port/jester.264'为测试视频流
 
 ```python
 def video2img():
