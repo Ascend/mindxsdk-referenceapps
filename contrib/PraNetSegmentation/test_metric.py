@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import time
 import sys
 import json
 from argparse import ArgumentParser
@@ -336,8 +337,11 @@ if __name__ == '__main__':
 
         RESPATH = INFER_RESULT + str(i) + ".png"
         while True:  # 轮询, 等待异步线程
+            time.sleep(0.1)
             try:
                 pred_mask = np.array(Image.open(RESPATH))
+                if not pred_mask.dtype == np.uint8:
+                    continue
                 break
             except (OSError, FileNotFoundError, PIL.UnidentifiedImageError, SyntaxError):
                 pass
