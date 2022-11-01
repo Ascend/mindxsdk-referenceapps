@@ -49,8 +49,8 @@ npu-smi info
         ├── val_link.list    
     ├── online_infer.py                  // 在线推理精度脚本
     ├── offline_infer.py                 // 离线推理精度脚本
-    ├── speed.py                         // 离线推理NPU性能脚本
-    ├── speed_gpu.py                      // 离线推理GPU性能脚本
+    ├── speed.py                         // 离线单视频推理NPU性能脚本
+    ├── speed_gpu.py                     // 离线单视频推理GPU性能脚本
 ```
 
 ## 2 环境依赖
