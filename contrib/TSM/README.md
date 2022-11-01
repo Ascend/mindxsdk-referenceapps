@@ -178,6 +178,8 @@ def return_kinetics(modality):
 python3 offline_infer.py kinetics
 ```
 
+得到精度为：71.01%
+
 **步骤5** 性能测试
 
 将用来测试的单视频放在“/TSM/”目录下，如视频“test.mp4”，运行性能测试脚本
@@ -192,17 +194,21 @@ def main():
     files = os.listdir(r"./image/")
 ```
 
-GPU性能
+GPU性能(Tesla_V100S_PCIE_32GB)
 
 ```shell
-python3 speedGPU.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
+python3 speed_gpu.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
 ```
+
+得到单视频推理性能为0.08sec/video
 
 SDK性能
 
 ```shell
 python3 speed.py
 ```
+
+得到单视频推理性能为0.189sec/video
 
 ## 4 在线推理
 
@@ -252,7 +258,7 @@ python3 online_infer.py
 
 ```python
 def video2img():
-    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('rtsp://192.168.88.110:1240/jester.264', './image')
+    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('ip:port/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 ```
