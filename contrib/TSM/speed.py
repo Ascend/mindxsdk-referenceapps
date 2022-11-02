@@ -129,36 +129,39 @@ def main():
     pil_img_list = list()
     i = 0
     s = 400 
-    for i in range(8):
-        filename = files[int(offsets[i])]
-        img = Image.open("./image/" + filename).convert('RGB')
+    if len(files) != 0:
+        for i in range(8):
+            filename = files[int(offsets[i])]
+            img = Image.open("./image/" + filename).convert('RGB')
         
-        if img.width > img.height:
-            frame_pil = img.resize((round(256 * img.width / img.height), 256))
-        else:
-            frame_pil = img.resize((256, round(256 * img.height / img.width)))
-        image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
-        imgs = [0, 0, 0]
-        imgs[0] = (image[0] / 255-0.485) / 0.229
-        imgs[1] = (image[1] / 255-0.456) / 0.224
-        imgs[2] = (image[2] / 255-0.406) / 0.225
-        pil_img_list.extend([imgs])
-    this_rst_list = []
-    md = sdk.model(FILE_PATH, DEVICE_ID)
-    inputs = np.array(pil_img_list).astype(np.float32)
-    t = sdk.Tensor(inputs)
-    t.to_device(0)
-    start_time = time.time()
-    out = md.infer(t)
-    cnt_time = time.time() - start_time
-    out[0].to_host()
-    out = out[0]
-    out = np.array(out)
-    this_rst_list.append(out)
-    output_index = int(np.argmax(out))
-    s = output_index
-    print(cls_text[s])
-    print('average {:.3f} sec/video'.format(float(cnt_time)))
+            if img.width > img.height:
+                frame_pil = img.resize((round(256 * img.width / img.height), 256))
+            else:
+                frame_pil = img.resize((256, round(256 * img.height / img.width)))
+            image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
+            imgs = [0, 0, 0]
+            imgs[0] = (image[0] / 255-0.485) / 0.229
+            imgs[1] = (image[1] / 255-0.456) / 0.224
+            imgs[2] = (image[2] / 255-0.406) / 0.225
+            pil_img_list.extend([imgs])
+        this_rst_list = []
+        md = sdk.model(FILE_PATH, DEVICE_ID)
+        inputs = np.array(pil_img_list).astype(np.float32)
+        t = sdk.Tensor(inputs)
+        t.to_device(0)
+        start_time = time.time()
+        out = md.infer(t)
+        cnt_time = time.time() - start_time
+        out[0].to_host()
+        out = out[0]
+        out = np.array(out)
+        this_rst_list.append(out)
+        output_index = int(np.argmax(out))
+        s = output_index
+        print(cls_text[s])
+        print('average {:.3f} sec/video'.format(float(cnt_time)))
+    else:
+        print("This video is not exist!!")
 
 if __name__ == '__main__':
     main()
