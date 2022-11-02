@@ -54,7 +54,7 @@ def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     cut_path = os.path.join(voc_dir, "VOC2017/JPEGImages")
     image_save_path = os.path.join(voc_dir, "VOC2017/images1")
     txt_path = nms_txt_path
-    nms_box(cut_path, image_save_path, txt_path, thresh=0)
+    nms_box(cut_path, image_save_path, txt_path, thresh=0.1)
 
     txt_path = nms_txt_path
     all_txt_path = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
@@ -69,7 +69,7 @@ def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     filename = os.path.join(voc_dir, "VOC2017/obj_txt_huizong/qikong.txt")
 
     rec, prec, ap = voc_to_eval(
-        filename, anno_path, imagesetfile, object_name, cachedir, ovthresh=0,
+        filename, anno_path, imagesetfile, object_name, cachedir, ovthresh=0.5,
         use_07_metric=False)
 
     aps += [ap]

@@ -42,7 +42,7 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath": "../models/fasterrcnn_coco2017_acc_test.cfg",
+                "postProcessConfigPath": "../models/fasterrcnn_coco2017.cfg",
                 "labelPath": "../models/coco2017.names",
                 "postProcessLibPath": "../../postprocess/build/libfasterrcnn_mindspore_post.so"
             },

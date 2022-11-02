@@ -36,7 +36,6 @@ def json_to_txt(infer_result_path, savetxt_path):
             if result:
                 data = result.get("MxpiObject")
                 txt_file = file.split(".")[0] + ".txt"
-                # with open(os.path.join(savetxt_path, txt_file), "w") as f:
                 flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
                 modes = stat.S_IWUSR | stat.S_IRUSR
                 with os.fdopen(os.open(os.path.join(savetxt_path, txt_file), flags, modes), 'w') as f:
@@ -57,6 +56,10 @@ def json_to_txt(infer_result_path, savetxt_path):
 
 
 def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
+    if not os.path.exists(save_txt_path):
+        os.makedirs(save_txt_path)
+    if not os.path.exists(remove_txt_path):
+        os.makedirs(remove_txt_path)
     fileroot = os.listdir(save_txt_path)
     remove_list = os.listdir(remove_txt_path)
     for filename in remove_list:
@@ -131,6 +134,11 @@ def plot_bbox(dets, c='k'):
 
 
 def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
+    if not os.path.exists(image_save_path):
+        os.makedirs(image_save_path)
+    remove_list = os.listdir(image_save_path)
+    for filename in remove_list:
+        os.remove(os.path.join(image_save_path, filename))
     txt_list = os.listdir(txt_path)
     for txtfile in tqdm.tqdm(txt_list):
         boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
@@ -180,6 +188,5 @@ if __name__ == '__main__':
     CUT_PATH = "../data/test/cut"
     IMAGE_SAVE_PATH = "../data/test/draw_result"
     NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
-    obj_lists = ['qikong', 'jiazha', 'liewen', 'yaobian',
-                 'weirh', 'weiht', 'chengxbl', 'neiao']
+    obj_lists = ['qikong', 'liewen']
     nms_box(CUT_PATH, IMAGE_SAVE_PATH, NMS_TXT_PATH, thresh=0, obj_list=obj_lists)

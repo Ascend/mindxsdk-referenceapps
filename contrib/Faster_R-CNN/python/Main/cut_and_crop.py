@@ -21,6 +21,12 @@ import cv2
 
 
 def cut(img_path, anno_path, cut_path):
+    if not os.path.exists(cut_path):
+        os.mkdir(cut_path)
+    else:
+        remove_list = os.listdir(cut_path)
+        for filename in remove_list:
+            os.remove(os.path.join(cut_path, filename))
     imagelist = os.listdir(img_path)
     annolist = os.listdir(anno_path)
     for image in imagelist:
@@ -58,7 +64,6 @@ def cut(img_path, anno_path, cut_path):
                     else:
                         ymin_d = ((int(ymin_data) + int(ymax_data)) / 2 - 300)
                         ymax_d = ((int(ymin_data) + int(ymax_data)) / 2 + 300)
-                        print(ymin_data, ymax_data)
                         img_cut = img.crop((int(xmin_data), int(ymin_d), int(xmax_data), int(ymax_d)))
                 img_cut.save(cut_path + image_pre + '.jpg')
 
@@ -66,6 +71,10 @@ def cut(img_path, anno_path, cut_path):
 def crop_on_slide(cut_path, crop_path, stride):
     if not os.path.exists(crop_path):
         os.mkdir(crop_path)
+    else:
+        remove_list = os.listdir(crop_path)
+        for filename in remove_list:
+            os.remove(os.path.join(crop_path, filename))
 
     output_shape = 600
     imgs = os.listdir(cut_path)
@@ -74,8 +83,6 @@ def crop_on_slide(cut_path, crop_path, stride):
         origin_image = cv2.imread(os.path.join(cut_path, img))
         height = origin_image.shape[0]
         width = origin_image.shape[1]
-        print(height)
-        print(width)
         x = 0
         newheight = output_shape
         newwidth = output_shape

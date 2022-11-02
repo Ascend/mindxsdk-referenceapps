@@ -16,13 +16,15 @@ Welds集中W0003 包括了68张焊接公司的X射线图像。本文基于W0003�
 
 数据集下载地址：https://domingomery.ing.puc.cl/material/gdxray/
 
+注：本系统训练使用的数据是由原png图片转为jpg图片，然后经过焊缝裁剪和滑窗裁剪后输入模型训练。
+
 ### 1.2 支持的产品
 
 本项目以昇腾Atlas310卡为主要的硬件平台。
 
 ### 1.3 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.1.1。
+支持的SDK版本为 2.0.4, CANN 版本为 5.1.1, MindSpore版本为1.8。
 
 版本号查询方法，在Atlas产品环境下，运行命令：
 
@@ -55,11 +57,9 @@ npu-smi info
 ```
 .
 ├── images                               # README文件内的图片
-│   ├── DetectionPipeline.png
-│   ├── EvaluateInfo.png
-│   ├── EvaluateInfoPrevious.png
-│   ├── warning.png
-│   └── VersionError.png
+│   ├── 1.png
+│   ├── 2.png
+│   ├── permissionerror.png
 ├── postprocess                          # 后处理插件
 │   ├── build.sh                         # 后处理编译所需环境变量可参考该文件
 │   ├── CMakeLists.txt
