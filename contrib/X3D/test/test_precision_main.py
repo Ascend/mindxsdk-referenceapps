@@ -85,8 +85,8 @@ def test_func(process_id, index_list, cross_process_num, cross_process_lock):
         cross_process_num.value += 1
         cost_time = int(time.time()-start_time)
         print(f"process_id: {process_id:<5} device_id: {device_id:<4} idx: {idx:<8} \
-            num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}\
-                h{(cost_time%3600)//60:>2}m{cost_time%60:>2}s")
+num:{cross_process_num.value:>5}/{TEST_NUM:<5} cost_time:{cost_time//3600:>2}h{(cost_time%3600)//60:>2}\
+m{cost_time%60:>2}s")
         cross_process_lock.release()
 
 
