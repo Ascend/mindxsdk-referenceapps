@@ -190,7 +190,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 1、YOLOv5模型转换：
 
-下载训练好的onnx模型，存放在MeterReader/models/yolov5路径下，文件名为det.onxx,使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型：
+下载训练好的onnx模型（下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip），存放在MeterReader/models/yolov5路径下，文件名为det.onxx,使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型：
 
   ```bash
   atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg --soc_version=Ascend310 
@@ -217,7 +217,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
             --enable_dev_version True
   ```
 
-使用命令语句跳转到MeterReader/models/deeplabv3文件路径下，使用配置文件和将模型用以下语句转换成om模型：
+或者可以直接下载转换好的onnx模型（下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip），再使用命令语句跳转到MeterReader/models/deeplabv3文件路径下，使用配置文件和将模型用以下语句转换成om模型：
 
   ```bash
   atc --model=seg.onnx --framework=5  --output=seg insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
@@ -377,19 +377,22 @@ python seg.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 1、YOLOv5模型精度测试。
 
 ```bash
-# 在命令行中跳转到meter_reader/python/yolov5_val文件路径下
-cd meter_reader/python/yolov5_val
 
-#使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为meter_reader/python/yolov5_val/det_val_data/det_sdk_txt。
+#下载目标检测模型验证集voc格式数据到MeterReader/python/yolov5_val/det_val_data路径下，下载链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip
+
+# 在命令行中跳转到MeterReader/python/yolov5_val文件路径下
+cd MeterReader/python/yolov5_val
+
+#使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为MeterReader/python/yolov5_val/det_val_data/det_sdk_txt。
 python mAP_det.py
 
-#使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在meter_reader/python/yolov5_val/det_val_data/det_sdk_txt路径中。
+#使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在MeterReader/python/yolov5_val/det_val_data/det_sdk_txt路径中。
 python yolo2voc.py
 
 #使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
 python no_det.py
 
-#使用下面命令运行脚本，计算得到det.om在验证集上的mAP，并保存在meter_reader/python/yolov5_val/det_res路径文件下。
+#使用下面命令运行脚本，计算得到det.om在验证集上的mAP，并保存在MeterReader/python/yolov5_val/det_res路径文件下。
 python computer_mAP.py
 ```
 经过测试，YOLOv5模型的mAP为100%。
@@ -399,6 +402,8 @@ python computer_mAP.py
 2、deeplabv3模型精度测试。采取Miou指标评价精度。
 
 ```bash
+#下载语义分割模型验证集voc格式数据到MeterReader/python/deeplabv3_val/seg_val_img路径下，下载链接https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz
+
 cd python/deeplabv3_val/
 python seg_evaluate.py
 ```
@@ -420,3 +425,15 @@ python seg_evaluate.py
 **解决方案：**
 
 在转换模型时必须要在AIPP做色域转换，要不然模型输入不正确。
+
+### 6.2 插件权限问题
+
+**问题描述**
+
+运行pipeline调用第三步的数值处理插件时报错，提示Check Owner permission failed: Current permission is 7, but required no greater than 6.
+
+**解决方案**
+
+将插件的权限调整为默认440（只读）即可
+```bash
+chmod 440 "$MX_SDK_HOME/lib/plugins/libmxpi_sampleplugin.so"

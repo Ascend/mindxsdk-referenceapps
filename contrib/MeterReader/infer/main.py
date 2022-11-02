@@ -56,7 +56,6 @@ if __name__ == '__main__':
     # det
     # inputfile = "/home/wangyi4/tmp/221021_xhr/images/det_res.jpg"
     outputdir = os.path.join(father_path, 'images', 'det_res/').replace('\\', '/')
-    print("oyt------------------",father_path, outputdir)
 
     # outputdir = "/home/wangyi4/tmp/221021_xhr/images/det_rect/" # 写定，临时文件夹
     det_result = os.popen(f'python det_test.py --ifile {inputfile} --odir {outputdir}')  
@@ -96,6 +95,7 @@ if __name__ == '__main__':
                 # print(temp)
                 seg_Ans.append(float(temp[1]))
             # print(line)
+        os.remove(det_res_img_file[i])
     print("------seg-----")
     print(seg_Ans)
 
