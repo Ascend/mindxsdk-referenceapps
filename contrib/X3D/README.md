@@ -66,7 +66,7 @@ X3D动作检测插件基于MindX SDK开发，可以对视频中不同目标的�
 │   │   ├── x3d_aipp_test.cfg //测试流程中导出om模型所需aipp文件
 │   │   ├── x3d_post.cfg //业务流程中后处理配置文件
 │   │   ├── x3d_post_test.cfg //测试流程中后处理配置文件
-│   │   └── x3d_pth_to_onnx.py //x3d onnx导出脚本
+│   │   └── X3d_pth2onnx.patch //x3d onnx导出脚本补丁
 │   │   └── x3d_s1.onnx //x3d onnx文件
 │   │   └── x3d_s1_test.om //x3d 测试流程om文件，接收RGB格式输入
 │   │   └── x3d_s1.om //x3d 业务流程om文件，接收YUV格式输入
@@ -227,7 +227,7 @@ mv ../x3d.patch ./
 patch -p1 < x3d.patch
 pip install -e .
 cd ..
-mv ../x3d_pth_to_onnx.py x3d_pth_to_onnx.py
+patch X3d_pth2onnx.py ../X3d_pth2onnx.patch
 ```
 
 
@@ -246,7 +246,7 @@ site-packages/torchvision/models/quantization/mobilenetv3.py
 回到X3D/models/x3d/X3D路径，执行以下命令导出onnx文件：
 
 ```
-python x3d_pth_to_onnx.py --cfg SlowFast/configs/Kinetics/X3D_S.yaml     X3D_PTH2ONNX.ENABLE True TEST.BATCH_SIZE 1 TEST.CHECKPOINT_FILE_PATH  "x3d_s.pyth" X3D_PTH2ONNX.ONNX_OUTPUT_PATH "x3d_s.onnx"
+python X3d_pth2onnx.py --cfg SlowFast/configs/Kinetics/X3D_S.yaml     X3D_PTH2ONNX.ENABLE True TEST.BATCH_SIZE 1 TEST.CHECKPOINT_FILE_PATH  "x3d_s.pyth" X3D_PTH2ONNX.ONNX_OUTPUT_PATH "x3d_s.onnx"
 ```
 
 因为测试流程与业务流程所接收的数据格式不同，请分别执行以下两条指令导出业务流程与测试流程所需om文件：
@@ -292,8 +292,10 @@ bash build.sh
 **步骤3** 执行推理
 
 ```
-bash run.sh
+bash run.sh > result.log
 ```
+
+推理结果会被保存在result.log文件。
 
 ### 4.1 插件属性介绍
 
