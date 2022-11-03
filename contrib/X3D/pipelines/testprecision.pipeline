@@ -1,0 +1,68 @@
+{
+    "test_precision": {
+        "stream_config": {
+            "deviceId": ""
+        },
+        "mxpi_rtspsrc0": {
+            "factory": "mxpi_rtspsrc",
+            "props": {
+                "rtspUrl": "",
+                "channelId": "0",
+                "timeout": "1"
+            },
+            "next": "mxpi_videodecoder0"
+        },
+        "mxpi_videodecoder0": {
+            "props": {
+                "inputVideoFormat": "H264",
+                "outputImageFormat": "YUV420SP_NV21",
+                "vdecChannelId": "0",
+                "outMode": "1"
+            },
+            "factory": "mxpi_videodecoder",
+            "next": "mxpi_x3dpreprocess0"
+        },
+        "mxpi_x3dpreprocess0": {
+            "props": {
+                "dataSource": "mxpi_videodecoder0",
+                "skipFrameNum": "5",
+                "windowStride": ""
+            },
+            "factory": "mxpi_x3dpreprocess",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_x3dpreprocess0",
+                "modelPath": "../models/x3d/x3d_s1_test.om",
+                "singleBatchInfer": "1",
+                "waitingTime": "250000"
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "mxpi_classpostprocessor0"
+        },
+        "mxpi_classpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "../models/x3d/x3d_post_test.cfg",
+                "labelPath": "../models/x3d/kinetics400.names",
+                "postProcessLibPath": "libx3dpostprocess.so"
+            },
+            "factory": "mxpi_classpostprocessor",
+            "next": "mxpi_dataserialize0"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_classpostprocessor0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
