@@ -111,11 +111,11 @@ python3 gen_label_kinetics.py
 
 ```txt
 
-# 18行 dataset_path = '../dataset'           # 放视频抽帧后的图片路径
-# 19行 label_path = '../label'               # 存放label路径
-# 32行 files_input = ['kinetics_val.csv']
-# 33行 files_output = ['val_videofolder.txt']
-# 64行 output.append('%s %d %d'%(os.path.join('../dataset/',os.path.join(categories_list[i], curFolder)), len(dir_files), curIDX))
+# 11行 dataset_path = '../dataset'           # 放视频抽帧后的图片路径
+# 12行 label_path = '../label'               # 存放label路径
+# 25行 files_input = ['kinetics_val.csv']
+# 26行 files_output = ['val_videofolder.txt']
+# 57行 output.append('%s %d %d'%(os.path.join('../dataset/',os.path.join(categories_list[i], curFolder)), len(dir_files), curIDX))
 
 ``` 
 
@@ -124,6 +124,18 @@ python3 gen_label_kinetics.py
 下载模型，模型连接 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip
 
 将下载好的模型放在“/TSM/model”目录下。
+
+在 https://github.com/mit-han-lab/temporal-shift-module/tree/master/ops 下载以下脚本，放入/TSM/ops目录下。
+
+```txt
+    ├── ops
+        ├── basic_ops.py
+        ├── dataset.py                   // 数据集构建脚本
+        ├── dataset_config.py            // 数据集配置脚本
+        ├── models.py                    // 模型搭建脚本 
+        ├── temporal_shift.py
+        ├── transforms.py
+```
 
 将模型转换为onnx模型，在“/TSM/model/”目录下，运行脚本将pth模型转换为onnx模型
 
@@ -139,19 +151,7 @@ bash onnx2om.sh
 
 **步骤4** 精度测试
 
-在 https://github.com/mit-han-lab/temporal-shift-module/tree/master/ops 下载以下脚本，放入/TSM/ops目录下。
-
-```txt
-    ├── ops
-        ├── basic_ops.py
-        ├── dataset.py                   // 数据集构建脚本
-        ├── dataset_config.py            // 数据集配置脚本
-        ├── models.py                    // 模型搭建脚本 
-        ├── temporal_shift.py
-        ├── transforms.py
-```
-
-修改dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
+修改/TSM/ops/dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
 
 ```shell
 import os
