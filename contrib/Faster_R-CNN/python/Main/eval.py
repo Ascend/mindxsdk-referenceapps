@@ -15,16 +15,16 @@
 
 
 import os
-import stat
 import json
 import shutil
-import xml.etree.ElementTree as ET
-import argparse
 import numpy as np
 import cv2 as cv
 import tqdm
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
+import shutil
+import xml.etree.ElementTree as ET
+import argparse
 
 parser = argparse.ArgumentParser(description="FasterRcnn evaluation")
 parser.add_argument("--ann_file", type=str,
@@ -40,36 +40,36 @@ parser.add_argument("--object_name", type=str, default="qikong", help="the objec
 args_opt = parser.parse_args()
 
 
-def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
-    txt_save_path = os.path.join(voc_dir, "VOC2017/image_txt")
-    val_txt_path = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
-    coco_to_txt(ann_file, result_json_file, val_txt_path, txt_save_path, cat_id=cat_id)
+def VOC_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
+    TXT_SAVE_PATH = os.path.join(voc_dir, "VOC2017/image_txt")
+    VAL_TXT_PATH = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
+    coco_to_txt(ann_file, result_json_file, VAL_TXT_PATH, TXT_SAVE_PATH, cat_id=cat_id)
 
-    txt_path = txt_save_path
-    all_txt_path = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
-    nms_txt_path = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
-    cut_path = val_txt_path
-    hebing_txt(txt_path, all_txt_path, nms_txt_path, cut_path)
+    TXT_PATH = TXT_SAVE_PATH
+    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt")
+    NMS_TXT_PATH = os.path.join(voc_dir, "VOC2017/image_huizong_txt_nms")
+    CUT_PATH = VAL_TXT_PATH
+    hebing_txt(TXT_PATH, ALL_TXT_PATH, NMS_TXT_PATH, CUT_PATH)
 
-    cut_path = os.path.join(voc_dir, "VOC2017/JPEGImages")
-    image_save_path = os.path.join(voc_dir, "VOC2017/images1")
-    txt_path = nms_txt_path
-    nms_box(cut_path, image_save_path, txt_path, thresh=0.1)
+    CUT_PATH = os.path.join(voc_dir, "VOC2017/JPEGImages")
+    imagesavePath = os.path.join(voc_dir, "VOC2017/images1")
+    TXT_PATH = NMS_TXT_PATH
+    nms_box(CUT_PATH, imagesavePath, TXT_PATH, thresh=0.1)
 
-    txt_path = nms_txt_path
-    all_txt_path = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
-    write_huizong(txt_path, all_txt_path)
+    TXT_PATH = NMS_TXT_PATH
+    ALL_TXT_PATH = os.path.join(voc_dir, "VOC2017/obj_txt_huizong")
+    write_huizong(TXT_PATH, ALL_TXT_PATH)
 
     aps = []
     recs = []
     precs = []
-    anno_path = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
+    ANNO_PATH = voc_dir + "/VOC2017/Annotations/" + '{:s}.xml'
     imagesetfile = os.path.join(voc_dir, "VOC2017/ImageSets/Main/val.txt")
     cachedir = os.path.join(voc_dir, "VOC2017/demo")
     filename = os.path.join(voc_dir, "VOC2017/obj_txt_huizong/qikong.txt")
 
-    rec, prec, ap = voc_to_eval(
-        filename, anno_path, imagesetfile, object_name, cachedir, ovthresh=0.5,
+    rec, prec, ap = voc_eval(
+        filename, ANNO_PATH, imagesetfile, object_name, cachedir, ovthresh=0.5,
         use_07_metric=False)
 
     aps += [ap]
@@ -103,12 +103,10 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         txt_file_name = file_name.split('.')[0] + ".txt"
 
         temp = int(file_name.split('_')[2]) - 600
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        modes = stat.S_IWUSR | stat.S_IRUSR
-        f = os.fdopen(os.open(os.path.join(savetxt_path, txt_file_name), flags, modes), 'w')
+        f = open(os.path.join(savetxt_path, txt_file_name), "w")
 
-        ann_ids = coco_res.getAnnIds(imgIds=image_id, iscrowd=None)
-        anns = coco_res.loadAnns(ann_ids)
+        annIds = coco_res.getAnnIds(imgIds=image_id, iscrowd=None)
+        anns = coco_res.loadAnns(annIds)
         for ann in anns:
             category_id = ann['category_id']
             if category_id == cat_id:
@@ -127,33 +125,30 @@ def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_
         f.close()
 
 
-def hebing_txt(txt_path, save_txt_path, remove_txt_path, val_txt_path):
-    fileroot = os.listdir(save_txt_path)
-    remove_list = os.listdir(remove_txt_path)
-    for filename in remove_list:
-        os.remove(os.path.join(remove_txt_path, filename))
+def hebing_txt(txtPath, saveTxtPath, removeTxtPath, val_txt_path):
+    fileroot = os.listdir(saveTxtPath)
+    removeList = os.listdir(removeTxtPath)
+    for filename in removeList:
+        os.remove(os.path.join(removeTxtPath, filename))
     for filename in fileroot:
-        os.remove(os.path.join(save_txt_path, filename))
+        os.remove(os.path.join(saveTxtPath, filename))
     data = []
     for line in open(val_txt_path, "r"):
         data.append(line.strip('\n'))
-    txt_list = os.listdir(txt_path)
-
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    modes = stat.S_IWUSR | stat.S_IRUSR
-    for image in data:
-        fw = os.fdopen(os.open(os.path.join(save_txt_path, image + '.txt'), flags, modes), 'w')
-        for txtfile in txt_list:
+    txtList = os.listdir(txtPath)
+    for txtfile in txtList:
+        for image in data:
             if image.split('_')[1] == txtfile.split('_')[1]:
-                for line in open(os.path.join(txt_path, txtfile), "r"):
+                fw = open(os.path.join(saveTxtPath, image + '.txt'), 'a')
+                for line in open(os.path.join(txtPath, txtfile), "r"):
                     fw.write(line)
-        fw.close()
+                fw.close()
 
-    fileroot = os.listdir(save_txt_path)
+    fileroot = os.listdir(saveTxtPath)
     for file in fileroot:
         print(file)
-        oldname = os.path.join(save_txt_path, file)
-        newname = os.path.join(remove_txt_path, file)
+        oldname = os.path.join(saveTxtPath, file)
+        newname = os.path.join(removeTxtPath, file)
         shutil.copyfile(oldname, newname)
     print("finish")
 
@@ -201,48 +196,41 @@ def plot_bbox(dets, c='k'):
     plt.title(" nms")
 
 
-def nms_box(image_path, image_save_path, txt_path, thresh):
-    txt_list = os.listdir(txt_path)
-    for txtfile in tqdm.tqdm(txt_list):
-        boxes = np.loadtxt(os.path.join(txt_path, txtfile), dtype=np.float32,
+def nms_box(imagePath, imagesavePath, txtPath, thresh):
+    txtList = os.listdir(txtPath)
+    for txtfile in tqdm.tqdm(txtList):
+        boxes = np.loadtxt(os.path.join(txtPath, txtfile), dtype=np.float32,
                            delimiter=',')
         if boxes.size > 5:
-            if os.path.exists(os.path.join(txt_path, txtfile)):
-                os.remove(os.path.join(txt_path, txtfile))
-            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-            modes = stat.S_IWUSR | stat.S_IRUSR
-            fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
+            fw = open(os.path.join(txtPath, txtfile), 'w')
             print(boxes.size)
             print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
-            img = cv.imread(os.path.join(image_path, txtfile[:-3] + 'jpg'), 0)
+            img = cv.imread(os.path.join(imagePath, txtfile[:-3] + 'jpg'), 0)
             for label in boxes[keep]:
                 fw.write(str(int(label[0])) + ',' + str(int(label[1])) + ',' + str(int(label[2])) + ',' + str(
                     int(label[3])) + ',' + str(round((label[4]), 2)) + '\n')
-                x_min = int(label[0])
-                y_min = int(label[1])
-                x_max = int(label[2])
-                y_max = int(label[3])
+                Xmin = int(label[0])
+                Ymin = int(label[1])
+                Xmax = int(label[2])
+                Ymax = int(label[3])
                 color = (0, 0, 255)
-                if x_max - x_min >= 5 and y_max - y_min >= 5:
-                    cv.rectangle(img, (x_min, y_min), (x_max, y_max), color, 1)
+                if Xmax - Xmin >= 5 and Ymax - Ymin >= 5:
+                    cv.rectangle(img, (Xmin, Ymin), (Xmax, Ymax), color, 1)
                     font = cv.FONT_HERSHEY_SIMPLEX
-                    cv.putText(img, str(round((label[4]), 2)), (x_min, y_min - 7), font, 0.2, (6, 230, 230),
+                    cv.putText(img, str(round((label[4]), 2)), (Xmin, Ymin - 7), font, 0.2, (6, 230, 230),
                                1)
-            print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
-            cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
+            print(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'))
+            cv.imwrite(os.path.join(imagesavePath, txtfile[:-3] + 'jpg'), img)
             fw.close()
 
 
-def write_huizong(txt_path, save_txt_path):
-    txt_list = os.listdir(txt_path)
-    if os.path.exists(os.path.join(save_txt_path, 'qikong.txt')):
-        os.remove(os.path.join(save_txt_path, 'qikong.txt'))
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    modes = stat.S_IWUSR | stat.S_IRUSR
-    fw = os.fdopen(os.open(os.path.join(save_txt_path, 'qikong.txt'), flags, modes), 'w')
-    for txtfile in txt_list:
-        for line in open(os.path.join(txt_path, txtfile), 'r'):
+def write_huizong(txtPath, saveTxtPath):
+    data = []
+    txtList = os.listdir(txtPath)
+    fw = open(os.path.join(saveTxtPath, 'qikong.txt'), 'w')
+    for txtfile in txtList:
+        for line in open(os.path.join(txtPath, txtfile), 'r'):
             line = line.strip('\n')
             fw.write(txtfile[:-4] + ' ' +
                      line.split(',')[4] + ' ' +
@@ -309,13 +297,13 @@ def voc_ap(rec, prec, use_07_metric=False):  # voc2007的计算方式和voc2012�
     return ap
 
 
-def voc_to_eval(detpath,
-                annopath,
-                imagesetfile,
-                classname,
-                cachedir,
-                ovthresh=0.5,
-                use_07_metric=False):
+def voc_eval(detpath,
+             annopath,
+             imagesetfile,
+             classname,
+             cachedir,
+             ovthresh=0.5,
+             use_07_metric=False):
     """rec, prec, ap = voc_eval(detpath,
                                 annopath,
                                 imagesetfile,
@@ -357,11 +345,10 @@ def voc_to_eval(detpath,
     class_recs = {}
     npos = 0
     for imagename in imagenames:
-        r = [obj for obj in recs.get(imagename, "the image name does not exist") if
-             obj.get('name', "the name does not exist!") == classname]  # obj['name'] recs[imagename]
-        bbox = np.array([x['bbox'] for x in r])
-        difficult = np.array([x['difficult'] for x in r]).astype(np.bool)
-        det = [False] * len(r)
+        R = [obj for obj in recs[imagename] if obj['name'] == classname]
+        bbox = np.array([x['bbox'] for x in R])
+        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
+        det = [False] * len(R)
         npos = npos + sum(~difficult)
         class_recs[imagename] = {'bbox': bbox,
                                  'difficult': difficult,
@@ -375,12 +362,12 @@ def voc_to_eval(detpath,
     splitlines = [x.strip().split(' ') for x in lines]
     image_ids = [x[0] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
-    bb1 = np.array([[float(z) for z in x[2:]] for x in splitlines])
+    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
 
     # sort by confidence
     sorted_ind = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
-    bb1 = bb1[sorted_ind, :]
+    BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 
     # go down dets and mark TPs and FPs
@@ -390,36 +377,36 @@ def voc_to_eval(detpath,
 
     for d in range(nd):
         print(nd)
-        r = class_recs.get(image_ids[d], "no")  # class_recs[image_ids[d]]
-        bb = bb1[d, :].astype(float)
+        R = class_recs[image_ids[d]]
+        bb = BB[d, :].astype(float)
         ovmax = -np.inf
-        bbgt = r['bbox'].astype(float)
+        BBGT = R['bbox'].astype(float)
 
-        if bbgt.size > 0:
+        if BBGT.size > 0:
             # compute overlaps
             # intersection
-            ixmin = np.maximum(bbgt[:, 0], bb[0])
-            iymin = np.maximum(bbgt[:, 1], bb[1])
-            ixmax = np.minimum(bbgt[:, 2], bb[2])
-            iymax = np.minimum(bbgt[:, 3], bb[3])
+            ixmin = np.maximum(BBGT[:, 0], bb[0])
+            iymin = np.maximum(BBGT[:, 1], bb[1])
+            ixmax = np.minimum(BBGT[:, 2], bb[2])
+            iymax = np.minimum(BBGT[:, 3], bb[3])
             iw = np.maximum(ixmax - ixmin + 1., 0.)
             ih = np.maximum(iymax - iymin + 1., 0.)
             inters = iw * ih
 
             # union
             uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
-                   (bbgt[:, 2] - bbgt[:, 0] + 1.) *
-                   (bbgt[:, 3] - bbgt[:, 1] + 1.) - inters)
+                   (BBGT[:, 2] - BBGT[:, 0] + 1.) *
+                   (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
 
             overlaps = inters / uni
             ovmax = np.max(overlaps)
             jmax = np.argmax(overlaps)
 
         if ovmax > ovthresh:
-            if not r['difficult'][jmax]:
-                if not r['det'][jmax]:
+            if not R['difficult'][jmax]:
+                if not R['det'][jmax]:
                     tp[d] = 1.
-                    r['det'][jmax] = 1
+                    R['det'][jmax] = 1
                 else:
                     fp[d] = 1.
         else:
@@ -438,4 +425,4 @@ def voc_to_eval(detpath,
 
 
 if __name__ == '__main__':
-    voc_eval(args_opt.ann_file, args_opt.result_json_file, args_opt.voc_dir, args_opt.cat_id, args_opt.object_name)
+    VOC_eval(args_opt.ann_file, args_opt.result_json_file, args_opt.voc_dir, args_opt.cat_id, args_opt.object_name)

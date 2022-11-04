@@ -26,7 +26,6 @@ add_compile_options("-Dgoogle=mindxsdk_private")
 add_definitions(-DENABLE_DVPP_INTERFACE)
 
 message("ACL_LIB_PATH:${ACL_LIB_PATH}.")
-#include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${ACL_LIB_PATH}/include)
 
 add_library(${TARGET_LIBRARY} SHARED ./FasterRcnnMindsporePost.cpp ./FasterRcnnMindsporePost.h)

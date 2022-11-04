@@ -34,30 +34,6 @@ class SdkApi:
         self._data_input = None
         self._device_id = None
 
-    def __del__(self):
-        if not self._stream_api:
-            return
-
-        self._stream_api.DestroyAllStreams()
-
-    @staticmethod
-    def _convert_infer_result(infer_result):
-        data = infer_result.get('MxpiObject')
-        if not data:
-            logging.error("The result data is error.")
-            return infer_result
-
-        for bbox in data:
-            if 'imageMask' not in bbox:
-                continue
-            mask_info = json_format.ParseDict(bbox["imageMask"],
-                                              MxpiDataType.MxpiImageMask())
-            mask_data = np.frombuffer(mask_info.dataStr, dtype=np.uint8)
-
-            bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
-            bbox['imageMask'].pop("dataStr")
-        return infer_result
-
     def init(self):
         try:
             with open(self.pipeline_cfg, 'r') as fp:
@@ -91,6 +67,12 @@ class SdkApi:
 
         return True
 
+    def __del__(self):
+        if not self._stream_api:
+            return
+
+        self._stream_api.DestroyAllStreams()
+
     def send_data_input(self, stream_name, plugin_id, input_data):
         data_input = MxDataInput()
         data_input.data = input_data
@@ -98,6 +80,24 @@ class SdkApi:
                                               data_input)
         if unique_id < 0:
             logging.error("Fail to send data to stream.")
+            return False
+        return True
+
+    def _send_protobuf(self, stream_name, plugin_id, element_name, buf_type,
+                       pkg_list):
+        protobuf = MxProtobufIn()
+        protobuf.key = element_name.encode("utf-8")
+        protobuf.type = buf_type
+        protobuf.protobuf = pkg_list.SerializeToString()
+        protobuf_vec = InProtobufVector()
+        protobuf_vec.push_back(protobuf)
+        err_code = self._stream_api.SendProtobuf(stream_name, plugin_id,
+                                                 protobuf_vec)
+        if err_code != 0:
+            logging.error(
+                "Failed to send data to stream, stream_name(%s), plugin_id(%s), element_name(%s), "
+                "buf_type(%s), err_code(%s).", stream_name, plugin_id,
+                element_name, buf_type, err_code)
             return False
         return True
 
@@ -146,20 +146,20 @@ class SdkApi:
         res_dict = json.loads(infer_res.data.decode())
         return self._convert_infer_result(res_dict)
 
-    def _send_protobuf(self, stream_name, plugin_id, element_name, buf_type,
-                       pkg_list):
-        protobuf = MxProtobufIn()
-        protobuf.key = element_name.encode("utf-8")
-        protobuf.type = buf_type
-        protobuf.protobuf = pkg_list.SerializeToString()
-        protobuf_vec = InProtobufVector()
-        protobuf_vec.push_back(protobuf)
-        err_code = self._stream_api.SendProtobuf(stream_name, plugin_id,
-                                                 protobuf_vec)
-        if err_code != 0:
-            logging.error(
-                "Failed to send data to stream, stream_name(%s), plugin_id(%s), element_name(%s), "
-                "buf_type(%s), err_code(%s).", stream_name, plugin_id,
-                element_name, buf_type, err_code)
-            return False
-        return True
+    @staticmethod
+    def _convert_infer_result(infer_result):
+        data = infer_result.get('MxpiObject')
+        if not data:
+            logging.error("The result data is error.")
+            return
+
+        for bbox in data:
+            if 'imageMask' not in bbox:
+                continue
+            mask_info = json_format.ParseDict(bbox["imageMask"],
+                                              MxpiDataType.MxpiImageMask())
+            mask_data = np.frombuffer(mask_info.dataStr, dtype=np.uint8)
+
+            bbox['imageMask']['data'] = "".join([str(i) for i in mask_data])
+            bbox['imageMask'].pop("dataStr")
+        return infer_result
