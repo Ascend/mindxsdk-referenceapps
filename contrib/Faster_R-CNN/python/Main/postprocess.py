@@ -174,7 +174,7 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
             fw.close()
 
 
-if __name__ == '__main__':
+def post_process():
     INFER_RESULT_PATH = "../data/test/infer_result"
     TXT_SAVE_PATH = "../data/test/img_txt"
     json_to_txt(INFER_RESULT_PATH, TXT_SAVE_PATH)
@@ -190,3 +190,7 @@ if __name__ == '__main__':
     NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
     obj_lists = ['qikong', 'liewen']
     nms_box(CUT_PATH, IMAGE_SAVE_PATH, NMS_TXT_PATH, thresh=0, obj_list=obj_lists)
+
+
+if __name__ == '__main__':
+    post_process()

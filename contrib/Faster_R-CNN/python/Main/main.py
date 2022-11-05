@@ -17,6 +17,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 import stat
 import shutil
 import time
@@ -32,6 +33,7 @@ from draw_predict import draw_label
 from infer import SdkApi
 import config as cfg
 from eval_by_sdk import get_eval_result
+from postprocess import post_process
 
 
 def parser_args():
@@ -117,6 +119,14 @@ def crop_on_slide(cut_path, crop_path, stride):
     imgs = os.listdir(cut_path)
 
     for img in imgs:
+        if img.split('.')[1] != "jpg" and img.split('.')[1] != "JPG":
+            print("ERROR")
+            print("Please input jpg image!")
+            sys.exit(1)
+        if img[5] != "_":
+            print("ERROR")
+            print("Please name the image like 'W0003_0001'!")
+            sys.exit(1)
         origin_image = cv2.imread(os.path.join(cut_path, img))
         height = origin_image.shape[0]
         width = origin_image.shape[1]
@@ -186,6 +196,10 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
 
     file_list = os.listdir(img_dir)
     total_len = len(file_list)
+    if total_len == 0:
+        print("ERROR")
+        print("The input directory is EMPTY!")
+        print("Please place the picture in '../data/test/cut'!")
     for img_id, file_name in enumerate(file_list):
         if not file_name.lower().endswith((".jpg", "jpeg")):
             continue
@@ -232,6 +246,7 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
             draw_label(save_path, file_path, result_dir)
         except Exception as ex:
             logging.exception("Unknown error, msg(%s).", ex)
+    post_process()
 
 
 if __name__ == "__main__":
