@@ -17,7 +17,7 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 
 ### 1.3 软件方案介绍
 
-本系统识别的流程是：先将输入的图像送入流中解码和缩放大小，使用YOLOv5目标检测模型去检测图片中的表盘，结束流。将目标框裁剪下来，再送入流中解码和缩放大小，用DeepLabv3语义分割模型去得到工业表中的指针和刻度，对语义分割模型预测的结果进行读书后处理，找到指针指向的刻度，根据刻度的间隔和刻度根数计算表盘的读数。
+本系统识别的流程是：先将输入的图像送入流中解码和缩放大小，使用YOLOv5目标检测模型去检测图片中的表盘，结束流。将目标框裁剪下来，再送入流中解码和缩放大小，用DeepLabv3语义分割模型去得到工业表中的指针和刻度，对语义分割模型预测的结果进行读数后处理，找到指针指向的刻度，根据刻度的间隔和刻度根数计算表盘的读数。
 
 表2.1 系统方案中各模块功能：
 
@@ -46,23 +46,13 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │  set.sh
 │
 ├─images
-│  │  det_res.jpg
-│  │  seg_test.jpg
-│  │  test.jpg
-│  │
-│  ├─det_res
-│  │      test.jpg
-│  │      test0.jpg
-│  │      test1.jpg
-│  │
 │  └─readme
-│          det_pipeline.png
-│          main_result.png
-│          seg_pipeline.png
+│      det_pipeline.png
+│      main_result.png
+│      seg_pipeline.png
 │
 ├─infer
 │      det_test.py
-│      fusion_result.json
 │      main.py
 │      main.sh
 │      seg.py
@@ -90,7 +80,7 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │          Myplugin.h
 │          postprocess.cpp
 │          postprocess.h
-│          run.sh
+│          build.sh
 │
 └─python    #验证精度代码
     ├─deeplabv3_val     #deeplabv3模型测试精度
@@ -109,7 +99,7 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 <li>基础环境：Ascend 310、mxVision、Ascend-CANN-toolkit、Ascend Driver
 <li>模型转换：
 
-PyTorch模型转昇腾离线模型：yolov5.onnx-->yolov5.om
+PyTorch模型转昇腾离线模型：yolov5.onnx  -->  yolov5.om
 
 onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 
@@ -123,7 +113,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 
 
   <center>
-      <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/det_pipeline.png">
+      <img src="./README_img/YOLOv5_pipeline.png">
       <br>
       <div style="color:orange;
       display: inline-block;
@@ -133,7 +123,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
   
 
   <center>
-        <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/seg_pipeline.png">
+        <img src="./README_img/DeepLabv3_pipeline.png">
         <br>
         <div style="color:orange;
         display: inline-block;
@@ -165,21 +155,11 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 | opencv-python |    4.6.0    |
 
 
-### 2.2 基础环境变量——env.sh
+### 2.2 导入基础环境
 
-```
-export MX_SDK_HOME="${SDK安装路径}/mxVision"
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-```
-
-### 2.3 ATC工具环境变量——atc_env.sh
-```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:$PATH
-export PYTHONPATH=${install_path}/arm64-linux/atc/python/site-packages:${install_path}/arm64-linux/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/arm64-linux/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/arm64-linux/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+```bash
+. /usr/local/Ascend/ascend-toolkit/set_env.sh
+. ${SDK安装路径}/mxVision/set_env.sh
 ```
 
 ## 3 模型转换及依赖安装
@@ -190,7 +170,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 1、YOLOv5模型转换：
 
-下载训练好的onnx模型（下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip），存放在MeterReader/models/yolov5路径下，文件名为det.onxx,使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型：
+下载训练好的onnx模型，存放在MeterReader/models/yolov5路径下，文件名为det.onxx,使用命令语句跳转到models/yolov5文件路径下，将模型用以下语句转换成om模型（模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip）
 
   ```bash
   atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg --soc_version=Ascend310 
@@ -207,7 +187,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 2、DeepLabv3模型转换：
 
-在python中安装paddle2onnx库，下载训练好的pdmodel模型(下载链接https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，存放在MeterReader/models/deeplabv3路径下，文件名为meter_seg_model，使用命令语句跳转到models/deeplabv3文件路径下，将模型用以下语句转换成onnx模型：
+在python中安装paddle2onnx库，下载训练好的pdmodel模型，存放在MeterReader/models/deeplabv3路径下，文件名为meter_seg_model，使用命令语句跳转到models/deeplabv3文件路径下，将模型用以下语句转换成onnx模型（模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip）
 
   ```bash
  paddle2onnx --model_dir saved_inference_model \
@@ -217,7 +197,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
             --enable_dev_version True
   ```
 
-或者可以直接下载转换好的onnx模型（下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip），再使用命令语句跳转到MeterReader/models/deeplabv3文件路径下，使用配置文件和将模型用以下语句转换成om模型：
+或者可以直接下载转换好的onnx模型，再使用命令语句跳转到MeterReader/models/deeplabv3文件路径下，使用配置文件和将模型用以下语句转换成om模型（模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip）
 
   ```bash
   atc --model=seg.onnx --framework=5  --output=seg insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
@@ -304,42 +284,16 @@ source ~/.bashrc
 将${SDK安装路径}改为SDK的安装路径
 ``` -->
 
-**步骤1** 设置环境变量
-
-将${SDK安装路径}更改为SDK安装的路径位置。
-```bash
-# 执行如下命令，打开.bashrc文件
-vi .bashrc
-
-# 在.bashrc文件中添加以下环境变量
-export MX_SDK_HOME=${SDK安装路径}
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-export PYTHONPATH=${MX_SDK_HOME}/python:$PYTHONPATH
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
-```
-
-**步骤2** 执行编译
+**步骤1** 执行编译
 
 编译插件，在项目目录下执行如下命令
 ```bash
 cd plugins/process3
-. run.sh
+. build.sh
 ```
 
 
-**步骤3** 运行及输出结果
+**步骤2** 运行及输出结果
 
 总体运行。输入一张图片，输出得到带有预测表盘计数的图片。
 ```bash
@@ -348,7 +302,7 @@ python main.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 ```
 执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及 通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。
 <center>
-    <img src="https://gitee.com/jiangjiang1353/mindxsdk-referenceapps/raw/master/contrib/MeterReader/images/readme/main_result.png">
+    <img src="./README_img/main_result.png">
     <br>
     <div style="color:orange;
     display: inline-block;
@@ -370,11 +324,11 @@ cd infer
 python seg.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 ``` -->
 
-**步骤4** 精度测试
+**步骤3** 精度测试
 
 分别对yolo模型与deeplabv3模型进行精度测试。
 
-1、YOLOv5模型精度测试。
+1、YOLOv5模型精度测试
 
 ```bash
 
@@ -408,7 +362,7 @@ cd python/deeplabv3_val/
 python seg_evaluate.py
 ```
 
-输出各个图的Miou指标，并求得平均值作为deeplabv3模型的精度指标。经测试，deeplabv3的模型的Miou为66.53%
+输出各个图的Miou指标，并求得平均值作为deeplabv3模型的精度指标。经测试，deeplabv3的模型的Miou为67%。
 
 
 ## 5 软件依赖说明

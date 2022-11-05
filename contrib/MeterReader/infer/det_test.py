@@ -290,7 +290,6 @@ class det_postprocessors:
             if len(det):
                 #[1024, 576]是图片根据模型输入resize后的尺寸
                 res = self.scale_coords([1024, 576], det[:, :4], im0.shape).round()
-                print("det-------")
                 for item in res:
                     print(f"det_xyxy:{list(item)}")
 
@@ -301,7 +300,7 @@ class det_postprocessors:
                     #x = [int(meter[0]), int(meter[1]), int(meter[2]), int(meter[3])]
                     #temp_line = self.xyxy2xywh(x)
                     cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
-                    res_path = (self.save_path+file_name+'.jpg').replace("\\","/")
+                    res_path = (self.save_path + file_name+'.jpg').replace("\\","/")
                     cv2.imwrite(res_path, im0)
         return res_img
 
@@ -374,42 +373,35 @@ if __name__ == '__main__':
         dataInput.data = f.read()
     STEAMNAME = b'detection'
     INPLUGINID = 0
-    uniqueId = steammanager_api.SendData(STEAMNAME, INPLUGINID, dataInput)
-    if uniqueId < 0:
-        print("Failed to send data to stream.")
+    uId = steammanager_api.SendData(STEAMNAME, INPLUGINID, dataInput)
+    if uId < 0:
+        print("Send data to stream fail!!")
         exit()
 
-    keys = [b"mxpi_tensorinfer0"]
-    keyVec = StringVector()
-    for key in keys:
-        keyVec.push_back(key)
+    key_vectors = StringVector()
+    key_vectors.push_back(b"mxpi_tensorinfer0")
 
     # 从流中取出对应插件的输出数据
-    infer = steammanager_api.GetResult(STEAMNAME, b'appsink0', keyVec)
-    # print("infer",infer)
+    infer = steammanager_api.GetResult(STEAMNAME, b'appsink0', key_vectors)
     if (infer.metadataVec.size() == 0):
-        print("Get no data from stream !")
+        print("No data from stream !")
         exit()
-    print("result.metadata size: ", infer.metadataVec.size())
     infer_result = infer.metadataVec[0]
     if infer_result.errorCode != 0:
         print("GetResult error. errorCode=%d , errMsg=%s" % (infer_result.errorCode, infer_result.errMsg))
         exit()
         
-    result = MxpiDataType.MxpiTensorPackageList()
-    result.ParseFromString(infer_result.serializedMetadata)
+    data = MxpiDataType.MxpiTensorPackageList()
+    data.ParseFromString(infer_result.serializedMetadata)
 
-    pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+    pred = np.frombuffer(data.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     pred.resize(1,36288,6)
     pred = pred.copy()
-    # np.save(r"/home/wangyi4/tmp/221021_xhr/img_pred.npy", pred)
-    # # #print("save--------------------","ok",pred)
-    # pred = np.load(r"/home/wangyi4/tmp/221021_xhr/img_pred.npy")
-    det_postprocessors = det_postprocessors()
-    det_postprocessors.source = FILENAME
-    det_postprocessors.pred = pred
-    det_postprocessors.save_path = RESULTFILE
-    res_img = det_postprocessors.run()
+    det_post = det_postprocessors()
+    det_post.source = FILENAME
+    det_post.pred = pred
+    det_post.save_path = RESULTFILE
+    res_img = det_post.run()
     img_name = FILENAME.split("/")[-1][:4]
     print("res_img",len(res_img),end=" ")
     for i in range(len(res_img)):
