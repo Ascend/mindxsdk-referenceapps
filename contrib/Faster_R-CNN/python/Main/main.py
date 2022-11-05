@@ -17,7 +17,11 @@ import argparse
 import json
 import logging
 import os
+import stat
+import shutil
 import time
+import xml.dom.minidom
+import xml.etree.ElementTree as ET
 
 import cv2
 import mmcv
@@ -70,8 +74,8 @@ def parser_args():
                         required=False,
                         help="eval ann_file.")
 
-    args = parser.parse_args()
-    return args
+    arg = parser.parse_args()
+    return arg
 
 
 def get_img_metas(file_name):
@@ -101,8 +105,74 @@ def process_img(img_file):
     return pad_img
 
 
-def image_inference(pipeline_path, stream_name, img_dir, result_dir,
-                    replace_last, model_type):
+def crop_on_slide(cut_path, crop_path, stride):
+    if not os.path.exists(crop_path):
+        os.mkdir(crop_path)
+    else:
+        remove_list = os.listdir(crop_path)
+        for filename in remove_list:
+            os.remove(os.path.join(crop_path, filename))
+
+    output_shape = 600
+    imgs = os.listdir(cut_path)
+
+    for img in imgs:
+        origin_image = cv2.imread(os.path.join(cut_path, img))
+        height = origin_image.shape[0]
+        width = origin_image.shape[1]
+        x = 0
+        newheight = output_shape
+        newwidth = output_shape
+
+        while x < width:
+            y = 0
+            if x + newwidth <= width:
+                while y < height:
+                    if y + newheight <= height:
+                        hmin = y
+                        hmax = y + newheight
+                        wmin = x
+                        wmax = x + newwidth
+                    else:
+                        hmin = height - newheight
+                        hmax = height
+                        wmin = x
+                        wmax = x + newwidth
+                        y = height  # test
+
+                    crop_img = os.path.join(crop_path, (
+                            img.split('.')[0] + '_' + str(wmax) + '_' + str(hmax) + '_' + str(output_shape) + '.jpg'))
+                    cv2.imwrite(crop_img, origin_image[hmin: hmax, wmin: wmax])
+                    y = y + stride
+                    if y + output_shape == height:
+                        y = height
+            else:
+                while y < height:
+                    if y + newheight <= height:
+                        hmin = y
+                        hmax = y + newheight
+                        wmin = width - newwidth
+                        wmax = width
+                    else:
+                        hmin = height - newheight
+                        hmax = height
+                        wmin = width - newwidth
+                        wmax = width
+                        y = height  # test
+
+                    crop_img = os.path.join(crop_path, (
+                            img.split('.')[0] + '_' + str(wmax) + '_' + str(hmax) + '_' + str(
+                        output_shape) + '.jpg'))
+                    cv2.imwrite(crop_img, origin_image[hmin: hmax, wmin: wmax])
+                    y = y + stride
+                x = width
+            x = x + stride
+            if x + output_shape == width:
+                x = width
+
+
+def image_inference(pipeline_path, s_name, img_dir, result_dir,
+                    rp_last, model_type):
     sdk_api = SdkApi(pipeline_path)
     if not sdk_api.init():
         exit(-1)
@@ -122,7 +192,7 @@ def image_inference(pipeline_path, stream_name, img_dir, result_dir,
         file_path = os.path.join(img_dir, file_name)
         save_path = os.path.join(result_dir,
                                  f"{os.path.splitext(file_name)[0]}.json")
-        if not replace_last and os.path.exists(save_path):
+        if not rp_last and os.path.exists(save_path):
             print(
                 f"The infer result json({save_path}) has existed, will be skip."
             )
@@ -132,24 +202,28 @@ def image_inference(pipeline_path, stream_name, img_dir, result_dir,
             if model_type == 'dvpp':
                 with open(file_path, "rb") as fp:
                     data = fp.read()
-                sdk_api.send_data_input(stream_name, img_data_plugin_id, data)
+                sdk_api.send_data_input(s_name, img_data_plugin_id, data)
             else:
                 img_np = process_img(file_path)
-                sdk_api.send_img_input(stream_name,
+                sdk_api.send_img_input(s_name,
                                        img_data_plugin_id, "appsrc0",
                                        img_np.tobytes(), img_np.shape)
 
             # set image data
             img_metas = get_img_metas(file_path).astype(np.float32)
-            sdk_api.send_tensor_input(stream_name, img_metas_plugin_id,
+            sdk_api.send_tensor_input(s_name, img_metas_plugin_id,
                                       "appsrc1", img_metas.tobytes(), [1, 4],
                                       cfg.TENSOR_DTYPE_FLOAT32)
 
             start_time = time.time()
-            result = sdk_api.get_result(stream_name)
+            result = sdk_api.get_result(s_name)
             end_time = time.time() - start_time
 
-            with open(save_path, "w") as fp:
+            if os.path.exists(save_path):
+                os.remove(save_path)
+            flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+            modes = stat.S_IWUSR | stat.S_IRUSR
+            with os.fdopen(os.open((save_path), flags, modes), 'w') as fp:
                 fp.write(json.dumps(result))
             print(
                 f"End-2end inference, file_name: {file_path}, {img_id + 1}/{total_len}, elapsed_time: {end_time}.\n"
@@ -163,10 +237,14 @@ def image_inference(pipeline_path, stream_name, img_dir, result_dir,
 if __name__ == "__main__":
     args = parser_args()
 
-    replace_last = True
-    stream_name = cfg.STREAM_NAME.encode("utf-8")
-    image_inference(args.pipeline_path, stream_name, args.img_path,
-                    args.infer_result_dir, replace_last, args.model_type)
+    REPLACE_LAST = True
+    STREAM_NAME = cfg.STREAM_NAME.encode("utf-8")
+    CUT_PATH = "../data/test/cut/"
+    CROP_IMG_PATH = "../data/test/crop/"
+    STRIDE = 450
+    crop_on_slide(CUT_PATH, CROP_IMG_PATH, STRIDE)
+    image_inference(args.pipeline_path, STREAM_NAME, args.img_path,
+                    args.infer_result_dir, REPLACE_LAST, args.model_type)
     if args.infer_mode == "eval":
         print("Infer end.")
         print("Begin to eval...")

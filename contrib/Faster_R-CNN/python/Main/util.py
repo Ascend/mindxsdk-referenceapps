@@ -13,22 +13,19 @@
 # limitations under the License.
 # ============================================================================
 """coco eval for maskrcnn"""
+import os
 import json
-
+import shutil
+import xml.etree.ElementTree as ET
 import mmcv
 import numpy as np
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-import os
-import json
-import shutil
 import numpy as np
 import cv2 as cv
 import tqdm
 import matplotlib.pyplot as plt
 from pycocotools.coco import COCO
-import shutil
-import xml.etree.ElementTree as ET
 
 _init_value = np.array(0.0)
 summary_init = {
@@ -68,51 +65,51 @@ def coco_eval(result_files,
         gt_img_ids = coco.getImgIds()
         det_img_ids = coco_dets.getImgIds()
         iou_type = 'bbox' if res_type == 'proposal' else res_type
-        cocoEval = COCOeval(coco, coco_dets, iou_type)
+        coco_to_eval = COCOeval(coco, coco_dets, iou_type)
         if res_type == 'proposal':
-            cocoEval.params.useCats = 0
-            cocoEval.params.maxDets = list(max_dets)
+            coco_to_eval.params.useCats = 0
+            coco_to_eval.params.maxDets = list(max_dets)
 
         tgt_ids = gt_img_ids if not single_result else det_img_ids
 
         if single_result:
             res_dict = dict()
             for id_i in tgt_ids:
-                cocoEval = COCOeval(coco, coco_dets, iou_type)
+                coco_to_eval = COCOeval(coco, coco_dets, iou_type)
                 if res_type == 'proposal':
-                    cocoEval.params.useCats = 0
-                    cocoEval.params.maxDets = list(max_dets)
+                    coco_to_eval.params.useCats = 0
+                    coco_to_eval.params.maxDets = list(max_dets)
 
-                cocoEval.params.imgIds = [id_i]
-                cocoEval.evaluate()
-                cocoEval.accumulate()
-                cocoEval.summarize()
+                coco_to_eval.params.imgIds = [id_i]
+                coco_to_eval.evaluate()
+                coco_to_eval.accumulate()
+                coco_to_eval.summarize()
                 res_dict.update(
-                    {coco.imgs[id_i]['file_name']: cocoEval.stats[1]})
+                    {coco.imgs[id_i]['file_name']: coco_to_eval.stats[1]})
 
-        cocoEval = COCOeval(coco, coco_dets, iou_type)
+        coco_to_eval = COCOeval(coco, coco_dets, iou_type)
         if res_type == 'proposal':
-            cocoEval.params.useCats = 0
-            cocoEval.params.maxDets = list(max_dets)
+            coco_to_eval.params.useCats = 0
+            coco_to_eval.params.maxDets = list(max_dets)
 
-        cocoEval.params.imgIds = tgt_ids
-        cocoEval.evaluate()
-        cocoEval.accumulate()
-        cocoEval.summarize()
+        coco_to_eval.params.imgIds = tgt_ids
+        coco_to_eval.evaluate()
+        coco_to_eval.accumulate()
+        coco_to_eval.summarize()
 
         summary_metrics = {
-            'Precision/mAP': cocoEval.stats[0],
-            'Precision/mAP@.50IOU': cocoEval.stats[1],
-            'Precision/mAP@.75IOU': cocoEval.stats[2],
-            'Precision/mAP (small)': cocoEval.stats[3],
-            'Precision/mAP (medium)': cocoEval.stats[4],
-            'Precision/mAP (large)': cocoEval.stats[5],
-            'Recall/AR@1': cocoEval.stats[6],
-            'Recall/AR@10': cocoEval.stats[7],
-            'Recall/AR@100': cocoEval.stats[8],
-            'Recall/AR@100 (small)': cocoEval.stats[9],
-            'Recall/AR@100 (medium)': cocoEval.stats[10],
-            'Recall/AR@100 (large)': cocoEval.stats[11],
+            'Precision/mAP': coco_to_eval.stats[0],
+            'Precision/mAP@.50IOU': coco_to_eval.stats[1],
+            'Precision/mAP@.75IOU': coco_to_eval.stats[2],
+            'Precision/mAP (small)': coco_to_eval.stats[3],
+            'Precision/mAP (medium)': coco_to_eval.stats[4],
+            'Precision/mAP (large)': coco_to_eval.stats[5],
+            'Recall/AR@1': coco_to_eval.stats[6],
+            'Recall/AR@10': coco_to_eval.stats[7],
+            'Recall/AR@100': coco_to_eval.stats[8],
+            'Recall/AR@100 (small)': coco_to_eval.stats[9],
+            'Recall/AR@100 (medium)': coco_to_eval.stats[10],
+            'Recall/AR@100 (large)': coco_to_eval.stats[11],
         }
 
     print(json.dumps(summary_metrics, indent=2))
@@ -138,7 +135,8 @@ def det2json(dataset, results):
     dataset_len = len(img_ids)
     for idx in range(dataset_len):
         img_id = img_ids[idx]
-        if idx == len(results): break
+        if idx == len(results):
+            break
         result = results[idx]
         for label, result_label in enumerate(result):
             bboxes = result_label
@@ -158,5 +156,5 @@ def results2json(dataset, results, out_file):
     json_results = det2json(dataset, results)
     result_files['bbox'] = '{}.{}.json'.format(out_file, 'bbox')
     result_files['proposal'] = '{}.{}.json'.format(out_file, 'bbox')
-    mmcv.dump(json_results, result_files['bbox'])
+    mmcv.dump(json_results, result_files.get('bbox', "bbox not exist!"))  # result_files['bbox']
     return result_files
