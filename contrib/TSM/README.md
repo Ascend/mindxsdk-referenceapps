@@ -165,6 +165,15 @@ mkdir ops
 
 在参考设计代码根目录下，执行以下命令对数据集视频进行抽帧并生成图片：
 
+修改vid2img_kinetics.py 内容，将77、78行注释。
+
+```text
+
+77行 #class_name = 'test'
+78行 #class_process(dir_path, dst_dir_path, class_name)
+
+``` 
+
 ```shell
 mkdir dataset
 cd ./tools
