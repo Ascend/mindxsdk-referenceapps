@@ -175,21 +175,21 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
 
 
 def post_process():
-    INFER_RESULT_PATH = "../data/test/infer_result"
-    TXT_SAVE_PATH = "../data/test/img_txt"
-    json_to_txt(INFER_RESULT_PATH, TXT_SAVE_PATH)
+    infer_result_path = "../data/test/infer_result"
+    txt_save_path = "../data/test/img_txt"
+    json_to_txt(infer_result_path, txt_save_path)
 
-    TXT_PATH = "../data/test/img_txt"
-    ALL_TXT_PATH = "../data/test/img_huizong_txt"
-    NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
-    CUT_PATH = "../data/test/cut"
-    hebing_txt(TXT_PATH, ALL_TXT_PATH, NMS_TXT_PATH, CUT_PATH)
+    txt_path = "../data/test/img_txt"
+    all_txt_path = "../data/test/img_huizong_txt"
+    nms_txt_path = "../data/test/img_huizong_txt_nms"
+    cut_path = "../data/test/cut"
+    hebing_txt(txt_path, all_txt_path, nms_txt_path, cut_path)
 
-    CUT_PATH = "../data/test/cut"
-    IMAGE_SAVE_PATH = "../data/test/draw_result"
-    NMS_TXT_PATH = "../data/test/img_huizong_txt_nms"
+    cut_path = "../data/test/cut"
+    image_save_path = "../data/test/draw_result"
+    nms_txt_path = "../data/test/img_huizong_txt_nms"
     obj_lists = ['qikong', 'liewen']
-    nms_box(CUT_PATH, IMAGE_SAVE_PATH, NMS_TXT_PATH, thresh=0, obj_list=obj_lists)
+    nms_box(cut_path, image_save_path, nms_txt_path, thresh=0.1, obj_list=obj_lists)
 
 
 if __name__ == '__main__':
