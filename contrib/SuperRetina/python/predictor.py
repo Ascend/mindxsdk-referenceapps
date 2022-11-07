@@ -259,7 +259,8 @@ def evaluate(query_path, refer_path, infer_model, query_is_image=False):
 
     # get the infer result
     detector_pred = np.reshape(infer_data_detector, (2, 1, 768, 768)) # Size of model input is 2x1x768x768
-    descriptor_pred = np.reshape(infer_data_descriptor, (2, 256, 94, 94)) # Size of another input to the model is 2x256x94x94
+    descriptor_pred = np.reshape(infer_data_descriptor,
+    (2, 256, 94, 94)) # Size of another input to the model is 2x256x94x94
 
     scores = simple_nms(detector_pred, nms_radius=nms_size)
     _, _, h_detector, w_detector = detector_pred.shape
