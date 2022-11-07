@@ -93,6 +93,15 @@ SDK-path: mxVision SDK 安装路径
 
 ascend-toolkit-path: CANN 安装路径。
 
+[ffmpeg下载](https://ffmpeg.org/download.html#build-linux)
+
+```Shell
+xz -d ffmpeg-git-amd64-static.tar.xz
+tar -xvf ffmpeg-git-amd64-static.tar
+cd ./ffmpeg-git-20190424-amd64-static
+./ffmpeg
+```
+
 ## 3  离线推理
 
 **步骤1** Kinetics-400数据集下载
@@ -163,9 +172,21 @@ mkdir ops
         ├── transforms.py
 ```
 
-在参考设计代码根目录下，执行以下命令对数据集视频进行抽帧并生成图片：
+将代码包中"online_demo"目录下mobilenet_v2_tsm.py 放在参考设计代码根目录的“model” 目录下。
 
-修改vid2img_kinetics.py 内容，将77、78行注释。
+```text
+├── TSM
+    ├── model
+        ├── pth2onnx.py                  // 转onnx模型脚本
+        ├── onnx2om.sh                   // 转om模型脚本
+        ├── mobilenet_v2_tsm.py          // 在线模型脚本
+        ├── pth2onnx1.py                 // 在线模型转onnx模型脚本
+        ├── onnx2om1.sh                  // 在线模型转om模型脚本
+```
+
+修改“tools”目录下的 vid2img_kinetics.py 内容，将77、78行注释。
+
+在参考设计代码根目录下，执行以下命令对数据集视频进行抽帧并生成图片：
 
 ```text
 
@@ -182,13 +203,7 @@ e.g.
 python3 vid2img_kinetics.py ../data ../dataset/
 ```
 
-在“tools”目录下，执行以下命令生成标签文件：
-
-```shell
-python3 gen_label_kinetics.py
-```
-
-修改gen_label_kinetics.py 内容。
+修改“tools”目录下gen_label_kinetics.py 内容。
 
 ```text
 
@@ -200,9 +215,15 @@ python3 gen_label_kinetics.py
 
 ``` 
 
+在“tools”目录下，执行以下命令生成标签文件：
+
+```shell
+python3 gen_label_kinetics.py
+```
+
 **步骤3** 模型转换
 
-下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip),将下载好的模型放在“/TSM/model”目录下。
+下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip)TSM.pth,将下载好的模型放在“${TSM代码根目录}/model”目录下。
 
 将模型转换为onnx模型，在参考设计代码根目录下，执行以下命令将pth模型转换为onnx模型
 
@@ -219,12 +240,12 @@ bash onnx2om.sh
 
 **步骤4** 精度测试
 
-修改/TSM/ops/dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
+修改${TSM代码根目录}/ops/dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
 
 ```shell
 import os
 
-ROOT_DATASET = './labels/'
+ROOT_DATASET = './labels/'    # 标签文件所在路径
 
 ...
 
@@ -232,8 +253,8 @@ def return_kinetics(modality):
     filename_categories = 400
     if modality == 'RGB':
         root_data = ROOT_DATASET
-        filename_imglist_train = 'train_videofolder.txt'
-        filename_imglist_val = 'val_videofolder.txt'
+        filename_imglist_train = 'train_videofolder.txt'        # 训练数据集标签
+        filename_imglist_val = 'val_videofolder.txt'            # 测试数据集标签
         prefix = 'img_{:05d}.jpg'
     else:
         raise NotImplementedError('no such modality:' + modality)
@@ -246,17 +267,17 @@ def return_kinetics(modality):
 python3 offline_infer.py kinetics
 ```
 
-得到精度为：71.01%
+原模型精度值为71.1%，实际精度值71.01%，最终得到精度为：71.01%
 
 **步骤5** 性能测试
 
-将用来测试的单视频放在参考设计代码根目录下，如视频“test.mp4”，运行性能测试脚本
+将用来测试的单视频放在参考设计代码根目录下，如视频“test_speed.mp4”，运行性能测试脚本
 
-修改参数，'./test.mp4'为测试视频，测试视频类别需在Kinetics-400数据集的400个种类内且视频长度至少为3s。
+修改参数，'./test_speed.mp4'为测试视频，测试视频类别需在Kinetics-400数据集的400个种类内且视频长度至少为3s。
 
 ```python
 def main():
-    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('./test.mp4', './image')
+    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('./test_speed.mp4', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     files = os.listdir(r"./image/")
@@ -288,10 +309,10 @@ python3 speed.py
 
 **步骤2** 生成视频流
 
-使用ffmpeg工具将mp4格式视频生成264格式视频
+使用ffmpeg工具将带有手势的“jester.mp4”的mp4格式视频转换生成为“jester.264”的264格式视频：
 
 ```shell
-ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.264
+ffmpeg -i jester.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 jester.264
 
 //-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制 -an关闭音频， -r 指定帧率
 ```
@@ -300,19 +321,7 @@ ffmpeg -i test.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 test.2
 
 **步骤3** 模型转换
 
-将代码包中"online_demo"目录下mobilenet_v2_tsm.py 放在参考设计代码根目录的“model” 目录下。
-
-```text
-├── TSM
-    ├── model
-        ├── pth2onnx.py                  // 转onnx模型脚本
-        ├── onnx2om.sh                   // 转om模型脚本
-        ├── mobilenet_v2_tsm.py          // 在线模型脚本
-        ├── pth2onnx1.py                 // 在线模型转onnx模型脚本
-        ├── onnx2om1.sh                  // 在线模型转om模型脚本
-```
-
-下载[在线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/online_models.zip)
+下载[在线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/online_models.zip) mobilenetv2_jester_online.pth.tar
 
 将下载好的模型放在参考设计代码根目录的“model”目录下。
 
@@ -335,29 +344,11 @@ bash onnx2om1.sh
 python3 online_infer.py
 ```
 
-修改参数，'ip:port/jester.264'为测试视频流
+修改参数，'ip:port/jester.264'为测试视频流，其中ip为起流的机器ip地址，port为起流的机器端口地址，jester.264为测试视频jester.mp4通过ffmpeg转换后的视频。
 
 ```python
 def video2img():
     cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('ip:port/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-```
-
-## 5 软件依赖说明
-
-如果涉及第三方软件依赖，请详细列出。
-
-| 依赖软件   | 版本     | 说明    |
-|--------|--------|-------|
-| ffmpeg | 3.4.8  | 视频抽帧  |
-| torch  | 1.10.0 | 数据集构建 |
-
-[ffmpeg下载](https://ffmpeg.org/download.html#build-linux)
-
-```Shell
-xz -d ffmpeg-git-amd64-static.tar.xz
-tar -xvf ffmpeg-git-amd64-static.tar
-cd ./ffmpeg-git-20190424-amd64-static
-./ffmpeg
 ```
