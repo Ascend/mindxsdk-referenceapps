@@ -93,9 +93,10 @@ SDK-path: mxVision SDK 安装路径
 
 ascend-toolkit-path: CANN 安装路径。
 
-[ffmpeg下载](https://ffmpeg.org/download.html#build-linux)
+[ffmpeg下载](https://johnvansickle.com/ffmpeg/)，在列表中选择适合的版本，这里以amd64版本为例，执行以下命令进行安装。
 
 ```Shell
+wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
 xz -d ffmpeg-git-amd64-static.tar.xz
 tar -xvf ffmpeg-git-amd64-static.tar
 cd ./ffmpeg-git-20190424-amd64-static
@@ -267,7 +268,7 @@ def return_kinetics(modality):
 python3 offline_infer.py kinetics
 ```
 
-原模型精度值为71.1%，实际精度值71.01%，最终得到精度为：71.01%
+原模型精度值为71.1%，实测精度值为71.01%，符合精度偏差范围，精度达标。
 
 **步骤5** 性能测试
 
