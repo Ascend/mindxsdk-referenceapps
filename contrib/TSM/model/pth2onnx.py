@@ -15,6 +15,8 @@
 import torch
 import torch.onnx
 import torch.nn.parallel
+import sys 
+sys.path.append("..") 
 from ops.models import TSN
 
 
