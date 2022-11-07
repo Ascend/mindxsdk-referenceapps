@@ -244,6 +244,8 @@ python3 main.py
     <img src="./images/permissionerror.png">
     <br>
 </center>
+
+
 **解决方案：**
 
 切换到``postprocess``目录下，修改`./build/libfasterrcnn_mindspore_post.so`文件权限为640。
