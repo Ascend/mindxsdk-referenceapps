@@ -247,7 +247,8 @@ def evaluate(query_path, refer_path, infer_model, query_is_image=False):
     inputs = inputs.astype(np.float32)
     inputs_tensor = sdk.Tensor(inputs)
     inputs_tensor.to_device(0)
-    outputs = infer_model.infer(inputs_tensor)
+    inputs_tensor_list = [inputs_tensor]
+    outputs = infer_model.infer(inputs_tensor_list)
     outputs[0].to_host()
     outputs[1].to_host()
     infer_data_detector = outputs[0]
