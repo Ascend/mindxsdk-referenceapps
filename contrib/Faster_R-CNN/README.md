@@ -128,6 +128,7 @@ npu-smi info
 |     numpy     |  1.23.3  |
 | opencv-python | 4.6.0.66 |
 |  pycocotools  |  2.0.5   |
+|     mmcv      |  1.7.0   |
 
 确保环境中正确安装mxVision SDK。
 
@@ -160,15 +161,21 @@ ascend-toolkit-path: CANN 安装路径。
 1. 将训练好的模型  [fasterrcnn_mindspore.air](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faster-RCNN/fasterrcnn_mindspore.air)  下载至 ``python/models/conversion-scripts`` 文件夹下。
 
 
-2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行指令：
+2. 将该模型转换为om模型，具体操作为： ``python/models`` 文件夹下,执行指令进行模型转换：
 
-```shell
+### DVPP模型转换
+
+```
 bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp.cfg conversion-scripts/fasterrcnn_mindspore_dvpp
-或：
+```
+
+### OPENCV模型转换
+
+```
 bash convert_om.sh conversion-scripts/fasterrcnn_mindspore.air aipp-configs/aipp_rgb.cfg conversion-scripts/fasterrcnn_mindspore_rgb
 ```
 
-**注：**转换后的rgb模型会用OpenCV对图片做预处理，然后进行推理，用户可自行进行选择。
+**注**：转换后的OPENCV模型会用OpenCV对图片做预处理，然后进行推理，用户可自行进行选择。
 
 ## 4. 编译与运行
 
@@ -186,8 +193,6 @@ bash build.sh
 
 在``python/data/test/cut/``目录下放好待检测的焊缝图片（``./images``下有一张测试图片W0003_0001.jpg）
 
-注：所有测试和验证图片都不能改名。
-
 **步骤3** 图片检测
 
 切换到``python/Main``目录下，执行命令：
@@ -200,7 +205,7 @@ python3 main.py
 
 **步骤4** 精度测试
 
-1. 准备精度测试所需图片，将[验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps /contrib/Faster-RCNN/eval.zip)下载到`python/data/eval/`目录下并解压。
+1. 准备精度测试所需图片，将[验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps/contrib/Faster-RCNN/eval.zip)下载到`python/data/eval/`目录下并解压。
 
 1. 打开`python/pipeline/fasterrcnn_ms_dvpp.pipeline`文件，将第45行（postProcessConfigPath）配置参数改为`../models/fasterrcnn_coco2017_acc_test.cfg`。
 
@@ -220,7 +225,7 @@ python3 main.py
    python3 eval.py --cat_id 2 --object_name "liewen"
    ```
    
-   **注：**cat_id为缺陷标签，object_name为对应缺陷名称，在 ``python/models/coco2017.names``可查看缺陷类别。
+   **注**：cat_id为缺陷标签，object_name为对应缺陷名称，在 ``python/models/coco2017.names``可查看缺陷类别。
    
    | 缺陷种类 |   AP   |
    | :------: | :----: |
@@ -237,7 +242,7 @@ python3 main.py
     <img src="./images/permissionerror.png">
     <br>
 </center>
-**解决方案：**
+**解决方案**：
 
 切换到``postprocess``目录下，修改`./build/libfasterrcnn_mindspore_post.so`文件权限为640。
 

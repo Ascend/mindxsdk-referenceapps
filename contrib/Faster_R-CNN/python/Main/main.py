@@ -17,7 +17,6 @@ import argparse
 import json
 import logging
 import os
-import sys
 import stat
 import shutil
 import time
@@ -120,13 +119,7 @@ def crop_on_slide(cut_path, crop_path, stride):
 
     for img in imgs:
         if img.split('.')[1] != "jpg" and img.split('.')[1] != "JPG":
-            print("ERROR")
-            print("Please input jpg image!")
-            sys.exit(1)
-        if img[5] != "_":
-            print("ERROR")
-            print("Please name the image like 'W0003_0001'!")
-            sys.exit(1)
+            raise ValueError("The file {} is not jpg or JPG image!".format(img))
         origin_image = cv2.imread(os.path.join(cut_path, img))
         height = origin_image.shape[0]
         width = origin_image.shape[1]

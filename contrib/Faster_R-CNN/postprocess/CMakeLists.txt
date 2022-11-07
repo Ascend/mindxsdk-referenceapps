@@ -4,7 +4,7 @@ add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 
 set(PLUGIN_NAME "fasterrcnn_mindspore_post")
 set(TARGET_LIBRARY ${PLUGIN_NAME})
-set(ACL_LIB_PATH $ENV{ASCEND_HOME}/latest/acllib)
+set(ACL_LIB_PATH $ENV{ASCEND_HOME}/ascend-toolkit/latest/acllib)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 

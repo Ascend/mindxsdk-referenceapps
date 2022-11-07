@@ -39,7 +39,10 @@ def json_to_txt(infer_result_path, savetxt_path):
                 flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
                 modes = stat.S_IWUSR | stat.S_IRUSR
                 with os.fdopen(os.open(os.path.join(savetxt_path, txt_file), flags, modes), 'w') as f:
-                    temp = int(file.split("_")[2]) - 600
+                    if file.split('_')[0] == "W0003":
+                        temp = int(file.split("_")[2]) - 600
+                    else:
+                        temp = int(file.split("_")[1]) - 600
                     for bbox in data:
                         class_vec = bbox.get("classVec")[0]
                         class_id = int(class_vec["classId"])
@@ -76,9 +79,14 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
     for image in data:
         fw = os.fdopen(os.open(os.path.join(save_txt_path, image + '.txt'), flags, modes), 'w')
         for txtfile in txt_list:
-            if image.split('_')[1] == txtfile.split('_')[1]:
-                for line in open(os.path.join(txt_path, txtfile), "r"):
-                    fw.write(line)
+            if image.split('_')[0] == "W0003":
+                if image.split('_')[1] == txtfile.split('_')[1]:
+                    for line in open(os.path.join(txt_path, txtfile), "r"):
+                        fw.write(line)
+            else:
+                if image.split('_')[0] == txtfile.split('_')[0]:
+                    for line in open(os.path.join(txt_path, txtfile), "r"):
+                        fw.write(line)
         fw.close()
 
     fileroot = os.listdir(save_txt_path)
