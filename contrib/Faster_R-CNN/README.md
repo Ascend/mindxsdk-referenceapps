@@ -111,6 +111,8 @@ npu-smi info
     <img src="./images/1.png">
     <br>
 </center>
+
+
 ### 1.7 特性及适用场景
 
 经过测试，在现有数据集的基础上，该项目检测算法可以检测八种焊缝缺陷：气孔、裂纹、夹渣、未熔合、未焊透、咬边、内凹、成形不良，关于缺陷召回率和MAP分数在后续内容中将会提到。本项目属于工业缺陷中焊缝缺陷检测领域，主要针对DR成像设备（数字化X射线成像设备）拍摄金属焊接处成像形成的焊接X射线图像进行缺陷检测。
@@ -242,7 +244,7 @@ python3 main.py
     <img src="./images/permissionerror.png">
     <br>
 </center>
-**解决方案**：
+**解决方案：**
 
 切换到``postprocess``目录下，修改`./build/libfasterrcnn_mindspore_post.so`文件权限为640。
 
