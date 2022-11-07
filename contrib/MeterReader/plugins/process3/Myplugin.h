@@ -24,7 +24,7 @@
 #include "postprocess.h"
 
 
-typedef void (*my_fun)(const std::vector< std::vector<int64_t> >& seg_image,
+using void (*my_fun)(const std::vector< std::vector<int64_t> >& seg_image,
     std::vector<READ_RESULT>* read_results,
     const int thread_num);
 
@@ -56,17 +56,14 @@ namespace MxPlugins {
          */
         APP_ERROR Process(std::vector<MxTools::MxpiBuffer*>& mxpiBuffer) override;
         static std::vector<std::shared_ptr<void>> DefineProperties();
-    protected:
 
     private:
-
         APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
             const MxTools::MxpiErrorInfo mxpiErrorInfo);
         std::string parentName_;
         std::string descriptionMessage_;
         std::ostringstream ErrorInfo_;
-
     };
 }
 
-#endif //SDKMEMORY_MXPISAMPLEPLUGIN_H
+#endif // SDKMEMORY_MXPISAMPLEPLUGIN_H

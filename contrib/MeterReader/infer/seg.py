@@ -36,46 +36,6 @@ postProcessConfigPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deep
 labelPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deeplabv3.names').replace('\\', '/')
 
 
-def Miou(img, img_pred):
-    """
-    img: 已标注的原图片
-    img_pred: 预测出的图片
-    """
-    if (img.shape != img_pred.shape):
-        print("两个图片形状不一致")
-        return
-
-    unique_item_list = np.unique(img)  # 不同取值的List
-    unique_item_dict = {}  # 不同取值对应的下标dict
-    for index in range(len(unique_item_list)):
-        item = unique_item_list[index]
-        unique_item_dict[item] = index
-    num = len(np.unique(unique_item_list))  # 共有num个不同取值
-
-    # 混淆矩阵
-    M = np.zeros((num + 1, num + 1))  # 多加一行一列，用于计算总和
-    # 统计个数
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            M_i = unique_item_dict[img[i][j]]
-            M_j = unique_item_dict[img_pred[i][j]]
-            M[M_i][M_j] += 1
-    print(M)
-    # 前num行相加，存在num+1列 【实际下标-1】
-    M[:num, num] = np.sum(M[:num, :num], axis=1)
-    # 前num+1列相加，放在num+1行【实际下标-1】
-    M[num, :num + 1] = np.sum(M[:num, :num + 1], axis=0)
-    # print(M)
-
-    # 计算Miou值
-    miou = 0
-    for i in range(num):
-        miou += (M[i][i]) / (M[i][num] + M[num][i] - M[i][i])
-    miou /= num
-    print(miou)
-    return miou
-
-
 def get_args():
     argv = sys.argv[1:]
     inputfile = ''
@@ -98,7 +58,6 @@ def get_args():
 
 if __name__ == '__main__':
 
-    # python seg.py --ifile /home/wangyi4/tmp/221021_xhr/images/seg_test_img/110.jpg --ofile /home/wangyi4/tmp/221021_xhr/images/det_rect/
     input_file_name, result_file = get_args()
 
     # 改写pipeline里面的model路径
@@ -111,7 +70,7 @@ if __name__ == '__main__':
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
 
-    with open(pipeline_path, "w") as f:
+    with os.fdopen(os.open(pipeline_path, os.O_WRONLY, stat.S_IWUSR | stat.S_IRUSR), 'w') as f:
         json.dump(content, f)
 
     steammanager_api = StreamManagerApi()
@@ -134,9 +93,9 @@ if __name__ == '__main__':
         exit()
     with os.fdopen(os.open(input_file_name, os.O_RDONLY, stat.S_IWUSR | stat.S_IRUSR), 'rb') as f:
         input_data.data = f.read()
-    stream_name = b'seg'
-    in_plugin_id = 0
-    uId = steammanager_api.SendData(stream_name, in_plugin_id, input_data)
+    streamName = b'seg'
+    inPluginId = 0
+    uId = steammanager_api.SendData(streamName, inPluginId, input_data)
     if uId < 0:
         print("Failed to send data to stream.")
         exit()
@@ -144,7 +103,7 @@ if __name__ == '__main__':
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_process3")
 
-    infer = steammanager_api.GetResult(stream_name, b'appsink0', keyVec)
+    infer = steammanager_api.GetResult(streamName, b'appsink0', keyVec)
     print("-------------------------")
     result = MxpiDataType.MxpiClass()
     result.ParseFromString(infer.metadataVec[0].serializedMetadata)

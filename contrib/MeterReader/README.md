@@ -52,7 +52,7 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │      seg_pipeline.png
 │
 ├─infer
-│      det_test.py
+│      det.py
 │      main.py
 │      main.sh
 │      seg.py
@@ -84,12 +84,12 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │
 └─python    #验证精度代码
     ├─deeplabv3_val     #deeplabv3模型测试精度
-    │      seg_evaluate.py
+    │      segEvaluate.py
     │
     └─yolov5_val        #yolov5模型测试精度
-            computer_mAP.py      #4.就算模型的mAP
-            mAP_det.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
-            no_det.py        #3.检测是否有的图像没有目标
+            mAPComputer.py      #4.就算模型的mAP
+            mAPDet.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
+            noDet.py        #3.检测是否有的图像没有目标
             yolo2voc.py      #2.将得到的检测结果yolo数据格式转换成voc格式
 ```
 
@@ -113,7 +113,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 
 
   <center>
-      <img src="./README_img/YOLOv5_pipeline.png">
+      <img src="./images./README_img/YOLOv5_pipeline.png">
       <br>
       <div style="color:orange;
       display: inline-block;
@@ -123,7 +123,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
   
 
   <center>
-        <img src="./README_img/DeepLabv3_pipeline.png">
+        <img src="./images./README_img/DeepLabv3_pipeline.png">
         <br>
         <div style="color:orange;
         display: inline-block;
@@ -302,7 +302,7 @@ python main.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 ```
 执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及 通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。
 <center>
-    <img src="./README_img/main_result.png">
+    <img src="./images/README_img/main_result.png">
     <br>
     <div style="color:orange;
     display: inline-block;

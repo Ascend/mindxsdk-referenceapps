@@ -15,9 +15,11 @@
 
 #pragma once
 
-#include <vector>
-
 #define TYPE_THRESHOLD 40
+
+#include <vector>
+using namespace std;
+
 
 struct READ_RESULT {
     int scale_num;
@@ -25,7 +27,6 @@ struct READ_RESULT {
     float ratio;
 };
 
-using namespace std;
 
 void get_line_data(const vector<int64_t>& image,
     vector<unsigned int>* line_data);

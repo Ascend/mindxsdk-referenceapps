@@ -25,7 +25,6 @@ cur_path = os.path.abspath(os.path.dirname(__file__))
 
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-
 def get_args():
     argv = sys.argv[1:]
     inputfile = ''
@@ -47,67 +46,52 @@ def get_args():
 
 
 if __name__ == '__main__':
-
-    # python main.py --ifile /home/wangyi4/jiang/meter_reader/images/01.jpg --ofile /home/wangyi4/jiang/meter_reader/infer/det_res.jpg
     inputfile, outputfile = get_args()
     # det
-    # inputfile = "/home/wangyi4/tmp/221021_xhr/images/det_res.jpg"
     outputdir = os.path.join(father_path, 'images', 'det_res/').replace('\\', '/')
 
-    # outputdir = "/home/wangyi4/tmp/221021_xhr/images/det_rect/" # 写定，临时文件夹
-    det_result = os.popen(f'python det_test.py --ifile {inputfile} --odir {outputdir}')
+    det_result = os.popen(f'python det.py --ifile {inputfile} --odir {outputdir}')
     det_res = det_result.read()
 
-    det_res_img_len = 0
-    det_res_img_file = []
-    det_res_img_index = []
+    detResImgLen = 0
+    detResImgFile = []
+    detResImgIndex = []
     for line in det_res.splitlines():
         if (line.startswith("res_img")):
             temp = line.split(" ")
-            det_res_img_len = int(temp[1])
-            for i in range(det_res_img_len):
-                det_res_img_file.append(temp[2 + i])
+            detResImgLen = int(temp[1])
+            for i in range(detResImgLen):
+                detResImgFile.append(temp[2 + i])
         elif line.startswith("det_xyxy"):
             temp = line.split(":")[1]
             print(json.loads(temp))
-            det_res_img_index.append(json.loads(temp))
+            detResImgIndex.append(json.loads(temp))
 
         print(line)
 
-        # print("------det-----")
-    # print(det_res_img_len)
-    # print(det_res_img_file)
-
     # seg
     seg_Ans = []
-    for i in range(det_res_img_len):
-        # seg_result = os.popen(f"python seg.py --ifile {det_res_img_file[i]} --ofile /home/wangyi4/tmp/221021_xhr/images/det_rect/")
-        seg_result = os.popen(f"python seg.py --ifile {det_res_img_file[i]} --ofile {outputdir}")
+    for i in range(detResImgLen):
+        seg_result = os.popen(f"python seg.py --ifile {detResImgFile[i]} --ofile {outputdir}")
         seg_res = seg_result.read()
         for line in seg_res.splitlines():
             if (line.startswith("seg_ans")):
-                # print(line)
                 temp = line.split(" ")
-                # print(temp)
                 seg_Ans.append(float(temp[1]))
-            # print(line)
-        os.remove(det_res_img_file[i])
+        os.remove(detResImgFile[i])
     print("------seg-----")
     print(seg_Ans)
-
     print("------All-----")
-    for i in range(det_res_img_len):
-        print(f"{det_res_img_file[i]}   {seg_Ans[i]}")
-        # print(line)
+    for i in range(detResImgLen):
+        print(f"{detResImgFile[i]}   {seg_Ans[i]}")
 
     # 处理成为图片
     im0 = cv2.imread(inputfile)
-    for i in range(len(det_res_img_index)):
-        meter = det_res_img_index[i]
+    for meter in detResImgIndex:
         # 加边框
         cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
         # 加读数
-        text = f"meter  {seg_Ans[i]:.3f}"
+        text = f"meter  {seg_Ans[detResImgIndex.index(meter)]:.3f}"
         im0 = cv2.putText(im0, text, (int(meter[0] + 3), int(meter[1]) + 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255),
                           2, cv2.LINE_AA, False)
 

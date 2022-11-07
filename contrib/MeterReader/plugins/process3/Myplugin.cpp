@@ -25,6 +25,7 @@ using namespace MxPlugins;
 using namespace MxTools;
 using namespace std;
 
+const int imgSize = 512;
 
 APP_ERROR Myplugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
@@ -65,16 +66,14 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         SetMxpiErrorInfo(*buffer, pluginName_, mxpiErrorInfo);
         return APP_ERR_METADATA_IS_NULL; // self define the error code
     }
-    // LogInfo << "Myplugin::Process 2";
-    //此处需要从metadata中读取出Deeplabv3后处理插件得到的输出，参考类型为MxpilmageMaskList
+
+    // 此处需要从metadata中读取出Deeplabv3后处理插件得到的输出，参考类型为MxpilmageMaskList
     shared_ptr<MxpiImageMaskList> srcImageMaskListptr = std::static_pointer_cast<MxpiImageMaskList>(metadata);
 
     int meter_num = srcImageMaskListptr->imagemaskvec_size();
-    // LogInfo << "srcImageMaskList size is " << meter_num;
     int length = srcImageMaskListptr->imagemaskvec(0).shape()[0] * srcImageMaskListptr->imagemaskvec(0).shape()[1];
     std::vector<std::vector<int64_t>> seg_result(meter_num, std::vector<int64_t>(length));
-    std::vector<std::vector<int64_t>> seg_result_resize(meter_num, std::vector<int64_t>(512 * 512));
-
+    std::vector<std::vector<int64_t>> seg_result_resize(meter_num, std::vector<int64_t>(imgSize * imgSize));
 
     for (int num = 0; num < meter_num; ++num) {
         const string single_seg_result = srcImageMaskListptr->imagemaskvec(num).datastr();
@@ -82,7 +81,6 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         std::vector<uint8_t> label_map(
             single_seg_result.begin(),
             single_seg_result.end());
-
 
         cv::Mat mask(srcImageMaskListptr->imagemaskvec(num).shape()[0],
             srcImageMaskListptr->imagemaskvec(num).shape()[1],
@@ -95,7 +93,6 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         std::vector<int64_t> map;
 
         if (mask.isContinuous()) {
-            // LogInfo << mask.rows;
             map.assign(mask.data, mask.data + mask.total() * mask.channels());
         }
         else {
@@ -109,19 +106,17 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
         seg_result_resize[num] = std::move(map);
     }
 
-
-    //根据seg_result,调用postprocess函数，得到读取结果
-    std::vector<READ_RESULT> read_results(meter_num); //此处在postprocess.h文件内有定义READ_RESULT
-
+    // 根据seg_result,调用postprocess函数，得到读取结果
+    std::vector<READ_RESULT> read_results(meter_num); // 此处在postprocess.h文件内有定义READ_RESULT
 
     read_process(seg_result_resize, &read_results, meter_num);
 
-    //处理读取结果，暂时只进行结果的打印
+    // 处理读取结果，暂时只进行结果的打印
     float ans;
     for (int i = 0; i < meter_num; i++) {
         // Provide a digital readout according to point location relative
         // to the scales
-        float result = 0;;
+        float result = 0;
         if (read_results[i].scale_num > TYPE_THRESHOLD) {
             result = read_results[i].scales * (25.0f / 50.0f);
         }
@@ -139,9 +134,7 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
     LogInfo << ans_ptr->confidence();
 
     APP_ERROR ret = mxpiMetadataManager.AddProtoMetadata(pluginName_, std::static_pointer_cast<void>(ans_ptr));
-
     if (ret != APP_ERR_OK) {
-
         ErrorInfo_ << GetError(ret, pluginName_) << "Myplugin add metadata failed.";
         mxpiErrorInfo.ret = ret;
         mxpiErrorInfo.errorInfo = ErrorInfo_.str();
@@ -158,7 +151,7 @@ std::vector<std::shared_ptr<void>> Myplugin::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
 
-    auto parentNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string>{
+    auto parentNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string> {
         STRING, "dataSource", "parentName", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
     properties.push_back(parentNameProSptr);
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 # coding=utf-8
 
 # Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
@@ -15,29 +15,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''
+1.mapDet.py:得到验证集中数据的预测结果，并且将结果保存成txt，以”图片名.txt“命名，txt中数据格式为：
+    <class_id> <x_center> <y_center> <width> <height>
+
+'''
+
 import json
 import os
-import numpy as np
 import stat
 import cv2
-import webcolors
+import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import sys
-import getopt
-import shutil
-
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
 
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-
 pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
 
 model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\', '/')
 
-class det_postprocessors:
+pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
+FILEPATH = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '/')
+SAVE_PATH = os.path.join(cur_path, 'det_val_data', 'det_sdk_img/').replace('\\', '/')
+SAVE_TXT = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt/').replace('\\', '/')
+
+
+class detPostprocessors:
     def __init__(self):
         self.pred = None
         self.source = None
@@ -48,9 +54,9 @@ class det_postprocessors:
         self.max_det = 1000
         self.multi_label = False
         self.save_path = 'det_res.jpg'
+        self.save_txt = ''
 
-
-
+    @staticmethod
     def xyxy2xywh(self, x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
 
@@ -62,6 +68,7 @@ class det_postprocessors:
 
         return y
 
+    @staticmethod
     def xywh2xyxy(self, x):
         # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
         y = np.copy(x)
@@ -72,6 +79,7 @@ class det_postprocessors:
 
         return y
 
+    @staticmethod
     def box_iou(self, box1, box2):
         """
         Return intersection-over-union (Jaccard index) of boxes.
@@ -94,7 +102,8 @@ class det_postprocessors:
         # inter(N,M) = (rb(N,M,2) - lt(N,M,2)).clamp(0).prod(2)
         inter = (np.min(box1[:, None, 2:], box2[:, 2:]) - np.max(box1[:, None, :2], box2[:, :2])).clamp(0).prod(2)
         return inter / (area1[:, None] + area2 - inter)  # iou = inter / (area1 + area2 - inter)
-
+    
+    @staticmethod
     def new_nms(self, bboxes, scores, threshold=0.5):
         x1 = bboxes[:, 0]
         y1 = bboxes[:, 1]
@@ -139,7 +148,8 @@ class det_postprocessors:
         keep = np.array(keep)
 
         return keep
-
+    
+    @staticmethod
     def scale_coords(self, img1_shape, coords, img0_shape, ratio_pad=None):
         # Rescale coords (xyxy) from img1_shape to img0_shape
         if ratio_pad is None:  # calculate from img0_shape
@@ -155,23 +165,14 @@ class det_postprocessors:
         self.clip_coords(coords, img0_shape)
         return coords
 
-
+    @staticmethod
     def clip_coords(self, boxes, shape):
         boxes[:, [0, 2]] = boxes[:, [0, 2]].clip(0, shape[1])  # x1, x2
         boxes[:, [1, 3]] = boxes[:, [1, 3]].clip(0, shape[0])  # y1, y2
-
-    def non_max_suppression(self, prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
-                        labels=(), max_det=300):
-        """Runs Non-Maximum Suppression (NMS) on inference results
-
-        Returns:
-             list of detections, on (n,6) tensor per image [xyxy, conf, cls]
-        """
-
-        """对推断结果运行非最大抑制(NMS)
     
-        返回:
-        检测列表，每个图像(n,6)张量[xyxy, conf, cls]"""
+    @staticmethod
+    def non_max_suppression(self, prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
+                            labels=(), max_det=300):
 
         nc = prediction.shape[2] - 5  # number of classes
         xc = prediction[..., 4] > conf_thres  # candidates
@@ -187,7 +188,7 @@ class det_postprocessors:
         multi_label &= nc > 1  # multiple labels per box (adds 0.5ms/img)
         merge = False  # use merge-NMS
 
-        # output = [torch.zeros((0, 6), device=prediction.device)] * prediction.shape[0]
+
         output = [np.zeros((0, 6))] * prediction.shape[0]
         for xi, x in enumerate(prediction):  # image index, image inference
             # Apply constraints
@@ -230,7 +231,6 @@ class det_postprocessors:
             if classes is not None:
                 x = x[(x[:, 5:6] == np(classes)).any(1)]
 
-
             # Check shape
             n = x.shape[0]  # number of boxes
             if not n:  # no boxes
@@ -249,8 +249,7 @@ class det_postprocessors:
             if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
                 # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
                 iou = self.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
-                weights = iou * scores[None]  # box weights
-                # x[i, :4] = torch.mm(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
+                weights = iou * scores[None]  # box weights # merged boxes
                 x[i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
                 if redundant:
                     i = i[iou.sum(1) > 1]  # require redundancy
@@ -259,11 +258,10 @@ class det_postprocessors:
 
         return output
 
-
+    @staticmethod
     def xyxy2xywh(self, x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
-        z = [0,0,0,0]
-        print("x========", x)
+        z = [0, 0, 0, 0]
         gn = [1920, 1080, 1920, 1080]
         z[0] = (x[0] + x[2]) / 2  # x center
         z[1] = (x[1] + x[3]) / 2  # y center
@@ -276,76 +274,48 @@ class det_postprocessors:
         x2 = str(xywh[1])[:8]
         x3 = str(xywh[2])[:8]
         x4 = str(xywh[3])[:8]
-        temp_line = "0" + " " + x1 + " " + x2 + " " + x3 + " " + x4 + "\n"
+        temp_line = "0" + " " + x1 + " " + x2 + " " + x3 + " " + x4 + " "
         return temp_line
 
     def run(self):
         # NMS 非极大值抑制
-        res_img = []
-        pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms, self.multi_label)
-        file_name = self.source.split("/")[-1][:4]
+        pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms,
+                                        self.multi_label)
+
+        line = ''
+        file_name = self.source.split("/")[-1][:-4]
         # Process predictions
         for i, det in enumerate(pred):  # per image
             im0 = cv2.imread(self.source)
             if len(det):
-                #[1024, 576]是图片根据模型输入resize后的尺寸
+                # [1024, 576]是图片根据模型输入resize后的尺寸
                 res = self.scale_coords([1024, 576], det[:, :4], im0.shape).round()
-                for item in res:
-                    print(f"det_xyxy:{list(item)}")
 
-                # print(res[0][0], res[0][1], res[0][2], res[0][3])
-                for i in range(len(res)):
-                    meter = res[i]
-                    res_img.append(im0[int(meter[1]):int(meter[3]),int(meter[0]):int(meter[2])])
-                    #x = [int(meter[0]), int(meter[1]), int(meter[2]), int(meter[3])]
-                    #temp_line = self.xyxy2xywh(x)
+                for i in res:
+                    meter = i
+                    x = [int(meter[0]), int(meter[1]), int(meter[2]), int(meter[3])]
+                    temp_line = self.xyxy2xywh(x)
+
                     cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
-                    res_path = (self.save_path + file_name+'.jpg').replace("\\","/")
-                    cv2.imwrite(res_path, im0)
-        return res_img
+                    res_img_path = (self.save_path + file_name + '.jpg').replace("\\", "/")
+                    cv2.imwrite(res_img_path, im0)
+                    line += temp_line + str(round(det[:, :5][-1][-1], 6)) + "\n"
+                    print("temp_line", temp_line)
 
-def get_args():
-    argv = sys.argv[1:]
-    inputfile = ''
-    outputdir = ''
-    try:
-        opts, args = getopt.getopt(argv,"hi:o:",["ifile=","odir="])
-    except getopt.GetoptError:
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            sys.exit()
-        elif opt in ("-i", "--ifile"):
-            inputfile = arg
-        elif opt in ("-o", "--odir"):
-            outputdir = arg
-    print('输入的文件为：', inputfile)
-    print('输出的文件为：', outputdir)
-    return inputfile,outputdir
+        lable_path = (self.save_txt + "/" + file_name + '.txt').replace("\\", "/")
+        MODES = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(lable_path, 'os.O_RDWR', MODES), 'w') as f:
+            f.write(line)
+
 
 if __name__ == '__main__':
-    # python det_test.py --ifile /home/wangyi4/tmp/221021_xhr/images/det_res.jpg --odir /home/wangyi4/tmp/221021_xhr/images/det_rect/
-    FILENAME,RESULTFILE = get_args()
+    # 改写pipeline里面的model路径
 
-    #如果文件夹不存在就创建，如果文件夹存在则清空
-    if not os.path.exists(RESULTFILE):
-        os.mkdir(RESULTFILE)
-    else:
-        shutil.rmtree(RESULTFILE)
-        os.mkdir(RESULTFILE)
-
-    #改写pipeline里面的model路径
-    
-    file_object = open(pipeline_path,'r')
+    file_object = open(pipeline_path, 'r')
 
     content = json.load(file_object)
     modelPath = model_path
     content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
-
-    # print(content)
-    with open(pipeline_path,"w") as f:
-        json.dump(content,f)
-
 
     steammanager_api = StreamManagerApi()
     # init stream manager
@@ -364,53 +334,53 @@ if __name__ == '__main__':
         exit()
     dataInput = MxDataInput()
     # It is best to use absolute path
-    # FILENAME = "/home/wangyi4/tmp/221021_xhr/images/det_res.jpg"
-    # RESULTFILE = "/home/wangyi4/tmp/221021_xhr/images/det_rect/"
-    if os.path.exists(FILENAME) != 1:
+
+    if os.path.exists(FILEPATH) != 1:
         print("The test image does not exist. Exit.")
         exit()
-    with os.fdopen(os.open(FILENAME, os.O_RDONLY, MODES), 'rb') as f:
-        dataInput.data = f.read()
-    STEAMNAME = b'detection'
-    INPLUGINID = 0
-    uId = steammanager_api.SendData(STEAMNAME, INPLUGINID, dataInput)
-    if uId < 0:
-        print("Send data to stream fail!!")
-        exit()
+    imgs = os.listdir(FILEPATH)
+    detPostprocessors = detPostprocessors()
+    for img in imgs:
+        img_path = os.path.join(FILEPATH, img)
+        with os.fdopen(os.open(img_path, os.O_RDONLY, MODES), 'rb') as f:
+            dataInput.data = f.read()
+        STEAMNAME = b'classification+detection'
+        INPLUGINID = 0
+        uniqueId = steammanager_api.SendData(STEAMNAME, INPLUGINID, dataInput)
+        if uniqueId < 0:
+            print("Failed to send data to stream.")
+            exit()
 
-    key_vectors = StringVector()
-    key_vectors.push_back(b"mxpi_tensorinfer0")
+        keys = [b"mxpi_tensorinfer0"]
+        keyVec = StringVector()
+        for key in keys:
+            keyVec.push_back(key)
 
-    # 从流中取出对应插件的输出数据
-    infer = steammanager_api.GetResult(STEAMNAME, b'appsink0', key_vectors)
-    if (infer.metadataVec.size() == 0):
-        print("No data from stream !")
-        exit()
-    infer_result = infer.metadataVec[0]
-    if infer_result.errorCode != 0:
-        print("GetResult error. errorCode=%d , errMsg=%s" % (infer_result.errorCode, infer_result.errMsg))
-        exit()
-        
-    data = MxpiDataType.MxpiTensorPackageList()
-    data.ParseFromString(infer_result.serializedMetadata)
+        # 从流中取出对应插件的输出数据
+        infer = steammanager_api.GetResult(STEAMNAME, b'appsink0', keyVec)
+        if (infer.metadataVec.size() == 0):
+            print("Get no data from stream !")
+            exit()
+        print("result.metadata size: ", infer.metadataVec.size())
+        infer_result = infer.metadataVec[0]
+        if infer_result.errorCode != 0:
+            print("GetResult error. errorCode=%d , errMsg=%s" % (infer_result.errorCode, infer_result.errMsg))
+            exit()
 
-    pred = np.frombuffer(data.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-    pred.resize(1,36288,6)
-    pred = pred.copy()
-    det_post = det_postprocessors()
-    det_post.source = FILENAME
-    det_post.pred = pred
-    det_post.save_path = RESULTFILE
-    res_img = det_post.run()
-    img_name = FILENAME.split("/")[-1][:4]
-    print("res_img",len(res_img),end=" ")
-    for i in range(len(res_img)):
-      write_path = RESULTFILE + img_name + str(i) + ".jpg"
-      print(write_path,end=" ")
-      cv2.imwrite(write_path, res_img[i])
+        result = MxpiDataType.MxpiTensorPackageList()
+        result.ParseFromString(infer_result.serializedMetadata)
 
-    print(" ")
+        pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        pred.resize(1, 36288, 6)
+        np.save(r"img_pred.npy", pred)
+
+        pred = np.load(r"img_pred.npy")
+
+        detPostprocessors.source = img_path
+        detPostprocessors.pred = pred
+        detPostprocessors.save_path = SAVE_PATH
+        detPostprocessors.save_txt = SAVE_TXT
+        detPostprocessors.run()
 
     # destroy streams
     steammanager_api.DestroyAllStreams()
-

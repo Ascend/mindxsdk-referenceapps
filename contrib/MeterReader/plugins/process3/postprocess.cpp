@@ -27,8 +27,6 @@
 #include "postprocess.h"
 
 
-
-
 using namespace std::chrono;  // NOLINT
 using namespace std;
 
@@ -36,18 +34,18 @@ using namespace std;
 
 const float pi = 3.1415926536f;
 
-const int image_size[] = { 512,512 };
+const int image_size[] = {512, 512};
 
-const int line_size[] = { 120,1570 }; // Line_height, Line_width
+const int line_size[] = {120, 1570}; // Line_height, Line_width
 
-const int circle_center[] = { 256, 256 };
+const int circle_center[] = {256, 256};
 
 const int circle_radius = 250;
 
-
-
-
-
+const int param_1 = 1;
+const int param_2 = 2;
+const double param_0_5 = 0.5;
+const double param_2_0 = 2.0;
 
 void get_line_data(const vector<int64_t>& image,
     vector<uint>* line_data) {
@@ -60,15 +58,14 @@ void get_line_data(const vector<int64_t>& image,
 
     for (int row_index = 0; row_index < line_size[0]; row_index++) {
         for (int col_index = 0; col_index < line_size[1]; col_index++) {
-            theta = pi * 2 / line_size[1] * (col_index + 1);
-            rho = circle_radius - row_index - 1;
-            line_data_y = (int)(circle_center[0] + rho * cos(theta) + 0.5);
-            line_data_x = (int)(circle_center[1] - rho * sin(theta) + 0.5);
+            theta = pi * param_2 / line_size[1] * (col_index + param_1);
+            rho = circle_radius - row_index - param_1;
+            line_data_y = int(circle_center[0] + rho * cos(theta) + param_0_5);
+            line_data_x = int(circle_center[1] - rho * sin(theta) + param_0_5);
             line_data_vec[row_index * line_size[1] + col_index] =
                 image[line_data_y * image_size[0] + line_data_x];
         }
     }
-
     return;
 }
 
@@ -87,7 +84,7 @@ void convert_1D_data(const vector<uint>& line_data,
             if (line_data[index] == 1) {
                 ++pointer_data_vec[col_index];
             }
-            else if (line_data[index] == 2) {
+            else if (line_data[index] == param_2) {
                 ++scale_data_vec[col_index];
             }
         }
@@ -111,10 +108,8 @@ void scale_mean_filt(const vector<uint>& scale_data,
             scale_mean_data_vec[i] = scale_data[i];
         }
     }
-
     return;
 }
-
 
 void get_scale_location(const vector<uint>& scale,
     vector<float>* scale_location) {
@@ -128,13 +123,13 @@ void get_scale_location(const vector<uint>& scale,
         if (scale[i] > 0 && scale[i + 1] > 0) {
             if (scale_flag == 0) {
                 scale_start = i;
-                scale_flag = 1;
+                scale_flag = param_1;
             }
         }
-        if (scale_flag == 1) {
+        if (scale_flag == param_1) {
             if (scale[i] == 0 && scale[i + 1] == 0) {
                 scale_end = i - 1;
-                one_scale_location = (scale_start + scale_end) / 2.0;
+                one_scale_location = (scale_start + scale_end) / param_2_0;
                 scale_location_vec.push_back(one_scale_location);
                 scale_start = 0;
                 scale_end = 0;
@@ -142,7 +137,6 @@ void get_scale_location(const vector<uint>& scale,
             }
         }
     }
-
 }
 
 void get_pointer_location(const vector<uint>& pointer,
@@ -155,27 +149,24 @@ void get_pointer_location(const vector<uint>& pointer,
         if (pointer[i] > 0 && pointer[i + 1] > 0) {
             if (pointer_flag == 0) {
                 pointer_start = i;
-                pointer_flag = 1;
+                pointer_flag = param_1;
             }
         }
-        if (pointer_flag == 1) {
+        if (pointer_flag == param_1) {
             if ((pointer[i] == 0) && (pointer[i + 1] == 0)) {
-                pointer_end = i - 1;
-                pointer_location = (pointer_start + pointer_end) / 2.0;
+                pointer_end = i - param_1;
+                pointer_location = (pointer_start + pointer_end) / param_2_0;
                 pointer_start = 0;
                 pointer_end = 0;
                 pointer_flag = 0;
             }
         }
     }
-
 }
 
 
 void get_meter_reader(const vector<float>& scale_location,
-    float pointer_location,
-    READ_RESULT* result) {
-
+    float pointer_location, READ_RESULT* result) {
     int scale_num = scale_location.size();
     result->scale_num = scale_num;
     result->scales = -1;

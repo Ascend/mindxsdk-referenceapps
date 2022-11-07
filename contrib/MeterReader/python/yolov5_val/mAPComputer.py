@@ -1,3 +1,20 @@
+# !/usr/bin/env python
+# coding=utf-8
+
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import glob
 import json
 import os
@@ -6,9 +23,9 @@ import operator
 import sys
 import argparse
 import math
-
-import numpy as np
 import cv2
+import numpy as np
+
 import matplotlib.pyplot as plt
 
 '''
@@ -19,7 +36,6 @@ import matplotlib.pyplot as plt
 3.no_det.py:过滤没有检测到目标的图片文件
 4.computer_mAP.py:计算mAp
 '''
-
 
 MINOVERLAP = 0.4
 
@@ -46,9 +62,9 @@ args = parser.parse_args()
 if args.ignore is None:
     args.ignore = []
 
-specific_iou_flagged = False
+specificIouFlagged = False
 if args.set_class_iou is not None:
-    specific_iou_flagged = True
+    specificIouFlagged = True
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -60,10 +76,6 @@ IMG_PATH = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '
 TEMP_FILES_PATH = os.path.join(cur_path, 'det_temp_files').replace('\\', '/')
 results_files_path = os.path.join(cur_path, 'det_res').replace('\\', '/')
 
-# IMG_PATH = r'./data/meter/val_img'
-# TEMP_FILES_PATH = r"./data/meter/temp_files"
-# results_files_path = r"./data/meter/pre_res"
-
 if os.path.exists(IMG_PATH):
     for dirpath, dirnames, files in os.walk(IMG_PATH):
         if not files:
@@ -71,29 +83,28 @@ if os.path.exists(IMG_PATH):
 else:
     args.no_animation = True
 
-show_animation = False
+showAnimation = False
 if not args.no_animation:
-    show_animation = True
+    showAnimation = True
 else:
-    show_animation = False
+    showAnimation = False
 
-draw_plot = False
+drawPlot = False
 if not args.no_plot:
-    draw_plot = True
+    drawPlot = True
 else:
-    draw_plot = False
+    drawPlot = False
 
 
-
-def log_ave_miss_rate(precision, false_positives_cumsum, num_images):
+def logAveMissRate(precision, false_positives_cumsum, num_images):
     """
         log-average miss rate:
-            Calculated by averaging miss rates at 9 evenly spaced false_positives_per_image points
+            Calculated by averaging miss rates at 9 evenly spaced falsePositivesPerImage points
             between 10e-2 and 10e0, in log-space.
         output:
-                log_ave_miss_rate | log-average miss rate
-                miss_rate | miss rate
-                false_positives_per_image | false positives per image
+                logAveMissRate | log-average miss rate
+                missrate | miss rate
+                falsePositivesPerImage | false positives per image
         references:
             [1] Dollar, Piotr, et al. "Pedestrian Detection: An Evaluation of the
                State of the Art." Pattern Analysis and Machine Intelligence, IEEE
@@ -101,25 +112,25 @@ def log_ave_miss_rate(precision, false_positives_cumsum, num_images):
     """
 
     if precision.size == 0:
-        log_ave_miss_rate = 0
-        miss_rate = 1
-        false_positives_per_image = 0
-        return log_ave_miss_rate, miss_rate, false_positives_per_image
+        logAveMissRate = 0
+        missRate = 1
+        falsePositivesPerImage = 0
+        return logAveMissRate, missRate, falsePositivesPerImage
 
-    false_positives_per_image = false_positives_cumsum / float(num_images)
-    miss_rate = (1 - precision)
+    falsePositivesPerImage = false_positives_cumsum / float(num_images)
+    missRate = (1 - precision)
 
-    false_positives_per_image_tmp = np.insert(false_positives_per_image, 0, -1.0)
-    miss_rate_tmp = np.insert(miss_rate, 0, 1.0)
+    falsePositivesPerImageTMP = np.insert(falsePositivesPerImage, 0, -1.0)
+    missRateTmp = np.insert(missRate, 0, 1.0)
 
     ref = np.logspace(-2.0, 0.0, num=9)
     for i, ref_i in enumerate(ref):
-        j = np.where(false_positives_per_image_tmp <= ref_i)[-1][-1]
-        ref[i] = miss_rate_tmp[j]
+        j = np.where(falsePositivesPerImageTMP <= ref_i)[-1][-1]
+        ref[i] = missRateTmp[j]
 
-    log_ave_miss_rate = math.exp(np.mean(np.log(np.maximum(1e-10, ref))))
+    logAveMissRate = math.exp(np.mean(np.log(np.maximum(1e-10, ref))))
 
-    return log_ave_miss_rate, miss_rate, false_positives_per_image
+    return logAveMissRate, missRate, falsePositivesPerImage
 
 
 """
@@ -138,8 +149,8 @@ def error(msg):
 
 
 def is_float_between_0_and_1(value):
-    try:
-        val = float(value)
+    val = float(value)
+    try:        
         if val > 0.0 and val < 1.0:
             return True
         else:
@@ -156,7 +167,7 @@ def is_float_between_0_and_1(value):
 """
 
 
-def voc_ap(rec, prec):
+def vocAp(rec, prec):
     """
     --- Official matlab code VOC2012---
     miss_rateec=[0 ; rec ; 1];
@@ -355,13 +366,12 @@ def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, out
  Create a ".temp_files/" and "results/" directory
 """
 
-
-if draw_plot:
+if drawPlot:
     os.makedirs(os.path.join(results_files_path, "AP"))
     os.makedirs(os.path.join(results_files_path, "F1"))
     os.makedirs(os.path.join(results_files_path, "Recall"))
     os.makedirs(os.path.join(results_files_path, "Precision"))
-if show_animation:
+if showAnimation:
     os.makedirs(os.path.join(results_files_path, "images", "detections_one_by_one"))
 
 """
@@ -455,7 +465,7 @@ n_classes = len(ground_truth_classes)
  Check format of the flag --set-class-iou (if used)
     e.g. check if class exists
 """
-if specific_iou_flagged:
+if specificIouFlagged:
     n_args = len(args.set_class_iou)
     error_msg = \
         '\n --set-class-iou [class_1] [IoU_1] [class_2] [IoU_2] [...]'
@@ -521,8 +531,8 @@ for class_index, class_name in enumerate(ground_truth_classes):
  Calculate the AP for each class
 """
 sum_AP = 0.0
-ap_dictionary = {}
-log_ave_miss_rate_dictionary = {}
+apDictionary = {}
+logAveMissRateDictionary = {}
 with open(results_files_path + "/results.txt", 'w') as results_file:
     results_file.write("# AP and precision/recall per class\n")
     count_true_positives = {}
@@ -548,7 +558,7 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
             if score[idx] > 0.5:
                 score05_idx = idx
 
-            if show_animation:
+            if showAnimation:
                 ground_truth_img = glob.glob1(IMG_PATH, file_id + ".*")
                 if len(ground_truth_img) == 0:
                     error("Error. Image not found with id: " + file_id)
@@ -573,22 +583,24 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
             for obj in ground_truth_data:
                 if obj["class_name"] == class_name:
                     bbground_truth = [float(x) for x in obj["bbox"].split()]
-                    bi = [max(bb[0], bbground_truth[0]), max(bb[1], bbground_truth[1]), min(bb[2], bbground_truth[2]), min(bb[3], bbground_truth[3])]
+                    bi = [max(bb[0], bbground_truth[0]), max(bb[1], bbground_truth[1]), min(bb[2], bbground_truth[2]),
+                          min(bb[3], bbground_truth[3])]
                     iw = bi[2] - bi[0] + 1
                     ih = bi[3] - bi[1] + 1
                     if iw > 0 and ih > 0:
                         # compute overlap (IoU) = area of intersection / area of union
                         ua = (bb[2] - bb[0] + 1) * (bb[3] - bb[1] + 1) + (bbground_truth[2] - bbground_truth[0]
-                                                                          + 1) * (bbground_truth[3] - bbground_truth[1] + 1) - iw * ih
+                                                                          + 1) * (
+                                         bbground_truth[3] - bbground_truth[1] + 1) - iw * ih
                         ov = iw * ih / ua
                         if ov > ovmax:
                             ovmax = ov
                             ground_truth_match = obj
 
-            if show_animation:
+            if showAnimation:
                 status = "NO MATCH FOUND!"
             min_overlap = MINOVERLAP
-            if specific_iou_flagged:
+            if specificIouFlagged:
                 if class_name in specific_iou_classes:
                     index = specific_iou_classes.index(class_name)
                     min_overlap = float(iou_list[index])
@@ -600,11 +612,11 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
                         count_true_positives[class_name] += 1
                         with open(ground_truth_file, 'w') as f:
                             f.write(json.dumps(ground_truth_data))
-                        if show_animation:
+                        if showAnimation:
                             status = "MATCH!"
                     else:
                         false_positives[idx] = 1
-                        if show_animation:
+                        if showAnimation:
                             status = "REPEATED MATCH!"
             else:
                 false_positives[idx] = 1
@@ -614,7 +626,7 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
             """
              Draw image to show animation
             """
-            if show_animation:
+            if showAnimation:
                 height, widht = img.shape[:2]
                 # colors (OpenCV works with BGR)
                 white = (255, 255, 255)
@@ -651,9 +663,12 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 if ovmax > 0:  # if there is intersections between the bounding-boxes
                     bbground_truth = [int(round(float(x))) for x in ground_truth_match["bbox"].split()]
-                    cv2.rectangle(img, (bbground_truth[0], bbground_truth[1]), (bbground_truth[2], bbground_truth[3]), light_blue, 2)
-                    cv2.rectangle(img_cumulative, (bbground_truth[0], bbground_truth[1]), (bbground_truth[2], bbground_truth[3]), light_blue, 2)
-                    cv2.putText(img_cumulative, class_name, (bbground_truth[0], bbground_truth[1] - 5), font, 0.6, light_blue, 1,
+                    cv2.rectangle(img, (bbground_truth[0], bbground_truth[1]), (bbground_truth[2], bbground_truth[3]),
+                                  light_blue, 2)
+                    cv2.rectangle(img_cumulative, (bbground_truth[0], bbground_truth[1]),
+                                  (bbground_truth[2], bbground_truth[3]), light_blue, 2)
+                    cv2.putText(img_cumulative, class_name, (bbground_truth[0], bbground_truth[1] - 5), font, 0.6,
+                                light_blue, 1,
                                 cv2.LINE_AA)
                 bb = [int(i) for i in bb]
                 cv2.rectangle(img, (bb[0], bb[1]), (bb[2], bb[3]), color, 2)
@@ -687,7 +702,7 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
         for idx, val in enumerate(tp):
             prec[idx] = float(tp[idx]) / np.maximum((false_positives[idx] + tp[idx]), 1)
 
-        ap, miss_rateec, mprec = voc_ap(rec[:], prec[:])
+        ap, miss_rateec, mprec = vocAp(rec[:], prec[:])
         F1 = np.array(rec) * np.array(prec) * 2 / np.where((np.array(prec) + np.array(rec)) == 0, 1,
                                                            (np.array(prec) + np.array(rec)))
 
@@ -713,16 +728,17 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
                     prec[score05_idx] * 100))
             else:
                 print(text + "\t||\tscore_threhold=0.5 : F1=0.00% ; Recall=0.00% ; Precision=0.00%")
-        ap_dictionary[class_name] = ap
+        apDictionary[class_name] = ap
 
         n_images = counter_images_per_class[class_name]
-        log_ave_miss_rate, miss_rate, false_positives_per_image = log_ave_miss_rate(np.array(rec), np.array(false_positives), n_images)
-        log_ave_miss_rate_dictionary[class_name] = log_ave_miss_rate
+        logAveMissRate, missRate, falsePositivesPerImage = logAveMissRate(np.array(rec),
+                                                                                    np.array(false_positives), n_images)
+        logAveMissRateDictionary[class_name] = logAveMissRate
 
         """
          Draw plot
         """
-        if draw_plot:
+        if drawPlot:
             plt.plot(rec, prec, '-o')
             area_under_curve_x = miss_rateec[:-1] + [miss_rateec[-2]] + [miss_rateec[-1]]
             area_under_curve_y = mprec[:-1] + [0.0] + [mprec[-1]]
@@ -770,7 +786,7 @@ with open(results_files_path + "/results.txt", 'w') as results_file:
             fig.savefig(results_files_path + "/Precision/" + class_name + ".png")
             plt.cla()
 
-    if show_animation:
+    if showAnimation:
         cv2.destroyAllWindows()
 
     results_file.write("\n# mAP of all classes\n")
@@ -807,7 +823,7 @@ dr_classes = list(det_counter_per_class.keys())
 """
  Plot the total number of occurences of each class in the ground-truth
 """
-if draw_plot:
+if drawPlot:
     window_title = "ground-truth-info"
     plot_title = "ground-truth\n"
     plot_title += "(" + str(len(ground_truth_files_list)) + " files and " + str(n_classes) + " classes)"
@@ -847,7 +863,7 @@ for class_name in dr_classes:
 """
  Plot the total number of occurences of each class in the "detection-results" folder
 """
-if draw_plot:
+if drawPlot:
     window_title = "detection-results-info"
     # Plot title
     plot_title = "detection-results\n"
@@ -885,17 +901,17 @@ with open(results_files_path + "/results.txt", 'a') as results_file:
         results_file.write(text)
 
 """
- Draw log-average miss rate plot (Show log_ave_miss_rate of all classes in decreasing order)
+ Draw log-average miss rate plot (Show logAveMissRate of all classes in decreasing order)
 """
-if draw_plot:
-    window_title = "log_ave_miss_rate"
+if drawPlot:
+    window_title = "logAveMissRate"
     plot_title = "log-average miss rate"
     x_label = "log-average miss rate"
     output_path = results_files_path + "/log_ave_miss_rate.png"
     to_show = False
     plot_color = 'royalblue'
     draw_plot_func(
-        log_ave_miss_rate_dictionary,
+        logAveMissRateDictionary,
         n_classes,
         window_title,
         plot_title,
@@ -909,7 +925,7 @@ if draw_plot:
 """
  Draw mAP plot (Show AP's of all classes in decreasing order)
 """
-if draw_plot:
+if drawPlot:
     window_title = "mAP"
     plot_title = "mAP = {0:.2f}%".format(mAP * 100)
     x_label = "Average Precision"
@@ -917,7 +933,7 @@ if draw_plot:
     to_show = True
     plot_color = 'royalblue'
     draw_plot_func(
-        ap_dictionary,
+        apDictionary,
         n_classes,
         window_title,
         plot_title,
@@ -927,4 +943,3 @@ if draw_plot:
         plot_color,
         ""
     )
-
