@@ -312,7 +312,7 @@ def match(query_path, refer_path, match_model, query_is_image=False, match_show=
     except Exception:
         pass
     if match_show:
-        draw_result(raw_query_image, raw_refer_image, cv_kpts_query,
+        draw(raw_query_image, raw_refer_image, cv_kpts_query,
         cv_kpts_refer, matches, np.array(status))
     return [good_match, cv_kpts_query, cv_kpts_refer, raw_query_image,
     raw_refer_image, match_image_height, match_image_width]
@@ -337,7 +337,7 @@ def compute_homography(query_path, refer_path, comp_model, query_is_image=False,
     return [h_m, comp_inliers_num_rate, raw_query_image, raw_refer_image, comp_image_height, comp_image_width]
 
 
-def draw_result(query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status):
+def draw(query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches, status):
     def draw_matches(imagea, imageb, kpsa, kpsb, matches, status):
         # initialize the output visualization image
         (ha, wa) = imagea.shape[:2]
@@ -379,7 +379,7 @@ def draw_result(query_image, refer_image, cv_kpts_query, cv_kpts_refer, matches,
     return 0
 
 
-def align_image_pair(query_path, refer_path, align_model, show=False):
+def align_im_pair(query_path, refer_path, align_model, show=False):
     h_m, inliers_num_rate, raw_query_image, raw_refer_image, align_image_height, align_image_width =\
         compute_homography(query_path, refer_path, align_model, comp_show=show)
 
@@ -420,7 +420,7 @@ if __name__ == '__main__':
     F1 = './data/samples/query.jpg'
     F2 = './data/samples/refer.jpg'
     if os.path.exists(F1) and os.path.exists(F2):
-        align_merged = align_image_pair(F1, F2, model, show=True)
+        align_merged = align_im_pair(F1, F2, model, show=True)
     else:
         print("F1 or F2 File doesn't Exist")
         exit()
