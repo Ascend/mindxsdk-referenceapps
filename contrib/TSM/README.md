@@ -224,7 +224,7 @@ python3 gen_label_kinetics.py
 
 **步骤3** 模型转换
 
-下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip)TSM.pth,将下载好的模型放在“${TSM代码根目录}/model”目录下。
+下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip) TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth, 将下载好的模型放在“${TSM代码根目录}/model”目录下。
 
 将模型转换为onnx模型，在参考设计代码根目录下，执行以下命令将pth模型转换为onnx模型
 
