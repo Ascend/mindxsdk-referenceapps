@@ -412,8 +412,8 @@ if __name__ == '__main__':
 
         query_im = os.path.join(image_dir, name_qr)
         refer_im = os.path.join(image_dir, name_rf)
-        query_im = os.path.join(query_im, '.jpg')
-        refer_im = os.path.join(refer_im, '.jpg')
+        query_im = query_im + '.jpg'
+        refer_im = refer_im + '.jpg'
         H_m1, inliers_number, query_image, _, image_height, image_width =\
             cal_homography(query_im, refer_im, model)
         HM2 = None
