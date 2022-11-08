@@ -158,7 +158,8 @@ class SdkApi:
                                                  protobuf_vec)
         if err_code != 0:
             logging.error(
-                "Failed to send data to stream, stream_name:{}, plugin_id:{}, element_name:{}, buf_type:{}, err_code:{}.".format(
+                "Failed to send data to stream, stream_name:{}, plugin_id:{}, "
+                "element_name:{}, buf_type:{}, err_code:{}.".format(
                     stream_name, plugin_id,
                     element_name, buf_type, err_code))
             return False

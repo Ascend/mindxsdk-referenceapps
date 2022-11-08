@@ -78,10 +78,6 @@ def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     print('recall for {} = {:.4f}'.format(object_name, rec[-1]))
     print('precision for {} = {:.4f}'.format(object_name, prec[-1]))
     print('Mean AP = {:.4f}'.format(np.mean(aps)))
-    # logging.info('AP for {} = {:.4f}'.format(object_name, ap))
-    # logging.info('recall for {} = {:.4f}'.format(object_name, rec[-1]))
-    # logging.info('precision for {} = {:.4f}'.format(object_name, prec[-1]))
-    # logging.info('Mean AP = {:.4f}'.format(np.mean(aps)))
 
 
 def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_id):
