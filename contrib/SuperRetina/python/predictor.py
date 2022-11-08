@@ -182,7 +182,6 @@ def plot_matches(image_alpha, image_beta, kpsa, kpsb, matches, status):
             pt_beta = (int(kpsb[trainidx].pt[0]) + alphaw, int(kpsb[trainidx].pt[1]))
             cv2.line(plot_image, pt_alpha, pt_beta, (0, 255, 0), 2)
 
-        # return image
     return plot_image
 
 
