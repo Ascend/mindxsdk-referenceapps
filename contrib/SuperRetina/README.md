@@ -122,7 +122,7 @@ if __name__ == '__main__':
     pth_to_onnx(input, checkpoint, onnx_path)
 ```
 
-**步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的SuperRetina/model/目录下，执行如下命令：
+**步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的SuperRetina/目录下，执行如下命令：
 
 ```bash
 bash onnx2om.sh ./SuperRetina.onnx ./SuperRetina
