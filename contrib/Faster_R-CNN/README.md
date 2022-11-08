@@ -207,7 +207,7 @@ python3 main.py
 
 **步骤4** 精度测试
 
-1. 准备精度测试所需图片，将[验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps/contrib/Faster-RCNN/eval.zip)下载到`python/data/eval/`目录下并解压。
+1. 准备精度测试所需图片，将[验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faster-RCNN/eval.zip)下载到`python/data/eval/`目录下并解压。
 
 1. 打开`python/pipeline/fasterrcnn_ms_dvpp.pipeline`文件，将第45行（postProcessConfigPath）配置参数改为`../models/fasterrcnn_coco2017_acc_test.cfg`。
 

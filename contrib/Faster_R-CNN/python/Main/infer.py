@@ -44,7 +44,7 @@ class SdkApi:
     def _convert_infer_result(infer_result):
         data = infer_result.get('MxpiObject')
         if not data:
-            logging.error("The result data is error.")
+            logging.info("The result data is empty.")
             return infer_result
 
         for bbox in data:
@@ -64,7 +64,7 @@ class SdkApi:
                 self._device_id = int(
                     json.loads(fp.read())[self.STREAM_NAME]["stream_config"]
                     ["deviceId"])
-                print(f"The device id: {self._device_id}.")
+                logging.info("The device id: {}.".format(self._device_id))
 
             # create api
             self._stream_api = StreamManagerApi()
@@ -72,7 +72,7 @@ class SdkApi:
             # init stream mgr
             ret = self._stream_api.InitManager()
             if ret != 0:
-                print(f"Failed to init stream manager, ret={ret}.")
+                logging.info("Failed to init stream manager, ret={}.".format(ret))
                 return False
 
             # create streams
@@ -81,12 +81,12 @@ class SdkApi:
 
             ret = self._stream_api.CreateMultipleStreams(pipe_line)
             if ret != 0:
-                print(f"Failed to create stream, ret={ret}.")
+                logging.info("Failed to create stream, ret={}.".format(ret))
                 return False
 
             self._data_input = MxDataInput()
         except Exception as exe:
-            logging.exception(f"Unknown error, msg: {exe}")
+            logging.exception("Unknown error, msg:{}".format(exe))
             return False
 
         return True
@@ -139,8 +139,8 @@ class SdkApi:
         infer_res = self._stream_api.GetResult(stream_name, out_plugin_id,
                                                self.INFER_TIMEOUT)
         if infer_res.errorCode != 0:
-            print('GetResultWithUniqueId error, errorCode=%s, errMsg=%s' %
-                  (infer_res.errorCode, infer_res.data.decode()))
+            logging.info("GetResultWithUniqueId error, errorCode={}, errMsg={}".format(infer_res.errorCode,
+                                                                                       infer_res.data.decode()))
             return None
 
         res_dict = json.loads(infer_res.data.decode())
@@ -158,8 +158,8 @@ class SdkApi:
                                                  protobuf_vec)
         if err_code != 0:
             logging.error(
-                "Failed to send data to stream, stream_name(%s), plugin_id(%s), element_name(%s), "
-                "buf_type(%s), err_code(%s).", stream_name, plugin_id,
-                element_name, buf_type, err_code)
+                "Failed to send data to stream, stream_name:{}, plugin_id:{}, element_name:{}, buf_type:{}, err_code:{}.".format(
+                    stream_name, plugin_id,
+                    element_name, buf_type, err_code))
             return False
         return True

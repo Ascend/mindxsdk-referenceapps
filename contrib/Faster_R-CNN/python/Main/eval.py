@@ -13,7 +13,7 @@
 # limitations under the License.
 # ============================================================================
 
-
+import logging
 import os
 import stat
 import json
@@ -78,7 +78,10 @@ def voc_eval(ann_file, result_json_file, voc_dir, cat_id, object_name):
     print('recall for {} = {:.4f}'.format(object_name, rec[-1]))
     print('precision for {} = {:.4f}'.format(object_name, prec[-1]))
     print('Mean AP = {:.4f}'.format(np.mean(aps)))
-    print('~~~~~~~~')
+    # logging.info('AP for {} = {:.4f}'.format(object_name, ap))
+    # logging.info('recall for {} = {:.4f}'.format(object_name, rec[-1]))
+    # logging.info('precision for {} = {:.4f}'.format(object_name, prec[-1]))
+    # logging.info('Mean AP = {:.4f}'.format(np.mean(aps)))
 
 
 def coco_to_txt(annotation_file, res_annotation, valtxt_path, savetxt_path, cat_id):
@@ -151,11 +154,9 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, val_txt_path):
 
     fileroot = os.listdir(save_txt_path)
     for file in fileroot:
-        print(file)
         oldname = os.path.join(save_txt_path, file)
         newname = os.path.join(remove_txt_path, file)
         shutil.copyfile(oldname, newname)
-    print("finish")
 
 
 def py_cpu_nms(dets, thresh):
@@ -212,8 +213,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             modes = stat.S_IWUSR | stat.S_IRUSR
             fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
-            print(boxes.size)
-            print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
             img = cv.imread(os.path.join(image_path, txtfile[:-3] + 'jpg'), 0)
             for label in boxes[keep]:
@@ -229,7 +228,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh):
                     font = cv.FONT_HERSHEY_SIMPLEX
                     cv.putText(img, str(round((label[4]), 2)), (x_min, y_min - 7), font, 0.2, (6, 230, 230),
                                1)
-            print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
             cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()
 
@@ -249,7 +247,6 @@ def write_huizong(txt_path, save_txt_path):
                      line.split(',')[0] + ' ' + line.split(',')[1] + ' ' + line.split(',')[2] + ' ' + line.split(',')[
                          3] + '\n')
     fw.close()
-    print("finish")
 
 
 np.seterr(divide='ignore', invalid='ignore')
@@ -351,8 +348,7 @@ def voc_to_eval(detpath,
     for i, imagename in enumerate(imagenames):
         recs[imagename] = parse_rec(annopath.format(imagename))
         if i % 100 == 0:
-            print('Reading annotation for {:d}/{:d}'.format(
-                i + 1, len(imagenames)))
+            logging.info("Reading annotation for {:d}/{:d}".format(i + 1, len(imagenames)))
     # extract gt objects for this class
     class_recs = {}
     npos = 0
@@ -389,7 +385,6 @@ def voc_to_eval(detpath,
     fp = np.zeros(nd)
 
     for d in range(nd):
-        print(nd)
         r = class_recs.get(image_ids[d], "no")  # class_recs[image_ids[d]]
         bb = bb1[d, :].astype(float)
         ovmax = -np.inf

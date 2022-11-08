@@ -134,13 +134,13 @@ def draw_label(res_file, img_path, label_img_dir):
     with open(res_file, "r") as fp:
         result = json.loads(fp.read())
     if not result:
-        logging.error("The result data is error, img_path(%s).", img_path)
+        logging.info("The result data is empty, img_path:{}.".format(img_path))
         return
 
     bound_boxes = list()
     data = result.get("MxpiObject")
     if not data:
-        logging.error("The result data is error, img_path(%s).", img_path)
+        logging.info("The result data is empty, img_path:{}.".format(img_path))
         return
 
     for bbox in data:

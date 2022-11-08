@@ -91,11 +91,9 @@ def hebing_txt(txt_path, save_txt_path, remove_txt_path, cut_path):
 
     fileroot = os.listdir(save_txt_path)
     for file in fileroot:
-        print(file)
         oldname = os.path.join(save_txt_path, file)
         newname = os.path.join(remove_txt_path, file)
         shutil.copyfile(oldname, newname)
-    print("finish")
 
 
 def py_cpu_nms(dets, thresh):
@@ -157,9 +155,7 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
             flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
             modes = stat.S_IWUSR | stat.S_IRUSR
             fw = os.fdopen(os.open(os.path.join(txt_path, txtfile), flags, modes), 'w')
-            print(boxes.size)
 
-            print(txtfile)
             keep = py_cpu_nms(boxes, thresh=thresh)
 
             img = cv.imread(os.path.join(image_path, txtfile[:-3] + 'jpg'), 0)
@@ -177,7 +173,6 @@ def nms_box(image_path, image_save_path, txt_path, thresh, obj_list):
                     font = cv.FONT_HERSHEY_SIMPLEX
                     cv.putText(img, (obj_list[int(label[5])] + str(round((label[4]), 2))),
                                (x_min, y_min - 7), font, 0.4, (6, 230, 230), 1)
-            print(os.path.join(image_save_path, txtfile[:-3] + 'jpg'))
             cv.imwrite(os.path.join(image_save_path, txtfile[:-3] + 'jpg'), img)
             fw.close()
 

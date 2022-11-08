@@ -112,7 +112,7 @@ def coco_eval(result_files,
             'Recall/AR@100 (large)': coco_to_eval.stats[11],
         }
 
-    print(json.dumps(summary_metrics, indent=2))
+    logging.info("{}".format(json.dumps(summary_metrics, indent=2)))
 
     return summary_metrics
 

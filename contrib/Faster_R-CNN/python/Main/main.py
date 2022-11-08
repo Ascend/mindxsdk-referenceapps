@@ -185,14 +185,12 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
 
     img_data_plugin_id = 0
     img_metas_plugin_id = 1
-    print(f"\nBegin to inference for {img_dir}.\n\n")
+    logging.info("\nBegin to inference for {}.\n\n".format(img_dir))
 
     file_list = os.listdir(img_dir)
     total_len = len(file_list)
     if total_len == 0:
-        print("ERROR")
-        print("The input directory is EMPTY!")
-        print("Please place the picture in '../data/test/cut'!")
+        logging.info("ERROR\nThe input directory is EMPTY!\nPlease place the picture in '../data/test/cut'!")
     for img_id, file_name in enumerate(file_list):
         if not file_name.lower().endswith((".jpg", "jpeg")):
             continue
@@ -200,9 +198,7 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
         save_path = os.path.join(result_dir,
                                  f"{os.path.splitext(file_name)[0]}.json")
         if not rp_last and os.path.exists(save_path):
-            print(
-                f"The infer result json({save_path}) has existed, will be skip."
-            )
+            logging.info("The infer result json({}) has existed, will be skip.".format(save_path))
             continue
 
         try:
@@ -232,13 +228,13 @@ def image_inference(pipeline_path, s_name, img_dir, result_dir,
             modes = stat.S_IWUSR | stat.S_IRUSR
             with os.fdopen(os.open((save_path), flags, modes), 'w') as fp:
                 fp.write(json.dumps(result))
-            print(
-                f"End-2end inference, file_name: {file_path}, {img_id + 1}/{total_len}, elapsed_time: {end_time}.\n"
-            )
+            logging.info(
+                "End-2end inference, file_name: {}, {}/{}, elapsed_time: {}.\n".format(file_path, img_id + 1, total_len,
+                                                                                       end_time))
 
             draw_label(save_path, file_path, result_dir)
         except Exception as ex:
-            logging.exception("Unknown error, msg(%s).", ex)
+            logging.exception("Unknown error, msg:{}.".format(ex))
     post_process()
 
 
@@ -254,6 +250,5 @@ if __name__ == "__main__":
     image_inference(args.pipeline_path, STREAM_NAME, args.img_path,
                     args.infer_result_dir, REPLACE_LAST, args.model_type)
     if args.infer_mode == "eval":
-        print("Infer end.")
-        print("Begin to eval...")
+        logging.info("Infer end.\nBegin to eval...")
         get_eval_result(args.ann_file, args.infer_result_dir)

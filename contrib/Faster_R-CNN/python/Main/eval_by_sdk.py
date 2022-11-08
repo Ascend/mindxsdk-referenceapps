@@ -15,6 +15,7 @@
 """post process for 310 inference"""
 import argparse
 import json
+import logging
 import os
 
 import numpy as np
@@ -33,7 +34,7 @@ def get_img_size(file_name):
 def parse_result(result_file, num_classes):
     all_box = [[] for i in range(0, num_classes)]
     if not os.path.exists(result_file):
-        print(f"No such file({result_file}), will be ignore.")
+        logging.info("No such file({}), will be ignore.".format(result_file))
         return [np.asarray(box) for box in all_box]
 
     with open(result_file, 'r') as fp:
