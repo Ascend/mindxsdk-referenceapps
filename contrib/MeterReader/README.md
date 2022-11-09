@@ -50,6 +50,7 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │      det_pipeline.png
 │      main_result.png
 │      seg_pipeline.png
+|      get_map.png
 │
 ├─infer
 │      det.py
@@ -84,12 +85,11 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │
 └─python    #验证精度代码
     ├─deeplabv3_val     #deeplabv3模型测试精度
-    │      segEvaluate.py
+    │      seg_evaluate.py
     │
     └─yolov5_val        #yolov5模型测试精度
-            mAPComputer.py      #4.就算模型的mAP
-            mAPDet.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
-            noDet.py        #3.检测是否有的图像没有目标
+            det.py       #1.使用om模型检测测试数据，将得到的结果保存成yolo格式的txt文件
+            match.py        #3.检测是否有的图像没有目标
             yolo2voc.py      #2.将得到的检测结果yolo数据格式转换成voc格式
 ```
 
@@ -226,7 +226,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 <li>增加对套件包的可执行权限：
 
 ```bash
-chmod +x Ascend-mindxsdk-mxvision_{version}_linux-{arch}.run
+Ascend-mindxsdk-mxvision_{version}_linux-{arch}.run
 ```
 
 <li>执行如下命令，校验套件包的一致性和完整性：
@@ -332,22 +332,33 @@ python seg.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 
 ```bash
 
-#下载目标检测模型验证集voc格式数据到MeterReader/python/yolov5_val/det_val_data路径下，下载链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip
+#下载目标检测模型验证集det_val_voc文件夹数据到MeterReader/python/yolov5_val/det_val_data路径下，下载链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip
 
 # 在命令行中跳转到MeterReader/python/yolov5_val文件路径下
 cd MeterReader/python/yolov5_val
 
 #使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为MeterReader/python/yolov5_val/det_val_data/det_sdk_txt。
-python mAP_det.py
+python det.py
 
-#使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在MeterReader/python/yolov5_val/det_val_data/det_sdk_txt路径中。
+#使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在MeterReader/python/yolov5_val/det_val_data/det_sdk_voc路径中。
 python yolo2voc.py
 
 #使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
-python no_det.py
+python match.py
 
-#使用下面命令运行脚本，计算得到det.om在验证集上的mAP，并保存在MeterReader/python/yolov5_val/det_res路径文件下。
-python computer_mAP.py
+#下载get_map.py脚本至MeterReader/python/yolov5_val，将修改第47、48、50行参数，下载连接：https://github.com/Cartucho/mAP/edit/master/main.py 
+
+<center>
+    <img src="./images/README_img/get_map.png">
+    <br>
+    <div style="color:orange;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图4. get_map.py修改参数 </div>
+</center>
+
+#使用下面命令运行脚本，计算得到det.om在验证集上的mAP。
+python get_map.py
 ```
 经过测试，YOLOv5模型的mAP为100%。
 
@@ -390,4 +401,6 @@ python seg_evaluate.py
 
 将插件的权限调整为默认440（只读）即可
 ```bash
-chmod 440 "$MX_SDK_HOME/lib/plugins/libmxpi_sampleplugin.so"
+"$MX_SDK_HOME/lib/plugins/libmxpi_sampleplugin.so"
+```
+

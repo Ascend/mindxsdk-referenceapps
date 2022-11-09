@@ -18,7 +18,6 @@
 #define TYPE_THRESHOLD 40
 
 #include <vector>
-using namespace std;
 
 
 struct READ_RESULT {
@@ -27,7 +26,7 @@ struct READ_RESULT {
     float ratio;
 };
 
-struct LOCATION_SET{
+struct LOCATION_SET {
     float one_location;
     bool flag;
     unsigned int start;
@@ -35,27 +34,26 @@ struct LOCATION_SET{
 };
 
 
-void get_line_data(const vector<int64_t>& image,
-    vector<unsigned int>* line_data);
+bool getLineData(const std::vector<int64_t>& image,
+    std::vector<unsigned int>* line_data);
 
-void convert_1D_data(const vector<unsigned int>& line_data,
-    vector<unsigned int>* scale_data,
-    vector<unsigned int>* pointer_data);
+bool convertToOneDimensionalData(const std::vector<unsigned int>& line_data,
+    std::vector<unsigned int>* scale_data,
+    std::vector<unsigned int>* pointer_data);
 
-void scale_mean_filt(const vector<unsigned int>& scale_data,
-    vector<unsigned int>* scale_mean_data);
+bool scaleAveFilt(const std::vector<unsigned int>& scale_data,
+    std::vector<unsigned int>* scale_mean_data);
 
-void get_scale_location(const vector<unsigned int>& scale,
-    vector<float>* scale_location);
+bool getScaleLocation(const std::vector<unsigned int>& scale,
+    std::vector<float>* scale_location);
 
-void get_pointer_location(const vector<unsigned int>& pointer,
+bool getPointerLocation(const std::vector<unsigned int>& pointer,
     float& pointer_location);
 
-void get_meter_reader(const vector<float>& scale_location,
+bool getMeterReader(const std::vector<float>& scale_location,
     float pointer_location,
     READ_RESULT* result);
 
-
-void read_process(const vector<vector<int64_t>>& image,
-    vector<READ_RESULT>* read_results,
+void read_process(const std::vector<std::vector<int64_t>>& image,
+    std::vector<READ_RESULT>* read_results,
     const int thread_num);

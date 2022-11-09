@@ -37,9 +37,10 @@ FILEPATH = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '
 SAVE_PATH = os.path.join(cur_path, 'det_val_data', 'det_sdk_img/').replace('\\', '/')
 SAVE_TXT = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt/').replace('\\', '/')
 MODES = stat.S_IWUSR | stat.S_IRUSR
-flags = os.O_WRONLY
+FLAGS = os.O_WRONLY | os.O_CREAT
 
-class detPostProcessors:
+
+class DetPostProcessors:
     def __init__(self):
         self.pred = None
         self.source = None
@@ -98,7 +99,7 @@ class detPostProcessors:
         # inter(N,M) = (rb(N,M,2) - lt(N,M,2)).clamp(0).prod(2)
         inter = (np.min(box1[:, None, 2:], box2[:, 2:]) - np.max(box1[:, None, :2], box2[:, :2])).clamp(0).prod(2)
         return inter / (area1[:, None] + area2 - inter)  # iou = inter / (area1 + area2 - inter)
-    
+
     @staticmethod
     def new_nms(bboxes, scores, threshold=0.5):
         x1 = bboxes[:, 0]
@@ -144,7 +145,7 @@ class detPostProcessors:
         keep = np.array(keep)
 
         return keep
-    
+
     @staticmethod
     def scale_coords(img1_shape, coords, img0_shape, ratio_pad=None):
         # Rescale coords (xyxy) from img1_shape to img0_shape
@@ -158,14 +159,14 @@ class detPostProcessors:
         coords[:, [0, 2]] -= pad[0]  # x padding
         coords[:, [1, 3]] -= pad[1]  # y padding
         coords[:, :4] /= gain
-        detPostProcessors.clip_coords(coords, img0_shape)
+        DetPostProcessors.clip_coords(coords, img0_shape)
         return coords
 
     @staticmethod
     def clip_coords(boxes, shape):
         boxes[:, [0, 2]] = boxes[:, [0, 2]].clip(0, shape[1])  # x1, x2
         boxes[:, [1, 3]] = boxes[:, [1, 3]].clip(0, shape[0])  # y1, y2
-    
+
     @staticmethod
     def non_max_suppression(prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
                             labels=(), max_det=300):
@@ -183,7 +184,6 @@ class detPostProcessors:
         redundant = True  # require redundant detections
         multi_label &= nc > 1  # multiple labels per box (adds 0.5ms/img)
         merge = False  # use merge-NMS
-
 
         output = [np.zeros((0, 6))] * prediction.shape[0]
         for xi, x in enumerate(prediction):  # image index, image inference
@@ -207,7 +207,7 @@ class detPostProcessors:
 
             # Compute conf
             x[:, 5:] *= x[:, 4:5]  # conf = obj_conf * cls_conf
-            box = detPostProcessors.xywh2xyxy(x[:, :4])
+            box = DetPostProcessors.xywh2xyxy(x[:, :4])
 
             # Detections matrix nx6 (xyxy, conf, cls)
             if multi_label:
@@ -238,13 +238,13 @@ class detPostProcessors:
             c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
 
-            i = detPostProcessors.new_nms(boxes, scores)  # NMS
+            i = DetPostProcessors.new_nms(boxes, scores)  # NMS
 
             if i.shape[0] > max_det:  # limit detections
                 i = i[:max_det]
             if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
                 # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
-                iou = detPostProcessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
+                iou = DetPostProcessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
                 weights = iou * scores[None]  # box weights # merged boxes
                 x[i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
                 if redundant:
@@ -275,21 +275,21 @@ class detPostProcessors:
 
     def run(self):
         # NMS 非极大值抑制
-        pred_result = detPostProcessors.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms,
-                                        self.multi_label)
+        pred_result_in = DetPostProcessors.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes,
+                                                            self.agnostic_nms, self.multi_label)
 
         line = ''
         file_name = self.source.split("/")[-1][:-4]
         # Process predictions
-        for i, det in enumerate(pred_result):  # per image
+        for i, det in enumerate(pred_result_in):  # per image
             im0 = cv2.imread(self.source)
             if len(det):
                 # [1024, 576]是图片根据模型输入resize后的尺寸
-                res = detPostProcessors.scale_coords([1024, 576], det[:, :4], im0.shape).round()
+                res = DetPostProcessors.scale_coords([1024, 576], det[:, :4], im0.shape).round()
 
                 for meter in res:
                     x = [int(meter[0]), int(meter[1]), int(meter[2]), int(meter[3])]
-                    temp_line = detPostProcessors.xyxy2xywh(x)
+                    temp_line = DetPostProcessors.xyxy2xywh(x)
 
                     cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
                     res_img_path = (self.save_path + file_name + '.jpg').replace("\\", "/")
@@ -297,8 +297,8 @@ class detPostProcessors:
                     line += temp_line + str(round(det[:, :5][-1][-1], 6)) + "\n"
 
         lable_path = (self.save_txt + "/" + file_name + '.txt').replace("\\", "/")
-        
-        with os.fdopen(os.open(lable_path, flags, MODES), 'w') as lable:
+
+        with os.fdopen(os.open(lable_path, os.O_WRONLY | os.O_CREAT, MODES), 'w') as lable:
             lable.write(line)
 
 
@@ -333,7 +333,7 @@ if __name__ == '__main__':
         print("The test image does not exist. Exit.")
         exit()
     imgs = os.listdir(FILEPATH)
-    detPostProcessors = detPostProcessors()
+    DetPostProcessors = DetPostProcessors()
     for img in imgs:
         img_path = os.path.join(FILEPATH, img)
         with os.fdopen(os.open(img_path, os.O_RDONLY, MODES), 'rb') as f:
@@ -370,11 +370,11 @@ if __name__ == '__main__':
 
         pred_result = np.load(r"img_pred.npy")
 
-        detPostProcessors.source = img_path
-        detPostProcessors.pred = pred_result
-        detPostProcessors.save_path = SAVE_PATH
-        detPostProcessors.save_txt = SAVE_TXT
-        detPostProcessors.run()
+        DetPostProcessors.source = img_path
+        DetPostProcessors.pred = pred_result
+        DetPostProcessors.save_path = SAVE_PATH
+        DetPostProcessors.save_txt = SAVE_TXT
+        DetPostProcessors.run()
 
         print("It is finish!")
 

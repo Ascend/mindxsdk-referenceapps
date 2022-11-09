@@ -33,9 +33,7 @@ sdk_voc_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_voc/').replace('\
 
 # 坐标转换，原始存储的是YOLOv5格式
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
-def xywhn2xyxy(boxes):
-    width = 800
-    height = 800
+def xywhn2xyxy(boxes, width = 800, height = 800):
     padw = 0
     padh = 0
     y = np.copy(boxes)
@@ -54,10 +52,10 @@ if __name__ == '__main__':
             lb = np.array([x.split() for x in f.read().strip().splitlines()], dtype=np.float32)  # predict_label
             print(lb)
         read_label = label_path_new.replace(".txt", ".jpg")
-        read_label_path = read_label.replace('sdk_txt', 'val_img').replace("\\", "/") 
+        read_label_path = read_label.replace('det_sdk_txt', 'det_val_img').replace("\\", "/") 
         img = cv2.imread(read_label_path)
         h, w = img.shape[:2]
-        lb[:, 1:] = xywhn2xyxy(lb[:, 1:]) 
+        lb[:, 1:] = xywhn2xyxy(lb[:, 1:], w, h) 
 
         # 绘图
         for _, x in enumerate(lb):
@@ -69,10 +67,7 @@ if __name__ == '__main__':
                         fontScale=1,
                         color=(0, 0, 255), 
                         thickness=2)
-
-            flags = os.O_WRONLY
-            modes = stat.S_IRUSR   
-            with os.fdopen(os.open(sdk_voc_path + i, flags, modes), 'w') as f:
-                f.write(str(x[0]) + ' ' + str(x[5]) 
+            with os.fdopen(os.open(sdk_voc_path + i, os.O_WRONLY | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR ), 'a') as voc:
+                voc.write(str(x[0]) + ' ' + str(x[5]) 
                 + ' ' + str(x[1]) + ' ' + str(x[2]) 
                 + ' ' + str(x[3]) + ' ' + str(x[4]) + '\n')

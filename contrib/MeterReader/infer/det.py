@@ -37,7 +37,7 @@ model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\
 res_img = []
 
 
-class detPostprocessors:
+class DetPostprocessors:
     def __init__(self):
         self.pred = None
         self.source = None
@@ -131,7 +131,7 @@ class detPostprocessors:
             h = np.maximum(0.0, (yy2 - yy1))
             inter = w * h
 
-            iou = inter / (areas[i] + areas[order[1:]] - inter)
+            iou = inter / (areas[nums_i] + areas[order[1:]] - inter)
 
             # 删除IoU大于指定阈值的bbox(重合度高), 保留小于指定阈值的bbox
             ids = np.where(iou <= threshold)[0]
@@ -155,7 +155,7 @@ class detPostprocessors:
         coords[:, [0, 2]] -= pad[0]  # x padding
         coords[:, [1, 3]] -= pad[1]  # y padding
         coords[:, :4] /= gain
-        detPostprocessors.clip_coords(coords, img0_shape)
+        DetPostprocessors.clip_coords(coords, img0_shape)
         return coords
 
     @staticmethod
@@ -213,7 +213,7 @@ class detPostprocessors:
 
             # Compute conf
             x[:, 5:] *= x[:, 4:5]  # conf = obj_conf * cls_conf
-            box = detPostprocessors.xywh2xyxy(x[:, :4])
+            box = DetPostprocessors.xywh2xyxy(x[:, :4])
 
             # Detections matrix nx6 (xyxy, conf, cls)
             if multi_label:
@@ -222,9 +222,9 @@ class detPostprocessors:
             else:  # best class only
 
                 conf = np.max(x[:, 5:], axis=1)
-                j = np.argmax(x[:, 5:], axis=1)
+                _j = np.argmax(x[:, 5:], axis=1)
                 conf = np.array(conf)[None].T
-                j = np.array(_j)[None].T
+                _j = np.array(_j)[None].T
 
                 temp_x = np.concatenate((box, conf, _j), axis=1)
                 x = np.squeeze(temp_x)
@@ -244,13 +244,13 @@ class detPostprocessors:
             c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
 
-            _i = detPostprocessors.new_nms(boxes, scores)  # NMS
+            _i = DetPostprocessors.new_nms(boxes, scores)  # NMS
 
             if _i.shape[0] > max_det:  # limit detections
                 _i = _i[:max_det]
             if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
                 # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
-                iou = detPostprocessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
+                iou = DetPostprocessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
                 weights = iou * scores[None]  # box weights
                 x[_i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
                 if redundant:
@@ -281,8 +281,9 @@ class detPostprocessors:
 
     def run(self):
         # NMS 非极大值抑制
-        
-        _pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms, self.multi_label)
+
+        _pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres,
+                                         self.classes, self.agnostic_nms, self.multi_label)
         file_name = self.source.split("/")[-1][:4]
         # Process predictions
         for temp_i, det in enumerate(_pred):
@@ -339,7 +340,8 @@ if __name__ == '__main__':
     modelPath = model_path
     content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
 
-    with open(pipeline_path, "w") as f:
+    MODES = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(pipeline_path, os.O_WRONLY, MODES), 'w') as f:
         json.dump(content, f)
 
     steammanager_api = StreamManagerApi()
@@ -389,14 +391,14 @@ if __name__ == '__main__':
     pred = np.frombuffer(data.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
     pred.resize(1, 36288, 6)
     pred = pred.copy()
-    detPost = detPostprocessors()
+    detPost = DetPostprocessors()
     detPost.source = FILENAME
     detPost.pred = pred
     detPost.save_path = RESULTFILE
     res_img = detPost.run()
     img_name = FILENAME.split("/")[-1][:4]
     length = len(res_img)
-    print(f"res_img {length}",end=" ")
+    print(f"res_img {length}", end=" ")
     for i in range(length):
         write_path = RESULTFILE + img_name + str(i) + ".jpg"
         print(write_path, end=" ")

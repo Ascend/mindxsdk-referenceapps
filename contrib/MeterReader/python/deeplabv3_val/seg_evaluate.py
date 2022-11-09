@@ -82,9 +82,9 @@ if __name__ == '__main__':
     content['seg']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
-    flags = os.O_WRONLY
-    modes = stat.S_IRUSR   
-    with os.fdopen(os.open(pipeline_path, flags, modes), 'w') as f:
+    FLAGS = os.O_WRONLY
+    MODE_S = stat.S_IRUSR   
+    with os.fdopen(os.open(pipeline_path, FLAGS, MODE_S), 'w') as f:
         json.dump(content, f)
 
     

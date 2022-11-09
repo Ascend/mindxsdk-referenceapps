@@ -20,11 +20,15 @@ import sys
 import json
 import getopt
 import cv2
+import shutil
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
 
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
+def error(msg):
+    print("ERROR!!! ",msg)
+    sys.exit()
 
 def get_args():
     argv = sys.argv[1:]
@@ -41,15 +45,53 @@ def get_args():
             input_file = arg
         elif opt in ("-o", "--ofile"):
             output_file = arg
-    print('输入的文件为：', input_file)
-    print('输出的文件为：', output_file)
-    return input_file, output_file
 
+    #判定是否输入文件名为空
+    if (not input_file):
+        error("输入文件名为空")
+    #判定是否为cv2可读文件
+    test_cv_read(input_file)
+    print('输入的文件为：', input_file)
+
+    if (not output_file):
+        error("输出文件名为空")
+    test_cv_write(input_file,output_file)
+    print('输出的文件为：', output_file)
+    return [input_file, output_file]
+
+#判断改文件是否可被cv2读取，或者为空图像
+def test_cv_read(filename):
+    try:
+        temp_img = cv2.imread(filename,-1)
+        if (temp_img is None):
+            error(f"cv2读取文件失败 或 图像为空. {filename}")
+        return
+    except Exception as e:
+        print(e)
+        error(f"cv2读取文件失败 或 图像为空. {filename}")
+
+#判断改文件是否可被cv2写入
+def test_cv_write(filename,filewritename):
+    try:
+        temp_img = cv2.imread(filename,-1)
+        cv2.imwrite(filewritename, temp_img)
+        return
+    except Exception as e:
+        print(e)
+        error(f"文件类型不兼容,cv2无法写入. {filewritename}")
 
 if __name__ == '__main__':
     inputfile, outputfile = get_args()
+
     # det
     outputdir = os.path.join(father_path, 'images', 'det_res/').replace('\\', '/')
+
+    # 如果yolov5输出的文件夹不存在，则创建。存在则清空再创建。
+    if (not os.path.isdir(outputdir)):
+        os.makedirs(outputdir)
+    else:
+        shutil.rmtree(outputdir)
+        os.makedirs(outputdir)
 
     det_result = os.popen(f'python det.py --ifile {inputfile} --odir {outputdir}')
     det_res = det_result.read()
@@ -69,6 +111,12 @@ if __name__ == '__main__':
             detResImgIndex.append(json.loads(temp))
 
         print(line)
+
+    if (len(detResImgFile)==0):
+        error("yolov5未识别到表盘图片")
+
+    if (len(detResImgFile)!=len(detResImgIndex)):
+        error(f"yolov5识别的表盘图片数量（{len(detResImgFile)}）与框的数量（{len(detResImgIndex)}）不一致。")
 
     # seg
     seg_Ans = []
