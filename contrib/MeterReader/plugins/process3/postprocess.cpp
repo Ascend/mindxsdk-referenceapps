@@ -30,8 +30,6 @@
 using namespace std::chrono;  // NOLINT
 using namespace std;
 
-#define uint unsigned int
-
 const float pi = 3.1415926536f;
 
 const int image_size[] = {512, 512};
@@ -42,126 +40,122 @@ const int circle_center[] = {256, 256};
 
 const int circle_radius = 250;
 
+const int param_0 = 0;
 const int param_1 = 1;
 const int param_2 = 2;
 const double param_0_5 = 0.5;
 const double param_2_0 = 2.0;
 
 void get_line_data(const vector<int64_t>& image,
-    vector<uint>* line_data) {
-    float theta;
+    vector<unsigned int>* line_data) {
+    float theta_col;
     int rho;
-    int line_data_x;
+    float theta;
     int line_data_y;
+    int line_data_x;
+    int line_data_vec_index;
+    int image_index;
 
-    vector<uint>& line_data_vec = (*line_data);
+    vector<unsigned int>& line_data_vec = (*line_data);
 
     for (int row_index = 0; row_index < line_size[0]; row_index++) {
+        rho = circle_radius - row_index - param_1;
         for (int col_index = 0; col_index < line_size[1]; col_index++) {
-            theta = pi * param_2 / line_size[1] * (col_index + param_1);
-            rho = circle_radius - row_index - param_1;
+            theta_col = col_index + param_1;
+            line_data_vec_index = row_index * line_size[1] + col_index;
+
+            theta = pi * param_2 / line_size[1] * theta_col;
             line_data_y = int(circle_center[0] + rho * cos(theta) + param_0_5);
             line_data_x = int(circle_center[1] - rho * sin(theta) + param_0_5);
-            line_data_vec[row_index * line_size[1] + col_index] =
-                image[line_data_y * image_size[0] + line_data_x];
+            image_index = line_data_y * image_size[0] + line_data_x;
+            line_data_vec[line_data_vec_index] = image[image_index];
         }
     }
     return;
 }
 
-void convert_1D_data(const vector<uint>& line_data,
-    vector<uint>* scale_data,
-    vector<uint>* pointer_data) {
-    // Accumulte the number of positions whose label is 1 along the height axis.
-    // Accumulte the number of positions whose label is 2 along the height axis.
-    vector<uint>& scale_data_vec = (*scale_data);
-    vector<uint>& pointer_data_vec = (*pointer_data);
+void convert_1D_data(const vector<unsigned int>& line_data,
+    vector<unsigned int>* scale_data,
+    vector<unsigned int>* pointer_data) {
+    vector<unsigned int>& scale_data_vec = (*scale_data);
+    vector<unsigned int>& pointer_data_vec = (*pointer_data);
     for (int col_index = 0; col_index < line_size[1]; col_index++) {
         scale_data_vec[col_index] = 0;
         pointer_data_vec[col_index] = 0;
         for (int row_index = 0; row_index < line_size[0]; ++row_index) {
             int index = row_index * line_size[1] + col_index;
-            if (line_data[index] == 1) {
-                ++pointer_data_vec[col_index];
-            }
-            else if (line_data[index] == param_2) {
-                ++scale_data_vec[col_index];
-            }
+            pointer_data_vec[col_index] += (line_data[index] == param_1)?(param_1):(param_0);
+            scale_data_vec[col_index] += (line_data[index] == param_2)?(param_1):(param_0);
         }
     }
     return;
 }
 
-void scale_mean_filt(const vector<uint>& scale_data,
-    vector<uint>* scale_mean_data) {
+void scale_mean_filt(const vector<unsigned int>& scale_data,
+    vector<unsigned int>* scale_mean_data) {
     int sum = 0;
-    float mean = 0;
     int length = scale_data.size();
     for (int i = 0; i < length; i++) {
         sum = sum + scale_data[i];
     }
-    mean = static_cast<float>(sum) / length;
+    float mean = float(sum) / length;
 
-    vector<uint>& scale_mean_data_vec = (*scale_mean_data);
+    vector<unsigned int>& scale_mean_data_vec = (*scale_mean_data);
     for (int i = 0; i < length; ++i) {
-        if ((float)(scale_data[i]) >= mean) {
+        if (float(scale_data[i]) >= mean) {
             scale_mean_data_vec[i] = scale_data[i];
         }
     }
     return;
 }
 
-void get_scale_location(const vector<uint>& scale,
+void get_scale_location(const vector<unsigned int>& scale,
     vector<float>* scale_location) {
-    float one_scale_location = 0;
-    bool scale_flag = 0;
-    uint scale_start = 0;
-    uint scale_end = 0;
+    LOCATION_SET scale_data; 
+    scale_data.one_location = 0;
+    scale_data.flag = 0;
+    scale_data.start = 0;
+    scale_data.end = 0;
 
     vector<float>& scale_location_vec = (*scale_location);
     for (int i = 0; i < line_size[1]; i++) {
-        if (scale[i] > 0 && scale[i + 1] > 0) {
-            if (scale_flag == 0) {
-                scale_start = i;
-                scale_flag = param_1;
-            }
+        if ((scale[i] > 0 && scale[i + 1] > 0) && scale_data.flag == 0) {
+            scale_data.start = i;
+            scale_data.flag = param_1;
         }
-        if (scale_flag == param_1) {
-            if (scale[i] == 0 && scale[i + 1] == 0) {
-                scale_end = i - 1;
-                one_scale_location = (scale_start + scale_end) / param_2_0;
-                scale_location_vec.push_back(one_scale_location);
-                scale_start = 0;
-                scale_end = 0;
-                scale_flag = 0;
-            }
+        if ((scale[i] == 0 && scale[i + 1] == 0) && scale_data.flag == param_1) {
+            scale_data.end = i - 1;
+            scale_data.one_location = (scale_data.start + scale_data.end) / param_2_0;
+            scale_location_vec.push_back(scale_data.one_location);
+            scale_data.start = 0;
+            scale_data.end = 0;
+            scale_data.flag = 0;
         }
     }
 }
 
-void get_pointer_location(const vector<uint>& pointer,
+void get_pointer_location(const vector<unsigned int>& pointer,
     float& pointer_location) {
-    pointer_location = 0;
-    bool pointer_flag = 0;
-    uint pointer_start = 0;
-    uint pointer_end = 0;
+    LOCATION_SET pointer_data; 
+    pointer_data.one_location = 0;
+    pointer_data.flag = 0;
+    pointer_data.start = 0;
+    pointer_data.end = 0;
+
     for (int i = 0; i < line_size[1]; i++) {
-        if (pointer[i] > 0 && pointer[i + 1] > 0) {
-            if (pointer_flag == 0) {
-                pointer_start = i;
-                pointer_flag = param_1;
-            }
+        if ((pointer[i] > 0 && pointer[i + 1] > 0) && pointer_data.flag == 0) {
+                pointer_data.start = i;
+                pointer_data.flag = param_1;
         }
-        if (pointer_flag == param_1) {
-            if ((pointer[i] == 0) && (pointer[i + 1] == 0)) {
-                pointer_end = i - param_1;
-                pointer_location = (pointer_start + pointer_end) / param_2_0;
-                pointer_start = 0;
-                pointer_end = 0;
-                pointer_flag = 0;
-            }
+        if ((pointer[i] == 0) && (pointer[i + 1] == 0) && pointer_data.flag == param_1) {
+                pointer_data.end = i - param_1;
+                pointer_data.one_location = (pointer_data.start + pointer_data.end) / param_2_0;
+                pointer_data.start = 0;
+                pointer_data.end = 0;
+                pointer_data.flag = 0;
         }
     }
+    pointer_location = pointer_data.one_location;
 }
 
 
@@ -175,9 +169,9 @@ void get_meter_reader(const vector<float>& scale_location,
         for (int i = 0; i < scale_num - 1; i++) {
             if (scale_location[i] <= pointer_location &&
                 pointer_location < scale_location[i + 1]) {
-                result->scales = i + 1 +
-                    (pointer_location - scale_location[i]) /
+                float temp = (pointer_location - scale_location[i]) /
                     (scale_location[i + 1] - scale_location[i] + 1e-05);
+                result->scales = i + 1 + temp;
             }
         }
         result->ratio =
@@ -193,29 +187,22 @@ void read_process(const vector<vector<int64_t>>& image,
     const int thread_num) {
     int read_num = image.size();
     vector<READ_RESULT>& read_results_vec = (*read_results);
-#pragma omp parallel for num_threads(thread_num)
+    #pragma omp parallel for num_threads(thread_num)
     for (int i_read = 0; i_read < read_num; i_read++) {
-
-        vector<uint> line_data(line_size[1] * line_size[0], 0);
-        get_line_data(image[i_read], &line_data);
-
-
-        vector<uint> scale_data(line_size[1]);
-        vector<uint> pointer_data(line_size[1]);
-        convert_1D_data(line_data, &scale_data, &pointer_data);
-
-
-        vector<uint> scale_mean_data(line_size[1]);
-        scale_mean_filt(scale_data, &scale_mean_data);
-
-
+        
+        vector<unsigned int> line_data(line_size[1] * line_size[0], 0);
+        vector<unsigned int> scale_data(line_size[1]);
+        vector<unsigned int> pointer_data(line_size[1]);
+        vector<unsigned int> scale_mean_data(line_size[1]);
         vector<float> scale_location;
-        get_scale_location(scale_mean_data, &scale_location);
-
         float pointer_location;
-        get_pointer_location(pointer_data, pointer_location);
-
         READ_RESULT result;
+
+        get_line_data(image[i_read], &line_data);
+        convert_1D_data(line_data, &scale_data, &pointer_data);
+        scale_mean_filt(scale_data, &scale_mean_data);
+        get_scale_location(scale_mean_data, &scale_location);
+        get_pointer_location(pointer_data, pointer_location);
         get_meter_reader(scale_location, pointer_location, &result);
 
         read_results_vec[i_read] = std::move(result);

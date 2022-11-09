@@ -18,10 +18,10 @@
 import json
 import os
 import stat
-import cv2
 import sys
 import getopt
 import shutil
+import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -36,6 +36,7 @@ model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\
 
 res_img = []
 
+
 class detPostprocessors:
     def __init__(self):
         self.pred = None
@@ -49,7 +50,7 @@ class detPostprocessors:
         self.save_path = 'det_res.jpg'
 
     @staticmethod
-    def xyxy2xywh(self, x):
+    def xyxy2xywh(x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
 
         y = np.copy(x)
@@ -61,7 +62,7 @@ class detPostprocessors:
         return y
 
     @staticmethod
-    def xywh2xyxy(self, x):
+    def xywh2xyxy(x):
         # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
         y = np.copy(x)
         y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
@@ -72,7 +73,7 @@ class detPostprocessors:
         return y
 
     @staticmethod
-    def box_iou(self, box1, box2):
+    def box_iou(box1, box2):
         """
         Return intersection-over-union (Jaccard index) of boxes.
         Both sets of boxes are expected to be in (x1, y1, x2, y2) format.
@@ -96,7 +97,7 @@ class detPostprocessors:
         return inter / (area1[:, None] + area2 - inter)  # iou = inter / (area1 + area2 - inter)
 
     @staticmethod
-    def new_nms(self, bboxes, scores, threshold=0.5):
+    def new_nms(bboxes, scores, threshold=0.5):
         x1 = bboxes[:, 0]
         y1 = bboxes[:, 1]
         x2 = bboxes[:, 2]
@@ -110,9 +111,9 @@ class detPostprocessors:
         # 记录输出的bbox
         keep = []
         while order.size > 0:
-            i = order[0]
+            nums_i = order[0]
             # 记录本轮最大的score对应的index
-            keep.append(i)
+            keep.append(nums_i)
 
             if order.size == 1:
                 break
@@ -120,10 +121,10 @@ class detPostprocessors:
             # 计算当前bbox与剩余的bbox之间的IoU
             # 计算IoU需要两个bbox中最大左上角的坐标点和最小右下角的坐标点
             # 即重合区域的左上角坐标点和右下角坐标点
-            xx1 = np.maximum(x1[i], x1[order[1:]])
-            yy1 = np.maximum(y1[i], y1[order[1:]])
-            xx2 = np.minimum(x2[i], x2[order[1:]])
-            yy2 = np.minimum(y2[i], y2[order[1:]])
+            xx1 = np.maximum(x1[nums_i], x1[order[1:]])
+            yy1 = np.maximum(y1[nums_i], y1[order[1:]])
+            xx2 = np.minimum(x2[nums_i], x2[order[1:]])
+            yy2 = np.minimum(y2[nums_i], y2[order[1:]])
 
             # 如果两个bbox之间没有重合, 那么有可能出现负值
             w = np.maximum(0.0, (xx2 - xx1))
@@ -142,7 +143,7 @@ class detPostprocessors:
         return keep
 
     @staticmethod
-    def scale_coords(self, img1_shape, coords, img0_shape, ratio_pad=None):
+    def scale_coords(img1_shape, coords, img0_shape, ratio_pad=None):
         # Rescale coords (xyxy) from img1_shape to img0_shape
         if ratio_pad is None:  # calculate from img0_shape
             gain = min(img1_shape[0] / img0_shape[0], img1_shape[1] / img0_shape[1])  # gain  = old / new
@@ -154,16 +155,16 @@ class detPostprocessors:
         coords[:, [0, 2]] -= pad[0]  # x padding
         coords[:, [1, 3]] -= pad[1]  # y padding
         coords[:, :4] /= gain
-        self.clip_coords(coords, img0_shape)
+        detPostprocessors.clip_coords(coords, img0_shape)
         return coords
 
     @staticmethod
-    def clip_coords(self, boxes, shape):
+    def clip_coords(boxes, shape):
         boxes[:, [0, 2]] = boxes[:, [0, 2]].clip(0, shape[1])  # x1, x2
         boxes[:, [1, 3]] = boxes[:, [1, 3]].clip(0, shape[0])  # y1, y2
 
     @staticmethod
-    def non_max_suppression(self, prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
+    def non_max_suppression(prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
                             labels=(), max_det=300):
         """Runs Non-Maximum Suppression (NMS) on inference results
 
@@ -212,20 +213,20 @@ class detPostprocessors:
 
             # Compute conf
             x[:, 5:] *= x[:, 4:5]  # conf = obj_conf * cls_conf
-            box = self.xywh2xyxy(x[:, :4])
+            box = detPostprocessors.xywh2xyxy(x[:, :4])
 
             # Detections matrix nx6 (xyxy, conf, cls)
             if multi_label:
-                i, j = (x[:, 5:] > conf_thres).nonzero(as_tuple=False).T
-                x = np.concatenate((box[i], x[i, j + 5, None], j[:, None].float()), axis=1)
+                _i, _j = (x[:, 5:] > conf_thres).nonzero(as_tuple=False).T
+                x = np.concatenate((box[_i], x[_i, _j + 5, None], _j[:, None].float()), axis=1)
             else:  # best class only
 
                 conf = np.max(x[:, 5:], axis=1)
                 j = np.argmax(x[:, 5:], axis=1)
                 conf = np.array(conf)[None].T
-                j = np.array(j)[None].T
+                j = np.array(_j)[None].T
 
-                temp_x = np.concatenate((box, conf, j), axis=1)
+                temp_x = np.concatenate((box, conf, _j), axis=1)
                 x = np.squeeze(temp_x)
 
             # Filter by class
@@ -243,24 +244,24 @@ class detPostprocessors:
             c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
 
-            i = self.new_nms(boxes, scores)  # NMS
+            _i = detPostprocessors.new_nms(boxes, scores)  # NMS
 
-            if i.shape[0] > max_det:  # limit detections
-                i = i[:max_det]
+            if _i.shape[0] > max_det:  # limit detections
+                _i = _i[:max_det]
             if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
                 # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
-                iou = self.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
+                iou = detPostprocessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
                 weights = iou * scores[None]  # box weights
-                x[i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
+                x[_i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
                 if redundant:
-                    i = i[iou.sum(1) > 1]  # require redundancy
+                    _i = _i[iou.sum(1) > 1]  # require redundancy
 
-            output[xi] = x[i]
+            output[xi] = x[_i]
 
         return output
 
     @staticmethod
-    def xyxy2xywh(self, x):
+    def xyxy2xywh(x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
         z = [0, 0, 0, 0]
         gn = [1920, 1080, 1920, 1080]
@@ -281,24 +282,19 @@ class detPostprocessors:
     def run(self):
         # NMS 非极大值抑制
         
-        pred = self.non_max_suppression(self.pred, 
-                self.conf_thres, 
-                self.iou_thres, 
-                self.classes, 
-                self.agnostic_nms,
-                self.multi_label)
+        _pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms, self.multi_label)
         file_name = self.source.split("/")[-1][:4]
         # Process predictions
-        for i, det in enumerate(pred):
+        for temp_i, det in enumerate(_pred):
             im0 = cv2.imread(self.source)
             if len(det):
                 # [1024, 576]是图片根据模型输入resize后的尺寸
                 res = self.scale_coords([1024, 576], det[:, :4], im0.shape).round()
+                for item in res:
+                    print(f"det_xyxy:{list(item)}")
 
-                for i in res:
-                    meter = i
+                for meter in res:
                     res_img.append(im0[int(meter[1]):int(meter[3]), int(meter[0]):int(meter[2])])
-
                     cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
                     res_path = (self.save_path + file_name + '.jpg').replace("\\", "/")
                     cv2.imwrite(res_path, im0)
@@ -400,6 +396,7 @@ if __name__ == '__main__':
     res_img = detPost.run()
     img_name = FILENAME.split("/")[-1][:4]
     length = len(res_img)
+    print(f"res_img {length}",end=" ")
     for i in range(length):
         write_path = RESULTFILE + img_name + str(i) + ".jpg"
         print(write_path, end=" ")

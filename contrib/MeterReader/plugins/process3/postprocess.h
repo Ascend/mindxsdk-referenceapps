@@ -27,6 +27,13 @@ struct READ_RESULT {
     float ratio;
 };
 
+struct LOCATION_SET{
+    float one_location;
+    bool flag;
+    unsigned int start;
+    unsigned int end;
+};
+
 
 void get_line_data(const vector<int64_t>& image,
     vector<unsigned int>* line_data);

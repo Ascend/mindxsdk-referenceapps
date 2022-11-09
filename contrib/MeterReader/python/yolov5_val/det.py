@@ -30,20 +30,16 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
-
-father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
-pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
-
+father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\', '/')
-
 pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
 FILEPATH = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '/')
 SAVE_PATH = os.path.join(cur_path, 'det_val_data', 'det_sdk_img/').replace('\\', '/')
 SAVE_TXT = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt/').replace('\\', '/')
+MODES = stat.S_IWUSR | stat.S_IRUSR
+flags = os.O_WRONLY
 
-
-class detPostprocessors:
+class detPostProcessors:
     def __init__(self):
         self.pred = None
         self.source = None
@@ -57,7 +53,7 @@ class detPostprocessors:
         self.save_txt = ''
 
     @staticmethod
-    def xyxy2xywh(self, x):
+    def xyxy2xywh(x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
 
         y = np.copy(x)
@@ -69,7 +65,7 @@ class detPostprocessors:
         return y
 
     @staticmethod
-    def xywh2xyxy(self, x):
+    def xywh2xyxy(x):
         # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
         y = np.copy(x)
         y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
@@ -80,7 +76,7 @@ class detPostprocessors:
         return y
 
     @staticmethod
-    def box_iou(self, box1, box2):
+    def box_iou(box1, box2):
         """
         Return intersection-over-union (Jaccard index) of boxes.
         Both sets of boxes are expected to be in (x1, y1, x2, y2) format.
@@ -104,7 +100,7 @@ class detPostprocessors:
         return inter / (area1[:, None] + area2 - inter)  # iou = inter / (area1 + area2 - inter)
     
     @staticmethod
-    def new_nms(self, bboxes, scores, threshold=0.5):
+    def new_nms(bboxes, scores, threshold=0.5):
         x1 = bboxes[:, 0]
         y1 = bboxes[:, 1]
         x2 = bboxes[:, 2]
@@ -150,7 +146,7 @@ class detPostprocessors:
         return keep
     
     @staticmethod
-    def scale_coords(self, img1_shape, coords, img0_shape, ratio_pad=None):
+    def scale_coords(img1_shape, coords, img0_shape, ratio_pad=None):
         # Rescale coords (xyxy) from img1_shape to img0_shape
         if ratio_pad is None:  # calculate from img0_shape
             gain = min(img1_shape[0] / img0_shape[0], img1_shape[1] / img0_shape[1])  # gain  = old / new
@@ -162,16 +158,16 @@ class detPostprocessors:
         coords[:, [0, 2]] -= pad[0]  # x padding
         coords[:, [1, 3]] -= pad[1]  # y padding
         coords[:, :4] /= gain
-        self.clip_coords(coords, img0_shape)
+        detPostProcessors.clip_coords(coords, img0_shape)
         return coords
 
     @staticmethod
-    def clip_coords(self, boxes, shape):
+    def clip_coords(boxes, shape):
         boxes[:, [0, 2]] = boxes[:, [0, 2]].clip(0, shape[1])  # x1, x2
         boxes[:, [1, 3]] = boxes[:, [1, 3]].clip(0, shape[0])  # y1, y2
     
     @staticmethod
-    def non_max_suppression(self, prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
+    def non_max_suppression(prediction, conf_thres, iou_thres, classes, agnostic, multi_label,
                             labels=(), max_det=300):
 
         nc = prediction.shape[2] - 5  # number of classes
@@ -211,7 +207,7 @@ class detPostprocessors:
 
             # Compute conf
             x[:, 5:] *= x[:, 4:5]  # conf = obj_conf * cls_conf
-            box = self.xywh2xyxy(x[:, :4])
+            box = detPostProcessors.xywh2xyxy(x[:, :4])
 
             # Detections matrix nx6 (xyxy, conf, cls)
             if multi_label:
@@ -242,13 +238,13 @@ class detPostprocessors:
             c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
             boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
 
-            i = self.new_nms(boxes, scores)  # NMS
+            i = detPostProcessors.new_nms(boxes, scores)  # NMS
 
             if i.shape[0] > max_det:  # limit detections
                 i = i[:max_det]
             if merge and (1 < n < 3E3):  # Merge NMS (boxes merged using weighted mean)
                 # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
-                iou = self.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
+                iou = detPostProcessors.box_iou(boxes[i], boxes) > iou_thres  # iou matrix
                 weights = iou * scores[None]  # box weights # merged boxes
                 x[i, :4] = np.matmul(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
                 if redundant:
@@ -259,7 +255,7 @@ class detPostprocessors:
         return output
 
     @staticmethod
-    def xyxy2xywh(self, x):
+    def xyxy2xywh(x):
         # Convert nx4 boxes from [x1, y1, x2, y2] to [x, y, w, h] where xy1=top-left, xy2=bottom-right
         z = [0, 0, 0, 0]
         gn = [1920, 1080, 1920, 1080]
@@ -279,33 +275,31 @@ class detPostprocessors:
 
     def run(self):
         # NMS 非极大值抑制
-        pred = self.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms,
+        pred_result = detPostProcessors.non_max_suppression(self.pred, self.conf_thres, self.iou_thres, self.classes, self.agnostic_nms,
                                         self.multi_label)
 
         line = ''
         file_name = self.source.split("/")[-1][:-4]
         # Process predictions
-        for i, det in enumerate(pred):  # per image
+        for i, det in enumerate(pred_result):  # per image
             im0 = cv2.imread(self.source)
             if len(det):
                 # [1024, 576]是图片根据模型输入resize后的尺寸
-                res = self.scale_coords([1024, 576], det[:, :4], im0.shape).round()
+                res = detPostProcessors.scale_coords([1024, 576], det[:, :4], im0.shape).round()
 
-                for i in res:
-                    meter = i
+                for meter in res:
                     x = [int(meter[0]), int(meter[1]), int(meter[2]), int(meter[3])]
-                    temp_line = self.xyxy2xywh(x)
+                    temp_line = detPostProcessors.xyxy2xywh(x)
 
                     cv2.rectangle(im0, (int(meter[0]), int(meter[1])), (int(meter[2]), int(meter[3])), (0, 255, 0), 2)
                     res_img_path = (self.save_path + file_name + '.jpg').replace("\\", "/")
                     cv2.imwrite(res_img_path, im0)
                     line += temp_line + str(round(det[:, :5][-1][-1], 6)) + "\n"
-                    print("temp_line", temp_line)
 
         lable_path = (self.save_txt + "/" + file_name + '.txt').replace("\\", "/")
-        MODES = stat.S_IWUSR | stat.S_IRUSR
-        with os.fdopen(os.open(lable_path, 'os.O_RDWR', MODES), 'w') as f:
-            f.write(line)
+        
+        with os.fdopen(os.open(lable_path, flags, MODES), 'w') as lable:
+            lable.write(line)
 
 
 if __name__ == '__main__':
@@ -339,12 +333,12 @@ if __name__ == '__main__':
         print("The test image does not exist. Exit.")
         exit()
     imgs = os.listdir(FILEPATH)
-    detPostprocessors = detPostprocessors()
+    detPostProcessors = detPostProcessors()
     for img in imgs:
         img_path = os.path.join(FILEPATH, img)
         with os.fdopen(os.open(img_path, os.O_RDONLY, MODES), 'rb') as f:
             dataInput.data = f.read()
-        STEAMNAME = b'classification+detection'
+        STEAMNAME = b'detection'
         INPLUGINID = 0
         uniqueId = steammanager_api.SendData(STEAMNAME, INPLUGINID, dataInput)
         if uniqueId < 0:
@@ -370,17 +364,19 @@ if __name__ == '__main__':
         result = MxpiDataType.MxpiTensorPackageList()
         result.ParseFromString(infer_result.serializedMetadata)
 
-        pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-        pred.resize(1, 36288, 6)
-        np.save(r"img_pred.npy", pred)
+        pred_result = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
+        pred_result.resize(1, 36288, 6)
+        np.save(r"img_pred.npy", pred_result)
 
-        pred = np.load(r"img_pred.npy")
+        pred_result = np.load(r"img_pred.npy")
 
-        detPostprocessors.source = img_path
-        detPostprocessors.pred = pred
-        detPostprocessors.save_path = SAVE_PATH
-        detPostprocessors.save_txt = SAVE_TXT
-        detPostprocessors.run()
+        detPostProcessors.source = img_path
+        detPostProcessors.pred = pred_result
+        detPostProcessors.save_path = SAVE_PATH
+        detPostProcessors.save_txt = SAVE_TXT
+        detPostProcessors.run()
+
+        print("It is finish!")
 
     # destroy streams
     steammanager_api.DestroyAllStreams()

@@ -33,16 +33,16 @@ sdk_voc_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_voc/').replace('\
 
 # 坐标转换，原始存储的是YOLOv5格式
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
-def xywhn2xyxy(x):
-    w=800
-    h=800
-    padw=0
-    padh=0
-    y = np.copy(x)
-    y[:, 0] = w * (x[:, 0] - x[:, 2] / 2) + padw  # top left x
-    y[:, 1] = h * (x[:, 1] - x[:, 3] / 2) + padh  # top left y
-    y[:, 2] = w * (x[:, 0] + x[:, 2] / 2) + padw  # bottom right x
-    y[:, 3] = h * (x[:, 1] + x[:, 3] / 2) + padh  # bottom right y
+def xywhn2xyxy(boxes):
+    width = 800
+    height = 800
+    padw = 0
+    padh = 0
+    y = np.copy(boxes)
+    y[:, 0] = width * (boxes[:, 0] - boxes[:, 2] / 2) + padw  # top left x
+    y[:, 1] = height * (boxes[:, 1] - boxes[:, 3] / 2) + padh  # top left y
+    y[:, 2] = width * (boxes[:, 0] + boxes[:, 2] / 2) + padw  # bottom right x
+    y[:, 3] = height * (boxes[:, 1] + boxes[:, 3] / 2) + padh  # bottom right y
     return y
 
 
@@ -70,6 +70,9 @@ if __name__ == '__main__':
                         color=(0, 0, 255), 
                         thickness=2)
 
-            MODES = stat.S_IWUSR | stat.S_IRUSR
-            with os.fdopen(os.open(sdk_voc_path + i, 'os.O_RDWR', MODES), 'w') as f:
-                f.write(str(x[0]) + ' ' + str(x[5]) + ' ' + str(x[1]) + ' ' + str(x[2]) + ' ' + str(x[3]) + ' ' + str(x[4]) + '\n')
+            flags = os.O_WRONLY
+            modes = stat.S_IRUSR   
+            with os.fdopen(os.open(sdk_voc_path + i, flags, modes), 'w') as f:
+                f.write(str(x[0]) + ' ' + str(x[5]) 
+                + ' ' + str(x[1]) + ' ' + str(x[2]) 
+                + ' ' + str(x[3]) + ' ' + str(x[4]) + '\n')

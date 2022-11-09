@@ -20,7 +20,6 @@ import os
 import sys
 import json
 import getopt
-
 import stat
 import cv2
 import numpy as np
@@ -93,9 +92,10 @@ if __name__ == '__main__':
         exit()
     with os.fdopen(os.open(input_file_name, os.O_RDONLY, stat.S_IWUSR | stat.S_IRUSR), 'rb') as f:
         input_data.data = f.read()
-    streamName = b'seg'
-    inPluginId = 0
-    uId = steammanager_api.SendData(streamName, inPluginId, input_data)
+        
+    STREAM_NAME = b'seg'
+    IN_PLUGIN_ID = 0
+    uId = steammanager_api.SendData(STREAM_NAME, IN_PLUGIN_ID, input_data)
     if uId < 0:
         print("Failed to send data to stream.")
         exit()
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     keyVec = StringVector()
     keyVec.push_back(b"mxpi_process3")
 
-    infer = steammanager_api.GetResult(streamName, b'appsink0', keyVec)
+    infer = steammanager_api.GetResult(STREAM_NAME, b'appsink0', keyVec)
     print("-------------------------")
     result = MxpiDataType.MxpiClass()
     result.ParseFromString(infer.metadataVec[0].serializedMetadata)

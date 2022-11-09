@@ -24,7 +24,7 @@
 #include "postprocess.h"
 
 
-using void (*my_fun)(const std::vector< std::vector<int64_t> >& seg_image,
+void (*my_fun)(const std::vector< std::vector<int64_t> >& seg_image,
     std::vector<READ_RESULT>* read_results,
     const int thread_num);
 

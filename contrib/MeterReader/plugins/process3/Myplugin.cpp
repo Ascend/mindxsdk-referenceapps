@@ -26,6 +26,7 @@ using namespace MxTools;
 using namespace std;
 
 const int imgSize = 512;
+const int param_4 = 4;
 
 APP_ERROR Myplugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
@@ -77,7 +78,7 @@ APP_ERROR Myplugin::Process(std::vector<MxpiBuffer*>& mxpiBuffer)
 
     for (int num = 0; num < meter_num; ++num) {
         const string single_seg_result = srcImageMaskListptr->imagemaskvec(num).datastr();
-        cv::Mat kernel(4, 4, CV_8U, cv::Scalar(1));
+        cv::Mat kernel(param_4, param_4, CV_8U, cv::Scalar(1));
         std::vector<uint8_t> label_map(
             single_seg_result.begin(),
             single_seg_result.end());

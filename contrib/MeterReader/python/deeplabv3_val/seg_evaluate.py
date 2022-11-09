@@ -25,16 +25,16 @@ import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
-def miouComputer(img, img_pred):
+def miou_computer(miuo_img, miou_pred):
     """
-    img: 已标注的原图片
+    miuo_img: 已标注的原图片
     img_pred: 预测出的图片
     """
-    if (img.shape != img_pred.shape):
+    if (miuo_img.shape != miou_pred.shape):
         print("两个图片形状不一致")
-        return
+        exit()
 
-    unique_item_list = np.unique(img)  
+    unique_item_list = np.unique(miuo_img)  
     unique_item_dict = {} 
     for index in unique_item_list:
         item = index
@@ -42,21 +42,21 @@ def miouComputer(img, img_pred):
     num = len(np.unique(unique_item_list))  
 
     # 混淆矩阵
-    M = np.zeros((num + 1, num + 1)) 
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            MI = unique_item_dict.get(img[i][j])
-            MJ = unique_item_dict.get(img_pred[i][j])
-            M[MI][MJ] += 1
+    _m = np.zeros((num + 1, num + 1)) 
+    for i in range(miuo_img.shape[0]):
+        for j in range(miuo_img.shape[1]):
+            _mi = unique_item_dict.get(miuo_img[i][j])
+            _mj = unique_item_dict.get(miou_pred[i][j])
+            _m[_mi][_mj] += 1
     # 前num行相加，存在num+1列 【实际下标-1】
-    M[:num, num] = np.sum(M[:num, :num], axis=1)
+    _m[:num, num] = np.sum(_m[:num, :num], axis=1)
     # 前num+1列相加，放在num+1行【实际下标-1】
-    M[num, :num + 1] = np.sum(M[:num, :num + 1], axis=0)
+    _m[num, :num + 1] = np.sum(_m[:num, :num + 1], axis=0)
 
     # 计算Miou值
     miou = 0
     for i in range(num):
-        miou += (M[i][i]) / (M[i][num] + M[num][i] - M[i][i])
+        miou += (_m[i][i]) / (_m[i][num] + _m[num][i] - _m[i][i])
     miou /= num
     return miou
 
@@ -82,8 +82,9 @@ if __name__ == '__main__':
     content['seg']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
-
-    with os.fdopen(os.open(pipeline_path, 'os.O_WRONLY', 'stat.S_IWUSR'), 'w') as f:
+    flags = os.O_WRONLY
+    modes = stat.S_IRUSR   
+    with os.fdopen(os.open(pipeline_path, flags, modes), 'w') as f:
         json.dump(content, f)
 
     
@@ -160,10 +161,10 @@ if __name__ == '__main__':
 
     unique_keys = set(det_pred_dict.keys())
     unique_keys.intersection(set(det_val_dict.keys()))
-    unique_keys = list(unique_keys)
+    _unique = list(unique_keys)
     Miou_list = []
-    for key in unique_keys:
-        Miou_list.append(miouComputer(det_val_dict.get(key), det_pred_dict.get(key)))
-    print(np.average(np.array(Miou_list)))
+    for key in _unique:
+        Miou_list.append(miou_computer(det_val_dict.get(key), det_pred_dict.get(key)))
+    print("The average miou is :", np.average(np.array(Miou_list)))
 
     steammanager_api.DestroyAllStreams()

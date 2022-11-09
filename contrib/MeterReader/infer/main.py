@@ -25,10 +25,11 @@ cur_path = os.path.abspath(os.path.dirname(__file__))
 
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
+
 def get_args():
     argv = sys.argv[1:]
-    inputfile = ''
-    outputfile = ''
+    input_file = ''
+    output_file = ''
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
     except getopt.GetoptError:
@@ -37,12 +38,12 @@ def get_args():
         if opt == '-h':
             sys.exit()
         elif opt in ("-i", "--ifile"):
-            inputfile = arg
+            input_file = arg
         elif opt in ("-o", "--ofile"):
-            outputfile = arg
-    print('输入的文件为：', inputfile)
-    print('输出的文件为：', outputfile)
-    return inputfile, outputfile
+            output_file = arg
+    print('输入的文件为：', input_file)
+    print('输出的文件为：', output_file)
+    return input_file, output_file
 
 
 if __name__ == '__main__':
@@ -53,14 +54,14 @@ if __name__ == '__main__':
     det_result = os.popen(f'python det.py --ifile {inputfile} --odir {outputdir}')
     det_res = det_result.read()
 
-    detResImgLen = 0
+    DET_RES_IMG_LEN = 0
     detResImgFile = []
     detResImgIndex = []
     for line in det_res.splitlines():
         if (line.startswith("res_img")):
             temp = line.split(" ")
-            detResImgLen = int(temp[1])
-            for i in range(detResImgLen):
+            DET_RES_IMG_LEN = int(temp[1])
+            for i in range(DET_RES_IMG_LEN):
                 detResImgFile.append(temp[2 + i])
         elif line.startswith("det_xyxy"):
             temp = line.split(":")[1]
@@ -71,7 +72,7 @@ if __name__ == '__main__':
 
     # seg
     seg_Ans = []
-    for i in range(detResImgLen):
+    for i in range(DET_RES_IMG_LEN):
         seg_result = os.popen(f"python seg.py --ifile {detResImgFile[i]} --ofile {outputdir}")
         seg_res = seg_result.read()
         for line in seg_res.splitlines():
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     print("------seg-----")
     print(seg_Ans)
     print("------All-----")
-    for i in range(detResImgLen):
+    for i in range(DET_RES_IMG_LEN):
         print(f"{detResImgFile[i]}   {seg_Ans[i]}")
 
     # 处理成为图片
