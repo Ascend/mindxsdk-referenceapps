@@ -298,7 +298,7 @@ def align_pair(query_path, refer_path, align_model, show=False):
         align_query = cv2.warpPerspective(raw_query_image, h_m, (height, width), borderMode=cv2.BORDER_CONSTANT,
                                             borderValue=(0))
 
-        point_merged = np.zeros((height, w, 3), dtype=np.uint8)
+        point_merged = np.zeros((height, width, 3), dtype=np.uint8)
 
         if len(align_query.shape) == 3:
             align_query = cv2.cvtColor(align_query, cv2.COLOR_BGR2GRAY)
