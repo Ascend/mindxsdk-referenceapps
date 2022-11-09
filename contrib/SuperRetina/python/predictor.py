@@ -89,8 +89,8 @@ def adjust_gamma(images, gamma=1.0):
     return new_images
 
 
-def transform(image):
-    img = Image.fromarray(image)
+def transform(image_trans):
+    img = Image.fromarray(image_trans)
     img = img.resize((768, 768), resample=Image.BILINEAR)
     img = np.array(img)
     img = np.expand_dims(img, axis=0)
@@ -182,7 +182,6 @@ def plot_matches(image_alpha, image_beta, kpsa, kpsb, matches, status):
             pt_beta = (int(kpsb[trainidx].pt[0]) + alphaw, int(kpsb[trainidx].pt[1]))
             cv2.line(plot_image, pt_alpha, pt_beta, (0, 255, 0), 2)
 
-        # return image
     return plot_image
 
 
@@ -426,7 +425,8 @@ if __name__ == '__main__':
         image = Image.open(F2)
         image.verify()
         image.close()
-    except:
+    except Exception as exc:
+        print(exc)
         print("F1 or F2 incorrect format")
         exit()
     
