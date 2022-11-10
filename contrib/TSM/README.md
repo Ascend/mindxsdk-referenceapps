@@ -23,9 +23,7 @@ SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
 ├── TSM
     ├── README.md                        // 所有模型相关说明
     ├── model
-        ├── pth2onnx.py                  // 转onnx模型脚本
         ├── onnx2om.sh                   // 转om模型脚本
-        ├── pth2onnx1.py                 // 在线模型转onnx模型脚本
         ├── onnx2om1.sh                  // 在线模型转om模型脚本
     ├── label
         ├── kinetics_val.csv             // label文件
@@ -69,7 +67,7 @@ SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
 | mxVision | 5.1RC2 |
 | Python   | 3.9    |
 | torch    | 1.10.0 |
-| ffmpeg   | 3.4.8  |
+| ffmpeg   | 4.2.1  |
 
 - 环境变量搭建
 
@@ -93,14 +91,13 @@ SDK-path: mxVision SDK 安装路径
 
 ascend-toolkit-path: CANN 安装路径。
 
-[ffmpeg下载](https://johnvansickle.com/ffmpeg/)，在列表中选择适合的版本，这里以amd64版本为例，执行以下命令进行安装。
+安装ffmpeg依赖
 
 ```Shell
-wget https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz
-xz -d ffmpeg-git-amd64-static.tar.xz
-tar -xvf ffmpeg-git-amd64-static.tar
-cd ./ffmpeg-git-20190424-amd64-static
-./ffmpeg
+https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz
+./configure --prefix=/usr/local/ffmpeg --enable-shared
+make -j
+make install
 ```
 
 ## 3  离线推理
@@ -173,18 +170,6 @@ mkdir ops
         ├── transforms.py
 ```
 
-将代码包中"online_demo"目录下mobilenet_v2_tsm.py 放在参考设计代码根目录的“model” 目录下。
-
-```text
-├── TSM
-    ├── model
-        ├── pth2onnx.py                  // 转onnx模型脚本
-        ├── onnx2om.sh                   // 转om模型脚本
-        ├── mobilenet_v2_tsm.py          // 在线模型脚本
-        ├── pth2onnx1.py                 // 在线模型转onnx模型脚本
-        ├── onnx2om1.sh                  // 在线模型转om模型脚本
-```
-
 修改“tools”目录下的 vid2img_kinetics.py 内容，将77、78行注释。
 
 ```text
@@ -212,6 +197,7 @@ python3 vid2img_kinetics.py ../data ../dataset/
 # 12行 label_path = '../label'               # 存放label路径
 # 25行 files_input = ['kinetics_val.csv']
 # 26行 files_output = ['val_videofolder.txt']
+# 37行 folders.append(items[1])
 # 57行 output.append('%s %d %d'%(os.path.join('../dataset/',os.path.join(categories_list[i], curFolder)), len(dir_files), curIDX))
 
 ``` 
@@ -224,14 +210,7 @@ python3 gen_label_kinetics.py
 
 **步骤3** 模型转换
 
-下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip) TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e50.pth, 将下载好的模型放在“${TSM代码根目录}/model”目录下。
-
-将模型转换为onnx模型，在参考设计代码根目录下，执行以下命令将pth模型转换为onnx模型
-
-```shell
-cd ./model
-python3 pth2onnx.py  kinetics  RGB
-```
+下载[离线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/offline_models.zip) TSM.onnx, 将下载好的模型放在“${TSM代码根目录}/model”目录下。
 
 将模型转换为om模型，在“model”目录下，执行以下命令生成om模型
 
@@ -241,7 +220,7 @@ bash onnx2om.sh
 
 **步骤4** 精度测试
 
-修改${TSM代码根目录}/ops/dataset_config.py 脚本中参数ROOT_DATASET、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
+修改${TSM代码根目录}/ops/dataset_config.py 脚本中参数root_data、filename_imglist_train和filename_imglist_val，若仅进行离线精度测试则可忽略filename_imglist_train设置。
 
 ```shell
 import os
@@ -253,7 +232,7 @@ ROOT_DATASET = './labels/'    # 标签文件所在路径
 def return_kinetics(modality):
     filename_categories = 400
     if modality == 'RGB':
-        root_data = ROOT_DATASET
+        root_data = ROOT_DATASET                                # 训练集根目录
         filename_imglist_train = 'train_videofolder.txt'        # 训练数据集标签
         filename_imglist_val = 'val_videofolder.txt'            # 测试数据集标签
         prefix = 'img_{:05d}.jpg'
@@ -310,6 +289,8 @@ python3 speed.py
 
 **步骤2** 生成视频流
 
+根据提示当前只支持部分视频格式，并不支持.mp4后缀的文件，但可以通过ffmpeg转换生成[ffmpeg安装教程](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md)，如下所示为MP4转换为h.264命令：
+
 使用ffmpeg工具将带有手势的“jester.mp4”的mp4格式视频转换生成为“jester.264”的264格式视频：
 
 ```shell
@@ -322,16 +303,9 @@ ffmpeg -i jester.mp4 -vcodec h264 -bf 0 -g 25 -r 10 -s 1280*720 -an -f h264 jest
 
 **步骤3** 模型转换
 
-下载[在线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/online_models.zip) mobilenetv2_jester_online.pth.tar
+下载[在线模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TSM/online_models.zip) jester.onnx
 
 将下载好的模型放在参考设计代码根目录的“model”目录下。
-
-将模型转换为onnx模型，在参考设计代码根目录下，运行脚本将pth模型转成onnx模型
-
-```shell
-cd ./model
-python3 pth2onnx1.py
-```
 
 将模型转换为om模型，在“model”目录下，运行脚本生成om模型
 
@@ -349,7 +323,7 @@ python3 online_infer.py
 
 ```python
 def video2img():
-    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('ip:port/jester.264', './image')
+    cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format('rtsp://ip:port/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 ```
