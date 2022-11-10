@@ -278,7 +278,7 @@ GPU性能(Tesla_V100S_PCIE_32GB)
 python3 speed_gpu.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
 ```
 
-得到单视频推理性能为0.08sec/video
+得到单视频纯推理性能为0.08sec/video
 
 SDK性能
 
@@ -288,7 +288,7 @@ SDK性能
 python3 speed.py
 ```
 
-得到单视频推理性能为0.189sec/video
+得到单视频纯推理性能为0.189sec/video
 
 ## 4 在线推理
 
