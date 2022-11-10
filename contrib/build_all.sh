@@ -75,6 +75,7 @@ exit 0
 	PicoDet/
   SOLOV2/
   OpenCVPlugin/
+  X3D/
 )
 
 err_flag=0
