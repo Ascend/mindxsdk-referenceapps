@@ -44,13 +44,16 @@ MindX SDK 安装前准备可参考《用户指南》，安装教程
 │  .bashrc
 │  README.md
 │  set.sh
+|  build.sh
 │
 ├─images
 │  └─readme
 │      det_pipeline.png
 │      main_result.png
 │      seg_pipeline.png
-|      get_map.png
+|      get_map1.png
+|      get_map2.png
+|      get_map3.png
 │
 ├─infer
 │      det.py
@@ -110,8 +113,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 <li>mxpi_process3插件的后处理开发
 
 <li>python推理流程代码开发:
-
-
+  YOLOv5的pipeline流程图:
   <center>
       <img src="./images./README_img/YOLOv5_pipeline.png">
       <br>
@@ -120,8 +122,7 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
       color: #999;
       padding: 2px;">图1. YOLOv5的pipeline流程图 </div>
   </center>
-  
-
+  DeepLabv3的pipeline流程图:
   <center>
         <img src="./images./README_img/DeepLabv3_pipeline.png">
         <br>
