@@ -92,6 +92,22 @@ def crop_image(re_img, new_height, new_width):
     return crop_im
 
 
+def stop_thread(thread):
+    _async_raise(thread.ident, SystemExit)
+
+
+def _async_raise(tid, exctype):
+    tid = ctypes.c_long(tid)
+    if not inspect.isclass(exctype):
+        exctype = type(exctype)
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+    if res == 0:
+        raise ValueError("invalid thread id")
+    elif res != 1:
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+
+
 def main():
     index = 0
     time.sleep(10)
@@ -114,38 +130,44 @@ def main():
     history_logit = []
     history_timing = []
     while True:
-        i_frame += 2
-        time.sleep(0.2)        
-        filename = IMGS[i_frame]
-        img = Image.open("./image/" + filename).convert('RGB')
-        if img.width > img.height:
-            frame_pil = img.resize((round(256 * img.width / img.height), 256))
-        else:
-            frame_pil = img.resize((256, round(256 * img.height / img.width)))
-        image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
-        img_tran = [0, 0, 0]
-        for i in range(3):
-            img_tran[0] = (image[0] / 255-0.485) / 0.229
-            img_tran[1] = (image[1] / 255-0.456) / 0.224
-            img_tran[2] = (image[2] / 255-0.406) / 0.225
-        img_tran = np.array(img_tran).astype(np.float32)
-        img_tran = sdk.Tensor(img_tran)
-        img_tran.to_device(DEVICE_ID)
-        inputs = [img_tran, ] + buffer
-        outputs = md.infer(inputs)
-        buffer = outputs[1:]
-        outputs[0].to_host()
-        out = outputs[0]  
-        feat = np.array(out)
-        idx_ = np.argmax(feat, axis=1)[0]
-        history_logit.append(feat)
-        history_logit = history_logit[-12:]
-        avg_logit = sum(history_logit)
-        idx_ = np.argmax(avg_logit, axis=1)[0]            
-        idx, history = process_output(idx_, history)
+        try: 
+            i_frame += 2
+            time.sleep(0.2)
+            filename = IMGS[i_frame]
+            img = Image.open("./image/" + filename).convert('RGB')
+            if img.width > img.height:
+                frame_pil = img.resize((round(256 * img.width / img.height), 256))
+            else:
+                frame_pil = img.resize((256, round(256 * img.height / img.width)))
+            image = crop_image(frame_pil, 224, 224).transpose(2, 0, 1)
+            img_tran = [0, 0, 0]
+            for i in range(3):
+                img_tran[0] = (image[0] / 255-0.485) / 0.229
+                img_tran[1] = (image[1] / 255-0.456) / 0.224
+                img_tran[2] = (image[2] / 255-0.406) / 0.225
+            img_tran = np.array(img_tran).astype(np.float32)
+            img_tran = sdk.Tensor(img_tran)
+            img_tran.to_device(DEVICE_ID)
+            inputs = [img_tran, ] + buffer
+            outputs = md.infer(inputs)
+            buffer = outputs[1:]
+            outputs[0].to_host()
+            out = outputs[0]
+            feat = np.array(out)
+            idx_ = np.argmax(feat, axis=1)[0]
+            history_logit.append(feat)
+            history_logit = history_logit[-12:]
+            avg_logit = sum(history_logit)
+            idx_ = np.argmax(avg_logit, axis=1)[0]
+            idx, history = process_output(idx_, history)
 
-        print(f"{index} {catigories[idx]}")
-        index += 1
+            print(f"{index} {catigories[idx]}")
+            index += 1
+        except KeyboardInterrupt:
+            print("stop")
+            stop_thread(s1)
+            stop_thread(s2)
+            break
 s1 = threading.Thread(target=video2img)
 s2 = threading.Thread(target=readimg)
 if __name__ == '__main__':
