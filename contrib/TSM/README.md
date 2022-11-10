@@ -100,6 +100,13 @@ make -j
 make install
 ```
 
+安装完毕后导入环境变量
+
+```Shell
+export PATH=/usr/local/ffmpeg/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
+```
+
 ## 3  离线推理
 
 **步骤1** Kinetics-400数据集下载
