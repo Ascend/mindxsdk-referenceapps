@@ -1,2 +1,2 @@
-python det_test.py --ifile /home/wangyi4/tmp/221021_xhr/images/det_res.jpg --odir /home/wangyi4/tmp/221021_xhr/images/det_rect/
-python seg.py --ifile /home/wangyi4/tmp/221021_xhr/images/seg_test_img/110.jpg --ofile /home/wangyi4/tmp/221021_xhr/images/det_rect/
+python det_test.py --ifile ./images/det_res.jpg --odir ./images/det_rect/
+python seg.py --ifile ./images/seg_test_img/110.jpg --ofile ./images/det_rect/
