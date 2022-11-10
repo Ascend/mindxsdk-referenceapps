@@ -27,7 +27,6 @@ function make_plugin() {
       echo "cmake failed."
       return 1
     fi
-
     if ! (make && make install);
     then
       echo "make failed."
