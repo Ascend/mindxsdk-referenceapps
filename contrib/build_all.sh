@@ -52,7 +52,6 @@ SAMPLE_FOLDER=(
   OpenCVPlugin/
     RefineDet/
     FCOS/
-    Faster_R-CNN/
 )
 
 err_flag=0
