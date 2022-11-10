@@ -52,6 +52,7 @@ SAMPLE_FOLDER=(
   OpenCVPlugin/
     RefineDet/
     FCOS/
+    MeterReader/
 )
 
 err_flag=0

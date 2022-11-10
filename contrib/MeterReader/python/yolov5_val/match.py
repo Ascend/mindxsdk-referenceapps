@@ -29,44 +29,45 @@ sdk_predict_voc_PATH：sdk预测的voc数据
 检查是否有的数据是无目标的
 '''
 
-def equals(varo, vart):
 
+def equals(varo, vart):
     return varo == vart
 
-def equalZero(veroi):
 
+def equal_zero(veroi):
     return veroi == 0
 
-def error(msg,other="",exit_flag=False):
-    if (not msg):
+
+def error(error_msg, other="", exit_flag=False):
+    if (not error_msg):
         return
     else:
-        print(msg,other)
+        print(error_msg, other)
         if (exit_flag):
             sys.exit()
+
 
 cur_path = os.path.abspath(os.path.dirname(__file__))
 validate_voc_PATH = os.path.join(cur_path, 'det_val_data', 'det_val_voc').replace('\\', '/')
 sdk_predict_voc_PATH = os.path.join(cur_path, 'det_val_data', 'det_sdk_voc').replace('\\', '/')
 
-
-backup_folder = 'backup_no_matches_found'
+BACKUP_FOLDER = 'backup_no_matches_found'
 
 os.chdir(validate_voc_PATH)
 validate_voc_files = glob.glob('*.txt')
-if equalZero(len(validate_voc_files)):
-    error("Error: no .txt files found in", validate_voc_PATH, exit_flag = True)
+if equal_zero(len(validate_voc_files)):
+    error("Error: no .txt files found in", validate_voc_PATH, exit_flag=True)
 
 os.chdir(sdk_predict_voc_PATH)
 sdk_predict_voc_files = glob.glob('*.txt')
 
-if equalZero(sdk_predict_voc_files):
-    error("Error: no .txt files found in", sdk_predict_voc_PATH, exit_flag = True)
+if equal_zero(sdk_predict_voc_files):
+    error("Error: no .txt files found in", sdk_predict_voc_PATH, exit_flag=True)
 
 validate_voc_files = set(validate_voc_files)
 sdk_predict_voc_files = set(sdk_predict_voc_files)
 print('total ground-truth files:', len(validate_voc_files))
-print('total detection-results files: '+ str(len(sdk_predict_voc_files))+'\n')
+print('total detection-results files: ' + str(len(sdk_predict_voc_files)) + '\n')
 
 validate_voc_backup = validate_voc_files - sdk_predict_voc_files
 sdk_predict_voc_backup = sdk_predict_voc_files - validate_voc_files
@@ -74,37 +75,37 @@ sdk_predict_voc_backup = sdk_predict_voc_files - validate_voc_files
 # validate_voc
 
 if not validate_voc_backup:
-    error('No backup required for', validate_voc_PATH, exit_flag = False)
+    error('No backup required for', validate_voc_PATH, exit_flag=False)
 else:
     os.chdir(validate_voc_PATH)
     ## create the backup dir if it doesn't exist already
-    if not os.path.exists(backup_folder):
-        os.makedirs(backup_folder)
+    if not os.path.exists(BACKUP_FOLDER):
+        os.makedirs(BACKUP_FOLDER)
     for file in validate_voc_backup:
-        os.rename(file, backup_folder + '/' + file)
+        os.rename(file, BACKUP_FOLDER + '/' + file)
 
 # sdk_predict_voc
 if not sdk_predict_voc_backup:
-    error('No backup required for', sdk_predict_voc_PATH, exit_flag = False)
+    error('No backup required for', sdk_predict_voc_PATH, exit_flag=False)
 else:
     os.chdir(sdk_predict_voc_PATH)
     ## create the backup dir if it doesn't exist already
-    if not os.path.exists(backup_folder):
-        os.makedirs(backup_folder)
+    if not os.path.exists(BACKUP_FOLDER):
+        os.makedirs(BACKUP_FOLDER)
     for file in sdk_predict_voc_backup:
-        os.rename(file, backup_folder + '/' + file)
+        os.rename(file, BACKUP_FOLDER + '/' + file)
 
-msg = "msg"
+MSG = "msg"
 if validate_voc_backup:
-    msg='total ground-truth backup files:'
-    print(msg+" "+str(len(validate_voc_backup)))
+    MSG = 'total ground-truth backup files:'
+    print(MSG + " " + str(len(validate_voc_backup)))
 if sdk_predict_voc_backup:
-    msg='total detection-results backup files:'
-    print(msg+" "+ str(len(sdk_predict_voc_backup)))
+    MSG = 'total detection-results backup files:'
+    print(MSG + " " + str(len(sdk_predict_voc_backup)))
 
 intersection_files = validate_voc_files & sdk_predict_voc_files
 
-msg='total intersected files:'
-print(msg, len(intersection_files))
-msg="Intersection completed!"
-print(msg)
+MSG = 'total intersected files:'
+print(MSG, len(intersection_files))
+MSG = "Intersection completed!"
+print(MSG)

@@ -34,15 +34,15 @@ def miou_computer(miuo_img, miou_pred):
         print("两个图片形状不一致")
         exit()
 
-    unique_item_list = np.unique(miuo_img)  
-    unique_item_dict = {} 
+    unique_item_list = np.unique(miuo_img)
+    unique_item_dict = {}
     for index in unique_item_list:
         item = index
         unique_item_dict[item] = index
-    num = len(np.unique(unique_item_list))  
+    num = len(np.unique(unique_item_list))
 
     # 混淆矩阵
-    _m = np.zeros((num + 1, num + 1)) 
+    _m = np.zeros((num + 1, num + 1))
     for i in range(miuo_img.shape[0]):
         for j in range(miuo_img.shape[1]):
             _mi = unique_item_dict.get(miuo_img[i][j])
@@ -83,11 +83,9 @@ if __name__ == '__main__':
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
     content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
     FLAGS = os.O_WRONLY
-    MODE_S = stat.S_IRUSR   
+    MODE_S = stat.S_IRUSR
     with os.fdopen(os.open(pipeline_path, FLAGS, MODE_S), 'w') as f:
         json.dump(content, f)
-
-    
 
     steammanager_api = StreamManagerApi()
     # init stream manager

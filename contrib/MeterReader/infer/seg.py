@@ -92,7 +92,7 @@ if __name__ == '__main__':
         exit()
     with os.fdopen(os.open(input_file_name, os.O_RDONLY, stat.S_IWUSR | stat.S_IRUSR), 'rb') as f:
         input_data.data = f.read()
-        
+
     STREAM_NAME = b'seg'
     IN_PLUGIN_ID = 0
     uId = steammanager_api.SendData(STREAM_NAME, IN_PLUGIN_ID, input_data)

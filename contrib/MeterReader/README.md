@@ -330,45 +330,80 @@ python seg.py --ifile ${输入图片路径} --ofile ${输出图片路径}
 
 1、YOLOv5模型精度测试
 
+下载目标检测模型验证集det_val_voc文件夹数据到MeterReader/python/yolov5_val/det_val_data路径下，下载链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip
+
+在命令行中跳转到MeterReader/python/yolov5_val文件路径下
 ```bash
-
-#下载目标检测模型验证集det_val_voc文件夹数据到MeterReader/python/yolov5_val/det_val_data路径下，下载链接https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip
-
-# 在命令行中跳转到MeterReader/python/yolov5_val文件路径下
-cd MeterReader/python/yolov5_val
-
-#使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为MeterReader/python/yolov5_val/det_val_data/det_sdk_txt。
+cd python/yolov5_val
+```
+使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为MeterReader/python/yolov5_val/det_val_data/det_sdk_txt。
+```bash
 python det.py
-
-#使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在MeterReader/python/yolov5_val/det_val_data/det_sdk_voc路径中。
+```
+使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在MeterReader/python/yolov5_val/det_val_data/det_sdk_voc路径中。
+```bash
 python yolo2voc.py
-
-#使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
+```
+使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
+```bash
 python match.py
+```
 
-#下载get_map.py脚本至MeterReader/python/yolov5_val，将修改第47、48、50行参数，下载连接：https://github.com/Cartucho/mAP/edit/master/main.py 
+下载get_map.py脚本至MeterReader/python/yolov5_val，按照以下步骤修改部分代码，下载连接：https://github.com/Cartucho/mAP/edit/master/main.py 
 
+修改get_map.py第47、48、50行处文件路径
+```bash
+GT_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_val_voc')
+DR_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_sdk_voc')
+# # if there are no images then no animation can be shown
+IMG_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_val_img')
+```
 <center>
-    <img src="./images/README_img/get_map.png">
+    <img src="./images/README_img/get_map1.png">
     <br>
     <div style="color:orange;
     display: inline-block;
     color: #999;
-    padding: 2px;">图4. get_map.py修改参数 </div>
+    padding: 2px;">图4. 修改get_map.py第47、48、50行处文件路径 </div>
 </center>
 
-#使用下面命令运行脚本，计算得到det.om在验证集上的mAP。
+修改get_map.py第64行代码
+```bash
+show_animation = False
+```
+<center>
+    <img src="./images/README_img/get_map2.png">
+    <br>
+    <div style="color:orange;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图5. 修改get_map.py第64行代码 </div>
+</center>
+
+在get_map.py第243行添加代码
+```bash
+to_show = False
+```
+<center>
+    <img src="./images/README_img/get_map3.png">
+    <br>
+    <div style="color:orange;
+    display: inline-block;
+    color: #999;
+    padding: 2px;">图5. 在get_map.py第243行添加代码 </div>
+</center>
+
+使用下面命令运行脚本，计算得到det.om在验证集上的mAP。
+```bash
 python get_map.py
 ```
+
 经过测试，YOLOv5模型的mAP为100%。
 
 
-
 2、deeplabv3模型精度测试。采取Miou指标评价精度。
-
+下载语义分割模型验证集voc格式数据到MeterReader/python/deeplabv3_val/seg_val_img路径下，下载链接https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz
 ```bash
-#下载语义分割模型验证集voc格式数据到MeterReader/python/deeplabv3_val/seg_val_img路径下，下载链接https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz
-
 cd python/deeplabv3_val/
 python seg_evaluate.py
 ```

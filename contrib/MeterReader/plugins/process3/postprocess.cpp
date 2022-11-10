@@ -45,7 +45,7 @@ const int param_1 = 1;
 const int param_2 = 2;
 const double param_0_5 = 0.5;
 const double param_2_0 = 2.0;
-const int params_int[] = {0,1,2,3,4,5,6,7,8,9};
+const int params_int[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 bool getLineData(const vector<int64_t>& image,
     vector<unsigned int>* line_data) {
@@ -85,8 +85,8 @@ bool convertToOneDimensionalData(const vector<unsigned int>& line_data,
         pointer_data_vec[col_index] = 0;
         for (int row_index = 0; row_index < line_size[0]; ++row_index) {
             int index = row_index * line_size[1] + col_index;
-            pointer_data_vec[col_index] += (line_data[index] == param_1)?(param_1):(param_0);
-            scale_data_vec[col_index] += (line_data[index] == param_2)?(param_1):(param_0);
+            pointer_data_vec[col_index] += (line_data[index] == param_1) ? (param_1) : (param_0);
+            scale_data_vec[col_index] += (line_data[index] == param_2) ? (param_1) : (param_0);
         }
     }
     return true;
@@ -146,15 +146,15 @@ bool getPointerLocation(const vector<unsigned int>& pointer,
 
     for (int i = 0; i < line_size[1]; i++) {
         if ((pointer[i] > 0 && pointer[i + 1] > 0) && pointer_data.flag == 0) {
-                pointer_data.start = i;
-                pointer_data.flag = param_1;
+            pointer_data.start = i;
+            pointer_data.flag = param_1;
         }
         if ((pointer[i] == 0) && (pointer[i + 1] == 0) && pointer_data.flag == param_1) {
-                pointer_data.end = i - param_1;
-                pointer_data.one_location = (pointer_data.start + pointer_data.end) / param_2_0;
-                pointer_data.start = 0;
-                pointer_data.end = 0;
-                pointer_data.flag = 0;
+            pointer_data.end = i - param_1;
+            pointer_data.one_location = (pointer_data.start + pointer_data.end) / param_2_0;
+            pointer_data.start = 0;
+            pointer_data.end = 0;
+            pointer_data.flag = 0;
         }
     }
     pointer_location = pointer_data.one_location;
@@ -163,7 +163,7 @@ bool getPointerLocation(const vector<unsigned int>& pointer,
 
 
 bool getMeterReader(const vector<float>& scale_location,
-    float pointer_location, 
+    float pointer_location,
     READ_RESULT* result) {
     int scale_num = scale_location.size();
     READ_RESULT& result_struct = (*result);
@@ -172,20 +172,17 @@ bool getMeterReader(const vector<float>& scale_location,
     result_struct.ratio = -1;
     if (scale_num > 0) {
         for (int i = 0; i < scale_num - 1; i++) {
-            bool scale_i_no_more_than_pointer =  (scale_location[i] <= pointer_location);
+            bool scale_i_no_more_than_pointer = (scale_location[i] <= pointer_location);
             bool pointer_less_than_scale_i1 = (pointer_location < scale_location[i + 1]);
-            if ( scale_i_no_more_than_pointer && pointer_less_than_scale_i1) {
+            if (scale_i_no_more_than_pointer && pointer_less_than_scale_i1) {
                 float temp = (pointer_location - scale_location[i]) / (scale_location[i + 1] - scale_location[i] + 1e-05);
                 result_struct.scales = i + 1 + temp;
             }
         }
-        result_struct.ratio =(pointer_location - scale_location[0]) / (scale_location[scale_num - 1] - scale_location[0] + 1e-05);
+        result_struct.ratio = (pointer_location - scale_location[0]) / (scale_location[scale_num - 1] - scale_location[0] + 1e-05);
     }
     return true;
 }
-
-
-
 
 
 void read_process(const vector<vector<int64_t>>& image,
@@ -203,47 +200,40 @@ void read_process(const vector<vector<int64_t>>& image,
         vector<unsigned int> img_scale_data(line_size[1]);
         vector<unsigned int> img_scale_mean_data(line_size[1]);
         READ_RESULT img_result;
-        if (process_flag_index == params_int[0]){
+        if (process_flag_index == params_int[param_0]) {
             process_success_flag = getLineData(image[img_read], &img_line_data);
-            if (process_success_flag){
+            if (process_success_flag) {
                 process_flag_index++;
             }
         }
-        if (process_flag_index == params_int[1]){
+        if (process_flag_index == params_int[param_1]) {
             process_success_flag = convertToOneDimensionalData(img_line_data, &img_scale_data, &img_pointer_data);
-            if (process_success_flag){
+            if (process_success_flag) {
                 process_flag_index++;
             }
         }
-        if (process_flag_index == params_int[2]){
+        if (process_flag_index == params_int[param_2]) {
             process_success_flag = scaleAveFilt(img_scale_data, &img_scale_mean_data);
-            if (process_success_flag){
+            if (process_success_flag) {
                 process_flag_index++;
             }
         }
-        if (process_flag_index == params_int[3]){
+        if (process_flag_index == params_int[param_2+param_1]) {
             process_success_flag = getScaleLocation(img_scale_mean_data, &img_scale_location);
-            if (process_success_flag){
+            if (process_success_flag) {
                 process_success_flag = getPointerLocation(img_pointer_data, img_pointer_location);
-                if (process_success_flag){
+                if (process_success_flag) {
                     process_flag_index++;
                 }
-            } 
-        }
-        if (process_flag_index == params_int[4]){
-            process_success_flag = getMeterReader(img_scale_location, img_pointer_location, &img_result);
-            read_results_vec[img_read] = std::move(img_result);
-            if (process_success_flag){
-                process_flag_index=params_int[0];
             }
         }
-        
-
-        
-        
-        
-        
-        
+        if (process_flag_index == params_int[param_2+param_2]) {
+            process_success_flag = getMeterReader(img_scale_location, img_pointer_location, &img_result);
+            read_results_vec[img_read] = std::move(img_result);
+            if (process_success_flag) {
+                process_flag_index = params_int[param_0];
+            }
+        }
     }
     return;
 }

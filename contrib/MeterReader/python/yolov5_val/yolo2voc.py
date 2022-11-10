@@ -19,11 +19,11 @@
 把第一步得到的txt文件中的数据格式转换成voc格式
 '''
 
-
 import os
 import stat
 import numpy as np
 import cv2
+
 # 获取当前脚本的位置
 cur_path = os.path.abspath(os.path.dirname(__file__))
 label_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt').replace('\\', '/')
@@ -33,7 +33,7 @@ sdk_voc_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_voc/').replace('\
 
 # 坐标转换，原始存储的是YOLOv5格式
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
-def xywhn2xyxy(boxes, width = 800, height = 800):
+def xywhn2xyxy(boxes, width=800, height=800):
     padw = 0
     padh = 0
     y = np.copy(boxes)
@@ -52,22 +52,23 @@ if __name__ == '__main__':
             lb = np.array([x.split() for x in f.read().strip().splitlines()], dtype=np.float32)  # predict_label
             print(lb)
         read_label = label_path_new.replace(".txt", ".jpg")
-        read_label_path = read_label.replace('det_sdk_txt', 'det_val_img').replace("\\", "/") 
+        read_label_path = read_label.replace('det_sdk_txt', 'det_val_img').replace("\\", "/")
         img = cv2.imread(read_label_path)
         h, w = img.shape[:2]
-        lb[:, 1:] = xywhn2xyxy(lb[:, 1:], w, h) 
+        lb[:, 1:] = xywhn2xyxy(lb[:, 1:], w, h)
 
         # 绘图
         for _, x in enumerate(lb):
             class_label = int(x[0])  # class
             cv2.rectangle(img, (round(x[1]), round(x[2])), (round(x[3]), round(x[4])), (0, 255, 0))
             cv2.putText(img, str(class_label),
-                        (int(x[1]), int(x[2] - 2)), 
+                        (int(x[1]), int(x[2] - 2)),
                         fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                         fontScale=1,
-                        color=(0, 0, 255), 
+                        color=(0, 0, 255),
                         thickness=2)
-            with os.fdopen(os.open(sdk_voc_path + i, os.O_WRONLY | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR ), 'a') as voc:
-                voc.write(str(x[0]) + ' ' + str(x[5]) 
-                + ' ' + str(x[1]) + ' ' + str(x[2]) 
-                + ' ' + str(x[3]) + ' ' + str(x[4]) + '\n')
+            with os.fdopen(os.open(sdk_voc_path + i, os.O_WRONLY | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR),
+                           'a') as voc:
+                voc.write(str(x[0]) + ' ' + str(x[5])
+                          + ' ' + str(x[1]) + ' ' + str(x[2])
+                          + ' ' + str(x[3]) + ' ' + str(x[4]) + '\n')
