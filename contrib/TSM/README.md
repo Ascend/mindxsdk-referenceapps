@@ -260,7 +260,7 @@ python3 offline_infer.py kinetics
 
 将用来测试的单视频放在参考设计代码根目录下，如视频“test_speed.mp4”，运行性能测试脚本
 
-修改参数，'./test_speed.mp4'为测试视频，测试视频类别需在Kinetics-400数据集的400个种类内且视频长度至少为3s。
+修改speed_gpu.py与speed.py参数，'./test_speed.mp4'为测试视频，测试视频类别需在Kinetics-400数据集的400个种类内且视频长度至少为3s。
 
 ```python
 def main():
