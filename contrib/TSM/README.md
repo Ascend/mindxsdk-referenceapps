@@ -91,7 +91,7 @@ SDK-path: mxVision SDK 安装路径
 
 ascend-toolkit-path: CANN 安装路径。
 
-安装ffmpeg依赖
+安装ffmpeg
 
 ```Shell
 https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz
