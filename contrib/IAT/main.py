@@ -5,24 +5,23 @@ from mindx.sdk import base
 from mindx.sdk.base import Tensor, Model, Size, log, ImageProcessor
 import cv2
 
-model_path = "/home/nankaigcs1/IAT/models/iatsim.om"       #模型的路径
-image_path = "/home/nankaigcs1/IAT/data/eval15/low/1.png"  #输入图片
-result_path = "/home/nankaigcs1/IAT/data/result/"
-dataset_dir = "/home/nankaigcs1/IAT/data/eval15/"
-device_id = 0                          #芯片ID
+g_model_path = "/home/nankaigcs1/IAT/models/iatsim.om"  #模型的路径
+g_image_path = "/home/nankaigcs1/IAT/data/eval15/low/1.png"  #输入图片
+g_result_path = "/home/nankaigcs1/IAT/data/result/"
+g_dataset_dir = "/home/nankaigcs1/IAT/data/eval15/"
+g_device_id = 0  #芯片ID
+
 
 class SSIM():
     """
     a class to evaluate SSIM
     """
-    def __init__(self):
-        super().__init__()
-
-    def __call__(self,img1,img2):
-        C1 = (0.01 * 255)**2
-        C2 = (0.03 * 255)**2
-        img1 = img1.reshape(3,400,600).transpose(1,2,0)*255
-        img2 = img2.reshape(3,400,600).transpose(1,2,0)*255
+    @staticmethod
+    def calcSSIM(img1, img2):
+        ssim_c1 = (0.01 * 255)**2
+        ssim_c2 = (0.03 * 255)**2
+        img1 = img1.reshape(3, 400, 600).transpose(1, 2, 0)*255
+        img2 = img2.reshape(3, 400, 600).transpose(1, 2, 0)*255
         kernel = cv2.getGaussianKernel(11, 1.5)
         window = np.outer(kernel, kernel.transpose())
         mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5] # valid
@@ -33,8 +32,8 @@ class SSIM():
         sigma1_sq = cv2.filter2D(img1**2, -1, window)[5:-5, 5:-5] - mu1_sq
         sigma2_sq = cv2.filter2D(img2**2, -1, window)[5:-5, 5:-5] - mu2_sq
         sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
-        ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) *
-                                                                (sigma1_sq + sigma2_sq + C2))
+        ssim_map = ((2 * mu1_mu2 + ssim_c1) * (2 * sigma12 + ssim_c2)) / ((mu1_sq + mu2_sq + ssim_c1) *
+                                                                (sigma1_sq + sigma2_sq + ssim_c2))
         return ssim_map.mean()
 
 
@@ -42,15 +41,14 @@ class PSNR():
     """
     a class to evaluate PSNR.
     """
-    def __init__(self):
-        super().__init__()
-
-    def __call__(self, a, b):
+    @staticmethod
+    def calcPSNR(a, b):
         mse = np.mean((a - b) ** 2)
         if mse == 0:
             return 0
 
         return 10 * np.log10((1.0 / mse))
+
 
 def get_image(image_path):
     """
@@ -58,7 +56,7 @@ def get_image(image_path):
     :param image_path: the path of image
     :return: a numpy array of image
     """
-    image_bgr = np.array([cv2.imread(image_path)])  #1x400x600x3
+    image_bgr = np.array([cv2.imread(image_path)])
     image = image_bgr.transpose(0,3,1,2).astype(np.float32)/255.0
     image = np.ascontiguousarray(image,dtype=np.float32)
     return image
@@ -72,12 +70,12 @@ def infer(image_path,is_save=False):
     :return: a numpy array of image
     """
     base.mx_init()
-    IAT = Model(model_path, device_id) #创造模型对象
+    IAT = Model(g_model_path, g_device_id) #创造模型对象
 
     infer_image = get_image(image_path)
     #numpy to tensor
     imageTensor = Tensor(infer_image)
-    imageTensor.to_device(device_id)
+    imageTensor.to_device(g_device_id)
     input = [imageTensor]
 
     #inference
@@ -87,7 +85,7 @@ def infer(image_path,is_save=False):
     enhanced_img = np.array(enhanced_img)
     if is_save:
         enhanced_img = enhanced_img.reshape(3,400,600).transpose(1,2,0)*255
-        imwrite(result_path+"result.png",enhanced_img)
+        cv2.imwrite(g_result_path + "result.png", enhanced_img)
 
     return enhanced_img
 
@@ -98,19 +96,17 @@ def test_precision():
     :return: null
     """
     import os
-    low_image_list = sorted([dataset_dir+"/low/"+image_name for image_name in os.listdir(dataset_dir+"/low/")])
-    high_image_list = sorted([dataset_dir+"/high/"+image_name for image_name in os.listdir(dataset_dir+"/high/")])
+    low_image_list = sorted([g_dataset_dir + "/low/" + image_name for image_name in os.listdir(g_dataset_dir + "/low/")])
+    high_image_list = sorted([g_dataset_dir + "/high/" + image_name for image_name in os.listdir(g_dataset_dir + "/high/")])
     print(low_image_list)
-    psnr = PSNR()
-    ssim = SSIM()
     image_num = len(low_image_list)
     psnr_sum = 0.0
     ssim_sum = 0.0
     for i in range(image_num):
         high_image = get_image(high_image_list[i])
         enhanced_image = infer(low_image_list[i])
-        psnr_sum += psnr(high_image,enhanced_image)
-        ssim_sum += ssim(high_image,enhanced_image)
+        psnr_sum += PSNR.calcPSNR(high_image, enhanced_image)
+        ssim_sum += SSIM.calcSSIM(high_image, enhanced_image)
 
     psnr_avg = psnr_sum/image_num
     ssim_avg = ssim_sum/image_num
