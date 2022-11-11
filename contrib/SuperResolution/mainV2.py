@@ -39,20 +39,20 @@ MAX_IMAGE_SIZE = 8192
 
 if __name__ == '__main__':
     # input image path
-    input_image_path = "./image/head.jpg"
+    INPUT_IMAGE_PATH = "./image/head.jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':
             print('input image path is not valid, use default config.')
         else:
-            input_image_path = sys.argv[1]
+            INPUT_IMAGE_PATH = sys.argv[1]
 
     # check input image
-    if os.path.exists(input_image_path) != 1:
-        print('The {} does not exist.'.format(input_image_path))
+    if os.path.exists(INPUT_IMAGE_PATH) != 1:
+        print('The {} does not exist.'.format(INPUT_IMAGE_PATH))
         exit()
     else:
-        image = Image.open(input_image_path)
+        image = Image.open(INPUT_IMAGE_PATH)
         if image.format != 'JPEG':
             print('input image only support jpg, curr format is {}.'.format(image.format))
             exit()
@@ -72,27 +72,27 @@ if __name__ == '__main__':
     lr = hr.resize((hr.width // SCALE, hr.height // SCALE), resample=Image.BILINEAR)
     # interpolated low-resolution image
     ilr = lr.resize((lr.width * SCALE, lr.height * SCALE), resample=Image.BICUBIC)
-    image_path = "./ilr_image.jpg"
-    ilr.save(image_path, format='JPEG')
+    IMAGE_PATH = "./ilr_image.jpg"
+    ilr.save(IMAGE_PATH, format='JPEG')
     
-    start=time.time()
+    start = time.time()
     # V2 initialize
-    device_id = 0  
+    DEVICE_ID = 0  
     base.mx_init()
     # V2 decode and resize
-    imageProcessor1 = ImageProcessor(device_id) 
-    decodedImg = imageProcessor1.decode(image_path, base.nv12)  
-    imageProcessor2 = ImageProcessor(device_id)  
-    size_cof = Size(DEFAULT_IMAGE_WIDTH,DEFAULT_IMAGE_HEIGHT)  
+    imageProcessor1 = ImageProcessor(DEVICE_ID) 
+    decodedImg = imageProcessor1.decode(IMAGE_PATH, base.nv12)  
+    imageProcessor2 = ImageProcessor(DEVICE_ID)  
+    size_cof = Size(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)  
     resizedImg = imageProcessor2.resize(decodedImg, size_cof, base.huaweiu_high_order_filter)  
     # V2 infer
     imgTensor = [resizedImg.to_tensor()]  
-    model_path = "model/VDSR_768_768.om"  
-    model_ = base.model(model_path, deviceId=device_id) 
+    MODEL_PATH = "model/VDSR_768_768.om"  
+    model_ = base.model(MODEL_PATH, deviceId=DEVICE_ID) 
     outputs = model_.infer(imgTensor)   
     
     end = time.time()
-    print('V2 infer Running time: %s Seconds'%(end-start))
+    print('V2 infer Running time: %s Seconds.' %(end-start))
     
     # get the infer result 
     output0 = outputs[0]  
@@ -131,6 +131,6 @@ if __name__ == '__main__':
     # draw into the picture according to the position, content, color and font
     draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
     # save visualization results
-    _, fileName = os.path.split(input_image_path)
+    _, fileName = os.path.split(INPUT_IMAGE_PATH)
     out_path = "./V2result/" + fileName
     target.save(out_path)

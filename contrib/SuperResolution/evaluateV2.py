@@ -28,13 +28,13 @@ OFFSET_5 = 5
 OFFSET_20 = 20
 
 
-def infer(input_image_path,imageProcessor1,imageProcessor2,model_):
+def infer(input_image_path, decode_image_processor, resize_image_processor, model):
     """
 	  image super-resolution inference
 	  :param input_image_path: input image path
-	  :param imageProcessor1: imageProcessor object to decode
- 	  :param imageProcessor1: imageProcessor object to resize
-    :param model_: model object to infer    
+	  :param decode_image_processor: imageProcessor object to decode
+ 	  :param resize_image_processor: imageProcessor object to resize
+      :param model: model object to infer    
 	  :return: no return
 	  """
     if os.path.exists(input_image_path) != 1:
@@ -51,12 +51,12 @@ def infer(input_image_path,imageProcessor1,imageProcessor2,model_):
     ilr.save(image_path, format='JPEG')
 
     # V2 decode and resize
-    decodedImg = imageProcessor1.decode(image_path, base.nv12)
-    size_cof = Size(DEFAULT_IMAGE_WIDTH,DEFAULT_IMAGE_HEIGHT)
-    resizedImg = imageProcessor2.resize(decodedImg, size_cof, base.huaweiu_high_order_filter)
+    decoded_img = decode_image_processor.decode(image_path, base.nv12)
+    size_cof = Size(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)
+    resized_img = resize_image_processor.resize(decoded_img, size_cof, base.huaweiu_high_order_filter)
     # V2 infer
-    imgTensor = [resizedImg.to_tensor()]
-    outputs = model_.infer(imgTensor)
+    img_tensor = [resized_img.to_tensor()]
+    outputs = model.infer(img_tensor)
     # get the infer result
     output0 = outputs[0]
     output0.to_host()
@@ -68,45 +68,45 @@ def infer(input_image_path,imageProcessor1,imageProcessor2,model_):
 
     hr_img_y, _, _ = hr.convert("YCbCr").split()
     # calculate peak signal-to-noise ratio
-    PSNR = calc_psnr(sr_img_y, hr_img_y)
-    psnr_all.append(PSNR)
-    print('PSNR: {:.2f}'.format(PSNR))
+    psnr = calc_psnr(sr_img_y, hr_img_y)
+    psnr_all.append(psnr)
+    print('PSNR: {:.2f}'.format(psnr))
 
 
 if __name__ == '__main__':
     # test image set path
-    test_image_set_path = "testSet/91-images-jpg"
+    TEST_IMAGE_SET_PATH = "testSet/91-images-jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':
             print('test image set path is not valid, use default config.')
         else:
-            test_image_set_path = sys.argv[1]
+            TEST_IMAGE_SET_PATH = sys.argv[1]
     # check input paths
-    if os.path.exists(test_image_set_path) != 1:
-        print('The image set path {} does not exist.'.format(test_image_set_path))
+    if os.path.exists(TEST_IMAGE_SET_PATH) != 1:
+        print('The image set path {} does not exist.'.format(TEST_IMAGE_SET_PATH))
         exit()
     # get all image files
-    image_files = os.listdir(test_image_set_path)
+    image_files = os.listdir(TEST_IMAGE_SET_PATH)
     # sort by file name
     image_files.sort(key=lambda x: str(x[:-4]))
     print(image_files)
     #V2 initialize
     base.mx_init()
-    device_id = 0
-    imageProcessor1 = ImageProcessor(device_id)
-    imageProcessor2 = ImageProcessor(device_id)
-    model_path = "model/VDSR_768_768.om"
-    model_ = base.model(model_path, deviceId=device_id)
+    DEVICE_ID = 0
+    imageProcessor1 = ImageProcessor(DEVICE_ID)
+    imageProcessor2 = ImageProcessor(DEVICE_ID)
+    MODEL_PATH = "model/VDSR_768_768.om"
+    model_ = base.model(MODEL_PATH, deviceId=DEVICE_ID)
     # save the peak signal-to-noise ratio of each image in the test set
     psnr_all = []
-    start=time.time()
+    start = time.time()
     # infer
     for test_image_path in image_files:
-        image_file = test_image_set_path + "/" + test_image_path
-        infer(image_file,imageProcessor1,imageProcessor2,model_)
+        image_file = TEST_IMAGE_SET_PATH + "/" + test_image_path
+        infer(image_file, imageProcessor1, imageProcessor2, model_)
     print("average psnr = " + str(sum(psnr_all)/len(psnr_all)))
     print(psnr_all)
-    end=time.time()
-    print('Running time: %s Seconds'%(end-start))
+    end = time.time()
+    print('Running time: %s Seconds.' %(end-start))
  
