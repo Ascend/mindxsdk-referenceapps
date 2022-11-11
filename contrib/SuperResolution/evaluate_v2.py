@@ -29,15 +29,18 @@ OFFSET_20 = 20
 
 
 def infer(input_image_path, decode_image_processor, resize_image_processor, model, image_size):
-    """image super-resolution inference
+    """
+    image super-resolution inference
     
     Args:
-	    :param input_image_path: input image path
-	    :param decode_image_processor: imageProcessor object to decode
-        :param resize_image_processor: imageProcessor object to resize
-        :param model: model object to infer    
-	return: 
+	    input_image_path: input image path
+	    decode_image_processor: imageProcessor object to decode
+        resize_image_processor: imageProcessor object to resize
+        model: model object to infer
+        
+	Returns:
 	    no return
+	    
 	"""
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
