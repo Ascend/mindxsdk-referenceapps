@@ -52,7 +52,7 @@ def infer(input_image_path,imageProcessor1,imageProcessor2,model_):
 
     # V2 decode and resize
     decodedImg = imageProcessor1.decode(image_path, base.nv12)
-    size_cof = Size(DEFAULT_IMAGE_WIDTH,DEFAULT_IMAGE_HEIGHT)寸
+    size_cof = Size(DEFAULT_IMAGE_WIDTH,DEFAULT_IMAGE_HEIGHT)
     resizedImg = imageProcessor2.resize(decodedImg, size_cof, base.huaweiu_high_order_filter)
     # V2 infer
     imgTensor = [resizedImg.to_tensor()]
