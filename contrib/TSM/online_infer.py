@@ -47,7 +47,7 @@ IMGS = []
 
 def video2img():
     cmd = 'ffmpeg  -i \"{}\" -threads 1 -vf scale=-1:331 -q:v 0 \"{}/img_%05d.jpg\"'.format(
-          'ip:port/jester.264', './image')
+          'rtsp://ip:port/jester.264', './image')
     subprocess.call(cmd, shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
