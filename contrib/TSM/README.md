@@ -29,6 +29,8 @@ SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
         ├── kinetics_val.csv             // label文件
     ├── download_data
         ├── k400_extractor.sh            // 解压数据集脚本
+    ├── offline.png                      // 离线推理技术实现流程
+    ├── online.png                       // 在线推理技术实现流程
     ├── online_infer.py                  // 在线推理精度脚本
     ├── offline_infer.py                 // 离线推理精度脚本
     ├── speed.py                         // 离线单视频推理NPU性能脚本
