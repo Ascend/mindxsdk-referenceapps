@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     start=time.time()
     # V2 initialize
     device_id = 0  
-    base.mx_init()  # 全局初始化，申请设备资源与日志资源
+    base.mx_init()
     # V2 decode and resize
     imageProcessor1 = ImageProcessor(device_id) 
     decodedImg = imageProcessor1.decode(image_path, base.nv12)  
