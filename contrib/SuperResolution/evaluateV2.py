@@ -30,13 +30,13 @@ OFFSET_20 = 20
 
 def infer(input_image_path, decode_image_processor, resize_image_processor, model):
     """
-	  image super-resolution inference
-	  :param input_image_path: input image path
-	  :param decode_image_processor: imageProcessor object to decode
- 	  :param resize_image_processor: imageProcessor object to resize
-      :param model: model object to infer    
-	  :return: no return
-	  """
+	image super-resolution inference
+	:param input_image_path: input image path
+	:param decode_image_processor: imageProcessor object to decode
+ 	:param resize_image_processor: imageProcessor object to resize
+    :param model: model object to infer    
+	:return: no return
+	"""
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
         exit()
@@ -108,5 +108,5 @@ if __name__ == '__main__':
     print("average psnr = " + str(sum(psnr_all)/len(psnr_all)))
     print(psnr_all)
     end = time.time()
-    print('Running time: %s Seconds.' %(end-start))
+    print('V2 Running time: %s Seconds.' % (end-start))
  

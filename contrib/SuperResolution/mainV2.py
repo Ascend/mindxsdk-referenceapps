@@ -92,7 +92,7 @@ if __name__ == '__main__':
     outputs = model_.infer(imgTensor)   
     
     end = time.time()
-    print('V2 infer Running time: %s Seconds.' %(end-start))
+    print('V2 Running time: %s Seconds.' % (end - start))
     
     # get the infer result 
     output0 = outputs[0]  
@@ -117,19 +117,18 @@ if __name__ == '__main__':
     # splice the pictures line by line
     target.paste(lr, (0, output_img.height - lr.height))
     target.paste(output_img, (lr.width + OFFSET_5, 0))
-    font_set = {
-        "type": "./font/SourceHanSansCN-Normal-2.otf",
-        "size": FONT_SIZE,
-        "color": (0, 0, 0),
-        "psnr_content": 'PSNR: {:.2f}'.format(PSNR),
-        "psnr_location": (0, output_img.height - lr.height - OFFSET_20),
-    }
+ 
     # create a brush to write text to the picture
     draw = ImageDraw.Draw(target)
     # set font type and size
-    font = ImageFont.truetype(font_set["type"], font_set["size"])
+    TYPE = "./font/SourceHanSansCN-Normal-2.otf"
+    SIZE = FONT_SIZE
+    COLOR = (0, 0, 0)
+    psnr_content = 'PSNR: {:.2f}'.format(PSNR)
+    psnr_location = (0, output_img.height - lr.height - OFFSET_20)
+    font = ImageFont.truetype(TYPE, SIZE)
     # draw into the picture according to the position, content, color and font
-    draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
+    draw.text(psnr_location, psnr_content, COLOR, font)
     # save visualization results
     _, fileName = os.path.split(INPUT_IMAGE_PATH)
     out_path = "./V2result/" + fileName
