@@ -91,10 +91,9 @@ SDK-path: mxVision SDK 安装路径
 
 ascend-toolkit-path: CANN 安装路径。
 
-安装ffmpeg
+下载[ffmpeg](https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz)，解压进入并执行以下命令安装：
 
 ```Shell
-https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz
 ./configure --prefix=/usr/local/ffmpeg --enable-shared
 make -j
 make install
@@ -278,6 +277,8 @@ GPU性能(Tesla_V100S_PCIE_32GB)
 python3 speed_gpu.py kinetics --test_segments=8 --test_crops=1 --batch_size=1
 ```
 
+注：speed_gpu.py脚本需在GPU环境上运行，NPU环境无法运行。
+
 得到单视频纯推理性能为0.08sec/video
 
 SDK性能
@@ -287,6 +288,8 @@ SDK性能
 ```shell
 python3 speed.py
 ```
+
+注：speed.py脚本需在NPU环境上运行。
 
 得到单视频纯推理性能为0.189sec/video
 
