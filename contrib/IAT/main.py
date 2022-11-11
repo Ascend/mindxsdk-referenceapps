@@ -5,11 +5,11 @@ from mindx.sdk import base
 from mindx.sdk.base import Tensor, Model, Size, log, ImageProcessor
 import cv2
 
-g_model_path = "/home/nankaigcs1/IAT/models/iatsim.om"  #模型的路径
-g_image_path = "/home/nankaigcs1/IAT/data/eval15/low/1.png"  #输入图片
-g_result_path = "/home/nankaigcs1/IAT/data/result/"
-g_dataset_dir = "/home/nankaigcs1/IAT/data/eval15/"
-g_device_id = 0  #芯片ID
+MODEL_PATH = "/home/nankaigcs1/IAT/models/iatsim.om"  #模型的路径
+IMAGE_PATH = "/home/nankaigcs1/IAT/data/eval15/low/1.png"  #输入图片
+RESULT_PATH = "/home/nankaigcs1/IAT/data/result/"
+DATASET_DIR = "/home/nankaigcs1/IAT/data/eval15/"
+DEVICE_ID = 0  #芯片ID
 
 
 class SSIM():
@@ -70,12 +70,12 @@ def infer(image_path,is_save=False):
     :return: a numpy array of image
     """
     base.mx_init()
-    IAT = Model(g_model_path, g_device_id) #创造模型对象
+    IAT = Model(MODEL_PATH, DEVICE_ID) #创造模型对象
 
     infer_image = get_image(image_path)
     #numpy to tensor
     imageTensor = Tensor(infer_image)
-    imageTensor.to_device(g_device_id)
+    imageTensor.to_device(DEVICE_ID)
     input = [imageTensor]
 
     #inference
@@ -85,7 +85,7 @@ def infer(image_path,is_save=False):
     enhanced_img = np.array(enhanced_img)
     if is_save:
         enhanced_img = enhanced_img.reshape(3,400,600).transpose(1,2,0)*255
-        cv2.imwrite(g_result_path + "result.png", enhanced_img)
+        cv2.imwrite(RESULT_PATH + "result.png", enhanced_img)
 
     return enhanced_img
 
@@ -96,9 +96,8 @@ def test_precision():
     :return: null
     """
     import os
-    low_image_list = sorted([g_dataset_dir + "/low/" + image_name for image_name in os.listdir(g_dataset_dir + "/low/")])
-    high_image_list = sorted([g_dataset_dir + "/high/" + image_name for image_name in os.listdir(g_dataset_dir + "/high/")])
-    print(low_image_list)
+    low_image_list = sorted([DATASET_DIR + "/low/" + image_name for image_name in os.listdir(DATASET_DIR + "/low/")])
+    high_image_list = sorted([DATASET_DIR + "/high/" + image_name for image_name in os.listdir(DATASET_DIR + "/high/")])
     image_num = len(low_image_list)
     psnr_sum = 0.0
     ssim_sum = 0.0
