@@ -124,11 +124,11 @@ if __name__ == '__main__':
     TYPE = "./font/SourceHanSansCN-Normal-2.otf"
     SIZE = FONT_SIZE
     COLOR = (0, 0, 0)
-    psnr_content = 'PSNR: {:.2f}'.format(PSNR)
+    PSNR_CONTENT = 'PSNR: {:.2f}'.format(PSNR)
     psnr_location = (0, output_img.height - lr.height - OFFSET_20)
     font = ImageFont.truetype(TYPE, SIZE)
     # draw into the picture according to the position, content, color and font
-    draw.text(psnr_location, psnr_content, COLOR, font)
+    draw.text(psnr_location, PSNR_CONTENT, COLOR, font)
     # save visualization results
     _, fileName = os.path.split(INPUT_IMAGE_PATH)
     out_path = "./V2result/" + fileName
