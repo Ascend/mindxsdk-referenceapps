@@ -17,7 +17,7 @@ class SSIM():
     a class to evaluate SSIM
     """
     @staticmethod
-    def calcSSIM(img1, img2):
+    def calc_SSIM(img1, img2):
         ssim_c1 = (0.01 * 255)**2
         ssim_c2 = (0.03 * 255)**2
         img1 = img1.reshape(3, 400, 600).transpose(1, 2, 0)*255
@@ -42,7 +42,7 @@ class PSNR():
     a class to evaluate PSNR.
     """
     @staticmethod
-    def calcPSNR(a, b):
+    def calc_PSNR(a, b):
         mse = np.mean((a - b) ** 2)
         if mse == 0:
             return 0
@@ -57,12 +57,12 @@ def get_image(image_path):
     :return: a numpy array of image
     """
     image_bgr = np.array([cv2.imread(image_path)])
-    image = image_bgr.transpose(0,3,1,2).astype(np.float32)/255.0
-    image = np.ascontiguousarray(image,dtype=np.float32)
+    image = image_bgr.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
+    image = np.ascontiguousarray(image, dtype=np.float32)
     return image
 
 
-def infer(image_path,is_save=False):
+def infer(image_path, is_save=False):
     """
     inference a low-light image.
     :param image_path: the path of low-light image to inference
@@ -84,7 +84,7 @@ def infer(image_path,is_save=False):
     enhanced_img.to_host()
     enhanced_img = np.array(enhanced_img)
     if is_save:
-        enhanced_img = enhanced_img.reshape(3,400,600).transpose(1,2,0)*255
+        enhanced_img = enhanced_img.reshape(3, 400, 600).transpose(1, 2, 0) * 255
         cv2.imwrite(RESULT_PATH + "result.png", enhanced_img)
 
     return enhanced_img
@@ -104,18 +104,15 @@ def test_precision():
     for i in range(image_num):
         high_image = get_image(high_image_list[i])
         enhanced_image = infer(low_image_list[i])
-        psnr_sum += PSNR.calcPSNR(high_image, enhanced_image)
-        ssim_sum += SSIM.calcSSIM(high_image, enhanced_image)
+        psnr_sum += PSNR.calc_PSNR(high_image, enhanced_image)
+        ssim_sum += SSIM.calc_SSIM(high_image, enhanced_image)
 
-    psnr_avg = psnr_sum/image_num
-    ssim_avg = ssim_sum/image_num
-    print("PSNR: ",psnr_avg)
-    print("SSIM: ",ssim_avg)
+    psnr_avg = psnr_sum / image_num
+    ssim_avg = ssim_sum / image_num
+    print("PSNR: ", psnr_avg)
+    print("SSIM: ", ssim_avg)
     return
 
-
-
-    print(image_list)
 if __name__ == "__main__":
 
     test_precision()
