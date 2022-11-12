@@ -28,4 +28,5 @@ if __name__ == '__main__':
     output_names = ["pred"]  
     dynamic_axes = {'image': {0: '-1'}, 'pred': {0: '-1'}} 
     dummy_input = torch.randn(1, 9, 352, 352)
-    torch.onnx.export(model, dummy_input, opt.onnx_path, input_names=input_names, dynamic_axes=dynamic_axes, output_names=output_names, opset_version=11, verbose=True) 
+    torch.onnx.export(model, dummy_input, opt.onnx_path, input_names=input_names, \
+        dynamic_axes=dynamic_axes, output_names=output_names, opset_version=11, verbose=True) 
