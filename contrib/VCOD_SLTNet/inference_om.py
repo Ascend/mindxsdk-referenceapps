@@ -59,7 +59,7 @@ if __name__ == '__main__':
         res = res.sigmoid().data.cpu().numpy().squeeze()
         res = (res - res.min()) / (res.max() - res.min() + 1e-8)
 
-        name =names[0].replace('jpg', 'png')
+        name = names[0].replace('jpg', 'png')
 
         fp = save_path + name
         imageio.imwrite(fp, res)
