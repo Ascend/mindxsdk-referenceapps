@@ -11,7 +11,6 @@
 # Unless required by applicable law or agreimport json
 import json
 import os
-import io
 import sys
 import time
 from utils import colorize, calc_psnr

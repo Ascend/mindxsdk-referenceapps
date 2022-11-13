@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@ import json
 import os
 import io
 import sys
+import time
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import MxpiDataType_pb2 as MxpiDataType
 from utils import colorize, calc_psnr
@@ -161,10 +162,13 @@ if __name__ == '__main__':
 
     # save the peak signal-to-noise ratio of each image in the test set
     psnr_all = []
+    start = time.time()
     for test_image_path in image_files:
         image_file = test_image_set_path + "/" + test_image_path
         infer(image_file, streamManagerApi)
     print("average psnr = " + str(sum(psnr_all)/len(psnr_all)))
     print(psnr_all)
+    end = time.time()
+    print('V1 Running time: %s Seconds.' % (end-start))
     # destroy streams
     streamManagerApi.DestroyAllStreams()
