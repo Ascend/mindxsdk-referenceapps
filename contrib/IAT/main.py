@@ -56,7 +56,9 @@ def get_image(image_path):
     :param image_path: the path of image
     :return: a numpy array of image
     """
-    image_bgr = np.array([cv2.imread(image_path)])
+    image_bgr = cv2.imread(image_path)
+    image_bgr = cv2.resize(image_bgr,(600,400))
+    image_bgr = np.array([image_bgr])
     image = image_bgr.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
     image = np.ascontiguousarray(image, dtype=np.float32)
     return image
