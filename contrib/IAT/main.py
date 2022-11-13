@@ -70,7 +70,7 @@ def infer(image_path, is_save=False):
     :return: a numpy array of image
     """
     base.mx_init()
-    model = Model(MODEL_PATH, DEVICE_ID)  #创造模型对象
+
 
     infer_image = get_image(image_path)
     #numpy to tensor
@@ -79,7 +79,8 @@ def infer(image_path, is_save=False):
     image_tensor = [image_tensor]
 
     #inference
-    outputs = model.infer(image_tensor)  #使用模型对Tensor对象进行推理
+    model = Model(MODEL_PATH, DEVICE_ID)
+    outputs = model.infer(image_tensor)
     enhanced_img = outputs[0]
     enhanced_img.to_host()
     enhanced_img = np.array(enhanced_img)
