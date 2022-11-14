@@ -20,6 +20,7 @@ import json
 import os
 import math
 import stat
+import subprocess
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
@@ -33,28 +34,27 @@ from util.detection import TextDetector
 from util.misc import to_device, mkdirs, rescale_result
 from util.config import config as cfg
 from util.visualize import visualize_detection
-import subprocess
 
-def norm(image,mean,std):
-    image = image.astype(np.float32)
-    image /= 255.0
-    image -= mean
-    image /= std
-    return image
 
-def resize(image,size):
-    h, w, _ = image.shape
-    image = cv2.resize(image, (size,size))
-    scales = np.array([size / w, size / h])
-    return image
+def norm(image_n, mean, std):
+    image_n = image_n.astype(np.float32)
+    image_n /= 255.0
+    image_n -= mean
+    image_n /= std
+    return image_n
 
-def write_to_file(contours, file_path):
-    with open(file_path, 'w') as f:
-        for cont in contours:
+def resize(image_r, size):
+    h, w, _ = image_r.shape
+    image_r = cv2.resize(image_r, (size, size))
+    return image_r
+
+def write_to_file(contours_w, file_path):
+    with os.fdopen(os.open(file_path, os.O_WRONLY, MODES), 'w') as f1:
+        for cont in contours_w:
             cont = np.stack([cont[:, 1], cont[:, 0]], 1)
             cont = cont.flatten().astype(str).tolist()
             cont = ','.join(cont)
-            f.write(cont + '\n')
+            f1.write(cont + '\n')
 
 if __name__ == '__main__':
     steam_manager_api = StreamManagerApi()
@@ -80,22 +80,17 @@ if __name__ == '__main__':
     if os.path.exists(FILEPATH) != 1:
         print("The filepath does not exist !")
         exit()
-    temppath=FILEPATH+"temp/"
-    if not os.path.exists(temppath):
-        os.mkdir(temppath)
     for filename in os.listdir(FILEPATH):
         image_path = FILEPATH + filename
         if image_path.split('.')[-1] != 'jpg':
             continue
         IMAGE_PATH = image_path
-        IMAGE_PATH1 =  temppath+'temp'+filename
         image = Image.open(IMAGE_PATH)
         image = np.array(image)
         H, W, _ = image.shape
-        image=resize(image,cfg.input_size)
-        image=norm(image,np.array(means),np.array(stds))
+        image=resize(image, cfg.input_size)
+        image=norm(image,np.array(means), np.array(stds))
         image=image.transpose(2, 0, 1)
-        print(IMAGE_PATH1)
         visionList = MxpiDataType.MxpiVisionList()
         visionVec = visionList.visionVec.add()
 
@@ -142,17 +137,17 @@ if __name__ == '__main__':
         result = MxpiDataType.MxpiTensorPackageList()
         result.ParseFromString(infer_result.serializedMetadata)
         pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-        pred_array=pred.reshape(1,7,512,512)
-        tr_pred=pred_array[:,0:2,:,:].reshape(2,512,512)
-        tcl_pred=pred_array[:,2:4,:,:].reshape(2,512,512)
-        sin_pred=pred_array[:,4,:,:].reshape(512,512)
-        cos_pred=pred_array[:,5,:,:].reshape(512,512)
-        radii_pred=pred_array[:,6,:,:].reshape(512,512)
-        tr_pred_tensor= torch.from_numpy(tr_pred)
-        tcl_pred_tensor= torch.from_numpy(tcl_pred)
+        pred_array = pred.reshape(1, 7, 512, 512)
+        tr_pred = pred_array[:, 0: 2, : , :].reshape(2, 512, 512)
+        tcl_pred = pred_array[:, 2:4, :, :].reshape(2, 512, 512)
+        sin_pred = pred_array[:, 4, :, :].reshape(512, 512)
+        cos_pred = pred_array[:, 5, :, :].reshape(512, 512)
+        radii_pred = pred_array[:, 6, :, :].reshape(512, 512)
+        tr_pred_tensor = torch.from_numpy(tr_pred)
+        tcl_pred_tensor = torch.from_numpy(tcl_pred)
         tr_pred = tr_pred_tensor.softmax(dim=0).data.cpu().numpy()
         tcl_pred = tcl_pred_tensor.softmax(dim=0).data.cpu().numpy()
-        td=TextDetector(cfg.tr_thresh,cfg.tcl_thresh)
+        td = TextDetector(cfg.tr_thresh, cfg.tcl_thresh)
         contours = td.detect_contours(image, tr_pred, tcl_pred, sin_pred, cos_pred, radii_pred)
         output = {
             'image': image,
@@ -162,14 +157,17 @@ if __name__ == '__main__':
             'cos': cos_pred,
             'radii': radii_pred
         }
-        tr_pred, tcl_pred = output['tr'], output['tcl']
-        img_show = image.transpose(1,2,0)
+        try:
+            tr_pred, tcl_pred = output['tr'], output['tcl']
+        except KeyError:
+            print("get result dict failed!")
+        img_show = image.transpose(1, 2, 0)
         img_show = ((img_show * stds + means) * 255).astype(np.uint8)
         img_show, contours = rescale_result(img_show, contours, H, W)
         mkdirs(cfg.output_dir+"/test")
         write_to_file(contours, os.path.join(cfg.output_dir+"/test", filename.replace('jpg', 'txt')))
         pred_vis = visualize_detection(img_show, contours)
-        cv2.imwrite(IMAGE_PATH1, pred_vis)
+        
 
     steam_manager_api.DestroyAllStreams()
     print('Computing DetEval in {}/{}'.format(cfg.output_dir, "test"))

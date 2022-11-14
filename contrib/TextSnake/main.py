@@ -18,11 +18,12 @@
 
 import json
 import os
+import stat
 import cv2
 import numpy as np
 from PIL import Image
 import torch
-import stat
+
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 from util.misc import fill_hole, regularize_sin_cos
@@ -32,18 +33,17 @@ from util.config import config as cfg
 from util.visualize import visualize_detection
 
 
-def norm(image,mean,std):
-    image = image.astype(np.float32)
-    image /= 255.0
-    image -= mean
-    image /= std
-    return image
+def norm(image_n , mean , std):
+    image_n = image_n.astype(np.float32)
+    image_n /= 255.0
+    image_n -= mean
+    image_n /= std
+    return image_n
 
-def resize(image,size):
-    h, w, _ = image.shape
-    image = cv2.resize(image, (size,size))
-    scales = np.array([size / w, size / h])
-    return image
+def resize(image_r , size):
+    h, w, _ = image_r.shape
+    image_r = cv2.resize(image_r, (size,size))
+    return image_r
 
 if __name__ == '__main__':
     steam_manager_api = StreamManagerApi()
@@ -64,12 +64,12 @@ if __name__ == '__main__':
 
     means = (0.485, 0.456, 0.406)
     stds = (0.229, 0.224, 0.225)
-    IMAGE_PATH = './img1.jpg'
+    IMAGE_PATH = './test.jpg'
     image = Image.open(IMAGE_PATH)
     image = np.array(image)
     H, W, _ = image.shape
-    image=resize(image,cfg.input_size)
-    image=norm(image,np.array(means),np.array(stds))
+    image=resize(image, cfg.input_size)
+    image=norm(image,np.array(means), np.array(stds))
     image=image.transpose(2, 0, 1)
     visionList = MxpiDataType.MxpiVisionList()
     visionVec = visionList.visionVec.add()
@@ -115,17 +115,17 @@ if __name__ == '__main__':
     result = MxpiDataType.MxpiTensorPackageList()
     result.ParseFromString(infer_result.serializedMetadata)
     pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
-    pred_array=pred.reshape(1,7,512,512)
-    tr_pred=pred_array[:,0:2,:,:].reshape(2,512,512)
-    tcl_pred=pred_array[:,2:4,:,:].reshape(2,512,512)
-    sin_pred=pred_array[:,4,:,:].reshape(512,512)
-    cos_pred=pred_array[:,5,:,:].reshape(512,512)
-    radii_pred=pred_array[:,6,:,:].reshape(512,512)
-    tr_pred_tensor= torch.from_numpy(tr_pred)
-    tcl_pred_tensor= torch.from_numpy(tcl_pred)
+    pred_array = pred.reshape(1, 7, 512, 512)
+    tr_pred = pred_array[:, 0:2, :, :].reshape(2, 512, 512)
+    tcl_pred = pred_array[:, 2:4, :, :].reshape(2, 512, 512)
+    sin_pred = pred_array[:, 4, :, :].reshape(512, 512)
+    cos_pred = pred_array[:, 5, :, :].reshape(512, 512)
+    radii_pred = pred_array[:, 6, :, :].reshape(512, 512)
+    tr_pred_tensor = torch.from_numpy(tr_pred)
+    tcl_pred_tensor = torch.from_numpy(tcl_pred)
     tr_pred = tr_pred_tensor.softmax(dim=0).data.cpu().numpy()
     tcl_pred = tcl_pred_tensor.softmax(dim=0).data.cpu().numpy()
-    td=TextDetector(cfg.tr_thresh,cfg.tcl_thresh)
+    td = TextDetector(cfg.tr_thresh, cfg.tcl_thresh)
     contours = td.detect_contours(image, tr_pred, tcl_pred, sin_pred, cos_pred, radii_pred)
     output = {
         'image': image,
@@ -136,13 +136,14 @@ if __name__ == '__main__':
         'radii': radii_pred
     }
 
-    
-    tr_pred, tcl_pred = output['tr'], output['tcl']
-    
-    img_show = image.transpose(1,2,0)
+    try:
+        tr_pred, tcl_pred = output['tr'], output['tcl']
+    except KeyError:
+        print("get result dict failed!")
+    img_show = image.transpose(1, 2, 0)
     img_show = ((img_show * stds + means) * 255).astype(np.uint8)
     img_show, contours = rescale_result(img_show, contours, H, W)
-    vis_dir = "result.jpg"
+    VIS_DIR = "result.jpg"
     pred_vis = visualize_detection(img_show, contours)
     mkdirs(vis_dir)
     cv2.imwrite(vis_dir, pred_vis)
