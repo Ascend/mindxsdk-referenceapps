@@ -21,13 +21,14 @@ import sys
 import copy
 import math
 import json
+import time
 import cv2
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
-import time
 
-globals = {
+
+globals_convert = {
     'true': 0,
     'false': 1
 }
@@ -36,12 +37,12 @@ globals = {
 def get_file():
     fs = []
     gts = []
-    with open('./eval_data/Label_test.txt', 'r', encoding='utf-8') as f:
-        label_list = [line.strip('\n') for line in f]
+    with open('./eval_data/Label_test.txt', 'r', encoding='utf-8') as file:
+        label_list = [line.strip('\n') for line in file]
     for item in label_list:
         file_name, label = item.split('\t')
         fs.append(file_name)
-        gts.append(eval(label, globals))
+        gts.append(eval(label, globals_convert))
     return fs, gts
 
 
@@ -67,9 +68,9 @@ def str_contrast(str1, str2):
     s1 = list(str1)
     s2 = list(str2)
     count = 0
-    for i in range(len(s1)):
-        if s1[i] in s2:
-            s2.remove(s1[i])
+    for s in s1:
+        if s in s2:
+            s2.remove(s)
             count += 1
     return count
 
@@ -80,14 +81,14 @@ def eval_value(pre, gt):
         text_sum += len(item["transcription"])
 
     correct_sum = 0
-    for i in range(len(pre)):
-        pre_box = [[pre[i]['x0'], pre[i]['y0']], [pre[i]['x1'], pre[i]['y1']], [pre[i]['x2'], pre[i]['y2']],
-                   [pre[i]['x3'], pre[i]['y3']]]
-        pre_text = pre[i]['MxpiTextsInfo'][0]['text'][0]
+    for points in pre:
+        pre_box = [[points['x0'], points['y0']], [points['x1'], points['y1']], [points['x2'], points['y2']],
+                   [points['x3'], points['y3']]]
+        pre_text = points['MxpiTextsInfo'][0]['text'][0]
         fit = 0
         fit_index = -1
-        for j in range(len(gt)):
-            gt_box = gt[j]['points']
+        for j, gt_p in enumerate(gt):
+            gt_box = gt_p['points']
             iou_p = iou(pre_box, gt_box)
             if iou_p > 0.3 and iou_p > fit:
                 fit_index = j
@@ -101,7 +102,7 @@ def eval_value(pre, gt):
 
 if __name__ == '__main__':
 
-    test_files, gts = get_file()
+    test_files, gts_list = get_file()
 
     if len(test_files) == 0:
         print("The eval directory is EMPTY!")
@@ -126,12 +127,12 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    acc_sum = 0
+    acc_sum = int(0)
     start = time.time()
-    for i in range(len(test_files)):
+    for i, test_file in enumerate(test_files):
 
-        filename = test_files[i]
-        gt = gts[i]
+        filename = test_file
+        gt_list = gts_list[i]
         # 添加路径
         testfile = "eval_data/" + filename
 
@@ -162,8 +163,8 @@ if __name__ == '__main__':
                 inferResult.errorCode, inferResult.data.decode()))
             exit()
         result = json.loads(inferResult.data.decode())
-        pre = result['MxpiTextObject']
-        acc_sum += eval_value(pre, gt)
+        pre_list = result['MxpiTextObject']
+        acc_sum += eval_value(pre_list, gt_list)
     acc = acc_sum / len(test_files)
     print("acc: ", acc)
 

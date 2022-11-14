@@ -50,15 +50,15 @@ def get_file_names(root_dir):
     return fs
 
 
-def add_text(img, text, left, top, textColor, textSize):
-    if isinstance(img, np.ndarray):  # 判断是否OpenCV图片类型
-        img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+def add_text(image, text_content, left, top, textcolor, textsize):
+    if isinstance(image, np.ndarray):  # 判断是否OpenCV图片类型
+        image = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     # 创建一个可以在给定图像上绘图的对象
-    draw = ImageDraw.Draw(img)
+    draw = ImageDraw.Draw(image)
     # 字体的格式
-    fontstyle = ImageFont.truetype("SIMSUN.TTC", textSize, encoding="utf-8")
+    fontstyle = ImageFont.truetype("SIMSUN.TTC", textsize, encoding="utf-8")
     # 绘制文本
-    draw.text((left, top), text, textColor, font=fontstyle)
+    draw.text((left, top), text_content, textcolor, font=fontstyle)
     # 转换回OpenCV格式
     return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
 
@@ -137,20 +137,20 @@ if __name__ == '__main__':
 
         class_r = sorted(class_r, key=lambda x: -x['confidence'])
         class_id = class_r[0]['className']
-
-        text = ''
+        CLASS_TYPE = ['taxi_receipt', 'vat_invoice', 'quota_invoice']
+        text = str('')
         for item in content:
             text += (item['MxpiTextsInfo'][0]['text'][0])
 
         if '车号' in text or '证号' in text or '上车' in text or '下车' in text:
             if class_id != 'taxi_receipt':
-                class_id = 'taxi_receipt'
+                class_id = CLASS_TYPE[0]
         elif '增值税' in text or '纳税人识别号' in text:
             if class_id != 'vat_invoice':
-                class_id = 'vat_invoice'
+                class_id = CLASS_TYPE[1]
         else:
             if class_id != 'quota_invoice':
-                class_id = 'quota_invoice'
+                class_id = CLASS_TYPE[2]
 
         # 绘图参数
         BOX_COLOR = (255, 0, 0)
