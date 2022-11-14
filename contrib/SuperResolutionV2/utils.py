@@ -15,8 +15,8 @@
 # limitations under the License.
 
 
-import numpy as np
 import math
+import numpy as np
 
 
 def colorize(value, value_min=10, value_max=1000, color_depth=255, extend_to_bgr=False, dominant_color=100):
@@ -74,5 +74,5 @@ def calc_psnr(src_img, dst_img):
     mse = np.mean((src_img - dst_img) ** 2)
     if mse == 0:
         return 100
-    PIXEL_MAX = 255.0
-    return 20 * math.log10(PIXEL_MAX / math.sqrt(mse))
+    pixel_max = 255.0
+    return 20 * math.log10(pixel_max / math.sqrt(mse))

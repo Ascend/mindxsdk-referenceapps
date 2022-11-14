@@ -91,20 +91,20 @@ if __name__ == '__main__':
         exit()
 
     # input image path
-    input_image_path = "./image/head.jpg"
+    INPUT_IMAGE_PATH = "./image/head.jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':
             print('input image path is not valid, use default config.')
         else:
-            input_image_path = sys.argv[1]
+            INPUT_IMAGE_PATH = sys.argv[1]
 
     # check input image
-    if os.path.exists(input_image_path) != 1:
-        print('The {} does not exist.'.format(input_image_path))
+    if os.path.exists(INPUT_IMAGE_PATH) != 1:
+        print('The {} does not exist.'.format(INPUT_IMAGE_PATH))
         exit()
     else:
-        image = Image.open(input_image_path)
+        image = Image.open(INPUT_IMAGE_PATH)
         if image.format != 'JPEG':
             print('input image only support jpg, curr format is {}.'.format(image.format))
             exit()
@@ -133,18 +133,18 @@ if __name__ == '__main__':
     dataInput.data = input_image_data
 
     # Inputs data to a specified stream based on streamName.
-    streamName = b'superResolution'
-    inPluginId = 0
-    uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+    STREAM_NAME = b'superResolution'
+    IN_PLUGINID = 0
+    uniqueId = streamManagerApi.SendData(STREAM_NAME, IN_PLUGINID, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
 
     # get plugin output data
-    key = b"mxpi_tensorinfer0"
+    KEY = b"mxpi_tensorinfer0"
     keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = streamManagerApi.GetProtobuf(streamName, 0, keyVec)
+    keyVec.push_back(KEY)
+    inferResult = streamManagerApi.GetProtobuf(STREAM_NAME, 0, keyVec)
     if inferResult.size() == 0:
         print("inferResult is null")
         exit()
@@ -177,21 +177,20 @@ if __name__ == '__main__':
     # splice the pictures line by line
     target.paste(lr, (0, output_img.height - lr.height))
     target.paste(output_img, (lr.width + OFFSET_5, 0))
-    font_set = {
-        "type": "./font/SourceHanSansCN-Normal-2.otf",
-        "size": FONT_SIZE,
-        "color": (0, 0, 0),
-        "psnr_content": 'PSNR: {:.2f}'.format(PSNR),
-        "psnr_location": (0, output_img.height - lr.height - OFFSET_20),
-    }
+
     # create a brush to write text to the picture
     draw = ImageDraw.Draw(target)
     # set font type and size
-    font = ImageFont.truetype(font_set["type"], font_set["size"])
+    TYPE = "./font/SourceHanSansCN-Normal-2.otf"
+    SIZE = FONT_SIZE
+    COLOR = (0, 0, 0)
+    PSNR_CONTENT = 'PSNR: {:.2f}'.format(PSNR)
+    psnr_location = (0, output_img.height - lr.height - OFFSET_20)
+    font = ImageFont.truetype(TYPE, SIZE)
     # draw into the picture according to the position, content, color and font
-    draw.text(font_set["psnr_location"], font_set["psnr_content"], font_set["color"], font=font)
+    draw.text(psnr_location, PSNR_CONTENT, COLOR, font)
     # save visualization results
-    _, fileName = os.path.split(input_image_path)
+    _, fileName = os.path.split(INPUT_IMAGE_PATH)
     out_path = "./result/" + fileName
     target.save(out_path)
 

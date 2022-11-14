@@ -9,9 +9,9 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreimport json
-from PIL import Image
-import sys
 import os
+import sys
+from PIL import Image
 
 if __name__ == '__main__':
     # test image set path
