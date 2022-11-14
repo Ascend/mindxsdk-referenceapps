@@ -104,6 +104,7 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [车道线检测](./contrib/UltraFastLaneDetection) | python | >=2.0.4 | 对图像中的车道线进行检测，并对检测到的图像中的每一条车道线进行识别 |
 | [车流量统计](./contrib/VehicleCounting) | c++ | >=2.0.4 | 对视频中的车辆进行计数，实现对本地视频（H264）进行车辆追踪并计数，最后生成可视化结果 |
 | [视频手势识别运行](./contrib/VideoGestureRecognition) | c++ | >=2.0.4 | 对本地视频（H264）进行手势识别并分类，生成可视化结果 |
+| [伪装目标分割](./contrib/CamouflagedObjectDetection) | python | >=2.0.4 | 对图像中的伪装目标进行识别检测，生成可视化分割结果 |
 
 ## 插件使用
 **以下表单描述了各插件在哪些样例中有使用，供用户查找参考**   
