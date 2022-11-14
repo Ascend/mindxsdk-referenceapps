@@ -58,7 +58,7 @@ def get_image(image_path):
     """
     image_bgr = cv2.imread(image_path)
     imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-    imge_rgb = cv2.resize(imge_rgb,(600,400))
+    imge_rgb = cv2.resize(imge_rgb, (600, 400))
     imge_rgb = np.array([imge_rgb])
     image = imge_rgb.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
     image = np.ascontiguousarray(image, dtype=np.float32)
@@ -92,6 +92,7 @@ def infer(image_path, is_save=False):
         cv2.imwrite(RESULT_PATH + "result.png", enhanced_img)
 
     return enhanced_img
+
 
 def test_precision():
     """
