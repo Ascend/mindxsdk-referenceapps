@@ -7,13 +7,29 @@
 程序输入：任意jpg图片
 程序输出：输出得到低分辨率图片（256 x 256px）和超分辨率重建图片（768 x 768px）组合的可视化大图
 
+### 模型介绍
+
+Jiwon Kim 等基于残差学习和梯度裁剪，利用 20 层的卷积网络实现针对不同放大尺度的图像超分辨模型，命名为 VDSR（Very Deep convolutional networks for Super-Resolution）。VDSR使用比 SRCNN 大 104 倍的学习率，使用跳跃连接将输入与学习到的残差融合生成高分辨率图像，每个卷积层卷积核尺寸为 3 × 3，输入与输出尺寸一致。VDSR 越深效果越好，随着深度的增加，PSNR 更早地达到稳定值；使用残差网络，仅迭代几轮，网络就能达到很好的效果
+
+模型地址：
+
+https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/SuperResolution
+
+论文地址：
+
+https://arxiv.org/abs/1511.04587
+
+模型概述：
+
+https://blog.csdn.net/u010327061/article/details/80094724
+
 ### 支持的产品
 
 昇腾310(推理)
 
 ### 支持的版本
 
-本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [3.0RC3](https://www.hiascend.com/software/Mindx-sdk) 。
+本样例配套的CANN版本为 [5.1.RC1](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [3.0RC3](https://www.hiascend.com/software/Mindx-sdk) 。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -26,7 +42,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |           |---- SourceHanSansCN-Normal-2.otf      // otf字体
 |-------- image
 |           |---- test.jpg                          // 测试图片(需自行准备)
-|-------- result                                    // 测试图片程序输出存放处
+|-------- result                                    // V1测试图片程序输出存放处
 |-------- model
 |           |---- YUV420SP_U8_GRAY.cfg              // 模型转换配置文件(灰度图)
 |           |---- model_conversion.sh               // 模型转换脚本
@@ -34,13 +50,12 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |-------- testSet
 |           |---- 91-images                         // 91-images验证集(含bmp图片)
 |           |---- 91-images-jpg                     // 91-images验证集转换后集(含jpg图片)
-|           |---- output                            // 验证集结果输出目录
 |           |---- bmp2jpg.py                        // bmp转jpg脚本
 |-------- evaluate.py                               // 模型精度验证V1
-|-------- evaluatev2.py                             // 模型精度验证V2
+|-------- evaluate_v2.py                            // 模型精度验证V2
 |-------- README.md                                 // ReadMe
 |-------- main.py                                   // 图像超分辨率主程序V1
-|-------- main.py                                   // 图像超分辨率主程序V2
+|-------- main_v2.py                                // 图像超分辨率主程序V2
 |-------- util.py                                   // 工具方法
 
 
@@ -55,7 +70,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
 | mxVision            | 3.0RC3       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 5.0.4        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| Ascend-CANN-toolkit | 5.1.RC1      | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 
 ### 准备工作
@@ -99,11 +114,11 @@ aipp_op {
 # 设置环境变量（请确认install_path路径是否正确）
 # Set environment PATH (Please confirm that the install_path is correct).
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+#在CANN以及MindX SDK的安装目录找到set_env.sh,并运行脚本：
+bash ${SDK安装路径}/set_env.sh
+bash ${CANN安装路径}/set_env.sh
+#查看环境变量：
+env
 
 # 执行，转换VDSR模型成om格式
 # Execute, transform VDSR model.
@@ -167,8 +182,8 @@ input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
 
 3) 键入执行指令，发起推理性能测试：
 ```python
-python3 mainv2.py ${测试图片路径}
-例如: python3 mainv2.py image/head.jpg
+python3 main_v2.py ${测试图片路径}
+例如: python3 main_v2.py image/head.jpg
     
 # 或者在main.py中配置 input_image_path 
 input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
@@ -177,11 +192,11 @@ input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
 执行完毕后，sample会将程序输出的可视化结果，保存在工程目录下`V2result`中 (可视化结果名和输入图片一致)
 
 
-## V1精度验证
+## V1精度+性能验证
 
 PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量的测量方法。
 
-1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
+1）准备测试集：下载91-images和General-100验证图片集，[91-images下载地址](https://www.kaggle.com/ll01dm/t91-image-dataset)，[General-100下载地址](https://paperswithcode.com/dataset/general-100)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
 
 2）图片格式转换：参考`testSet/bmp2jpg.py`脚本，将两个图片集中bmp图片转换为jpg图片
 
@@ -209,13 +224,13 @@ python3 evaluate.py ${验证图片集路径}
 test_image_set_path = './${验证图片集路径}'
 ```
 
-执行完毕后，会在控制台输出该验证图片集的平均峰值信噪比
+执行完毕后，会在控制台输出该验证图片集的平均峰值信噪比和推理时间
 
-## V2精度验证
+## V2精度+性能验证
 
 PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量的测量方法。
 
-1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
+1）准备测试集：下载91-images和General-100验证图片集，[91-images下载地址](https://www.kaggle.com/ll01dm/t91-image-dataset)，[General-100下载地址](https://paperswithcode.com/dataset/general-100)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
 
 2）图片格式转换：参考`testSet/bmp2jpg.py`脚本，将两个图片集中bmp图片转换为jpg图片
 
@@ -231,16 +246,16 @@ test_image_set_path = './${测试图片集路径}'
 
 然后会在`testSet`目录下，生成转换后的包含jpg格式图片的文件夹，文件夹名称为`${测试图片集路径}-jpg`
 
-3）利用`evaluatev2.py `脚本，计算得到两个图片集的平均PSNR（峰值信噪比）
+3）利用`evaluate_v2.py `脚本，计算得到两个图片集的平均PSNR（峰值信噪比）
 
 键入执行指令，发起精度验证测试：
 
 ```python
 python3 evaluate.py ${验证图片集路径}
-例如: python3 evaluatev2.py testSet/91-images-jpg
+例如: python3 evaluate_v2.py testSet/91-images-jpg
     
 # 或者在evaluate.py中配置 test_image_set_path 
 test_image_set_path = './${验证图片集路径}'
 ```
 
-执行完毕后，会在控制台输出该验证图片集的平均峰值信噪比
+执行完毕后，会在控制台输出该验证图片集的平均峰值信噪比和推理时间
