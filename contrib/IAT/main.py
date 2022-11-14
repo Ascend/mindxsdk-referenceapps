@@ -105,6 +105,7 @@ def test_precision():
     image_num = len(low_image_list)
     psnr_sum = 0.0
     ssim_sum = 0.0
+    
     for i in range(image_num):
         high_image = get_image(high_image_list[i])
         enhanced_image = infer(low_image_list[i])
