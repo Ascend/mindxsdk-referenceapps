@@ -10,10 +10,8 @@ parser.add_argument('--testsize', type=int, default=352, help='testing size')
 parser.add_argument('--trainsize', type=int, default=352, help='testing size')
 parser.add_argument('--pretrained_cod10k', default=None, help='path to the pretrained Resnet')
 
-parser.add_argument('--pth_path', type=str, \
-    default='/Users/mac/Downloads/snapshot/Net_epoch_MoCA_short_term_pseudo.pth')
-parser.add_argument('--onnx_path', type=str, \
-    default='/Users/mac/Downloads/sltnet.onnx')
+parser.add_argument('--pth_path', type=str, default='./snapshot/Net_epoch_MoCA_short_term_pseudo.pth')
+parser.add_argument('--onnx_path', type=str, default='./sltnet.onnx')
 
 opt = parser.parse_args()
 

@@ -22,10 +22,11 @@ eg：版本号查询方法，在Atlas产品环境下，运行命令：
 npu-smi info
 ```
 
+版本号为SDK3.0 RC2
 
 ### 1.3 软件方案介绍
 
-本方案中，将 PyTorch 版本的伪装视频物体检测模型 [SLT-Net](https://github.com/XuelianCheng/SLT-Net)，转化为晟腾的om模型，将输入视频帧进行处理，通过调用晟腾om模型进行处理，生成最终的视频伪装物体的掩码 Mask 图。
+本方案中，将 PyTorch 版本的伪装视频物体检测模型 [SLT-Net](https://github.com/XuelianCheng/SLT-Net)，转化为晟腾的om模型 （转换前的 torch 模型与 onnx、om 模型可以从[该链接下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)），将输入视频帧进行处理，通过调用晟腾om模型进行处理，生成最终的视频伪装物体的掩码 Mask 图。
 
 
 ### 1.4 代码目录结构与说明
@@ -43,7 +44,7 @@ npu-smi info
 ### 1.5 技术实现流程图
 
 
-![Flowchart](https://tva1.sinaimg.cn/large/008vxvgGgy1h82sbpzlykj30xb05tgm4.jpg)
+![Flowchart](./flowchart.jpeg)
 
 图1 视频伪装物体检测流程图
 
@@ -81,7 +82,6 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 ## 依赖安装
 
-（依赖搭建安装或者获取方式的具体步骤）
 
 基于华为 conda 环境 py392
 
@@ -90,7 +90,6 @@ pip install timm imageio onnx-simplifier
 ```
 
 ## 编译与运行
-（描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
 
 
 **步骤1** （修改相应文件）
@@ -150,20 +149,14 @@ elif dataset == 'MoCA':
 
 替换为数据集路径 `TestDataset_per_sq` 的父目录。
 
-```
-elif dataset == 'MoCA':
-    return '/home/fandengping01/shuowang_project/SLT-Net/'
-```
-
 
 **步骤2** （设置环境变量）
 
 ```
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
-source /home/fandengping01/mindx_dir/mxVision/set_env.sh
+source ~/mindx_dir/mxVision/set_env.sh
 conda activate py392
 ```
-
 
 **步骤3** （执行编译的步骤）
 
@@ -190,7 +183,6 @@ python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx 
 atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
 ```
 
-
 已经转换好的模型可供参考：[模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
 
 
@@ -211,10 +203,6 @@ python inference_om.py
 
 - 运行 `eval/run_eval.py` 脚本，修改 `gt_dir`、`pred_dir` 为本地的 GT、预测结果的目录即可
 
-```
-gt_dir = '/Users/mac/data/cv/MoCA_Video/TestDataset_per_sq/'
-pred_dir = '/Users/mac/Downloads/sltnet_om_res/MoCA'
-```
 
 - 运行
 

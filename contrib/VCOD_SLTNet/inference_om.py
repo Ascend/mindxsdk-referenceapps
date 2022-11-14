@@ -16,15 +16,11 @@ parser.add_argument('--testsize', type=int, default=352, help='testing size')
 parser.add_argument('--trainsize', type=int, default=352, help='testing size')
 parser.add_argument('--pretrained_cod10k', default=None, help='path to the pretrained Resnet')
 
-parser.add_argument('--pth_path', type=str, \
-    default='/Users/mac/Downloads/snapshot/Net_epoch_MoCA_short_term_pseudo.pth')
-parser.add_argument('--onnx_path', type=str, \
-    default='/Users/mac/Downloads/sltnet.onnx')
+parser.add_argument('--pth_path', type=str, default='./Net_epoch_MoCA_short_term_pseudo.pth')
+parser.add_argument('--onnx_path', type=str, default='./sltnet.onnx')
 
-parser.add_argument('--save_root', type=str, \
-    default='/home/fandengping01/shuowang_project/sltnet_res/')
-parser.add_argument('--om_path', type=str, \
-    default='/home/fandengping01/shuowang_project/om_model/sltnet.om')
+parser.add_argument('--save_root', type=str, default='./sltnet_res/')
+parser.add_argument('--om_path', type=str, default='./om_model/sltnet.om')
 parser.add_argument('--device_id', type=int, default=0)
 
 opt = parser.parse_args()
