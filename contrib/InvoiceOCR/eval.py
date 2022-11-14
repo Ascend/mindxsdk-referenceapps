@@ -27,7 +27,6 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-
 globals_convert = {
     'true': 0,
     'false': 1
@@ -128,6 +127,7 @@ if __name__ == '__main__':
         exit()
 
     ACC_SUM = 0
+    TYPE_ACC = 0
     start = time.time()
     for i, test_file in enumerate(test_files):
 
@@ -153,6 +153,7 @@ if __name__ == '__main__':
         uniqueId = streamManagerApi.SendData(STREAM_NAME, INPLUGIN_ID, dataInput)
 
         inferResult = streamManagerApi.GetResult(STREAM_NAME, uniqueId, 3000000)
+
         end = time.time()
         total_time = []
         total_time.append(end - start)
@@ -163,9 +164,16 @@ if __name__ == '__main__':
                 inferResult.errorCode, inferResult.data.decode()))
             exit()
         result = json.loads(inferResult.data.decode())
+        class_r = result["MxpiClass"]
+        class_r = sorted(class_r, key=lambda x: -x['confidence'])
+        CLASS_ID = class_r[0]['className']
+        if CLASS_ID == filename[:-9]:
+            TYPE_ACC += 1
         pre_list = result['MxpiTextObject']
         ACC_SUM += eval_value(pre_list, gt_list)
     acc = ACC_SUM / len(test_files)
     print("acc: ", acc)
 
+    type_acc = TYPE_ACC / len(test_files)
+    print('type_acc: ', type_acc)
     streamManagerApi.DestroyAllStreams()

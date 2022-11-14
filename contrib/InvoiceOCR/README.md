@@ -194,21 +194,7 @@ python3 main.py
 
 ### 5.1 resnet50精度
 
-本精度测试在昇腾910芯片上执行，
-
-输入如下命令：
-
-```
-python eval.py --data_path=./imagenet2012/val --checkpoint_file_path=./output1/checkpoint/resnet_1-2000_3.ckpt --config_path=./config/resnet50_imagenet2012_config.yaml
-```
-
-精度如下：
-
-![](./imgs/resnet50精度.jpg)
-
-
-
-## 5.2 DB+CRNN端到端精度
+本精度测试在昇腾310芯片上执行
 
 测试数据可在[此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/eval_data.zip)下载，将下载的数据解压到`eval_data`目录下，在项目目录下执行
 
@@ -216,16 +202,16 @@ python eval.py --data_path=./imagenet2012/val --checkpoint_file_path=./output1/c
 python3 eval.py
 ```
 
-可得精度结果如下所示
+可得精度结果如下所示，其中`acc`为`db+crnn`端到端精度，`type_acc`为`resnet50`精度
 
-![](./imgs/e2e精度.jpg)
+![](./imgs/精度.jpg)
 
 精度结果如下表所示
 
 | 模型      | 精度   |
 | --------- | ------ |
-| resnet50  | 0.9931 |
-| 端到端OCR | 0.9531 |
+| resnet50  | 0.99   |
+| 端到端OCR | 0.9534 |
 
 
 

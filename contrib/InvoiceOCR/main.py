@@ -60,7 +60,7 @@ def add_text(image, text_content, left, top, textcolor, textsize):
     # 绘制文本
     draw.text((left, top), text_content, textcolor, font=fontstyle)
     # 转换回OpenCV格式
-    return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
+    return cv2.cvtColor(np.asarray(image), cv2.COLOR_RGB2BGR)
 
 
 if __name__ == '__main__':
