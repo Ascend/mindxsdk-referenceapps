@@ -76,11 +76,11 @@ npu-smi info
 
 ### 1.5 技术实现流程图
 
-![](imgs\技术流图.png)
+![](./imgs/技术流图.png)
 
 图1 技术流程图
 
-![](imgs\pipeline流程图.png)
+![](./imgs/pipeline流程图.png)
 
 图2 pipeline流程图
 
@@ -204,7 +204,7 @@ python eval.py --data_path=./imagenet2012/val --checkpoint_file_path=./output1/c
 
 精度如下：
 
-![](imgs\resnet50精度.jpg)
+![](./imgs/resnet50精度.jpg)
 
 
 
@@ -218,7 +218,7 @@ python3 eval.py
 
 可得精度结果如下所示
 
-![](imgs\e2e精度.jpg)
+![](./imgs/e2e精度.jpg)
 
 精度结果如下表所示
 
@@ -275,7 +275,7 @@ trtexec --onnx=crnn.onnx --fp16 --shapes=x:1x3x48x320
 
 ### 7.1 后处理插件路径问题
 
-![](imgs\错误1.png)
+![](./imgs/错误1.png)
 
 **问题描述：**
 
@@ -291,7 +291,7 @@ export LD_LIBRARY_PATH={project_path}/lib/:$LD_LIBRARY_PATH
 
 ### 7.2 字体资源问题
 
-![](imgs\错误2.png)
+![](./imgs/错误2.png)
 
 **问题描述：**
 
