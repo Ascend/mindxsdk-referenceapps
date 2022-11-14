@@ -45,7 +45,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 |-------- V2result                                  // V2测试图片程序输出存放处
 |-------- model
 |           |---- YUV420SP_U8_GRAY.cfg              // 模型转换配置文件(灰度图)
-|           |---- model_conversion.sh               // 模型转换脚本
 |           |---- VDSR_768_768.om                   // 转换后OM模型存放在此处(需自行上传)
 |-------- testSet
 |           |---- 91-images                         // 91-images验证集(含bmp图片)
@@ -106,7 +105,7 @@ aipp_op {
 
 **步骤4** 使用ATC模型转换工具进行模型转换
 
-运行模型转换脚本 `model_conversion.sh` 或在 `model` 目录下执行以下命令
+在 `model` 目录下执行以下命令
 
 ```
 # 设置环境变量（请确认install_path路径是否正确）
@@ -124,7 +123,7 @@ env
 atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_format=NCHW --input_shape="data: 1, 1, 768, 768" --output=./VDSR_768_768 --soc_version=Ascend310 --output_type=FP32 --insert_op_conf=YUV420SP_U8_GRAY.cfg
 ```
 
-执行完模型转换脚本后，会在model目录下生成相应的VDSR_768_768.om模型文件。
+执行完后，会在model目录下生成相应的VDSR_768_768.om模型文件。
 
 模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
 
