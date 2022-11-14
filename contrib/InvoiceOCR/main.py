@@ -136,21 +136,21 @@ if __name__ == '__main__':
         content = result["MxpiTextObject"]
 
         class_r = sorted(class_r, key=lambda x: -x['confidence'])
-        class_id = class_r[0]['className']
+        CLASS_ID = class_r[0]['className']
         CLASS_TYPE = ['taxi_receipt', 'vat_invoice', 'quota_invoice']
-        text = str('')
+        TEXT = ''
         for item in content:
-            text += (item['MxpiTextsInfo'][0]['text'][0])
+            TEXT += (item['MxpiTextsInfo'][0]['text'][0])
 
-        if '车号' in text or '证号' in text or '上车' in text or '下车' in text:
-            if class_id != 'taxi_receipt':
-                class_id = CLASS_TYPE[0]
-        elif '增值税' in text or '纳税人识别号' in text:
-            if class_id != 'vat_invoice':
-                class_id = CLASS_TYPE[1]
+        if '车号' in TEXT or '证号' in TEXT or '上车' in TEXT or '下车' in TEXT:
+            if CLASS_ID != 'taxi_receipt':
+                CLASS_ID = CLASS_TYPE[0]
+        elif '增值税' in TEXT or '纳税人识别号' in TEXT:
+            if CLASS_ID != 'vat_invoice':
+                CLASS_ID = CLASS_TYPE[1]
         else:
-            if class_id != 'quota_invoice':
-                class_id = CLASS_TYPE[2]
+            if CLASS_ID != 'quota_invoice':
+                CLASS_ID = CLASS_TYPE[2]
 
         # 绘图参数
         BOX_COLOR = (255, 0, 0)
@@ -170,7 +170,7 @@ if __name__ == '__main__':
             img_c = add_text(img_c, item['MxpiTextsInfo'][0]['text'][0], item['x0'], item['y0'] - text_size, TEXT_COLOR,
                              text_size)
 
-        output_img_path = './outputs/' + class_id + '_' + filename
+        output_img_path = './outputs/' + CLASS_ID + '_' + filename
         cv2.imwrite(output_img_path, img_c)
 
     streamManagerApi.DestroyAllStreams()

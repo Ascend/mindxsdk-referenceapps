@@ -127,7 +127,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    acc_sum = int(0)
+    ACC_SUM = 0
     start = time.time()
     for i, test_file in enumerate(test_files):
 
@@ -164,8 +164,8 @@ if __name__ == '__main__':
             exit()
         result = json.loads(inferResult.data.decode())
         pre_list = result['MxpiTextObject']
-        acc_sum += eval_value(pre_list, gt_list)
-    acc = acc_sum / len(test_files)
+        ACC_SUM += eval_value(pre_list, gt_list)
+    acc = ACC_SUM / len(test_files)
     print("acc: ", acc)
 
     streamManagerApi.DestroyAllStreams()
