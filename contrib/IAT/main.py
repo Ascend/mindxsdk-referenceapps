@@ -57,9 +57,10 @@ def get_image(image_path):
     :return: a numpy array of image
     """
     image_bgr = cv2.imread(image_path)
-    image_bgr = cv2.resize(image_bgr,(600,400))
-    image_bgr = np.array([image_bgr])
-    image = image_bgr.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
+    imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+    imge_rgb = cv2.resize(imge_rgb,(600,400))
+    imge_rgb = np.array([imge_rgb])
+    image = imge_rgb.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
     image = np.ascontiguousarray(image, dtype=np.float32)
     return image
 
@@ -92,7 +93,6 @@ def infer(image_path, is_save=False):
 
     return enhanced_img
 
-
 def test_precision():
     """
     evaluate precision of the model.
@@ -116,8 +116,10 @@ def test_precision():
     print("SSIM: ", ssim_avg)
     return
 
+
 if __name__ == "__main__":
+
     try:
-        infer(IMAGE_PATH)
+        infer(IMAGE_PATH, is_save=True)
     except Exception as e:
         print(e)
