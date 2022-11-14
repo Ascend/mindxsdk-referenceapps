@@ -11,7 +11,7 @@
 
 Jiwon Kim 等基于残差学习和梯度裁剪，利用 20 层的卷积网络实现针对不同放大尺度的图像超分辨模型，命名为 VDSR（Very Deep convolutional networks for Super-Resolution）。VDSR使用比 SRCNN 大 104 倍的学习率，使用跳跃连接将输入与学习到的残差融合生成高分辨率图像，每个卷积层卷积核尺寸为 3 × 3，输入与输出尺寸一致。VDSR 越深效果越好，随着深度的增加，PSNR 更早地达到稳定值；使用残差网络，仅迭代几轮，网络就能达到很好的效果
 
-模型地址：
+V1版本地址：
 
 https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/SuperResolution
 
@@ -125,7 +125,7 @@ atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_for
 
 执行完后，会在model目录下生成相应的VDSR_768_768.om模型文件。
 
-模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/infacldevg/atctool/atlasatc_16_0001.html)
 
 
 
