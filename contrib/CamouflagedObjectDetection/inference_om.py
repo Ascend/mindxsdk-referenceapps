@@ -33,7 +33,7 @@ import numpy as np
 from mindx.sdk.base import Tensor, Model
 import torch.nn.functional as F
 import torch
-from utils.dataset import test_data_set as EvalDataset
+from utils.dataset import TestDataset as EvalDataset
 import imageio
 
 

@@ -1,11 +1,10 @@
 import os
-import numpy as np
 from PIL import Image
 import torchvision.transforms as transforms
 
 
 # test dataset and loader
-class test_data_set:
+class TestDataset:
     def __init__(self, image_root, gt_root, testsize):
         self.testsize = testsize
         self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
@@ -21,14 +20,18 @@ class test_data_set:
         self.size = len(self.images)
         self.index = 0
 
+    def __len__(self):
+        return self.size
+
     def load_data(self):
-        image = self.rgb_loader(self.images[self.index])
+        with open(self.images[self.index], 'rb') as f:
+            image = Image.open(f).convert('RGB')
         image = self.transform(image).unsqueeze(0)
 
-        gt = self.binary_loader(self.gts[self.index])
+        with open(self.gts[self.index], 'rb') as f:
+            gt = Image.open(f).convert('L')
 
         name = self.images[self.index].split('/')[-1]
-
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
 
@@ -36,17 +39,3 @@ class test_data_set:
         self.index = self.index % self.size
 
         return image, gt, name
-
-    def __len__(self):
-        return self.size
-        
-    def rgb_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('RGB')
-
-    def binary_loader(self, path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('L')
-
