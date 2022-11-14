@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 
 
 # test dataset and loader
-class test_dataset:
+class test_data_set:
     def __init__(self, image_root, gt_root, testsize):
         self.testsize = testsize
         self.images = [image_root + f for f in os.listdir(image_root) if f.endswith('.jpg') or f.endswith('.png')]
@@ -29,17 +29,17 @@ class test_dataset:
 
         name = self.images[self.index].split('/')[-1]
 
-        image_for_post = self.rgb_loader(self.images[self.index])
-        image_for_post = image_for_post.resize(gt.size)
-
         if name.endswith('.jpg'):
             name = name.split('.jpg')[0] + '.png'
 
         self.index += 1
         self.index = self.index % self.size
 
-        return image, gt, name, np.array(image_for_post)
+        return image, gt, name
 
+    def __len__(self):
+        return self.size
+        
     def rgb_loader(self, path):
         with open(path, 'rb') as f:
             img = Image.open(f)
@@ -50,5 +50,3 @@ class test_dataset:
             img = Image.open(f)
             return img.convert('L')
 
-    def __len__(self):
-        return self.size

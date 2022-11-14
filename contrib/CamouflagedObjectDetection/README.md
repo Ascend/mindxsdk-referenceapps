@@ -14,9 +14,9 @@
 
 - 具体实现细节可以参考基于PyTorch深度学习框架的代码：https://github.com/GewelsJI/DGNet/tree/main/lib_pytorch
 
-- 所使用的公开数据集是NC4K，可以在此处下载：
+- 所使用的公开数据集是NC4K，可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/data.tar
 
-- 所使用的模型是PVTv2-B1版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：
+- 所使用的模型是EfficientNet-B4版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：
 
 ### 1.3 实现流程
 
@@ -58,25 +58,12 @@
 │   └── 74.png
 ├── data  # 数据集存放路径
 │   └── NC4K
-├── eval  # python评测指标代码
-│   ├── metrics.py
-├── eval_txt
-│   └── DGNet_benchmark  # 评测结果存放路径
-├── evaluation.py # python评测脚本文件
 ├── inference_om.py # 昇腾离线模型推理python脚本文件
-├── lib # DGNet模型的基础库（来源于https://github.com/GewelsJI/DGNet/tree/main/lib_pytorch/lib）
-│   ├── DGNet.py
-│   ├── EfficientNet.py
-│   ├── __init__.py
-│   ├── PVTv2.py
-│   └── utils.py
 ├── README.md # 本文件
-├── requirements.txt  # python环境安装列表
 ├── seg_results_om
 │   ├── Exp-DGNet-OM  # 预测结果图存放路径
 ├── snapshots
 │   ├── DGNet  # 模型文件存放路径
-├── torch_to_onnx.py  # Pytorch模型转换为ONNX模型的python脚本文件
 └── utils
     ├── dataset.py  # pytorch的dataloader文件
     ├── __init__.py
@@ -99,10 +86,6 @@
 | opencv-python |    4.5.3.56    |
 
 ### 3.2 环境搭建
-
-### 3.2.1 Python基础环境搭建
-
-执行命令`pip install -r requirements.txt`安装对应的python环境
 
 #### 3.2.1 基础环境变量设置（ATC转换工具）
 
@@ -162,23 +145,13 @@ fi
 
 ### 3.3 模型转换
 
-原始Github针对DGNet模型开发并提供了五种模型变体，分别为：DGNet (Efficient-B4) 、DGNet-S（Efficient-B0）、DGNet-PVTv2-B0、DGNet-PVTv2-B1、DGNet-PVTv2-B2、DGNet-PVTv2-B3。
+**步骤1** 在GitHub上下载DGNet (Efficient-B4) 的ONNX模型，下载地址为：https://github.com/GewelsJI/DGNet/releases/download/Checkpoints/DGNet.pth
 
-**此处仅以DGNet模型为例，其余模型同理进行操作，其具体分布操作步骤如下：**
-
-**步骤1** 在GitHub上下载DGNet (Efficient-B4) 模型，下载地址：https://github.com/GewelsJI/DGNet/releases/download/Checkpoints/DGNet.pth
-
-**步骤2** 将获取到的DGNet模型pth文件存放至`./snapshots/DGNet/DGNet.pth`。
+**步骤2** 将获取到的DGNet模型onxx文件存放至`./snapshots/DGNet/DGNet.onnx`。
 
 **步骤3** 模型转换具体步骤
 
 ```bash
-# 首先在./snapshots/DGNet/中下载对应的pytorch模型文件
-wget https://github.com/GewelsJI/DGNet/releases/download/Checkpoints/DGNet.pth
-
-# 进入目录并运行如下python代码，然后会获取到onnx文件（在./snapshots/DGNet/DGNet.onnx目录中）
-python ./torch_to_onnx.py
-
 # 请确保之前完成 3.2.1 节中基础环境变量设置，这样能够确保ATC转换工具的正常使用（如果已经执行，请跳过此步骤）
 source ~/.bashrc
 
@@ -187,19 +160,18 @@ cd ./snapshots/DGNet/
 
 # 执行以下命令将ONNX模型（.onnx）转换为昇腾离线模型（.om）
 atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352,352" --log=debug --soc_version=Ascend310 > atc.log
-
 ```
 
-执行完模型转换脚本后，会在对应目录中获取到如下转化模型：DGNet.om（本项目中在Ascend平台上所使用的离线模型文件）和DGNet.onnx（提供了onnx模型推理脚本`./utils/inference_onnx.py`，但不执行相关性能验证，因为与本项目验收目标无关）。
+执行完模型转换脚本后，会在对应目录中获取到如下转化模型：DGNet.om（本项目中在Ascend平台上所使用的离线模型文件）。
 
 
 ## 4 推理与评测
 
 示例步骤如下：
 
-**步骤0（可选）** 
+**步骤0** 
 
-参考1.2节中说明下载一份测试数据集合：下载链接：
+参考1.2节中说明下载一份测试数据集合：下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/data.tar
 
 **步骤1** 
 
@@ -219,13 +191,7 @@ python ./inference_om.py
 
 **步骤3**
 
-- 定量性能验证：执行Python脚本，用于生成评测指标数值表格
-
-  ``` bash
-  python evaluation.py
-  ```
-
-  这里给出了所有模型的测评结果，可以看出Smeasure指标上去的了0.857，超过了项目交付中提到的“大于0.84”的要求。
+- 定量性能验证：使用原始GitHub仓库中提供的[标准评测代码](https://github.com/GewelsJI/DGNet/blob/main/lib_ascend/evaluation.py)进行测评，然后可以生成评测指标数值表格。可以看出DGNet模型的Smeasure指标数值为0.857，超过了项目交付中提到的“大于0.84”的要求。
 
   ```text
   +---------+-----------------------+----------+-----------+-------+-------+--------+-------+-------+--------+-------+

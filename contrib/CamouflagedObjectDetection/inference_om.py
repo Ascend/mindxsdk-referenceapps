@@ -33,25 +33,25 @@ import numpy as np
 from mindx.sdk.base import Tensor, Model
 import torch.nn.functional as F
 import torch
-from utils.dataset import test_dataset as EvalDataset
+from utils.dataset import test_data_set as EvalDataset
 import imageio
 
 
-def infer(OM_PATH, SAVE_PATH, DEVICE_ID):
-    model = Model(OM_PATH, DEVICE_ID)
+def infer(om_path, save_path, device_id):
+    model = Model(om_path, device_id)
     print(model)
 
     val_loader = EvalDataset(image_root='./data/NC4K/Imgs/',
                              gt_root='./data/NC4K/GT/',
                              testsize=352)
-    os.makedirs(SAVE_PATH, exist_ok=True)
+    os.makedirs(save_path, exist_ok=True)
     for i in range(val_loader.size):
-        images, gt, name, _ = val_loader.load_data()
+        images, gt, name = val_loader.load_data()
         gt = np.asarray(gt, np.float32)
         images = images.numpy()
-        imageTensor = Tensor(images)
-        imageTensor.to_device(DEVICE_ID)
-        out = model.infer(imageTensor)
+        image_tensor = Tensor(images)
+        image_tensor.to_device(device_id)
+        out = model.infer(image_tensor)
         out = out[0]
         out.to_host()
 
@@ -59,12 +59,12 @@ def infer(OM_PATH, SAVE_PATH, DEVICE_ID):
         res = F.upsample(res, size=gt.shape, mode='bilinear', align_corners=False)
         res = res.sigmoid().data.cpu().numpy().squeeze()
         res = (res - res.min()) / (res.max() - res.min() + 1e-8)
-        print('--> save results: {}'.format(SAVE_PATH+name))
-        imageio.imwrite(SAVE_PATH+name, res)
+        print('--> save results: {}'.format(save_path+name))
+        imageio.imwrite(save_path+name, res)
 
 
 if __name__ == "__main__":
     infer(
-        OM_PATH='./snapshots/DGNet-PVTv2-B3/DGNet-PVTv2-B3.om', 
-        SAVE_PATH='./seg_results_om/Exp-DGNet-PVTv2-B3-OM/NC4K-Test/',
-        DEVICE_ID=0)
+        om_path='./snapshots/DGNet-PVTv2-B3/DGNet-PVTv2-B3.om', 
+        save_path='./seg_results_om/Exp-DGNet-PVTv2-B3-OM/NC4K-Test/',
+        device_id=0)
