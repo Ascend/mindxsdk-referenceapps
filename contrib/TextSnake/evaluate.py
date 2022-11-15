@@ -43,10 +43,12 @@ def norm(image_n, mean, std):
     image_n /= std
     return image_n
 
+
 def resize(image_r, size):
     h, w, _ = image_r.shape
     image_r = cv2.resize(image_r, (size, size))
     return image_r
+
 
 def write_to_file(contours_w, file_path):
     with os.fdopen(os.open(file_path, os.O_WRONLY, MODES), 'w') as f1:
@@ -55,6 +57,7 @@ def write_to_file(contours_w, file_path):
             cont = cont.flatten().astype(str).tolist()
             cont = ','.join(cont)
             f1.write(cont + '\n')
+
 
 if __name__ == '__main__':
     steam_manager_api = StreamManagerApi()
@@ -88,9 +91,9 @@ if __name__ == '__main__':
         image = Image.open(IMAGE_PATH)
         image = np.array(image)
         H, W, _ = image.shape
-        image=resize(image, cfg.input_size)
-        image=norm(image,np.array(means), np.array(stds))
-        image=image.transpose(2, 0, 1)
+        image = resize(image, cfg.input_size)
+        image = norm(image, np.array(means), np.array(stds))
+        image = image.transpose(2, 0, 1)
         visionList = MxpiDataType.MxpiVisionList()
         visionVec = visionList.visionVec.add()
 
