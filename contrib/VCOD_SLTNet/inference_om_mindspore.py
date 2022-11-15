@@ -54,18 +54,18 @@ class test_dataset:
         print(split)
 
         for scene in os.listdir(os.path.join(data_root)):
-            if split=='MoCA-Video-Test':
+            if split =='MoCA-Video-Test':
                 images  = sorted(glob(os.path.join(data_root, scene, 'Frame', img_format)))
-            elif split=='TestDataset_per_sq':
-                images  = sorted(glob(os.path.join(data_root, scene, 'Imgs', img_format)))
+            elif split =='TestDataset_per_sq':
+                images = sorted(glob(os.path.join(data_root, scene, 'Imgs', img_format)))
             gt_list = sorted(glob(os.path.join(data_root, scene, 'GT', '*.png')))
 
-            for i in range(len(images)-2):
-                self.extra_info += [ (scene, i) ]  # scene and frame_id
-                self.gt_list    += [ gt_list[i] ]
-                self.image_list += [ [images[i], 
-                                    images[i+1], 
-                                    images[i+2]] ]
+            for j in range(len(images)-2):
+                self.extra_info += [ (scene, j) ]  # scene and frame_id
+                self.gt_list    += [ gt_list[j] ]
+                self.image_list += [ [images[j],
+                                    images[j+1],
+                                    images[j+2]] ]
 
         self.resize = vision.Resize(size=(self.testsize, self.testsize))
         self.norm = vision.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -92,12 +92,14 @@ class test_dataset:
     
         return imgs, gt_idx, names_img, scene_idx
 
-    def rgb_loader(self, path):
+    @staticmethod
+    def rgb_loader(path):
         with open(path, 'rb') as f:
             img = Image.open(f)
             return img.convert('RGB')
 
-    def binary_loader(self, path):
+    @staticmethod
+    def binary_loader(path):
         with open(path, 'rb') as f:
             img = Image.open(f)
             return img.convert('L')
