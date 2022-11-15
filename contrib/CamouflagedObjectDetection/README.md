@@ -22,7 +22,7 @@
 
 - 基础环境：Ascend 310、mxVision、Ascend-CANN-toolkit、Ascend Driver
 - 模型转换：将ONNX模型（.onnx）转换为昇腾离线模型（.om）
-- 基于Python的昇腾离线模型推理流程代码开发
+- 昇腾离线模型推理流程代码开发
 
 ### 1.4 代码地址
 
