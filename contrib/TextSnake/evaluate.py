@@ -88,7 +88,10 @@ if __name__ == '__main__':
         if image_path.split('.')[-1] != 'jpg':
             continue
         IMAGE_PATH = image_path
-        image = Image.open(IMAGE_PATH)
+        try：
+            image = Image.open(IMAGE_PATH)
+        except FileNotFoundError：
+            print("input image not found!")
         image = np.array(image)
         H, W, _ = image.shape
         image = resize(image, cfg.input_size)
