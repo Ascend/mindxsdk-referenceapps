@@ -29,7 +29,8 @@ def infer(om_path, save_path, device_id):
     Paper Citation:
     @article{ji2022gradient,
       title={Deep Gradient Learning for Efficient Camouflaged Object Detection},
-      author={Ji, Ge-Peng and Fan, Deng-Ping and Chou, Yu-Cheng and Dai, Dengxin and Liniger, Alexander and Van Gool, Luc},
+      author={Ji, Ge-Peng and Fan, Deng-Ping and Chou, Yu-Cheng and Dai, 
+              Dengxin and Liniger, Alexander and Van Gool, Luc},
       journal={Machine Intelligence Research},
       year={2023}
     } 
