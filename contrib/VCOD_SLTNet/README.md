@@ -6,7 +6,7 @@
 
 样例输入：连续几帧包含伪装物体的视频序列。
 
-样例输出：最后一帧所对应的伪装物体掩码 Mask 图。
+样例输出：伪装物体掩码 Mask 图。
 
 ### 1.1 支持的产品
 
@@ -34,9 +34,10 @@ npu-smi info
 本sample工程名称为 VCOD_SLTNet，工程目录如下图所示：
 
 ```
-├── inference_om.py       # 推理文件
+├── inference_om.py            # 推理文件，基于 torch
+├── inference_om_mindspore.py  # 推理文件，基于 mindspore
 ├── README.md
-└── sltnet_torch2onnx.py  # 模型转换脚本
+└── sltnet_torch2onnx.py       # 模型转换脚本
 ```
 
 
@@ -67,6 +68,8 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 |  CANN        |  5.1RC2    |
 | PyTorch | 1.9.0 |
 | numpy | 1.21.5 |
+| imageio | 2.22.3| 
+| Pillow | 9.3.0 | 
 
 
 在编译运行项目前，需要设置环境变量：
@@ -188,7 +191,14 @@ atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,3
 
 **步骤4** （运行及输出结果）
 
-将 `inference_om.py` 移到 SLT-Net 根目录，配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，运行：
+mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference_om_mindspore.py 即可。无需放入 SLT-Net 根目录。
+
+```
+python inference_om_mindspore.py
+```
+
+
+torch 版本的模型：将 `inference_om.py` 移到 SLT-Net 根目录（torch 版本的推理模型，依赖原项目的 dataloader），配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，运行：
 
 ```
 python inference_om.py
@@ -211,8 +221,11 @@ cd eval
 python run_eval.py
 ```
 
-得到如下输出
+得到指标结果
 
 ```
-{'MoCA/Smeasure': 0.6519, 'MoCA/wFmeasure': 0.3285, 'MoCA/MAE': 0.0155, 'MoCA/adpEm': 0.661, 'MoCA/meanEm': 0.7167, 'MoCA/maxEm': 0.7314, 'MoCA/adpFm': 0.3198, 'MoCA/meanFm': 0.3547, 'MoCA/maxFm': 0.3643}
+# torch 版本
+{'Smeasure': 0.6519, 'wFmeasure': 0.3285, 'MAE': 0.0155, 'adpEm': 0.661, 'meanEm': 0.7167, 'maxEm': 0.7314, 'adpFm': 0.3198, 'meanFm': 0.3547, 'maxFm': 0.3643}
+# mindspore 版本
+{'Smeasure': 0.5724, 'wFmeasure': 0.1744, 'MAE': 0.042, 'adpEm': 0.5044, 'meanEm': 0.615, 'maxEm': 0.7134, 'adpFm': 0.1716, 'meanFm': 0.2018, 'maxFm': 0.2195}
 ```
