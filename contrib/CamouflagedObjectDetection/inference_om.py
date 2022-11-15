@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-#-*-coding:utf-8-*-
-
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,19 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Paper Title: Deep Gradient Learning for Camouflaged Object Detection
-Project Page: https://github.com/GewelsJI/DGNet
-Author: Ge-Peng Ji
-Paper Citation:
-@article{ji2022gradient,
-  title={Deep Gradient Learning for Efficient Camouflaged Object Detection},
-  author={Ji, Ge-Peng and Fan, Deng-Ping and Chou, Yu-Cheng and Dai, Dengxin and Liniger, Alexander and Van Gool, Luc},
-  journal={Machine Intelligence Research},
-  year={2023}
-} 
-"""
-
 import os
 import numpy as np
 from mindx.sdk.base import Tensor, Model
@@ -38,6 +22,18 @@ import imageio
 
 
 def infer(om_path, save_path, device_id):
+    """
+    Paper Title: Deep Gradient Learning for Camouflaged Object Detection
+    Project Page: https://github.com/GewelsJI/DGNet
+    Author: Ge-Peng Ji
+    Paper Citation:
+    @article{ji2022gradient,
+      title={Deep Gradient Learning for Efficient Camouflaged Object Detection},
+      author={Ji, Ge-Peng and Fan, Deng-Ping and Chou, Yu-Cheng and Dai, Dengxin and Liniger, Alexander and Van Gool, Luc},
+      journal={Machine Intelligence Research},
+      year={2023}
+    } 
+    """
     model = Model(om_path, device_id)
     print(model)
 
