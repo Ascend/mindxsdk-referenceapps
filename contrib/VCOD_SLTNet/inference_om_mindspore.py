@@ -75,22 +75,22 @@ class test_dataset:
 
     def load_data(self):
         imgs = []
-        names= []
+        names_img = []
 
         for i in range(len(self.image_list[self.index])):
             imgs += [self.rgb_loader(self.image_list[self.index][i])]
-            names+= [self.image_list[self.index][i].split('/')[-1]]
+            names_img += [self.image_list[self.index][i].split('/')[-1]]
             imgs[i] = self.resize(imgs[i])
             imgs[i] = self.norm(imgs[i])
             imgs[i] = np.ascontiguousarray(imgs[i], dtype=np.float32)
 
-        scene= self.image_list[self.index][0].split('/')[-3]  
-        gt = self.binary_loader(self.gt_list[self.index])
+        scene_idx = self.image_list[self.index][0].split('/')[-3]  
+        gt_idx = self.binary_loader(self.gt_list[self.index])
 
         self.index += 1
         self.index = self.index % self.size
     
-        return imgs, gt, names, scene
+        return imgs, gt_idx, names_img, scene_idx
 
     def rgb_loader(self, path):
         with open(path, 'rb') as f:
@@ -112,15 +112,15 @@ if __name__ == '__main__':
     model = Model(opt.om_path, opt.device_id)
 
     for i in tqdm(range(test_loader.size)):
-        images, gt, names, scene = test_loader.load_data()
-        save_path = opt.save_root + scene + '/Pred/'
+        images_in, gt, names, scene_name = test_loader.load_data()
+        save_path = opt.save_root + scene_name + '/Pred/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
         gt = np.asarray(gt, np.float32)
         gt /= (gt.max() + 1e-8)
 
-        model_in = np.concatenate(images, axis=-1)[..., None].transpose((3, 2, 0, 1))
+        model_in = np.concatenate(images_in, axis=-1)[..., None].transpose((3, 2, 0, 1))
         model_in = np.ascontiguousarray(model_in, dtype=np.float32)
         model_in = Tensor(model_in)
 
