@@ -151,10 +151,8 @@ fi
 ```bash
 # 请确保之前完成 3.2.1 节中基础环境变量设置，这样能够确保ATC转换工具的正常使用（如果已经执行，请跳过此步骤）
 source ~/.bashrc
-
 # 进入对应目录
 cd ./snapshots/DGNet/
-
 # 执行以下命令将ONNX模型（.onnx）转换为昇腾离线模型（.om）
 atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352,352" --log=debug --soc_version=Ascend310 > atc.log
 ```
@@ -202,7 +200,7 @@ python ./inference_om.py
   - 输入伪装图片：![](./assets/74.jpg)
   - 预测分割结果：![](./assets/74.png)
 
-## 7 参考引用
+## 5 参考引用
 
     @article{ji2022gradient,
       title={Deep Gradient Learning for Efficient Camouflaged Object Detection},
