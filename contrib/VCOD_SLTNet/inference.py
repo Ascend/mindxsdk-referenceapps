@@ -44,16 +44,19 @@ class TestDataset:
             images_i  = sorted(glob(os.path.join(data_root, scene_i, 'Imgs', img_format)))
             gt_list = sorted(glob(os.path.join(data_root, scene_i, 'GT', '*.png')))
 
-            for i in range(len(images_i)-2):
-                self.extra_info += [ (scene_i, i) ]
-                self.gt_list    += [ gt_list[i] ]
-                self.image_list += [ [images_i[i], 
-                                    images_i[i+1], 
-                                    images_i[i+2]] ]
+            for ii in range(len(images_i)-2):
+                self.extra_info += [ (scene_i, ii) ]
+                self.gt_list    += [ gt_list[ii] ]
+                self.image_list += [ [images_i[ii], 
+                                    images_i[ii+1], 
+                                    images_i[ii+2]] ]
 
         self.index = 0
         self.size = len(self.gt_list)
 
+    def __len__(self):
+        return self.size
+        
     @staticmethod
     def rgb_loader(path):
         image_bgr = cv2.imread(path)
@@ -71,18 +74,16 @@ class TestDataset:
             imgs[idx] = cv2.resize(imgs[idx], (self.testsize, self.testsize))
             imgs[idx] = np.array([imgs[idx]])
             imgs[idx] = imgs[idx].transpose(0, 3, 1, 2).astype(np.float32) / 255.0
-            imgs[idx] = (imgs[idx] - np.asarray(self.mean)[None, :, None, None]) / np.asarray(self.std)[None, :, None, None]
+            imgs[idx] = (imgs[idx] - np.asarray(self.mean)[None, :, None, None]) / \
+                np.asarray(self.std)[None, :, None, None]
 
-        scene = self.image_list[self.index][0].split('/')[-3]  
+        scenes = self.image_list[self.index][0].split('/')[-3]  
         gt_i = self.binary_loader(self.gt_list[self.index])
 
         self.index += 1
         self.index = self.index % self.size
     
-        return (imgs, gt_i, names, scene)
-
-    def __len__(self):
-        return self.size
+        return imgs, gt_i, names, scenes
 
     @staticmethod
     def binary_loader(path):
@@ -105,7 +106,7 @@ if __name__ == '__main__':
     model = Model(opt.om_path, opt.device_id)
 
     for i in tqdm(range(test_loader.size)):
-        (images, gt, name, scene) = test_loader.load_data()
+        images, gt, name, scene = test_loader.load_data()
         gt = np.asarray(gt, np.float32)
         save_path = opt.save_root + scene + '/Pred/'        
         if not os.path.exists(save_path):
