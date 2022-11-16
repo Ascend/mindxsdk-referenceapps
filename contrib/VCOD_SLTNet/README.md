@@ -2,31 +2,28 @@
 
 ## 1 介绍
 
-基于 MindX SDK 实现 SLT-Net 模型的推理，在 MoCA-Mask 数据集上 Sm 达到大于 0.6。并把可视化结果保存到本地，达到预期的功能和精度要求。
+基于 MindX SDK 实现 SLT-Net 模型的推理，在 MoCA-Mask 数据集上 Sm 达到大于 0.6。输入连续几帧伪装物体的视频序列，输出伪装物体掩膜 Mask 图。
 
-样例输入：连续几帧包含伪装物体的视频序列。
-
-样例输出：伪装物体掩码 Mask 图。
 
 ### 1.1 支持的产品
 
 支持昇腾310芯片
 
+
 ### 1.2 支持的版本
 
-支持的SDK版本，列出版本号查询方式。
+支持的SDK版本：SDK3.0 RC2
 
-eg：版本号查询方法，在Atlas产品环境下，运行命令：
+版本号查询方法，在Atlas产品环境下，运行命令：
 
 ```
 npu-smi info
 ```
 
-版本号为SDK3.0 RC2
 
 ### 1.3 软件方案介绍
 
-本方案中，将 PyTorch 版本的伪装视频物体检测模型 [SLT-Net](https://github.com/XuelianCheng/SLT-Net)，转化为晟腾的om模型 （转换前的 torch 模型与 onnx、om 模型可以从[该链接下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)），将输入视频帧进行处理，通过调用晟腾om模型进行处理，生成最终的视频伪装物体的掩码 Mask 图。
+本方案中，`torch2onnx.py` 将 PyTorch 版本的伪装视频物体检测模型 [SLT-Net](https://github.com/XuelianCheng/SLT-Net)，转化为晟腾的om模型。`inference.py` 将输入视频帧进行处理，通过调用晟腾om模型进行处理，生成最终的视频伪装物体的掩膜 Mask 图。
 
 
 ### 1.4 代码目录结构与说明
@@ -34,16 +31,13 @@ npu-smi info
 本sample工程名称为 VCOD_SLTNet，工程目录如下图所示：
 
 ```
-├── inference_om.py            # 推理文件，基于 torch
-├── inference_om_mindspore.py  # 推理文件，基于 mindspore
-├── README.md
-└── sltnet_torch2onnx.py       # 模型转换脚本
+├── inference.py   # 推理文件
+├── torch2onnx.py  # 模型转换脚本
+└── README.md
 ```
 
 
-
 ### 1.5 技术实现流程图
-
 
 ![Flowchart](./flowchart.jpeg)
 
@@ -57,9 +51,7 @@ npu-smi info
 
 ## 2 环境依赖
 
-请列出环境依赖软件和版本。
-
-eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如下表：
+环境依赖软件和版本如下表：
 
 | 软件名称 | 版本   |
 | -------- | ------ |
@@ -70,10 +62,9 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 | numpy | 1.21.5 |
 | imageio | 2.22.3| 
 | Pillow | 9.3.0 | 
-
+| cv2 | 4.5.5 |
 
 在编译运行项目前，需要设置环境变量：
-
 
 - 环境变量介绍
 
@@ -83,33 +74,20 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 . ${ascend_toolkit_path}/set_env.sh
 ```
 
-## 依赖安装
-
-
-基于华为 conda 环境 py392
-
-```
-pip install timm imageio onnx-simplifier
-```
 
 ## 编译与运行
 
 
-**步骤1** （修改相应文件）
+**步骤1** （下载相关文件）
 
-- 下载 PyTorch 版本 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net)
+- 运行 inference 下载 om 模型文件：[华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)，其中也包含 om 文件生成用到的 torch 模型文件与 onnx 文件。
 
+- 运行 torch2onnx 下载 PyTorch 版本 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net)，[SLT-Net 模型文件](https://drive.google.com/file/d/1_u4dEdxM4AKuuh6EcWHAlo8EtR7e8q5v/view) ，保留 `Net_epoch_MoCA_short_term_pseudo.pth` 文件即可，也可以通过 [华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载 torch 模型文件。然后进行下述操作来转换模型。[SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 为已经修改过的代码样例，供参考，并且，该链接提供精简的 [评测指标](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch/tree/master/eval_python) 的运行代码
 
-- 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) [MoCA 测试样例（华为网盘地址）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
-
-
-- 下载 PyTorch 版本 [SLT-Net 模型文件](https://drive.google.com/file/d/1_u4dEdxM4AKuuh6EcWHAlo8EtR7e8q5v/view) ，保留 `Net_epoch_MoCA_short_term_pseudo.pth` 文件即可。
+- 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载
 
 
-- 修改 SLT-Net 源码 
-
-（[SLT-Net](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 为已经修改过的代码，可以直接运行。也可以对于从 [SLT-Net Github](https://github.com/XuelianCheng/SLT-Net) 克隆的代码按照下面操作进行修改）
-
+**步骤2** （ [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) ）
 
 1. `lib/__init__.py` 中注释掉第二行
 
@@ -217,8 +195,7 @@ python inference_om.py
 - 运行
 
 ```
-cd eval
-python run_eval.py
+python eval/run_eval.py
 ```
 
 得到指标结果

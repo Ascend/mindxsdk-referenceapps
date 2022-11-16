@@ -27,7 +27,7 @@ import mindspore.ops as ops
 from mindx.sdk.base import Tensor, Model
 
 
-class test_dataset:
+class TestDataset:
     def __init__(self, datapath, testsize):
         self.testsize = testsize
         self.image_list = []
@@ -40,40 +40,19 @@ class test_dataset:
         self.mean = [0.485, 0.456, 0.406]
         self.std = [0.229, 0.224, 0.225]
 
-        for scene in os.listdir(os.path.join(data_root)):
-            images  = sorted(glob(os.path.join(data_root, scene, 'Imgs', img_format)))
-            gt_list = sorted(glob(os.path.join(data_root, scene, 'GT', '*.png')))
+        for scene_i in os.listdir(os.path.join(data_root)):
+            images_i  = sorted(glob(os.path.join(data_root, scene_i, 'Imgs', img_format)))
+            gt_list = sorted(glob(os.path.join(data_root, scene_i, 'GT', '*.png')))
 
-            for i in range(len(images)-2):
-                self.extra_info += [ (scene, i) ]
+            for i in range(len(images_i)-2):
+                self.extra_info += [ (scene_i, i) ]
                 self.gt_list    += [ gt_list[i] ]
-                self.image_list += [ [images[i], 
-                                    images[i+1], 
-                                    images[i+2]] ]
+                self.image_list += [ [images_i[i], 
+                                    images_i[i+1], 
+                                    images_i[i+2]] ]
 
         self.index = 0
         self.size = len(self.gt_list)
-
-    def load_data(self):
-        imgs = []
-        names= []
-
-        for i in range(len(self.image_list[self.index])):
-            imgs += [self.rgb_loader(self.image_list[self.index][i])]
-            names+= [self.image_list[self.index][i].split('/')[-1]]
-
-            imgs[i] = cv2.resize(imgs[i], (self.testsize, self.testsize))
-            imgs[i] = np.array([imgs[i]])
-            imgs[i] = imgs[i].transpose(0, 3, 1, 2).astype(np.float32) / 255.0
-            imgs[i] = (imgs[i] - np.asarray(self.mean)[None, :, None, None]) / np.asarray(self.std)[None, :, None, None]
-
-        scene= self.image_list[self.index][0].split('/')[-3]  
-        gt = self.binary_loader(self.gt_list[self.index])
-
-        self.index += 1
-        self.index = self.index % self.size
-    
-        return imgs, gt, names, scene
 
     @staticmethod
     def rgb_loader(path):
@@ -81,14 +60,35 @@ class test_dataset:
         imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         return imge_rgb
 
+    def load_data(self):
+        imgs = []
+        names = []
+
+        for idx in range(len(self.image_list[self.index])):
+            imgs += [self.rgb_loader(self.image_list[self.index][idx])]
+            names += [self.image_list[self.index][idx].split('/')[-1]]
+
+            imgs[idx] = cv2.resize(imgs[idx], (self.testsize, self.testsize))
+            imgs[idx] = np.array([imgs[idx]])
+            imgs[idx] = imgs[idx].transpose(0, 3, 1, 2).astype(np.float32) / 255.0
+            imgs[idx] = (imgs[idx] - np.asarray(self.mean)[None, :, None, None]) / np.asarray(self.std)[None, :, None, None]
+
+        scene = self.image_list[self.index][0].split('/')[-3]  
+        gt_i = self.binary_loader(self.gt_list[self.index])
+
+        self.index += 1
+        self.index = self.index % self.size
+    
+        return (imgs, gt_i, names, scene)
+
+    def __len__(self):
+        return self.size
+
     @staticmethod
     def binary_loader(path):
         with open(path, 'rb') as f:
             img = Image.open(f)
             return img.convert('L')
-
-    def __len__(self):
-        return self.size
 
 
 if __name__ == '__main__':
@@ -100,12 +100,12 @@ if __name__ == '__main__':
     parser.add_argument('--device_id', type=int, default=0)
     opt = parser.parse_args()
 
-    test_loader = test_dataset(datapath=opt.datapath, testsize=opt.testsize)
+    test_loader = TestDataset(datapath=opt.datapath, testsize=opt.testsize)
 
     model = Model(opt.om_path, opt.device_id)
 
     for i in tqdm(range(test_loader.size)):
-        images, gt, names, scene = test_loader.load_data()
+        (images, gt, name, scene) = test_loader.load_data()
         gt = np.asarray(gt, np.float32)
         save_path = opt.save_root + scene + '/Pred/'        
         if not os.path.exists(save_path):
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         res = res.astype('uint8')
         res = res.asnumpy().squeeze()
 
-        name = names[0].replace('jpg', 'png')
+        name = name[0].replace('jpg', 'png')
         fp = save_path + name
         imageio.imwrite(fp, res)
         print('> ', fp)
