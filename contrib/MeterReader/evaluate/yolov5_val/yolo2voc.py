@@ -24,9 +24,10 @@ import stat
 import numpy as np
 import cv2
 
-label_path = '../evaluate/yolov5_val/det_val_data/det_sdk_txt'
-image_path = '../evaluate/yolov5_val/det_val_data/det_sdk_img'
-sdk_voc_path = '../evaluate/yolov5_val/det_val_data/det_sdk_voc/'
+labelPath = '../evaluate/yolov5_val/det_val_data/det_sdk_txt'
+imagePath = '../evaluate/yolov5_val/det_val_data/det_sdk_img'
+vocPath = '../evaluate/yolov5_val/det_val_data/det_sdk_voc/'
+
 
 # 坐标转换，原始存储的是YOLOv5格式
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
@@ -42,9 +43,9 @@ def xywhn2xyxy(boxes, width=800, height=800):
 
 
 if __name__ == '__main__':
-    folderlist = os.listdir(label_path)
+    folderlist = os.listdir(labelPath)
     for i in folderlist:
-        label_path_new = os.path.join(label_path, i)
+        label_path_new = os.path.join(labelPath, i)
         with open(label_path_new, 'r') as f:
             lb = np.array([x.split() for x in f.read().strip().splitlines()], dtype=np.float32)  # predict_label
             print(lb)
@@ -64,7 +65,7 @@ if __name__ == '__main__':
                         fontScale=1,
                         color=(0, 0, 255),
                         thickness=2)
-            with os.fdopen(os.open(sdk_voc_path + i, os.O_WRONLY | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR),
+            with os.fdopen(os.open(vocPath + i, os.O_WRONLY | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR),
                            'a') as voc:
                 voc.write(str(x[0]) + ' ' + str(x[5])
                           + ' ' + str(x[1]) + ' ' + str(x[2])

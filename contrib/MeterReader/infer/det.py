@@ -26,8 +26,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-pipeline_path = '../pipeline/yolov5/det.pipeline'
-
+PIPELINE = '../pipeline/yolov5/det.pipeline'
 res_img = []
 
 
@@ -333,7 +332,7 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
+    with os.fdopen(os.open(PIPELINE, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:

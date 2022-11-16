@@ -27,7 +27,8 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-pipeline_path = '../pipeline/deeplabv3/seg.pipeline'
+PIPELINE = '../pipeline/deeplabv3/seg.pipeline'
+
 
 def get_args():
     argv = sys.argv[1:]
@@ -57,7 +58,7 @@ if __name__ == '__main__':
         exit()
 
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
+    with os.fdopen(os.open(PIPELINE, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:

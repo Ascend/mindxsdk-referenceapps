@@ -47,21 +47,21 @@ def error(error_msg, other="", exit_flag=False):
             sys.exit()
 
 
-validate_voc_PATH = '../evaluate/yolov5_val/det_val_data/det_val_voc'
-sdk_predict_voc_PATH = '../evaluate/yolov5_val/det_val_data/det_sdk_voc'
+validatePath = '../evaluate/yolov5_val/det_val_data/det_val_voc'
+predictPath = '../evaluate/yolov5_val/det_val_data/det_sdk_voc'
 
 BACKUP_FOLDER = 'backup_no_matches_found'
 
-os.chdir(validate_voc_PATH)
+os.chdir(validatePath)
 validate_voc_files = glob.glob('*.txt')
 if equal_zero(len(validate_voc_files)):
-    error("Error: no .txt files found in", validate_voc_PATH, exit_flag=True)
+    error("Error: no .txt files found in", validatePath, exit_flag=True)
 
-os.chdir(sdk_predict_voc_PATH)
+os.chdir(predictPath)
 sdk_predict_voc_files = glob.glob('*.txt')
 
 if equal_zero(sdk_predict_voc_files):
-    error("Error: no .txt files found in", sdk_predict_voc_PATH, exit_flag=True)
+    error("Error: no .txt files found in", predictPath, exit_flag=True)
 
 validate_voc_files = set(validate_voc_files)
 sdk_predict_voc_files = set(sdk_predict_voc_files)
@@ -74,9 +74,9 @@ sdk_predict_voc_backup = sdk_predict_voc_files - validate_voc_files
 # validate_voc
 
 if not validate_voc_backup:
-    error('No backup required for', validate_voc_PATH, exit_flag=False)
+    error('No backup required for', validatePath, exit_flag=False)
 else:
-    os.chdir(validate_voc_PATH)
+    os.chdir(validatePath)
     ## create the backup dir if it doesn't exist already
     if not os.path.exists(BACKUP_FOLDER):
         os.makedirs(BACKUP_FOLDER)
@@ -85,9 +85,9 @@ else:
 
 # sdk_predict_voc
 if not sdk_predict_voc_backup:
-    error('No backup required for', sdk_predict_voc_PATH, exit_flag=False)
+    error('No backup required for', predictPath, exit_flag=False)
 else:
-    os.chdir(sdk_predict_voc_PATH)
+    os.chdir(predictPath)
     ## create the backup dir if it doesn't exist already
     if not os.path.exists(BACKUP_FOLDER):
         os.makedirs(BACKUP_FOLDER)
