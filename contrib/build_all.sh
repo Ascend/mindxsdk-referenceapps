@@ -40,7 +40,7 @@ SAMPLE_FOLDER=(
     UltraFastLaneDetection/
     VehicleIdentification/
     yunet/
-   RoadSegmentation/
+    RoadSegmentation/
     PassengerflowEstimation/
     VehicleRetrogradeRecognition/
     Collision/
@@ -48,11 +48,12 @@ SAMPLE_FOLDER=(
     CenterFace/
     YOLOX/
     PicoDet/
-  SOLOV2/
-  OpenCVPlugin/
+    SOLOV2/
+    OpenCVPlugin/
     RefineDet/
-    FCOS/
+    FCOS
     Faster_R-CNN/
+    MeterReader/
 )
 
 err_flag=0

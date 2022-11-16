@@ -27,7 +27,7 @@
         "mxpi_tensorinfer0":{
             "props":{
                 "dataSource":"mxpi_imageresize0",
-                "modelPath":"seg.om"
+                "modelPath":"../models/deeplabv3/seg.om"
             },
             "factory":"mxpi_tensorinfer",
             "next":"mxpi_semanticsegpostprocessor0"
@@ -35,14 +35,12 @@
         "mxpi_semanticsegpostprocessor0":{
             "props":{
                 "dataSource":"mxpi_tensorinfer0",
-                "postProcessConfigPath":"deeplabv3.cfg",
-                "labelPath":"deeplabv3.names",
+                "postProcessConfigPath":"../pipeline/deeplabv3/deeplabv3.cfg",
+                "labelPath":"../pipeline/deeplabv3/deeplabv3.names",
                 "postProcessLibPath":"libdeeplabv3post.so"
             },
             "factory":"mxpi_semanticsegpostprocessor",
-            "next":"mxpi_process3",
-            "postProcessConfigPath":"deeplabv3.cfg",
-            "labelPath":"deeplabv3.names"
+            "next":"mxpi_process3"
         },
         "mxpi_process3":{
             "props":{

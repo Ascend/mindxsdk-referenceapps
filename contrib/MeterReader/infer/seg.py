@@ -27,20 +27,13 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-cur_path = os.path.abspath(os.path.dirname(__file__))
-father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-pipeline_path = os.path.join(father_path, 'pipeline', 'deeplabv3', 'seg.pipeline').replace('\\', '/')
-model_path = os.path.join(father_path, 'models', 'deeplabv3', 'seg.om').replace('\\', '/')
-postProcessConfigPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deeplabv3.cfg').replace('\\', '/')
-labelPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deeplabv3.names').replace('\\', '/')
-
+pipeline_path = '../pipeline/deeplabv3/seg.pipeline'
 
 def get_args():
     argv = sys.argv[1:]
     inputfile = ''
-    outputfile = ''
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
+        opts, args = getopt.getopt(argv, "hi:o:", ["ifile="])
     except getopt.GetoptError:
         sys.exit(2)
     for opt, arg in opts:
@@ -48,29 +41,13 @@ def get_args():
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
-        elif opt in ("-o", "--ofile"):
-            outputfile = arg
-    print('输入的文件为：', inputfile)
-    print('输出的文件为：', outputfile)
-    return inputfile, outputfile
+
+    return inputfile
 
 
 if __name__ == '__main__':
 
-    input_file_name, result_file = get_args()
-
-    # 改写pipeline里面的model路径
-
-    file_object = open(pipeline_path, 'r')
-
-    content = json.load(file_object)
-    modelPath = model_path
-    content['seg']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
-    content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
-    content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
-
-    with os.fdopen(os.open(pipeline_path, os.O_WRONLY, stat.S_IWUSR | stat.S_IRUSR), 'w') as f:
-        json.dump(content, f)
+    input_file_name = get_args()
 
     steammanager_api = StreamManagerApi()
 
@@ -79,7 +56,8 @@ if __name__ == '__main__':
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
 
-    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, stat.S_IWUSR | stat.S_IRUSR), 'rb') as f:
+    MODES = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
@@ -92,7 +70,7 @@ if __name__ == '__main__':
         exit()
     with os.fdopen(os.open(input_file_name, os.O_RDONLY, stat.S_IWUSR | stat.S_IRUSR), 'rb') as f:
         input_data.data = f.read()
-
+        
     STREAM_NAME = b'seg'
     IN_PLUGIN_ID = 0
     uId = steammanager_api.SendData(STREAM_NAME, IN_PLUGIN_ID, input_data)

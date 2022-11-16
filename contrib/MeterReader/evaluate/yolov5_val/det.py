@@ -29,13 +29,11 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-cur_path = os.path.abspath(os.path.dirname(__file__))
-father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\', '/')
-pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
-FILEPATH = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '/')
-SAVE_PATH = os.path.join(cur_path, 'det_val_data', 'det_sdk_img/').replace('\\', '/')
-SAVE_TXT = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt/').replace('\\', '/')
+
+pipeline_path = '../pipeline/yolov5/det.pipeline'
+FILEPATH = '../evaluate/yolov5_val/det_val_data/det_val_img'
+SAVE_PATH = '../evaluate/yolov5_val/det_val_data/det_sdk_img/'
+SAVE_TXT = '../evaluate/yolov5_val/det_val_data/det_sdk_txt/'
 MODES = stat.S_IWUSR | stat.S_IRUSR
 FLAGS = os.O_WRONLY | os.O_CREAT
 
@@ -305,11 +303,11 @@ class DetPostProcessors:
 if __name__ == '__main__':
     # 改写pipeline里面的model路径
 
-    file_object = open(pipeline_path, 'r')
+    # file_object = open(pipeline_path, 'r')
 
-    content = json.load(file_object)
-    modelPath = model_path
-    content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
+    # content = json.load(file_object)
+    # modelPath = model_path
+    # content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
 
     steammanager_api = StreamManagerApi()
     # init stream manager

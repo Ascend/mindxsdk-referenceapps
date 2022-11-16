@@ -26,13 +26,7 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-cur_path = os.path.abspath(os.path.dirname(__file__))
-
-father_path = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-
-pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
-
-model_path = os.path.join(father_path, 'models', 'yolov5', 'det.om').replace('\\', '/')
+pipeline_path = '../pipeline/yolov5/det.pipeline'
 
 res_img = []
 
@@ -317,8 +311,6 @@ def get_args():
             inputfile = arg
         elif opt in ("-o", "--odir"):
             outputdir = arg
-    print('输入的文件为：', inputfile)
-    print('输出的文件为：', outputdir)
     return inputfile, outputdir
 
 
@@ -331,18 +323,6 @@ if __name__ == '__main__':
     else:
         shutil.rmtree(RESULTFILE)
         os.mkdir(RESULTFILE)
-
-    # 改写pipeline里面的model路径
-
-    file_object = open(pipeline_path, 'r')
-
-    content = json.load(file_object)
-    modelPath = model_path
-    content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
-
-    MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open(pipeline_path, os.O_WRONLY, MODES), 'w') as f:
-        json.dump(content, f)
 
     steammanager_api = StreamManagerApi()
     # init stream manager

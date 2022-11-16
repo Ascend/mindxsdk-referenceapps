@@ -24,6 +24,9 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+pipeline_path = '../pipeline/deeplabv3/seg.pipeline'
+DIRNAME = "../evaluate/deeplabv3_val/seg_val_img/seg_test_img"
+det_val_dir = "../evaluate/deeplabv3_val/seg_val_img/seg_test_img_groundtruth"
 
 def miou_computer(miuo_img, miou_pred):
     """
@@ -34,15 +37,15 @@ def miou_computer(miuo_img, miou_pred):
         print("两个图片形状不一致")
         exit()
 
-    unique_item_list = np.unique(miuo_img)
-    unique_item_dict = {}
+    unique_item_list = np.unique(miuo_img)  
+    unique_item_dict = {} 
     for index in unique_item_list:
         item = index
         unique_item_dict[item] = index
-    num = len(np.unique(unique_item_list))
+    num = len(np.unique(unique_item_list))  
 
     # 混淆矩阵
-    _m = np.zeros((num + 1, num + 1))
+    _m = np.zeros((num + 1, num + 1)) 
     for i in range(miuo_img.shape[0]):
         for j in range(miuo_img.shape[1]):
             _mi = unique_item_dict.get(miuo_img[i][j])
@@ -62,31 +65,6 @@ def miou_computer(miuo_img, miou_pred):
 
 
 if __name__ == '__main__':
-    # 获取当前脚本的位置
-
-    cur_path = os.path.abspath(os.path.dirname(__file__))
-    father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    model_path = os.path.join(father_path, 'models', 'deeplabv3', 'seg.om').replace('\\', '/')
-    postProcessConfigPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deeplabv3.cfg').replace('\\', '/')
-    labelPath = os.path.join(father_path, 'pipeline', 'deeplabv3', 'deeplabv3.names').replace('\\', '/')
-    pipeline_path = os.path.join(father_path, 'pipeline', 'deeplabv3', 'seg.pipeline').replace('\\', '/')
-    DIRNAME = os.path.join(cur_path, 'seg_val_img', 'seg_test_img').replace('\\', '/')
-    det_val_dir = os.path.join(cur_path, 'seg_val_img', 'seg_test_img_groundtruth').replace('\\', '/')
-
-    # 改写pipeline里面的model路径
-
-    file_object = open(pipeline_path, 'r')
-
-    content = json.load(file_object)
-    modelPath = model_path
-    content['seg']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
-    content['seg']['mxpi_semanticsegpostprocessor0']['props']['postProcessConfigPath'] = postProcessConfigPath
-    content['seg']['mxpi_semanticsegpostprocessor0']['props']['labelPath'] = labelPath
-    FLAGS = os.O_WRONLY
-    MODE_S = stat.S_IRUSR
-    with os.fdopen(os.open(pipeline_path, FLAGS, MODE_S), 'w') as f:
-        json.dump(content, f)
-
     steammanager_api = StreamManagerApi()
     # init stream manager
     ret = steammanager_api.InitManager()
@@ -163,6 +141,6 @@ if __name__ == '__main__':
     Miou_list = []
     for key in _unique:
         Miou_list.append(miou_computer(det_val_dict.get(key), det_pred_dict.get(key)))
-    print("The average miou is :", np.average(np.array(Miou_list)))
+    print("The average miou is=====================:", np.average(np.array(Miou_list)))
 
     steammanager_api.DestroyAllStreams()

@@ -24,12 +24,9 @@ import stat
 import numpy as np
 import cv2
 
-# 获取当前脚本的位置
-cur_path = os.path.abspath(os.path.dirname(__file__))
-label_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_txt').replace('\\', '/')
-image_path = os.path.join(cur_path, 'det_val_data', 'det_val_img').replace('\\', '/')
-sdk_voc_path = os.path.join(cur_path, 'det_val_data', 'det_sdk_voc/').replace('\\', '/')
-
+label_path = '../evaluate/yolov5_val/det_val_data/det_sdk_txt'
+image_path = '../evaluate/yolov5_val/det_val_data/det_sdk_img'
+sdk_voc_path = '../evaluate/yolov5_val/det_val_data/det_sdk_voc/'
 
 # 坐标转换，原始存储的是YOLOv5格式
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right

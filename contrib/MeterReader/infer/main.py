@@ -35,9 +35,9 @@ def error(msg):
 def get_args():
     argv = sys.argv[1:]
     input_file = ''
-    output_file = ''
+    output_dir = ''
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
+        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "odir="])
     except getopt.GetoptError:
         sys.exit(2)
     for opt, arg in opts:
@@ -45,8 +45,8 @@ def get_args():
             sys.exit()
         elif opt in ("-i", "--ifile"):
             input_file = arg
-        elif opt in ("-o", "--ofile"):
-            output_file = arg
+        elif opt in ("-o", "--odir"):
+            output_dir = arg
 
     # 判定是否输入文件名为空
     if (not input_file):
@@ -55,11 +55,10 @@ def get_args():
     test_cv_read(input_file)
     print('输入的文件为：', input_file)
 
-    if (not output_file):
-        error("输出文件名为空")
-    test_cv_write(input_file, output_file)
-    print('输出的文件为：', output_file)
-    return [input_file, output_file]
+    if (not output_dir):
+        error("输出文件目录为空")
+    print('输出的文件目录为：', output_dir)
+    return [input_file, output_dir]
 
 
 # 判断改文件是否可被cv2读取，或者为空图像
@@ -74,31 +73,24 @@ def test_cv_read(filename):
         error(f"cv2读取文件失败 或 图像为空. {filename}")
 
 
-# 判断改文件是否可被cv2写入
-def test_cv_write(filename, filewritename):
-    try:
-        temp_img = cv2.imread(filename, -1)
-        cv2.imwrite(filewritename, temp_img)
-        return
-    except Exception as e:
-        print(e)
-        error(f"文件类型不兼容,cv2无法写入. {filewritename}")
-
-
 if __name__ == '__main__':
-    inputfile, outputfile = get_args()
+    inputfile, outputdir = get_args()
 
     # det
-    outputdir = os.path.join(father_path, 'images', 'det_res/').replace('\\', '/')
+    outputdir_temp = os.path.join(father_path, 'images', 'det_res/').replace('\\', '/')
+
+    inputfilename = os.path.basename(inputfile)
+    dirStr, ext = os.path.splitext(inputfilename)
+    outputfile = os.path.join(outputdir, dirStr + "_result" + ".png")
 
     # 如果yolov5输出的文件夹不存在，则创建。存在则清空再创建。
-    if (not os.path.isdir(outputdir)):
-        os.makedirs(outputdir)
+    if (not os.path.isdir(outputdir_temp)):
+        os.makedirs(outputdir_temp)
     else:
-        shutil.rmtree(outputdir)
-        os.makedirs(outputdir)
+        shutil.rmtree(outputdir_temp)
+        os.makedirs(outputdir_temp)
 
-    det_result = os.popen(f'python det.py --ifile {inputfile} --odir {outputdir}')
+    det_result = os.popen(f'python det.py --ifile {inputfile} --odir {outputdir_temp}')
     det_res = det_result.read()
 
     DET_RES_IMG_LEN = 0
@@ -110,10 +102,11 @@ if __name__ == '__main__':
             DET_RES_IMG_LEN = int(temp[1])
             for i in range(DET_RES_IMG_LEN):
                 detResImgFile.append(temp[2 + i])
+            continue
         elif line.startswith("det_xyxy"):
             temp = line.split(":")[1]
-            print(json.loads(temp))
             detResImgIndex.append(json.loads(temp))
+            continue
 
         print(line)
 
@@ -126,18 +119,13 @@ if __name__ == '__main__':
     # seg
     seg_Ans = []
     for i in range(DET_RES_IMG_LEN):
-        seg_result = os.popen(f"python seg.py --ifile {detResImgFile[i]} --ofile {outputdir}")
+        seg_result = os.popen(f"python seg.py --ifile {detResImgFile[i]}")
         seg_res = seg_result.read()
         for line in seg_res.splitlines():
             if (line.startswith("seg_ans")):
                 temp = line.split(" ")
                 seg_Ans.append(float(temp[1]))
         os.remove(detResImgFile[i])
-    print("------seg-----")
-    print(seg_Ans)
-    print("------All-----")
-    for i in range(DET_RES_IMG_LEN):
-        print(f"{detResImgFile[i]}   {seg_Ans[i]}")
 
     # 处理成为图片
     im0 = cv2.imread(inputfile)
@@ -151,3 +139,7 @@ if __name__ == '__main__':
 
     cv2.imwrite(outputfile, im0)
 
+    # 删去临时文件夹
+    shutil.rmtree(outputdir_temp)
+
+    print("Success!")

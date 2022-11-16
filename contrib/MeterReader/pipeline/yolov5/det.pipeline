@@ -1,7 +1,7 @@
 {
     "detection":{
         "stream_config":{
-            "deviceId":"0"
+            "deviceId":"1"
         },
         "appsrc0":{
             "props":{
@@ -37,7 +37,7 @@
         "mxpi_tensorinfer0":{
             "props":{
                 "dataSource":"mxpi_imageresize0",
-                "modelPath":"det.om"
+                "modelPath":"../models/yolov5/det.om"
             },
             "factory":"mxpi_tensorinfer",
             "next":"mxpi_dataserialize0"
