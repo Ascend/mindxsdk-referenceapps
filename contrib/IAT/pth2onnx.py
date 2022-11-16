@@ -49,7 +49,7 @@ def pth2onnx(input_file, output_file):
 
 
 def main():
-    pth2onnx('best_Epoch_lol_v1.pth','IAT_lol.onnx')
+    pth2onnx('best_Epoch_lol_v1.pth', 'IAT_lol.onnx')
 
 
 if __name__ == "__main__":
