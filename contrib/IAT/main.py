@@ -137,20 +137,8 @@ def test_precision():
     print("SSIM: ", ssim_avg)
     return
 
-def test_input():
-    import os
-    TEST_DIR = "/home/nankaigcs1/IAT/data/test/"
-    SAVE_DIR = "/home/nankaigcs1/IAT/data/result/"
-    low_image_list = sorted([TEST_DIR  + image_name for image_name in os.listdir(TEST_DIR)])
-    image_num = len(low_image_list)
-
-    for i in range(image_num):
-        enhanced_image = infer(low_image_list[i],is_save=True)
-
-    return
 
 if __name__ == "__main__":
-    # test_input()
     try:
         infer(IMAGE_PATH, is_save=True)
     except Exception as e:
