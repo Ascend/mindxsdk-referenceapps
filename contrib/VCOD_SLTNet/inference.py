@@ -78,18 +78,11 @@ class TestDataset:
                 np.asarray(self.std)[None, :, None, None]
 
         scenes = self.image_list[self.index][0].split('/')[-3]  
-        gt_i = self.binary_loader(self.gt_list[self.index])
 
         self.index += 1
         self.index = self.index % self.size
     
-        return imgs, gt_i, names, scenes
-
-    @staticmethod
-    def binary_loader(path):
-        with open(path, 'rb') as f:
-            img = Image.open(f)
-            return img.convert('L')
+        return imgs, names, scenes
 
 
 if __name__ == '__main__':
@@ -106,13 +99,14 @@ if __name__ == '__main__':
     model = Model(opt.om_path, opt.device_id)
 
     for i in tqdm(range(test_loader.size)):
-        images, gt, name, scene = test_loader.load_data()
-        gt = np.asarray(gt, np.float32)
+        images, name, scene = test_loader.load_data()
+        
         save_path = opt.save_root + scene + '/Pred/'        
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
         model_in = np.concatenate(images, axis=1)
+        img_h, img_w = model_in.shape[2], model_in.shape[3]
         model_in = np.ascontiguousarray(model_in, dtype=np.float32)
         model_in = Tensor(model_in)
         model_in.to_device(opt.device_id)
@@ -123,7 +117,7 @@ if __name__ == '__main__':
 
         res = ms.Tensor(res)
         res = ops.Sigmoid()(res)
-        res = nn.ResizeBilinear()(res, (gt.shape[0], gt.shape[1]))
+        res = nn.ResizeBilinear()(res, (img_h, img_w))
         res = (res - res.min()) / (res.max() - res.min() + 1e-8) * 255
         res = res.astype('uint8')
         res = res.asnumpy().squeeze()
