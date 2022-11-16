@@ -196,6 +196,9 @@ https://github.com/princewang1994/TextSnake.pytorch/tree/b4ee996d5a4d214ed825350
 python3 evaluate.py
 ```
 得到精度测试的结果：
+
 ![精度测试结果1](./精度1.png)
+
 ![精度测试结果2](./精度2.png)
+
 与pytorch实现版本的精度结果相对比，其精度相差在1%以下，精度达标。
