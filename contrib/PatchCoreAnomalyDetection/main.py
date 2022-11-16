@@ -19,7 +19,7 @@ import time
 import os
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
-from StreamManagerApi import StreamManagerApi, StringVector,MxProtobufIn,InProtobufVector
+from StreamManagerApi import StreamManagerApi, StringVector, MxProtobufIn, InProtobufVector
 import numpy as np
 from sklearn.metrics import roc_auc_score
 from utils import FaissNN, preprocess, norm, RescaleSegmentor, unpatch_scores, score_max
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     labels = []
     scorestopK10 = []
     IMAGES_CNT = len(data_tuple)
-    cnt = 0
+    CNT = 0
     ALL_TIME = 0
     nn_method = FaissNN(4)
     faiss_path = f"faiss-index-precision/{category}/nnscorer_search_index.faiss"
@@ -130,8 +130,8 @@ if __name__ == '__main__':
     )
 
     for img in data_tuple:
-        cnt += 1
-        print(f"{cnt}/{IMAGES_CNT}")
+        CNT += 1
+        print(f"{CNT}/{IMAGES_CNT}")
 
         ori_img = cv2.imread(img[0])
         ori_img = np.transpose(ori_img, (2, 0, 1))[::-1]
@@ -161,9 +161,9 @@ if __name__ == '__main__':
 
         # Inputs data to a specified stream based on streamName.
         STREAMNAME = b'AnomalyDetection'
-        inPluginId = 0
+        INPLUGINID = 0
 
-        ret = streamManagerApi.SendProtobuf(STREAMNAME, inPluginId, proto_buffer_vec)
+        ret = streamManagerApi.SendProtobuf(STREAMNAME, INPLUGINID, proto_buffer_vec)
         if ret < 0:
             print("Failed to send data to stream.")
             exit()
@@ -200,12 +200,12 @@ if __name__ == '__main__':
         query_distances, query_nns = imagelevel_nn(query_features)
         patch_scores = image_scores = np.mean(query_distances, axis=-1)
 
-        topK = 10
-        index = np.argsort(patch_scores)[::-1][0:topK]
-        sum = 0
+        TOPK = 10
+        index = np.argsort(patch_scores)[::-1][0:TOPK]
+        TOPK_SUM_10 = 0
         for idx in index:
-            sum += patch_scores[idx.item()]
-        avg = sum / topK
+            TOPK_SUM_10 += patch_scores[idx.item()]
+        avg = TOPK_SUM_10 / TOPK
         scorestopK10.append(avg.item())
 
         image_scores = unpatch_scores(
@@ -240,7 +240,7 @@ if __name__ == '__main__':
         cv2.imwrite(os.path.join(f"segmention/{category}/{img[1]}", img[0]), heat_img)
         print("infer time: {}s".format(step_time))
         RescaleSegmentor()
-    avg_time = ALL_TIME / cnt
+    avg_time = ALL_TIME / CNT
     print("avg infer time: {}s".format(avg_time))
 
     scores = np.array(scores, dtype=np.float32)

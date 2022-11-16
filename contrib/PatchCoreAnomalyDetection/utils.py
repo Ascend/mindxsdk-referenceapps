@@ -54,10 +54,9 @@ class FaissNN(object):
             self.search_index = None
 
 
-
-
 def unpatch_scores(x, batchsize):
     return x.reshape(batchsize, -1, *x.shape[1:])
+
 
 def score_max(x):
     while x.ndim > 1:
