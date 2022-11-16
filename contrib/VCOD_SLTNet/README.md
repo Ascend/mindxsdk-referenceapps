@@ -224,8 +224,5 @@ python run_eval.py
 得到指标结果
 
 ```
-# torch 版本
-{'Smeasure': 0.6519, 'wFmeasure': 0.3285, 'MAE': 0.0155, 'adpEm': 0.661, 'meanEm': 0.7167, 'maxEm': 0.7314, 'adpFm': 0.3198, 'meanFm': 0.3547, 'maxFm': 0.3643}
-# mindspore 版本
-{'Smeasure': 0.5724, 'wFmeasure': 0.1744, 'MAE': 0.042, 'adpEm': 0.5044, 'meanEm': 0.615, 'maxEm': 0.7134, 'adpFm': 0.1716, 'meanFm': 0.2018, 'maxFm': 0.2195}
+{'Smeasure': 0.6539, 'wFmeasure': 0.3245, 'MAE': 0.0161, 'adpEm': 0.6329, 'meanEm': 0.7229, 'maxEm': 0.7554, 'adpFm': 0.3025, 'meanFm': 0.3577, 'maxFm': 0.3738}
 ```
