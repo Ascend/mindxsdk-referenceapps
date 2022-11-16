@@ -15,13 +15,26 @@
 import os
 import numpy as np
 from mindx.sdk.base import Tensor, Model
-import torch.nn.functional as F
-import torch
-from utils.dataset import TestDataset as EvalDataset
+import cv2
 import imageio
 
 
-def infer(om_path, save_path, device_id):
+def get_image(image_path):
+    """
+    get image by its path.
+    :param image_path: the path of image
+    :return: a numpy array of image
+    """
+    image_bgr = cv2.imread(image_path)
+    imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+    imge_rgb = cv2.resize(imge_rgb, (352, 352))
+    imge_rgb = np.array([imge_rgb])
+    image = imge_rgb.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
+    image = np.ascontiguousarray(image, dtype=np.float32)
+    return image
+
+
+def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
     """
     Paper Title: Deep Gradient Learning for Camouflaged Object Detection
     Project Page: https://github.com/GewelsJI/DGNet
@@ -38,30 +51,29 @@ def infer(om_path, save_path, device_id):
     model = Model(om_path, device_id)
     print(model)
 
-    val_loader = EvalDataset(image_root='./data/NC4K/Imgs/',
-                             gt_root='./data/NC4K/GT/',
-                             testsize=352)
     os.makedirs(save_path, exist_ok=True)
-    for i in range(val_loader.size):
-        images, gt, name = val_loader.load_data()
-        gt = np.asarray(gt, np.float32)
-        images = images.numpy()
-        image_tensor = Tensor(images)
+    for img_name in os.listdir(data_path):
+        image = get_image(os.path.join(data_path, img_name))
+
+        # put image array into ascend ai processor
+        image_tensor = Tensor(image)
         image_tensor.to_device(device_id)
+
+        # infer
         out = model.infer(image_tensor)
         out = out[0]
         out.to_host()
 
-        res = torch.from_numpy(np.array(out))
-        res = F.upsample(res, size=gt.shape, mode='bilinear', align_corners=False)
-        res = res.sigmoid().data.cpu().numpy().squeeze()
+        # save results
+        res = np.array(out).squeeze()
+        res = 1/(1+(np.exp((-res))))
         res = (res - res.min()) / (res.max() - res.min() + 1e-8)
-        print('--> save results: {}'.format(save_path+name))
-        imageio.imwrite(save_path+name, res)
+        
+        imageio.imwrite(save_path+img_name.replace('.jpg', '.png'), res)
 
 
 if __name__ == "__main__":
     infer(
-        om_path='./snapshots/DGNet-PVTv2-B3/DGNet-PVTv2-B3.om', 
-        save_path='./seg_results_om/Exp-DGNet-PVTv2-B3-OM/NC4K-Test/',
+        om_path='./snapshots_all/DGNet/DGNet.om', 
+        save_path='./seg_results_om/Exp-DGNet-OM/NC4K/',
         device_id=0)
