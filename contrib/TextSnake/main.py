@@ -23,7 +23,6 @@ import cv2
 import numpy as np
 from PIL import Image
 import torch
-
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 from util.misc import fill_hole, regularize_sin_cos
@@ -31,6 +30,20 @@ from util.detection import TextDetector
 from util.misc import to_device, mkdirs, rescale_result
 from util.config import config as cfg
 from util.visualize import visualize_detection
+
+
+def zerodimsoftmax(x):
+    first = x[0, :, :].reshape(512, 512)
+    second = x[1, :, :].reshape(512, 512)
+    fexp=np.exp(first)
+    sexp=np.exp(second)
+    sumexp=fexp+sexp
+    fxf=fexp/sumexp
+    fxs=sexp/sumexp
+    fx = np.zeros((2,512,512))
+    fx[0, :, :] = fxf
+    fx[1, :, :] = fxs
+    return fx
 
 
 def norm(image_n , mean , std):
@@ -127,10 +140,8 @@ if __name__ == '__main__':
         sin_pred = pred_array[:, 4, :, :].reshape(512, 512)
         cos_pred = pred_array[:, 5, :, :].reshape(512, 512)
         radii_pred = pred_array[:, 6, :, :].reshape(512, 512)
-        tr_pred_tensor = torch.from_numpy(tr_pred)
-        tcl_pred_tensor = torch.from_numpy(tcl_pred)
-        tr_pred = tr_pred_tensor.softmax(dim=0).data.cpu().numpy()
-        tcl_pred = tcl_pred_tensor.softmax(dim=0).data.cpu().numpy()
+        tr_pred = zerodimsoftmax(tr_pred)
+        tcl_pred = zerodimsoftmax(tcl_pred)
         td = TextDetector(cfg.tr_thresh, cfg.tcl_thresh)
         contours = td.detect_contours(image, tr_pred, tcl_pred, sin_pred, cos_pred, radii_pred)
         output = {
