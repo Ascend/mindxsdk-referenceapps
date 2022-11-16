@@ -72,10 +72,10 @@ if __name__ == '__main__':
         args.results, "exp", mode="iterate"
     )
 
-    seed = 0
-    random.seed(seed)
-    np.random.seed(seed)
-    mindspore.set_seed(seed)
+    SEED = 0
+    random.seed(SEED)
+    np.random.seed(SEED)
+    mindspore.set_seed(SEED)
 
     network = wide_resnet101_2()
 

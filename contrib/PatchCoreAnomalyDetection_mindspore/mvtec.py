@@ -28,12 +28,13 @@ from mindspore.dataset.vision import ToTensor
 from mindspore.dataset.transforms import TypeCast
 from mindspore.dataset.transforms import Compose
 from mindspore.dataset.vision import Normalize
+from PIL import Image
+from enum import Enum
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
-from PIL import Image
-from enum import Enum
+
 
 _CLASSNAMES = [
     "bottle",
@@ -116,17 +117,10 @@ class MVTecDataset():
         return len(self.img_paths)
 
     def __getitem__(self, idx):
-        # print("--------------------------------------")
         img_path, gt, label, img_type = self.img_paths[idx], self.gt_paths[idx], self.labels[idx], self.types[idx]
         img = Image.open(img_path).convert('RGB')
         img = np.array(img)
         img = self.transform(img)
-
-        # print(tmp.type)
-        # img = self.transform(img)
-        # img = img.numpy()
-
-        # img2 = img
 
         if gt == 0:
             gt = np.zeros((1, np.array(img).shape[-2], np.array(img).shape[-2])).tolist()

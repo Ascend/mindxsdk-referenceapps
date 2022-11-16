@@ -54,7 +54,6 @@ def compute_greedy_coreset_indices(features, number_of_starting_points, percenta
     Args:
         features: [NxD] input feature bank to sample.
     """
-    # features = features.astype("float16")
     number_of_starting_points = np.clip(
         number_of_starting_points, None, len(features)
     )
@@ -124,7 +123,6 @@ mm = ops.MatMul()
 expendDims = ops.ExpandDims()
 
 
-
 def compute_batchwise_differences(
         matrix_a, matrix_b
 ):
@@ -144,8 +142,6 @@ def compute_batchwise_differences(
                                        Tensor(65504, dtype=ms.float32)))
 
     return tmp
-
-
 
 
 class FaissNN(object):
@@ -270,6 +266,7 @@ class NearestNeighbourScorer(object):
             nn_method: Nearest neighbour search method.
         """
         self.feature_merger = ConcatMerger()
+        self.detection_features = None
 
         self.n_nearest_neighbours = n_nearest_neighbours
         self.nn_method = nn_method
@@ -317,24 +314,8 @@ class NearestNeighbourScorer(object):
         return anomaly_scores, query_distances, query_nns
 
     @staticmethod
-    def _detection_file(folder, prepend=""):
-        return os.path.join(folder, prepend + "nnscorer_features.pkl")
-
-    @staticmethod
     def _index_file(folder, prepend=""):
         return os.path.join(folder, prepend + "nnscorer_search_index.faiss")
-
-    @staticmethod
-    def _save(filename, features):
-        if features is None:
-            return
-        with open(filename, "wb") as save_file:
-            pickle.dump(features, save_file, pickle.HIGHEST_PROTOCOL)
-
-    @staticmethod
-    def _load(filename: str):
-        with open(filename, "rb") as load_file:
-            return pickle.load(load_file)
 
     def save(
             self,
@@ -343,10 +324,6 @@ class NearestNeighbourScorer(object):
             prepend: str = "",
     ):
         self.nn_method.save(self._index_file(save_folder, prepend))
-        if save_features_separately:
-            self._save(
-                self._detection_file(save_folder, prepend), self.detection_features
-            )
 
     def save_and_reset(self, save_folder: str) -> None:
         self.save(save_folder)
@@ -354,10 +331,6 @@ class NearestNeighbourScorer(object):
 
     def load(self, load_folder: str, prepend: str = "") -> None:
         self.nn_method.load(self._index_file(load_folder, prepend))
-        if os.path.exists(self._detection_file(load_folder, prepend)):
-            self.detection_features = self._load(
-                self._detection_file(load_folder, prepend)
-            )
 
 
 squeeze = ops.Squeeze(1)
@@ -419,7 +392,7 @@ class PatchMaker:
         return x
 
 
-def select_topK(topK=5, scores2=[]):
+def select_topK(topK=5, scores2=None):
     scorestopKn = []
     for i in range(len(scores2)):
         scores_topK = np.array(scores2[i]).reshape(-1)
@@ -520,13 +493,7 @@ def compute_and_store_final_results(
         results_path,
         results,
         row_names=None,
-        column_names=[
-            "Instance AUROC",
-            "Full Pixel AUROC",
-            "Full PRO",
-            "Anomaly Pixel AUROC",
-            "Anomaly PRO",
-        ],
+        column_names=None,
 ):
     """Store computed results as CSV file.
 
