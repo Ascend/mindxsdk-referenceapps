@@ -87,7 +87,7 @@ npu-smi info
 - 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载
 
 
-**步骤2** （ [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) ）
+**步骤2** 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换
 
 1. `lib/__init__.py` 中注释掉第二行
 
@@ -97,7 +97,6 @@ npu-smi info
 from .short_term_model import VideoModel as VideoModel_pvtv2
 # from .long_term_model import VideoModel as VideoModel_long_term
 ```
-
 
 2. `lib/short_term_model.py`
 
@@ -111,7 +110,6 @@ image1, image2, image3 = x[0],x[1],x[2]
 image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]
 ```
 
-
 3. `lib/pvtv2_afterTEM.py`
 
 注释掉
@@ -119,7 +117,6 @@ image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]
 # from mmseg.models import build_segmentor
 # from mmcv import ConfigDict
 ```
-    
 
 4. `mypath.py`
 
@@ -131,7 +128,7 @@ elif dataset == 'MoCA':
 替换为数据集路径 `TestDataset_per_sq` 的父目录。
 
 
-**步骤2** （设置环境变量）
+**步骤3** （设置环境变量）
 
 ```
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
@@ -139,8 +136,7 @@ source ~/mindx_dir/mxVision/set_env.sh
 conda activate py392
 ```
 
-**步骤3** （执行编译的步骤）
-
+**步骤4** （执行编译的步骤）
 
 1. pytorch 模型转换 onnx 文件
 
@@ -150,13 +146,11 @@ conda activate py392
 python sltnet_torch2onnx.py
 ```
 
-
 2. 简化 onnx 文件 （可选操作）
 
 ```
 python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx sltnet_sim.onnx
 ```
-
 
 3. onnx 文件转换 om 文件
 
@@ -166,31 +160,21 @@ atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,3
 
 已经转换好的模型可供参考：[模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
 
-
-**步骤4** （运行及输出结果）
+**步骤5** （运行及输出结果）
 
 mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference_om_mindspore.py 即可。无需放入 SLT-Net 根目录。
 
 ```
-python inference_om_mindspore.py
+python inference.py
 ```
 
-
-torch 版本的模型：将 `inference_om.py` 移到 SLT-Net 根目录（torch 版本的推理模型，依赖原项目的 dataloader），配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，运行：
-
-```
-python inference_om.py
-```
-
-
-**步骤5** （评测结果）
+**步骤6** （评测结果）
 
 - 可以使用基于 [MATLAB](https://github.com/XuelianCheng/SLT-Net/tree/master/eval) 或基于 [Python](https://github.com/lartpang/PySODEvalToolkit) 的评测代码。
 
 - 推荐使用精简后的 [Python 评测代码](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch/tree/master/eval_python)
 
-- 运行 `eval/run_eval.py` 脚本，修改 `gt_dir`、`pred_dir` 为本地的 GT、预测结果的目录即可
-
+- 运行 `eval/run_eval.py` 脚本，修改 `gt_dir`、`pred_dir` 为本地的 GT、预测结果的目录即可。
 
 - 运行
 
