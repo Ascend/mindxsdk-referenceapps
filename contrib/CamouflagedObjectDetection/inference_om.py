@@ -13,33 +13,40 @@
 # limitations under the License.
 
 import os
-import numpy as np
-from mindx.sdk.base import Tensor, Model
 import cv2
 import imageio
+import mindspore
+import argparse
+import numpy as np
+from mindx.sdk.base import Tensor, Model
 
 
-def get_image(image_path):
+def get_image(image_path, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
     """
     get image by its path.
-    :param image_path: the path of image
+    :param 
+        image_path: the path of image
+        mean: the mean value of samples (from ImageNet)
+        std: the std value of samples (from ImageNet)
     :return: a numpy array of image
     """
     image_bgr = cv2.imread(image_path)
     imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+    image_size = imge_rgb.shape
     imge_rgb = cv2.resize(imge_rgb, (352, 352))
     imge_rgb = np.array([imge_rgb])
     image = imge_rgb.transpose(0, 3, 1, 2).astype(np.float32) / 255.0
+    image = (image - np.asarray(mean)[None, :, None, None]) / np.asarray(std)[None, :, None, None]
     image = np.ascontiguousarray(image, dtype=np.float32)
-    return image
+    return image, image_size[0], image_size[1]
 
 
 def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
     """
     Paper Title: Deep Gradient Learning for Camouflaged Object Detection
-    Project Page: https://github.com/GewelsJI/DGNet
+    Original Project Page: https://github.com/GewelsJI/DGNet
     Author: Ge-Peng Ji
-    Paper Citation:
+    Paper Citation Bibtex:
     @article{ji2022gradient,
       title={Deep Gradient Learning for Efficient Camouflaged Object Detection},
       author={Ji, Ge-Peng and Fan, Deng-Ping and Chou, Yu-Cheng and Dai, 
@@ -50,10 +57,10 @@ def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
     """
     model = Model(om_path, device_id)
     print(model)
-
+    
     os.makedirs(save_path, exist_ok=True)
     for img_name in os.listdir(data_path):
-        image = get_image(os.path.join(data_path, img_name))
+        image, h, w = get_image(os.path.join(data_path, img_name))
 
         # put image array into ascend ai processor
         image_tensor = Tensor(image)
@@ -63,17 +70,27 @@ def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
         out = model.infer(image_tensor)
         out = out[0]
         out.to_host()
+        res = np.array(out)
 
         # save results
-        res = np.array(out).squeeze()
-        res = 1/(1+(np.exp((-res))))
-        res = (res - res.min()) / (res.max() - res.min() + 1e-8)
+        res = mindspore.Tensor(res)
         
+        res = mindspore.ops.Sigmoid()(res)
+        res = mindspore.nn.ResizeBilinear()(res, (h, w))
+        res = (res - res.min()) / (res.max() - res.min() + 1e-8)
+        res = res.asnumpy().squeeze()
         imageio.imwrite(save_path+img_name.replace('.jpg', '.png'), res)
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--om_path', type=str, default='../dataset/TestDataset/CAMO/',
+                        help='the test rgb images root')
+    parser.add_argument('--save_path', type=str, default='../dataset/TestDataset/CAMO/',
+                        help='the test rgb images root')
+    args = parser.parse_args()
+    
     infer(
-        om_path='./snapshots_all/DGNet/DGNet.om', 
-        save_path='./seg_results_om/Exp-DGNet-OM/NC4K/',
+        om_path=args.om_path, 
+        save_path=args.save_path,
         device_id=0)

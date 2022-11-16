@@ -16,7 +16,8 @@
 
 - 所使用的公开数据集是NC4K，可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/data.tar
 
-- 所使用的模型是EfficientNet-B4版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：
+- 所使用的模型是EfficientNet-B4版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/DGNet.zip
+
 
 ### 1.3 实现流程
 
@@ -38,8 +39,8 @@
 
 | 序号 | 子系统 | 功能描述 |
 | :------------ | :---------- | :---------- |
-| 1    | 图像输入 | 调用PIL.Image中的图片加载函数，用于加载输入图片|
-| 2    | 图像前处理 | 调用torchvision.transforms函数，将输入图片放缩到352*352大小，并执行归一化操作 |
+| 1    | 图像输入 | 调用cv2中的图片加载函数，用于加载输入图片|
+| 2    | 图像前处理 | 将输入图片放缩到352*352大小，并执行归一化操作 |
 | 3    | 伪装目标检测 | 利用DGNet检测模型，检测出图片中的伪装目标|
 | 4    | 数据分发 | 将DGNet模型检测到的逐像素概率图进行数据分发到下个插件|
 | 5    | 结果输出 | 将伪装目标概率预测图结果进行输出并保存|
@@ -144,7 +145,7 @@ fi
 
 **步骤1** 在GitHub上下载DGNet (Efficient-B4) 的ONNX模型，下载地址为：https://github.com/GewelsJI/DGNet/releases/download/Checkpoints/DGNet.pth
 
-**步骤2** 将获取到的DGNet模型onxx文件存放至`./snapshots/DGNet/DGNet.onnx`。
+**步骤2** 将下载获取到的DGNet模型onxx文件存放至`./snapshots/DGNet/DGNet.onnx`。
 
 **步骤3** 模型转换具体步骤
 
@@ -186,14 +187,14 @@ python ./inference_om.py
 
 **步骤3**
 
-- 定量性能验证：使用原始GitHub仓库中提供的[标准评测代码](https://github.com/GewelsJI/DGNet/blob/main/lib_ascend/evaluation.py)进行测评，然后可以生成评测指标数值表格。可以看出DGNet模型的Smeasure指标数值为0.84，超过了项目交付中提到的“大于0.84”的要求。
+- 定量性能验证：使用原始GitHub仓库中提供的[标准评测代码](https://github.com/GewelsJI/DGNet/blob/main/lib_ascend/evaluation.py)进行测评，然后可以生成评测指标数值表格。可以看出DGNet模型的Smeasure指标数值为0.856，已经超过了项目交付中提到的“大于0.84”的要求。
 
   ```text
-  +---------+--------------+----------+
-  | Dataset |    Method    | Smeasure |
-  +---------+--------------+----------+
-  |   NC4K  | Exp-DGNet-OM |  0.84    |
-  +---------+--------------+----------+
+  +---------+-----------------------+----------+-----------+-------+-------+--------+-------+-------+--------+-------+
+  | Dataset |         Method        | Smeasure | wFmeasure |  MAE  | adpEm | meanEm | maxEm | adpFm | meanFm | maxFm |
+  +---------+-----------------------+----------+-----------+-------+-------+--------+-------+-------+--------+-------+
+  |   NC4K  |      Exp-DGNet-OM     |  0.856   |   0.782   | 0.043 | 0.909 |  0.91  | 0.921 |  0.8  | 0.812  | 0.833 |
+  +---------+-----------------------+----------+-----------+-------+-------+--------+-------+-------+--------+-------+
   ```
 
 - 定性性能验证：
