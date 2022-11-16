@@ -107,7 +107,8 @@ if __name__ == '__main__':
 
     for i in tqdm(range(test_loader.size)):
         dataset = test_loader.load_data()
-        images, gt, name, scene = dataset['imgs'], dataset['gt'], dataset['names'], dataset['scenes']
+        images, gt, name, scene = dataset.get('imgs'), dataset.get('gt'), \
+            dataset.get('names'), dataset.get('scenes')
         gt = np.asarray(gt, np.float32)
         save_path = opt.save_root + scene + '/Pred/'
         if not os.path.exists(save_path):
