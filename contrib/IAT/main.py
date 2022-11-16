@@ -19,10 +19,10 @@ from mindx.sdk import base
 from mindx.sdk.base import Tensor, Model, Size, log, ImageProcessor
 import cv2
 
-MODEL_PATH = "/home/nankaigcs1/IAT/models/iatsim.om"   # 模型的路径
-IMAGE_PATH = "/home/nankaigcs1/IAT/data/eval15/low/1.png"   # 输入图片
-RESULT_PATH = "/home/nankaigcs1/IAT/data/result/"
-DATASET_DIR = "/home/nankaigcs1/IAT/data/eval15/"
+MODEL_PATH = "./models/iatsim.om"   # 模型的路径
+IMAGE_PATH = "./data/test.png"   # 输入图片
+RESULT_PATH = "./data/result/"
+DATASET_DIR = "./data/eval15/"
 DEVICE_ID = 0   # 芯片ID
 
 
