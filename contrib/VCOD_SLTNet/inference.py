@@ -89,7 +89,7 @@ class TestDataset:
         self.index += 1
         self.index = self.index % self.size
     
-        return imgs, gt_i, names, scenes
+        return {'imgs': imgs, 'gt': gt_i, 'names': names, 'scenes': scenes}
 
 
 if __name__ == '__main__':
@@ -106,9 +106,10 @@ if __name__ == '__main__':
     model = Model(opt.om_path, opt.device_id)
 
     for i in tqdm(range(test_loader.size)):
-        images, gt, name, scene = test_loader.load_data()
+        dataset = test_loader.load_data()
+        images, gt, name, scene = dataset['imgs'], dataset['gt'], dataset['names'], dataset['scenes']
         gt = np.asarray(gt, np.float32)
-        save_path = opt.save_root + scene + '/Pred/'        
+        save_path = opt.save_root + scene + '/Pred/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
