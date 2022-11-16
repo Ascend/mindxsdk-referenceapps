@@ -1,3 +1,17 @@
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from base64 import decode
 import numpy as np
 import mindx.sdk as sdk
@@ -56,6 +70,10 @@ def get_image(image_path):
     :param image_path: the path of image
     :return: a numpy array of image
     """
+    import os
+    if not os.path.exists(image_path):
+        print("image path is wrong!")
+        exit(0)
     image_bgr = cv2.imread(image_path)
     imge_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
     imge_rgb = cv2.resize(imge_rgb, (600, 400))
@@ -89,7 +107,8 @@ def infer(image_path, is_save=False):
     enhanced_img = np.array(enhanced_img)
     if is_save:
         enhanced_img = enhanced_img.reshape(3, 400, 600).transpose(1, 2, 0) * 255
-        cv2.imwrite(RESULT_PATH + "result.png", enhanced_img)
+        enhanced_img = cv2.cvtColor(enhanced_img, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(RESULT_PATH + image_path.split('/')[-1], enhanced_img)
 
     return enhanced_img
 
@@ -105,7 +124,7 @@ def test_precision():
     image_num = len(low_image_list)
     psnr_sum = 0.0
     ssim_sum = 0.0
-    
+
     for i in range(image_num):
         high_image = get_image(high_image_list[i])
         enhanced_image = infer(low_image_list[i])
@@ -118,9 +137,20 @@ def test_precision():
     print("SSIM: ", ssim_avg)
     return
 
+def test_input():
+    import os
+    TEST_DIR = "/home/nankaigcs1/IAT/data/test/"
+    SAVE_DIR = "/home/nankaigcs1/IAT/data/result/"
+    low_image_list = sorted([TEST_DIR  + image_name for image_name in os.listdir(TEST_DIR)])
+    image_num = len(low_image_list)
+
+    for i in range(image_num):
+        enhanced_image = infer(low_image_list[i],is_save=True)
+
+    return
 
 if __name__ == "__main__":
-
+    # test_input()
     try:
         infer(IMAGE_PATH, is_save=True)
     except Exception as e:
