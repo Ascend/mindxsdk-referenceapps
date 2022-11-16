@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-import os
 import cv2
 import numpy as np
 import faiss
@@ -55,18 +54,15 @@ class FaissNN(object):
             self.search_index = None
 
 
-class PatchMaker:
-    def __init__(self, patchsize, stride=None):
-        self.patchsize = patchsize
-        self.stride = stride
 
-    def unpatch_scores(self, x, batchsize):
-        return x.reshape(batchsize, -1, *x.shape[1:])
 
-    def score(self, x):
-        while x.ndim > 1:
-            x = np.max(x, axis=-1)
-        return x
+def unpatch_scores(x, batchsize):
+    return x.reshape(batchsize, -1, *x.shape[1:])
+
+def score_max(x):
+    while x.ndim > 1:
+        x = np.max(x, axis=-1)
+    return x
 
 
 def preprocess(image):
@@ -85,7 +81,7 @@ def preprocess(image):
     tensorvec_noise = tensor_package_vec.tensorVec.add()
     tensorvec_noise.memType = 1
     tensorvec_noise.deviceId = 0
-    # bs为1， 1*20为噪声输入尺寸，4指向float32数据
+    # bs为1，4指向float32数据
     tensorvec_noise.tensorDataSize = int(1 * 3 * 224 * 224 * 4)
     tensorvec_noise.tensorDataType = 0
     for i in image.shape:
@@ -103,21 +99,17 @@ def norm(scores):
     scores = np.mean(scores, axis=0)
     return scores
 
+
 class RescaleSegmentor:
     def __init__(self, target_size=224):
         self.target_size = target_size
         self.smoothing = 4
 
     def convert_to_segmentation(self, patch_scores):
-
         _scores = patch_scores
-        # _scores = np.expand_dims(_scores,axis=1)
-        # _scores = _scores.unsqueeze(1)
-        _scores = np.transpose(_scores,(1,2,0))
-        _scores = cv2.resize(_scores,self.target_size)
+        _scores = np.transpose(_scores, (1, 2, 0))
+        _scores = cv2.resize(_scores, self.target_size)
         _scores = np.expand_dims(_scores, axis=0)
-        # _scores = np.squeeze(_scores,axis=1)
-        # _scores = _scores.squeeze(1)
         patch_scores = _scores
 
         return [

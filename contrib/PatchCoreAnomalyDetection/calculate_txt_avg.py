@@ -22,14 +22,14 @@ args = parser.parse_args()
 def calculate_precision(path):
     cate_cnt = 0
     auroc_avg_max = 0
-    auroc_avg_topK10 = 0
+    auroc_avg_topk_10 = 0
     for line in open(path, 'r'):
         cate_cnt += 1
         auroc_avg_max += float(line.split("\t")[2])
-        auroc_avg_topK10 += float(line.split("\t")[4])
-    auroc_avg_topK10 = auroc_avg_topK10 / cate_cnt
+        auroc_avg_topk_10 += float(line.split("\t")[4])
+    auroc_avg_topk_10 = auroc_avg_topk_10 / cate_cnt
     auroc_avg_max = auroc_avg_max / cate_cnt
-    print(f"auroc:{auroc_avg_max}\tauroc_topK10:{auroc_avg_topK10}")
+    print(f"auroc:{auroc_avg_max}\tauroc_topK10:{auroc_avg_topk_10}")
 
 
 def calculate_performance(path):

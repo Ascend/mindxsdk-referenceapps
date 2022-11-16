@@ -13,19 +13,15 @@
 # limitations under the License.
 
 import argparse
-import datetime
 import json
 import time
-
+import os
 import MxpiDataType_pb2 as MxpiDataType
 import cv2
-from StreamManagerApi import *
-from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
+from StreamManagerApi import StreamManagerApi, StringVector,MxProtobufIn,InProtobufVector
 import numpy as np
-import os
-
 from sklearn.metrics import roc_auc_score
-from utils import FaissNN, preprocess, norm, PatchMaker
+from utils import FaissNN, preprocess, norm, unpatch_scores, score_max
 import yaml
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
@@ -34,7 +30,7 @@ cfg = open("config.yaml", 'r', encoding='utf-8')
 data_dict = yaml.safe_load(cfg)
 cfg.close()
 
-parser = argparse.ArgumentParser(description='train')
+parser = argparse.ArgumentParser(description='test precision')
 
 parser.add_argument('--data', "-d", type=str, default="bottle")
 args = parser.parse_args()
@@ -56,12 +52,11 @@ if __name__ == '__main__':
     emb_1 = int(CROP_IMG / scales[1])
     if feature_layer == "layer2":
         emb_area = int(emb_0 * emb_0)
-        channel_cnt = 512
+        CHANNEL_CNT = 512
     else:
         emb_area = int(emb_1 * emb_1)
-        channel_cnt = 1024
+        CHANNEL_CNT = 1024
         emb_0 = emb_1
-    patch_maker = PatchMaker(patchsize=3)
     nn_method.reset_index()
     faiss_path = f"faiss-index-precision/{category}/nnscorer_search_index.faiss"
     nn_method.load(faiss_path)
@@ -70,7 +65,7 @@ if __name__ == '__main__':
     )
     pipelineStr = {
 
-        "classification+detection": {
+        "AnomalyDetection": {
             "stream_config": {
                 "deviceId": "2"
             },
@@ -125,13 +120,13 @@ if __name__ == '__main__':
     scores = []
     labels = []
     scorestopK10 = []
-    images_cnt = len(data_tuple)
+    IMAGES_CNT = len(data_tuple)
     cnt = 0
-    all_time = 0
+    ALL_TIME = 0
 
     for img in data_tuple:
         cnt += 1
-        print(f"{cnt}/{images_cnt}")
+        print(f"{cnt}/{IMAGES_CNT}")
 
         ori_img = cv2.imread(img[0])
         ori_img = np.transpose(ori_img, (2, 0, 1))[::-1]
@@ -159,10 +154,10 @@ if __name__ == '__main__':
         proto_buffer_vec.push_back(proto_buffer_in)
 
         # Inputs data to a specified stream based on streamName.
-        streamName = b'classification+detection'
+        STREAMNAME = b'AnomalyDetection'
         inPluginId = 0
 
-        ret = streamManagerApi.SendProtobuf(streamName, inPluginId, proto_buffer_vec)
+        ret = streamManagerApi.SendProtobuf(STREAMNAME, inPluginId, proto_buffer_vec)
         if ret < 0:
             print("Failed to send data to stream.")
             exit()
@@ -172,7 +167,7 @@ if __name__ == '__main__':
         keyVec = StringVector()
         for key in keys:
             keyVec.push_back(key)
-        infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        infer = streamManagerApi.GetResult(STREAMNAME, b'appsink0', keyVec)
         if (infer.metadataVec.size() == 0):
             print("Get no data from stream !")
             exit()
@@ -187,10 +182,10 @@ if __name__ == '__main__':
 
         pred = np.frombuffer(result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.float32)
 
-        features = pred.reshape(1, channel_cnt, emb_0, emb_0).astype('float32')
+        features = pred.reshape(1, CHANNEL_CNT, emb_0, emb_0).astype('float32')
 
         features = np.transpose(features, (0, 2, 3, 1))
-        features = features.reshape(int(features.shape[1] * features.shape[2]), channel_cnt)
+        features = features.reshape(int(features.shape[1] * features.shape[2]), CHANNEL_CNT)
 
         features = np.ascontiguousarray(features)
 
@@ -207,18 +202,18 @@ if __name__ == '__main__':
         avg = sum / topK
         scorestopK10.append(avg.item())
 
-        image_scores = patch_maker.unpatch_scores(
+        image_scores = unpatch_scores(
             image_scores, batchsize=1
         )
         image_scores = image_scores.reshape(*image_scores.shape[:2], -1)
-        image_scores = patch_maker.score(image_scores).item()
+        image_scores = score_max(image_scores).item()
         scores.append(image_scores)
         labels.append(1 if img[1] != "good" else 0)
         end = time.time()
         step_time = end - start
-        all_time += step_time
+        ALL_TIME += step_time
         print("infer time: {}s".format(step_time))
-    avg_time = all_time / cnt
+    avg_time = ALL_TIME / cnt
     print("avg infer time: {}s".format(avg_time))
     scores = np.array(scores, dtype=np.float32)
     min_scores = scores.min(axis=-1).reshape(-1, 1)
