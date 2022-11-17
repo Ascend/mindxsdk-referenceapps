@@ -189,9 +189,6 @@ class FaissNN(object):
         search_index.add(index_features)
         return search_index.search(query_features, n_nearest_neighbours)
 
-    def _create_index(self, dimension):
-        return faiss.IndexFlatL2(dimension)
-
     def save(self, filename: str) -> None:
         faiss.write_index(self.search_index, filename)
 
@@ -202,6 +199,9 @@ class FaissNN(object):
         if self.search_index:
             self.search_index.reset()
             self.search_index = None
+
+    def _create_index(self, dimension):
+        return faiss.IndexFlatL2(dimension)
 
 
 class _BaseMerger:
