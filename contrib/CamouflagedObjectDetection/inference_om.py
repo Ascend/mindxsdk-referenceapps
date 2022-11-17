@@ -13,15 +13,16 @@
 # limitations under the License.
 
 import os
+import argparse
+
 import cv2
 import imageio
 import mindspore
-import argparse
 import numpy as np
 from mindx.sdk.base import Tensor, Model
 
 
-def get_image(image_path, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
+def get_image(image_path, mean, std):
     """
     get image by its path.
     :param 
@@ -60,7 +61,10 @@ def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
     
     os.makedirs(save_path, exist_ok=True)
     for img_name in os.listdir(data_path):
-        image, h, w = get_image(os.path.join(data_path, img_name))
+        image, h, w = get_image(
+            os.path.join(data_path, img_name), 
+            mean=[0.485, 0.456, 0.406], 
+            std=[0.229, 0.224, 0.225])
 
         # put image array into ascend ai processor
         image_tensor = Tensor(image)
@@ -84,10 +88,14 @@ def infer(om_path, save_path, device_id, data_path='./data/NC4K/Imgs'):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--om_path', type=str, default='../dataset/TestDataset/CAMO/',
-                        help='the test rgb images root')
-    parser.add_argument('--save_path', type=str, default='../dataset/TestDataset/CAMO/',
-                        help='the test rgb images root')
+    parser.add_argument(
+        '--om_path', type=str, 
+        default='./snapshots/DGNet-PVTv2-B3/DGNet.om',
+        help='the test rgb images root')
+    parser.add_argument(
+        '--save_path', type=str, 
+        default='./seg_results_om/Exp-DGNet-OM/NC4K/',
+        help='the test rgb images root')
     args = parser.parse_args()
     
     infer(
