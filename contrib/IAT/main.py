@@ -138,8 +138,12 @@ def test_precision():
     return
 
 
-if __name__ == "__main__":
+def main():
     try:
         infer(IMAGE_PATH, is_save=True)
     except Exception as e:
         print(e)
+
+
+if __name__ == "__main__":
+    main()
