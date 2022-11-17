@@ -22,7 +22,6 @@ import stat
 import cv2
 import numpy as np
 from PIL import Image
-import torch
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 from util.misc import fill_hole, regularize_sin_cos
