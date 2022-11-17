@@ -35,6 +35,7 @@ Retinaface基于MindX_SDK开发，在昇腾芯片上进行目标检测，并实�
 ├── config
 │   └── aipp.cfg
 │   ├── face_Retina.cfg
+├── images
 ├── main.py
 ├── test.py
 ├── utils.py
@@ -114,7 +115,7 @@ mkdir -p evaluate/widerface_txt/
 ```
 git clone https://github.com/biubug6/Pytorch_Retinaface.git
 ```
-或者直接下载zip代码包解压。
+或者直接下载[论文代码仓库](https://github.com/biubug6/Pytorch_Retinaface)中的zip代码包解压。
 
 1、准备include目录中的文件
 
@@ -138,25 +139,23 @@ git clone https://github.com/biubug6/Pytorch_Retinaface.git
 ```
 
 4、准备模型及标签文件
-在ModelZoo社区下载“ATC Retinaface(FP16) from Pytorch.zip”模型代码包并上传至服务器解压
+在ModelZoo社区[下载](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/7270b02a457d4c4ab262277a646517f9)“ATC Retinaface(FP16) from Pytorch.zip”模型代码包并上传至服务器解压。
 * 将模型代码包中的"retinaface.onnx"模型拷贝至项目根目录的"model"目录下
 * 将模型代码包中的"Retinaface/data/widerface/val/wider_val.txt"标签文件拷贝至"evaluate"目录下；
 
 ## 4 模型转化
 
-本项目中使用的模型是Retinaface模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/7270b02a457d4c4ab262277a646517f9)。下载后解包，得到`Retinaface.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+下载后解包，得到`Retinaface.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
 
 模型转换步骤如下：
 
-1、按照2环境依赖设置环境变量
-
-2、`cd`到`model`文件夹，运行
+1、`cd`到`model`文件夹，运行
 
 ````
 bash run.sh
 ````
 
-3、执行该命令后会在指定输出.om模型路径生成项目指定模型文件newRetinaface.om。若模型转换成功则输出：
+2、执行该命令后会在指定输出.om模型路径生成项目指定模型文件newRetinaface.om。若模型转换成功则输出：
 
 ```
 ATC start working now, please wait for a moment.
@@ -210,12 +209,51 @@ make install
 
 4、运行`main.py`程序
 
-在根目录，运行
-
-````
+确认并修改“main.py”中下列所示的代码：
+```
+pipeline = {
+        "Retinaface": {
+            "stream_config": {
+                "deviceId": "3"   # 运行NPU卡ID
+            },
+            "appsrc0": {
+                "props": {
+                    "blocksize": "409600"
+                },
+                "factory": "appsrc",
+                "next": "mxpi_tensorinfer0"
+            },
+            "mxpi_tensorinfer0": {
+                "props": {
+                    "singleBatchInfer": "1",
+                    "dataSource": "appsrc0",
+                    "modelPath": "./model/newRetinaface.om" # 推理所需模型
+                },
+                "factory": "mxpi_tensorinfer",
+                "next": "mxpi_objectpostprocessor0"
+            },
+            "mxpi_objectpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "./config/face_Retina.cfg", # 推理所需的配置文件
+                "postProcessLibPath": "libtotalyunetpostprocess.so"
+            },
+            "factory": "mxpi_objectpostprocessor",
+            "next": "appsink0"
+            },
+            "appsink0": {
+                "props": {
+                    "blocksize": "409600"
+                },
+                "factory": "appsink"
+            }
+        }
+    }
+```
+在代码根目录下，执行以下命令进行推理：
+```
 bash run.sh
-````
-
+```
 最后会得到`result.jpg`即为输出结果
 
 
@@ -224,15 +262,67 @@ bash run.sh
 
 本模型使用widerface数据集进行精度评估。
 
-1.[下载](https://share.weiyun.com/5ot9Qv1)数据集放到Retinaface目录下
+1.[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Retinaface/widerface.zip)数据集放到Retinaface目录下
 
-2. 打开test.py文件,在开头修改路径参数：
+2.打开test.py文件,在开头修改路径参数：
 * RNDB修改为widerface验证集的位置。
 * RNDY修改为保存结果txt文件的文件夹位置。 
+如例：
+    ```
+    RNDB = "./widerface/val/images/"
+    RNDY = "./evaluate/widerface_txt"
+    ```
 
-3.在Retinaface目录运行
+3.确认并修改“test.py”中下列所示的代码：
+```
+pipeline = {
+    "Retinaface": {
+        "stream_config": {
+            "deviceId": "3" # 运行NPU卡ID
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_tensorinfer0"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "singleBatchInfer": "1",
+                "dataSource": "appsrc0",
+                "modelPath": "./model/newRetinaface.om" # 推理所需模型
+            },
+            "factory": "mxpi_tensorinfer",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "409600"
+            },
+            "factory": "appsink"
+        }
+    }
+}
+```
+在Retinaface目录运行
 ```
 python3 test.py
 ```
-4、在`evaluate/widerface_evaluate`目录运行`python3 evaluation.py -p <your prediction dir> -g <groud truth dir>`，等待一段时间后即可得到结果。其中<your prediction dir>与2中RNDB相同，<groud truth dir>是widerface_evaluate中的groun_truth文件夹。
+该程序会逐一推理widerface官方验证集之中的样本，并将结果保存在RNDB文件当中。
 
+4、进入`evaluate/widerface_evaluate`目录下，运行`python3 evaluation.py -p <your prediction dir> -g <groud truth dir>`, 其中：
+
+* `<your prediction dir>`即RNDB是模型推理的结果。
+
+* `<groud truth dir>`是widerface_evaluate中的groun_truth文件夹。
+
+最终得到的精度如下图所示：
+
+![模型推理结果](images/result.png)
+
+原模型精度如下图所示：
+
+![源模型推理结果](images/origin.png)
+
+符合精度偏差要求，精度达标。

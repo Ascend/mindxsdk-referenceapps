@@ -26,7 +26,7 @@ import numpy as np
 import cv2
 import MxpiDataType_pb2 as MxpiDataType
 from PIL import Image
-from utils import preprocess
+from utils import preprocess_for_main
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 from StreamManagerApi import StreamManagerApi, MxProtobufIn, InProtobufVector, StringVector
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    tensor_data , return_img = preprocess("./test.jpg")
+    tensor_data , return_img = preprocess_for_main("./test.jpg")
     tensor = tensor_data[None, :]
 
     STREAMNAME = b"Retinaface"
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     objectList = MxpiDataType.MxpiObjectList()
     objectList.ParseFromString(infer_result[0].messageBuf)
 
-    img = cv2.imread('test.jpg')
+    img = cv2.imread('./test.jpg')
     result = objectList.objectVec
     resize , left, top, right, bottom = return_img
     for x in result:

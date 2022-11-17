@@ -47,6 +47,25 @@ cfg_mnet = {
 }
 
 
+def preprocess_for_main(image_path):
+        img = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        target_size = 1000
+        im_shape = img.shape
+        im_size_min = np.min(im_shape[0:2])
+        im_size_max = np.max(im_shape[0:2])
+        resize = target_size / im_size_max
+        img = cv2.resize(img, None, None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)
+        width_pad = target_size - img.shape[1]
+        left = 0 
+        right = width_pad
+        height_pad = target_size - img.shape[0]
+        top = 0
+        bottom = height_pad
+        img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(0, 0, 0))
+        im_height, im_width, _ = img.shape
+        img = img.flatten()
+        return img , [resize, left, top, right, bottom]
+
 def preprocess(image_path):
         img_raw = cv2.imread(image_path, cv2.IMREAD_COLOR)
         img = np.float32(img_raw)
