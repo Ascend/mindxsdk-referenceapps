@@ -17,7 +17,8 @@ import glob
 import json
 import os
 from pathlib import Path
-
+from enum import Enum
+import collections
 import numpy as np
 import mindspore.common.dtype as mstype
 import mindspore.dataset as ds
@@ -29,12 +30,9 @@ from mindspore.dataset.transforms import TypeCast
 from mindspore.dataset.transforms import Compose
 from mindspore.dataset.vision import Normalize
 from PIL import Image
-from enum import Enum
 
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
-
-
 
 _CLASSNAMES = [
     "bottle",
@@ -61,6 +59,10 @@ class DatasetSplit(Enum):
     TEST = "test"
 
 
+Dataset = collections.namedtuple('Dataset', ['img', 'img2', 'gt', 'label', 'idx', 'img_path'])
+LoadDataset = collections.namedtuple('LoadDataset', ['img_tot_paths', 'gt_tot_paths', 'tot_labels', 'tot_types'])
+
+
 class MVTecDataset():
     """MVTecDataset"""
 
@@ -82,6 +84,27 @@ class MVTecDataset():
         self.classnames_to_use = [classname] if classname is not None else _CLASSNAMES
         self.imgpaths_per_class, self.data_to_iterate = self.get_image_data()
         self.img_paths, self.gt_paths, self.labels, self.types = self.load_dataset()
+
+    def __len__(self):
+        return len(self.img_paths)
+
+    def __getitem__(self, idx):
+        img_path, gt, label, img_type = self.img_paths[idx], self.gt_paths[idx], self.labels[idx], self.types[idx]
+        img = Image.open(img_path).convert('RGB')
+        img = np.array(img)
+        img = self.transform(img)
+
+        if gt == 0:
+            gt = np.zeros((1, np.array(img).shape[-2], np.array(img).shape[-2])).tolist()
+        else:
+            gt = Image.open(gt)
+            gt = np.array(gt)
+            gt = self.gt_transform(gt)
+
+        if self.is_json:
+            return os.path.basename(img_path[:-4]), img_type
+        dataset = Dataset(img, img, gt, label, idx, img_path)
+        return dataset
 
     def load_dataset(self):
         """load_dataset"""
@@ -110,86 +133,68 @@ class MVTecDataset():
                 tot_types.extend([defect_type] * len(img_paths))
 
         assert len(img_tot_paths) == len(gt_tot_paths), "Something wrong with test and ground truth pair!"
-
-        return img_tot_paths, gt_tot_paths, tot_labels, tot_types
-
-    def __len__(self):
-        return len(self.img_paths)
-
-    def __getitem__(self, idx):
-        img_path, gt, label, img_type = self.img_paths[idx], self.gt_paths[idx], self.labels[idx], self.types[idx]
-        img = Image.open(img_path).convert('RGB')
-        img = np.array(img)
-        img = self.transform(img)
-
-        if gt == 0:
-            gt = np.zeros((1, np.array(img).shape[-2], np.array(img).shape[-2])).tolist()
-        else:
-            gt = Image.open(gt)
-            gt = np.array(gt)
-            gt = self.gt_transform(gt)
-
-        if self.is_json:
-            return os.path.basename(img_path[:-4]), img_type
-        return img, img, gt, label, idx, img_path
+        loadDataset = LoadDataset(img_tot_paths, gt_tot_paths, tot_labels, tot_types)
+        return loadDataset
 
     def get_image_data(self):
         imgpaths_per_class = {}
         maskpaths_per_class = {}
+        try:
+            for classname in self.classnames_to_use:
+                classpath = os.path.join(self.source, classname, self.split.value)
+                maskpath = os.path.join(self.source, classname, "ground_truth")
+                anomaly_types = os.listdir(classpath)
 
-        for classname in self.classnames_to_use:
-            classpath = os.path.join(self.source, classname, self.split.value)
-            maskpath = os.path.join(self.source, classname, "ground_truth")
-            anomaly_types = os.listdir(classpath)
+                imgpaths_per_class[classname] = {}
+                maskpaths_per_class[classname] = {}
 
-            imgpaths_per_class[classname] = {}
-            maskpaths_per_class[classname] = {}
-
-            for anomaly in anomaly_types:
-                anomaly_path = os.path.join(classpath, anomaly)
-                anomaly_files = sorted(os.listdir(anomaly_path))
-                imgpaths_per_class[classname][anomaly] = [
-                    os.path.join(anomaly_path, x) for x in anomaly_files
-                ]
-
-                if self.train_val_split < 1.0:
-                    n_images = len(imgpaths_per_class[classname][anomaly])
-                    train_val_split_idx = int(n_images * self.train_val_split)
-                    if self.split == DatasetSplit.TRAIN:
-                        imgpaths_per_class[classname][anomaly] = imgpaths_per_class[
-                                                                     classname
-                                                                 ][anomaly][:train_val_split_idx]
-                    elif self.split == DatasetSplit.VAL:
-                        imgpaths_per_class[classname][anomaly] = imgpaths_per_class[
-                                                                     classname
-                                                                 ][anomaly][train_val_split_idx:]
-
-                if self.split == DatasetSplit.TEST and anomaly != "good":
-                    anomaly_mask_path = os.path.join(maskpath, anomaly)
-                    anomaly_mask_files = sorted(os.listdir(anomaly_mask_path))
-                    maskpaths_per_class[classname][anomaly] = [
-                        os.path.join(anomaly_mask_path, x) for x in anomaly_mask_files
+                for anomaly in anomaly_types:
+                    anomaly_path = os.path.join(classpath, anomaly)
+                    anomaly_files = sorted(os.listdir(anomaly_path))
+                    imgpaths_per_class[classname][anomaly] = [
+                        os.path.join(anomaly_path, x) for x in anomaly_files
                     ]
-                else:
-                    maskpaths_per_class[classname]["good"] = None
 
-        # Unrolls the data dictionary to an easy-to-iterate list.
-        data_to_iterate = []
-        for classname in sorted(imgpaths_per_class.keys()):
-            for anomaly in sorted(imgpaths_per_class[classname].keys()):
-                for i, image_path in enumerate(imgpaths_per_class[classname][anomaly]):
-                    data_tuple = [classname, anomaly, image_path]
+                    if self.train_val_split < 1.0:
+                        n_images = len(imgpaths_per_class[classname][anomaly])
+                        train_val_split_idx = int(n_images * self.train_val_split)
+                        if self.split == DatasetSplit.TRAIN:
+                            imgpaths_per_class[classname][anomaly] = imgpaths_per_class[
+                                                                         classname
+                                                                     ][anomaly][:train_val_split_idx]
+                        elif self.split == DatasetSplit.VAL:
+                            imgpaths_per_class[classname][anomaly] = imgpaths_per_class[
+                                                                         classname
+                                                                     ][anomaly][train_val_split_idx:]
+
                     if self.split == DatasetSplit.TEST and anomaly != "good":
-                        data_tuple.append(maskpaths_per_class[classname][anomaly][i])
+                        anomaly_mask_path = os.path.join(maskpath, anomaly)
+                        anomaly_mask_files = sorted(os.listdir(anomaly_mask_path))
+                        maskpaths_per_class[classname][anomaly] = [
+                            os.path.join(anomaly_mask_path, x) for x in anomaly_mask_files
+                        ]
                     else:
-                        data_tuple.append(None)
-                    data_to_iterate.append(data_tuple)
+                        maskpaths_per_class[classname]["good"] = None
 
+            # Unrolls the data dictionary to an easy-to-iterate list.
+            data_to_iterate = []
+            for classname in sorted(imgpaths_per_class.keys()):
+                for anomaly in sorted(imgpaths_per_class[classname].keys()):
+                    for i, image_path in enumerate(imgpaths_per_class[classname][anomaly]):
+                        data_tuple = [classname, anomaly, image_path]
+                        if self.split == DatasetSplit.TEST and anomaly != "good":
+                            data_tuple.append(maskpaths_per_class[classname][anomaly][i])
+                        else:
+                            data_tuple.append(None)
+                        data_to_iterate.append(data_tuple)
+        except KeyError:
+            print("the data_dict does not have the key!")
+            exit()
         return imgpaths_per_class, data_to_iterate
 
 
-def createDatasetJson(dataset_path, category, data_transforms, gt_transforms):
-    """createDatasetJson"""
+def CreateDatasetJson(dataset_path, category, data_transforms, gt_transforms):
+    """CreateDatasetJson"""
     train_json_path = os.path.join(dataset_path, category, '{}_{}.json'.format(category, 'train'))
     test_json_path = os.path.join(dataset_path, category, '{}_{}.json'.format(category, 'test'))
 
@@ -231,7 +236,7 @@ def createDatasetJson(dataset_path, category, data_transforms, gt_transforms):
     return train_json_path, test_json_path
 
 
-def createDataset(dataset_path, category, resize=256, imagesize=224):
+def CreateDataset(dataset_path, category, resize=256, imagesize=224):
     """createDataset"""
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
@@ -248,7 +253,7 @@ def createDataset(dataset_path, category, resize=256, imagesize=224):
         ToTensor()
     ])
 
-    train_json_path, test_json_path = createDatasetJson(dataset_path, category, data_transforms, gt_transforms)
+    train_json_path, test_json_path = CreateDatasetJson(dataset_path, category, data_transforms, gt_transforms)
 
     train_data = MVTecDataset(source=dataset_path, classname=category,
                               transform=data_transforms, gt_transform=gt_transforms, phase='train')

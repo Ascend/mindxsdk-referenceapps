@@ -17,6 +17,7 @@ import csv
 import datetime
 import os
 import pickle
+import stat
 import time
 import logging
 import faiss
@@ -145,7 +146,7 @@ def compute_batchwise_differences(
 
 
 class FaissNN(object):
-    def __init__(self, on_gpu: bool = False, num_workers: int = 4):
+    def __init__(self, num_workers: int = 4):
         """FAISS Nearest neighbourhood search.
 
         Args:
@@ -153,32 +154,7 @@ class FaissNN(object):
             num_workers: Number of workers to use with FAISS for similarity search.
         """
         faiss.omp_set_num_threads(num_workers)
-        self.on_gpu = on_gpu
         self.search_index = None
-
-    def _gpu_cloner_options(self):
-        return faiss.GpuClonerOptions()
-
-    def _index_to_gpu(self, index):
-        if self.on_gpu:
-            # For the non-gpu faiss python package, there is no GpuClonerOptions
-            # so we can not make a default in the function header.
-            return faiss.index_cpu_to_gpu(
-                faiss.StandardGpuResources(), 0, index, self._gpu_cloner_options()
-            )
-        return index
-
-    def _index_to_cpu(self, index):
-        if self.on_gpu:
-            return faiss.index_gpu_to_cpu(index)
-        return index
-
-    def _create_index(self, dimension):
-        if self.on_gpu:
-            return faiss.GpuIndexFlatL2(
-                faiss.StandardGpuResources(), dimension, faiss.GpuIndexFlatConfig()
-            )
-        return faiss.IndexFlatL2(dimension)
 
     def fit(self, features: np.ndarray) -> None:
         """
@@ -190,11 +166,10 @@ class FaissNN(object):
         if self.search_index:
             self.reset_index()
         self.search_index = self._create_index(features.shape[-1])
-        self._train(self.search_index, features)
         self.search_index.add(features)
 
-    def _train(self, _index, _features):
-        pass
+    def _create_index(self, dimension):
+        return faiss.IndexFlatL2(dimension)
 
     def run(
             self,
@@ -214,15 +189,14 @@ class FaissNN(object):
 
         # Build a search index just for this search.
         search_index = self._create_index(index_features.shape[-1])
-        self._train(search_index, index_features)
         search_index.add(index_features)
         return search_index.search(query_features, n_nearest_neighbours)
 
     def save(self, filename: str) -> None:
-        faiss.write_index(self._index_to_cpu(self.search_index), filename)
+        faiss.write_index(self.search_index, filename)
 
     def load(self, filename: str) -> None:
-        self.search_index = self._index_to_gpu(faiss.read_index(filename))
+        self.search_index = faiss.read_index(filename)
 
     def reset_index(self):
         if self.search_index:
@@ -256,7 +230,7 @@ class ConcatMerger(_BaseMerger):
 
 
 class NearestNeighbourScorer(object):
-    def __init__(self, n_nearest_neighbours: int, nn_method=FaissNN(False, 4)) -> None:
+    def __init__(self, n_nearest_neighbours: int, nn_method=FaissNN(4)) -> None:
         """
         Neearest-Neighbourhood Anomaly Scorer class.
 
@@ -292,6 +266,10 @@ class NearestNeighbourScorer(object):
         )
         self.nn_method.fit(self.detection_features)
 
+    @staticmethod
+    def _index_file(folder, prepend=""):
+        return os.path.join(folder, prepend + "nnscorer_search_index.faiss")
+
     def predict(
             self, query_features
     ):
@@ -313,14 +291,9 @@ class NearestNeighbourScorer(object):
         anomaly_scores = np.mean(query_distances, axis=-1)
         return anomaly_scores, query_distances, query_nns
 
-    @staticmethod
-    def _index_file(folder, prepend=""):
-        return os.path.join(folder, prepend + "nnscorer_search_index.faiss")
-
     def save(
             self,
             save_folder: str,
-            save_features_separately: bool = False,
             prepend: str = "",
     ):
         self.nn_method.save(self._index_file(save_folder, prepend))
@@ -361,50 +334,35 @@ class RescaleSegmentor:
         ]
 
 
-class PatchMaker:
-    def __init__(self, patchsize, stride=None):
-        self.patchsize = patchsize
-        self.stride = stride
-
-    def unpatch_scores(self, x, batchsize):
-        return x.reshape(batchsize, -1, *x.shape[1:])
-
-    def score(self, x):
-        was_numpy = False
-        if isinstance(x, np.ndarray):
-            was_numpy = True
-            x = mindspore.Tensor.from_numpy(x)
-        while x.ndim > 1:
-            x = x.max(axis=-1)
-        if was_numpy:
-            return x.asnumpy()
-        return x
-
-    def score_2(self, x):
-        was_numpy = False
-        if isinstance(x, np.ndarray):
-            was_numpy = True
-            x = mindspore.Tensor.from_numpy(x)
-        while x.ndim > 1:
-            x = x.reshape(1, 784)
-        if was_numpy:
-            return x.numpy()
-        return x
+def unpatch_scores(x, batchsize):
+    return x.reshape(batchsize, -1, *x.shape[1:])
 
 
-def select_topK(topK=5, scores2=None):
-    scorestopKn = []
-    for i in range(len(scores2)):
-        scores_topK = np.array(scores2[i]).reshape(-1)
-        index = np.argsort(scores_topK)[::-1][0:topK]
-        sum = 0
+def score_max(x):
+    while x.ndim > 1:
+        x = x.max(axis=-1)
+    return x
+
+
+def score_max_2(x):
+    while x.ndim > 1:
+        x = x.reshape(1, 784)
+    return x
+
+
+def select_topk(topK=5, scores2=None):
+    scorestopkn = []
+    for i, item in enumerate(scores2):
+        scores_topk = np.array(scores2[i]).reshape(-1)
+        index = np.argsort(scores_topk)[::-1][0:topK]
+        TOPK_SUM = 0
         for idx in index:
-            sum += scores_topK[idx.item()]
-        avg = sum / topK
+            TOPK_SUM += scores_topk[idx.item()]
+        avg = TOPK_SUM / topK
         avg = avg.item()
-        scorestopKn.append(avg)
-    scorestopKn = norm(scorestopKn)
-    return scorestopKn
+        scorestopkn.append(avg)
+    scorestopkn = norm(scorestopkn)
+    return scorestopkn
 
 
 def norm(scores):
@@ -429,13 +387,10 @@ def compute_imagewise_retrieval_metrics(
         anomaly_ground_truth_labels: [np.array or list] [N] Binary labels - 1
                                     if image is an anomaly, 0 if not.
     """
-    fpr, tpr, thresholds = metrics.roc_curve(
-        anomaly_ground_truth_labels, anomaly_prediction_weights
-    )
     auroc = metrics.roc_auc_score(
         anomaly_ground_truth_labels, anomaly_prediction_weights
     )
-    return {"auroc": auroc, "fpr": fpr, "tpr": tpr, "threshold": thresholds}
+    return auroc
 
 
 def compute_pixelwise_retrieval_metrics(anomaly_segmentations, ground_truth_masks):
@@ -457,36 +412,10 @@ def compute_pixelwise_retrieval_metrics(anomaly_segmentations, ground_truth_mask
     flat_anomaly_segmentations = anomaly_segmentations.ravel()
     flat_ground_truth_masks = ground_truth_masks.ravel()
 
-    fpr, tpr, thresholds = metrics.roc_curve(
-        flat_ground_truth_masks.astype(int), flat_anomaly_segmentations
-    )
     auroc = metrics.roc_auc_score(
         flat_ground_truth_masks.astype(int), flat_anomaly_segmentations
     )
-
-    precision, recall, thresholds = metrics.precision_recall_curve(
-        flat_ground_truth_masks.astype(int), flat_anomaly_segmentations
-    )
-    F1_scores = np.divide(
-        2 * precision * recall,
-        precision + recall,
-        out=np.zeros_like(precision),
-        where=(precision + recall) != 0,
-    )
-
-    optimal_threshold = thresholds[np.argmax(F1_scores)]
-    predictions = (flat_anomaly_segmentations >= optimal_threshold).astype(int)
-    fpr_optim = np.mean(predictions > flat_ground_truth_masks)
-    fnr_optim = np.mean(predictions < flat_ground_truth_masks)
-
-    return {
-        "auroc": auroc,
-        "fpr": fpr,
-        "tpr": tpr,
-        "optimal_threshold": optimal_threshold,
-        "optimal_fpr": fpr_optim,
-        "optimal_fnr": fnr_optim,
-    }
+    return auroc
 
 
 def compute_and_store_final_results(
@@ -506,31 +435,35 @@ def compute_and_store_final_results(
     """
     if row_names is not None:
         assert len(row_names) == len(results), "#Rownames != #Result-rows."
+    try:
+        mean_metrics = {}
+        for i, result_key in enumerate(column_names):
+            mean_metrics[result_key] = np.mean([x[i] for x in results])
+            LOGGER.info("{0}: {1:3.3f}".format(result_key, mean_metrics[result_key]))
 
-    mean_metrics = {}
-    for i, result_key in enumerate(column_names):
-        mean_metrics[result_key] = np.mean([x[i] for x in results])
-        LOGGER.info("{0}: {1:3.3f}".format(result_key, mean_metrics[result_key]))
-
-    savename = os.path.join(results_path, "results.csv")
-    with open(savename, "w") as csv_file:
-        csv_writer = csv.writer(csv_file, delimiter=",")
-        header = column_names
-        if row_names is not None:
-            header = ["Row Names"] + header
-
-        csv_writer.writerow(header)
-        for i, result_list in enumerate(results):
-            csv_row = result_list
+        savename = os.path.join(results_path, "results.csv")
+        MODES = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(savename, os.O_RDWR | os.O_CREAT, MODES), 'w') as csv_file:
+            csv_writer = csv.writer(csv_file, delimiter=",")
+            header = column_names
             if row_names is not None:
-                csv_row = [row_names[i]] + result_list
-            csv_writer.writerow(csv_row)
-        mean_scores = list(mean_metrics.values())
-        if row_names is not None:
-            mean_scores = ["Mean"] + mean_scores
-        csv_writer.writerow(mean_scores)
+                header = ["Row Names"] + header
 
-    mean_metrics = {"mean_{0}".format(key): item for key, item in mean_metrics.items()}
+            csv_writer.writerow(header)
+            for i, result_list in enumerate(results):
+                csv_row = result_list
+                if row_names is not None:
+                    csv_row = [row_names[i]] + result_list
+                csv_writer.writerow(csv_row)
+            mean_scores = list(mean_metrics.values())
+            if row_names is not None:
+                mean_scores = ["Mean"] + mean_scores
+            csv_writer.writerow(mean_scores)
+
+        mean_metrics = {"mean_{0}".format(key): item for key, item in mean_metrics.items()}
+    except KeyError:
+        print("the data_dict does not have the key!")
+        exit()
     return mean_metrics
 
 
