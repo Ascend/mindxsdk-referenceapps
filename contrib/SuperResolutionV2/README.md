@@ -37,7 +37,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ```
 .
-|
 |-------- font
 |           |---- SourceHanSansCN-Normal-2.otf      // otf字体
 |-------- image
