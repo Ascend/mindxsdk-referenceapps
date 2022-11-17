@@ -27,7 +27,7 @@ import mindspore
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
-from mvtec import CreateDataset
+from mvtec import create_dataset
 from mindspore import context, load_checkpoint, load_param_into_net, nn
 from models import wide_resnet101_2
 from network import PatchCore
@@ -36,7 +36,7 @@ from mindspore import Tensor
 from mindspore import ops
 
 from tools import reduce_features, compute_greedy_coreset_indices, NearestNeighbourScorer, FaissNN, RescaleSegmentor, \
-    unpatch_scores, score_max, select_topk, norm, compute_imagewise_retrieval_metrics, \
+    unpatch_scores, score_max, select_topk, norm, \
     compute_pixelwise_retrieval_metrics, compute_and_store_final_results, create_storage_folder
 
 LOGGER = logging.getLogger(__name__)
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         except KeyError:
             print("the data_dict does not have the key!")
             exit()
-        train_dataset, test_dataset, _, _ = CreateDataset(args.dataset_path, key, resize,
+        train_dataset, test_dataset, _, _ = create_dataset(args.dataset_path, key, resize,
                                                           imagesize)
         LOGGER.info(f"{idx + 1}/{len(data_dict)}\t{key}")
         if layer == "layer2":
@@ -263,6 +263,8 @@ if __name__ == '__main__':
         auroc_topK40 = roc_auc_score(anomaly_labels, scorestopK40)
         auroc_topK60 = roc_auc_score(anomaly_labels, scorestopK60)
         auroc_topK100 = roc_auc_score(anomaly_labels, scorestopK100)
+        auroc_best_every = max(auroc_max, auroc_dx, auroc_px, auroc_topK5, auroc_topK8, auroc_topK10, auroc_topK15,
+                               auroc_topK20, auroc_topK40, auroc_topK60, auroc_topK100)
 
         result_collect.append(
             {
@@ -279,6 +281,7 @@ if __name__ == '__main__':
                 "instance_auroc_topK40": auroc_topK40,
                 "instance_auroc_topK60": auroc_topK60,
                 "instance_auroc_topK100": auroc_topK100,
+                "instance_auroc_best": auroc_best_every,
                 "full_pixel_auroc": full_pixel_auroc,
             }
         )

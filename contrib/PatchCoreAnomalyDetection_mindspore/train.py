@@ -22,7 +22,7 @@ import time
 import mindspore
 import numpy as np
 
-from mvtec import CreateDataset
+from mvtec import create_dataset
 from mindspore import context, load_checkpoint, load_param_into_net, nn
 from models import wide_resnet101_2
 from network import PatchCore
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     results = args.results
     gpu = args.gpu
     data = args.data
-    train_dataset, test_dataset, _, _ = CreateDataset("/data/jtc/", data, resize, imagesize)
+    train_dataset, test_dataset, _, _ = create_dataset("/data/jtc/", data, resize, imagesize)
 
     context.set_context(mode=context.PYNATIVE_MODE, device_target='Ascend',
                         save_graphs=False)

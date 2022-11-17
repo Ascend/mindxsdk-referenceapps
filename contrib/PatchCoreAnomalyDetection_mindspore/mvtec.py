@@ -61,6 +61,7 @@ class DatasetSplit(Enum):
 
 Dataset = collections.namedtuple('Dataset', ['img', 'img2', 'gt', 'label', 'idx', 'img_path'])
 LoadDataset = collections.namedtuple('LoadDataset', ['img_tot_paths', 'gt_tot_paths', 'tot_labels', 'tot_types'])
+Mvtec = collections.namedtuple('LoadDataset', ['train_dataset', 'test_dataset', 'train_json_path', 'test_json_path'])
 
 
 class MVTecDataset():
@@ -133,8 +134,8 @@ class MVTecDataset():
                 tot_types.extend([defect_type] * len(img_paths))
 
         assert len(img_tot_paths) == len(gt_tot_paths), "Something wrong with test and ground truth pair!"
-        loadDataset = LoadDataset(img_tot_paths, gt_tot_paths, tot_labels, tot_types)
-        return loadDataset
+        dataset_ret = LoadDataset(img_tot_paths, gt_tot_paths, tot_labels, tot_types)
+        return dataset_ret
 
     def get_image_data(self):
         imgpaths_per_class = {}
@@ -193,7 +194,7 @@ class MVTecDataset():
         return imgpaths_per_class, data_to_iterate
 
 
-def CreateDatasetJson(dataset_path, category, data_transforms, gt_transforms):
+def create_dataset_json(dataset_path, category, data_transforms, gt_transforms):
     """CreateDatasetJson"""
     train_json_path = os.path.join(dataset_path, category, '{}_{}.json'.format(category, 'train'))
     test_json_path = os.path.join(dataset_path, category, '{}_{}.json'.format(category, 'test'))
@@ -236,7 +237,7 @@ def CreateDatasetJson(dataset_path, category, data_transforms, gt_transforms):
     return train_json_path, test_json_path
 
 
-def CreateDataset(dataset_path, category, resize=256, imagesize=224):
+def create_dataset(dataset_path, category, resize=256, imagesize=224):
     """createDataset"""
     mean = [0.485, 0.456, 0.406]
     std = [0.229, 0.224, 0.225]
@@ -253,7 +254,7 @@ def CreateDataset(dataset_path, category, resize=256, imagesize=224):
         ToTensor()
     ])
 
-    train_json_path, test_json_path = CreateDatasetJson(dataset_path, category, data_transforms, gt_transforms)
+    train_json_path, test_json_path = create_dataset_json(dataset_path, category, data_transforms, gt_transforms)
 
     train_data = MVTecDataset(source=dataset_path, classname=category,
                               transform=data_transforms, gt_transform=gt_transforms, phase='train')
@@ -274,4 +275,6 @@ def CreateDataset(dataset_path, category, resize=256, imagesize=224):
     train_dataset = train_dataset.batch(32, drop_remainder=False)
     test_dataset = test_dataset.batch(1, drop_remainder=False)
 
-    return train_dataset, test_dataset, train_json_path, test_json_path
+    mvtec = Mvtec(train_dataset, test_dataset, train_json_path, test_json_path)
+
+    return mvtec

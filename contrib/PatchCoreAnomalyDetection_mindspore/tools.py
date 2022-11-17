@@ -168,9 +168,6 @@ class FaissNN(object):
         self.search_index = self._create_index(features.shape[-1])
         self.search_index.add(features)
 
-    def _create_index(self, dimension):
-        return faiss.IndexFlatL2(dimension)
-
     def run(
             self,
             n_nearest_neighbours,
@@ -191,6 +188,9 @@ class FaissNN(object):
         search_index = self._create_index(index_features.shape[-1])
         search_index.add(index_features)
         return search_index.search(query_features, n_nearest_neighbours)
+
+    def _create_index(self, dimension):
+        return faiss.IndexFlatL2(dimension)
 
     def save(self, filename: str) -> None:
         faiss.write_index(self.search_index, filename)
@@ -250,6 +250,10 @@ class NearestNeighbourScorer(object):
         )
         self.pixelwise_nn = lambda query, index: self.nn_method.run(1, query, index)
 
+    @staticmethod
+    def _index_file(folder, prepend=""):
+        return os.path.join(folder, prepend + "nnscorer_search_index.faiss")
+
     def fit(self, detection_features):
         """Calls the fit function of the nearest neighbour method.
 
@@ -265,10 +269,6 @@ class NearestNeighbourScorer(object):
             detection_features,
         )
         self.nn_method.fit(self.detection_features)
-
-    @staticmethod
-    def _index_file(folder, prepend=""):
-        return os.path.join(folder, prepend + "nnscorer_search_index.faiss")
 
     def predict(
             self, query_features
@@ -350,15 +350,15 @@ def score_max_2(x):
     return x
 
 
-def select_topk(topK=5, scores2=None):
+def select_topk(topk=5, scores2=None):
     scorestopkn = []
     for i, item in enumerate(scores2):
         scores_topk = np.array(scores2[i]).reshape(-1)
-        index = np.argsort(scores_topk)[::-1][0:topK]
-        TOPK_SUM = 0
+        index = np.argsort(scores_topk)[::-1][0:topk]
+        topk_sum = 0
         for idx in index:
-            TOPK_SUM += scores_topk[idx.item()]
-        avg = TOPK_SUM / topK
+            topk_sum += scores_topk[idx.item()]
+        avg = topk_sum / topk
         avg = avg.item()
         scorestopkn.append(avg)
     scorestopkn = norm(scorestopkn)
@@ -442,8 +442,8 @@ def compute_and_store_final_results(
             LOGGER.info("{0}: {1:3.3f}".format(result_key, mean_metrics[result_key]))
 
         savename = os.path.join(results_path, "results.csv")
-        MODES = stat.S_IWUSR | stat.S_IRUSR
-        with os.fdopen(os.open(savename, os.O_RDWR | os.O_CREAT, MODES), 'w') as csv_file:
+        modes = stat.S_IWUSR | stat.S_IRUSR
+        with os.fdopen(os.open(savename, os.O_RDWR | os.O_CREAT, modes), 'w') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=",")
             header = column_names
             if row_names is not None:
