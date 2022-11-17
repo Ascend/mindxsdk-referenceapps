@@ -65,6 +65,7 @@ def preprocess_for_main(image_path):
         im_height, im_width, _ = img.shape
         img = img.flatten()
         return img , [resize, left, top, right, bottom]
+        
 
 def preprocess(image_path):
         img_raw = cv2.imread(image_path, cv2.IMREAD_COLOR)
