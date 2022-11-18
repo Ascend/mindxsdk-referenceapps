@@ -42,7 +42,7 @@ eg：本sample工程名称为XXX，工程目录如下图所示：
 
 ### 1.5 技术实现流程图
 
-![技术实现流程图](https://gitee.com/dragonis/mindxsdk-referenceapps/blob/master/contrib/IAT/flowchart.jpeg)
+![技术实现流程图](contrib/IAT/flowchart.jpeg)
 
 ### 1.6 特性及适用场景
 
@@ -77,14 +77,8 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 
 
-## 3 依赖安装
-
-基于华为 conda 环境 py392
-
-
-
-## 4 编译与运行
-示例步骤如下：
+## 3 编译与运行
+### 3.1 推理示例代码
 
 **步骤1** （下载原模型代码)
 
@@ -139,9 +133,36 @@ python main.py
 
 即可在./data/目录下得到推理后的结果.
 
+### 3.2 精度测试示例
+
+**步骤1-3**  与3.1节一致
+
+**步骤4** （获取LOL数据集）
+
+- 下载[LOLv1数据集](https://daooshee.github.io/BMVC2018website/)
+
+- 将数据集解压后将测试集目录(eval15)放到本项目./data/文件夹下,如下图所示:
+
+  ```
+  ├── data		  
+  	├──eval15  	# 精度测试数据集
+  		├──high
+  		├──low
+  ```
+
+**步骤5** （修改主函数并运行）
+
+将main.py中的主函数改为调用test_precision()，运行:
+
+```
+python main.py
+```
+
+即可得到精度测试结果。
 
 
-## 5 参考文献
+
+## 4 参考文献
 
 @misc{https://doi.org/10.48550/arxiv.2205.14871,
   doi = {10.48550/ARXIV.2205.14871},
