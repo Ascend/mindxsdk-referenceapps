@@ -141,6 +141,8 @@ python train.py --data_path=./imagenet2012/train --config_path=./config/resnet50
 
 ### 3.2 模型转换
 
+此处提供训练后的中间模型供模型转换使用：[resnet50](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/resnet.air)、[db](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/db.onnx)、[crnn](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/crnn.onnx)
+
 在`./models/resnet50`目录下执行如下命令
 
 ```
@@ -150,7 +152,7 @@ atc --model=./resnet50.air --framework=1 --output=resnet50 --input_format=NCHW -
 在`./models/db`目录下执行如下命令
 
 ```
-atc --model=./db.onnx --framework=5 --output_type=FP32 --output=db_r50_1 --input_format=NCHW --input_shape="x:1,3,-1,-1" --dynamic_image_size="1216,1280;1280,1216;1120,1280;1280,1120;1024,1280;1280,1024;928,1280;1280,928;832,1280;1280,832;736,1280;1280,736;704,1280;1280,704;672,1280;1280,672;640,1280;1280,640;608,1280;1280,608;576,1280;1280,576;544,1280;1280,544;512,1280;1280,512;480,1280;1280,480;448,1280;1280,448" --soc_version=Ascend310 --insert_op_conf=./det_aipp.cfg
+atc --model=./db.onnx --framework=5 --output_type=FP32 --output=db --input_format=NCHW --input_shape="x:1,3,-1,-1" --dynamic_image_size="1216,1280;1280,1216;1120,1280;1280,1120;1024,1280;1280,1024;928,1280;1280,928;832,1280;1280,832;736,1280;1280,736;704,1280;1280,704;672,1280;1280,672;640,1280;1280,640;608,1280;1280,608;576,1280;1280,576;544,1280;1280,544;512,1280;1280,512;480,1280;1280,480;448,1280;1280,448" --soc_version=Ascend310 --insert_op_conf=./det_aipp.cfg
 ```
 
 在`./models/crnn`目录下执行如下命令
@@ -170,7 +172,18 @@ atc --model=./crnn.onnx --framework=5 --output_type=FP32 --output=crnn --input_f
 ## 4 编译与运行
 **步骤1** 编译后处理插件DBPostProcess
 
-参考[链接](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/mxVision/GeneralTextRecognition/src)编译后处理插件，并将编译好的`libDBPostProcess.so`和`libclipper.so`放在项目目录`./lib`下，添加如下环境变量(其中project_path为项目路径)
+参考[链接](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/mxVision/GeneralTextRecognition/src)编译后处理插件，修改部分文件代码，具体如下：
+
+```
+# 数字为行号，文件位于src/DBPostProcess/CMakeLists.txt
+1 cmake_minimum_required(VERSION 3.5.2)
+3 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
+
+# 数字为行号，文件位于src/DBPostProcess/DBPostProcess.h
+72 bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
+```
+
+修改完成后进行编译，将编译好的`libDBPostProcess.so`和`libclipper.so`放在项目目录`./lib`下，添加如下环境变量(其中project_path为项目路径)
 
 ```
 export LD_LIBRARY_PATH={project_path}/lib/:$LD_LIBRARY_PATH
@@ -285,7 +298,7 @@ export LD_LIBRARY_PATH={project_path}/lib/:$LD_LIBRARY_PATH
 
 **解决方案：**
 
-将字体文件路径正确配置到`eval.py`中`add_text`函数中，如下
+将字体文件路径正确配置到`eval.py`中`add_text`函数中，[此处](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/SIMSUN.TTC)提供字体文件，下载后放置于项目目录下，如下
 
 ```
 fontstyle = ImageFont.truetype("SIMSUN.TTC", textSize, encoding="utf-8")
