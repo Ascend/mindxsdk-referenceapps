@@ -38,15 +38,23 @@ def get_args():
     output_dir = ''
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "odir="])
-    except getopt.GetoptError:
-        sys.exit(2)
+    except getopt.GetoptError as e:
+        error(e)
+    opt_ifile_flag = False
+    opt_odir_flag = False
     for opt, arg in opts:
         if opt == '-h':
             sys.exit()
         elif opt in ("-i", "--ifile"):
+            opt_ifile_flag = True
             input_file = arg
         elif opt in ("-o", "--odir"):
+            opt_odir_flag = True
             output_dir = arg
+    if (not opt_ifile_flag):
+        error("未输入参数--ifile。请参考python main.py --ifile <input_file_path> --odir <output_dir_path>")
+    elif (not opt_odir_flag):
+        error("未输入参数--odir。请参考python main.py --ifile <input_file_path> --odir <output_dir_path>")
 
     # 判定是否输入文件名为空
     if (not input_file):
@@ -57,6 +65,8 @@ def get_args():
 
     if (not output_dir):
         error("输出文件目录为空")
+    elif (not os.path.isdir(output_dir)):
+        error("输出文件目录不存在，请创建。")
     print('输出的文件目录为：', output_dir)
     return [input_file, output_dir]
 

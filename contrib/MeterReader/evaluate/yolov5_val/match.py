@@ -15,9 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''
-4.noDet.py:过滤没有检测到目标的图片文件
-'''
 
 import sys
 import os
@@ -28,6 +25,10 @@ validate_voc_PATH:验证集的voc数据
 sdk_predict_voc_PATH：sdk预测的voc数据
 检查是否有的数据是无目标的
 '''
+cur_path = os.path.abspath(os.path.dirname(__file__))
+father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+validate_voc_PATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_val_voc').replace('\\', '/')
+sdk_predict_voc_PATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_voc').replace('\\', '/')
 
 
 def equals(varo, vart):
@@ -47,21 +48,18 @@ def error(error_msg, other="", exit_flag=False):
             sys.exit()
 
 
-validatePath = '../evaluate/yolov5_val/det_val_data/det_val_voc'
-predictPath = '../evaluate/yolov5_val/det_val_data/det_sdk_voc'
-
 BACKUP_FOLDER = 'backup_no_matches_found'
 
-os.chdir(validatePath)
+os.chdir(validate_voc_PATH)
 validate_voc_files = glob.glob('*.txt')
 if equal_zero(len(validate_voc_files)):
-    error("Error: no .txt files found in", validatePath, exit_flag=True)
+    error("Error: no .txt files found in", validate_voc_PATH, exit_flag=True)
 
-os.chdir(predictPath)
+os.chdir(sdk_predict_voc_PATH)
 sdk_predict_voc_files = glob.glob('*.txt')
 
 if equal_zero(sdk_predict_voc_files):
-    error("Error: no .txt files found in", predictPath, exit_flag=True)
+    error("Error: no .txt files found in", sdk_predict_voc_PATH, exit_flag=True)
 
 validate_voc_files = set(validate_voc_files)
 sdk_predict_voc_files = set(sdk_predict_voc_files)
@@ -74,9 +72,9 @@ sdk_predict_voc_backup = sdk_predict_voc_files - validate_voc_files
 # validate_voc
 
 if not validate_voc_backup:
-    error('No backup required for', validatePath, exit_flag=False)
+    error('No backup required for', validate_voc_PATH, exit_flag=False)
 else:
-    os.chdir(validatePath)
+    os.chdir(validate_voc_PATH)
     ## create the backup dir if it doesn't exist already
     if not os.path.exists(BACKUP_FOLDER):
         os.makedirs(BACKUP_FOLDER)
@@ -85,9 +83,9 @@ else:
 
 # sdk_predict_voc
 if not sdk_predict_voc_backup:
-    error('No backup required for', predictPath, exit_flag=False)
+    error('No backup required for', sdk_predict_voc_PATH, exit_flag=False)
 else:
-    os.chdir(predictPath)
+    os.chdir(sdk_predict_voc_PATH)
     ## create the backup dir if it doesn't exist already
     if not os.path.exists(BACKUP_FOLDER):
         os.makedirs(BACKUP_FOLDER)

@@ -192,24 +192,26 @@ atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg -
 
 **（1）步骤一**
 
-使用以下命令安装paddle2onnx依赖：
+使用以下命令安装paddle2onnx依赖，[paddle2onnx安装参考链接](https://github.com/PaddlePaddle/Paddle2ONNX/)：
 ```bash
 pip3 install paddle2onnx
 ```
-确保已下载[pdmodel模型压缩包](https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，将目录"meter_seg_model"中的文件解压至"${MeterReader代码根目录}/models/deeplabv3"目录下，进入"deeplabv3"目录，使用以下命令将"pdmodel"模型转换成“onnx”模型：
+确保已下载[pdmodel模型压缩包](https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，将目录"meter_seg_model"中的文件解压至"${MeterReader代码根目录}/models/deeplabv3"目录下，进入"deeplabv3"目录，使用以下命令将"pdmodel"模型转换成"onnx"模型：
   ```bash
- paddle2onnx --model_dir saved_inference_model \
-            --model_filename model.pdmodel \
-            --params_filename model.pdiparams \
-            --save_file seg.onnx \
-            --enable_dev_version True
+  cd ${MeterReader代码根目录}/models/deeplabv3
+  paddle2onnx --model_dir meter_seg_model \
+              --model_filename model.pdmodel \
+              --params_filename model.pdiparams \
+              --save_file seg.onnx \
+              --enable_dev_version True
   ```
 
 **（2）步骤二**
 
 进入"\${MeterReader代码根目录}/models/deeplabv3"目录，执行以下命令将"seg.onnx"模型转换成"seg.om"模型
   ```bash
-  atc --model=seg.onnx --framework=5  --output=seg insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
+  cd ${MeterReader代码根目录}/models/deeplabv3
+  atc --model=seg.onnx --framework=5  --output=seg --insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
   ```
 
 出现以下语句表示命令执行成功，会在当前目录中得到seg.om模型文件。
@@ -217,8 +219,6 @@ pip3 install paddle2onnx
   ATC start working now, please wait for a moment.
   ATC run success, welcome to the next use.
   ```
-
-
 
 
 ## 4 编译与运行
@@ -233,9 +233,21 @@ cd ${MeterReader代码根目录}/plugins/process3
 . build.sh
 ```
 
+**步骤2** 修改pipeline文件中的参数地址
+* 修改"${MeterReader代码根目录}/pipeline/yolov5/det.pipeline"第40行处文件路径
+  ```python
+  40 "modelPath":"${MeterReader代码根目录}/models/yolov5/det.om"
+  ```
 
-**步骤2** 运行及输出结果
+* 修改"${MeterReader代码根目录}/pipeline/deeplabv3/seg.pipeline"第30、38、39行处文件路径
+  ```python
+  30 "modelPath":"${MeterReader代码根目录}/models/deeplabv3/seg.om"
+  38 "postProcessConfigPath":"${MeterReader代码根目录}/pipeline/deeplabv3/deeplabv3.cfg",
+  39 "labelPath":"${MeterReader代码根目录}/pipeline/deeplabv3/deeplabv3.names",
+  ```
 
+
+**步骤3** 运行及输出结果
 
 总体运行。输入带有预测表盘的jpg图片，在指定输出目录下输出得到带有预测表盘计数的png图片。
 ```bash
@@ -244,7 +256,7 @@ python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 ```
 
 
-执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及 通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。
+执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。最后展示的结果图片上用矩形框框出了图片中的表计并且标出了预测的表盘读数。
 <center>
     <img src="./images/README_img/main_result.png">
     <br>
@@ -255,26 +267,31 @@ python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 </center>
 
 
-**步骤3** 精度测试
+**步骤4** 精度测试
 
 分别对yolo模型与deeplabv3模型进行精度测试。
 
 1、YOLOv5模型精度测试
 
-下载目标检测[模型验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip),将其中的目录"det_val_voc"中的数据解压至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data"目录下
+在"\${MeterReader代码根目录}/evaluate/yolov5_val/下新建"det_val_data"文件夹，并在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data"新建"det_val_voc"和"det_val_img"文件夹。
+
+下载目标检测[模型验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip),将其中的目录"data/yolov5/det_val_voc"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下,"data/yolov5/det_val_img"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
 
 在命令行中跳转到"\${MeterReader代码根目录}/evaluate/yolov5_val"文件路径下
 ```bash
-cd python/yolov5_val
+cd ${MeterReader代码根目录}/evaluate/yolov5_val
 ```
-使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_txt"。
+
+在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data下新建"det_sdk_txt"文件夹，使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_txt"。
 ```bash
 python det.py
 ```
-使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_voc"路径中。
+
+在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data下新建"det_sdk_voc"文件夹，使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_voc"路径中。
 ```bash
 python yolo2voc.py
 ```
+
 使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
 ```bash
 python match.py
@@ -311,7 +328,7 @@ python get_map.py
 
 2、deeplabv3模型精度测试。
 
-采取Miou指标评价精度。下载[语义分割模型验证集voc格式数据](https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz)，解压至"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img"。
+采取Miou指标评价精度。在"\${MeterReader代码根目录}/evaluate/deeplabv3_val/下新建"seg_val_img"文件夹，下载[语义分割模型验证集voc格式数据](https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz)，解压至"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img"。
 ```bash
     将目录"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/meter_seg/meter_seg/images/val" 中的数据拷贝至目录"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/seg_test_img"
 

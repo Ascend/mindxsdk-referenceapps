@@ -24,9 +24,12 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-DIRNAME = "../evaluate/deeplabv3_val/seg_val_img/seg_test_img"
-segGroundTruth = "../evaluate/deeplabv3_val/seg_val_img/seg_test_img_groundtruth"
 
+cur_path = os.path.abspath(os.path.dirname(__file__))
+father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+pipeline_path = os.path.join(father_path, 'pipeline', 'deeplabv3', 'seg.pipeline').replace('\\', '/')
+DIRNAME = os.path.join(father_path, 'evaluate', 'deeplabv3_val', 'seg_val_img', 'seg_test_img').replace('\\', '/')
+det_val_dir = os.path.join(father_path, 'evaluate', 'deeplabv3_val', 'seg_val_img', 'seg_test_img_groundtruth').replace('\\', '/')
 
 def miou_computer(miuo_img, miou_pred):
     """
@@ -74,7 +77,7 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open('../pipeline/deeplabv3/seg.pipeline', os.O_RDONLY, MODES), 'rb') as f:
+    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
@@ -123,10 +126,10 @@ if __name__ == '__main__':
 
     # 获取标注数据
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    files = os.listdir(segGroundTruth)
+    files = os.listdir(det_val_dir)
     det_val_dict = {}
     for file in files:
-        FILENAME = segGroundTruth + os.path.sep + file
+        FILENAME = det_val_dir + os.path.sep + file
 
         if os.path.exists(FILENAME) != 1:
             print("The test image does not exist. Exit.")

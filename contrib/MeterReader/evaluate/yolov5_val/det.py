@@ -15,11 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''
-1.mapDet.py:得到验证集中数据的预测结果，并且将结果保存成txt，以”图片名.txt“命名，txt中数据格式为：
-    <class_id> <x_center> <y_center> <width> <height>
-
-'''
 
 import json
 import os
@@ -29,11 +24,13 @@ import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
+cur_path = os.path.abspath(os.path.dirname(__file__))
+father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+pipeline_path = os.path.join(father_path, 'pipeline', 'yolov5', 'det.pipeline').replace('\\', '/')
+FILEPATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_val_img').replace('\\', '/')
+SAVE_PATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_img/').replace('\\', '/')
+SAVE_TXT = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_txt/').replace('\\', '/')
 
-PIPELINE = '../pipeline/yolov5/det.pipeline'
-FILEPATH = '../evaluate/yolov5_val/det_val_data/det_val_img'
-SAVE_PATH = '../evaluate/yolov5_val/det_val_data/det_sdk_img/'
-SAVE_TXT = '../evaluate/yolov5_val/det_val_data/det_sdk_txt/'
 MODES = stat.S_IWUSR | stat.S_IRUSR
 FLAGS = os.O_WRONLY | os.O_CREAT
 
@@ -301,13 +298,6 @@ class DetPostProcessors:
 
 
 if __name__ == '__main__':
-    # 改写pipeline里面的model路径
-
-    # file_object = open(pipeline_path, 'r')
-
-    # content = json.load(file_object)
-    # modelPath = model_path
-    # content['detection']['mxpi_tensorinfer0']['props']['modelPath'] = modelPath
 
     steammanager_api = StreamManagerApi()
     # init stream manager
@@ -318,7 +308,8 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    with os.fdopen(os.open(PIPELINE, os.O_RDONLY, MODES), 'rb') as f:
+    print("pipe----------------------",pipeline_path)
+    with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)
     if ret != 0:
