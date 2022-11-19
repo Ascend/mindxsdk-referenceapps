@@ -192,11 +192,11 @@ atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg -
 
 **（1）步骤一**
 
-使用以下命令安装paddle2onnx依赖，[paddle2onnx安装参考链接](https://github.com/PaddlePaddle/Paddle2ONNX/)：
+使用以下命令安装paddle2onnx依赖，[paddle2onnx安装参考链接](https://github.com/PaddlePaddle/Paddle2ONNX/blob/develop/docs/zh/compile.md)：
 ```bash
 pip3 install paddle2onnx
 ```
-确保已下载[pdmodel模型压缩包](https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，将目录"meter_seg_model"中的文件解压至"${MeterReader代码根目录}/models/deeplabv3"目录下，进入"deeplabv3"目录，使用以下命令将"pdmodel"模型转换成"onnx"模型：
+确保已下载[pdmodel模型压缩包](https://bj.bcebos.com/paddlex/examples2/meter_reader//meter_seg_model.tar.gz)，将目录"meter_seg_model"中的文件解压至"${MeterReader代码根目录}/models/deeplabv3"目录下，进入"deeplabv3"目录，使用以下命令将"pdmodel"模型转换成"onnx"模型,[paddle2onnx模型转换参考链接](https://github.com/PaddlePaddle/Paddle2ONNX/)：
   ```bash
   cd ${MeterReader代码根目录}/models/deeplabv3
   paddle2onnx --model_dir meter_seg_model \
