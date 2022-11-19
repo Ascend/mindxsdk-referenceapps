@@ -203,6 +203,9 @@ class FaissNN(object):
             self.search_index.reset()
             self.search_index = None
 
+    def _create_index(self, dimension):
+        return faiss.IndexFlatL2(dimension)
+
 
 class _BaseMerger:
     def __init__(self):
