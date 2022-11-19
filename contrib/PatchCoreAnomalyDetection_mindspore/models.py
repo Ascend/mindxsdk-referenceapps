@@ -94,6 +94,20 @@ class ResNet(nn.Cell):
         self.flatten = nn.Flatten()
         self.fc = nn.Dense(512 * block.expansion, num_classes)
 
+    def construct(self, x):
+        """construct"""
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.pad(x)
+        x = self.maxpool(x)
+        #
+        c1 = self.layer1(x)
+        c2 = self.layer2(c1)
+        c3 = self.layer3(c2)
+
+        return [c2, c3]
+
     def _make_layer(self, block, planes, blocks, stride=1):
         """_make_layer"""
         downsample = None
@@ -115,20 +129,6 @@ class ResNet(nn.Cell):
                                 base_width=self.base_width, dilation=self.dilation))
 
         return nn.SequentialCell(layers)
-
-    def construct(self, x):
-        """construct"""
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.pad(x)
-        x = self.maxpool(x)
-        #
-        c1 = self.layer1(x)
-        c2 = self.layer2(c1)
-        c3 = self.layer3(c2)
-
-        return [c2, c3]
 
 
 def wide_resnet101_2():

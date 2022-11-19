@@ -22,16 +22,17 @@ import time
 import mindspore
 import numpy as np
 
-from mvtec import createDataset
+from mvtec import create_dataset
 from mindspore import context, load_checkpoint, load_param_into_net, nn
 from models import wide_resnet101_2
 from network import PatchCore
 from mindspore import export
 from mindspore import Tensor
 from mindspore import ops
+from sklearn.metrics import roc_auc_score
 
 from tools import reduce_features, compute_greedy_coreset_indices, NearestNeighbourScorer, FaissNN, RescaleSegmentor, \
-    PatchMaker, select_topK, norm, compute_imagewise_retrieval_metrics, \
+    unpatch_scores, score_max, select_topk, norm, \
     compute_pixelwise_retrieval_metrics, compute_and_store_final_results
 
 LOGGER = logging.getLogger(__name__)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     results = args.results
     gpu = args.gpu
     data = args.data
-    train_dataset, test_dataset, _, _ = createDataset("/data/jtc/", data, resize, imagesize)
+    train_dataset, test_dataset, _, _ = create_dataset("/data/jtc/", data, resize, imagesize)
 
     context.set_context(mode=context.PYNATIVE_MODE, device_target='Ascend',
                         save_graphs=False)
@@ -111,12 +112,12 @@ if __name__ == '__main__':
         step_size = train_dataset.get_dataset_size()
         print(f"step_size{step_size}")
         features = []
-        step = 0
+        STEP = 0
         pad = nn.Pad(paddings=((0, 0), (0, 0), (1, 1), (1, 1)))
         pool = nn.AvgPool2d(patchsize, 1, pad_mode="valid")
         for image in data_iter:
             # time
-            step += 1
+            STEP += 1
             start = datetime.datetime.fromtimestamp(time.time())
 
             feature = model.predict(image['image'])
@@ -130,10 +131,9 @@ if __name__ == '__main__':
             feature = feature.asnumpy()
             end = datetime.datetime.fromtimestamp(time.time())
             step_time = (end - start).microseconds / 1000.0
-            print("step: {}/{}, time: {}ms".format(step, step_size, step_time))
+            print("step: {}/{}, time: {}ms".format(STEP, step_size, step_time))
             features.append(feature)
 
-        LOGGER.info("##########subsample...###########################")
         features = np.concatenate(features, axis=0)
         LOGGER.info("##########subsample...###########################")
         features = features.astype("float32")
@@ -141,12 +141,11 @@ if __name__ == '__main__':
         sample_indices = compute_greedy_coreset_indices(reduced_features, 10, percentage=percentage)
         sample_indices = sample_indices.tolist()
         features = features[sample_indices]
-        nn_method = FaissNN(False, 4)
+        nn_method = FaissNN(4)
         anomaly_scorer = NearestNeighbourScorer(n_nearest_neighbours=1, nn_method=nn_method)
         LOGGER.info("##########subsample complete#####################")
         LOGGER.info("construct memory bank")
         anomaly_scorer.fit(detection_features=[features])
-
         print("***************end train***************")
 
         print("***************start eval***************")
@@ -159,10 +158,9 @@ if __name__ == '__main__':
         anomaly_segmentor = RescaleSegmentor(
             target_size=(imagesize, imagesize)
         )
-        step = 0
-        patch_maker = PatchMaker(patchsize=patchsize, stride=1)
-        for step, image in enumerate(test_data_iter):
-            step += 1
+        STEP = 0
+        for idx, image in enumerate(test_data_iter):
+            STEP += 1
             start = datetime.datetime.fromtimestamp(time.time())
             labels_gt.extend(image["is_anomaly"].asnumpy().tolist())
             masks_gt.extend(image["mask"].asnumpy().tolist())
@@ -179,13 +177,13 @@ if __name__ == '__main__':
             features = features.asnumpy()
 
             patch_scores = image_scores = anomaly_scorer.predict([features])[0]
-            image_scores = patch_maker.unpatch_scores(
+            image_scores = unpatch_scores(
                 image_scores, batchsize=batchsize
             )
             image_scores = image_scores.reshape(*image_scores.shape[:2], -1)
-            image_scores = patch_maker.score(image_scores)
+            image_scores = score_max(image_scores)
 
-            patch_scores = patch_maker.unpatch_scores(
+            patch_scores = unpatch_scores(
                 patch_scores, batchsize=batchsize
             )
             scales = patch_shapes[0]
@@ -194,7 +192,7 @@ if __name__ == '__main__':
             masks = anomaly_segmentor.convert_to_segmentation(patch_scores)
             end = datetime.datetime.fromtimestamp(time.time())
             step_time = (end - start).microseconds / 1000.0
-            print("step: {}, time: {}ms".format(step, step_time))
+            print("step: {}, time: {}ms".format(STEP, step_time))
 
             _scores, _masks, _scores2 = [score for score in image_scores], [mask for mask in masks], [score2 for score2
                                                                                                       in patch_scores]
@@ -213,18 +211,18 @@ if __name__ == '__main__':
         scorespx = []
         scoresdx = []
         scoresrangex = []
-        for i in range(len(scores2)):
+        for i, item in enumerate(scores2):
             scoresmax.append(np.max(np.array(scores2[i])).item())
             scorespx.append(np.mean(np.array(scores2[i])).item())
             scoresdx.append(np.var(np.array(scores2[i])).item())
             scoresrangex.append(np.max(np.array(scores[i])).item() - np.min(scores[i]).item())
 
-        scorestopK5 = select_topK(5, scores2)
-        scorestopK10 = select_topK(10, scores2)
-        scorestopK20 = select_topK(20, scores2)
-        scorestopK40 = select_topK(40, scores2)
-        scorestopK60 = select_topK(60, scores2)
-        scorestopK100 = select_topK(100, scores2)
+        scorestopK5 = select_topk(5, scores2)
+        scorestopK10 = select_topk(10, scores2)
+        scorestopK20 = select_topk(20, scores2)
+        scorestopK40 = select_topk(40, scores2)
+        scorestopK60 = select_topk(60, scores2)
+        scorestopK100 = select_topk(100, scores2)
         scoresmax = norm(scoresmax)
         scorespx = norm(scorespx)
         scoresdx = norm(scoresdx)
@@ -238,12 +236,12 @@ if __name__ == '__main__':
         segmentations = np.array(segmentations)
         min_scores = (
             segmentations.reshape(len(segmentations), -1)
-            .min(axis=-1)
-            .reshape(-1, 1, 1, 1)
+                .min(axis=-1)
+                .reshape(-1, 1, 1, 1)
         )
         max_scores = (
             segmentations.reshape(len(segmentations), -1).max(axis=-1)
-            .reshape(-1, 1, 1, 1)
+                .reshape(-1, 1, 1, 1)
         )
         segmentations = (segmentations - min_scores) / (max_scores - min_scores)
         segmentations = np.mean(segmentations, axis=0)
@@ -252,47 +250,19 @@ if __name__ == '__main__':
         pixel_scores = compute_pixelwise_retrieval_metrics(
             segmentations, masks_gt
         )
-        full_pixel_auroc = pixel_scores["auroc"]
+        full_pixel_auroc = pixel_scores
 
-        auroc = compute_imagewise_retrieval_metrics(
-            scores, anomaly_labels
-        )["auroc"]
+        auroc = roc_auc_score(anomaly_labels, scores)
+        auroc_max = roc_auc_score(anomaly_labels, scoresmax)
+        auroc_dx = roc_auc_score(anomaly_labels, scoresdx)
+        auroc_px = roc_auc_score(anomaly_labels, scorespx)
+        auroc_topK5 = roc_auc_score(anomaly_labels, scorestopK5)
+        auroc_topK10 = roc_auc_score(anomaly_labels, scorestopK10)
+        auroc_topK20 = roc_auc_score(anomaly_labels, scorestopK20)
+        auroc_topK40 = roc_auc_score(anomaly_labels, scorestopK40)
+        auroc_topK60 = roc_auc_score(anomaly_labels, scorestopK60)
+        auroc_topK100 = roc_auc_score(anomaly_labels, scorestopK100)
 
-        auroc_max = compute_imagewise_retrieval_metrics(
-            scoresmax, anomaly_labels
-        )["auroc"]
-
-        auroc_dx = compute_imagewise_retrieval_metrics(
-            scoresdx, anomaly_labels
-        )["auroc"]
-
-        auroc_px = compute_imagewise_retrieval_metrics(
-            scorespx, anomaly_labels
-        )["auroc"]
-
-        auroc_topK5 = compute_imagewise_retrieval_metrics(
-            scorestopK5, anomaly_labels
-        )["auroc"]
-
-        auroc_topK10 = compute_imagewise_retrieval_metrics(
-            scorestopK10, anomaly_labels
-        )["auroc"]
-
-        auroc_topK20 = compute_imagewise_retrieval_metrics(
-            scorestopK20, anomaly_labels
-        )["auroc"]
-
-        auroc_topK40 = compute_imagewise_retrieval_metrics(
-            scorestopK40, anomaly_labels
-        )["auroc"]
-
-        auroc_topK60 = compute_imagewise_retrieval_metrics(
-            scorestopK60, anomaly_labels
-        )["auroc"]
-
-        auroc_topK100 = compute_imagewise_retrieval_metrics(
-            scorestopK100, anomaly_labels
-        )["auroc"]
         result_collect = []
         result_collect.append(
             {
@@ -321,7 +291,7 @@ if __name__ == '__main__':
         os.makedirs(patchcore_save_path, exist_ok=True)
         print("Saving PatchCore data.")
         anomaly_scorer.save(
-            patchcore_save_path, save_features_separately=False, prepend=""
+            patchcore_save_path, prepend=""
         )
 
     # Store all results and mean scores to a csv-file.
