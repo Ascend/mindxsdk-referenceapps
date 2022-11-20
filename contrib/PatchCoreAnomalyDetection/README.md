@@ -233,4 +233,4 @@ python3 main.py
 
 <img src="./images/performance.png" alt="flow_chart" style="zoom:67%;" />
 
-​	性能测试完毕后生成performance.txt文件，保存各个子数据的测试结果。。
+​	性能测试完毕后生成performance.txt文件，保存各个子数据的测试结果。
