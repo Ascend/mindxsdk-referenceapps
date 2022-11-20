@@ -216,6 +216,6 @@ python3 main.py
 . eval_performance.sh
 ```
 
-模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.027729319ms，性能36FPS，满足性能要求（FPS≥ 20）。
+模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.02930630ms，性能34.1FPS，满足性能要求（FPS≥ 20）。
 
 <img src="./images/performance.png" alt="flow_chart" style="zoom:67%;" />
