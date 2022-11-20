@@ -206,6 +206,8 @@ python3 main.py
 
 模型在MvTec数据集上的精度达标，最终模型平均instance_auroc_topk10输出值为99.68%，满足精度要求（imagelevel_auroc≥ 99.5%）。
 
+<img src="./images/precision.png" alt="flow_chart" style="zoom:67%;" />
+
 ## 6 测试性能
 
 运行如下命令完成精度测试，输出模型平均性能。
@@ -215,3 +217,5 @@ python3 main.py
 ```
 
 模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.027729319ms，性能36FPS，满足性能要求（FPS≥ 20）。
+
+<img src="./images/performance.png" alt="flow_chart" style="zoom:67%;" />
