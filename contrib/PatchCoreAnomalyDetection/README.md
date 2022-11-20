@@ -39,17 +39,20 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ```
 ├── models             
-│   ├── wideresnet101_224_layer2.om     #尺寸为224，特征图为layer2层的缺陷检测模型
-│   ├── wideresnet101_280_layer2.om     #尺寸为280，特征图为layer2层的缺陷检测模型
-│   ├── wideresnet101_320_layer2.om     #尺寸为320，特征图为layer2层的缺陷检测模型
-│   ├── wideresnet101_320_layer3.om     #尺寸为320，特征图为layer3层的缺陷检测模型
-├── mvtec                               #数据集存放文件夹
-├── calculate_txt_avg.py                #计算平均值	
+│   ├── wideresnet101_224_layer2.om     # 尺寸为224，特征图为layer2层的缺陷检测模型
+│   ├── wideresnet101_280_layer2.om     # 尺寸为280，特征图为layer2层的缺陷检测模型
+│   ├── wideresnet101_320_layer2.om     # 尺寸为320，特征图为layer2层的缺陷检测模型
+│   ├── wideresnet101_320_layer3.om     # 尺寸为320，特征图为layer3层的缺陷检测模型
+├── faiss-index-performance             # 该目录性能测试所需用到的faiss
+├── images                              # 该目录 readme文件中的图片
+├── mvtec                               # 数据集存放文件夹
+├── calculate_txt_avg.py                # 计算平均值	
 ├── config.yaml                         #子数据集配置文件
 ├── eval_performance.py					# 测试性能	
 ├── eval_performance.sh					# 测试性能命令行
 ├── eval_precision.py					# 测试精度	
 ├── eval_precision.sh				    # 测试精度命令行
+├── README.md                           # 数据集存放文件夹
 ├── main.py								
 └── utils.py                            # 工具类
 ```
@@ -66,7 +69,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ### 1.6 特性及适用场景
 
-项目适用于光照条件较好，背景简单，且图片较清晰的测试图片
+项目适用于光照条件较好，背景简单，且图片较清晰的测试图片。
 
 ## 2 环境依赖
 
@@ -105,15 +108,13 @@ env
 
 本项目使用的模型是 WideResnet101 模型。
 
-从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pth 模型转为mindspore可以加载的ckpt模型，mindspore训练过程中将ckpt模型转化为 air 模型，再由ATC命令将 air 模型转为 om 模型。
-
-pth 权重文件的下载链接 [https://www.hiascend.com/zh/software/modelzoo/models/detail/C/626b7f1604fc49b7badb9197be17c7f1/1](https://www.hiascend.com/zh/software/modelzoo/models/detail/C/626b7f1604fc49b7badb9197be17c7f1/1)
+从 pytorch官网获取pth模型，在运行项目之前需要将 pth 模型转为mindspore可以加载的ckpt模型，mindspore训练过程中将ckpt模型转化为 air 模型，再由ATC命令将 air 模型转为 om 模型。
 
 模型转换工具（ATC）相关介绍如下 [https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0005.html)
 
 具体步骤如下
 
-Ascend910：
+Ascend910(PatchCoreAnomalyDetection_mindspore目录)：
 
  	1. 下载pth文件，PatchCore使用预训练模型提取图像特征，训练过程采用wideresnet101作为backbone，并提取layer2，layer3进行特征聚合。wideresnet101的pth下载链接：[wide_resnet101_2](https://download.pytorch.org/models/wide_resnet101_2-32ee1156.pth)，将下载好的pth文件放在mindspore训练代码目录下
  	2. 将pth文件转为mindspore可以加载的ckpt文件
@@ -128,12 +129,40 @@ python pthtockpt.py --pth_path wide_resnet101_2-32ee1156.pth
 python train_all.py --dataset_path path/to/mvtec/ --results /path/to/results/ --gpu 0
 ```
 
-​	训练结束之后会在./results(默认为results)目录下保存训练出的faiss文件，训练结束之后保存的faiss文件需要移动到Ascend310，同时会保存**air文件**，用于转换om模型，完成MindX SDK推理。所有子数据集训练完成，会生成wideresnet101_layer2.air和wideresnet_layer3.air文件，通过拆分特征层，提升最终推理的性能。将文件上传至310推理环境
+​	训练结束之后会在./results(默认为results)目录下保存训练出的faiss文件(./results/exp_n/models/})，训练结束之后保存的faiss文件需要移动到Ascend310(即PatchCoreAnomalyDetection目录下的faiss-index-precision目录)。同时会保存**air文件**，用于转换om模型，完成MindX SDK推理。所有子数据集训练完成，会生成wideresnet101_layer2.air和wideresnet_layer3.air文件，通过拆分特征层，提升最终推理的性能。将文件上传至310推理环境。
 
-Ascend310:
+Ascend310(PatchCoreAnomalyDetection目录):
 
 1. 将mindspore训练转化好的air模型放置 ./models 目录下。
-2. 进入./model文件夹下执行命令
+2. 创建faiss-index-precision目录
+
+```bash
+mkdir faiss-index-precision
+```
+
+3. 将mindspore训练得到的faiss文件保存在./faiss-index-precision
+
+```bash
+.
+├── faiss-index-precision
+│   ├── bottle
+│   ├── cable
+│   ├── capsule
+│   ├── carpet
+│   ├── grid
+│   ├── hazelnut
+│   ├── leather
+│   ├── metal_nut
+│   ├── pill
+│   ├── screw
+│   ├── tile
+│   ├── toothbrush
+│   ├── transistor
+│   ├── wood
+│   └── zipper
+```
+
+1. 进入./model文件夹下执行命令
 
 ```
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_224_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer2.air" --input_shape="x:1,3,224,224"
@@ -149,7 +178,7 @@ ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
 
-表示命令执行成功。
+表示命令执行成功模型成功转换。
 
 ## 4 编译与运行
 
@@ -159,7 +188,7 @@ ATC run success, welcome to the next use.
 
 **步骤 2** 按照模型转换获取om模型，放置在 ./models 路径下。
 
-**步骤 3** 在命令行输入 如下命令运行整个工程
+**步骤 3** 在命令行输入 如下命令运行整个工程。
 
 ```
 python3 main.py
@@ -169,20 +198,20 @@ python3 main.py
 
 ## 5 测试精度
 
-运行如下命令完成精度测试，输出模型instance_auroc。
+运行如下命令完成精度测试，输出模型instance_auroc_topk10。
 
 ```
 . eval_precision.sh
 ```
 
-模型在MvTec数据集上的精度达标，最终模型平均instance_auroc输出值为99.68%，满足精度要求（instance_auroc≥ 99.5%）。
+模型在MvTec数据集上的精度达标，最终模型平均instance_auroc_topk10输出值为99.68%，满足精度要求（imagelevel_auroc≥ 99.5%）。
 
 ## 6 测试性能
 
 运行如下命令完成精度测试，输出模型平均性能。
 
 ```
-. eval_precision.sh
+. eval_performance.sh
 ```
 
 模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.027729319ms，性能36FPS，满足性能要求（FPS≥ 20）。
