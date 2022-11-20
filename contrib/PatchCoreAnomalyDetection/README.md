@@ -162,7 +162,7 @@ mkdir faiss-index-precision
 │   └── zipper
 ```
 
-1. 进入./model文件夹下执行命令
+​	4. 进入./model文件夹下执行命令
 
 ```
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_224_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer2.air" --input_shape="x:1,3,224,224"
@@ -171,7 +171,7 @@ atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --in
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_320_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer3.air" --input_shape="x:1,3,320,320"
 ```
 
-   4.执行该命令会在当前目录下生成项目需要的om模型文件。执行后终端输出为
+   5.执行该命令会在当前目录下生成项目需要的om模型文件。执行后终端输出为
 
 ```
 ATC start working now, please wait for a moment.
@@ -179,6 +179,17 @@ ATC run success, welcome to the next use.
 ```
 
 表示命令执行成功模型成功转换。
+
+四个模型参考链接如下：
+
+```
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PatchCoreAnomalyDetection/wideresnet101_224_layer2.om
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PatchCoreAnomalyDetection/wideresnet101_320_layer2.om
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PatchCoreAnomalyDetection/wideresnet101_280_layer2.om
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PatchCoreAnomalyDetection/wideresnet101_320_layer3.om
+```
+
+
 
 ## 4 编译与运行
 
@@ -208,6 +219,8 @@ python3 main.py
 
 <img src="./images/precision.png" alt="flow_chart" style="zoom:67%;" />
 
+精度测试完毕后生成precision.txt文件，保存各个子数据的测试结果。
+
 ## 6 测试性能
 
 运行如下命令完成精度测试，输出模型平均性能。
@@ -219,3 +232,5 @@ python3 main.py
 模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.02930630ms，性能34.1FPS，满足性能要求（FPS≥ 20）。
 
 <img src="./images/performance.png" alt="flow_chart" style="zoom:67%;" />
+
+​	性能测试完毕后生成performance.txt文件，保存各个子数据的测试结果。。
