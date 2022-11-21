@@ -21,7 +21,7 @@ npu-smi info
 
 ### 1.3 软件方案介绍
 
-本方案中，将 PyTorch 版本的低光图像增强模型 [IAT](https://github.com/cuiziteng/illumination-adaptive-transformer)，转化为晟腾的om模型。对于输入的夜间低照度图像，通过调用晟腾om模型进行处理，最终生成经过低光增强后的图像。
+本方案中，将 PyTorch 版本的低光图像增强模型 [IAT](https://github.com/cuiziteng/illumination-adaptive-transformer)，转化为昇腾的om模型。对于输入的夜间低照度图像，通过调用昇腾om模型进行处理，最终生成经过低光增强后的图像。
 
 
 
@@ -64,6 +64,7 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 | CANN          | 5.1.RC2.alpha008 |
 | numpy         | 1.22.3           |
 | opencv-python | 4.5.5            |
+| onnxsim       | 0.4.10           |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -84,18 +85,33 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 - 下载 PyTorch 版本 [IAT代码](https://github.com/cuiziteng/illumination-adaptive-transformer)
 
-**步骤2** （设置环境变量）
+- 根据原模型目录下的README.md文件配置原模型环境，具体代码如下：
+
+  ```
+  $ conda create -n IAT python==3.7.0
+  $ conda activate IAT
+  $ conda install --yes -c pytorch pytorch=1.7.1 torchvision cudatoolkit=11.0
+  $ pip install timm matplotlib IQA_pytorch tqdm
+  ```
+
+  ​
+
+**步骤2** （配置项目环境）
+
+退出原模型环境，根据第2节环境依赖所述安装相应的项目环境，并设置环境变量。
 
 ```
 source ${sdk_path}/set_env.sh
 source ${ascend_toolkit_path}/set_env.sh
 ```
 
+
+
 **步骤3** （执行编译的步骤）
 
 ​    1.pytorch 模型转换 onnx 文件
 
-​	将 `pth2onnx.py` 放到 Illumination-Adaptive_Transformer/IAT_enhance/项目目录下，运行：
+​	将 `pth2onnx.py` 放到 Illumination-Adaptive_Transformer/IAT_enhance/项目目录下，并切换到原模型环境，运行：
 
 ```
 python pth2onnx.py
@@ -117,8 +133,10 @@ onnxsim IAT_lol.onnx IAT_lol-sim.onnx
 
 ​     3.onnx 文件转换 om 文件
 
+​	将环境从原模型环境切换到当前项目环境，然后运行：
+
 ```
-atc --framework=5 --model=./IAT_lol-sim.onnx --input_shape="input_1:1,3,400,600" --output=IAT_lol-sim--soc_version=Ascend310
+atc --framework=5 --model=./IAT_lol-sim.onnx --input_shape="input_1:1,3,400,600" --output=IAT_lol-sim --soc_version=Ascend310
 ```
 
 
@@ -133,7 +151,36 @@ python main.py
 
 即可在./data/目录下得到推理后的结果.
 
-### 3.2 精度测试示例
+
+
+## * 4 指标验证
+
+### 4.1 模型规模测试
+
+利用python相关的模型测试工具 fvcore即可测得IAT模型的计算量，测试方法代码如下：
+
+```python
+def evaluate_net():
+    # 创建resnet50网络
+    model = IAT()
+    model = model.cuda()
+    # 创建输入网络的tensor
+    tensor = torch.rand(1, 3, 400, 600).cuda()
+
+    # 分析FLOPs
+    flops = FlopCountAnalysis(model, tensor)
+    print("FLOPs: ", flops.total())
+```
+
+测试结果如下：
+
+![模型计算量](图片/模型规模测试.jpg)
+
+根据[IAT论文](https://github.com/cuiziteng/illumination-adaptive-transformer)所述，该模型参数量约为90K，通过测试得到计算量约为6.019GFLOPs。
+
+
+
+### 4.2 精度测试
 
 **步骤1-3**  与3.1节一致
 
@@ -152,17 +199,19 @@ python main.py
 
 **步骤5** （修改主函数并运行）
 
-将main.py中的主函数改为调用test_precision()，运行:
+切换到项目环境下，将main.py中的主函数改为调用test_precision()，运行:
 
 ```
 python main.py
 ```
 
-即可得到精度测试结果。
+即可得到精度测试结果,测试结果如下：
+
+![模型计算量](图片/精度测试.jpg)
 
 
 
-## 4 参考文献
+## 5 参考文献
 
 @misc{https://doi.org/10.48550/arxiv.2205.14871,
   doi = {10.48550/ARXIV.2205.14871},
