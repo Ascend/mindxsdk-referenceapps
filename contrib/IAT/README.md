@@ -95,7 +95,6 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
   $ pip install timm matplotlib IQA_pytorch tqdm
   ```
 
-  ​
 
 **步骤2** （配置项目环境）
 
@@ -105,8 +104,6 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 source ${sdk_path}/set_env.sh
 source ${ascend_toolkit_path}/set_env.sh
 ```
-
-
 
 **步骤3** （执行编译的步骤）
 
@@ -139,8 +136,6 @@ onnxsim IAT_lol.onnx IAT_lol-sim.onnx
 ```
 atc --framework=5 --model=./IAT_lol-sim.onnx --input_shape="input_1:1,3,400,600" --output=IAT_lol-sim --soc_version=Ascend310
 ```
-
-
 
 **步骤4** （运行及输出结果）
 
