@@ -273,9 +273,13 @@ python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 
 1、YOLOv5模型精度测试
 
-在"\${MeterReader代码根目录}/evaluate/yolov5_val/下新建"det_val_data"文件夹，并在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data"新建"det_val_voc"和"det_val_img"文件夹。
+在"\${MeterReader代码根目录}/evaluate/yolov5_val/下新建"det_val_data"文件夹，并在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data"新建"det_val_voc"、"meter_det"和"det_val_img"文件夹。
 
-下载目标检测[模型验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip),将其中的目录"data/yolov5/det_val_voc"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下,"data/yolov5/det_val_img"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
+[下载YOLOv5表计检测数据集]（https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_test.tar.gz)到任意文件夹，解压后将所有图片汇聚"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"文件夹。
+
+根据"det_val_voc"中的txt文件的文件名(txt命名格式为：文件名.txt)找到对应在"meter_det"中的图片文件，将找到的jpg图片文件中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
+
+下载目标检测[模型验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip)，将其中的目录"data/yolov5/det_val_voc"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下。
 
 在命令行中跳转到"\${MeterReader代码根目录}/evaluate/yolov5_val"文件路径下
 ```bash
