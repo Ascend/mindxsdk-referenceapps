@@ -153,11 +153,20 @@ python main.py
 
 ### 4.1 模型规模测试
 
-利用python相关的模型测试工具 fvcore即可测得IAT模型的计算量，测试方法代码如下：
+模型计算量测试需要利用python相关的模型测试工具 fvcore, 在原模型环境中可以使用以下命令进行安装：
+
+```
+pip install fvcore
+```
+
+利用fvcore的相关工具即可测得IAT模型的计算量，测试方法代码如下：
 
 ```python
 def evaluate_net():
-    # 创建resnet50网络
+    from model.IAT_main import IAT
+    from fvcore.nn import FlopCountAnalysis
+    
+    # 创建IAT网络
     model = IAT()
     model = model.cuda()
     # 创建输入网络的tensor
