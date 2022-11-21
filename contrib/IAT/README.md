@@ -36,6 +36,7 @@ eg：本sample工程名称为XXX，工程目录如下图所示：
 	├──iatsim.om  	# 模型文件
 ├── main.py		  	# 推理文件
 ├── pth2onnx.py		# 模型转换文件
+├── flowchart.jpeg	# 技术实现流程图
 └── README.md
 
 ```
