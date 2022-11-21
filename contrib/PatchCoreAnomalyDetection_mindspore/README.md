@@ -58,7 +58,7 @@ python pthtockpt.py --pth_path wide_resnet101_2-32ee1156.pth
 python train_all.py --dataset_path path/to/mvtec/ --results /path/to/results/ --gpu 0
 ```
 
-训练结束之后会在./results(默认为results)目录下保存训练出的faiss文件，训练结束之后保存的faiss文件需要移动到Ascend310，同时会保存air文件，用于转换om模型，完成MindX SDK推理。所有子数据集训练完成，会生成wideresnet101_layer2.air和wideresnet_layer3.air文件，通过拆分特征层，提升最终推理的性能。
+​ 训练结束之后会在./results(默认为results)目录下保存训练出的faiss文件(./results/exp_n/models/})，训练结束之后保存的faiss文件需要移动到Ascend310(即PatchCoreAnomalyDetection目录下的faiss-index-precision目录)。同时会保存air文件，用于转换om模型，完成MindX SDK推理。所有子数据集训练完成，会生成wideresnet101_layer2.air和wideresnet_layer3.air文件，通过拆分特征层，提升最终推理的性能。将文件上传至310推理环境。件，通过拆分特征层，提升最终推理的性能。
 
 - 训练某一个子数据集
 
