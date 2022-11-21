@@ -65,10 +65,20 @@ def add_text(image, text_content, left, top, textcolor, textsize):
 
 if __name__ == '__main__':
 
+    if not os.path.exists('./inputs'):
+        print("Not found the input directory!")
+        print("Please check directories!")
+        exit()
+
     test_files = get_file_names('./inputs/')
+    
+    if len(os.listdir('./inputs')) == 0:
+        print("The input directory is EMPTY!")
+        print("Please place the picture in './inputs/' !")
+        exit()
 
     if len(test_files) == 0:
-        print("The input directory is EMPTY!")
+        print("Not found jpg or JPG file in the input path!")
         print("Please place the picture in './inputs/' !")
         exit()
 

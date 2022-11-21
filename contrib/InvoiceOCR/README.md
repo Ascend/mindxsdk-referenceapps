@@ -67,9 +67,8 @@ npu-smi info
 │   └── xxx.jpg
 ├── outputs                     # 输出图片
 │   └── xxxx.jpg
-├── main.py                     # 推理脚本
-├── eval.py						# 测试精度脚本
-└── set_env.sh					# 环境变量设置脚本
+├── main.py                     # 推理脚本						
+└── eval.py						# 测试精度脚本
 ```
 
 
@@ -107,12 +106,16 @@ npu-smi info
 
 在编译运行项目前，需要设置环境变量：
 
-在项目路径下运行
-
 ```
-bash set_env.sh
-# 查看环境
-env
+# Mind SDK环境变量:
+.${SDK-path}/set_env.sh
+
+# CANN环境变量:
+.${ascend-toolkit-path}/set_env.sh
+
+# 环境变量介绍
+SDK-path:SDK mxVision安装路径
+ascend-toolkit-path:CANN安装路径
 ```
 
 
@@ -123,11 +126,7 @@ env
 
 #### 3.1.1 resnet50
 
-训练代码参考[链接](https://gitee.com/mindspore/models/tree/r1.8/official/cv/resnet)，将数据集放在.`/imagenet2012`目录下，修改config下配置文件，执行如下代码训练
-
-```
-python train.py --data_path=./imagenet2012/train --config_path=./config/resnet50_imagenet2012_config.yaml --output_path='./output' 
-```
+训练代码参考[链接](https://gitee.com/mindspore/models/tree/r1.8/official/cv/resnet)
 
 #### 3.1.2 db
 
@@ -146,7 +145,7 @@ python train.py --data_path=./imagenet2012/train --config_path=./config/resnet50
 在`./models/resnet50`目录下执行如下命令
 
 ```
-atc --model=./resnet50.air --framework=1 --output=resnet50 --input_format=NCHW --input_shape="x:1,3,224,224" --enable_small_channel=1 --soc_version=Ascend310 --insert_op_conf="aipp.config"
+atc --model=./resnet.air --framework=1 --output=resnet50 --input_format=NCHW --input_shape="x:1,3,224,224" --enable_small_channel=1 --soc_version=Ascend310 --insert_op_conf="aipp.config"
 ```
 
 在`./models/db`目录下执行如下命令
@@ -187,6 +186,13 @@ atc --model=./crnn.onnx --framework=5 --output_type=FP32 --output=crnn --input_f
 
 ```
 export LD_LIBRARY_PATH={project_path}/lib/:$LD_LIBRARY_PATH
+```
+
+进入`./lib`目录，执行如下命令修改`.so`文件权限为640
+
+```
+chmod 640 libclipper.so
+chmod 640 libDBPostProcess.so
 ```
 
 **步骤2** 配置pipeline文件
