@@ -188,7 +188,7 @@ atc --model=./crnn.onnx --framework=5 --output_type=FP32 --output=crnn --input_f
 export LD_LIBRARY_PATH={project_path}/lib/:$LD_LIBRARY_PATH
 ```
 
-进入`./lib`目录，执行chmod命令将.so文件权限修改为640。
+进入`./lib`目录，**将编译完的.so文件权限修改为640**。
 
 
 
