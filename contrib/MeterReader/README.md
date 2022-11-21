@@ -257,14 +257,7 @@ python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 
 
 执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。最后展示的结果图片上用矩形框框出了图片中的表计并且标出了预测的表盘读数。
-<center>
-    <img src="./images/README_img/main_result.png">
-    <br>
-    <div style="color:orange;
-    display: inline-block;
-    color: #999;
-    padding: 2px;">图4. 模型运行输出结果 </div>
-</center>
+
 
 
 **步骤4** 精度测试
