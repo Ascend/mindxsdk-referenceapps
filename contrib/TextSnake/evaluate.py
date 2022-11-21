@@ -65,7 +65,7 @@ def resize(image_r, size):
 
 
 def write_to_file(contours_w, file_path):
-    with os.fdopen(os.open(file_path, os.O_WRONLY, MODES), 'w') as f1:
+    with os.fdopen(os.open(file_path, os.O_WRONLY|os.O_CREAT, MODES), 'w') as f1:
         for cont in contours_w:
             cont = np.stack([cont[:, 1], cont[:, 0]], 1)
             cont = cont.flatten().astype(str).tolist()
