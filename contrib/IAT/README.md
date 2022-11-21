@@ -30,20 +30,20 @@ npu-smi info
 eg：本sample工程名称为XXX，工程目录如下图所示：
 
 ```
-├── data		  
-	├──test.png  	# 推理图像
-├── models
-	├──iatsim.om  	# 模型文件
+├── images			# README图片文件夹
+├── data		    # 推理图片文件夹
+	├──.keepme  	
+├── models			# 模型文件夹
+	├──.keepme  	
 ├── main.py		  	# 推理文件
 ├── pth2onnx.py		# 模型转换文件
-├── flowchart.jpeg	# 技术实现流程图
 └── README.md
 
 ```
 
 ### 1.5 技术实现流程图
 
-![技术实现流程图](contrib/IAT/flowchart.jpeg)
+![技术实现流程图](images/技术路线.jpeg)
 
 ### 1.6 特性及适用场景
 
@@ -179,7 +179,7 @@ def evaluate_net():
 
 测试结果如下：
 
-![模型计算量](图片/模型规模测试.jpg)
+![模型计算量](images/模型规模测试.jpeg)
 
 根据[IAT论文](https://github.com/cuiziteng/illumination-adaptive-transformer)所述，该模型参数量约为90K，通过测试得到计算量约为6.019GFLOPs。
 
@@ -212,7 +212,7 @@ python main.py
 
 即可得到精度测试结果,测试结果如下：
 
-![模型计算量](图片/精度测试.jpg)
+![模型计算量](images/精度测试.jpeg)
 
 
 
