@@ -1,0 +1,194 @@
+{
+    "invoiceocr": {
+        "stream_config": {
+            "deviceId": "0"
+        },
+        "appsrc0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "next": "mxpi_imagedecoder0",
+            "factory": "appsrc"
+        },
+        "mxpi_imagedecoder0": {
+            "props": {
+                "cvProcessor":"opencv"
+            },
+            "next": "tee0",
+            "factory": "mxpi_imagedecoder"
+        },
+        "tee0": {
+            "next": [
+                "queue0",
+                "queue1"
+            ],
+            "factory": "tee"
+        },
+        "queue0": {
+            "next": "mxpi_imageresize0",
+            "factory": "queue"
+        },
+        "queue1": {
+            "next": "mxpi_imageresize1",
+            "factory": "queue"
+        },
+        "mxpi_imageresize0": {
+            "props": {
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeHeight": "224",
+                "resizeWidth": "224",
+                "resizeType": "Resizer_Stretch",
+                "cvProcessor":"opencv"   
+            },
+            "next": "queue2",
+            "factory": "mxpi_imageresize"
+        },
+        "queue2": {
+            "next": "mxpi_tensorinfer0",
+            "factory": "queue"
+        },
+        "mxpi_tensorinfer0": {
+            "props": {
+                "dataSource": "mxpi_imageresize0",
+                "modelPath": "./models/resnet50/resnet50.om",
+                "outputDeviceId": "-1"
+            },
+            "next": "queue3",
+            "factory": "mxpi_tensorinfer"
+        },
+        "queue3": {
+            "next": "mxpi_classpostprocessor0",
+            "factory": "queue"
+        },
+        "mxpi_classpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer0",
+                "postProcessConfigPath": "./models/resnet50/resnet50.cfg",
+                "labelPath": "./models/resnet50/invoice.names",
+                "postProcessLibPath": "libresnet50postprocess.so"
+            },
+            "next": "queue4",
+            "factory": "mxpi_classpostprocessor"
+        },
+        "queue4": {
+            "next": "mxpi_synchronize0:0",
+            "factory": "queue"
+        },
+        "mxpi_imageresize1": {
+            "props": {
+                "cvProcessor": "opencv",
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeType": "Resizer_KeepAspectRatio_Fit"
+            },
+            "next": "queue5",
+            "factory": "mxpi_imageresize"
+        },
+        "queue5": {
+            "next": "mxpi_tensorinfer1",
+            "factory": "queue"
+        },        
+        "mxpi_tensorinfer1": {
+            "props": {
+                "dataSource": "mxpi_imageresize1",
+                "modelPath": "./models/db/db.om"
+            },
+            "next": "queue6",
+            "factory": "mxpi_tensorinfer"
+        },
+        "queue6": {
+            "next": "mxpi_textobjectpostprocessor0",
+            "factory": "queue"
+        },   
+        "mxpi_textobjectpostprocessor0": {
+            "props": {
+                "postProcessConfigPath": "./models/db/det.cfg",
+                "postProcessLibPath": "./lib/libDBPostProcess.so"
+                
+            },
+            "next": "queue7",
+            "factory": "mxpi_textobjectpostprocessor"
+        },
+        "queue7": {
+            "next": "mxpi_warpperspective0",
+            "factory": "queue"
+        },
+        "mxpi_warpperspective0": {
+            "props": {
+                "debugMode": "false"
+            },
+            "factory": "mxpi_warpperspective",
+            "next": "queue8"
+        },   
+        "queue8": {
+            "next": "mxpi_imageresize2",
+            "factory": "queue"
+        },
+        "mxpi_imageresize2": {
+            "props": {
+                "cvProcessor": "opencv",
+                "resizeType": "Resizer_PaddleOCR",
+                "resizeHeight": "48",
+                "resizeWidth": "320",
+                "paddingType": "Padding_RightDown",
+                "paddingHeight": "48",
+                "paddingWidth": "320",
+                "paddingColorB": "128",
+                "paddingColorG": "128",
+                "paddingColorR": "128"
+            },
+            "next": "queue9",
+            "factory": "mxpi_imageresize"
+        }, 
+        "queue9": {
+            "next": "mxpi_tensorinfer2",
+            "factory": "queue"
+        },  
+        "mxpi_tensorinfer2": {
+            "props": {
+                "dataSource": "mxpi_imageresize2",
+                "modelPath": "./models/crnn/crnn.om"
+            },
+            "next": "queue10",
+            "factory": "mxpi_tensorinfer"
+        },
+        "queue10": {
+            "next": "mxpi_textgenerationpostprocessor0",
+            "factory": "queue"
+        },
+        "mxpi_textgenerationpostprocessor0": {
+            "props": {
+                "dataSource": "mxpi_tensorinfer2",
+                "postProcessConfigPath": "./models/crnn/rec.cfg",
+                "labelPath": "./models/crnn/ppocr_keys_v1.names",
+                "postProcessLibPath": "libcrnnpostprocess.so"
+            },
+            "next": "queue11",
+            "factory": "mxpi_textgenerationpostprocessor"
+        },
+        "queue11": {
+            "next": "mxpi_synchronize0:1",
+            "factory": "queue"
+        },
+        "mxpi_synchronize0": {
+            "next": "queue12",
+            "factory": "mxpi_synchronize"
+        }, 
+        "queue12": {
+            "next": "mxpi_dataserialize0",
+            "factory": "queue"
+        },
+        "mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_classpostprocessor0,mxpi_textobjectpostprocessor0,mxpi_textgenerationpostprocessor0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0": {
+            "props": {
+                "blocksize": "4096000"
+            },
+            "factory": "appsink"
+        }
+    }
+}
