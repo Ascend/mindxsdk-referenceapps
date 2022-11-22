@@ -39,15 +39,16 @@ from util.visualize import visualize_detection
 def zerodimsoftmax(x):
     first = x[0, :, :].reshape(512, 512)
     second = x[1, :, :].reshape(512, 512)
-    fexp=np.exp(first)
-    sexp=np.exp(second)
-    sumexp=fexp+sexp
-    fxf=fexp/sumexp
-    fxs=sexp/sumexp
-    fx = np.zeros((2,512,512))
+    fexp = np.exp(first)
+    sexp = np.exp(second)
+    sumexp = fexp + sexp
+    fxf=fexp / sumexp
+    fxs=sexp / sumexp
+    fx = np.zeros((2, 512, 512))
     fx[0, :, :] = fxf
     fx[1, :, :] = fxs
     return fx
+
 
 
 def norm(image_n, mean, std):
