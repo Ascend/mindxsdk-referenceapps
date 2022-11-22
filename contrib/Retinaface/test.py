@@ -76,7 +76,7 @@ if ret != 0:
     print("Failed to create Stream, ret=%s" % str(ret))
     exit()
 
-FLAGS = os.O_WRONLY | os.O_CREAT
+FLAGS = os.O_RDWR | os.O_CREAT
 MODES = stat.S_IWUSR | stat.S_IRUSR
 with os.fdopen(os.open('./evaluate/wider_val.txt', FLAGS, MODES), 'r') as fr:
     for img_address in fr:
