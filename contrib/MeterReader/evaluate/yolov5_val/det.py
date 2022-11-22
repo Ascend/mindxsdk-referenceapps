@@ -308,7 +308,6 @@ if __name__ == '__main__':
 
     # create streams by pipeline config file
     MODES = stat.S_IWUSR | stat.S_IRUSR
-    print("pipe----------------------",pipeline_path)
     with os.fdopen(os.open(pipeline_path, os.O_RDONLY, MODES), 'rb') as f:
         pipeline_str = f.read()
     ret = steammanager_api.CreateMultipleStreams(pipeline_str)

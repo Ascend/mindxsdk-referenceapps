@@ -27,8 +27,10 @@ sdk_predict_voc_PATH：sdk预测的voc数据
 '''
 cur_path = os.path.abspath(os.path.dirname(__file__))
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-validate_voc_PATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_val_voc').replace('\\', '/')
-sdk_predict_voc_PATH = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_voc').replace('\\', '/')
+validate_voc_PATH = os.path.join(father_path, \
+    'evaluate', 'yolov5_val', 'det_val_data', 'det_val_voc').replace('\\', '/')
+sdk_predict_voc_PATH = os.path.join(father_path, \
+    'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_voc').replace('\\', '/')
 
 
 def equals(varo, vart):

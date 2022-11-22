@@ -30,7 +30,7 @@ label_path = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data',
 image_path = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_img').replace('\\', '/')
 sdk_voc_path = os.path.join(father_path, 'evaluate', 'yolov5_val', 'det_val_data', 'det_sdk_voc/').replace('\\', '/')
 
-# 坐标转换，原始存储的是YOLOv5格式
+
 # Convert nx4 boxes from [x, y, w, h] normalized to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
 def xywhn2xyxy(boxes, width=800, height=800):
     padw = 0

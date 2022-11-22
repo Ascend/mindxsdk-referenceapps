@@ -29,7 +29,9 @@ cur_path = os.path.abspath(os.path.dirname(__file__))
 father_path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 pipeline_path = os.path.join(father_path, 'pipeline', 'deeplabv3', 'seg.pipeline').replace('\\', '/')
 DIRNAME = os.path.join(father_path, 'evaluate', 'deeplabv3_val', 'seg_val_img', 'seg_test_img').replace('\\', '/')
-det_val_dir = os.path.join(father_path, 'evaluate', 'deeplabv3_val', 'seg_val_img', 'seg_test_img_groundtruth').replace('\\', '/')
+det_val_dir = os.path.join(father_path, 'evaluate', \
+    'deeplabv3_val', 'seg_val_img', 'seg_test_img_groundtruth').replace('\\', '/')
+
 
 def miou_computer(miuo_img, miou_pred):
     """
