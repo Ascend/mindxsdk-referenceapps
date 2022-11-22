@@ -54,8 +54,6 @@ MindX SDK 安装前准备可参考[《用户指南》安装教程](https://gitee
         ├── get_map1.png
         ├── get_map2.png
         ├── get_map3.png
-        ├── kinds_of_meter.jpg
-        ├── main_result.png
         ├── YOLOv5_pipeline.png        
 ├── infer
     ├── det.py
@@ -234,18 +232,17 @@ cd ${MeterReader代码根目录}/plugins/process3
 ```
 
 **步骤2** 修改pipeline文件中的参数地址
-* 修改"${MeterReader代码根目录}/pipeline/yolov5/det.pipeline"第40行处文件路径
+* 修改"${MeterReader代码根目录}/pipeline/yolov5/det.pipeline"第40行处文件的绝对路径，将pipeline中所需要用到的模型路径改为存放模型的绝对路径地址：
   ```python
   40 "modelPath":"${MeterReader代码根目录}/models/yolov5/det.om"
   ```
 
-* 修改"${MeterReader代码根目录}/pipeline/deeplabv3/seg.pipeline"第30、38、39行处文件路径
+* 修改"${MeterReader代码根目录}/pipeline/deeplabv3/seg.pipeline"第30、38、39行处文件的绝对路径，将pipeline中所需要用到的模型路径、配置文件地址改为绝对路径地址：
   ```python
   30 "modelPath":"${MeterReader代码根目录}/models/deeplabv3/seg.om"
   38 "postProcessConfigPath":"${MeterReader代码根目录}/pipeline/deeplabv3/deeplabv3.cfg",
   39 "labelPath":"${MeterReader代码根目录}/pipeline/deeplabv3/deeplabv3.names",
   ```
-
 
 **步骤3** 运行及输出结果
 
@@ -255,9 +252,7 @@ cd ${MeterReader代码根目录}/infer
 python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 ```
 
-
 执行结束后，可在命令行内得到yolo模型得到的表盘文件路径，以及通过后续模型得到的预测表盘度数。并可在设定的${输出图片路径}中查看带有预测表盘计数的图片结果。最后展示的结果图片上用矩形框框出了图片中的表计并且标出了预测的表盘读数。
-
 
 
 **步骤4** 精度测试
@@ -266,37 +261,51 @@ python main.py --ifile ${输入图片路径} --odir ${输出图片目录}
 
 1、YOLOv5模型精度测试
 
-在"\${MeterReader代码根目录}/evaluate/yolov5_val/下新建"det_val_data"文件夹，并在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data"新建"det_val_voc"、"meter_det"和"det_val_img"文件夹。
-
-[下载YOLOv5表计检测数据集]（https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_test.tar.gz)到任意文件夹，解压后将所有图片汇聚"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"文件夹。
-
-根据"det_val_voc"中的txt文件的文件名(txt命名格式为：文件名.txt)找到对应在"meter_det"中的图片文件，将找到的jpg图片文件中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
-
-下载目标检测[模型验证集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip)，将其中的目录"data/yolov5/det_val_voc"中的数据拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下。
-
-在命令行中跳转到"\${MeterReader代码根目录}/evaluate/yolov5_val"文件路径下
+步骤一：执行以下命令创建所需要的文件目录
 ```bash
-cd ${MeterReader代码根目录}/evaluate/yolov5_val
+cd ${MeterReader代码根目录}/evaluate/yolov5_val/
+mkdir -p det_val_data/det_val_voc
+mkdir -p det_val_data/meter_det
+mkdir -p det_val_data/det_val_img
+mkdir -p det_val_data/det_sdk_txt
+mkdir -p det_val_data/det_sdk_voc
 ```
 
-在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data下新建"det_sdk_txt"文件夹，使用下面命令运行脚本，得到当前det.om模型检测验证集数据的yolo格式结果，并保存到以图片命名的txt文件中，保存文件路径为"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_txt"。
+步骤二：准备标签文件及推理图片
+
+下载[YOLOv5表计检测数据集](https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_det.tar.gz)并解压到任意目录后，将数据集目录中"test"和"train"目录下的所有图片汇总拷贝至"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"目录下。
+
+我们提供了样例的[模型验证集标签文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/data.zip)以供下载测试。
+
+完成下载并解压后，将"data/yolov5/det_val_voc"目录下的文件拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下。
+
+然后根据拷贝后目录下样例的txt标签文件名称(txt命名格式为：文件名.txt)在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"目录下找到对应名称的jpg图片并拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
+
+步骤三：预处理数据集
+
+执行以下命令后，将在"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_txt"目录下生成当前"det.om"模型检测验证集数据的yolo格式结果，并以图片命名的txt格式保存：
 ```bash
+cd ${MeterReader代码根目录}/evaluate/yolov5_val
 python det.py
 ```
 
-在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data下新建"det_sdk_voc"文件夹，使用下面命令运行脚本，将模型检测得到的yolo数据格式转换为voc数据格式，结果保存在"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_voc"路径中。
+再执行以下命令，将上述得到的yolo数据格式转换成voc数据格式，并保存至"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_sdk_voc"目录下：
 ```bash
 python yolo2voc.py
 ```
 
-使用下面命令运行脚本，检测验证集中的数据是否有无目标文件。
+最后执行以下命令，检测验证集中的数据是否有无目标文件：
 ```bash
 python match.py
 ```
 
-下载[get_map.py脚本](https://github.com/Cartucho/mAP/edit/master/main.py)至MeterReader/python/yolov5_val，按照以下步骤修改部分代码: 
+注意事项：运行脚本之前需要把det_sdk_txt和det_sdk_voc文件夹下的文件清空。
 
-* 修改get_map.py第47、48、50行处文件路径
+步骤四：精度推理
+
+[登录](https://github.com/Cartucho/mAP/edit/master/main.py)并点击下载[mAP-master.zip](https://codeload.github.com/Cartucho/mAP/zip/refs/heads/master)代码压缩包，上传服务器解压后，将代码包中的"main.py"脚本拷贝至"${MeterReader代码根目录}/evaluate/yolov5_val/"目录下，按照以下步骤修改部分代码:
+
+* 修改main.py第47、48、50行处文件路径
   ```python
   47 GT_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_val_voc')
   48 DR_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_sdk_voc')
@@ -304,20 +313,21 @@ python match.py
   50 IMG_PATH = os.path.join(os.getcwd(), 'det_val_data', 'det_val_img')
   ```
 
-* 修改get_map.py第64行代码
+* 修改main.py原第64行代码
   ```python
   64 show_animation = False
+  65 if not args.no_animation:
   ```
 
-
-* 在get_map.py第243行添加代码
+* 在main.py原第243行添加代码
   ```python
+  242 def draw_plot_func(dictionary, n_classes, window_title, plot_title, x_label, output_path, to_show, plot_color, true_p_bar):
   243 to_show = False
   ```
 
 使用下面命令运行脚本，计算得到det.om在验证集上的mAP。
 ```bash
-python get_map.py
+python main.py
 ```
 
 经过测试，YOLOv5模型的mAP为100%。
@@ -325,13 +335,23 @@ python get_map.py
 
 2、deeplabv3模型精度测试。
 
-采取Miou指标评价精度。在"\${MeterReader代码根目录}/evaluate/deeplabv3_val/下新建"seg_val_img"文件夹，下载[语义分割模型验证集voc格式数据](https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz)，解压至"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img"。
-```bash
-    将目录"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/meter_seg/meter_seg/images/val" 中的数据拷贝至目录"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/seg_test_img"
-
-    将目录"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/meter_seg/meter_seg/annotations/val" 中的数据拷贝至"\${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/seg_test_img_groundtruth"
+执行以下命令，创建所需文件目录：
 ```
-使用下面命令运行脚本
+cd ${MeterReader代码根目录}/evaluate/deeplabv3_val/
+mkdir seg_val_img
+cd seg_val_img
+mkdir seg_test_img
+mkdir seg_test_img_groundtruth
+```
+
+下载[语义分割模型验证集voc格式数据](https://bj.bcebos.com/paddlex/examples/meter_reader/datasets/meter_seg.tar.gz)，解压至"${MeterReader代码根录}/evaluate/deeplabv3_val/seg_val_img"目录下。然后执行以下命令拷贝数据：
+```
+cp -r ${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/meter_seg/meter_seg/images/val/. ${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/seg_test_img/
+
+cp -r ${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/meter_seg/meter_seg/annotations/val/. ${MeterReader代码根目录}/evaluate/deeplabv3_val/seg_val_img/seg_test_img_groundtruth/
+```
+
+采用Miou指标进行精度评价。使用下面命令运行脚本：
 ```bash
 cd ${MeterReader代码根目录}/evaluate/deeplabv3_val/
 python seg_evaluate.py
