@@ -279,7 +279,7 @@ mkdir -p det_val_data/det_sdk_voc
 
 完成下载并解压后，将"data/yolov5/det_val_voc"目录下的文件拷贝至"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_voc"目录下。
 
-然后根据拷贝后目录下样例的txt标签文件名称(txt命名格式为：文件名.txt)在"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"目录下找到对应名称的jpg图片并拷贝至"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
+然后根据拷贝后目录下样例的txt标签文件名称(txt命名格式为：文件名.txt)在"${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/meter_det"目录下找到对应名称的jpg图片并拷贝至"\${MeterReader代码根目录}/evaluate/yolov5_val/det_val_data/det_val_img"目录下。
 
 步骤三：预处理数据集
 
