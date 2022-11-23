@@ -111,9 +111,7 @@ pipeline流程如下图所示：
 
 pth 权重文件和 onnx 文件的下载链接
 https://www.hiascend.com/zh/software/modelzoo/models/detail/1/74fab02660d635f86325f2ffb56cff1b
-    
-模型转换工具（ATC）相关介绍如下
-https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+
     
 具体步骤如下
 
@@ -140,13 +138,40 @@ ATC run success, welcome to the next use.
 
 **步骤 1**  将任意一张jpg格式的图片存到当前目录下（./TextSnake），命名为test.jpg。如果 pipeline 文件（或测试图片）不在当前目录下（./TestSnake），需要修改 main.py 的pipeline（或测试图片）路径指向到所在目录。此外，需要从
 https://github.com/princewang1994/TextSnake.pytorch/tree/b4ee996d5a4d214ed825350d6b307dd1c31faa07
-下载util文件夹至当前目录（./TextSnake），并修改其中的detection.py,在315行前后分别添加：
+下载util文件夹至当前目录（./TextSnake），并修改其中的detection.py,修改方式如下（以下行数均为原代码行数）：
+
+（1）将12行改为：
+ ```
+def __init__(self, tr_thresh=0.4, tcl_thresh=0.6):
+ ```
+
+并删除该构造函数中与model相关的语句。
+
+（2）将38行：
+ ```
+in_poly = cv2.pointPolygonTest(cont, (xmean, i), False)
+ ```
+改为
+ ```
+in_poly = cv2.pointPolygonTest(cont, (int(xmean), int(i)), False)
+ ```
+56行改为
+ ```
+if cv2.pointPolygonTest(cont, (int(test_pt[0]), int(test_pt[1])), False) > 0
+ ```
+67行改为
+ ```
+return cv2.pointPolygonTest(cont, (int(x), int(y)), False) > 0
+ ```
+
+（3）在315行前后分别添加：
  ```
 conts = list(conts)
 ```
 ```
 conts = tuple(conts)
 ```
+
 **步骤 2**   按照模型转换获取om模型，放置在 TextSnake/model 路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名。
 
 **步骤 3**  在命令行输入 如下命令运行整个工程
