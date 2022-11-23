@@ -185,8 +185,8 @@ if __name__ == '__main__':
 
         steam_manager_api.DestroyAllStreams()
         print('Computing DetEval in {}/{}'.format(cfg.output_dir, "test"))
-        subprocess.call(['python3.7', './util/Deteval.py', "test", '--tr', '0.7', '--tp', '0.6'])
-        subprocess.call(['python3.7', './util/Deteval.py', "test", '--tr', '0.8', '--tp', '0.4'])
+        subprocess.call(['python3.9', './util/Deteval.py', "test", '--tr', '0.7', '--tp', '0.6'])
+        subprocess.call(['python3.9', './util/Deteval.py', "test", '--tr', '0.8', '--tp', '0.4'])
         print('End.')
     except KeyError:
         print("get result dict failed!")
