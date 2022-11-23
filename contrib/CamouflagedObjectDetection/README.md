@@ -18,7 +18,6 @@
 
 - 所使用的模型是EfficientNet-B4版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/DGNet.zip
 
-
 ### 1.3 实现流程
 
 - 基础环境：Ascend 310、mxVision、Ascend-CANN-toolkit、Ascend Driver
