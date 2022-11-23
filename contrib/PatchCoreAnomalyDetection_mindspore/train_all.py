@@ -112,7 +112,7 @@ if __name__ == '__main__':
             print("the data_dict does not have the key!")
             exit()
         train_dataset, test_dataset, _, _ = create_dataset(args.dataset_path, key, resize,
-                                                          imagesize)
+                                                           imagesize)
         LOGGER.info(f"{idx + 1}/{len(data_dict)}\t{key}")
         if layer == "layer2":
             model = model_layer2
@@ -122,13 +122,9 @@ if __name__ == '__main__':
         data_iter = train_dataset.create_dict_iterator()
         step_size = train_dataset.get_dataset_size()
         features = []
-        pad = nn.Pad(paddings=((0, 0), (0, 0), (1, 1), (1, 1)))
-        pool = nn.AvgPool2d(patchsize, 1, pad_mode="valid")
         for data in train_dataset.create_dict_iterator():
             # time
             feature = model.predict(data['image'])
-            feature = pad(feature)
-            feature = pool(feature)
 
             patch_num = [[feature.shape[2], feature.shape[3]]]
             feature = ops.transpose(feature, (0, 2, 3, 1))
@@ -168,8 +164,6 @@ if __name__ == '__main__':
             batchsize = image.shape[0]
             features = model.predict(image)
 
-            features = pad(features)
-            features = pool(features)
             patch_shapes = [[features.shape[2], features.shape[3]]]
             features = ops.transpose(features, (0, 2, 3, 1))
             features = features.reshape(-1, features.shape[3])
@@ -235,12 +229,12 @@ if __name__ == '__main__':
         segmentations = np.array(segmentations)
         min_scores = (
             segmentations.reshape(len(segmentations), -1)
-                .min(axis=-1)
-                .reshape(-1, 1, 1, 1)
+            .min(axis=-1)
+            .reshape(-1, 1, 1, 1)
         )
         max_scores = (
             segmentations.reshape(len(segmentations), -1).max(axis=-1)
-                .reshape(-1, 1, 1, 1)
+            .reshape(-1, 1, 1, 1)
         )
         segmentations = (segmentations - min_scores) / (max_scores - min_scores)
         segmentations = np.mean(segmentations, axis=0)

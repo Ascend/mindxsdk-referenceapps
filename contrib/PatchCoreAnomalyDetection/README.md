@@ -168,7 +168,7 @@ mkdir faiss-index-precision
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_224_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer2.air" --input_shape="x:1,3,224,224"
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_280_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer2.air" --input_shape="x:1,3,280,280"
 atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_320_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer2.air" --input_shape="x:1,3,320,320"
-atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_320_layer2" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer3.air" --input_shape="x:1,3,320,320"
+atc --check_report=${modelzoo路径}/test/Ascend310/network_analysis.report --input_format=NCHW --output="./models/wideresnet101_320_layer3" --soc_version=Ascend310 --framework=1 --model="./models/wideresnet101_layer3.air" --input_shape="x:1,3,320,320"
 ```
 
    5.执行该命令会在当前目录下生成项目需要的om模型文件。执行后终端输出为

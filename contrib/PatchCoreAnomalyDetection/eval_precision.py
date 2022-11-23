@@ -33,6 +33,8 @@ cfg.close()
 parser = argparse.ArgumentParser(description='test precision')
 
 parser.add_argument('--data', "-d", type=str, default="bottle")
+parser.add_argument('--dataset_path', type=str, default="mvtec")
+
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -104,7 +106,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    classpath = f"mvtec/{category}/test/"
+    classpath = f"args.dataset_path/{category}/test/"
     anomaly_types = os.listdir(classpath)
 
     data_tuple = []
@@ -188,6 +190,8 @@ if __name__ == '__main__':
         features = features.reshape(int(features.shape[1] * features.shape[2]), CHANNEL_CNT)
 
         features = np.ascontiguousarray(features)
+
+
 
         query_features = features.reshape(len(features), -1)
 

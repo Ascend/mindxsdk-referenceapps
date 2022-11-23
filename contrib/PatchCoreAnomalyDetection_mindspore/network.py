@@ -21,11 +21,14 @@ class PatchCore(nn.Cell):
         super(PatchCore, self).__init__()
         self.network = network
         self.layer = layer
+        self.pad = nn.Pad(paddings=((0, 0), (0, 0), (1, 1), (1, 1)))
+        self.pool = nn.AvgPool2d(3, 1, pad_mode="valid")
 
     def construct(self, x):
         if self.layer == "layer2":
             layer = self.network(x)[0]
         else:
             layer = self.network(x)[1]
-
+        layer = self.pad(layer)
+        layer = self.pool(layer)
         return layer

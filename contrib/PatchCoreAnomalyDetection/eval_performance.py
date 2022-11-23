@@ -31,8 +31,8 @@ data_dict = yaml.safe_load(cfg)
 cfg.close()
 
 parser = argparse.ArgumentParser(description='train')
-
 parser.add_argument('--data', "-d", type=str, default="bottle")
+parser.add_argument('--dataset_path', type=str, default="mvtec")
 args = parser.parse_args()
 
 if __name__ == '__main__':
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    classpath = f"mvtec/{category}/test/"
+    classpath = f"args.dataset_path/{category}/test/"
     anomaly_types = os.listdir(classpath)
 
     data_tuple = []
