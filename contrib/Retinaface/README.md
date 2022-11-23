@@ -103,7 +103,12 @@ ascend-toolkit-path: CANN 安装路径。
 
 ## 3 软件依赖说明
 
-本项目无特定软件依赖。
+* Cpython
+    
+    可通过pip指令直接安装：
+    ```
+    pip3 install cpython
+    ```
 
 ## 4.推理文件准备
 进入项目根目录，执行以下命令，创建所需文件夹：
@@ -214,7 +219,7 @@ make install
 pipeline = {
         "Retinaface": {
             "stream_config": {
-                "deviceId": "3"   # 运行NPU卡ID
+                "deviceId": "0"   # 运行NPU卡ID
             },
             "appsrc0": {
                 "props": {
@@ -262,7 +267,7 @@ bash run.sh
 
 本模型使用widerface数据集进行精度评估。
 
-1.[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Retinaface/widerface.zip)数据集放到Retinaface目录下
+1.[下载](https://share.weiyun.com/5ot9Qv1)数据集放到Retinaface目录下
 
 2.打开test.py文件,在开头修改路径参数：
 * RNDB修改为widerface验证集的位置。
@@ -278,7 +283,7 @@ bash run.sh
 pipeline = {
     "Retinaface": {
         "stream_config": {
-            "deviceId": "3" # 运行NPU卡ID
+            "deviceId": "0" # 运行NPU卡ID
         },
         "appsrc0": {
             "props": {
@@ -318,11 +323,9 @@ python3 test.py
 * `<groud truth dir>`是widerface_evaluate中的groun_truth文件夹。
 
 最终得到的精度如下图所示：
-
 ![模型推理结果](images/result.png)
 
 原模型精度如下图所示：
-
 ![源模型推理结果](images/origin.png)
 
 符合精度偏差要求，精度达标。

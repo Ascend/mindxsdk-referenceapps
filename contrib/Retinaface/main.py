@@ -40,7 +40,7 @@ if __name__ == '__main__':
     pipeline = {
         "Retinaface": {
             "stream_config": {
-                "deviceId": "3"
+                "deviceId": "0"
             },
             "appsrc0": {
                 "props": {
@@ -81,7 +81,13 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    tensor_data , return_img = preprocess_for_main("./test.jpg")
+    img_path = "./test.jpg"
+    
+    if not os.path.exists(img_path):
+        print("Test image does not exsit!")
+        exit()
+    
+    tensor_data , return_img = preprocess_for_main(img_path)
     tensor = tensor_data[None, :]
 
     STREAMNAME = b"Retinaface"

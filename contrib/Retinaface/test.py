@@ -43,7 +43,7 @@ if ret != 0:
 pipeline = {
     "Retinaface": {
         "stream_config": {
-            "deviceId": "3"
+            "deviceId": "0"
         },
         "appsrc0": {
             "props": {
