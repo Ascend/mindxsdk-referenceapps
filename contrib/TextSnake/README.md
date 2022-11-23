@@ -115,7 +115,7 @@ https://www.hiascend.com/zh/software/modelzoo/models/detail/1/74fab02660d635f863
     
 具体步骤如下
 
-1. 下载上述模型压缩包，获取 TextSnake_bs1.onnx 模型文件放置 TextSnake/model 目录下。
+1. 下载上述模型压缩包，获取 TextSnake.onnx 模型文件放置 TextSnake/model 目录下。
 
 2. 进入TextSnake/model文件夹下执行命令
 
