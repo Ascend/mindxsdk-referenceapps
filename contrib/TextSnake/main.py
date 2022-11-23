@@ -37,8 +37,8 @@ def zerodimsoftmax(x):
     fexp = np.exp(first)
     sexp = np.exp(second)
     sumexp = fexp + sexp
-    fxf=fexp / sumexp
-    fxs=sexp / sumexp
+    fxf = fexp / sumexp
+    fxs = sexp / sumexp
     fx = np.zeros((2, 512, 512))
     fx[0, :, :] = fxf
     fx[1, :, :] = fxs
