@@ -84,7 +84,7 @@ npu-smi info
 
 - 运行 torch2onnx 下载 PyTorch 版本 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net)，[SLT-Net 模型文件](https://drive.google.com/file/d/1_u4dEdxM4AKuuh6EcWHAlo8EtR7e8q5v/view) ，保留 `Net_epoch_MoCA_short_term_pseudo.pth` 文件即可，也可以通过 [华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载 torch 模型文件。然后进行下述操作来转换模型。[SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 为已经修改过的代码样例，供参考，并且，该链接提供精简的 [评测指标](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch/tree/master/eval_python) 的运行代码
 
-- 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载
+- 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) 来下载
 
 
 **步骤2** 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换
