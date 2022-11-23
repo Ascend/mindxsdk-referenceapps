@@ -62,10 +62,6 @@
 │   ├── Exp-DGNet-OM  # 预测结果图存放路径
 ├── snapshots
 │   ├── DGNet  # 模型文件存放路径
-└── utils
-    ├── dataset.py  # pytorch的dataloader文件
-    ├── __init__.py
-    └── inference_onnx.py # ONNX离线模型推理python脚本文件
 ```
 
 ## 3 开发准备
@@ -81,69 +77,28 @@
 |    Python     |    3.9.2    |
 |     CANN      |    5.0.4    |
 |     numpy     |   1.21.2    |
-| opencv-python |    4.5.3.56    |
+| opencv-python |  4.5.3.56   |
+| mindspore-cpu |     1.9.0   |
 
 ### 3.2 环境搭建
 
-#### 3.2.1 基础环境变量设置（ATC转换工具）
-
-ATC工具介绍请参考：https://support.huawei.com/enterprise/zh/doc/EDOC1100234054/83f40ac7
+在编译运行项目前，需要设置环境变量
 
 ```bash
-# 执行如下命令，打开.bashrc文件
-vim ~/.bashrc
+# MindXSDK 环境变量：
+. ${SDK-path}/set_env.sh
 
-# 在.bashrc文件中添加以下环境变量
-export LD_LIBRARY_PATH=/usr/local/Ascend/driver/lib64:/usr/local/Ascend/driver/lib64/common:/usr/local/Ascend/driver/lib64/driver:$LD_LIBRARY_PATH
-export ASCEND_TOOLKIT_HOME=/usr/local/Ascend/ascend-toolkit/latest
-export LD_LIBRARY_PATH=${ASCEND_TOOLKIT_HOME}/lib64:${ASCEND_TOOLKIT_HOME}/lib64/plugin/opskernel:${ASCEND_TOOLKIT_HOME}/lib64/plugin/nnengine:$LD_LIBRARY_PATH
-export PYTHONPATH=${ASCEND_TOOLKIT_HOME}/python/site-packages:${ASCEND_TOOLKIT_HOME}/opp/op_impl/built-in/ai_core/tbe:$PYTHONPATH
-export PATH=${ASCEND_TOOLKIT_HOME}/bin:${ASCEND_TOOLKIT_HOME}/compiler/ccec_compiler/bin:$PATH
-export ASCEND_AICPU_PATH=${ASCEND_TOOLKIT_HOME}
-export ASCEND_OPP_PATH=${ASCEND_TOOLKIT_HOME}/opp
-export TOOLCHAIN_HOME=${ASCEND_TOOLKIT_HOME}/toolkit
-export ASCEND_HOME_PATH=${ASCEND_TOOLKIT_HOME}
+# CANN 环境变量：
+. ${ascend-toolkit-path}/set_env.sh
 
-# 保存退出.bashrc文件，并执行如下命令使环境变量生效
-source ~/.bashrc
-
-# 查看环境变量并检查是否正确添加
-env
-```
-
-#### 3.2.2 昇腾离线模型推理环境变量设置（MindX SDK工具）
-
-请参考此链接安装MindX SDK工具包：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/quick_start/1-1%E5%AE%89%E8%A3%85SDK%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6.md
-
-```bash
-
-# 执行如下命令，打开.bashrc文件
-vim ~/mindx_dir/mxVision/set_env.sh
-
-
-# 在set_env.sh中添加如下设置
-path="${BASH_SOURCE[0]}"
-
-if [[ -f "$path" ]] && [[ "$path" =~ 'set_env.sh' ]];then
-  sdk_path=$(cd $(dirname $path); pwd )
-
-  if [[ -f "$sdk_path"/filelist.txt ]] && [[ -f "$sdk_path"/version.info ]];then
-    export MX_SDK_HOME="$sdk_path"
-    export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-    export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0":"${MX_SDK_HOME}/lib/plugins"
-    export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib/modelpostprocessors":"${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":${LD_LIBRARY_PATH}
-    export PYTHONPATH=${MX_SDK_HOME}/python:$PYTHONPATH
-  else
-    echo "The package is incomplete, please check it."
-  fi
-else
-  echo "There is no 'set_env.sh' to import"
-fi
+# 环境变量介绍
+SDK-path: SDK mxVision 安装路径
+ascend-toolkit-path: CANN 安装路径
 ```
 
 ### 3.3 模型转换
 
-**步骤1** 在GitHub上下载DGNet (Efficient-B4) 的ONNX模型，下载地址为：https://github.com/GewelsJI/DGNet/releases/download/Checkpoints/DGNet.pth
+**步骤1** 在GitHub上下载DGNet (Efficient-B4) 的ONNX模型
 
 **步骤2** 将下载获取到的DGNet模型onxx文件存放至`./snapshots/DGNet/DGNet.onnx`。
 
@@ -160,7 +115,6 @@ atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352
 
 执行完模型转换脚本后，会在对应目录中获取到如下转化模型：DGNet.om（本项目中在Ascend平台上所使用的离线模型文件）。
 
-
 ## 4 推理与评测
 
 示例步骤如下：
@@ -171,25 +125,31 @@ atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352
 
 **步骤1** 
 
-请确保之前完成 3.2.2 节中昇腾离线模型推理环境变量设置，这样能够确保MindX SDK工具的正常使用（如果已经执行，请跳过此步骤）
-
-```bash
-. ~/mindx_dir/mxVision/set_env.sh
-```
-
-**步骤2** 
-
 执行离线推理Python脚本
 
 ```bash
 python inference_om.py --om_path ./snapshots/DGNet/DGNet.om --save_path ./seg_results_om/Exp-DGNet-OM/NC4K/ --data_path ./data/NC4K/Imgs 
 ```
 
-**步骤3**
+**步骤2** 
 
 - 定量性能验证：
 
-使用原始GitHub仓库中提供的[标准评测代码](https://github.com/GewelsJI/DGNet/blob/main/lib_ascend/evaluation.py)进行测评，然后可以生成评测指标数值表格。可以看出DGNet模型的Smeasure指标数值为0.856，已经超过了项目交付中提到的“大于0.84”的要求。
+使用原始GitHub仓库中提供的标准评测代码进行测评，具体操作步骤如下：
+
+```bash
+# 拉取原始仓库
+git clone https://github.com/GewelsJI/DGNet
+
+# 将如下两个文件夹放入当前
+mv your_DGNet_Path/lib_ascend/eval ./contrib/CamouflagedObjectDetection/
+mv your_DGNet_Path/lib_ascend/evaluation.py ./contrib/CamouflagedObjectDetection/
+
+# 运行如下命令进行测评
+python evaluation.py
+```
+
+然后可以生成评测指标数值表格。可以看出DGNet模型的Smeasure指标数值为0.856，已经超过了项目交付中提到的“大于0.84”的要求。
 
 ```text
 +---------+-----------------------+----------+-----------+-------+-------+--------+-------+-------+--------+-------+
