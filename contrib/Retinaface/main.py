@@ -81,13 +81,13 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    img_path = "./test.jpg"
+    IMAGE = "./test.jpg"
     
-    if not os.path.exists(img_path):
+    if not os.path.exists(IMAGE):
         print("Test image does not exsit!")
         exit()
     
-    tensor_data , return_img = preprocess_for_main(img_path)
+    tensor_data , return_img = preprocess_for_main(IMAGE)
     tensor = tensor_data[None, :]
 
     STREAMNAME = b"Retinaface"
