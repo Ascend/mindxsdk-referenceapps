@@ -29,6 +29,12 @@
 
 本项目的代码地址为：https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/CamouflagedObjectDetection
 
+### 1.5 特性及适用场景
+
+本项目适用于自然场景下图片完整清晰、无模糊鬼影的场景，并且建议输入图片为JPEG编码格式，大小不超过10M。
+
+**注意：由于模型限制，本项目暂只支持自然场景下伪装动物的检测，不能用于其他用途**
+
 ## 2 软件方案介绍
 
 ### 2.1 项目方案架构介绍
@@ -105,12 +111,10 @@ ascend-toolkit-path: CANN 安装路径
 **步骤3** 模型转换具体步骤
 
 ```bash
-# 请确保之前完成 3.2.1 节中基础环境变量设置，这样能够确保ATC转换工具的正常使用（如果已经执行，请跳过此步骤）
-source ~/.bashrc
 # 进入对应目录
 cd ./snapshots/DGNet/
 # 执行以下命令将ONNX模型（.onnx）转换为昇腾离线模型（.om）
-atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352,352" --log=debug --soc_version=Ascend310 > atc.log
+atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352,352" --log=debug --soc_version=Ascend310
 ```
 
 执行完模型转换脚本后，会在对应目录中获取到如下转化模型：DGNet.om（本项目中在Ascend平台上所使用的离线模型文件）。
@@ -139,11 +143,11 @@ python inference_om.py --om_path ./snapshots/DGNet/DGNet.om --save_path ./seg_re
 
 ```bash
 # 拉取原始仓库
-git clone https://github.com/GewelsJI/DGNet
+git clone https://github.com/GewelsJI/DGNet.git
 
 # 将如下两个文件夹放入当前
-mv your_DGNet_Path/lib_ascend/eval ./contrib/CamouflagedObjectDetection/
-mv your_DGNet_Path/lib_ascend/evaluation.py ./contrib/CamouflagedObjectDetection/
+mv ./DGNet/lib_ascend/eval ./contrib/CamouflagedObjectDetection/
+mv ./DGNet/lib_ascend/evaluation.py ./contrib/CamouflagedObjectDetection/
 
 # 运行如下命令进行测评
 python evaluation.py
