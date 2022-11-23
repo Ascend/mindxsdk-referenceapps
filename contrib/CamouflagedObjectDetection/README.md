@@ -78,7 +78,7 @@
 |     CANN      |    5.0.4    |
 |     numpy     |   1.21.2    |
 | opencv-python |  4.5.3.56   |
-| mindspore-cpu |     1.9.0   |
+| mindspore (cpu) |     1.9.0   |
 
 ### 3.2 环境搭建
 
@@ -98,7 +98,7 @@ ascend-toolkit-path: CANN 安装路径
 
 ### 3.3 模型转换
 
-**步骤1** 在GitHub上下载DGNet (Efficient-B4) 的ONNX模型
+**步骤1** 下载DGNet (Efficient-B4) 的ONNX模型：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/DGNet.zip
 
 **步骤2** 将下载获取到的DGNet模型onxx文件存放至`./snapshots/DGNet/DGNet.onnx`。
 
