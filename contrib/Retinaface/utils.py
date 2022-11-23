@@ -91,7 +91,7 @@ def preprocess(image_path):
         return img.numpy() , info
 
 
-def postprocess(loc , conf , landms , resize):
+def postprocess(loc , conf , landms , resize , img_path):
         loc = np.reshape(loc, [1, 41236, 4])
         conf = np.reshape(conf ,  [1, 41236, 2])
         landms = np.reshape(landms , [1, 41236, 10])
@@ -131,7 +131,7 @@ def postprocess(loc , conf , landms , resize):
         dets = np.concatenate((dets, landms), axis=1)
         bboxs = dets
         bboxs_num = str(len(bboxs)) + "\n"
-        a = Image.open("test.jpg")
+        a = Image.open(img_path)
         result = ''
         count = 0
         for box in bboxs:

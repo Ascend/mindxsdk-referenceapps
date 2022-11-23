@@ -122,7 +122,7 @@ with os.fdopen(os.open('./evaluate/wider_val.txt', FLAGS, MODES), 'r') as fr:
         conf = np.frombuffer(infer_data1, dtype=np.float32)
         infer_data2 = infer_list.tensorPackageVec[0].tensorVec[2].dataStr
         landms = np.frombuffer(infer_data2, dtype=np.float32)
-        result , count = postprocess(loc , conf , landms , info)
+        result , count = postprocess(loc , conf , landms , info , RNDB + img_address.strip('\r\n'))
         dir_name = RNDY + "/" + os.path.split(img_address.strip('.jpg\r\n'))[0]
         if not os.path.isdir(dir_name):
             os.makedirs(dir_name)
