@@ -42,8 +42,8 @@ def zerodimsoftmax(x):
     fexp = np.exp(first)
     sexp = np.exp(second)
     sumexp = fexp + sexp
-    fxf=fexp / sumexp
-    fxs=sexp / sumexp
+    fxf = fexp / sumexp
+    fxs = sexp / sumexp
     fx = np.zeros((2, 512, 512))
     fx[0, :, :] = fxf
     fx[1, :, :] = fxs
@@ -66,7 +66,7 @@ def resize(image_r, size):
 
 
 def write_to_file(contours_w, file_path):
-    with os.fdopen(os.open(file_path, os.O_WRONLY|os.O_CREAT, MODES), 'w') as f1:
+    with os.fdopen(os.open(file_path, os.O_WRONLY | os.O_CREAT, MODES), 'w') as f1:
         for cont in contours_w:
             cont = np.stack([cont[:, 1], cont[:, 0]], 1)
             cont = cont.flatten().astype(str).tolist()
