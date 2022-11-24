@@ -328,7 +328,7 @@ python3 test.py
 
 4、进入`evaluate/widerface_evaluate`目录下，运行`python3 evaluation.py -p <your prediction dir> -g <groud truth dir>`, 其中：
 
-* `<your prediction dir>`即RNDB是模型推理的结果。
+* `<your prediction dir>`即RNDY是模型推理的结果。
 
 * `<groud truth dir>`是widerface_evaluate中的groun_truth文件夹。
 
