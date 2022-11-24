@@ -48,8 +48,8 @@ parser.add_argument("--imagesize", type=int, default=224)
 parser.add_argument("--patchsize", type=int, default=3)
 
 parser.add_argument('--num_epochs', type=int, default=1, help='Epoch size')
-parser.add_argument('--gpu', type=int, default=0, help='Device id')
-parser.add_argument('--percentage', '-p', type=float, default=0.01, help='Device id')
+parser.add_argument('--device_id', type=int, default=0, help='Device id')
+parser.add_argument('--percentage', '-p', type=float, default=0.01, help='coreset percentage')
 
 args = parser.parse_args()
 
@@ -62,13 +62,13 @@ if __name__ == '__main__':
     patchsize = args.patchsize
     percentage = args.percentage
     results = args.results
-    gpu = args.gpu
+    device_id = args.device_id
     data = args.data
     train_dataset, test_dataset, _, _ = create_dataset("/data/jtc/", data, resize, imagesize)
 
     context.set_context(mode=context.PYNATIVE_MODE, device_target='Ascend',
                         save_graphs=False)
-    context.set_context(device_id=gpu)
+    context.set_context(device_id=device_id)
 
     LOGGER.info(
         "Evaluating dataset ..."

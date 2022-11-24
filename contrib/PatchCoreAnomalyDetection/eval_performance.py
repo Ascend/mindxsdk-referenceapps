@@ -32,7 +32,7 @@ cfg.close()
 
 parser = argparse.ArgumentParser(description='train')
 parser.add_argument('--data', "-d", type=str, default="bottle")
-parser.add_argument('--dataset_path', type=str, default="mvtec")
+parser.add_argument('--dataset_path', type=str, default="./mvtec")
 args = parser.parse_args()
 
 if __name__ == '__main__':

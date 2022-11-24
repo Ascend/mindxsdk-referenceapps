@@ -52,7 +52,7 @@ parser.add_argument("--imagesize", type=int, default=224)
 parser.add_argument("--patchsize", type=int, default=3)
 
 parser.add_argument('--num_epochs', type=int, default=1, help='Epoch size')
-parser.add_argument('--gpu', type=int, default=0, help='Device id')
+parser.add_argument('--device_id', type=int, default=0, help='Device id')
 parser.add_argument('--percentage', '-p', type=float, default=0.01, help='coreset percentage')
 parser.add_argument('--dataset_path', type=str, default="/data/jtc/", help='Dataset path')
 
@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     context.set_context(mode=context.PYNATIVE_MODE, device_target='Ascend',
                         save_graphs=False)
-    context.set_context(device_id=args.gpu)
+    context.set_context(device_id=args.device_id)
 
     cfg = open("config.yaml", 'r', encoding='utf-8')
     data_dict = yaml.safe_load(cfg)

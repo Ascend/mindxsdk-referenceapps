@@ -202,8 +202,9 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 **步骤 3** 在命令行输入 如下命令运行整个工程。
 
 ```
-python3 main.py
+python3 main.py ${mvtec_path}
 ```
+其中${mvtec_path}为mvtec数据集的路径
 
 **步骤 4** 图片检测。运行结束输出训练精度。
 
@@ -212,8 +213,9 @@ python3 main.py
 运行如下命令完成精度测试，输出模型instance_auroc_topk10。
 
 ```
-. eval_precision.sh
+. eval_precision.sh ${mvtec_path}
 ```
+其中${mvtec_path}为mvtec数据集的路径
 
 模型在MvTec数据集上的精度达标，最终模型平均instance_auroc_topk10输出值为99.68%，满足精度要求（imagelevel_auroc≥ 99.5%）。
 
@@ -226,8 +228,9 @@ python3 main.py
 运行如下命令完成精度测试，输出模型平均性能。
 
 ```
-. eval_performance.sh
+. eval_performance.sh ${mvtec_path}
 ```
+其中${mvtec_path}为mvtec数据集的路径
 
 模型在MvTec数据集上的性能达标，最终模型平均推理时间为0.02930630ms，性能34.1FPS，满足性能要求（FPS≥ 20）。
 

@@ -13,50 +13,60 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#!/bin/bash
+MODE=$1
+echo ${MODE}
+if [ ! ${MODE} ]; then
+    MODE="./mvtec"
+    echo ${MODE}
+else
+    echo ${MODE} 
+fi
+
 
 echo "1/15 test bottle"
-python eval_performance.py -d bottle
+python eval_performance.py -d bottle --dataset_path ${MODE}
 
 echo "2/15 test cable"
-python eval_performance.py -d cable
+python eval_performance.py -d cable --dataset_path ${MODE}
 
 echo "3/15 test capsule"
-python eval_performance.py -d capsule
+python eval_performance.py -d capsule --dataset_path ${MODE}
 
 echo "4/15 test carpet"
-python eval_performance.py -d carpet
+python eval_performance.py -d carpet --dataset_path ${MODE}
 
 echo "5/15 test grid"
-python eval_performance.py -d grid
+python eval_performance.py -d grid --dataset_path ${MODE}
 
 echo "6/15 test hazelnut"
-python eval_performance.py -d hazelnut
+python eval_performance.py -d hazelnut --dataset_path ${MODE}
 
 echo "7/15 test leather"
-python eval_performance.py -d leather
+python eval_performance.py -d leather --dataset_path ${MODE}
 
 echo "8/15 test metal_nut"
-python eval_performance.py -d metal_nut
+python eval_performance.py -d metal_nut --dataset_path ${MODE}
 
 echo "9/15 test pill"
-python eval_performance.py -d pill
+python eval_performance.py -d pill --dataset_path ${MODE}
 
 echo "10/15 test screw"
-python eval_performance.py -d screw
+python eval_performance.py -d screw --dataset_path ${MODE}
 
 echo "11/15 test tile"
-python eval_performance.py -d tile
+python eval_performance.py -d tile --dataset_path ${MODE}
 
 echo "12/15 test toothbrush"
-python eval_performance.py -d toothbrush
+python eval_performance.py -d toothbrush --dataset_path ${MODE}
 
 echo "13/15 test transistor"
-python eval_performance.py -d transistor
+python eval_performance.py -d transistor --dataset_path ${MODE}
 
 echo "14/15 test wood"
-python eval_performance.py -d wood
+python eval_performance.py -d wood --dataset_path ${MODE}
 
 echo "15/15 test zipper"
-python eval_performance.py -d zipper
+python eval_performance.py -d zipper --dataset_path ${MODE}
 
 python calculate_txt_avg.py -m performance
