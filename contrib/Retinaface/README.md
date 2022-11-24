@@ -62,9 +62,12 @@ Retinaface基于MindX_SDK开发，在昇腾芯片上进行目标检测，并实�
 本项目根据widerface数据集训练得到，适用于人脸检测，并且将人脸位置与五官位置标出。
 
 本项目在绝大多数情况下准确，但是存在以下检测异常的情况：
-1.正常检测中，由于模型本身的限制，会出现部分物体检测不到/检测错误；
-2.图片中无检测目标时，会出现可视化异常，输出结果无图片信息
 
+1.正常检测中，由于模型本身的限制，会出现部分物体检测不到/检测错误；
+
+2.图片中无检测目标时，会出现可视化异常，输出结果无图片信息；
+
+3.对于图片中一些侧脸和与人脸相似的动物脸的情况，模型可能会出现漏检测或者误检测；
 
 
 
@@ -97,7 +100,7 @@ CANN 环境变量：
 - 环境变量介绍
 
 ```
-SDK-path: mxVision SDK 安装路径
+SDK-path: mxVision SDK * 安装路径
 ascend-toolkit-path: CANN 安装路径。
 ```
 
@@ -108,6 +111,13 @@ ascend-toolkit-path: CANN 安装路径。
     可通过pip指令直接安装：
     ```
     pip3 install cpython
+    ```
+
+* Ipython
+
+    可通过pip指令直接安装：
+    ```
+    pip3 install ipython
     ```
 
 ## 4.推理文件准备
@@ -314,7 +324,7 @@ pipeline = {
 ```
 python3 test.py
 ```
-该程序会逐一推理widerface官方验证集之中的样本，并将结果保存在RNDB文件当中。
+该程序会逐一推理widerface官方验证集之中的样本，并将结果保存在RNDY文件当中。
 
 4、进入`evaluate/widerface_evaluate`目录下，运行`python3 evaluation.py -p <your prediction dir> -g <groud truth dir>`, 其中：
 
@@ -322,10 +332,16 @@ python3 test.py
 
 * `<groud truth dir>`是widerface_evaluate中的groun_truth文件夹。
 
+比如：
+```
+python3 evaluation.py -p ../widerface_txt/ -g ground_truth/
+```
 最终得到的精度如下图所示：
+
 ![模型推理结果](images/result.png)
 
 原模型精度如下图所示：
+
 ![源模型推理结果](images/origin.png)
 
 符合精度偏差要求，精度达标。
