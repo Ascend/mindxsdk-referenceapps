@@ -104,7 +104,7 @@ if __name__ == '__main__':
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    classpath = f"args.dataset_path/{category}/test/"
+    classpath = f"{args.dataset_path}/{category}/test/"
     anomaly_types = os.listdir(classpath)
 
     data_tuple = []
