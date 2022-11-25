@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mode='some'
+mode='all'
 epoch=100
 style_dir="../datasets/style"       # 风格图片目录
 content_dir="../datasets/content"   # 内容图片目录

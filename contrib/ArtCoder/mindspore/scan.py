@@ -34,7 +34,8 @@ def scan(args):
                     else:
                         print("Identify errors: {}".format(path))
 
-    print("Accuracy: {:.2f}%".format(accuracy / count))
+    print("Successful scans / Total scans: {} / {}".format(accuracy, count))
+    print("Accuracy: {:.2f}%".format(accuracy / count * 100))
 
 
 
