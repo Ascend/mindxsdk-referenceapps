@@ -31,9 +31,11 @@ npu-smi info
 本sample工程名称为 VCOD_SLTNet，工程目录如下图所示：
 
 ```
-├── inference.py   # 推理文件
-├── torch2onnx.py  # 模型转换脚本
-└── README.md
+──VCOD_SLTNet
+    ├── flowchart.jpeg
+    ├── inference.py   # 推理文件
+    ├── torch2onnx.py  # 模型转换脚本
+    └── README.md
 ```
 
 
@@ -46,7 +48,7 @@ npu-smi info
 
 ### 1.6 特性及适用场景
 
-对于伪装视频数据的分割任务均适用
+对于伪装视频数据的分割任务均适用，输入视频需要转换为图片序列输入到模型中，具体可以参考 MoCA 数据格式，[MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) ，分辨率在 (352*352) 左右。
 
 
 ## 2 环境依赖
@@ -69,16 +71,20 @@ npu-smi info
 - 环境变量介绍
 
 ```
-列出具体执行命令（简化）
-. ${sdk_path}/set_env.sh
-. ${ascend_toolkit_path}/set_env.sh
+MindSDK 环境变量：
+    . ${SDK-path}/set_env.sh
+CANN 环境变量：
+    . ${ascend-toolkit-path}/set_env.sh
+环境变量介绍
+SDK-path: mxVision SDK 安装路径
+ascend-toolkit-path: CANN 安装路径。
 ```
 
 
-## 编译与运行
+## 3. 数据准备
 
 
-**步骤1** （下载相关文件）
+### 3.1 下载相关文件
 
 - 运行 inference 下载 om 模型文件：[华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)，其中也包含 om 文件生成用到的 torch 模型文件与 onnx 文件。
 
@@ -87,7 +93,7 @@ npu-smi info
 - 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) 来下载
 
 
-**步骤2** 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换
+### 3.2 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换
 
 1. `lib/__init__.py` 中注释掉第二行
 
@@ -128,7 +134,9 @@ elif dataset == 'MoCA':
 替换为数据集路径 `TestDataset_per_sq` 的父目录。
 
 
-**步骤3** （设置环境变量）
+## 4. 模型转换
+
+### 4.1 设置环境变量
 
 ```
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
@@ -136,7 +144,7 @@ source ~/mindx_dir/mxVision/set_env.sh
 conda activate py392
 ```
 
-**步骤4** （执行编译的步骤）
+### 4.2 执行编译的步骤
 
 1. pytorch 模型转换 onnx 文件
 
@@ -160,7 +168,8 @@ atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,3
 
 已经转换好的模型可供参考：[模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
 
-**步骤5** （运行及输出结果）
+
+## 5. 运行推理
 
 mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference_om_mindspore.py 即可。无需放入 SLT-Net 根目录。
 
@@ -168,7 +177,8 @@ mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `sa
 python inference.py
 ```
 
-**步骤6** （评测结果）
+## 6. 精度评估
+
 
 - 可以使用基于 [MATLAB](https://github.com/XuelianCheng/SLT-Net/tree/master/eval) 或基于 [Python](https://github.com/lartpang/PySODEvalToolkit) 的评测代码。
 
