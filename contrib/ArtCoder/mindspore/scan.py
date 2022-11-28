@@ -12,20 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
-import cv2
 import argparse
+import cv2
 
-def scan(args):
+
+
+def scan_qr(args):
     count = 0
     accuracy = 0
-    qrDecoder = cv2.wechat_qrcode_WeChatQRCode()
+    qr_decoder = cv2.wechat_qrcode_WeChatQRCode()
     for root, _, files in os.walk(args.scan_dir):
         for file in files:
             path = os.path.join(root, file)
             image = cv2.imread(path, -1)
             if image is not None:
                 count += 1
-                retval, points = qrDecoder.detectAndDecode(image)
+                retval, points = qr_decoder.detectAndDecode(image)
                 if not retval:
                     print("Identify errors: {}".format(path))
                 else:
@@ -50,4 +52,4 @@ if __name__ == '__main__':
                         type=str, 
                         default='./output')
     args = parser.parse_args()
-    scan(args=args)
+    scan_qr(args)
