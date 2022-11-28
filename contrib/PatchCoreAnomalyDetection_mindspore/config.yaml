@@ -1,0 +1,119 @@
+bottle:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.01
+  patchsize: 3
+
+cable:
+  backbone: wideresnet101
+  layer: layer3
+  resize: 336
+  imagesize: 320
+  percentage: 0.01
+  patchsize: 3
+
+capsule:
+  backbone: wideresnet101
+  layer: layer3
+  resize: 324
+  imagesize: 320
+  percentage: 0.04
+  patchsize: 3
+
+carpet:
+  backbone: wideresnet101
+  layer: layer3
+  resize: 336
+  imagesize: 320
+  percentage: 0.04
+  patchsize: 3
+
+grid:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 320
+  imagesize: 320
+  percentage: 0.01
+  patchsize: 3
+
+hazelnut:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.009
+  patchsize: 3
+
+leather:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.01
+  patchsize: 3
+
+metal_nut:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 224
+  imagesize: 224
+  percentage: 0.02
+  patchsize: 3
+
+pill:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 280
+  imagesize: 280
+  percentage: 0.009
+  patchsize: 3
+
+screw:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 368
+  imagesize: 320
+  percentage: 0.01
+  patchsize: 3
+
+tile:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 332
+  imagesize: 320
+  percentage: 0.01
+  patchsize: 3
+
+toothbrush:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.01
+  patchsize: 3
+
+transistor:
+  backbone: wideresnet101
+  layer: layer3
+  resize: 336
+  imagesize: 320
+  percentage: 0.01
+  patchsize: 3
+
+wood:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.01
+  patchsize: 3
+
+zipper:
+  backbone: wideresnet101
+  layer: layer2
+  resize: 256
+  imagesize: 224
+  percentage: 0.01
+  patchsize: 3
