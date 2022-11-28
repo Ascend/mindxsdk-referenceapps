@@ -51,5 +51,5 @@ if __name__ == '__main__':
                         help="path to test stylized QR codes (default: './output')", 
                         type=str, 
                         default='./output')
-    args = parser.parse_args()
-    scan_qr(args)
+    params = parser.parse_args()
+    scan_qr(params)
