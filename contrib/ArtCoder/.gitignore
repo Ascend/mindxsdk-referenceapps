@@ -1,0 +1,7 @@
+*/__pycache__
+*/kernel_meta
+*/rank_0
+*/model/*.ckpt
+datasets/*
+!datasets/*.sh
+mindspore/output
