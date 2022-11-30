@@ -20,6 +20,7 @@ import os
 import sys
 import argparse
 import collections
+
 """
     0,0 ------> x (width)
      |
@@ -32,10 +33,9 @@ import collections
                 (Right,Bottom)
 """
 
-
-MINOVERLAP = 0.5  # default value (defined in the PASCAL VOC2012 challenge)
-top_margin = 0.15  # in percentage of the figure height
-bottom_margin = 0.05  # in percentage of the figure height
+MIN_OVERLAP = 0.5  # default value (defined in the PASCAL VOC2012 challenge)
+TOP_MARGIN = 0.15  # in percentage of the figure height
+BOTTOM_MARGIN = 0.05  # in percentage of the figure height
 
 
 def file_lines_to_list(path):
@@ -62,7 +62,7 @@ def voc_ap(recall, precision):
     --- Official matlab code VOC2012---
     m_recall=[0 ; recall ; 1];
     m_precision=[0 ; precision ; 0];
-    for j=numel(m_precision)-1:-1:1
+    for j=numeral(m_precision)-1:-1:1
             m_precision(i)=max(m_precision(j),m_precision(j+1));
     end
     i=find(m_recall(2:end)~=m_recall(1:end-1))+1;
@@ -77,7 +77,7 @@ def voc_ap(recall, precision):
     """
     This part makes the precision monotonically decreasing
         (goes from the end to the beginning)
-        matlab: for i=numel(m_precision)-1:-1:1
+        matlab: for i=numeral(m_precision)-1:-1:1
                     m_precision(i)=max(m_precision(i),m_precision(i+1));
     """
 
@@ -108,7 +108,7 @@ def is_float_between_0_and_1(value):
     """
     try:
         val = float(value)
-        if val > 0.0 and val < 1.0:
+        if 0.0 < val < 1.0:
             return True
         else:
             return False
@@ -130,10 +130,10 @@ def check_args(args):
     """
     if not (os.path.exists(args.label_path)):
         error("annotation file:{} does not exist.".format(args.label_path))
-    
+
     if not (os.path.exists(args.npu_txt_path)):
         error("txt path:{} does not exist.".format(args.npu_txt_path))
-    
+
     if args.ignore is None:
         args.ignore = []
     return args
@@ -160,11 +160,11 @@ def parse_line(txt_file, lines_list, bounding_boxes, counter_per_class, already_
             continue
         bbox = left + " " + top + " " + right + " " + bottom
         if class_name == '0':
-          class_name = 'crouch'
+            class_name = 'crouch'
         elif class_name == '1':
-          class_name = 'support'
+            class_name = 'support'
         elif class_name == '2':
-          class_name = 'jump'
+            class_name = 'jump'
         bounding_boxes.append({"class_name": class_name, "bbox": bbox, "used": False})
         counter_per_class[class_name] += 1
 
@@ -202,7 +202,7 @@ def get_label_list(file_path):
         boxes, counter_per_class = parse_line(txt_file, lines_list, bounding_boxes, counter_per_class,
                                               already_seen_classes)
         file_bbox[file_id] = boxes
-    
+
     classes = list(counter_per_class.keys())
 
     # let's sort the classes alphabetically
@@ -253,10 +253,10 @@ def get_predict_list(file_path, gt_classes):
     return class_bbox
 
 
-def calculate_PR(sum_AP, fp, tp, counter_per_class, class_name):
+def calculate_pr(sum_ap, fp, tp, counter_per_class, class_name):
     """
        @description: calculate PR
-       @param sum_AP
+       @param sum_ap
        @param fp
        @param tp
        @param counter_per_class
@@ -278,19 +278,19 @@ def calculate_PR(sum_AP, fp, tp, counter_per_class, class_name):
     prec = tp[:]
     for idx, val in enumerate(tp):
         prec[idx] = float(tp[idx]) / (fp[idx] + tp[idx])
-    
+
     ap, mrec, mprec = voc_ap(rec[:], prec[:])
-    sum_AP += ap
+    sum_ap += ap
     text = "{0:.2f}%".format(ap * 100) + " = " + class_name + " AP "
     ret = dict()
-    ret['sum_AP'] = sum_AP
+    ret['sum_AP'] = sum_ap
     ret['text'] = text
     ret['prec'] = prec
     ret['rec'] = rec
     return ret
 
 
-def calculate_AP(output_file, gt_classes, labels, class_bbox, counter_per_class):
+def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class):
     """
     Calculate the AP for each class
     :param output_file:
@@ -300,8 +300,9 @@ def calculate_AP(output_file, gt_classes, labels, class_bbox, counter_per_class)
                         "file_id": file_id, "bbox": bbox}]}
     :return:
     """
-    sum_AP = 0.0
-    writer = open(output_file, 'w')
+    sum_ap = 0.0
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    writer = os.fdopen(os.open('result.txt', FLAGS, 0o755), 'w')
     writer.write("# AP and precision/recall per class\n")
     count_true_positives = {}
     n_classes = len(gt_classes)
@@ -342,7 +343,7 @@ def calculate_AP(output_file, gt_classes, labels, class_bbox, counter_per_class)
                             gt_match = obj
 
             # set minimum overlap
-            min_overlap = MINOVERLAP
+            min_overlap = MIN_OVERLAP
             if ovmax >= min_overlap:
                 if "difficult" not in gt_match:
                     if not bool(gt_match["used"]):
@@ -357,8 +358,8 @@ def calculate_AP(output_file, gt_classes, labels, class_bbox, counter_per_class)
                 # false positive
                 fp[idx] = 1
         # compute precision / recall
-        ret = calculate_PR(sum_AP, fp, tp, counter_per_class, class_name)
-        sum_AP = ret['sum_AP']
+        ret = calculate_pr(sum_ap, fp, tp, counter_per_class, class_name)
+        sum_ap = ret['sum_ap']
         text = ret['text']
         prec = ret['prec']
         rec = ret['rec']
@@ -367,9 +368,9 @@ def calculate_AP(output_file, gt_classes, labels, class_bbox, counter_per_class)
         rounded_rec = ['%.2f' % elem for elem in rec]
         writer.write(text + "\n Precision: " + str(rounded_prec) +
                      "\n Recall :" + str(rounded_rec) + "\n\n")
-    writer.write("\n# mAP of all classes\n")
-    mAP = sum_AP / n_classes
-    text = "mAP = {0:.2f}%".format(mAP * 100)
+    writer.write("\n# m_ap of all classes\n")
+    m_ap = sum_ap / n_classes
+    text = "m_ap = {0:.2f}%".format(m_ap * 100)
     writer.write(text + "\n")
     print(text)
 
@@ -391,6 +392,6 @@ if __name__ == '__main__':
     get_classes = label_list['classes']
     gt_n_classes = label_list['n_classes']
     count_per_class = label_list['counter_per_class']
-    
+
     predict_bbox = get_predict_list(arg.npu_txt_path, get_classes)
-    calculate_AP(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)
+    calculate_ap(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)

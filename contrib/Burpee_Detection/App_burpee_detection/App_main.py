@@ -1,10 +1,11 @@
-# Copyright 2021 Huawei Technologies Co., Ltd
+# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,29 +15,39 @@
 import shutil
 import json
 import os
-import time
+import sys
+import logging
 import cv2
-import numpy as np
+# import time
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
-
 from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
-import sys
-import logging
 
+
+class ostream:
+    def __init__(self, file):
+        self.file = file
+
+    def __lshift__(self, obj):
+        self.file.write(str(obj))
+        return self
+
+
+cout = ostream(sys.stdout)
+endl = '/n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
 # Init stream manager
 ret = streamManagerApi.InitManager()
 if ret != 0:
-    print("Failed to init Stream manager, ret=%s" % str(ret))
+    cout << 'Failed to init Stream manager, ret=' << str(ret) << endl
     exit()
 # Mark start time
-start = time.time()
+# start = time.time()
 # Create streams by pipeline config file
 # load  pipline
 with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
@@ -44,156 +55,151 @@ with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
 if ret != 0:
-    print("Failed to create Stream, ret=%s" % str(ret))
+    cout << 'Failed to create Stream, ret=' << str(ret) << endl
     exit()
-
 
 # 正常情况日志级别使用INFO，需要定位时可以修改为DEBUG，此时SDK会打印和服务端的通信信息
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-# 1. 设置用户属性, 包括 secret_id, secret_key, region等。Appid 已在CosConfig中移除，请在参数 Bucket 中带上 Appid。Bucket 由 BucketName-Appid 组成
-secret_id = 'AKIDq23sVu40iANL5bz93iAPRIxPdleIgjYA'     # 替换为用户的 SecretId，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi
-secret_key = 'QbXIoPlvtd9RUJuHROIxMYVDfsrcrsi2'   # 替换为用户的 SecretKey，请登录访问管理控制台进行查看和管理，https://console.cloud.tencent.com/cam/capi
-region = 'ap-shanghai'      # 替换为用户的 region，已创建桶归属的region可以在控制台查看，https://console.cloud.tencent.com/cos5/bucket
-                           # COS支持的所有region列表参见https://cloud.tencent.com/document/product/436/6224
-token = None               # 如果使用永久密钥不需要填入token，如果使用临时密钥需要填入，临时密钥生成和使用指引参见https://cloud.tencent.com/document/product/436/14048
-scheme = 'https'           # 指定使用 http/https 协议来访问 COS，默认为 https，可不填
+# 1. 设置用户属性, 包括 secret_id, secret_key, region等。App_id 已在CosConfig中移除，请在参数 Bucket 中带上 App_id。Bucket 由 BucketName-App_id 组成
+SECRET_ID = 'AKIDq23sVu40iANL5bz93iAPRIxPdleIgjYA'  # 替换为用户的 SecretId，登录https://console.cloud.tencent.com/cam/capi查看
+SECRET_KEY = 'QbXIoPlvtd9RUJuHROIxMYVDfsrcrsi2'  # 替换为用户的 SecretKey，登录https://console.cloud.tencent.com/cam/capi查看
+REGION = 'ap-shanghai'  # 替换为用户的 region，已创建桶归属的region可在https://console.cloud.tencent.com/cos5/bucket查看
+# COS支持的所有region列表参见https://cloud.tencent.com/document/product/436/6224
+TOKEN = None  # 如果使用永久密钥不需填入token，若使用临时密钥需填入，临时密钥生成和使用见https://cloud.tencent.com/document/product/436/14048
+SCHEME = 'https'  # 指定使用 http/https 协议来访问 COS，默认为 https，可不填
 
-config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key, Token=token, Scheme=scheme)
-client = CosS3Client(config)
+CONFIG = CosConfig(Region=REGION, SecretId=SECRET_ID,
+                   SecretKey=SECRET_KEY, Token=TOKEN, Scheme=SCHEME)
+CLIENT = CosS3Client(CONFIG)
 
-img_num = 0
-action_cnt = 0
-state = 0
-input_count = 0
-err_file = False
-fps = 1
-input_path = "./input/"
-result_path = 'result.txt'
+IMG_NUM = 0
+ACTION = ""
+ACTION_CNT = 0
+STATE = 0
+INPUT_COUNT = 0
+ERR_FILE = False
+FPS = 1
+INPUT_PATH = "./input/"
+RESULT_PATH = 'result.txt'
 
 # Release the input
-if os.path.exists(input_path):
-    shutil.rmtree(input_path)
-
+if os.path.exists(INPUT_PATH):
+    shutil.rmtree(INPUT_PATH)
 
 while True:
-    
-    # Check the state of app
-    response = client.list_objects(
-    Bucket='burpee-1312708737',
-    Prefix='state')
 
-    if len(response['Contents']) == 2:
-        img_num = 0
-        action_cnt = 0
-        state = 0
-        input_count = 0
-        if os.path.exists(input_path):
-            shutil.rmtree(input_path)
+    # Check the state of app
+    RESPONSE = CLIENT.list_objects(Bucket='burpee-1312708737',
+                                   Prefix='state')
+
+    if len(RESPONSE['Contents']) == 2:
+        IMG_NUM = 0
+        ACTION_CNT = 0
+        STATE = 0
+        INPUT_COUNT = 0
+        if os.path.exists(INPUT_PATH):
+            shutil.rmtree(INPUT_PATH)
         continue
 
     # Check the number of input images
-    response = client.list_objects(
-    Bucket='burpee-1312708737',
-    Prefix='input')
+    RESPONSE = CLIENT.list_objects(Bucket='burpee-1312708737',
+                                   Prefix='input')
 
-    if len(response['Contents']) < img_num + 2:
-        print("wait for inputs")
+    if len(RESPONSE['Contents']) < IMG_NUM + 2:
+        cout << 'wait for inputs' << endl
         continue
     # Check the target input image
-    response = client.object_exists(
-        Bucket='burpee-1312708737',
-        Key='input/img'+ str(img_num) +'.jpg')
+    RESPONSE = CLIENT.object_exists(Bucket='burpee-1312708737',
+                                    Key='input/img' + str(IMG_NUM) + '.jpg')
 
-    if not response:
-          print("no such file")
-          continue
+    if not RESPONSE:
+        cout << 'no such file' << endl
+        continue
 
     # Download the data of input 
-    if os.path.exists(input_path) != 1:
+    if os.path.exists(INPUT_PATH) != 1:
         os.makedirs("./input/")
-        
-    response = client.get_object(
-              Bucket='burpee-1312708737',
-              Key= 'input/img'+ str(img_num) +'.jpg'
-              )
-    response['Body'].get_stream_to_file('/home/HwHiAiUser/Burpee_Detection/Burpee_Detection/App_burpee_detection/input/img'+ str(img_num) +'.jpg')
-    print("Get the input successfully")
-    
+
+    RESPONSE = CLIENT.get_object(Bucket='burpee-1312708737',
+                                 Key='input/img' + str(IMG_NUM) + '.jpg')
+    RESPONSE['Body'].get_stream_to_file('/input/img' + str(IMG_NUM) + '.jpg')
+    cout << 'Get the input successfully' << endl
+
     # Input object of streams -- detection target   
-    img_path = os.path.join(input_path,'img'+str(img_num)+'.jpg')
-    
-    dataInput = MxDataInput()
-    if os.path.exists(img_path) != 1:
-        print("The image does not exist.")
+    IMG_PATH = os.path.join(INPUT_PATH, 'img' + str(IMG_NUM) + '.jpg')
 
-    with open(img_path, 'rb') as f:
-        dataInput.data = f.read()
-        
-    streamName = b'detection'
-    inPluginId = 0
+    DATA_INPUT = MxDataInput()
+    if os.path.exists(IMG_PATH) != 1:
+        cout << 'The image does not exist.' << endl
+
+    with open(IMG_PATH, 'rb') as f:
+        DATA_INPUT.data = f.read()
+
+    STREAM_NAME = b'detection'
+    IN_PLUGIN_ID = 0
     # Send data to streams by SendDataWithUniqueId()
-    uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
+    UNIQUEID = streamManagerApi.SendDataWithUniqueId(STREAM_NAME, IN_PLUGIN_ID, DATA_INPUT)
 
-    if uniqueId < 0:
-        print("Failed to send data to stream.")
+    if UNIQUEID < 0:
+        cout << 'Failed to send data to stream.' << endl
         exit()
 
     # Get results from streams by GetResultWithUniqueId()
-    infer_result = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
-    if infer_result.errorCode != 0:
-        print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
-        infer_result.errorCode, infer_result.data.decode()))
+    INFER_RESULT = streamManagerApi.GetResultWithUniqueId(STREAM_NAME, UNIQUEID, 3000)
+    if INFER_RESULT.errorCode != 0:
+        cout << 'GetResultWithUniqueId error. errorCode=' << INFER_RESULT.errorCode \
+             << ', errorMsg=' << INFER_RESULT.data.decode() << endl
         exit()
-    
-    # Get Objectclass
-    results = json.loads(infer_result.data.decode())
-    img = cv2.imread(img_path)
-    img_num = img_num + 1
 
-    best_confidence = 0
-    key = "MxpiObject"
-    
-    if key not in results.keys():   
+    # Get Object class
+    RESULTS = json.loads(INFER_RESULT.data.decode())
+    IMG = cv2.imread(IMG_PATH)
+    IMG_NUM = IMG_NUM + 1
+
+    BEST_CONFIDENCE = 0
+    KEY = "MxpiObject"
+
+    if KEY not in RESULTS.keys():
         continue
-        
-    # Save the best confidence and its information
-    for bbox in results['MxpiObject']:
-        if round(bbox['classVec'][0]['confidence'], 4) >= best_confidence:           
-            action = bbox['classVec'][0]['className']
-            best_confidence = round(bbox['classVec'][0]['confidence'], 4)
 
+    # Save the best confidence and its information
+    for BBOX in RESULTS['MxpiObject']:
+        if round(BBOX['classVec'][0]['confidence'], 4) >= BEST_CONFIDENCE:
+            ACTION = BBOX['classVec'][0]['className']
+            BEST_CONFIDENCE = round(BBOX['classVec'][0]['confidence'], 4)
 
     # State change 
-    if state == 0:
-        if action == "crouch":
-            state = 1
-    elif state == 1:
-        if action == "support":
-            state = 2
-    elif state == 2:
-        if action == "crouch":
-            state = 3
-    elif state == 3:
-        if action == "jump":
-            state = 0
-            action_cnt = action_cnt + 1
-          
+    if STATE == 0:
+        if ACTION == "crouch":
+            STATE = 1
+    elif STATE == 1:
+        if ACTION == "support":
+            STATE = 2
+    elif STATE == 2:
+        if ACTION == "crouch":
+            STATE = 3
+    elif STATE == 3:
+        if ACTION == "jump":
+            STATE = 0
+            ACTION_CNT = ACTION_CNT + 1
+
     # Save txt for results
-    if os.path.exists(result_path):
-        os.remove(result_path)
-    with open('result.txt',"a+") as f:
-        f.write(str(action_cnt))   
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    if os.path.exists(RESULT_PATH):
+        os.remove(RESULT_PATH)
+    with os.fdopen(os.open('result.txt', FLAGS, 0o755), 'w') as f:
+        f.write(str(ACTION_CNT))
     # Upload the result file        
     with open('result.txt', 'rb') as fp:
-        response = client.put_object(
+        RESPONSE = CLIENT.put_object(
             Bucket='burpee-1312708737',
             Body=fp,
             Key='result/result.txt',
             StorageClass='STANDARD',
             EnableMD5=False
-            )   
-    print("upload the result file successfully!!!")
+        )
+    cout << 'upload the result file successfully!!!' << endl
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
