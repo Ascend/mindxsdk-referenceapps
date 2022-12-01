@@ -301,8 +301,8 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
     :return:
     """
     sum_ap = 0.0
-    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-    writer = os.fdopen(os.open('result.txt', FLAGS, 0o755), 'w')
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    writer = os.fdopen(os.open(output_file, flags, 0o755), 'w')
     writer.write("# AP and precision/recall per class\n")
     count_true_positives = {}
     n_classes = len(gt_classes)
@@ -320,7 +320,7 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
             file_id = detection["file_id"]
             ground_truth_data = labels[file_id]
 
-            ovmax = -1
+            ov_max = -1
             gt_match = -1
             # load detected object bounding-box
             bb = [float(x) for x in detection["bbox"].split()]
@@ -338,13 +338,13 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
                              (bbgt[2] - bbgt[0] + 1) * \
                              (bbgt[3] - bbgt[1] + 1) - iw * ih
                         ov = iw * ih / ua
-                        if ov > ovmax:
-                            ovmax = ov
+                        if ov > ov_max:
+                            ov_max = ov
                             gt_match = obj
 
             # set minimum overlap
             min_overlap = MIN_OVERLAP
-            if ovmax >= min_overlap:
+            if ov_max >= min_overlap:
                 if "difficult" not in gt_match:
                     if not bool(gt_match["used"]):
                         # true positive
@@ -359,14 +359,20 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
                 fp[idx] = 1
         # compute precision / recall
         ret = calculate_pr(sum_ap, fp, tp, counter_per_class, class_name)
+        key_value = (ret.get('sum_ap', "abc") and ret.get('text', "abc")) and \
+                    (ret.get('rec', "abc"))
+        if key_value:
+            pass
+        else:
+            continue
         sum_ap = ret['sum_ap']
         text = ret['text']
-        prec = ret['prec']
+        p_rec = ret['p_rec']
         rec = ret['rec']
         print(text)
-        rounded_prec = ['%.2f' % elem for elem in prec]
+        rounded_p_rec = ['%.2f' % elem for elem in p_rec]
         rounded_rec = ['%.2f' % elem for elem in rec]
-        writer.write(text + "\n Precision: " + str(rounded_prec) +
+        writer.write(text + "\n Precision: " + str(rounded_p_rec) +
                      "\n Recall :" + str(rounded_rec) + "\n\n")
     writer.write("\n# m_ap of all classes\n")
     m_ap = sum_ap / n_classes
@@ -381,17 +387,23 @@ if __name__ == '__main__':
                         help="ignore a list of classes.")
     parser.add_argument('--label_path', default="../data/labels/test", help='the path of the label files')
     parser.add_argument('--npu_txt_path', default="./result_test", help='the path of the predict result')
-    parser.add_argument('--output_file', default="./performance_test.txt", help='save result file')
+    parser.add_argument('--output_file', default="./result.txt", help='save result file')
     parser.add_argument('--threshold', default=0, help='threshold of the object score')
 
     arg = parser.parse_args()
     arg = check_args(arg)
 
     label_list = get_label_list(arg.label_path)
-    gt_file_bbox = label_list['file_bbox']
-    get_classes = label_list['classes']
-    gt_n_classes = label_list['n_classes']
-    count_per_class = label_list['counter_per_class']
+    key_value = (label_list.get('file_bbox', "abc") and label_list.get('classes', "abc")) and \
+                (label_list.get('n_classes', "abc") and label_list.get('counter_per_class', "abc"))
+    if key_value:
+        gt_file_bbox = label_list['file_bbox']
+        get_classes = label_list['classes']
+        gt_n_classes = label_list['n_classes']
+        count_per_class = label_list['counter_per_class']
 
-    predict_bbox = get_predict_list(arg.npu_txt_path, get_classes)
-    calculate_ap(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)
+        predict_bbox = get_predict_list(arg.npu_txt_path, get_classes)
+        calculate_ap(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)
+    else:
+        print("no label exists")
+

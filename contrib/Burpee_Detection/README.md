@@ -33,22 +33,8 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 │   ├── fps.png  
 │   ├── app_flow.png  
 │   └── video_flow.png 
-├── data                         
-│   ├── images                   //数据集
-|   |    ├── big                 //大型图片数据集
-|   |    ├── dark                //低光照环境数据集
-|   |    ├── empty               //空数据集
-|   |    ├── multi               //多人环境数据集
-|   |    ├── png                 //PNG数据集
-|   |    ├── forward             //正面角度数据集
-|   |    └── test                //测试集
-|   └── labels
-|   |    └── test                //测试集标签
 ├── model
-│   ├── aipp_yolov5.cfg          //atc转换时需要的aipp配置文件
 │   ├── atc.sh                   //atc运行脚本
-│   ├── yolov5.cfg               //om模型后处理配置文件
-│   └── yolov5.names             //om模型识别类别文件
 ├── pipeline
 │   ├── burpee_detection_p.pipeline          //图片识别使用的pipeline文件
 │   └── burpee_detection_v.pipeline          //视频流识别使用的pipeline文件
@@ -181,7 +167,7 @@ bash run.sh
 - ![app_1](readme_img/app_1.png)
 
 
-- **步骤4** 点击导入，选择小程序代码文件夹并打开（代码可下载），点击编译模式选中`pages/bind/bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，手机扫描二维码
+- **步骤4** 点击导入，选择小程序代码文件夹并打开（代码可下载），点击编译模式选中`pages`目录下的子目录`bind`并选择`bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，手机扫描二维码
 
 
 - ![app_2](readme_img/app_2.png)  - ![app_3](readme_img/app_3.png) - ![app_4](readme_img/app_4.png)

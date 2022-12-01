@@ -15,15 +15,15 @@
 import shutil
 import json
 import os
+import sys
 import time
 import cv2
-import sys
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 
 
-class ostream:
+class OStream:
     def __init__(self, file):
         self.file = file
 
@@ -32,15 +32,15 @@ class ostream:
         return self
 
 
-cout = ostream(sys.stdout)
-endl = '/n'
+cout = OStream(sys.stdout)
+END_L = '/n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
 # Init stream manager
 ret = streamManagerApi.InitManager()
 if ret != 0:
-    cout << 'Failed to init Stream manager, ret=' << str(ret) << endl
+    cout << 'Failed to init Stream manager, ret=' << str(ret) << END_L
     exit()
 # Mark start time
 start = time.time()
@@ -51,7 +51,7 @@ with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
 ret = streamManagerApi.CreateMultipleStreams(PIPELINE_STR)
 # Print error message
 if ret != 0:
-    cout << 'Failed to create Stream, ret=' << str(ret) << endl
+    cout << 'Failed to create Stream, ret=' << str(ret) << END_L
     exit()
 
 DET_IMG_COUNT = 0  # the number of detected pictures
@@ -83,14 +83,14 @@ for index, path in enumerate(INPUT_PATH):
     # Input object of streams -- detection target
     for item in os.listdir(path):
         IMG_PATH = os.path.join(path, item)
-        cout << 'read file path:' << IMG_PATH << endl
+        cout << 'read file path:' << IMG_PATH << END_L
         IMG_NAME = os.path.splitext(item)[0]
         IMG_TXT = RESULT_PATH + IMG_NAME + ".txt"
         if os.path.exists(IMG_TXT):
             os.remove(IMG_TXT)
         DATA_INPUT = MxDataInput()
         if os.path.exists(IMG_PATH) != 1:
-            cout << 'The image does not exist.' << endl
+            cout << 'The image does not exist.' << END_L
             continue
         with open(IMG_PATH, 'rb') as f:
             DATA_INPUT.data = f.read()
@@ -100,14 +100,14 @@ for index, path in enumerate(INPUT_PATH):
         UNIQUE_ID = streamManagerApi.SendDataWithUniqueId(STREAM_NAME, IN_PLUGIN_ID, DATA_INPUT)
 
         if UNIQUE_ID < 0:
-            cout << 'Failed to send data to stream.' << endl
+            cout << 'Failed to send data to stream.' << END_L
             exit()
 
         # Get results from streams by GetResultWithUniqueId()
         INFER_RESULT = streamManagerApi.GetResultWithUniqueId(STREAM_NAME, UNIQUE_ID, 3000)
         if INFER_RESULT.errorCode != 0:
             cout << 'GetResultWithUniqueId error. errorCode=' << INFER_RESULT.errorCode \
-                 << ', errorMsg=' << INFER_RESULT.data.decode() << endl
+            << ', errorMsg=' << INFER_RESULT.data.decode() << END_L
             exit()
 
         DET_IMG_COUNT = DET_IMG_COUNT + 1
@@ -117,6 +117,8 @@ for index, path in enumerate(INPUT_PATH):
 
         IMG = cv2.imread(IMG_PATH)
         BBOXES = []
+        best_class = {}
+        TEXT = ""
         BEST_CONFIDENCE = 0
         KEY = "MxpiObject"
         if KEY not in RESULTS.keys():
@@ -128,7 +130,11 @@ for index, path in enumerate(INPUT_PATH):
                       'y1': int(BBOX['y1']),
                       'confidence': round(BBOX['classVec'][0]['confidence'], 4),
                       'text': BBOX['classVec'][0]['className']}
-
+            key_value = BBOXES.get('confidence', "abc")
+            if key_value:
+                pass
+            else:
+                continue
             if BBOXES['confidence'] > BEST_CONFIDENCE:
                 L1 = []
                 # Convert the label as Yolo label
@@ -153,6 +159,12 @@ for index, path in enumerate(INPUT_PATH):
                               'confidence': round(BBOX['classVec'][0]['confidence'], 4),
                               'text': BBOX['classVec'][0]['className']}
         # Draw rectangle and txt for visualization
+        key_value = (best_class.get('x0', "abc") and best_class.get('y0', "abc")) and \
+                    (best_class.get('x1', "abc") and best_class.get('y1', "abc"))
+        if key_value:
+            pass
+        else:
+            continue
         cv2.putText(IMG, TEXT, (best_class['x0'] + 10, best_class['y0'] + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0,
                     (0, 100, 255), 2)
         cv2.rectangle(IMG, (best_class['x0'], best_class['y0']), (best_class['x1'], best_class['y1']),
@@ -163,8 +175,8 @@ for index, path in enumerate(INPUT_PATH):
         cv2.imwrite(originImgFile, IMG)
 
         # Save txt for results
-        FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        with os.fdopen(os.open(IMG_TXT, FLAGS, 0o755), 'w') as f:
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        with os.fdopen(os.open(IMG_TXT, flags, 0o755), 'w') as f:
             CONTENT = '{} {} {} {} {} {}'.format(L1[5], L1[4], L1[0], L1[1], L1[2], L1[3])
             f.write(CONTENT)
             f.write('\n')
@@ -172,8 +184,8 @@ for index, path in enumerate(INPUT_PATH):
 end = time.time()
 cost_time = end - start
 # Mark spend time
-cout << 'Image count:' << DET_IMG_COUNT << endl
-cout << 'Spend time:' << cost_time << endl
-cout << 'fps:' << (DET_IMG_COUNT / cost_time) << endl
+cout << 'Image count:' << DET_IMG_COUNT << END_L
+cout << 'Spend time:' << cost_time << END_L
+cout << 'fps:' << (DET_IMG_COUNT / cost_time) << END_L
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()

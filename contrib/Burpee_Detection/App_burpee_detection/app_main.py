@@ -18,7 +18,6 @@ import os
 import sys
 import logging
 import cv2
-# import time
 
 import MxpiDataType_pb2 as MxpiDataType
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
@@ -27,7 +26,7 @@ from qcloud_cos import CosConfig
 from qcloud_cos import CosS3Client
 
 
-class ostream:
+class OStream:
     def __init__(self, file):
         self.file = file
 
@@ -36,18 +35,16 @@ class ostream:
         return self
 
 
-cout = ostream(sys.stdout)
-endl = '/n'
+cout = OStream(sys.stdout)
+END_L = '/n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
 # Init stream manager
 ret = streamManagerApi.InitManager()
 if ret != 0:
-    cout << 'Failed to init Stream manager, ret=' << str(ret) << endl
+    cout << 'Failed to init Stream manager, ret=' << str(ret) << END_L
     exit()
-# Mark start time
-# start = time.time()
 # Create streams by pipeline config file
 # load  pipline
 with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
@@ -55,7 +52,7 @@ with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
 if ret != 0:
-    cout << 'Failed to create Stream, ret=' << str(ret) << endl
+    cout << 'Failed to create Stream, ret=' << str(ret) << END_L
     exit()
 
 # 正常情况日志级别使用INFO，需要定位时可以修改为DEBUG，此时SDK会打印和服务端的通信信息
@@ -64,7 +61,7 @@ logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 # 1. 设置用户属性, 包括 secret_id, secret_key, region等。App_id 已在CosConfig中移除，请在参数 Bucket 中带上 App_id。Bucket 由 BucketName-App_id 组成
 SECRET_ID = 'AKIDq23sVu40iANL5bz93iAPRIxPdleIgjYA'  # 替换为用户的 SecretId，登录https://console.cloud.tencent.com/cam/capi查看
 SECRET_KEY = 'QbXIoPlvtd9RUJuHROIxMYVDfsrcrsi2'  # 替换为用户的 SecretKey，登录https://console.cloud.tencent.com/cam/capi查看
-REGION = 'ap-shanghai'  # 替换为用户的 region，已创建桶归属的region可在https://console.cloud.tencent.com/cos5/bucket查看
+REGION = 'ap-shanghai'  # 替换为用户的 region，已创建桶的region可在https://console.cloud.tencent.com/cos5/bucket查看
 # COS支持的所有region列表参见https://cloud.tencent.com/document/product/436/6224
 TOKEN = None  # 如果使用永久密钥不需填入token，若使用临时密钥需填入，临时密钥生成和使用见https://cloud.tencent.com/document/product/436/14048
 SCHEME = 'https'  # 指定使用 http/https 协议来访问 COS，默认为 https，可不填
@@ -107,14 +104,14 @@ while True:
                                    Prefix='input')
 
     if len(RESPONSE['Contents']) < IMG_NUM + 2:
-        cout << 'wait for inputs' << endl
+        cout << 'wait for inputs' << END_L
         continue
     # Check the target input image
     RESPONSE = CLIENT.object_exists(Bucket='burpee-1312708737',
                                     Key='input/img' + str(IMG_NUM) + '.jpg')
 
     if not RESPONSE:
-        cout << 'no such file' << endl
+        cout << 'no such file' << END_L
         continue
 
     # Download the data of input 
@@ -124,14 +121,14 @@ while True:
     RESPONSE = CLIENT.get_object(Bucket='burpee-1312708737',
                                  Key='input/img' + str(IMG_NUM) + '.jpg')
     RESPONSE['Body'].get_stream_to_file('/input/img' + str(IMG_NUM) + '.jpg')
-    cout << 'Get the input successfully' << endl
+    cout << 'Get the input successfully' << END_L
 
     # Input object of streams -- detection target   
     IMG_PATH = os.path.join(INPUT_PATH, 'img' + str(IMG_NUM) + '.jpg')
 
     DATA_INPUT = MxDataInput()
     if os.path.exists(IMG_PATH) != 1:
-        cout << 'The image does not exist.' << endl
+        cout << 'The image does not exist.' << END_L
 
     with open(IMG_PATH, 'rb') as f:
         DATA_INPUT.data = f.read()
@@ -142,14 +139,14 @@ while True:
     UNIQUEID = streamManagerApi.SendDataWithUniqueId(STREAM_NAME, IN_PLUGIN_ID, DATA_INPUT)
 
     if UNIQUEID < 0:
-        cout << 'Failed to send data to stream.' << endl
+        cout << 'Failed to send data to stream.' << END_L
         exit()
 
     # Get results from streams by GetResultWithUniqueId()
     INFER_RESULT = streamManagerApi.GetResultWithUniqueId(STREAM_NAME, UNIQUEID, 3000)
     if INFER_RESULT.errorCode != 0:
         cout << 'GetResultWithUniqueId error. errorCode=' << INFER_RESULT.errorCode \
-             << ', errorMsg=' << INFER_RESULT.data.decode() << endl
+        << ', errorMsg=' << INFER_RESULT.data.decode() << END_L
         exit()
 
     # Get Object class
@@ -185,10 +182,10 @@ while True:
             ACTION_CNT = ACTION_CNT + 1
 
     # Save txt for results
-    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     if os.path.exists(RESULT_PATH):
         os.remove(RESULT_PATH)
-    with os.fdopen(os.open('result.txt', FLAGS, 0o755), 'w') as f:
+    with os.fdopen(os.open('result.txt', flags, 0o755), 'w') as f:
         f.write(str(ACTION_CNT))
     # Upload the result file        
     with open('result.txt', 'rb') as fp:
@@ -199,7 +196,7 @@ while True:
             StorageClass='STANDARD',
             EnableMD5=False
         )
-    cout << 'upload the result file successfully!!!' << endl
+    cout << 'upload the result file successfully!!!' << END_L
 
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()

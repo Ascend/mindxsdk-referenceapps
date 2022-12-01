@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import sys
 import cv2
 import numpy as np
 
@@ -20,7 +21,7 @@ from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
 import MxpiDataType_pb2 as MxpiDataType
 
 
-class ostream:
+class OStream:
     def __init__(self, file):
         self.file = file
 
@@ -29,18 +30,16 @@ class ostream:
         return self
 
 
-cout = ostream(sys.stdout)
-endl = '/n'
+cout = OStream(sys.stdout)
+END_L = '/n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
 # Init stream manager
 ret = streamManagerApi.InitManager()
 if ret != 0:
-    cout << 'Failed to init Stream manager, ret=' << str(ret) << endl
+    cout << 'Failed to init Stream manager, ret=' << str(ret) << END_L
     exit()
-# Mark start time
-# start = time.time()
 # Create streams by pipeline config file
 # load  pipline
 with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
@@ -48,7 +47,7 @@ with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
 if ret != 0:
-    cout << 'Failed to create Stream, ret=' << str(ret) << endl
+    cout << 'Failed to create Stream, ret=' << str(ret) << END_L
     exit()
 # Stream name
 STREAM_NAME = b'detection'
@@ -72,7 +71,7 @@ while True:
 
     # Determine whether the output is empty
     if infer_result.metadataVec.size() == 0:
-        cout << 'infer_result is null' << endl
+        cout << 'infer_result is null' << END_L
         continue
 
     # Frame information structure
@@ -100,6 +99,8 @@ while True:
     img = cv2.cvtColor(img_bgr, getattr(cv2, "COLOR_YUV2BGR_NV12"))
 
     BEST_CONFIDENCE = 0
+    TEXT = ""
+    best_bboxes = {}
 
     if len(objectList.objectVec) == 0:
         continue
@@ -117,12 +118,28 @@ while True:
                            'y0': int(results.y0),
                            'y1': int(results.y1),
                            'text': results.classVec[0].className}
+            key_value = best_bboxes.get('text', "abc")
+            if key_value:
+                pass
+            else:
+                continue
             action = best_bboxes['text']
             TEXT = "{}{}".format(str(BEST_CONFIDENCE), " ")
 
     # Draw rectangle and txt for visualization
+    key_value = best_bboxes.get('text', "abc")
+    if key_value:
+        pass
+    else:
+        continue
     for item in best_bboxes['text']:
         TEXT += item
+    key_value = (best_bboxes.get('x0', "abc") and best_bboxes.get('y0', "abc")) and \
+                (best_bboxes.get('x1', "abc") and best_bboxes.get('y1', "abc"))
+    if key_value:
+        pass
+    else:
+        continue
     cv2.putText(img, TEXT, (best_bboxes['x0'] + 10, best_bboxes['y0'] + 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
     cv2.rectangle(img, (best_bboxes['x0'], best_bboxes['y0']), (best_bboxes['x1'], best_bboxes['y1']),
@@ -155,8 +172,8 @@ while True:
     RESULT_PIC_PATH = "./result_pic/"
     if os.path.exists(RESULT_PIC_PATH) != 1:
         os.makedirs("./result_pic/")
-    origin_img_file = './result_pic/image' + '-' + str(Id) + '.jpg'
-    cv2.imwrite(origin_img_file, img)
+    ORIGIN_IMG_FILE = './result_pic/image' + '-' + str(Id) + '.jpg'
+    cv2.imwrite(ORIGIN_IMG_FILE, img)
 
     # Write the video
     out.write(img)
