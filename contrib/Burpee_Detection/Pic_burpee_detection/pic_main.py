@@ -135,7 +135,7 @@ for index, path in enumerate(INPUT_PATH):
                 pass
             else:
                 continue
-            if BBOXES['confidence'] > BEST_CONFIDENCE:
+            if key_value > BEST_CONFIDENCE:
                 L1 = []
                 # Convert the label as Yolo label
                 x_center = round((BBOXES['x1'] + BBOXES['x0']) * 0.5 / IMG.shape[1], 6)
@@ -175,8 +175,8 @@ for index, path in enumerate(INPUT_PATH):
         cv2.imwrite(originImgFile, IMG)
 
         # Save txt for results
-        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
-        with os.fdopen(os.open(IMG_TXT, flags, 0o755), 'w') as f:
+        FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        with os.fdopen(os.open(IMG_TXT, FLAGS, 0o755), 'w') as f:
             CONTENT = '{} {} {} {} {} {}'.format(L1[5], L1[4], L1[0], L1[1], L1[2], L1[3])
             f.write(CONTENT)
             f.write('\n')

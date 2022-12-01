@@ -123,7 +123,7 @@ while True:
                 pass
             else:
                 continue
-            action = best_bboxes['text']
+            action = key_value
             TEXT = "{}{}".format(str(BEST_CONFIDENCE), " ")
 
     # Draw rectangle and txt for visualization

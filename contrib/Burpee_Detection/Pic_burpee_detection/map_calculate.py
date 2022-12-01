@@ -37,7 +37,6 @@ MIN_OVERLAP = 0.5  # default value (defined in the PASCAL VOC2012 challenge)
 TOP_MARGIN = 0.15  # in percentage of the figure height
 BOTTOM_MARGIN = 0.05  # in percentage of the figure height
 
-
 def file_lines_to_list(path):
     """
     Convert the lines of a file to a list
@@ -359,16 +358,15 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
                 fp[idx] = 1
         # compute precision / recall
         ret = calculate_pr(sum_ap, fp, tp, counter_per_class, class_name)
-        key_value = (ret.get('sum_ap', "abc") and ret.get('text', "abc")) and \
-                    (ret.get('rec', "abc"))
-        if key_value:
+        sum_ap = ret.get('sum_ap', "abc")
+        text = ret.get('text', "abc")
+        p_rec = ret.get('p_rec', "abc")
+        rec = ret.get('rec', "abc")
+        value = sum_ap and text and p_rec and rec
+        if value:
             pass
         else:
-            continue
-        sum_ap = ret['sum_ap']
-        text = ret['text']
-        p_rec = ret['p_rec']
-        rec = ret['rec']
+            return
         print(text)
         rounded_p_rec = ['%.2f' % elem for elem in p_rec]
         rounded_rec = ['%.2f' % elem for elem in rec]
@@ -394,14 +392,13 @@ if __name__ == '__main__':
     arg = check_args(arg)
 
     label_list = get_label_list(arg.label_path)
-    key_value = (label_list.get('file_bbox', "abc") and label_list.get('classes', "abc")) and \
-                (label_list.get('n_classes', "abc") and label_list.get('counter_per_class', "abc"))
-    if key_value:
-        gt_file_bbox = label_list['file_bbox']
-        get_classes = label_list['classes']
-        gt_n_classes = label_list['n_classes']
-        count_per_class = label_list['counter_per_class']
+    gt_file_bbox = label_list.get('file_bbox', "abc")
+    get_classes = label_list.get('classes', "abc")
+    gt_n_classes = label_list.get('n_classes', "abc")
+    count_per_class = label_list.get('counter_per_class', "abc")
 
+    key_value = gt_file_bbox and get_classes and gt_n_classes and count_per_class
+    if key_value:
         predict_bbox = get_predict_list(arg.npu_txt_path, get_classes)
         calculate_ap(arg.output_file, get_classes, gt_file_bbox, predict_bbox, count_per_class)
     else:

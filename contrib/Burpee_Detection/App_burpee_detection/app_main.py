@@ -58,7 +58,7 @@ if ret != 0:
 # 正常情况日志级别使用INFO，需要定位时可以修改为DEBUG，此时SDK会打印和服务端的通信信息
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
-# 1. 设置用户属性, 包括 secret_id, secret_key, region等。App_id 已在CosConfig中移除，请在参数 Bucket 中带上 App_id。Bucket 由 BucketName-App_id 组成
+# 设置用户属性, 包括 secret_id, secret_key, region等。App_id 已在CosConfig中移除，请在参数 Bucket 中带上 App_id。Bucket 由 BucketName-App_id 组成
 SECRET_ID = 'AKIDq23sVu40iANL5bz93iAPRIxPdleIgjYA'  # 替换为用户的 SecretId，登录https://console.cloud.tencent.com/cam/capi查看
 SECRET_KEY = 'QbXIoPlvtd9RUJuHROIxMYVDfsrcrsi2'  # 替换为用户的 SecretKey，登录https://console.cloud.tencent.com/cam/capi查看
 REGION = 'ap-shanghai'  # 替换为用户的 region，已创建桶的region可在https://console.cloud.tencent.com/cos5/bucket查看
@@ -182,10 +182,10 @@ while True:
             ACTION_CNT = ACTION_CNT + 1
 
     # Save txt for results
-    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+    FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     if os.path.exists(RESULT_PATH):
         os.remove(RESULT_PATH)
-    with os.fdopen(os.open('result.txt', flags, 0o755), 'w') as f:
+    with os.fdopen(os.open('result.txt', FLAGS, 0o755), 'w') as f:
         f.write(str(ACTION_CNT))
     # Upload the result file        
     with open('result.txt', 'rb') as fp:
