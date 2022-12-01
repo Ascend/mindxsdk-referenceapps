@@ -1,18 +1,17 @@
 """
-    Copyright 2020 Huawei Technologies Co., Ltd
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-    Typical usage example:
+# Copyright(C) 2020. Huawei Technologies Co.,Ltd. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """
 
 import glob
@@ -36,6 +35,7 @@ import collections
 MIN_OVERLAP = 0.5  # default value (defined in the PASCAL VOC2012 challenge)
 TOP_MARGIN = 0.15  # in percentage of the figure height
 BOTTOM_MARGIN = 0.05  # in percentage of the figure height
+
 
 def file_lines_to_list(path):
     """
@@ -297,6 +297,7 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
     :param labels: {file_index:[{"class_name": class_name, "bbox": bbox, "used": False}]}
     :param class_bbox: {class_name:[{"confidence": confidence,
                         "file_id": file_id, "bbox": bbox}]}
+    :param counter_per_class
     :return:
     """
     sum_ap = 0.0

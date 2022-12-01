@@ -16,4 +16,4 @@
 source ../envs/env.sh
 
 # running inference process
-python3.9.2 Pic_main.py
+python3.9.2 pic_main.py

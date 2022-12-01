@@ -27,12 +27,12 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 │   ├── atc_env.sh               //atc转换需要的环境变量
 │   └── env.sh                   //基础环境变量
 ├── readme_img                   //ReadMe图片资源
-│   ├── dataset.png   
-│   ├── video.png   
-│   ├── map.png                  
-│   ├── fps.png  
-│   ├── app_flow.png  
-│   └── video_flow.png 
+│   ├── dataset.jpg   
+│   ├── video.jpg   
+│   ├── map.jpg                  
+│   ├── fps.jpg  
+│   ├── app_flow.jpg  
+│   └── video_flow.jpg 
 ├── model
 │   ├── atc.sh                   //atc运行脚本
 ├── pipeline
@@ -54,11 +54,11 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 ###  1.5 技术实现流程图
 视频识别：
 
-![video-flow](readme_img/video_flow.png)
+![video-flow](readme_img/video_flow.jpg)
 
 小程序应用后端流程：
 
-![app-flow](readme_img/app_flow.png)
+![app-flow](readme_img/app_flow.jpg)
 
 ## 2 环境依赖
 
@@ -150,7 +150,7 @@ bash run.sh
 运行可视化结果会以`video_result.mp4`视频形式保存在`Burpee_Detection/Video_burpee_detection`目录下
 波比跳识别个数会以`result.txt`文件形式保存在`Burpee_Detection/Video_burpee_detection`目录下
 
-![dataset](readme_img/video.png)
+![dataset](readme_img/video.jpg)
 
 #### 4.1.2 小程序
 
@@ -164,18 +164,18 @@ bash run.sh
 - **步骤3** 下载`微信开发者工具`并登录，在微信公众平台注册小程序并获取AppID
 
 
-- ![app_1](readme_img/app_1.png)
+- ![app_1](readme_img/app_1.jpg)
 
 
-- **步骤4** 点击导入，选择小程序代码文件夹并打开（代码可下载），点击编译模式选中`pages`目录下的子目录`bind`并选择`bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，手机扫描二维码
+- **步骤4** 点击导入，选择小程序代码文件夹并打开（代码可下载），点击编译模式选中`pages`目录下的子目录`bind`并选择`bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，然后用手机扫描二维码
 
 
-- ![app_2](readme_img/app_2.png)  - ![app_3](readme_img/app_3.png) - ![app_4](readme_img/app_4.png)
+- ![app_2](readme_img/app_2.jpg)  - ![app_3](readme_img/app_3.jpg) - ![app_4](readme_img/app_4.jpg)
 
 
 - **步骤5** 进入微信小程序页面，点击`开始计数`，小程序将摄像头以40ms（fps=25）的速率拍摄照片，并上传至腾讯云桶内，后台接收图片并处理
 - 
-- ![app_5](readme_img/app_5.png)
+- ![app_5](readme_img/app_5.jpg)
 - 
 - **步骤6** 人物在摄像头前进行波比跳，后台实时更新波比跳个数并将结果发送至桶内，小程序端以0.1s的速率刷新页面展示的个数
 
@@ -187,7 +187,7 @@ bash run.sh
 
 - **步骤1** 下载测试数据集，并将`data`目录放在`Burpee_Detection`目录下
 
-  ![dataset](readme_img/dataset.png)
+  ![dataset](readme_img/dataset.jpg)
 
 - **步骤2** 打开`Burpee_Detection/Pic_burpee_detection`目录下`Pic_burpee_detection.py`文件，将变量 `PATH` ,`Result_PATH` ,`Result_Pic_PATH`分别初始化为 `["../data/images/test/"]`,`["./result_test/"]`,`["./result_test_pic/"]`
 
@@ -203,7 +203,7 @@ bash run.sh
 
   运行结果中会有`Spend time：`是识别所有图片所用的时间，`fps：`计算得到的帧数
 
-  ![fps](readme_img/fps.png)
+  ![fps](readme_img/fps.jpg)
 
 - **步骤4** 在`Burpee_Detection/Pic_burpee_detection`目录下运行`map_calculate.py`脚本，计算精度。
 
@@ -213,7 +213,7 @@ bash run.sh
 
   测试结果
 
-  ![map](readme_img/map.png)
+  ![map](readme_img/map.jpg)
 
   ##  5 软件依赖以及资源链接
 

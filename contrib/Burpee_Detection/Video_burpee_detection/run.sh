@@ -16,4 +16,4 @@
 source ../envs/env.sh
 
 # running inference process
-python3.9.2 Video_main.py
+python3.9.2 video_main.py
