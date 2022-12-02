@@ -221,4 +221,5 @@ bash run.sh
   | ffmpeg         | 2021-10-14 | 实现 mp4 格式视频转为 H.264 格式视频       | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
   | 微信开发者工具 |1.06.2207210| 实现小程序的使用                           | [链接](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html) |
   | 小程序导入代码 |-           | 微信小程序代码                             | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690270238&Signature=SHjFgSLUrGMPGbYNYyNgS3VmBMw%3D) |
-  | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/models.zip?AccessKeyId=LMDYAAERYH5FWMJIHJOM&Expires=1701063800&Signature=I9qJSuxbvN3VJ66%2B%2BXmO%2B%2BiyLTQ%3D |
+  | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/models.zip?AccessKeyId=LMDYAAERYH5FWMJIHJOM&Expires=1701063800&Signature=I9qJSuxbvN3VJ66%2B%2BXmO%2B%2BiyLTQ%3D)|
+  |               | -          |pt 模型文件，onnx 模型文件，om 模型文件        |[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Burpee/models.zip)|
