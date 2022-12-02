@@ -66,7 +66,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 实现流程图如下图所示：
 
-![image-20221201214655261](C:\Users\24580\AppData\Roaming\Typora\typora-user-images\image-20221201214655261.png)
+![image-20221201214655261](./%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
 
 
 
@@ -203,6 +203,9 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 表示命令执行成功。
 
+相关模型的下载链接如下：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip
+将模型按照提供的文件夹目录放至即可。
+
 ## 编译与运行
 
 当已有模型的om文件，保存在Overlap-CRNN/om_model/下
@@ -224,7 +227,7 @@ python crnn_img_infer.py
 
 ## 测试精度
 
-**步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集）
+**步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集，按照文件目录放至即可：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/dataset.zip）
 
 **步骤2** 在命令行输入 如下命令运行整个工程：
 
@@ -234,4 +237,4 @@ python crnn_infer.py
 
 模型在测试集上的精度达标，最终模型的的acc为83.58%，满足精度要求（acc≥80%）。
 
-![image-20221202155839483](C:\Users\24580\AppData\Roaming\Typora\typora-user-images\image-20221202155839483.png)
+![image-20221202155839483](./%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C.png)
