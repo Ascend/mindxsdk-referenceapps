@@ -1,4 +1,4 @@
-# Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,7 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# 变量说明
+export MX_SDK_path=""# mxVision 安装路径
+export Ascend_toolkit_path=""# CANN 安装路径
 
-export MX_SDK_HOME="/home/HwHiAiUser/Ascend/mindx_sdk/mxVision_2.0.4/linux-x86_64/mxVision-2.0.4"
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
+# MindXSDK 环境变量：
+source ${MX_SDK_path}/set_env.sh
+
+# CANN 环境变量：
+source ${Ascend_toolkit_path}/set_env.sh
+

@@ -5,7 +5,7 @@
     },
     "mxpi_rtspsrc0": {
       "props": {
-        "rtspUrl": "rtsp://192.168.0.5:8554/burpee_detection.264",
+        "rtspUrl": "rtsp://xxx.xxx.x.x:xxxx/burpee_detection.264",
         "fpsMode": "1"
       },
       "factory": "mxpi_rtspsrc",
@@ -36,7 +36,7 @@
         "modelPath": "../model/burpee_detection.om",
         "postProcessConfigPath": "../model/yolov5.cfg",
         "labelPath": "../model/yolov5.names",
-        "postProcessLibPath": "/home/HwHiAiUser/Ascend/mindx_sdk/mxVision_2.0.4/linux-x86_64/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so",
+        "postProcessLibPath": "../../Ascend/mindx_sdk/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so",
         "deviceId": "0"
       },
       "factory": "mxpi_modelinfer",

@@ -24,8 +24,7 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 ```
 ├── envs
-│   ├── atc_env.sh               //atc转换需要的环境变量
-│   └── env.sh                   //基础环境变量
+│   └── env.sh                   //基础环境变量与atc转换需要的环境变量
 ├── readme_img                   //ReadMe图片资源
 │   ├── dataset.jpg   
 │   ├── video.jpg   
@@ -71,20 +70,17 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 在运行项目需要的环境变量如下，运行前不需要特别设置，环境依赖已经写入脚本中，脚本在`Burpee_Detection/envs`目录下：
 
 ```bash
-# 基础环境变量——env.sh
-export MX_SDK_HOME="${SDK安装路径}/mxVision-2.0.4"
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
+export MX_SDK_path=""# mxVision 安装路径
+export Ascend_toolkit_path=""#CANN 安装路径
 
-# ATC工具环境变量——atc_env.sh
-export install_path=/home/HwHiAiUser/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.7.5/bin:${install_path}/x86_64-linux/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/x86_64-linux/atc/python/site-packages:${install_path}/x86_64-linux/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/x86_64-linux/atc/python/site-packages/schedule_search.egg$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/x86_64-linux/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+# MindXSDK 环境变量：
+./${MX_SDK_path}/set_env.sh
+
+# CANN 环境变量：
+./${Ascend_toolkit_path}/set_env.sh
 ```
 
-注：其中`${SDK安装路径}`替换为用户的SDK安装路径;`install_path`替换为ascend-toolkit开发套件包所在路径。`LD_LIBRARY_PATH`用以加载开发套件包中lib库。
+注：其中`${MX_SDK_path}`替换为用户的SDK安装路径;`Ascend_toolkit_path`替换为ascend-toolkit开发套件包所在路径。
 
 ## 3 模型转换以及依赖安装
 
@@ -137,7 +133,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 - **步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 `om` 模型文件，放置在 `Burpee_Detection/models` 目录下。
 
-- **步骤3** 修改`burpee_detection_v.pipeline`中`mxpi_modelinfer0`中`postProcessLibPath`的值`${SDK安装路径}`为 MindX SDK 的安装路径
+- **步骤3** 修改`burpee_detection_v.pipeline`中`mxpi_modelinfer0`中`postProcessLibPath`的值`${MX_SDK_path}`为 MindX SDK 的安装路径
 
 - **步骤4** 按照 3 小节 **准备** 中的步骤创建rtsp流以实现本地视频的rtsp拉流操作。
 
@@ -185,11 +181,11 @@ bash run.sh
 
 ### 4.2 性能与精度测试
 
-- **步骤1** 下载测试数据集，并将`data`目录放在`Burpee_Detection`目录下
+- **步骤1** 准备测试数据集，并将`data`目录放在`Burpee_Detection`目录下
 
   ![dataset](readme_img/dataset.jpg)
 
-- **步骤2** 打开`Burpee_Detection/Pic_burpee_detection`目录下`Pic_burpee_detection.py`文件，将变量 `PATH` ,`Result_PATH` ,`Result_Pic_PATH`分别初始化为 `["../data/images/test/"]`,`["./result_test/"]`,`["./result_test_pic/"]`
+- **步骤2** 打开`Burpee_Detection/Pic_burpee_detection`目录下`pic_burpee_detection.py`文件，将变量 `INPUT_PATH` ,`OUTPUT_PATH` ,`OUTPUT_PIC_PATH`分别初始化为 `["../data/images/test/"]`,`["./result_test/"]`,`["./result_test_pic/"]`
 
 
 - **步骤3** 在`Burpee_Detection/Pic_burpee_detection`目录下运行`run.sh`脚本，对`data/images/test`目录下的图片进行识别并输出结果
@@ -225,6 +221,4 @@ bash run.sh
   | ffmpeg         | 2021-10-14 | 实现 mp4 格式视频转为 H.264 格式视频       | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
   | 微信开发者工具 |1.06.2207210| 实现小程序的使用                           | [链接](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html) |
   | 小程序导入代码 |-           | 微信小程序代码                             | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690270238&Signature=SHjFgSLUrGMPGbYNYyNgS3VmBMw%3D) |
-  | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/models.zip?AccessKeyId=LMDYAAERYH5FWMJIHJOM&Expires=1689495724&Signature=f3y/GUL8po3menuj5Dsfa%2B21kPE%3D) |
-  | 测试数据集     |            | 由237张图片构成，Yolo 格式                | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/data.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690267377&Signature=ihE8HZ2et2BysOCsyIvZVAgfrm0%3D) |
-  
+  | 模型文件       | -          | pt 模型文件，onnx 模型文件，om 模型文件    | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/models.zip?AccessKeyId=LMDYAAERYH5FWMJIHJOM&Expires=1701063800&Signature=I9qJSuxbvN3VJ66%2B%2BXmO%2B%2BiyLTQ%3D |

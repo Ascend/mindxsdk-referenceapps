@@ -32,7 +32,7 @@
         "modelPath": "../model/burpee_detection.om",
         "postProcessConfigPath": "../model/yolov5.cfg",
         "labelPath": "../model/yolov5.names",
-        "postProcessLibPath": "/home/HwHiAiUser/Ascend/mindx_sdk/mxVision_2.0.4/linux-x86_64/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so"
+        "postProcessLibPath": "../../Ascend/mindx_sdk/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so"
       },
       "factory": "mxpi_modelinfer",
       "next": "mxpi_dataserialize0"
