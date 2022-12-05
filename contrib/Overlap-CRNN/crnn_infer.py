@@ -80,11 +80,6 @@ def load_img_data(image_name):
     image_tensor = Tensor(resize_img)  # 推理前需要转换为tensor的List，使用Tensor类来构建。
     image_tensor.to_device(DEVICE_ID)  # !!!!!重要，需要转移至device侧，该函数单独执行
     image_tensor_list = [image_tensor]  # 推理前需要转换为tensor的List
-    """
-    使用外部数据作为tensor时务必使用to_device进行转移，缺失该步骤会导致输出结果异常，RC3以上版本已修复
-    ！！！如使用了numpy.transpose等改变数据内存形状的操作后，需要使用numpy.ascontiguousarray对内存进行重新排序成连续的
-    如使用非图像数据，也是转为numpy.ndarray数据类型再进行Tensor转换，使用{tensor_data} = Tensor({numpy_data})方式
-    """
     return image_tensor_list
 
 
