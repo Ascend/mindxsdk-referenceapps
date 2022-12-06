@@ -60,11 +60,12 @@ npu-smi info
 | MindX SDK  | mxVision-3.0.RC2 |
 | Python |   3.9.2     |
 |  CANN        |  5.1RC2    |
-| PyTorch | 1.9.0 |
+| PyTorch | 1.12.1 |
 | numpy | 1.21.5 |
 | imageio | 2.22.3| 
 | Pillow | 9.3.0 | 
 | cv2 | 4.5.5 |
+| timm | 0.4.12 |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -93,7 +94,7 @@ ascend-toolkit-path: CANN 安装路径。
 - 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) 来下载
 
 
-### 3.2 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换
+### 3.2 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换，使用 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 可跳过该步骤。
 
 1. `lib/__init__.py` 中注释掉第二行
 
@@ -148,10 +149,26 @@ conda activate py392
 
 1. pytorch 模型转换 onnx 文件
 
-    将 `sltnet_torch2onnx.py` 放到 SLT-Net 项目目录下，运行：
+
+    将 `torch2onnx.py` 放到 SLT-Net 项目根目录。推荐下载已经完成针对模型转化优化的项目代码 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch)。
+    
+    下载 [模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)，指定其中的 torch 模型文件路径，如： `./sltnet.pth`
+
+    注意，timm 的版本为 `0.4.12`，其他版本可能会报错。
+
+    pytorch 模型转换 onnx 涉及到的最基本的环境如下：
+
+    ```
+    conda create -n vcod_sltnet python=3.8
+    conda activate vcod_sltnet
+    conda install pytorch==1.12.1 -c pytorch
+    pip install timm==0.4.12
+    ```
+
+    运行：
 
 ```
-python sltnet_torch2onnx.py
+python torch2onnx.py --pth_path ./sltnet.pth --onnx_path ./sltnet.onnx
 ```
 
 2. 简化 onnx 文件 （可选操作）
@@ -165,6 +182,8 @@ python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx 
 ```
 atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
 ```
+
+注意，该操作耗时较长（约1小时左右），如无报错，请耐心等待。
 
 已经转换好的模型可供参考：[模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
 
