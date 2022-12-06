@@ -66,6 +66,7 @@ npu-smi info
 | Pillow | 9.3.0 | 
 | cv2 | 4.5.5 |
 | timm | 0.4.12 |
+| tqdm | 4.64.1 |
 
 在编译运行项目前，需要设置环境变量：
 
@@ -190,11 +191,19 @@ atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,3
 
 ## 5. 运行推理
 
-mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference_om_mindspore.py 即可。无需放入 SLT-Net 根目录。
+mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference.py 即可。无需放入 SLT-Net 根目录。
 
 ```
-python inference.py
+python inference.py --datapath ${MoCA_Video数据集路径} --save_root ./results/ --om_path ./sltnet.om --testsize 352 --device_id 0
 ```
+
+参数说明：
+    datapath：下载数据以后，目录中，`TestDataset_per_sq` 的上一级目录，
+    save_root：结果保存路径
+    om_path：om 模型路径
+    testsize：图片 resize 的大小，当前固定为 352
+    device_id：设备编号
+
 
 ## 6. 精度评估
 
