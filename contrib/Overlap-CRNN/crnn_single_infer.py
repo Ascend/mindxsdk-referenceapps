@@ -44,7 +44,7 @@ def infer():
     output = crnn_model.infer(img)
     output[0].to_host()
     output[0] = np.array(output[0])
-    result = CTC_Post_Process(y_pred=output[0], blank=BLANK)
+    result = Ctc_Post_Process(y_pred=output[0], blank=BLANK)
     result = result[0]
     img_show(IMAGE_PATH, result)
     print("predict text: ", result)
@@ -100,11 +100,11 @@ def arr2char(inputs):
     string = ""
     for num in inputs:
         if num < BLANK:
-            string += g_label_dict[num]
+            string += g_labelDict[num]
     return string
 
 
-def CTC_Post_Process(y_pred, blank):
+def Ctc_Post_Process(y_pred, blank):
     indices = []
     seq_len, batch_size, _ = y_pred.shape
     indices = y_pred.argmax(axis=2)
@@ -142,13 +142,13 @@ def img_show(img, pred):
 
 
 try:
-    g_label_dict = ""
+    g_labelDict = ""
     if not os.path.exists(LABEL_DICT_PATH):
         print("The input dictionary path is empty!!!")
         print("plz place the model in ./Overlap-CRNN/")
         exit()
     r_dict = open(LABEL_DICT_PATH, 'r')
-    g_label_dict = r_dict.read().splitlines()  # 将字典读入一个str中
+    g_labelDict = r_dict.read().splitlines()  # 将字典读入一个str中
     infer()
 
 except Exception as e:
