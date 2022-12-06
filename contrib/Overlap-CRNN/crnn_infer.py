@@ -34,14 +34,14 @@ def infer():
     crnn_model = sdk.model(MODEL_PATH, DEVICE_ID)
     imgs, labels = data_loader()
     results = []
-    for num in range(len(imgs)):
-        img_path = imgs[num]
-        label = labels[num]
+    for i, img in enumerate(imgs):
+        img_path = img
+        label = labels[i]
         image_tensor_list = load_img_data(img_path)
         output = crnn_model.infer(image_tensor_list)
         output[0].to_host()
         output[0] = np.array(output[0])
-        result = CTCPostProcess(y_pred=output[0], blank=BLANK)
+        result = CTC_Post_Process(y_pred=output[0], blank=BLANK)
         result = result[0]
         results.append(result)
     get_acc(results, labels)
@@ -85,13 +85,13 @@ def load_img_data(image_name):
 
 def arr2char(inputs):
     string = ""
-    for input in inputs:
-        if input < BLANK:
-            string += label_dict[input]
+    for num in inputs:
+        if num < BLANK:
+            string += g_label_dict[num]
     return string
 
 
-def CTCPostProcess(y_pred, blank):
+def CTC_Post_Process(y_pred, blank):
     indices = []
     seq_len, batch_size, _ = y_pred.shape
     indices = y_pred.argmax(axis=2)
@@ -118,8 +118,8 @@ def json_data_loader():
     annotation_path = os.path.join(IMAGE_PATH, 'mask_annotation.txt')
     imgs = []
     texts = []
-    with open(annotation_path, 'r') as f:
-        datas = json.loads(f.read())
+    with open(annotation_path, 'r') as r_annotation:
+        datas = json.loads(r_annotation.read())
     print(len(datas))
 
     for _, data in enumerate(datas):
@@ -133,8 +133,8 @@ def data_loader():
     annotation_path = os.path.join(IMAGE_PATH, 'mask_annotation.txt')
     imgs = []
     texts = []
-    f = open(annotation_path, 'r')
-    datas = f.read().splitlines()
+    r_annotation = open(annotation_path, 'r')
+    datas = r_annotation.read().splitlines()
 
     for data in datas:
         img, text = data.split('\t')
@@ -161,10 +161,10 @@ def get_acc(pred_labels, gt_labels):
 
 
 try:
-    label_dict = ""
+    g_label_dict = ""
     f = open(LABEL_DICT_PATH, 'r')
-    label_dict = f.read().splitlines()
-    print('label len:', len(label_dict))
+    g_label_dict = f.read().splitlines()
+    print('label len:', len(g_label_dict))
     infer()
 
 except Exception as e:
