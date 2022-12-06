@@ -109,7 +109,7 @@ from .short_term_model import VideoModel as VideoModel_pvtv2
 
 ```
 def forward(self, x):
-    image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:] # （此处注释描述修改措施）
+    image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]  # 替换之前的 image1, image2, image3 = x[0],x[1],x[2]
     fmap1=self.backbone.feat_net(image1)
     fmap2=self.backbone.feat_net(image2)
     fmap3=self.backbone.feat_net(image3)
@@ -133,21 +133,25 @@ elif dataset == 'MoCA':
 
 5) 修改 `lib/short_term_model.py` 文件中，如下代码行：
 
+修改：
+
 ```
 self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
 ```
 
-为
+为：
 
 ```
 self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)
 ```
 
+修改：
+
 ```
 self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
 ```
 
-为
+为：
 
 ```
 self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
@@ -161,7 +165,7 @@ if self.args.pretrained_cod10k is not None:
 ```
 
 
-代码修改可以参考 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch)，也可直接使用改项目进行下面的 onnx 模型转换操作，替代以上修改步骤。
+可参考已经完成修改的 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch)，也可直接使用该项目进行下面的 onnx 模型转换操作，替代以上步骤。
 
 
 2、模型转换
@@ -175,8 +179,11 @@ python torch2onnx.py --pth_path ${pth模型文件路径} --onnx_path ./sltnet.on
 ```
 
 参数说明：
-    pth_path：pth模型文件名称及所在路径
-    onnx_path：生成输出的onnx模型文件
+
+pth_path：pth模型文件名称及所在路径
+
+onnx_path：生成输出的onnx模型文件
+
 
 注意，timm 的版本为 `0.4.12`，其他版本可能有兼容性问题。
 
@@ -207,14 +214,19 @@ python inference.py --datapath ${MoCA_Video数据集路径} --save_root ./result
 ```
 
 参数说明：
-    datapath：下载数据以后，目录中 `TestDataset_per_sq` 的上一级目录，
-    save_root：结果保存路径
-    om_path：om 模型路径
-    testsize：图片 resize 的大小，当前固定为 352
-    device_id：设备编号
+
+datapath：下载数据以后，目录中 `TestDataset_per_sq` 的上一级目录，
+
+save_root：结果保存路径
+
+om_path：om 模型路径
+
+testsize：图片 resize 的大小，当前固定为 352
+
+device_id：设备编号
 
 
-## 5.精度评估
+## 5. 精度评估
 
 点击访问 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 并下载 `SLT_Net_MindXsdk_torch-master.zip` 代码压缩包，上传服务器并解压获得 `SLT_Net_MindXsdk_torch-master` 目录及相关文件；
 
