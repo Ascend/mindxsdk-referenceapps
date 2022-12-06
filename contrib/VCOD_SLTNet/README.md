@@ -23,7 +23,8 @@ npu-smi info
 
 ### 1.3 软件方案介绍
 
-本方案中，`torch2onnx.py` 将 PyTorch 版本的伪装视频物体检测模型 [SLT-Net](https://github.com/XuelianCheng/SLT-Net)，转化为晟腾的om模型。`inference.py` 将输入视频帧进行处理，通过调用晟腾om模型进行处理，生成最终的视频伪装物体的掩膜 Mask 图。
+
+本方案中，先通过 `torch2onnx.py` 脚本将 PyTorch 版本的伪装视频物体检测模型 SLT-Net 转换为 onnx 模型；然后通过 `inference.py` 脚本调用晟腾om模型，将输入视频帧进行图像处理，最终生成视频伪装物体的掩膜 Mask 图。
 
 
 ### 1.4 代码目录结构与说明
@@ -48,7 +49,7 @@ npu-smi info
 
 ### 1.6 特性及适用场景
 
-对于伪装视频数据的分割任务均适用，输入视频需要转换为图片序列输入到模型中，具体可以参考 MoCA 数据格式，[MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) ，分辨率在 (352*352) 左右。
+对于伪装视频数据的分割任务均适用，输入视频需要转换为图片序列输入到模型中，具体可以参考 MoCA 数据格式，详见 [SLT-Net](https://xueliancheng.github.io/SLT-Net-project/) 与 [MoCA 数据集主页](https://www.robots.ox.ac.uk/~vgg/data/MoCA/)。
 
 
 ## 2 环境依赖
@@ -68,128 +69,136 @@ npu-smi info
 | timm | 0.4.12 |
 | tqdm | 4.64.1 |
 
-在编译运行项目前，需要设置环境变量：
-
-- 环境变量介绍
-
-```
-MindSDK 环境变量：
-    . ${SDK-path}/set_env.sh
-CANN 环境变量：
-    . ${ascend-toolkit-path}/set_env.sh
-环境变量介绍
-SDK-path: mxVision SDK 安装路径
-ascend-toolkit-path: CANN 安装路径。
-```
-
 
 ## 3. 数据准备
 
+### 3.1 准备相关文件
 
-### 3.1 下载相关文件
+1、SLT-Net代码包准备
 
-- 运行 inference 下载 om 模型文件：[华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)，其中也包含 om 文件生成用到的 torch 模型文件与 onnx 文件。
+点击访问 [SLT-Net](https://github.com/XuelianCheng/SLT-Net) 并下载 SLT-Net-master.zip 代码压缩包，上传服务器并解压得到“SLT-Net-master”目录及文件；
 
-- 运行 torch2onnx 下载 PyTorch 版本 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net)，[SLT-Net 模型文件](https://drive.google.com/file/d/1_u4dEdxM4AKuuh6EcWHAlo8EtR7e8q5v/view) ，保留 `Net_epoch_MoCA_short_term_pseudo.pth` 文件即可，也可以通过 [华为 obs 链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 来下载 torch 模型文件。然后进行下述操作来转换模型。[SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 为已经修改过的代码样例，供参考，并且，该链接提供精简的 [评测指标](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch/tree/master/eval_python) 的运行代码
+2、SLT-Net模型文件准备
 
-- 下载数据集 [MoCA](https://drive.google.com/file/d/1FB24BGVrPOeUpmYbKZJYL5ermqUvBo_6/view) ，或者通过 [MoCA 测试样例（华为 obs 链接）](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip) 来下载
+方法一：通过访问 [SLT-Net 模型官方链接](https://drive.google.com/file/d/1_u4dEdxM4AKuuh6EcWHAlo8EtR7e8q5v/view) 下载模型压缩包 (注意，需要访问 Google Drive )，解压后将 `Net_epoch_MoCA_short_term_pseudo.pth` 模型拷贝至 `SLT-Net-master` 目录下；
+
+方法二：下载 [models.zip 备份模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 并解压获得 `sltnet.pth`、`sltnet.onnx`、`sltnet.om` 三个模型文件，将 `sltnet.pth` 模型拷贝至 `SLT-Net-master` 目录下
 
 
-### 3.2 修改 [SLT-Net 代码](https://github.com/XuelianCheng/SLT-Net) 以完成模型转换，使用 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 可跳过该步骤。
+3、数据集准备
 
-1. `lib/__init__.py` 中注释掉第二行
+通过访问[MoCA官方链接](https://xueliancheng.github.io/SLT-Net-project/)下载 `MoCA_Video` 数据集，或者通过[数据集备份链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/MoCA_Video.zip)来下载 `MoCA_Video.zip` 数据集压缩包并解压；
 
-因为长期模型依赖 CUDA，并且需要在 CUDA 平台进行编译，而本项目基于 MindX SDK 实现，因此使用短期模型。并且，短期模型的评价指标满足预期。
+
+### 3.2 模型转换
+
+1、SLT-Net代码预处理
+
+进入 `SLT-Net-master/lib` 目录下，对 `__init__.py`、`short_term_model.py`、`pvtv2_afterTEM.py`三个文件做以下修改：
+
+1）`__init__.py`文件注释如下：
 
 ```
 from .short_term_model import VideoModel as VideoModel_pvtv2
 # from .long_term_model import VideoModel as VideoModel_long_term
 ```
 
-2. `lib/short_term_model.py`
+注：因为长期模型依赖 CUDA，并且需要在 CUDA 平台进行编译，而本项目基于 MindX SDK 实现，因此使用短期模型。并且，短期模型的评价指标满足预期。
+
+2）`short_term_model.py` 文件修改如下：
 
 ```
-image1, image2, image3 = x[0],x[1],x[2]
+def forward(self, x):
+    image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:] # （此处注释描述修改措施）
+    fmap1=self.backbone.feat_net(image1)
+    fmap2=self.backbone.feat_net(image2)
+    fmap3=self.backbone.feat_net(image3)
 ```
 
-替换为
+3）`pvtv2_afterTEM.py` 文件注释如下：
 
 ```
-image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]
+from timm.models import create_model
+#from mmseg.models import build_segmentor
+#from mmcv import ConfigDict
+import pdb
 ```
 
-3. `lib/pvtv2_afterTEM.py`
-
-注释掉
-```
-# from mmseg.models import build_segmentor
-# from mmcv import ConfigDict
-```
-
-4. `mypath.py`
+4）修改“SLT-Net-master/mypath.py”文件如下：
 
 ```
 elif dataset == 'MoCA':
-    return './dataset/MoCA-Mask/'
+    return './dataset/MoCA-Mask/' # 将此处路径修改指定为“MoCA_Video”目录的相对路径
 ```
 
-替换为数据集路径 `TestDataset_per_sq` 的父目录。
-
-
-## 4. 模型转换
-
-### 4.1 设置环境变量
+5) 修改 `lib/short_term_model.py` 文件中，如下代码行：
 
 ```
-source /usr/local/Ascend/ascend-toolkit/set_env.sh
-source ~/mindx_dir/mxVision/set_env.sh
-conda activate py392
+self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
 ```
 
-### 4.2 执行编译的步骤
-
-1. pytorch 模型转换 onnx 文件
-
-
-    将 `torch2onnx.py` 放到 SLT-Net 项目根目录。推荐下载已经完成针对模型转化优化的项目代码 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch)。
-    
-    下载 [模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)，指定其中的 torch 模型文件路径，如： `./sltnet.pth`
-
-    注意，timm 的版本为 `0.4.12`，其他版本可能会报错。
-
-    pytorch 模型转换 onnx 涉及到的最基本的环境如下：
-
-    ```
-    conda create -n vcod_sltnet python=3.8
-    conda activate vcod_sltnet
-    conda install pytorch==1.12.1 -c pytorch
-    pip install timm==0.4.12
-    ```
-
-    运行：
+为
 
 ```
-python torch2onnx.py --pth_path ./sltnet.pth --onnx_path ./sltnet.onnx
+self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)
 ```
 
-2. 简化 onnx 文件 （可选操作）
+```
+self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
+```
+
+为
+
+```
+self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
+```
+
+删除
+
+```
+if self.args.pretrained_cod10k is not None:
+    self.load_backbone(self.args.pretrained_cod10k )
+```
+
+
+代码修改可以参考 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch)，也可直接使用改项目进行下面的 onnx 模型转换操作，替代以上修改步骤。
+
+
+2、模型转换
+
+步骤一、pth模型转onnx模型
+
+将 `VCOD_SLTNet` 代码包中的 `torch2onnx.py` 脚本拷贝至 `SLT-Net-master` 目录下，并在 `SLT-Net-master` 目录下执行以下命令将 pth 模型转换成 onnx 模型：
+
+```
+python torch2onnx.py --pth_path ${pth模型文件路径} --onnx_path ./sltnet.onnx
+```
+
+参数说明：
+    pth_path：pth模型文件名称及所在路径
+    onnx_path：生成输出的onnx模型文件
+
+注意，timm 的版本为 `0.4.12`，其他版本可能有兼容性问题。
+
+
+步骤二、简化onnx文件（可选操作）
 
 ```
 python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx sltnet_sim.onnx
 ```
 
-3. onnx 文件转换 om 文件
+步骤三、onnx模型转om模型
+
+注意，该操作耗时较长（约1小时左右），如无报错，请耐心等待。
 
 ```
 atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
 ```
 
-注意，该操作耗时较长（约1小时左右），如无报错，请耐心等待。
-
-已经转换好的模型可供参考：[模型文件](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip)
+注：若想使用转换好的onnx模型或om模型，可通过下载 [models.zip备份模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 解压获得转换好的 onnx 模型或 om 模型。
 
 
-## 5. 运行推理
+## 4. 运行推理
 
 mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference.py 即可。无需放入 SLT-Net 根目录。
 
@@ -198,30 +207,27 @@ python inference.py --datapath ${MoCA_Video数据集路径} --save_root ./result
 ```
 
 参数说明：
-    datapath：下载数据以后，目录中，`TestDataset_per_sq` 的上一级目录，
+    datapath：下载数据以后，目录中 `TestDataset_per_sq` 的上一级目录，
     save_root：结果保存路径
     om_path：om 模型路径
     testsize：图片 resize 的大小，当前固定为 352
     device_id：设备编号
 
 
-## 6. 精度评估
+## 5.精度评估
 
+点击访问 [SLT_Net_MindXsdk_torch](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch) 并下载 `SLT_Net_MindXsdk_torch-master.zip` 代码压缩包，上传服务器并解压获得 `SLT_Net_MindXsdk_torch-master` 目录及相关文件；
 
-- 可以使用基于 [MATLAB](https://github.com/XuelianCheng/SLT-Net/tree/master/eval) 或基于 [Python](https://github.com/lartpang/PySODEvalToolkit) 的评测代码。
-
-- 推荐使用精简后的 [Python 评测代码](https://github.com/shuowang-ai/SLT_Net_MindXsdk_torch/tree/master/eval_python)
-
-- 运行 `eval/run_eval.py` 脚本，修改 `gt_dir`、`pred_dir` 为本地的 GT、预测结果的目录即可。
-
-- 运行
+进入 `SLT_Net_MindXsdk_torch-master` 目录，修改 `eval_python/run_eval.py` 脚本中的 `gt_dir` 为本地的 `MoCA_Video/TestDataset_per_sq/` 目录的绝对路径，`pred_dir` 为预测结果目录的绝对路径，并执行以下命令进行精度评估：
 
 ```
-python eval/run_eval.py
+python eval_python/run_eval.py
 ```
 
-得到指标结果
+完成评估后的结果如下：
 
-```
 {'Smeasure': 0.6539, 'wFmeasure': 0.3245, 'MAE': 0.0161, 'adpEm': 0.6329, 'meanEm': 0.7229, 'maxEm': 0.7554, 'adpFm': 0.3025, 'meanFm': 0.3577, 'maxFm': 0.3738}
-```
+
+评测结果高于交付所要求的 Smeasure 0.6 的指标。
+
+注：评估还可参考基于 基于 [MATLAB](https://github.com/XuelianCheng/SLT-Net/tree/master/eval) 的 SLT-Net 的评测代码或参考基于 Python 的 [PySODEvalToolkit](https://github.com/lartpang/PySODEvalToolkit) 的评测代码。
