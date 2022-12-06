@@ -41,7 +41,7 @@ def infer():
         output = crnn_model.infer(image_tensor_list)
         output[0].to_host()
         output[0] = np.array(output[0])
-        result = Ctc_Post_Process(y_pred=output[0], blank=BLANK)
+        result = ctc_post_process(y_pred=output[0], blank=BLANK)
         result = result[0]
         results.append(result)
     get_acc(results, labels)
@@ -87,11 +87,11 @@ def arr2char(inputs):
     string = ""
     for num in inputs:
         if num < BLANK:
-            string += g_labelDict[num]
+            string += LABEL_DICT[num]
     return string
 
 
-def Ctc_Post_Process(y_pred, blank):
+def ctc_post_process(y_pred, blank):
     indices = []
     seq_len, batch_size, _ = y_pred.shape
     indices = y_pred.argmax(axis=2)
@@ -161,10 +161,10 @@ def get_acc(pred_labels, gt_labels):
 
 
 try:
-    g_labelDict = ""
+    LABEL_DICT = ""
     f = open(LABEL_DICT_PATH, 'r')
-    g_labelDict = f.read().splitlines()
-    print('label len:', len(g_labelDict))
+    LABEL_DICT = f.read().splitlines()
+    print('label len:', len(LABEL_DICT))
     infer()
 
 except Exception as e:
