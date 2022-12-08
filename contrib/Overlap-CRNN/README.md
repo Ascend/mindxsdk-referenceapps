@@ -66,13 +66,13 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 实现流程图如下图所示：
 
-![image-20221201214655261](./%E6%B5%81%E7%A8%8B%E5%9B%BE.png)
+![image-20221201214655261](../Overlap-CRNN/流程图.png)
 
 
 
 ### 1.6 特性及适用场景
 
-本案例中的 CRNN模型适用于灰度图像的识别，并可以返回测试图像的word-based的精度值。
+本案例中的 CRNN模型适用于英文的灰度图像的识别，并可以返回测试图像的word-based的精度值。
 
 本模型在以下几种情况去噪效果良好：图像中文字清晰可见、排版工整、字符大小适中等。
 
@@ -107,7 +107,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 
 
-## 模型训练
+## 3 模型训练
 
 **步骤1** 从昇腾社区的modelzoo中下载官方CRNN模型代码：https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1
 
@@ -116,9 +116,10 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 1. **default_config.yaml**
 
    ```yaml
-   model_version: "V2" # GPU训练使用V2
+   model_version: "V2" # V2可以在GPU和Ascend上训练
    label_dict: "PATH/TO/ch_sim_en_digit_symble.txt" # 使用自己的字典的路径
    max_text_length: 12
+   image_width: 112
    class_num: 6703 
    blank: 6702
    train_dataset_path: "" # 训练数据集路径
@@ -145,6 +146,80 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
        f.close()
    ```
 
+   
+
+   将CaptchaDataset函数更换为：
+
+   ```python
+   class CaptchaDataset:
+    """
+    create train or evaluation dataset for crnn
+
+    Args:
+        img_root_dir(str): root path of images
+        max_text_length(int): max number of digits in images.
+        device_target(str): platform of training, support Ascend and GPU.
+    """
+
+    def __init__(self, img_root_dir, is_training=True, config=config1):
+        if not os.path.exists(img_root_dir):
+            raise RuntimeError(
+                "the input image dir {} is invalid!".format(img_root_dir))
+        self.img_root_dir = img_root_dir
+        if is_training:
+            self.imgslist = os.path.join(self.img_root_dir,
+                                         'annotation_train.txt')
+        else:
+            self.imgslist = os.path.join(self.img_root_dir,
+                                         'annotation_test.txt')
+        self.img_names = {}
+        self.img_list = []
+        with open(self.imgslist, 'r') as f:
+            for line in f:
+                img_name, img_label = line.strip('\n').split('\t')
+                self.img_list.append(img_name)
+                self.img_names[img_name] = str(img_label)
+        f.close()
+        self.max_text_length = config.max_text_length
+        self.blank = config.blank
+        self.class_num = config.class_num
+        self.sample_num = len(self.img_list)
+        self.batch_size = config.batch_size
+        print("There are totally {} samples".format(self.sample_num))
+
+    def __len__(self):
+        return self.sample_num
+
+    def __getitem__(self, item):
+        img_name = self.img_list[item]
+        try:
+            im = Image.open(os.path.join(self.img_root_dir, img_name))
+        except IOError:
+            print("%s is a corrupted image" % img_name)
+            return self[item + 1]
+        im = im.convert("RGB")
+        r, g, b = im.split()
+        im = Image.merge("RGB", (b, g, r))
+        image = np.array(im)
+        if not check_image_is_valid(image):
+            print("%s is a corrupted image" % img_name)
+            return self[item + 1]
+
+        text = self.img_names[img_name]
+
+        label_unexpanded = text_to_labels(text)
+        label = np.full(self.max_text_length, self.blank)
+        if self.max_text_length < len(label_unexpanded):
+            label_len = self.max_text_length
+        else:
+            label_len = len(label_unexpanded)
+        for j in range(label_len):
+            label[j] = label_unexpanded[j]
+        return image, label
+   ```
+
+   
+
 3. **metric.py**
 
    将第18行的字典
@@ -164,11 +239,11 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
        f.close()
    ```
 
-**步骤3** 训练步骤参考官方代码https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1
+**步骤3** 训练步骤参考官方代码: https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1
 
 
 
-## 模型转换
+## 4 模型转换
 
 本项目使用的模型是CRNN模型。
 
@@ -183,7 +258,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 2. 进入CRNN_for_MindSpore_1.2_code文件夹下执行命令（修改`ckpt_file_path`和`file_name`参数为自己的路径）：
 
    ```
-   python export.py --ckpt_file [ckpt_file_path] --file_name [file_name] --file_format AIR
+   python export.py --ckpt_file [ckpt_file] --file_name [air_file_name] --file_format AIR
    ```
 
 3. 将生成的AIR模型转移到推理服务器，放至在Overlap-CRNN/air_model路径下。
@@ -204,28 +279,29 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 表示命令执行成功。
 
 相关模型的下载链接如下：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip
-将模型按照提供的文件夹目录放至即可。
 
-## 编译与运行
+模型均在GPU下训练得到，将模型按照提供的文件夹目录放至即可。
 
-当已有模型的om文件，保存在Overlap-CRNN/om_model/下
+## 5 编译与运行
+
+当已有模型的om文件，保存在Overlap-CRNN/om_models/下
 
 示例步骤如下：
 **步骤1** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
 
-**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_img_infer.py`中相关配置，将`model_path`对象的路径改成实际的om模型的路径；`image_path`对象的路径改成实际的测试图片的路径；`save_path`对象设置成需要保存可视化图像的路径。
+**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/om_models/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
 
 **步骤3** 在命令行输入 如下命令运行整个工程：
 
 ```
-python crnn_img_infer.py
+python crnn_single_infer.py
 ```
 
 **步骤4** 运行结束输出show.jpg
 
 
 
-## 测试精度
+## 6 测试精度
 
 **步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集，按照文件目录放至即可：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/dataset.zip）
 
@@ -237,4 +313,4 @@ python crnn_infer.py
 
 模型在测试集上的精度达标，最终模型的的acc为83.58%，满足精度要求（acc≥80%）。
 
-![image-20221202155839483](./%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C.png)
+![image-20221202155839483](../Overlap-CRNN/测试结果.png)
