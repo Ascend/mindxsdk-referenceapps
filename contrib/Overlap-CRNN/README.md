@@ -51,11 +51,11 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 ├── README.md
 ├── ch_sim_en_digit_symble.txt #字典
 ├── models #不同类型的模型文件
-│   ├── air_models
+│   ├── air_model
 │   │   ├── crnn.air
-│   └── ckpt_models
+│   └── ckpt_model
 │   │   ├── crnn.ckpt
-│   └── om_models
+│   └── om_model
 │   │   ├── crnn.om
 ├── dataset #测试数据集
 │   ├── img
@@ -88,6 +88,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 | 软件名称            | 版本        |
 | ------------------- | ----------- |
+| mindspore           | 1.8.1       |
 | MindX SDK           | 3.0RC2      |
 | Ascend-CANN-toolkit | 5.1.RC2     |
 | ubuntu              | 18.04.1 LTS |
@@ -113,7 +114,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 **步骤2** 为适配我们的任务要求，做如下修改：
 
-1. **default_config.yaml**
+1. **./default_config.yaml**
 
    ```yaml
    model_version: "V2" # V2可以在GPU和Ascend上训练
@@ -127,7 +128,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
    train_eval_dataset_path: "" # 测试数据路径
    ```
 
-2. **dataset.py**
+2. **./src/dataset.py**
 
    将第41行的：
 
@@ -220,7 +221,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
    
 
-3. **metric.py**
+3. **./src/metric.py**
 
    将第18行的字典
 
@@ -255,7 +256,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 1. 准备好训练得到的ckpt模型文件，放至在训练服务器Ascend910上。
 
-2. 进入CRNN_for_MindSpore_1.2_code文件夹下执行命令（修改`ckpt_file_path`和`file_name`参数为自己的路径）：
+2. 进入CRNN_for_MindSpore_1.2_code文件夹下执行命令（修改`ckpt_file`和`air_file_name`参数为自己的路径）：
 
    ```
    python export.py --ckpt_file [ckpt_file] --file_name [air_file_name] --file_format AIR
@@ -280,16 +281,16 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 相关模型的下载链接如下：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip
 
-模型均在GPU下训练得到，将模型按照提供的文件夹目录放至即可。
+模型均在GPU下训练得到，如果需要使用本仓库提供的模型进行推理或模型转换，请务必参照GPU所需的参数设置，然后将模型按照提供的文件夹目录放至即可。
 
 ## 5 编译与运行
 
-当已有模型的om文件，保存在Overlap-CRNN/om_models/下
+当已有模型的om文件，保存在Overlap-CRNN/om_model/下
 
 示例步骤如下：
 **步骤1** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
 
-**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/om_models/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
+**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
 
 **步骤3** 在命令行输入 如下命令运行整个工程：
 
