@@ -133,19 +133,7 @@ elif dataset == 'MoCA':
 
 5) 修改 `lib/short_term_model.py` 文件中，如下代码行：
 
-修改：
-
-```
-self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
-```
-
-为：
-
-```
-self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)
-```
-
-修改：
+修改两处 （`self.args.trainsize` 直接指定为 `352`）：
 
 ```
 self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
@@ -156,6 +144,7 @@ self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
 ```
 self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
 ```
+
 
 删除
 
@@ -196,8 +185,6 @@ python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx 
 
 步骤三、onnx模型转om模型
 
-注意，该操作耗时较长（约1小时左右），如无报错，请耐心等待。
-
 ```
 atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
 ```
@@ -205,9 +192,13 @@ atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,3
 注：若想使用转换好的onnx模型或om模型，可通过下载 [models.zip备份模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 解压获得转换好的 onnx 模型或 om 模型。
 
 
+注意，pth模型转onnx模型，onnx模型转om模型，均可能花费约1小时左右，视不同运行环境而定。如无报错，请耐心等待。
+
+
 ## 4. 运行推理
 
-mindspore 版本模型：配置代码中参数：1. 输出结果保存目录 `save_root`； 2. om 模型路径 `om_path`，直接运行 inference.py 即可。无需放入 SLT-Net 根目录。
+
+使用如下命令，运行 `inference.py` 脚本：
 
 ```
 python inference.py --datapath ${MoCA_Video数据集路径} --save_root ./results/ --om_path ./sltnet.om --testsize 352 --device_id 0
@@ -224,6 +215,22 @@ om_path：om 模型路径
 testsize：图片 resize 的大小，当前固定为 352
 
 device_id：设备编号
+
+
+注意，该脚本无需放入修改的 SLT-Net 目录，在任意位置均可执行，只需设置好上述参数即可。
+
+
+运行输出如下：
+
+```
+  0%|                                                                                                       | 0/713 [00:00<?, ?it/s]>  ./results/arctic_fox/Pred/00000.png
+  0%|▏                                                                                              | 1/713 [00:00<10:31,  1.13it/s]>  ./results/arctic_fox/Pred/00005.png
+  0%|▎                                                                                              | 2/713 [00:01<09:01,  1.31it/s]>  ./results/arctic_fox/Pred/00010.png
+  0%|▍                                                                                              | 3/713 [00:02<08:30,  1.39it/s]>  ./results/arctic_fox/Pred/00015.png
+  1%|▌                                                                                              | 4/713 [00:02<08:13,  1.44it/s]>  ./results/arctic_fox/Pred/00020.png
+```
+
+将展示剩余运行时间以及生成图片的路径。
 
 
 ## 5. 精度评估
