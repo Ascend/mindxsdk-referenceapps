@@ -109,12 +109,15 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 
 ## 3 模型训练
+模型均在GPU下训练得到，如果需要使用本仓库提供的模型进行推理或模型转换，请务必参照GPU所需的参数设置，然后将模型按照提供的文件夹目录放至即可。
 
-**步骤1** 从昇腾社区的modelzoo中下载官方CRNN模型代码：https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1
+相关模型的下载链接如下：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip)
 
-**步骤2** 为适配我们的任务要求，做如下修改：
+**步骤1** 从昇腾社区的modelzoo中下载官方CRNN模型代码，并按安装官方文档中的步骤完成训练：[下载链接](https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1)
 
-1. **./default_config.yaml**
+
+
+1. **CRNN_for_MindSpore_1.2_code/default_config.yaml**
 
    ```yaml
    model_version: "V2" # V2可以在GPU和Ascend上训练
@@ -128,7 +131,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
    train_eval_dataset_path: "" # 测试数据路径
    ```
 
-2. **./src/dataset.py**
+2. **CRNN_for_MindSpore_1.2_code/src/dataset.py**
 
    将第41行的：
 
@@ -221,7 +224,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
    
 
-3. **./src/metric.py**
+3. **CRNN_for_MindSpore_1.2_code/src/metric.py**
 
    将第18行的字典
 
@@ -240,37 +243,33 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
        f.close()
    ```
 
-**步骤3** 训练步骤参考官方代码: https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1
-
-
-
-## 4 模型转换
-
-本项目使用的模型是CRNN模型。
-
-通过第三节的训练后得到ckpt模型文件，在项目运行前需要将ckpt文件通过 `export.py `转换成AIR模型文件，然后在本代码仓下通过ATC转换成om模型。
-
-模型转换工具（ATC）相关介绍如下：https://support.huawei.com/enterprise/zh/doc/EDOC1100234054
-
-具体步骤如下：
-
-1. 准备好训练得到的ckpt模型文件，放至在训练服务器Ascend910上。
-
-2. 进入CRNN_for_MindSpore_1.2_code文件夹下执行命令（修改`ckpt_file`和`air_file_name`参数为自己的路径）：
-
+**步骤2** 训练得到ckpt模型文件后，进入CRNN_for_MindSpore_1.2_code文件夹下执行命令（修改`ckpt_file`和`air_file_name`参数为自己的路径）：
    ```
    python export.py --ckpt_file [ckpt_file] --file_name [air_file_name] --file_format AIR
    ```
 
-3. 将生成的AIR模型转移到推理服务器，放至在Overlap-CRNN/air_model路径下。
 
-4. 进入推理服务器执行命令（修改`air_model_path`和`output_model_path`参数为自己的路径）：
 
+
+## 4 模型推理
+
+**步骤1** 将生成的AIR模型转移到推理服务器，放至在Overlap-CRNN/models/air_model路径下。
+```
+cd ./Overlap-CRNN
+mkdir models
+cd models
+mkdir air_model
+```
+
+**步骤2** 进入推理服务器执行命令（修改`air_model_path`和`output_model_path`参数为自己的路径）：
    ```
    atc --model=[air_model_path] --framework=1 --output=[output_model_path] --soc_version=Ascend310 --output_type=FP32 --op_select_implmode=high_precision --input_shape="input:1,3,32,112"
    ```
+模型转换工具（ATC）相关介绍如下：[ATC介绍](https://support.huawei.com/enterprise/zh/doc/EDOC1100234054)
 
-5. 执行该命令会在当前目录下生成项目需要的模型文件`[output_model].om`。执行后终端输出为：
+相关模型的下载链接如下：[模型下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip)
+
+**步骤3** 执行该命令会在当前目录下生成项目需要的模型文件`[output_model].om`。执行后终端输出为：
 
    ```
    ATC start working now, please wait for a moment.
@@ -279,30 +278,29 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 表示命令执行成功。
 
-相关模型的下载链接如下：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip
+**步骤4** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
 
-模型均在GPU下训练得到，如果需要使用本仓库提供的模型进行推理或模型转换，请务必参照GPU所需的参数设置，然后将模型按照提供的文件夹目录放至即可。
+**步骤5** 按照模型转换获取om模型，放置在Overlap-CRNN/models/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
 
-## 5 编译与运行
+相关参数在Overlap-CRNN/crnn_single_infer.py下：
+```
+MODEL_PATH = "./models/om_model/crnn.om"
+IMAGE_PATH = "./test.jpg"
+SAVE_PATH = "./show.jpg"
+```
 
-当已有模型的om文件，保存在Overlap-CRNN/models/om_model/下
 
-示例步骤如下：
-**步骤1** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
-
-**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/models/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
-
-**步骤3** 在命令行输入 如下命令运行整个工程：
+**步骤6** 在命令行输入 如下命令运行整个工程：
 
 ```
 python crnn_single_infer.py
 ```
 
-**步骤4** 运行结束输出show.jpg
+**步骤7** 运行结束输出show.jpg
 
 
 
-## 6 测试精度
+## 5 测试精度
 
 **步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集，按照文件目录放至即可：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/dataset.zip）
 
