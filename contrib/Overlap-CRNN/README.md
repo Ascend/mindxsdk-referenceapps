@@ -285,12 +285,12 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
 ## 5 编译与运行
 
-当已有模型的om文件，保存在Overlap-CRNN/om_model/下
+当已有模型的om文件，保存在Overlap-CRNN/models/om_model/下
 
 示例步骤如下：
 **步骤1** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
 
-**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
+**步骤2** 按照模型转换获取om模型，放置在Overlap-CRNN/models/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
 
 **步骤3** 在命令行输入 如下命令运行整个工程：
 
