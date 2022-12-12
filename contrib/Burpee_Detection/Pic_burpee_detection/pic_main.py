@@ -33,8 +33,20 @@ class OStream:
 
 
 cout = OStream(sys.stdout)
-END_L = '/n'
+END_L = '\n'
 
+# Init the directory of input and output
+INPUT_PATH = ["../data/images/test/"]  # the path of input
+
+OUTPUT_PATH = ["./result_test/"]  # the output path of txt file
+
+OUTPUT_PIC_PATH = ["./result_test_pic/"]  # the output path of pictures
+
+for path in INPUT_PATH:
+    if len(os.listdir(path)) == 0:
+        cout << 'The folder is empty:' << path << END_L
+        exit()
+            
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
 # Init stream manager
@@ -43,7 +55,7 @@ if ret != 0:
     cout << 'Failed to init Stream manager, ret=' << str(ret) << END_L
     exit()
 # Mark start time
-start = time.time()
+#start = time.time()
 # Create streams by pipeline config file
 # Load  pipline
 with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
@@ -56,12 +68,6 @@ if ret != 0:
 
 DET_IMG_COUNT = 0  # the number of detected pictures
 
-# Init the directory of input and output
-INPUT_PATH = ["../data/images/test/"]  # the path of input
-
-OUTPUT_PATH = ["./result_test/"]  # the output path of txt file
-
-OUTPUT_PIC_PATH = ["./result_test_pic/"]  # the output path of pictures
 
 for index, path in enumerate(INPUT_PATH):
 
@@ -90,7 +96,7 @@ for index, path in enumerate(INPUT_PATH):
             os.remove(IMG_TXT)
         DATA_INPUT = MxDataInput()
         if os.path.exists(IMG_PATH) != 1:
-            cout << 'The image does not exist.' << END_L
+            cout << 'The image does not exist:' << IMG_PATH << END_L
             continue
         with open(IMG_PATH, 'rb') as f:
             DATA_INPUT.data = f.read()
@@ -181,11 +187,11 @@ for index, path in enumerate(INPUT_PATH):
             f.write(CONTENT)
             f.write('\n')
 
-end = time.time()
-cost_time = end - start
+#end = time.time()
+#cost_time = end - start
 # Mark spend time
-cout << 'Image count:' << DET_IMG_COUNT << END_L
-cout << 'Spend time:' << cost_time << END_L
-cout << 'fps:' << (DET_IMG_COUNT / cost_time) << END_L
+#cout << 'Image count:' << DET_IMG_COUNT << END_L
+#cout << 'Spend time:' << cost_time << END_L
+#cout << 'fps:' << (DET_IMG_COUNT / cost_time) << END_L
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()

@@ -16,8 +16,8 @@ export MX_SDK_path=""# mxVision 安装路径
 export Ascend_toolkit_path=""# CANN 安装路径
 
 # MindXSDK 环境变量：
-source ${MX_SDK_path}/set_env.sh
+. /${MX_SDK_path}/set_env.sh
 
 # CANN 环境变量：
-source ${Ascend_toolkit_path}/set_env.sh
+. /${Ascend_toolkit_path}/set_env.sh
 

@@ -280,9 +280,9 @@ def calculate_pr(sum_ap, fp, tp, counter_per_class, class_name):
     sum_ap += ap
     text = "{0:.2f}%".format(ap * 100) + " = " + class_name + " AP "
     ret = dict()
-    ret['sum_AP'] = sum_ap
+    ret['sum_ap'] = sum_ap
     ret['text'] = text
-    ret['prec'] = prec
+    ret['p_rec'] = prec
     ret['rec'] = rec
     return ret
 
@@ -299,6 +299,8 @@ def calculate_ap(output_file, gt_classes, labels, class_bbox, counter_per_class)
     :return:
     """
     sum_ap = 0.0
+    if os.path.exists(output_file):
+        os.remove(output_file)
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     writer = os.fdopen(os.open(output_file, flags, 0o755), 'w')
     writer.write("# AP and precision/recall per class\n")

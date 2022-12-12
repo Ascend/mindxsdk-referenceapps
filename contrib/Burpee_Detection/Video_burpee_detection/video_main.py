@@ -31,7 +31,7 @@ class OStream:
 
 
 cout = OStream(sys.stdout)
-END_L = '/n'
+END_L = '\n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
@@ -42,7 +42,7 @@ if ret != 0:
     exit()
 # Create streams by pipeline config file
 # load  pipline
-with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
+with open("../pipeline/burpee_detection_v.pipeline", 'rb') as f:
     pipelineStr = f.read()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message

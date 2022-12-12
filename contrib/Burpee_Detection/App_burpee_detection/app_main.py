@@ -36,7 +36,7 @@ class OStream:
 
 
 cout = OStream(sys.stdout)
-END_L = '/n'
+END_L = '\n'
 
 # The following belongs to the SDK Process
 streamManagerApi = StreamManagerApi()
