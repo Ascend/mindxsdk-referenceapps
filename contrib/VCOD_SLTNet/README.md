@@ -133,16 +133,21 @@ def forward(self, x):
     fmap3=self.backbone.feat_net(image3)
 ```
 
-修改两处 （`self.args.trainsize` 直接指定为 `352`）：
+修改
 
 ```
-self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
-```
+    def __init__(self, args):
+        super(ImageModel, self).__init__()
+        self.args = args
+        # self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=self.args.trainsize)
+        self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)
 
-为：
+    ....
 
-```
-self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
+        # self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
+        self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
+        if self.args.pretrained_cod10k is not None:
+            self.load_backbone(self.args.pretrained_cod10k )
 ```
 
 
