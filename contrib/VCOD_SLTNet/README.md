@@ -121,23 +121,7 @@ from .short_term_model import VideoModel as VideoModel_pvtv2
 注：因为长期模型依赖 CUDA，并且需要在 CUDA 平台进行编译，而本项目基于 MindX SDK 实现，因此使用短期模型。并且，短期模型的评价指标满足预期。
 
 
-2）`pvtv2_afterTEM.py` 文件注释如下：
-
-```
-from timm.models import create_model
-#from mmseg.models import build_segmentor
-#from mmcv import ConfigDict
-import pdb
-```
-
-3）修改“SLT-Net-master/mypath.py”文件如下：
-
-```
-elif dataset == 'MoCA':
-    return './dataset/MoCA-Mask/' # 将此处路径修改指定为“MoCA_Video”目录的相对路径
-```
-
-4) 修改 `lib/short_term_model.py` 文件中，如下代码行：
+2) 修改 `short_term_model.py` 文件中，如下代码行：
 
 修改
 
@@ -167,6 +151,24 @@ self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
 ```
 if self.args.pretrained_cod10k is not None:
     self.load_backbone(self.args.pretrained_cod10k )
+```
+
+
+3）`pvtv2_afterTEM.py` 文件注释如下：
+
+```
+from timm.models import create_model
+#from mmseg.models import build_segmentor
+#from mmcv import ConfigDict
+import pdb
+```
+
+
+修改“SLT-Net-master/mypath.py”文件如下：
+
+```
+elif dataset == 'MoCA':
+    return './dataset/MoCA-Mask/' # 将此处路径修改指定为“MoCA_Video”目录的相对路径
 ```
 
 
