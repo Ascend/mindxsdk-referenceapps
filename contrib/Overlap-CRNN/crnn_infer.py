@@ -32,7 +32,7 @@ BLANK = 6702
 
 def infer():
     crnn_model = sdk.model(MODEL_PATH, DEVICE_ID)
-    imgs, labels = data_loader()
+    imgs, labels = json_data_loader()
     results = []
     for i, img in enumerate(imgs):
         img_path = img
@@ -115,7 +115,7 @@ def ctc_post_process(y_pred, blank):
 
 
 def json_data_loader():
-    annotation_path = os.path.join(IMAGE_PATH, 'mask_annotation.txt')
+    annotation_path = os.path.join(IMAGE_PATH, 'annotation.json')
     imgs = []
     texts = []
     with open(annotation_path, 'r') as r_annotation:
@@ -124,7 +124,7 @@ def json_data_loader():
 
     for _, data in enumerate(datas):
         for _, text_data in enumerate(data['texts']):
-            imgs.append(os.path.join(IMAGE_PATH, text_data['mask']))
+            imgs.append(text_data['mask'])
             texts.append(text_data['label'])
     return imgs, texts
 
