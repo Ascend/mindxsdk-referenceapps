@@ -59,7 +59,8 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 │   │   ├── crnn.om
 ├── dataset #测试数据集
 │   ├── img
-│   └── mask_annotation.txt
+│   ├── map_record.json
+│   └── annotation.json
 ```
 
 ### 1.5 技术实现流程图
@@ -111,7 +112,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 ## 3 模型训练
 模型均在GPU下训练得到，如果需要使用本仓库提供的模型进行推理或模型转换，请务必参照GPU所需的参数设置，然后将模型按照提供的文件夹目录放至即可。
 
-相关模型的下载链接如下：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip)
+相关模型的下载链接如下：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlap-CRNN/models.zip)
 
 **步骤1** 从昇腾社区的modelzoo中下载官方CRNN模型代码，并按安装官方文档中的步骤完成训练：[下载链接](https://www.hiascend.com/zh/software/modelzoo/models/detail/C/c4945b2fc8aa47f6af9b4f2870e41062/1)
 
@@ -152,7 +153,7 @@ eg：本sample工程名称为Overlap-CRNN，工程目录如下图所示：
 
    
 
-   将CaptchaDataset函数更换为：
+   将`CaptchaDataset`函数更换为：
 
    ```python
    class CaptchaDataset:
@@ -267,7 +268,7 @@ mkdir air_model
    ```
 模型转换工具（ATC）相关介绍如下：[ATC介绍](https://support.huawei.com/enterprise/zh/doc/EDOC1100234054)
 
-相关模型的下载链接如下：[模型下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/models.zip)
+相关模型的下载链接如下：[模型下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlap-CRNN/models.zip)
 
 **步骤3** 执行该命令会在当前目录下生成项目需要的模型文件`[output_model].om`。执行后终端输出为：
 
@@ -280,7 +281,7 @@ mkdir air_model
 
 **步骤4** 将任意一张jpg格式的图片存到当前目录下(./Overlap-CRNN），命名为test.jpg。
 
-**步骤5** 按照模型转换获取om模型，放置在Overlap-CRNN/models/om_model/ 路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
+**步骤5** 按照模型转换获取om模型，放置在Overlap-CRNN/models/om_model/路径下。若未自行转换模型，使用的是仓库提供的模型，则无需修改相关文件，否则修改`crnn_single_infer.py`中相关配置，将`MODEL_PATH`对象的路径改成实际的om模型的路径；`IMAGE_PATH`对象的路径改成实际的测试图片的路径；`SAVE_PATH`对象设置成需要保存可视化图像的路径。
 
 相关参数在Overlap-CRNN/crnn_single_infer.py下：
 ```
@@ -296,13 +297,13 @@ SAVE_PATH = "./show.jpg"
 python crnn_single_infer.py
 ```
 
-**步骤7** 运行结束输出show.jpg
+**步骤7** 运行结束输出`show.jpg`
 
 
 
 ## 5 测试精度
 
-**步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集，按照文件目录放至即可：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlao-CRNN/dataset.zip）
+**步骤1** 在Overlap-CRNN/dataset/路径下准备相同格式的数据集（已提供测试用的数据集，按照文件目录放至即可：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlap-CRNN/dataset.zip)）
 
 **步骤2** 在命令行输入 如下命令运行整个工程：
 
@@ -310,6 +311,6 @@ python crnn_single_infer.py
 python crnn_infer.py
 ```
 
-模型在测试集上的精度达标，最终模型的的acc为83.58%，满足精度要求（acc≥80%）。
+模型在测试集上的精度达标，最终模型的的acc为89.17%，满足精度要求（acc≥80%）。
 
 ![image-20221202155839483](../Overlap-CRNN/测试结果.png)
