@@ -140,12 +140,12 @@ def forward(self, x):
         super(ImageModel, self).__init__()
         self.args = args
         # self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=self.args.trainsize)
-        self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)
+        self.backbone = Network(pvtv2_pretrained=self.args.pvtv2_pretrained, imgsize=352)   # 指定图片大小
 
     ....
 
         # self.backbone = Network(pvtv2_pretrained=False, imgsize=self.args.trainsize)
-        self.backbone = Network(pvtv2_pretrained=False, imgsize=352)
+        self.backbone = Network(pvtv2_pretrained=False, imgsize=352)   # 指定图片大小
         if self.args.pretrained_cod10k is not None:
             self.load_backbone(self.args.pretrained_cod10k )
 ```
