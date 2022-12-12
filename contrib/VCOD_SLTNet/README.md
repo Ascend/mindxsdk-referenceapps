@@ -49,7 +49,22 @@ npu-smi info
 
 ### 1.6 特性及适用场景
 
-对于伪装视频数据的分割任务均适用，输入视频需要转换为图片序列输入到模型中，具体可以参考 MoCA 数据格式，详见 [SLT-Net](https://xueliancheng.github.io/SLT-Net-project/) 与 [MoCA 数据集主页](https://www.robots.ox.ac.uk/~vgg/data/MoCA/)。
+对于伪装视频数据的分割任务均适用，输入视频需要转换为图片序列输入到模型中，具体可以参考 MoCA 数据格式与目录结构（如下所示），详见 [SLT-Net](https://xueliancheng.github.io/SLT-Net-project/) 与 [MoCA 数据集主页](https://www.robots.ox.ac.uk/~vgg/data/MoCA/)。
+
+
+```
+--data
+    └── TestDataset_per_sq           # 测试数据集
+        ├── flower_crab_spider_1     # 不同场景
+            ├── GT                   # Ground Truth
+                ├── 00000.png
+                ├── .....
+            └── Imgs                 # 输入图片序列
+                ├── 00000.jpg
+                ├── .....
+        ......
+
+```
 
 
 ## 2 环境依赖
@@ -105,17 +120,8 @@ from .short_term_model import VideoModel as VideoModel_pvtv2
 
 注：因为长期模型依赖 CUDA，并且需要在 CUDA 平台进行编译，而本项目基于 MindX SDK 实现，因此使用短期模型。并且，短期模型的评价指标满足预期。
 
-2）`short_term_model.py` 文件修改如下：
 
-```
-def forward(self, x):
-    image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]  # 替换之前的 image1, image2, image3 = x[0],x[1],x[2]
-    fmap1=self.backbone.feat_net(image1)
-    fmap2=self.backbone.feat_net(image2)
-    fmap3=self.backbone.feat_net(image3)
-```
-
-3）`pvtv2_afterTEM.py` 文件注释如下：
+2）`pvtv2_afterTEM.py` 文件注释如下：
 
 ```
 from timm.models import create_model
@@ -124,14 +130,24 @@ from timm.models import create_model
 import pdb
 ```
 
-4）修改“SLT-Net-master/mypath.py”文件如下：
+3）修改“SLT-Net-master/mypath.py”文件如下：
 
 ```
 elif dataset == 'MoCA':
     return './dataset/MoCA-Mask/' # 将此处路径修改指定为“MoCA_Video”目录的相对路径
 ```
 
-5) 修改 `lib/short_term_model.py` 文件中，如下代码行：
+4) 修改 `lib/short_term_model.py` 文件中，如下代码行：
+
+修改
+
+```
+def forward(self, x):
+    image1, image2, image3 = x[:, :3], x[:, 3:6], x[:, 6:]  # 替换之前的 image1, image2, image3 = x[0],x[1],x[2]
+    fmap1=self.backbone.feat_net(image1)
+    fmap2=self.backbone.feat_net(image2)
+    fmap3=self.backbone.feat_net(image3)
+```
 
 修改两处 （`self.args.trainsize` 直接指定为 `352`）：
 
@@ -189,10 +205,11 @@ python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx 
 atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
 ```
 
-注：若想使用转换好的onnx模型或om模型，可通过下载 [models.zip备份模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 解压获得转换好的 onnx 模型或 om 模型。
+注意：
 
+1. 若想使用转换好的onnx模型或om模型，可通过下载 [models.zip备份模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/sltnet/models.zip) 解压获得转换好的 onnx 模型或 om 模型。
 
-注意，pth模型转onnx模型，onnx模型转om模型，均可能花费约1小时左右，视不同运行环境而定。如无报错，请耐心等待。
+2. pth模型转onnx模型，onnx模型转om模型，均可能花费约1小时左右，视不同运行环境而定。如无报错，请耐心等待。
 
 
 ## 4. 运行推理

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import sys
 import argparse
 from glob import glob
 from tqdm import tqdm
@@ -100,6 +101,14 @@ if __name__ == '__main__':
     parser.add_argument('--testsize', type=int, default=352)
     parser.add_argument('--device_id', type=int, default=0)
     opt = parser.parse_args()
+
+    if not opt.om_path.endswith('om'):
+        print("Please check the correctness of om file:", opt.om_path)
+        sys.exit()
+
+    if not 'TestDataset_per_sq' in os.listdir(opt.datapath):
+        print("Please check the correctness of dataset path:", opt.datapath)
+        sys.exit()
 
     test_loader = TestDataset(datapath=opt.datapath, testsize=opt.testsize)
 
