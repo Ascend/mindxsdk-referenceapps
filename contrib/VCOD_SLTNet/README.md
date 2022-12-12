@@ -121,7 +121,7 @@ from .short_term_model import VideoModel as VideoModel_pvtv2
 注：因为长期模型依赖 CUDA，并且需要在 CUDA 平台进行编译，而本项目基于 MindX SDK 实现，因此使用短期模型。并且，短期模型的评价指标满足预期。
 
 
-2) 修改 `short_term_model.py` 文件中，如下代码行：
+2）修改 `short_term_model.py` 文件中，如下代码行：
 
 修改
 
