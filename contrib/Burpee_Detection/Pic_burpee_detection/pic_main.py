@@ -36,7 +36,7 @@ cout = OStream(sys.stdout)
 END_L = '\n'
 
 # Init the directory of input and output
-INPUT_PATH = ["../data/images/test/"]  # the path of input
+INPUT_PATH = [".././data/images/test/"]  # the path of input
 
 OUTPUT_PATH = ["./result_test/"]  # the output path of txt file
 
@@ -58,7 +58,7 @@ if ret != 0:
 #start = time.time()
 # Create streams by pipeline config file
 # Load  pipline
-with open("../pipeline/burpee_detection_p.pipeline", 'rb') as f:
+with open(".././pipeline/burpee_detection_p.pipeline", 'rb') as f:
     PIPELINE_STR = f.read()
 ret = streamManagerApi.CreateMultipleStreams(PIPELINE_STR)
 # Print error message

@@ -173,7 +173,7 @@ bash run.sh
 
 - **步骤1** 按照第 4 小节 **视频** 中的**步骤1**到**步骤3**搭建小程序后端环境。
 
-- ![app_6](readme_img/app_6.jpg)
+![app_6](readme_img/app_6.jpg)
 
 - **步骤2** 按照第 4 小节 **视频** 中的**步骤1**到**步骤3**搭建小程序后端环境。
 
@@ -184,31 +184,28 @@ bash run.sh
 ```
 - **步骤4** 下载`微信开发者工具`并登录，在微信公众平台注册小程序并获取AppID
 
-
-- ![app_1](readme_img/app_1.jpg)
-
+![app_1](readme_img/app_1.jpg)
 
 - **步骤5** 点击导入，选择小程序代码文件夹并打开（代码可下载，下载链接在第二小节），点击编译模式选中`pages`目录下的子目录`bind`并选择`bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，然后用手机扫描二维码
 
-
-- ![app_2](readme_img/app_2.jpg)  - ![app_3](readme_img/app_3.jpg) - ![app_4](readme_img/app_4.jpg)
-
+![app_2](readme_img/app_2.jpg)   
+![app_3](readme_img/app_3.jpg)  
+![app_4](readme_img/app_4.jpg)
 
 - **步骤6** 进入微信小程序页面，点击`开始计数`，小程序将摄像头以40ms（fps=25）的速率拍摄照片，并上传至腾讯云桶内，后台接收图片并处理
-- 
-- ![app_5](readme_img/app_5.jpg)
-- 
+
+![app_5](readme_img/app_5.jpg)
+
 - **步骤7** 人物在摄像头前进行波比跳，后台实时更新波比跳个数并将结果发送至桶内，小程序端以0.1s的速率刷新页面展示的个数
 
 - **步骤8** 点击`结束`，小程序停止发送图像并清理上传至桶内的图片释放内存，后端等待小程序下次开始计数
-
 
 
 ### 4.2 性能与精度测试
 
 - **步骤1** 准备测试数据集，并将`data`目录放在`Burpee_Detection`目录下
 
-  ![dataset](readme_img/dataset.jpg)
+![dataset](readme_img/dataset.jpg)
 
 - **步骤2** 打开`Burpee_Detection/Pic_burpee_detection`目录下`pic_burpee_detection.py`文件，将变量 `INPUT_PATH` ,`OUTPUT_PATH` ,`OUTPUT_PIC_PATH`分别初始化为 `["../data/images/test/"]`,`[".././Pic_burpee_detection/result_test/"]`,`[".././Pic_burpee_detection/result_test_pic/"]`
 
@@ -248,8 +245,12 @@ bash run.sh
 ### 4.3 特殊情况测试
 
  数据为光线较暗时（无光源的情况下）图片
+
  ![dataset](readme_img/dark.jpg)
+
  测试结果：
+
  ![dataset](readme_img/dark_res.jpg)
+
  当测试无目标时会有对应报错
  

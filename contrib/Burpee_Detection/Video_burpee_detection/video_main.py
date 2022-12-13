@@ -42,7 +42,7 @@ if ret != 0:
     exit()
 # Create streams by pipeline config file
 # load  pipline
-with open("../pipeline/burpee_detection_v.pipeline", 'rb') as f:
+with open(".././pipeline/burpee_detection_v.pipeline", 'rb') as f:
     pipelineStr = f.read()
 ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
 # Print error message
@@ -171,7 +171,7 @@ while True:
     Id = frameList.frameId
     RESULT_PIC_PATH = "./result_pic/"
     if os.path.exists(RESULT_PIC_PATH) != 1:
-        os.makedirs("./result_pic/")
+        os.makedirs(RESULT_PIC_PATH)
     ORIGIN_IMG_FILE = './result_pic/image' + '-' + str(Id) + '.jpg'
     cv2.imwrite(ORIGIN_IMG_FILE, img)
 
