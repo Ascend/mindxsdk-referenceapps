@@ -106,7 +106,7 @@ if __name__ == '__main__':
         print("Please check the correctness of om file:", opt.om_path)
         sys.exit()
 
-    if not 'TestDataset_per_sq' in os.listdir(opt.datapath):
+    if 'TestDataset_per_sq' not in os.listdir(opt.datapath):
         print("Please check the correctness of dataset path:", opt.datapath)
         sys.exit()
 
