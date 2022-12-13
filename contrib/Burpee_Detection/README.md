@@ -10,7 +10,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的 CANN 版本为 [5.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的 CANN 版本为 [5.1.RC1](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [3.0.RC3](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -75,19 +75,19 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 ## 2 环境依赖
 
-| 软件名称            | 版本           | 说明                                       | 获取方式                                                     |
-| ------------------- |--------------|------------------------------------------| ------------------------------------------------------------ |
-| MindX SDK           | 3.0.RC3      | mxVision软件包                              | [链接](https://www.hiascend.com/zh/software/mindx-sdk/mxVision/community) |
-| ubuntu              | 18.04.1 LTS  | 操作系统                                     | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.1.RC1      | Ascend-cann-toolkit开发套件包                 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
-| live555        | 1.09         | 实现视频转 rtsp 进行推流                          | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md) |
-  | ffmpeg         | 2021-10-14   | 实现 mp4 格式视频转为 H.264 格式视频                 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html) |
-  | 微信开发者工具 | 1.06.2207210 | 实现小程序的使用                                 | [链接](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html) |
-  | 小程序导入代码 | -            | 微信小程序代码                                  | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690270238&Signature=SHjFgSLUrGMPGbYNYyNgS3VmBMw%3D) |
-  | 腾讯桶内文件夹格式         |-           | 压缩包解压后文件夹内文件形式即为桶内文件形式  |  [链接]（https://burpee.obs.cn-east-3.myhuaweicloud.com/%E6%A1%B6%E5%86%85%E6%96%87%E4%BB%B6.zip）|
-  | 对象储存 python sdk |-           |小程序相关python sdk快速入门      | [链接]（https://cloud.tencent.com/document/product/436/12269）|
-  | 模型文件       | -            | pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件 | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com/models.zip)|
-  |               | -            | pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件 |[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Burpee/models%E5%92%8C%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.zip)|
+|      软件名称       |      版本      |                         说明                          |                                                                                                  获取方式                                                                                                   |
+|:-------------------:|:------------:|:---------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|      MindX SDK      |   3.0.RC3    |                     mxVision软件包                     |                                                                 [链接](https://www.hiascend.com/zh/software/mindx-sdk/mxVision/community)                                                                 |
+|       ubuntu        | 18.04.1 LTS  |                        操作系统                         |                                                                                               Ubuntu官网获取                                                                                                |
+| Ascend-CANN-toolkit |   5.1.RC1    |              Ascend-cann-toolkit开发套件包               |                                                    [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)                                                    |
+|    live555     |     1.09     |                   实现视频转 rtsp 进行推流                   |                                                   [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/Live555离线视频转RTSP说明文档.md)                                                   |
+|     ffmpeg     |  2021-10-14  |              实现 mp4 格式视频转为 H.264 格式视频               |                   [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://gitee.com/link?target=https%3A%2F%2Fffmpeg.org%2Fdownload.html)                   |
+| 微信开发者工具 | 1.06.2207210 |                      实现小程序的使用                       |                                                              [链接](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)                                                              |
+| 小程序导入代码 |      -       |                       微信小程序代码                       | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690270238&Signature=SHjFgSLUrGMPGbYNYyNgS3VmBMw%3D) |
+|     腾讯桶内文件夹格式     |      -       |               压缩包解压后文件夹内文件形式即为桶内文件形式                |                                                      [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com/%E6%A1%B6%E5%86%85%E6%96%87%E4%BB%B6.zip)                                                      |
+| 对象储存 python sdk |      -       |                 小程序相关python sdk快速入门                 |                                                                       [链接](https://cloud.tencent.com/document/product/436/12269)                                                                        |
+|    模型文件    |      -       |      pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件       |                                                                     [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com/models.zip)                                                                     |
+|               |      -       | pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件            |                        [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Burpee/models%E5%92%8C%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.zip)                        |
 在运行项目需要的环境变量如下，运行前不需要特别设置，环境依赖已经写入脚本中，脚本在`Burpee_Detection/envs`目录下：
 
   ```bash
