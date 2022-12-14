@@ -55,7 +55,7 @@ if ret != 0:
     cout << 'Failed to init Stream manager, ret=' << str(ret) << END_L
     exit()
 # Mark start time
-#start = time.time()
+start = time.time()
 # Create streams by pipeline config file
 # Load  pipline
 with open(".././pipeline/burpee_detection_p.pipeline", 'rb') as f:
@@ -187,11 +187,11 @@ for index, path in enumerate(INPUT_PATH):
             f.write(CONTENT)
             f.write('\n')
 
-#end = time.time()
-#cost_time = end - start
+end = time.time()
+cost_time = end - start
 # Mark spend time
-#cout << 'Image count:' << DET_IMG_COUNT << END_L
-#cout << 'Spend time:' << cost_time << END_L
-#cout << 'fps:' << (DET_IMG_COUNT / cost_time) << END_L
+cout << 'Image count:' << DET_IMG_COUNT << END_L
+cout << 'Spend time:' << cost_time << END_L
+cout << 'fps:' << (DET_IMG_COUNT / cost_time) << END_L
 # Destroy All Streams
 streamManagerApi.DestroyAllStreams()
