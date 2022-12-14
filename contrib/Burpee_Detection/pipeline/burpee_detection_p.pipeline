@@ -1,0 +1,54 @@
+{
+  "detection": {
+    "stream_config": {
+      "deviceId": "0"
+    },
+    "appsrc0": {
+      "props": {
+        "blocksize": "409600"
+      },
+      "factory": "appsrc",
+      "next": "mxpi_imagedecoder0"
+    },
+    "mxpi_imagedecoder0": {
+      "props": {
+        "deviceId": "0"
+      },
+      "factory": "mxpi_imagedecoder",
+      "next": "mxpi_imageresize0"
+    },
+    "mxpi_imageresize0": {
+      "props": {
+        "dataSource": "mxpi_imagedecoder0",
+        "resizeHeight": "640",
+        "resizeWidth": "640",
+        "resizeType": "Resizer_KeepAspectRatio_Fit"
+      },
+      "factory": "mxpi_imageresize",
+      "next": "mxpi_modelinfer0"
+    },
+    "mxpi_modelinfer0": {
+      "props": {
+        "modelPath": ".././model/burpee_detection.om",
+        "postProcessConfigPath": ".././model/yolov5.cfg",
+        "labelPath": ".././model/yolov5.names",
+        "postProcessLibPath": "../.././Ascend/mindx_sdk/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so"
+      },
+      "factory": "mxpi_modelinfer",
+      "next": "mxpi_dataserialize0"
+    },
+    "mxpi_dataserialize0": {
+      "props": {
+        "outputDataKeys": "mxpi_modelinfer0"
+      },
+      "factory": "mxpi_dataserialize",
+      "next": "appsink0"
+    },
+    "appsink0": {
+      "props": {
+        "blocksize": "4096000"
+      },
+      "factory": "appsink"
+    }
+  }
+}
