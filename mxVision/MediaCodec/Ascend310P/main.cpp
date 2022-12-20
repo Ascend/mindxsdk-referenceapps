@@ -104,20 +104,24 @@ APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
     MxBase::ConfigData configData;
     util.LoadConfiguration(path, configData, MxBase::CONFIGFILE);
 
-    configData.GetFileValueWarn("stream.channelCount", config.channelCount);
-    configData.GetFileValueWarn("stream.deviceId", config.deviceId);
-    configData.GetFileValueWarn("stream.fpsMode", config.fpsMode);
-    configData.GetFileValueWarn("stream.resizeWidth", config.resizeWidth);
-    configData.GetFileValueWarn("stream.resizeHeight", config.resizeHeight);
-    configData.GetFileValueWarn("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
-    configData.GetFileValueWarn("VideoDecoder.outputImageFormat", config.outputImageFormat);
-    configData.GetFileValueWarn("VideoEncoder.inputFormat", config.inputFormat);
-    configData.GetFileValueWarn("VideoEncoder.outputFormat", config.outputFormat);
-    configData.GetFileValueWarn("VideoEncoder.imageWidth", config.videoEncodeWidth);
-    configData.GetFileValueWarn("VideoEncoder.imageHeight", config.videoEncodeHeight);
-    configData.GetFileValueWarn("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
-    configData.GetFileValueWarn("VideoEncoder.iFrameInterval", config.iFrameInterval);
-
+    APP_ERROR err = APP_ERR_OK;
+    err |= configData.GetFileValue("stream.channelCount", config.channelCount);
+    err |= configData.GetFileValue("stream.deviceId", config.deviceId);
+    err |= configData.GetFileValue("stream.fpsMode", config.fpsMode);
+    err |= configData.GetFileValue("stream.resizeWidth", config.resizeWidth);
+    err |= configData.GetFileValue("stream.resizeHeight", config.resizeHeight);
+    err |= configData.GetFileValue("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
+    err |= configData.GetFileValue("VideoDecoder.outputImageFormat", config.outputImageFormat);
+    err |= configData.GetFileValue("VideoEncoder.inputFormat", config.inputFormat);
+    err |= configData.GetFileValue("VideoEncoder.outputFormat", config.outputFormat);
+    err |= configData.GetFileValue("VideoEncoder.imageWidth", config.videoEncodeWidth);
+    err |= configData.GetFileValue("VideoEncoder.imageHeight", config.videoEncodeHeight);
+    err |= configData.GetFileValue("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
+    err |= configData.GetFileValue("VideoEncoder.iFrameInterval", config.iFrameInterval);
+    
+    if (err != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
     for (size_t i = 0; i < config.channelCount; ++i) {
         auto name = "stream.ch" + std::to_string(i);
         std::string value;
