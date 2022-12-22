@@ -29,7 +29,7 @@ namespace {
     const int y_max = 690;
     const int traceSize = 20;
     const int lastPointSize = 2;
-    static std::vector<std::queue<center>> pts(ptsSize);  // 保存每个车辆轨迹的最新的20个bbox的中心点
+    static std::vector<std::queue<center>> pts(ptsSize);  // 保存每个车辆动向的最新的20个bbox的中心点
     const float count_center = 2.0;
     static std::vector<int> is_retrograde;
 }
@@ -124,7 +124,7 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
         {
             MxpiTrackLet srcMxpiTrackLet = srcMxpiTrackLetList.trackletvec(j);
             int index = (int)srcMxpiTrackLet.trackid();
-            // 保存每个车辆轨迹最新的20个bbox
+            // 保存每个车辆动向最新的20个bbox
             if (srcMxpiTrackLet.trackflag()!=2 && srcMxpiTrackLet.headervec(0).memberid()==i)
             {
                 if (pts[index].size()>=traceSize)
@@ -140,7 +140,7 @@ APP_ERROR MxpiTrackRetrogradeCar::GenerateSampleOutput(const MxpiObjectList srcM
                     pts[index].push(pts[index].front());
                     pts[index].pop();
                 }
-                // 不少于2个bbox的车辆轨迹可用于方向判断
+                // 不少于2个bbox的车辆动向可用于方向判断
                 if (last_point.size()==lastPointSize)
                 {
                     int p1, p2, m1, m2;

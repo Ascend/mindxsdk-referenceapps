@@ -26,12 +26,12 @@ def test_gateway_query(item_number):
     for i in range(0, item_number):
         current_time += one_second
         user_id = name_ids
-        item_dict = {'client_ip': '10.78.46.192', 'request_uri': 'a' * 10,
-            'host_ip': '172.17.0.1', 'route_id': '1', 'timestamp': str(current_time),
+        item_dict = {'client_ip': 'xxx.xxx.xxx.xx', 'request_uri': 'a' * 10,
+            'host_ip': 'xxx.xxx.xxx.xx', 'route_id': '1', 'timestamp': str(current_time),
             'user_id': user_id, 'query_id': 'a' * 32}
         item_list.append(item_dict)
     print('模仿网关生成mock的用户名和起止时间为', name_ids, item_list[0]['timestamp'], item_list[-1]['timestamp'])
-    rsp = requests.request('POST', 'http://172.18.0.4:1234/TransparentLog_gateway', json = item_list)
+    rsp = requests.request('POST', 'http://xxx.xxx.xxx.xx:xxxx/TransparentLog_gateway', json = item_list)
     print(rsp.text)
 
 

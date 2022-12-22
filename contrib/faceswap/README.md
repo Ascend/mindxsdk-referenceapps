@@ -1,10 +1,10 @@
 ## 基于MindX SDK的faceswap应用开发
 
 ## 1 介绍
-faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸部关键点推理以及人脸替换，将替换结果可视化并保存。  
+faceswap应用基于MindX SDK开发，在昇腾芯片上进行目标检测，脸部关键点推理以及目标替换，将替换结果可视化并保存。  
 
-样例输入：两张脸部特征清晰，轮廓完整的正面人像jpg，face1.jpg,face2.jpg，且每张人像图片中仅包含一张人脸，我们定义face1.jpg为源脸（底图），face2.jpg为目标脸（覆盖图）。<br/>
-样例输出：一张脸部特征更换后的人像jpg，得到结果为face1图片中人脸显示face2的人脸特征。<br/>  
+样例输入：两张脸部特征清晰，轮廓完整的正面人像jpg，face1.jpg,face2.jpg，且每张人像图片中仅包含一张目标，我们定义face1.jpg为源脸（底图），face2.jpg为目标脸（覆盖图）。<br/>
+样例输出：一张脸部特征更换后的人像jpg，得到结果为face1图片中目标显示face2的目标特征。<br/>  
 ```
 由于模型精度限制，关于输入输出的其他说明见本文 8. 常见问题
 ```
@@ -18,8 +18,8 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行人脸检测，脸
 支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)  
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 ### 1.3  技术实现流程图<br/>
-本项目的主要工作流程为，初始输入目标图像和原图像，第一阶段采用yolov4模型进行人脸检测，接着利用后处理插件、抠图插件对检测结果进行处理，得到人脸区域部分；
-第二阶段采用脸部特征点检测模型对得到的人脸区域进行检测，得到脸部106个特征点的坐标，并在后处理阶段进行脸部替换，最后人脸替换可视化结果。  
+本项目的主要工作流程为，初始输入目标图像和原图像，第一阶段采用yolov4模型进行目标检测，接着利用后处理插件、抠图插件对检测结果进行处理，得到目标区域部分；
+第二阶段采用脸部特征点检测模型对得到的目标区域进行检测，得到脸部106个特征点的坐标，并在后处理阶段进行脸部替换，最后目标替换可视化结果。  
 技术实现流程如下图所示：  
 
 ![alt 技术流程](Img4md/img.png)
@@ -29,13 +29,13 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ```angular2html
 |-------- data                                 // 输入存放文件夹（需用户新建，见5.4）
 |-------- models
-|           |---- yolov4.cfg                   // yolov4后处理配置文件（用于人脸检测）
+|           |---- yolov4.cfg                   // yolov4后处理配置文件（用于目标检测）
 |           |---- coco.names                   // yolov4模型所有可识别类
 |           |---- yolov4_detection.om          // yolov4离线推理模型，见4.1
 |           |---- V3ONNX.cfg                   // 脸部特征点检测模型转换配置文件（用于检测脸部特征点）
 |           |---- V3ONNXX.om                   // 脸部特征点检测离线模型，见4.2
 |-------- pipline
-|           |---- faceswap.pipeline            // 人脸替换流水线配置文件
+|           |---- faceswap.pipeline            // 目标替换流水线配置文件
 |-------- result                               // 存放结果文件（需用户新建，见5.5）
 |-------- faceswap_main.py                              
 |-------- faceswap_post.py                     // 后处理模块
@@ -56,8 +56,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 `apt-get install libpython3.9`
 
 ## 4 模型获取及转换
-### 4.1 人脸检测模型转换
-人脸检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_detection.om) 点击`链接`，下载yolov4_detection.om,并将模型存放在工程/model目录下。
+### 4.1 目标检测模型转换
+目标检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_detection.om) 点击`链接`，下载yolov4_detection.om,并将模型存放在工程/model目录下。
 ### 4.2 脸部特征点检测模型
 **步骤1**  
 在[Github_pfld_106_face_landmarks](https://github.com/Hsintao/pfld_106_face_landmarks) 上选择v3.onnx，下载特征点检测对应的onnx模型：[v3.onnx](https://github.com/Hsintao/pfld_106_face_landmarks/blob/master/output/v3.onnx) ；  
@@ -148,17 +148,17 @@ mkdir result
 ```
 6. 运行可执行文件
 ```
-切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3 faceswap_main.py 源人脸图片路径 目标人脸图片路径]  
+切换至工程主目录，执行以下命令运行样例。命令行格式为 [python3 faceswap_main.py 源目标图片路径 目标目标图片路径]  
 
 例：python3 faceswap_main.py data/face1.jpg data/face2.jpg
 ```
 
 7. 查看结果  
-执行`faceswap_main.py`完毕后，可在工程目录`result`中查看人脸替换结果`face_swap_result.jpg`。  
+执行`faceswap_main.py`完毕后，可在工程目录`result`中查看目标替换结果`face_swap_result.jpg`。  
 8. 常见问题  
-① 在人脸检测阶段，由于yolov4_detection.om模型的coco.names标签集中同时存在people，face两类标签。当对输入图片的检测结果为people时，无法进行后续的换脸操作，故输入图片应尽可能体现脸部特征，建议输入图片为类似于证件照的半身人像。否则，当输入为全身人像时候，图片标签为people，无法进行后续换脸操作；  
-② 在特征点检测阶段，由于特征点检测模型限制，输入人脸应尽可能采用脸部清晰，轮廓完整的正面图像，即应尽可能输入2D人脸图像，且脸部应尽可能避免眼镜等一类装饰物。若图片中存在3D特征，如输入侧脸时，可能会由于脸部特征点检测存在偏差导致换脸效果不佳；  
-③ 针对MindX SDK固有插件的输入限制，输入人脸图片的宽高均应限制在[32, 8192]区间内，否则会导致图片入流失败。当输入图片尺寸不符合要求时，系统会提示相应的错误信息。
+① 在目标检测阶段，由于yolov4_detection.om模型的coco.names标签集中同时存在people，face两类标签。当对输入图片的检测结果为people时，无法进行后续的换脸操作，故输入图片应尽可能体现脸部特征，建议输入图片为类似于证件照的半身人像。否则，当输入为全身人像时候，图片标签为people，无法进行后续换脸操作；  
+② 在特征点检测阶段，由于特征点检测模型限制，输入目标应尽可能采用脸部清晰，轮廓完整的正面图像，即应尽可能输入2D目标图像，且脸部应尽可能避免眼镜等一类装饰物。若图片中存在3D特征，如输入侧脸时，可能会由于脸部特征点检测存在偏差导致换脸效果不佳；  
+③ 针对MindX SDK固有插件的输入限制，输入目标图片的宽高均应限制在[32, 8192]区间内，否则会导致图片入流失败。当输入图片尺寸不符合要求时，系统会提示相应的错误信息。
 
 
 

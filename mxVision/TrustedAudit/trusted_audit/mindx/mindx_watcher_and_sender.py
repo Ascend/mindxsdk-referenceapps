@@ -194,7 +194,7 @@ def process_check(processname):
 
 if __name__ == "__main__":
     FOLDER_NAME = '/root/log/mindxsdk/logs'
-    LOG_FILES = {} # 全局变量LOG_FILES用于监控各文件日期、已读取行号等信息
+    LOG_FILES = {} # 全局变量LOG_FILES用于管理各文件日期、已读取行号等信息
     SENDING_CHUNK_SIZE = 100 # 发缓冲区大小；buffer大小建议设为chunk大小的若干倍，避免阻塞
     SENDING_GAP_TIME = 5
     SENDING_BUFFER = []
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     print('watcher is running...datetime is:', datetime.now())
     sender_thread = threading.Thread(target=log_sender) # 发送进程
     sender_thread.start()
-    event_handler = MyFileSystemEventHandler() # 文件监控进程
+    event_handler = MyFileSystemEventHandler() # 文件管理进程
     observer = Observer()
     observer.schedule(event_handler, path=FOLDER_NAME, recursive=True)
     observer.start()

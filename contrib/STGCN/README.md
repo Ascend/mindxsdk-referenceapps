@@ -10,7 +10,7 @@ STGCN模型GitHub仓库：https://github.com/hazdzz/STGCN
 
 SZ-Taxi数据集：https://github.com/lehaifeng/T-GCN/tree/master/data	
 
-SZ-Taxi数据集包含深圳市的出租车轨迹，包括道路邻接矩阵和道路交通速度信息。
+SZ-Taxi数据集包含深圳市的出租车动向，包括道路邻接矩阵和道路交通速度信息。
 
 ### 1.1 支持的产品
 本项目以昇腾Atlas310卡为主要的硬件平台。

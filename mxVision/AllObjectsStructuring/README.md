@@ -7,7 +7,7 @@
 1. 目标检测：在视频流中检测出目标，本样例选用基于Yolov4-tiny的目标检测，能达到快速精准检测。
 2. 动态目标识别和属性分析：能够识别出检测出的目标类别，并对其属性进行分析。
 3. 人体属性分类+PersonReID：能够根据人体属性和PersonReID进行分类.
-4. 人脸属性分类+FaceReID：能够根据人脸属性和FaceReID进行分类.
+4. 目标属性分类+FaceReID：能够根据目标属性和FaceReID进行分类.
 5. 车辆属性分类：能够对车辆的属性进行分类。
 
 
@@ -72,7 +72,7 @@
 
 **步骤3：** 在项目根目录下 AllObjectStructuring/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuring/AllObjectsStructuring_models.zip)，并放到项目根目录下 AllObjectStructuring/models/ 目录下。
 
-**步骤4：** 在项目根目录下 AllObjectStructuring/ 创建目录faces_to_register `mkdir faces_to_register` ，将用来注册入库的人脸照片放到项目根目录下 AllObjectStructuring/faces_to_register/ 目录下。faces_to_register目录中可以存放子文件夹，照片格式必须为.jpg，且子文件夹名称必须为英文字符。如果不需要接入特征检索功能，此步骤可忽略。
+**步骤4：** 在项目根目录下 AllObjectStructuring/ 创建目录faces_to_register `mkdir faces_to_register` ，将用来注册入库的目标照片放到项目根目录下 AllObjectStructuring/faces_to_register/ 目录下。faces_to_register目录中可以存放子文件夹，照片格式必须为.jpg，且子文件夹名称必须为英文字符。如果不需要接入特征检索功能，此步骤可忽略。
 
 **步骤5：** 修改项目根目录下 AllObjectStructuring/pipeline/AllObjectsStructuring.pipeline文件：
 
@@ -104,7 +104,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
 
 **步骤9：** 请在昇腾社区下载特征检索源码包https://www.hiascend.com/software/mindx-sdk/mxindex，并根据readme来搭建特征检索库。如果不需要接入特征检索功能，此步骤可忽略。
 
-注：当前版本特征检索库缺少本例中人脸检索所需部分算子（Flat，IVFSQ8），需自行生成，请参考特征检索readme 4.2.2：
+注：当前版本特征检索库缺少本例中目标检索所需部分算子（Flat，IVFSQ8），需自行生成，请参考特征检索readme 4.2.2：
 
 首先进入特征检索 src/ascendfaiss/tools 目录，
 
@@ -141,7 +141,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
 ### 带检索
 需要在项目根目录下 AllObjectsStructuring/util/arguments.py 配置检索大小库运行的芯片id
 
-配置检索小库运行芯片id，根据实际情况修改`default`值，勿与注册人脸、全目标结构化pipeline使用同一芯片
+配置检索小库运行芯片id，根据实际情况修改`default`值，勿与注册目标、全目标结构化pipeline使用同一芯片
 ```bash
     parser.add_argument('-index-little-device-ids',
                         type=int,
@@ -150,7 +150,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
                         help='specify the device assignment for little index.',
                         dest='index_little_device_ids')
 ```
-配置检索大库运行芯片id，根据实际情况修改`default`值，勿与注册人脸、全目标结构化pipeline使用同一芯片
+配置检索大库运行芯片id，根据实际情况修改`default`值，勿与注册目标、全目标结构化pipeline使用同一芯片
 ```bash
     parser.add_argument('-index-large-device-ids',
                         type=int,
@@ -163,7 +163,7 @@ rstp流格式为rtsp://${ip_addres}:${port}/${h264_file}
 运行
 `bash run.sh index`
 
-正常启动后，控制台会输出检测到人脸目标的对应索引信息。
+正常启动后，控制台会输出检测到目标目标的对应索引信息。
 
 
 

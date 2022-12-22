@@ -423,7 +423,7 @@ void VideoProcess::GetResults(std::shared_ptr<BlockingQueue<std::shared_ptr<void
             LogError << "PostProcess failed, ret=" << ret << ".";
             return;
         }
-        // 追踪
+        // 动向
         ret = tracker->ProcessSort(objInfos);
         if (ret != APP_ERR_OK) {
             LogError << "result failed ";

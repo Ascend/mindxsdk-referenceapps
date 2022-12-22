@@ -69,10 +69,10 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [驾驶员状态识别](./contrib/DriverStatusRecognition) | python | >=2.0.4 | 识别视频中的驾驶员状态 |
 | [边缘检测](./contrib/EdgeDetectionPicture) | c++ | >=2.0.4 | 图像边缘提取，输出可视化结果 |
 | [EfficientDet](./contrib/EfficientDet) | python | >=2.0.4 | 使用 EfficientDet 模型进行目标检测 |
-| [人脸检测](./contrib/FaceBoxes) | python | >=2.0.4 | 对图像中的人脸进行画框并且标注置信度 |
-| [口罩识别](./contrib/facemaskdetection) | python | >=2.0.4 | 对原图像的人脸以及口罩进行识别画框 |
-| [人脸替换](./contrib/faceswap) | python | >=2.0.4 | 进行人脸检测，脸部关键点推理以及人脸替换，将替换结果可视化并保存 |
-| [情绪识别](./contrib/FacialExpressionRecognition) | python | >=2.0.4 | 采集图片中的人脸图像，然后利用情绪识别模型推理情绪类别 |
+| [目标检测](./contrib/FaceBoxes) | python | >=2.0.4 | 对图像中的目标进行画框并且标注置信度 |
+| [口罩识别](./contrib/facemaskdetection) | python | >=2.0.4 | 对原图像的目标以及口罩进行识别画框 |
+| [目标替换](./contrib/faceswap) | python | >=2.0.4 | 进行目标检测，脸部关键点推理以及目标替换，将替换结果可视化并保存 |
+| [情绪识别](./contrib/FacialExpressionRecognition) | python | >=2.0.4 | 采集图片中的目标图像，然后利用情绪识别模型推理情绪类别 |
 | [目标跟踪](./contrib/FairMOT) | python | >=2.0.4 | 视频目标检测和跟踪，对行人进行画框和编号 |
 | [语义分割](./contrib/FastSCNN) | python | >=2.0.4 | 对图片实现语义分割功能 |
 | [疲劳驾驶识别](./contrib/FatigueDrivingRecognition) | python | >=2.0.4 | 对视频中驾驶人员疲劳状态识别与预警 |
@@ -81,7 +81,7 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [头部姿态识别](./contrib/HeadPoseEstimation) | python | >=2.0.4 | 对图像中的头部进行姿态识别，输出可视化结果 |
 | [安全帽识别](./contrib/HelmetIdentification) | python | >=2.0.4 | 两路视频的安全帽去重识别，并对为佩戴行为告警 |
 | [人体语义分割](./contrib/human_segmentation) | c++ | >=2.0.4 | 对输入图片中的人像进行语义分割操作，然后输出mask掩膜图，将其与原图结合，生成标注出人体部分的人体语义分割图片 |
-| [个体属性识别](./contrib/Individual) | python | >=2.0.4 | 识别多种人脸属性信息，包括年龄、性别、颜值、情绪、脸型、胡须、发色、是否闭眼、是否配戴眼镜、人脸质量信息及类型等 |
+| [个体属性识别](./contrib/Individual) | python | >=2.0.4 | 识别多种目标属性信息，包括年龄、性别、颜值、情绪、脸型、胡须、发色、是否闭眼、是否配戴眼镜、目标质量信息及类型等 |
 | [语音关键词检测](./contrib/kws) | python | >=2.0.4 | 对语音进行关键词检测 |
 | [人像分割](./contrib/MMNET) | python | >=2.0.4 | 基于MMNET解决移动设备上人像抠图的问题，旨在以最小的模型性能降级在移动设备上获得实时推断 |
 | [单目深度估计](./contrib/MonocularDepthEstimation) | python | >=2.0.4 | 基于AdaBins室内模型的单目深度估计，输出目标图像的深度图 |
@@ -102,7 +102,7 @@ mxSdkReferenceApps是基于MindX SDK开发的参考样例。
 | [发言者识别](./contrib/SpeakerRecog) | python | >=2.0.4 | 对发言者进行识别。如果声纹库中不包含当前说话人，则对当前说话人进行注册并保存至声纹库，否则给出识别结果 |
 | [图像超分辨率](./contrib/SuperResolution) | python | >=2.0.4 | 对输入的图片利用VDSR模型进行超分辨率重建 |
 | [车道线检测](./contrib/UltraFastLaneDetection) | python | >=2.0.4 | 对图像中的车道线进行检测，并对检测到的图像中的每一条车道线进行识别 |
-| [车流量统计](./contrib/VehicleCounting) | c++ | >=2.0.4 | 对视频中的车辆进行计数，实现对本地视频（H264）进行车辆追踪并计数，最后生成可视化结果 |
+| [车流量统计](./contrib/VehicleCounting) | c++ | >=2.0.4 | 对视频中的车辆进行计数，实现对本地视频（H264）进行车辆动向并计数，最后生成可视化结果 |
 | [视频手势识别运行](./contrib/VideoGestureRecognition) | c++ | >=2.0.4 | 对本地视频（H264）进行手势识别并分类，生成可视化结果 |
 | [伪装目标分割](./contrib/CamouflagedObjectDetection) | python | >=2.0.4 | 对图像中的伪装目标进行识别检测，生成可视化分割结果 |
 
