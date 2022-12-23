@@ -1,0 +1,60 @@
+{
+    "Video+Openpose":{
+        "stream_config":{
+            "deviceId":"0"
+        },
+	"appsrc0": {
+            "props": {
+                "blocksize": "405600"
+            },
+            "factory": "appsrc",
+            "next": "mxpi_imagedecoder0"
+        },
+	"mxpi_imagedecoder0": {
+            "factory": "mxpi_imagedecoder",
+            "next": "mxpi_imageresize0"
+        },
+        "mxpi_imageresize0":{
+            "next":"mxpi_tensorinfer0",
+            "factory":"mxpi_imageresize",
+            "props":{
+                "interpolation":"2",
+                "resizeWidth":"512",
+                "resizeHeight":"512",
+                "dataSource":"mxpi_imagedecoder0",
+                "resizeType":"Resizer_KeepAspectRatio_Fit"
+            }
+        },
+        "mxpi_tensorinfer0":{
+            "next":"mxpi_rtmopenposepostprocesseval0",
+            "factory":"mxpi_tensorinfer",
+            "props":{
+                "dataSource": "mxpi_imageresize0",
+                "modelPath":"../models/openpose_pytorch_512.om"
+            }
+        },
+        "mxpi_rtmopenposepostprocesseval0":{
+            "next":"mxpi_dataserialize0",
+            "factory":"mxpi_rtmopenposepostprocesseval",
+            "props":{
+                "imageSource":"mxpi_imagedecoder0",
+                "inputHeight":"512",
+                "dataSource":"mxpi_tensorinfer0",
+                "inputWidth":"512"
+            }
+        },
+	"mxpi_dataserialize0": {
+            "props": {
+                "outputDataKeys": "mxpi_rtmopenposepostprocesseval0"
+            },
+            "factory": "mxpi_dataserialize",
+            "next": "appsink0"
+        },
+        "appsink0":{
+            "factory":"appsink",
+            "props":{
+                "blocksize":"4056000"
+            }
+        }
+    }
+}

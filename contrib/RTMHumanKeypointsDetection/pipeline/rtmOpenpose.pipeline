@@ -1,0 +1,131 @@
+{
+    "Video+Openpose":{
+        "stream_config":{
+            "deviceId":"0"
+        },
+        "mxpi_rtspsrc0":{
+            "next":"queue0",
+            "factory":"mxpi_rtspsrc",
+            "props":{
+                "rtspUrl":"rtsp://XXX.XXX.XXX.XXX/test1.264",
+                "channelId":"0"
+            }
+        },
+        "queue0":{
+            "next":"mxpi_videodecoder0",
+            "factory":"queue",
+            "props":{
+                "max-size-buffers":"200"
+            }
+        },
+        "mxpi_videodecoder0":{
+            "next":"tee0",
+            "factory":"mxpi_videodecoder",
+            "props":{
+                "outputImageFormat":"YUV420SP_NV12",
+                "inputVideoFormat":"H264",
+                "vdecChannelId":"0"
+            }
+        },
+        "tee0":{
+            "factory": "tee",
+            "next":[
+                "queue1",
+                "queue2"
+            ]
+        },
+        "queue2":{
+            "next": "mxpi_opencvosd0:0",
+            "factory": "queue",
+            "props":{
+                "max-size-buffers": "200"
+            }
+        },
+        "queue1":{
+            "next":"mxpi_imageresize0",
+            "factory":"queue",
+            "props":{
+                "max-size-buffers":"200"
+            }
+        },
+        "mxpi_imageresize0":{
+            "next":"queue3",
+            "factory":"mxpi_imageresize",
+            "props":{
+                "interpolation":"2",
+                "resizeWidth":"512",
+                "resizeHeight":"512",
+                "dataSource":"mxpi_videodecoder0",
+                "resizeType":"Resizer_KeepAspectRatio_Fit"
+            }
+        },
+        "queue3":{
+            "next":"mxpi_tensorinfer0",
+            "factory":"queue",
+            "props":{
+                "max-size-buffers":"200"
+            }
+        },
+        "mxpi_tensorinfer0":{
+            "next":"mxpi_rtmopenposepostprocess0",
+            "factory":"mxpi_tensorinfer",
+            "props":{
+                "dataSource": "mxpi_imageresize0",
+                "modelPath":"./models/openpose_pytorch_512.om"
+            }
+        },
+        "mxpi_rtmopenposepostprocess0":{
+            "next":"queue4",
+            "factory":"mxpi_rtmopenposepostprocess",
+            "props":{
+                "imageSource":"mxpi_videodecoder0",
+                "inputHeight":"512",
+                "dataSource":"mxpi_tensorinfer0",
+                "inputWidth":"512"
+            }
+        },
+        "queue4":{
+            "next":"mxpi_opencvosd0:1",
+            "factory":"queue",
+            "props":{
+                "max-size-buffers":"200"
+            }
+        },
+        "mxpi_opencvosd0":{
+            "factory": "mxpi_opencvosd",
+            "next": "queue5"
+        },
+        "queue5":{
+            "props":{
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "mxpi_videoencoder0"
+        },
+        "mxpi_videoencoder0":{
+            "props": {
+                "inputFormat": "YUV420SP_NV12",
+                "outputFormat": "H264",
+                "fps": "1",
+                "iFrameInterval": "50",
+                "imageHeight": "720",
+                "imageWidth": "1280"
+            },
+            "factory": "mxpi_videoencoder",
+            "next": "queue6"
+        },
+        "queue6": {
+            "props": {
+                "max-size-buffers": "200"
+            },
+            "factory": "queue",
+            "next": "appsink0"
+        },
+        "appsink0":{
+            "factory":"appsink",
+            "props":{
+                "blocksize":"4056000"
+            }
+        }
+    }
+}
