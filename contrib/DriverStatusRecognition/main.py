@@ -60,6 +60,7 @@ if __name__ == '__main__':
         retStr = inferResult.data.decode()
         cls_id = retStr.split(",")[0].split("{[")[-1]
         if ("0" in cls_id):
+            # c0为安全驾驶
             st_frame = st_frame + 1
         
         total_frame = total_frame + 1
@@ -67,12 +68,11 @@ if __name__ == '__main__':
         if (int(end - time_start) == int(detect_time)):
             thr = st_frame / total_frame
             print("frame_tatal:{}, st_frame:{}, thr:{}".format(total_frame, st_frame, thr))
+            print("cls_id:", cls_id)
             if thr < threshold_1:
-                print("严重警告")
+                print("安全驾驶占比小于阈值，严重警告")
             elif thr >= threshold_1 and thr < threshold_2:
-                print("警告")
-            elif thr >= threshold_2:
-                print("有危险行为")
+                print("安全驾驶占比小于警告值，注意")
             thr = st_frame = total_frame = 0            
             time_start = time.time()
             

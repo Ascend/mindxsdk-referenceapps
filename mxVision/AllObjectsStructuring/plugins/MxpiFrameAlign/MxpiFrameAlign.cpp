@@ -34,7 +34,6 @@ APP_ERROR MxpiFrameAlign::Init(std::map<std::string, std::shared_ptr<void>> &con
                  << ") status must be async(0), you set status sync(1), so force status to async(0).";
         status_ = ASYNC;
     }
-    dataSource_ = *std::static_pointer_cast<std::string>(configParamMap["dataSource"]);
     dataKeyVec_ = SplitWithRemoveBlank(dataSource_, SPLIT_RULE);
     if (dataKeyVec_.empty()) {
         LogError << GetError(APP_ERR_COMM_INIT_FAIL, elementName_)
@@ -98,13 +97,9 @@ APP_ERROR MxpiFrameAlign::Process(std::vector<MxTools::MxpiBuffer*> &mxpiBuffer)
 std::vector<std::shared_ptr<void>> MxpiFrameAlign::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
-    auto dataSource = std::make_shared<ElementProperty<std::string>>(ElementProperty<std::string> {
-        STRING, "dataSource", "dataSource", "the name of data source", "", "", ""
-    });
     auto intervalTime = std::make_shared<ElementProperty<int>>(ElementProperty<int> {
         INT, "intervalTime", "intervalTime", "the interval time of send data (ms)", 20, 0, 100
     });
-    properties.push_back(dataSource);
     properties.push_back(intervalTime);
     return properties;
 }

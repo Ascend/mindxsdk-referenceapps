@@ -69,6 +69,7 @@ private:
     APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
     const MxTools::MxpiErrorInfo mxpiErrorInfo);
     std::string parentName_;
+    std::string descriptionMessage_;
     std::ostringstream ErrorInfo_;
 };
 }

@@ -283,9 +283,9 @@ std::vector<std::shared_ptr<void>> MxpiPostProcess::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
-            STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorlinfer0", "NULL", "NULL"});
-    properties.push_back(parentNameProSptr);
+        auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiTrackIdReplaceClassName", "NULL", "NULL"});
+    properties.push_back(descriptionMessageProSptr);
     return properties;
 }
 

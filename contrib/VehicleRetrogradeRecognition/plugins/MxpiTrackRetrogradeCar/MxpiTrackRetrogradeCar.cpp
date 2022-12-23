@@ -49,8 +49,7 @@ APP_ERROR MxpiTrackRetrogradeCar::Init(std::map<std::string, std::shared_ptr<voi
     APP_ERROR ret = APP_ERR_OK;
 
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> motNamePropSptr = std::static_pointer_cast<string>(configParamMap["motSource"]);
     motName_ = *motNamePropSptr.get();
     std::shared_ptr<int> inputX1PropSptr = std::static_pointer_cast<int>(configParamMap["x1"]);
@@ -297,8 +296,6 @@ std::vector<std::shared_ptr<void>> MxpiTrackRetrogradeCar::DefineProperties()
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
    
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
-        STRING, "dataSource", "inputName", "the name of postprocessor", "mxpi_distributor0_0", "NULL", "NULL"});
     auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
     auto limitX1ProSptr = (std::make_shared<ElementProperty<int>>)(ElementProperty<int> {
@@ -314,7 +311,6 @@ std::vector<std::shared_ptr<void>> MxpiTrackRetrogradeCar::DefineProperties()
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiTrackRetrogradeCar", "NULL", "NULL"});
 
-    properties.push_back(parentNameProSptr);
     properties.push_back(motNameProSptr);
     properties.push_back(limitX1ProSptr);
     properties.push_back(limitX2ProSptr);

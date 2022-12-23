@@ -24,13 +24,12 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 ```
 ├── envs
-│   ├── atc_env.sh               //atc转换需要的环境变量
 │   └── env.sh                   //基础环境变量
 ├── images                       //ReadMe图片资源
 │   └── image-flow.png
 ├── model
 │   ├── aipp_yolov5.cfg          //atc转换时需要的aipp配置文件
-│   ├── atc.sh                   //atc运行脚本
+│   ├── model_conver.sh                   //模型转换脚本
 │   ├── modify_yolov5s_slice.py  //slice算子处理脚本
 │   ├── yolov5.cfg               //om模型后处理配置文件
 │   └── yolov5.names             //om模型识别类别文件
@@ -67,12 +66,6 @@ export MX_SDK_HOME="${SDK安装路径}/mxVision"
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
 export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 
-# ATC工具环境变量——atc_env.sh
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:$PATH
-export PYTHONPATH=${install_path}/arm64-linux/atc/python/site-packages:${install_path}/arm64-linux/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/arm64-linux/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/arm64-linux/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
 ```
 
 注：其中`${SDK安装路径}`替换为用户的SDK安装路径;`install_path`替换为ascend-toolkit开发套件包所在路径。`LD_LIBRARY_PATH`用以加载开发套件包中lib库。
@@ -117,10 +110,10 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
   运行结果：生成`best_s_t.onnx`文件。
 
-- **步骤5** 将`best_s_t.onnx`文件重命名为`firedetection.onnx`，然后运行当前目录`FireDetection\model`下的`atc.sh`
+- **步骤5** 将`best_s_t.onnx`文件重命名为`firedetection.onnx`，然后运行当前目录`FireDetection\model`下的`model_conver.sh`
 
   ```bash
-  bash atc.sh
+  bash model_conver.sh
   ```
 
   执行该命令后会在当前文件夹下生成项目需要的模型文件

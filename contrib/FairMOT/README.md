@@ -31,7 +31,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 7    | 模型后处理插件       | 实现对FairMOT模型输出的tensor解析，获取目标检测框以及对应的ReID向量，传输到跟踪模块。 |
 | 8    | 跟踪插件             | 实现多目标（包括机非人、目标）路径记录功能。                 |
 | 9    | 跟踪编号取代类名插件 | 用跟踪插件产生的编号信息取代后处理插件产生的类名信息，再将数据传入数据流中。 |
-| 10   | 目标框转绘插件       | 将流中传进的MxpiObjectList数据类型转换可用于OSD插件绘图所使用的的 MxpiOsdInstancesList数据类型。 |
+| 10   | 目标框转绘插件       | 将流中传进的MxpiObjectList数据类型转换可用于OSD插件绘图所使用的 MxpiOsdInstancesList数据类型。 |
 | 11   | OSD可视化插件        | 主要实现对每帧图像标注跟踪结果。                             |
 | 12   | 视频编码插件         | 用于将OSD可视化插件输出的图片进行视频编码，输出视频。        |
 
@@ -73,12 +73,12 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
 | MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| ubantu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
+| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
 | Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 
 在编译运行项目前，需要设置环境变量：
@@ -111,7 +111,8 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 
 ## 4 模型转换
 
-本项目中适用的模型是FairMOT模型，onnx模型可以直接[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FairMOT/mot_v2.onnx)。下载后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中适用的模型是FairMOT模型，onnx模型可以直接[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FairMOT/mot_v2.onnx)。下载后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型。
+原始ATC样例：https://gitee.com/ascend/samples/tree/master/python/contrib/object_tracking_video
 
 模型转换，步骤如下：
 
@@ -119,7 +120,7 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 2. 进入 `FairMOT/models` 文件夹下执行命令：
 
 ```
-atc --input_shape="input.1:1,3,480,864" --check_report=./network_analysis.report --input_format=NCHW --output=./mot_v2 --soc_version=Ascend310 --insert_op_conf=./aipp_FairMOT.config --framework=5 --model=./mot_v2.onnx
+atc --input_shape="input.1:1,3,608,1088" --check_report=./network_analysis.report --input_format=NCHW --output=./mot_v2 --soc_version=Ascend310 --insert_op_conf=./aipp_FairMOT.config --framework=5 --model=./mot_v2.onnx
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 mot_v2.om。执行后终端输出为：
@@ -135,13 +136,13 @@ ATC run success, welcome to the next use.
 
 ## 5 准备
 
-按照第3小结**软件依赖**安装live555和ffmpeg，按照 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改`FairMOT/pipeline`目录下的fairmot.pipeline文件中mxpi_rtspsrc0的内容。
+按照第3小节**软件依赖**安装live555和ffmpeg，按照 [Live555离线视频转RTSP说明文档](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改`FairMOT/pipeline`目录下的fairmot.pipeline文件中mxpi_rtspsrc0的内容。
 
 ```
         "mxpi_rtspsrc0": {
             "factory": "mxpi_rtspsrc",
             "props": {
-                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",      // 修改为自己所使用的的服务器和文件名
+                "rtspUrl":"rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264",      // 修改为自己所使用的服务器和文件名
                 "channelId": "0"
             },
             "next": "mxpi_videodecoder0"
@@ -152,7 +153,7 @@ ATC run success, welcome to the next use.
 
 ## 6 编译与运行
 
-**步骤1** 按照第2小结**环境依赖**中的步骤设置环境变量。
+**步骤1** 按照第2小节**环境依赖**中的步骤设置环境变量。
 
 **步骤2** 按照第 4 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 `FairMOT/models` 目录下。
 
@@ -164,7 +165,7 @@ ATC run success, welcome to the next use.
 bash build.sh
 ```
 
-命令执行成功后会在`FairMOT/plugins/FairmotPostProcess`和`FairMOT/plugins/MxpiTrackIdReplaceClassName`目录下分别生成build文件夹。将`FairMOT/plugins/MxpiTrackIdReplaceClassName/build`目录下生成的的libmxpi_trackidreplaceclassname.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下，同时将`FairMOT/plugins/FairmotPostProcess/build`目录下生成的libfairmotpostprocess.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下。
+命令执行成功后会在`FairMOT/plugins/FairmotPostProcess`和`FairMOT/plugins/MxpiTrackIdReplaceClassName`目录下分别生成build文件夹。将`FairMOT/plugins/MxpiTrackIdReplaceClassName/build`目录下生成的libmxpi_trackidreplaceclassname.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下，同时将`FairMOT/plugins/FairmotPostProcess/build`目录下生成的libfairmotpostprocess.so下载后上传到`${SDK安装路径}/mxVision/lib/plugins`目录下。
 
 **步骤5** 运行。回到FairMOT目录下，在FairMOT目录下执行命令：
 
@@ -178,7 +179,7 @@ bash run.sh
 
 **测试帧率：**
 
-使用`FairMOT/test`目录下的main.cpp替换`FairMOT`目录下的main.cpp，然后按照第6小结编译与运行中的步骤进行编译运行，服务器会输出运行到该帧的平均帧率。
+使用`FairMOT/test`目录下的main.cpp替换`FairMOT`目录下的main.cpp，然后按照第6小节编译与运行中的步骤进行编译运行，服务器会输出运行到该帧的平均帧率。
 
 ![](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image2.png)
 
@@ -190,8 +191,8 @@ bash run.sh
 
 **问题描述：**
 
-`FairMOT/pipeline/fairmot.pipeline`中视频编码分辨率参数目前未配置，自适应分辨率编码输出。
-如手动指定imageHeight 和 imageWidth 属性，则需要和视频输入分配率相同，否则会包如下类型的错：
+`FairMOT/pipeline/fairmot.pipeline`中视频编码分辨率参数目前配置为1280*720。  
+该参数通过imageHeight 和 imageWidth 属性配置，且需要和视频输入分配率相同，否则会包如下类型的错：
 
 ![](https://gitee.com/seven-day/mindxsdk-referenceapps/raw/master/contrib/FairMOT/image/image3.png)
 

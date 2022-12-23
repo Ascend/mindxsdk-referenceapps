@@ -36,8 +36,7 @@ APP_ERROR MxpiSamplePlugin::Init(std::map<std::string, std::shared_ptr<void>>& c
     LogInfo << "MxpiSamplePlugin::Init start.";
     APP_ERROR ret = APP_ERR_OK;
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> descriptionMessageProSptr =
     std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     height = *std::static_pointer_cast<float>(configParamMap["height"]);
@@ -391,8 +390,6 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
-        STRING, "dataSource", "name", "the name of previous plugin", "mxpi_imageresize0", "NULL", "NULL"});
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
     auto startRow = std::make_shared<ElementProperty<double>>(ElementProperty<double> {
@@ -419,7 +416,6 @@ std::vector<std::shared_ptr<void>> MxpiSamplePlugin::DefineProperties()
         INT, "interpolation", "interpolation", "the interpolation  of image", 1, 0, 4});
     auto option = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
 		            STRING, "option", "option", "OPTION of plugin", "resize", "NULL", "NULL"});
-    properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
     properties.push_back(startRow);
     properties.push_back(startCol);

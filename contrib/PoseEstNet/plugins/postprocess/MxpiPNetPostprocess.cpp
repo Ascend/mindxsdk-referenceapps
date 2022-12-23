@@ -64,8 +64,7 @@ APP_ERROR MxpiPNetPostprocess::Init(std::map<std::string, std::shared_ptr<void>>
     LogInfo << "MxpiPNetPostprocess::Init start.";
     APP_ERROR ret = APP_ERR_OK;
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> infoPlugPropSptr = std::static_pointer_cast<string>(configParamMap["InfoSource"]);
     infoPlugName_ = *infoPlugPropSptr.get();
     std::shared_ptr<string> descriptionMessageProSptr =
@@ -339,13 +338,10 @@ std::vector<std::shared_ptr<void>> MxpiPNetPostprocess::DefineProperties() {
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
-        STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorinfer2", "NULL", "NULL"});
     auto infoPlugProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
         STRING, "InfoSource", "name", "the name of needed decoder/crop plugin", "mxpi_imagedecoder0", "NULL", "NULL"});
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>> (ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiSamplePlugin", "NULL", "NULL"});
-    properties.push_back(parentNameProSptr);
     properties.push_back(infoPlugProSptr);
     properties.push_back(descriptionMessageProSptr);
     return properties;

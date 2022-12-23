@@ -100,6 +100,7 @@ namespace mx_plugins {
         APP_ERROR SetMxpiErrorInfo(MxTools::MxpiBuffer& buffer, const std::string pluginName,
                                    const MxTools::MxpiErrorInfo mxpiErrorInfo);
         std::string parentName_;
+        std::string descriptionMessage_;
         std::ostringstream ErrorInfo_;
         int index;
     };

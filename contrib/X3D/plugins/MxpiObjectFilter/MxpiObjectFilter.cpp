@@ -28,9 +28,7 @@ APP_ERROR MxpiObjectFilter::Init(
     std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     std::cout << "MxpiObjectFilter::Init start." << std::endl;
-    std::shared_ptr<std::string> dataSource =
-        std::static_pointer_cast<std::string>(configParamMap["dataSource"]);
-    dataSource_ = *dataSource;
+    parentName_ = dataSource_;
     return APP_ERR_OK;
 }
 
@@ -95,10 +93,7 @@ APP_ERROR MxpiObjectFilter::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 std::vector<std::shared_ptr<void>> MxpiObjectFilter::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
-    auto dataSource = std::make_shared<ElementProperty<string>>(
-        ElementProperty<string> {
-            STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
-    properties.push_back(dataSource);
+
     return properties;
 }
 

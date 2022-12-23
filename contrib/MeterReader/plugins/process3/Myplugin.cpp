@@ -31,8 +31,7 @@ const int param_4 = 4;
 APP_ERROR Myplugin::Init(std::map<std::string, std::shared_ptr<void>>& configParamMap)
 {
     LogInfo << "Myplugin::Init start.";
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     return APP_ERR_OK;
 }
 
@@ -152,9 +151,9 @@ std::vector<std::shared_ptr<void>> Myplugin::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
 
-    auto parentNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string> {
-        STRING, "dataSource", "parentName", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
-    properties.push_back(parentNameProSptr);
+    auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
+        STRING, "descriptionMessage", "message", "Description mesasge of plugin", "This is MxpiCollisionClassName", "NULL", "NULL"});
+    properties.push_back(descriptionMessageProSptr);
 
     return properties;
 }

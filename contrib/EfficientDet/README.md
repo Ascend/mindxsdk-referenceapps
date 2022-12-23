@@ -104,7 +104,7 @@ EfficientDet 的后处理插件接收模型推理插件输出的两个特征图�
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本   |
 | -------- | ------ |
@@ -192,13 +192,14 @@ bash model_convertion_d{compound_coef}.sh
 
 **步骤2** 如果使用的是上述链接提供的 onnx 模型或者 om 模型，按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``python/models`` 目录下。
 
-**步骤3** 编译。在项目目录下执行命令：
-```
-bash build.sh
-cp postprocess/build/libefficientdetpostprocess.so ${MX_SDK_HOME}/lib/modelpostprocessors/
-```
+**步骤3** 编译。在项目目录下执行bash build.sh命令。
 
-**步骤4** 图片检测。将一张图片放在项目目录下，命名为 img.jpg，在该图片上进行检测，**从 ```main.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值**，然后执行命令：
+此时硬生成postprocess/build/libefficientdetpostprocess.so 文件
+
+**步骤4** 图片检测。将一张图片放在项目目录下，命名为 img.jpg，在该图片上进行检测
+>**如提示so库异常，则需要从 ```main.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值改为具体路径值**
+
+执行命令：
 ```
 cd python
 python3 main.py
@@ -259,7 +260,9 @@ pip3.9 install pycocotools
 
 ```
 
-3. **从 ```evaluate.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，** 然后执行命令：
+3. 执行验证 
+
+**从 ```evaluate.py``` 中找到使用的 pipeline 文件路径，将其中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值改为具体路径值，** 然后执行命令：
 ```
 cd python
 python3 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val2017_detection_result_d0.json
@@ -279,6 +282,7 @@ python3 evaluate.py --pipeline=pipeline/EfficientDet-d0.pipeline --output=val201
 bash model_convertion_d0_previous_version.sh
 ```
 执行成功后在 ``python/models`` 文件夹下生成 efficient-det-d0-mindxsdk-order-previous-version.om 模型文件。
+
 2. 评测。将 ```python/pipeline/EfficientDet-d0-previous-version.pipeline``` 中 mxpi_objectpostprocessor0 插件的 postProcessLibPath 属性值中的 ${MX_SDK_HOME} 值改为具体路径值，然后执行命令：
 ```
 python3 evaluate.py --pipeline=pipeline/EfficientDet-d0-previous-version.pipeline --output=val2017_detection_result_d0_previous_version.json

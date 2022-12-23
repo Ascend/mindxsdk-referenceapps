@@ -8,13 +8,13 @@
 
 ## 基于MindSpore框架训练模型
 
-**步骤1** 训练数据获取 下载数据集 。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/data.zip)
+**步骤1** 训练数据获取 下载数据集 。
 
-**步骤2** 将数据集按照 4：1 分为训练集和验证集
+**步骤2** 将数据集按照 4：1 分为训练集和验证集[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/data.zip)
 
 **步骤3** 训练代码下载  将获取到基于MindSpore的ResNet50模型 [下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/DriverStatusRecognition/model.zip)
 
-**步骤3** 训练模型
+**步骤4** 训练模型
 
 (1)、按照如下修改 train.py中的 init_loss_scale()
 
@@ -65,7 +65,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
  cd convert
- bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/output_name_use_to_video_test.om  yuv_aipp.config
+ bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/resnet50-dirver_detection-air-915-yuv.om  yuv_aipp.config
 ```
 
 **步骤3**  启动rtsp服务
@@ -92,7 +92,7 @@ bash run.sh main.py 30
 
 ```
 cd convert
-bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/output_name_use_to_percision_test.om  aipp.config
+bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/resnet50-dirver_detection-915-air.om  aipp.config
 ```
 
 (2)  修改pipeline/dirver-detection-img.pipeline 中的相关选项，如om模型路径等
@@ -100,7 +100,7 @@ bash air2om.sh /${实际PATH}/*.air  /${实际PATH}/output_name_use_to_percision
 (3) 测试精度
 
 ```
-bash run.sh percision.py /${实际PATH}/val_data  
+bash run.sh precision.py /${实际PATH}/val_data  
 ```
 
 ## 性能测试

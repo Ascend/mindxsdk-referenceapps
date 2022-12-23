@@ -115,14 +115,15 @@ export ARCH_PATTERN=x86_64-linux
 **步骤2**：修改代码目录中：```plugins/```下的各个插件中```CMakeLists.txt```文件中的路径为实际安装依赖包的路径。修改代码路径如下所示：
 
 ```cmake
-set(MX_SDK_HOME ${XXX}/MindX_SDK/mxVision/)						       # Host侧SDK 请修改为实际路径
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${XM_SDK_HOME}/lib/plugins) # Host侧插件 请修改为实际路径
+set(MX_SDK_HOME {MX_SDK_HOME}/mxVision/)						       # Host侧SDK 请修改为实际路径
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${MX_SDK_HOME}/lib/plugins) # Host侧插件 请修改为实际路径
 ```
 
 **步骤3**：编译插件，生成.so文件
 
 ```bash
 mkdir build
+cd build
 cmake ..
 make -j
 ```
@@ -144,24 +145,24 @@ export LD_LIBRARY_PATH=$ASCEND_HOME/ascend-toolkit/latest/acllib/lib64:$LD_LIBRA
 export PATH=/usr/local/python3.9.2/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/ccec_compiler/bin:/usr/local/Ascend/ascend-toolkit/latest/atc/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=/usr/local/Ascend/ascend-toolkit/latest/opp
-export LD_LIBRARY_PATH=${XXX}/project/opencv/lib:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH="${XXX}/mxManufacture/lib:${XXX}/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${XXX}/mxManufacture/python:${PYTHONPATH}"
-export MX_SDK_HOME="${XXX}/MindX_SDK/mxVision"
-export LD_LIBRARY_PATH="${XXX}/MindX_SDK/mxManufacture/lib:${XXX}/MindX_SDK/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
-export GST_PLUGIN_SCANNER="${XXX}/MindX_SDK/mxManufacture/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${XXX}/MindX_SDK/mxManufacture/opensource/lib/gstreamer-1.0:${XXX}/MindX_SDK/mxManufacture/lib/plugins"
-export PYTHONPATH="${XXX}/MindX_SDK/mxManufacture/python:${PYTHONPATH}"
+export LD_LIBRARY_PATH=${MX_SDK_HOME}/project/opencv/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="${MX_SDK_HOME}/mxManufacture/lib:${MX_SDK_HOME}/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
+export PYTHONPATH="${MX_SDK_HOME}/mxManufacture/python:${PYTHONPATH}"
+export MX_SDK_HOME="{MX_SDK_HOME}/mxVision"
+export LD_LIBRARY_PATH="{MX_SDK_HOME}/mxManufacture/lib:{MX_SDK_HOME}/mxManufacture/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}"
+export GST_PLUGIN_SCANNER="{MX_SDK_HOME}/mxManufacture/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
+export GST_PLUGIN_PATH="{MX_SDK_HOME}/mxManufacture/opensource/lib/gstreamer-1.0:{MX_SDK_HOME}/mxManufacture/lib/plugins"
+export PYTHONPATH="{MX_SDK_HOME}/mxManufacture/python:${PYTHONPATH}"
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
 ```
 
-注意：请把${XXX}替换为具体的SDK安装路径
+注意：请把${MX_SDK_HOME}替换为具体的SDK安装路径
 
-**步骤4**：在```IDCardRecognition.py```中，更改```pipeline```路径。
+**步骤4**：在```IDCardRecognition.py```中，更改```pipeline```路径，并修改pipeline中${MX_SDK_HOME}为实际路径。
 
 ### 4.2 运行
 
-直接运行
+修改IDCardRecognition.sh中${MX_SDK_HOME}为实际路径后运行(当前为在sdk默认sample中运行的相对路径)
 
 ```bash
 sh IDCardRecognition.sh

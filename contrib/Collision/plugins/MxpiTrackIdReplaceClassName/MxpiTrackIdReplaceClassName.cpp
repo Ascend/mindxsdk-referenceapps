@@ -30,8 +30,7 @@ APP_ERROR MxpiTrackIdReplaceClassName::Init(std::map<std::string, std::shared_pt
     APP_ERROR ret = APP_ERR_OK;
 
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> motNamePropSptr = std::static_pointer_cast<string>(configParamMap["motSource"]);
     motName_ = *motNamePropSptr.get();
     std::shared_ptr<string> descriptionMessageProSptr = std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
@@ -158,15 +157,12 @@ std::vector<std::shared_ptr<void>> MxpiTrackIdReplaceClassName::DefineProperties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
 
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
-        STRING, "dataSource", "inputName", "the name of fairmotpostprocessor", "mxpi_fairmot_obj", "NULL", "NULL"});
     auto motNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "motSource", "parentName", "the name of previous plugin", "mxpi_motsimplesortV20", "NULL", "NULL"});
 
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiTrackIdReplaceClassName", "NULL", "NULL"});
 
-    properties.push_back(parentNameProSptr);
     properties.push_back(motNameProSptr);
     properties.push_back(descriptionMessageProSptr);
     return properties;

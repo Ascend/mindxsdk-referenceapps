@@ -17,7 +17,7 @@
 
 ## 2 模型转换
 
-由于原模型是onnx模型，需借助ACT工具将onnx模型转换为om模型。模型转换时应先按照[准备动作](https://support.huaweicloud.com/atc-model-convert-cann202infer/atlasatc_16_0005.html)  
+由于原模型是onnx模型，需借助ATC工具将onnx模型转换为om模型。模型转换时应先按照[准备动作](https://support.huaweicloud.com/atc-model-convert-cann202infer/atlasatc_16_0005.html)  
 配置好环境和设置环境变量，然后执行以下命令
 ```bash
 atc --framework=5 --model={model_path} --input_shape="fbank:1,64,1000"

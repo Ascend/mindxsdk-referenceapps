@@ -50,8 +50,8 @@
         },
         "mxpi_imageresize0": {
             "props": {
-                "resizeHeight": "480",
-                "resizeWidth": "864",
+                "resizeHeight": "608",
+                "resizeWidth": "1088",
                 "resizeType": "Resizer_KeepAspectRatio_Fit"
             },
             "factory": "mxpi_imageresize",
@@ -143,7 +143,9 @@
                 "inputFormat": "YUV420SP_NV12",
                 "outputFormat": "H264",
                 "fps": "1",
-                "iFrameInterval": "50"
+                "iFrameInterval": "50",
+                "imageWidth":"1280",
+                "imageHeight":"720"
             },
             "factory": "mxpi_videoencoder",
             "next": "queue7"

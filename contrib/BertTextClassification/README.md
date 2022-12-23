@@ -98,7 +98,7 @@
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本   |
 | -------- | ------ |
@@ -202,9 +202,9 @@ make
 
 ## 5 精度测试
 
-**步骤1** 按照第 4 小节 编译与运行 的步骤将样例运行成功。
+**步骤1** 已按照上一小节 编译与运行 的步骤将样例运行成功。
 
-**步骤2** 从网址https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/BertTextClassification/data.zip下载后解压，将解压后的test.csv文件分别放在sdk/data目录和mxBase/data目录。
+**步骤2** 下载[数据集](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/BertTextClassification/data.zip)后解压，将解压后的test.csv文件分别放在sdk/data目录和mxBase/data目录。
 
 **步骤3** pipeline项目中的精度测试文件为sdk/test目录下的test.py，将test.py移到sdk目录下，执行下面代码，得到pipeline的精度测试结果。
 
@@ -212,11 +212,11 @@ make
 python3 test.py
 ```
 
-**步骤4** mxBase项目中，将mxBase目录下main.cpp中main方法的代码注释，添加下面代码后执行，得到mxBase的精度测试结果。
+**步骤4** mxBase项目中，将mxBase目录下main.cpp中main方法的全部代码注释，替换为下面代码后执行（即main函数中仅包含以下代码），得到mxBase的精度测试结果。
 
 ```
 Test::test_accuracy();
 ```
 
-## 5 其他问题
+## 6 其他问题
 1.本项目的设计为限制输入样例为txt文件，其他文件如图片、音频输入则会报错。

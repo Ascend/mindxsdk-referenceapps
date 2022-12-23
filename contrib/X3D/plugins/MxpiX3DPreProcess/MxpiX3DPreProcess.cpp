@@ -41,9 +41,7 @@ APP_ERROR MxpiX3DPreProcess::Init(
     std::map<std::string, std::shared_ptr<void>> &configParamMap)
 {
     std::cout << "MxpiX3DPreProcess::Init start." << std::endl;
-    std::shared_ptr<std::string> dataSource =
-        std::static_pointer_cast<std::string>(configParamMap["dataSource"]);
-    dataSource_ = *dataSource;
+    parentName_ = dataSource_;
     std::shared_ptr<std::uint32_t> skipFrameNum =
         std::static_pointer_cast<std::uint32_t>(configParamMap["skipFrameNum"]);
     skipFrameNum_ = *skipFrameNum;
@@ -228,16 +226,13 @@ APP_ERROR MxpiX3DPreProcess::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
 std::vector<std::shared_ptr<void>> MxpiX3DPreProcess::DefineProperties()
 {
     std::vector<std::shared_ptr<void>> properties;
-    auto dataSource = std::make_shared<ElementProperty<string>>(
-        ElementProperty<string> {
-            STRING, "dataSource", "dataSource", "data source", "defalut", "NULL", "NULL"});
+
     auto skipFrameNum = std::make_shared<ElementProperty<uint>>(
         ElementProperty<uint> {
             UINT, "skipFrameNum", "skipFrameNum", "the number of skip frame", 5, 1, 10});
     auto windowStride = std::make_shared<ElementProperty<uint>>(
         ElementProperty<uint> {
             UINT, "windowStride", "windowStride", "the number of window stride", 1, 1, MAX_WINDOW_STRIDE});
-    properties.push_back(dataSource);
     properties.push_back(skipFrameNum);
     properties.push_back(windowStride);
     return properties;

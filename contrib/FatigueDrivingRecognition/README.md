@@ -15,7 +15,11 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4，版本号查询方法：在Atlas产品环境下，运行命令：
+SDK版本为2.0.4，查询方法
+```
+cat ${SDK安装路径}/mxVision/version.info
+```
+CANN版本为22.0.2，查询方法：在Atlas产品环境下，运行命令：
 
 ```
 npu-smi info
@@ -87,7 +91,7 @@ npu-smi info
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本  |
 | -------- | ----- |
@@ -117,7 +121,7 @@ PYTHONPATH: python环境路径
 
 ## 3 模型转换
 
-##### 2.1 模型与软件依赖
+##### 3.1 模型与软件依赖
 
 所用模型为yolov4模型与PFLD模型：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FatigueDrivingRecognition/model.zip)
 
@@ -131,7 +135,7 @@ PYTHONPATH: python环境路径
 | pytorch  | 1.2.0 | [pytorch官网](https://pytorch.org/get-started/previous-versions/) |
 | ONNX     | 1.7.0 | pip install onnx==1.7.0                                      |
 
-##### 2.2 pth文件转换为onnx文件
+##### 3.2 pth文件转换为onnx文件
 
 1. 若尝试pth文件转换为onnx文件，可获取[原项目](https://github.com/Hsintao/pfld_106_face_landmarks)代码，下载至本地。安装环境依赖**requirements.txt**在原项目中已给出。
 2. 将原项目中的pytorch2onnx.py文件替换成本项目中的ModelTransformation/pytorch2onnx.py文件。运行：
@@ -142,7 +146,7 @@ python pytorch2onnx.py
 
 转换完成后权重文件pfld_106.onnx上传至服务器任意目录下。
 
-##### 2.3 onnx文件转换为om文件
+##### 3.3 onnx文件转换为om文件
 
 将atc_env.sh中的HOME修改为onnx模型所在目录，运行atc_env.sh将onnx转为om模型，脚本中包含atc命令：
 

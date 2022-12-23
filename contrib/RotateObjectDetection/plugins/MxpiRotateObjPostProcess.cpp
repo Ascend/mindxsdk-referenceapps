@@ -437,8 +437,7 @@ APP_ERROR MxpiRotateObjPostProcess::Init(std::map<std::string, std::shared_ptr<v
     APP_ERROR ret = APP_ERR_OK;
 
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> imageResizePropSptr = std::static_pointer_cast<string>(configParamMap["imageSource"]);
     imageResizeName_ = *imageResizePropSptr.get();
 
@@ -852,11 +851,8 @@ std::vector<std::shared_ptr<void>> MxpiRotateObjPostProcess::DefineProperties(){
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
-        STRING, "dataSource", "name", "the name of previous plugin", "mxpi_tensorinfer0", "NULL", "NULL"});
     auto imageResizeNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string>{
         STRING, "imageSource", "inputName", "the name of imageresize", "mxpi_imageresize0", "NULL", "NULL"});
-    properties.push_back(parentNameProSptr);
     properties.push_back(imageResizeNameProSptr);
     return properties;
 }

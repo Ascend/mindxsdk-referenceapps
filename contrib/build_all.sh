@@ -27,7 +27,7 @@ SAMPLE_FOLDER=(
     # human_segmentation/
     # OpenposeKeypointDetection/
     PersonCount/
-    FatigueDrivingRecognition/
+    # FatigueDrivingRecognition/
     # CartoonGANPicture/
     # HeadPoseEstimation/
     FaceBoxes/
@@ -36,20 +36,20 @@ SAMPLE_FOLDER=(
     EfficientDet/
     SentimentAnalysis/
     # RotateObjectDetection/
-    FairMOT/
+    # FairMOT/
     UltraFastLaneDetection/
     VehicleIdentification/
     yunet/
-    RoadSegmentation/
-    PassengerflowEstimation/
-    VehicleRetrogradeRecognition/
-    Collision/
-    PassengerflowEstimation/
+    # RoadSegmentation/
+    # PassengerflowEstimation/
+    # VehicleRetrogradeRecognition/
+    # Collision/
+    # PassengerflowEstimation/
     CenterFace/
     YOLOX/
     PicoDet/
     SOLOV2/
-    OpenCVPlugin/
+    # OpenCVPlugin/
     RefineDet/
     FCOS
     Faster_R-CNN/

@@ -80,11 +80,11 @@ def infer(stream_manager, stream_name, in_plugin_id, data_input):
     input_pic_width = input_pic_info.widthAligned
 
     # get output depth pic size
-    output_depth_pic_height = infer_result_list.tensorPackageVec[0].tensorVec[0].tensorShape[2]
-    output_depth_pic_width = infer_result_list.tensorPackageVec[0].tensorVec[0].tensorShape[3]
+    output_depth_pic_height = infer_result_list.tensorPackageVec[0].tensorVec[1].tensorShape[2]
+    output_depth_pic_width = infer_result_list.tensorPackageVec[0].tensorVec[1].tensorShape[3]
 
     # get output depth pic data
-    output_depth_info_data = infer_result_list.tensorPackageVec[0].tensorVec[0].dataStr
+    output_depth_info_data = infer_result_list.tensorPackageVec[0].tensorVec[1].dataStr
     # converting the byte data into 32 bit float array
     depth_info = np.frombuffer(output_depth_info_data, dtype=np.float32)
     depth_info = depth_info.reshape(output_depth_pic_height, output_depth_pic_width)

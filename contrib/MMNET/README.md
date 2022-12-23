@@ -15,11 +15,11 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 npu-smi 20.2.0 
+支持的SDK版本为 2.0.4，CANN版本为 20.2.0 
 
 ### 1.3 代码目录结构与说明
 
-本工程名称为mmnet，工程目录如下图所示：
+本工程名称为MMNET，工程目录如下图所示：
 
 ```
 |-------- test                                // 存放测试图片
@@ -59,13 +59,10 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 在编译运行项目前，需要设置环境变量：
 
 - 环境变量介绍
+运行以下设置脚本以完成，其中{%Mind_SDK%}请替换为实际SDK安装位置
 
 ```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+source {%Mind_SDK%}/mxVision-3.0.RC3/
 ```
 
 

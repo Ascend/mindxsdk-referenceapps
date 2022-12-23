@@ -29,8 +29,7 @@ APP_ERROR MxpiSelectObject::Init(std::map<std::string, std::shared_ptr<void>>& c
     APP_ERROR ret = APP_ERR_OK;
 
     // Get the property values by key
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     std::shared_ptr<string> descriptionMessageProSptr =
         std::static_pointer_cast<string>(configParamMap["descriptionMessage"]);
     descriptionMessage_ = *descriptionMessageProSptr.get();
@@ -144,14 +143,8 @@ std::vector<std::shared_ptr<void>> MxpiSelectObject::DefineProperties()
     // Define an A to store properties
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-   
-    auto parentNameProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
-        STRING, "dataSource", "inputName", "the name of objectpostprocessor", "mxpi_objectpostprocessor0", "NULL", "NULL"});
-
     auto descriptionMessageProSptr = std::make_shared<ElementProperty<string>>(ElementProperty<string> {
         STRING, "descriptionMessage", "message", "Description mesasge of plugin",  "This is MxpiSelectObject", "NULL", "NULL"});
-
-    properties.push_back(parentNameProSptr);
     properties.push_back(descriptionMessageProSptr);
     return properties;
 }
