@@ -59,9 +59,9 @@ if ret != 0:
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 
 # 设置用户属性, 包括 secret_id, secret_key, region等。App_id 已在CosConfig中移除，请在参数 Bucket 中带上 App_id。Bucket 由 BucketName-App_id 组成
-SECRET_ID = 'AKIDq23sVu40iANL5bz93iAPRIxPdleIgjYA'  # 替换为用户的 SecretId，登录https://console.cloud.tencent.com/cam/capi查看
-SECRET_KEY = 'QbXIoPlvtd9RUJuHROIxMYVDfsrcrsi2'  # 替换为用户的 SecretKey，登录https://console.cloud.tencent.com/cam/capi查看
-REGION = 'ap-shanghai'  # 替换为用户的 region，已创建桶的region可在https://console.cloud.tencent.com/cos5/bucket查看
+SECRET_ID = ''  # 替换为用户的 SecretId，登录https://console.cloud.tencent.com/cam/capi查看
+SECRET_KEY = ''  # 替换为用户的 SecretKey，登录https://console.cloud.tencent.com/cam/capi查看
+REGION = ''  # 替换为用户的 region，已创建桶的region可在https://console.cloud.tencent.com/cos5/bucket查看
 # COS支持的所有region列表参见https://cloud.tencent.com/document/product/436/6224
 TOKEN = None  # 如果使用永久密钥不需填入token，若使用临时密钥需填入，临时密钥生成和使用见https://cloud.tencent.com/document/product/436/14048
 SCHEME = 'https'  # 指定使用 http/https 协议来访问 COS，默认为 https，可不填
@@ -87,7 +87,7 @@ if os.path.exists(INPUT_PATH):
 while True:
 
     # Check the state of app
-    RESPONSE = CLIENT.list_objects(Bucket='burpee-1312708737',
+    RESPONSE = CLIENT.list_objects(Bucket='',   # 替换为用户的 Bucket
                                    Prefix='state')
 
     if len(RESPONSE['Contents']) == 2:
@@ -100,14 +100,14 @@ while True:
         continue
 
     # Check the number of input images
-    RESPONSE = CLIENT.list_objects(Bucket='burpee-1312708737',
+    RESPONSE = CLIENT.list_objects(Bucket='',   # 替换为用户的 Bucket
                                    Prefix='input')
 
     if len(RESPONSE['Contents']) < IMG_NUM + 2:
         cout << 'wait for inputs' << END_L
         continue
     # Check the target input image
-    RESPONSE = CLIENT.object_exists(Bucket='burpee-1312708737',
+    RESPONSE = CLIENT.object_exists(Bucket='',   # 替换为用户的 Bucket
                                     Key='input/img' + str(IMG_NUM) + '.jpg')
 
     if not RESPONSE:
@@ -118,7 +118,7 @@ while True:
     if os.path.exists(INPUT_PATH) != 1:
         os.makedirs("./input/")
 
-    RESPONSE = CLIENT.get_object(Bucket='burpee-1312708737',
+    RESPONSE = CLIENT.get_object(Bucket='',   # 替换为用户的 Bucket
                                  Key='input/img' + str(IMG_NUM) + '.jpg')
     RESPONSE['Body'].get_stream_to_file('/input/img' + str(IMG_NUM) + '.jpg')
     cout << 'Get the input successfully' << END_L
@@ -190,7 +190,7 @@ while True:
     # Upload the result file        
     with open('result.txt', 'rb') as fp:
         RESPONSE = CLIENT.put_object(
-            Bucket='burpee-1312708737',
+            Bucket='',   # 替换为用户的 Bucket
             Body=fp,
             Key='result/result.txt',
             StorageClass='STANDARD',

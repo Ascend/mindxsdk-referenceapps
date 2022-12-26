@@ -2,7 +2,11 @@
 
 ## 1 介绍
 
-波比跳运动小程序基于 MindX SDK 开发，在 Ascend 310 芯片上进行目标检测，将检测结果保存成视频。项目主要流程：1)视频流程：通过 live555 服务器进行拉流输入视频，然后进行视频解码将 H.264 格式的视频解码为图片，图片缩放后经过模型推理进行波比跳检测，识别结果经过后处理后利用 cv 可视化识别框，以视频的形式输出，同时生成文本文件记录视频中完成的波比跳个数。2)小程序流程：通过微信小程序开发者将摄像头截取的图片数据上传至腾讯云桶中，然后后端将桶中数据下载至本地并将数据输入至流水线内，接着进行图片解码和缩放，最后经过模型推理进行波比跳检测，识别结果经过后处理后上传至腾讯云桶中，为前端小程序使用。
+波比跳运动小程序基于 MindX SDK 开发，在 Ascend 310 芯片上进行目标检测，将检测结果保存成视频。项目主要流程：
+
+1)视频流程：通过 live555 服务器进行拉流输入视频，然后进行视频解码将 H.264 格式的视频解码为图片，图片缩放后经过模型推理进行波比跳检测，识别结果经过后处理后利用 cv 可视化识别框，以视频的形式输出，同时生成文本文件记录视频中完成的波比跳个数。
+
+2)小程序流程：通过微信小程序开发者将摄像头截取的图片数据上传至腾讯云桶中，然后后端将桶中数据下载至本地并将数据输入至流水线内，接着进行图片解码和缩放，最后经过模型推理进行波比跳检测，识别结果经过后处理后上传至腾讯云桶中，为前端小程序使用。
 
 ### 1.1 支持的产品
 
@@ -35,8 +39,7 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 │   ├── video.jpg   
 │   ├── app_flow.jpg  
 │   ├── video_flow.jpg 
-│   ├── dark.jpg
-│   └── dark_res.jpg 
+│   └── dark.jpg
 ├── model
 │   ├── atc.sh                   //atc运行脚本
 ├── pipeline
@@ -86,8 +89,8 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 | 小程序导入代码 |      -       |                       微信小程序代码                       | [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com:443/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%BB%A3%E7%A0%81.zip?AccessKeyId=3M18UT7HRLKP58NPPFUO&Expires=1690270238&Signature=SHjFgSLUrGMPGbYNYyNgS3VmBMw%3D) |
 |     腾讯桶内文件夹格式     |      -       |               压缩包解压后文件夹内文件形式即为桶内文件形式                |                                                      [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com/%E6%A1%B6%E5%86%85%E6%96%87%E4%BB%B6.zip)                                                      |
 | 对象储存 python sdk |      -       |                 小程序相关python sdk快速入门                 |                                                                       [链接](https://cloud.tencent.com/document/product/436/12269)                                                                        |
-|    模型文件    |      -       |      pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件       |                                                                     [链接](https://burpee.obs.cn-east-3.myhuaweicloud.com/models.zip)                                                                     |
-|               |      -       | pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件            |                        [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Burpee/models%E5%92%8C%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.zip)                        |
+|    模型文件    |      -       |      pt 模型文件，onnx 模型文件，om 模型文件,names文件，模型配置文件       |                        [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Burpee/models%E5%92%8C%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.zip)                        |
+
 在运行项目需要的环境变量如下，运行前不需要特别设置，环境依赖已经写入脚本中，脚本在`Burpee_Detection/envs`目录下：
 
   ```bash
@@ -172,40 +175,46 @@ bash run.sh
 #### 4.1.2 小程序
 
 - **步骤1** 按照第 4 小节 **视频** 中的**步骤1**到**步骤3**搭建小程序后端环境。
-
-![app_6](readme_img/app_6.jpg)
-
-- **步骤2** 按照第 4 小节 **视频** 中的**步骤1**到**步骤3**搭建小程序后端环境。
-
-- **步骤3** 运行。进入 `Burpee_Detection/` 目录，在 `Burpee_Detection/App_burpee_detection` 目录下执行命令：
+- **步骤2** 运行。在 `Burpee_Detection/App_burpee_detection` 目录下执行命令：
 
 ```bash
 bash run.sh
 ```
+- **步骤3** 创建obs桶内文件夹和文件，如下所示
+```
+├── input   //存放小程序获取数据
+├── result  //存放后端处理的数据输出结果
+├── state   //用于判断小程序状态（前端改写，后端查看）
+├── state.txt //前端放入state文件夹的文件
+├── result.txt//存放后端处理的计数值
+```
 - **步骤4** 下载`微信开发者工具`并登录，在微信公众平台注册小程序并获取AppID
 
-![app_1](readme_img/app_1.jpg)
+
+- ![app_1](readme_img/app_1.jpg)
+
 
 - **步骤5** 点击导入，选择小程序代码文件夹并打开（代码可下载，下载链接在第二小节），点击编译模式选中`pages`目录下的子目录`bind`并选择`bind`，点击`详情-本地设置`，选中不效验合法域名后（可在小程序公众平台开发管理-开发设置中，配置合法域名），点击`真机调试`，然后用手机扫描二维码
 
-![app_2](readme_img/app_2.jpg)   
-![app_3](readme_img/app_3.jpg)  
-![app_4](readme_img/app_4.jpg)
+
+- ![app_2](readme_img/app_2.jpg)  - ![app_3](readme_img/app_3.jpg) - ![app_4](readme_img/app_4.jpg)
+
 
 - **步骤6** 进入微信小程序页面，点击`开始计数`，小程序将摄像头以40ms（fps=25）的速率拍摄照片，并上传至腾讯云桶内，后台接收图片并处理
-
-![app_5](readme_img/app_5.jpg)
-
+- 
+- ![app_5](readme_img/app_5.jpg)
+- 
 - **步骤7** 人物在摄像头前进行波比跳，后台实时更新波比跳个数并将结果发送至桶内，小程序端以0.1s的速率刷新页面展示的个数
 
 - **步骤8** 点击`结束`，小程序停止发送图像并清理上传至桶内的图片释放内存，后端等待小程序下次开始计数
 
 
+
 ### 4.2 性能与精度测试
 
-- **步骤1** 准备测试数据集，并将`data`目录放在`Burpee_Detection`目录下
+- **步骤1** 准备测试数据集(数据集内应有数据以及对应的标签，格式为yolo)，并将`data`文件夹放在`Burpee_Detection`目录下
 
-![dataset](readme_img/dataset.jpg)
+  ![dataset](readme_img/dataset.jpg)
 
 - **步骤2** 打开`Burpee_Detection/Pic_burpee_detection`目录下`pic_burpee_detection.py`文件，将变量 `INPUT_PATH` ,`OUTPUT_PATH` ,`OUTPUT_PIC_PATH`分别初始化为 `["../data/images/test/"]`,`[".././Pic_burpee_detection/result_test/"]`,`[".././Pic_burpee_detection/result_test_pic/"]`
 
@@ -245,12 +254,11 @@ bash run.sh
 ### 4.3 特殊情况测试
 
  数据为光线较暗时（无光源的情况下）图片
-
  ![dataset](readme_img/dark.jpg)
 
  测试结果：
-
- ![dataset](readme_img/dark_res.jpg)
-
+   ```bash
+   No objects detected!!!
+   ```
  当测试无目标时会有对应报错
  

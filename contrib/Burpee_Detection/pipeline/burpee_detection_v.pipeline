@@ -33,10 +33,10 @@
     "mxpi_modelinfer0": {
       "props": {
         "dataSource": "mxpi_imageresize0",
-        "modelPath": "../model/burpee_detection.om",
-        "postProcessConfigPath": "../model/yolov5.cfg",
-        "labelPath": "../model/yolov5.names",
-        "postProcessLibPath": "../../Ascend/mindx_sdk/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so",
+        "modelPath": ".././model/burpee_detection.om",
+        "postProcessConfigPath": ".././model/yolov5.cfg",
+        "labelPath": ".././model/yolov5.names",
+        "postProcessLibPath": "../.././Ascend/mindx_sdk/mxVision-2.0.4/lib/libMpYOLOv5PostProcessor.so",
         "deviceId": "0"
       },
       "factory": "mxpi_modelinfer",
