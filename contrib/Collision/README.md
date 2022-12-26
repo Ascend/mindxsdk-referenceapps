@@ -126,7 +126,7 @@ export PATH=/usr/local/python3.9.2/bin:$PATH
 
 ## 4 模型转换
 
-本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)]([ATC YOLOv3(FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4))。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0005.html) 。
+本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)]([ATC YOLOv3(FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4))。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md) 。
 
 模型转换，步骤如下：
 

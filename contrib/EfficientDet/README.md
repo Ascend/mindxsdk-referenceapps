@@ -136,7 +136,7 @@ PYTHONPATH: python环境路径
 
 ## 3. 模型转换
 
-本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。本项目中使用的 onnx 模型和 om 模型链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/models.zip。
+本项目中采用的模型是 EfficientDet 模型，参考实现代码：https://github.com/zylo117/Yet-Another-EfficientDet-Pytorch， 选用的模型是该 pytorch 项目中提供的模型 efficientdet-d0.pth，本项目运行前需要将 pytorch 模型转换为 onnx 模型，然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。本项目中使用的 onnx 模型和 om 模型链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/EfficientDet/models.zip。
 
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型 simplified-efficient-det-d0-mindxsdk-order.onnx 和 simplified-efficient-det-d6-mindxsdk-order.onnx 至 ``python/models/onnx-models`` 文件夹下。

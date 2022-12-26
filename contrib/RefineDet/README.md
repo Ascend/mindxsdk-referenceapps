@@ -131,7 +131,7 @@ ascend-toolkit-path: CANN 安装路径
 
 ## 4 模型转化
 
-本项目中使用的模型是RefineDet模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/47d31ca99aa641b2b220cabc9233cdb7)。下载后解包，得到`RefineDet320_VOC_final_no_nms.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huawei.com/enterprise/zh/doc/EDOC1100234054?idPath=23710424|251366513|22892968|251168373)
+本项目中使用的模型是RefineDet模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/47d31ca99aa641b2b220cabc9233cdb7)。下载后解包，得到`RefineDet320_VOC_final_no_nms.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 模型转换步骤如下：
 

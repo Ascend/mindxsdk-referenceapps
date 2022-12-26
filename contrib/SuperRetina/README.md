@@ -94,7 +94,7 @@ export install_path=${install_path}
 
 ###  3. 模型转换
 
-模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://gitee.com/link?target=https%3A%2F%2Fsupport.huawei.com%2Fenterprise%2Fzh%2Fdoc%2FEDOC1100191944%2Fa3cf4cee)。
+模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
 
 ###  3.1 基于深度学习的图像配准模型的转换
 

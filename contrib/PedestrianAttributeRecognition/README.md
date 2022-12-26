@@ -84,7 +84,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 确保环境中正确安装mxVision SDK。
 
-模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html
+模型转换所需ATC工具环境搭建参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 在编译运行项目前，需要设置环境变量：
 
@@ -108,7 +108,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ```python
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
-更多的atc模型转换信息可以参考此链接样例：https://support.huaweicloud.com/ug-mfac-mindxsdk201/atlasmx_02_0053.html
+更多的atc模型转换信息可以参考此链接样例：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 deepmar模型，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
 

@@ -40,7 +40,7 @@
 
 **步骤2** 将获取到的`37_Deeplabv3+_0.8063.pth`和`84_DANet_0.8081.pth`分别转换为 `Deeplabv3.onnx`和`DANet.onnx`(步骤1链接中已包含转换后的`onxx`格式模型，可直接跳到步骤2.5)
 
-**步骤2.1** 需要在原项目模型源码基础上进行`*.pth->*.onxx`转换, 所以思路是在`PyCharm`中把项目克隆下来并安装环境，运行转换工具。首先使用 git 克隆[GitHub项目](https://github.com/JasmineRain/NAIC_AI-RS/blob/master) 到本地
+**步骤2.1** 需要在原项目模型源码基础上进行`*.pth->*.onxx`转换, 所以思路是在`PyCharm`中把项目克隆下来并安装环境，运行转换工具。首先使用 git 克隆[GitHub项目](https://github.com/JasmineRain/NAIC_AI-RS) 到本地
 
 **步骤2.2** 安装`Anaconda`并创建一个虚拟环境,且`pip install -r requirements.txt`安装项目所需环境依赖, 并额外安装依赖`onnx == 1.8.0`
 ```bash
@@ -63,7 +63,7 @@ pip install -r requiremenst.txt  #安装依赖,可能会因为网络问题而报
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
- https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 ### 2.2 pipeline配置
 

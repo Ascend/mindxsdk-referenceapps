@@ -70,7 +70,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 **步骤3**  启动rtsp服务
 
-按照 [教程](https://gitee.com/ascend/mindxsdk-referenceapps/wikis/MindX SDK 指引页?sort_id=4015504) 自行准备数据 并启动rtsp服务
+按照 [教程](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md) 自行准备数据 并启动rtsp服务
 
 **步骤4** 修改配置文件
 

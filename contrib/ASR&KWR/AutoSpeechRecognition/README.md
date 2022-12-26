@@ -14,7 +14,7 @@
 
 ## 2 模型转换
 由于原模型是tensorflow的模型，因此我们需要借助于ATC工具将tensorflow的pb模型转化为om模型。
-模型转换时应先按照 [准备动作](https://support.huaweicloud.com/atc-model-convert-cann202infer/atlasatc_16_0005.html) 配置好环境和设置环境变量，然后再分别执行以下命令
+模型转换时应先按照 [ATC模型转换工具指南](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md) 环境搭建章节配置好环境和设置环境变量，然后再分别执行以下命令
 
 
 - 声学模型的转换

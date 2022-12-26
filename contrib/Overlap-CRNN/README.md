@@ -266,7 +266,7 @@ mkdir air_model
    ```
    atc --model=[air_model_path] --framework=1 --output=[output_model_path] --soc_version=Ascend310 --output_type=FP32 --op_select_implmode=high_precision --input_shape="input:1,3,32,112"
    ```
-模型转换工具（ATC）相关介绍如下：[ATC介绍](https://support.huawei.com/enterprise/zh/doc/EDOC1100234054)
+模型转换工具（ATC）相关介绍如下：[ATC介绍](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 相关模型的下载链接如下：[模型下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Overlap-CRNN/models.zip)
 

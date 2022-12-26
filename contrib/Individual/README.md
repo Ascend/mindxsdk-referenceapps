@@ -79,7 +79,7 @@
 | mxVision | 2.0.4 |
 | python   | 3.9.2 |
 
-模型转换所需ATC工具环境搭建参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html
+模型转换所需ATC工具环境搭建参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 
 在编译运行项目前，需要设置环境变量：
@@ -111,7 +111,7 @@ yolov4模型提供在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com
 
 face_quality_0605_b1.om模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Individual/model.zip
 
-resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+resnet50模型下载链接同上述face_quality_0605_b1.om模型下载链接。转换离线模型参考昇腾Gitee：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 首先需要配置ATC环境，下载caffemodel以及prototxt文件等，放到相应的路径后，修改模型转换的cfg配置文件，cfg配置文件已经上传至项目目录models下。使用命令
 
 ```

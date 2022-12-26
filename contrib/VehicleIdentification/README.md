@@ -182,7 +182,7 @@ ATC run success, welcome to the next use.
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
- https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 
 

@@ -147,7 +147,7 @@ ATC run success, welcome to the next use.
 经过上述操作，可以在“项目所在目录/models”找到yolov3.om模型和ReID.om模型，模型转换操作已全部完成
 
 4.3 参考链接
-> 模型转换使用了ATC工具，如需更多信息请参考：[ATC模型转换-快速入门](https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/infacldevg/atctool/atlasatc_16_0005.html)  
+> 模型转换使用了ATC工具，如需更多信息请参考：[ATC模型转换-快速入门](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)  
 > Yolov3模型转换的参考链接：[ATC yolov3-tiny(FP16)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0076a4a68336225660af59153e46c5e1/1)  
 > ReID模型转换的参考链接：[ATC ReID (FP16)](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/1a115206edca47e39a712e912c9c0eca/1)  
 

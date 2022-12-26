@@ -94,15 +94,13 @@ export FREETYPE_HOME=${FREETYPE_HOME}
 
 ### 3. 模型转换
 
-模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/a3cf4cee)。车牌检测模型和车牌识别模型转换所需的aipp配置文件均放置在/CarPlateRecognition/model目录下。
+模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。车牌检测模型和车牌识别模型转换所需的aipp配置文件均放置在/CarPlateRecognition/model目录下。
 
 ### 3.1 车牌检测模型的转换
 
-**步骤1** **模型获取** 将[车牌检测项目原工程](https://hub.fastgit.org/zeusees/License-Plate-Detector/tree/master)克隆到**本地**。
+**步骤1** **模型获取** 将[车牌检测项目原工程](https://github.com/zeusees/License-Plate-Detector.git)克隆到**本地**。
 
 ```shell
-git clone https://hub.fastgit.org/zeusees/License-Plate-Detector.git # 使用的镜像源
-或
 git clone https://github.com/zeusees/License-Plate-Detector.git
 ```
 
@@ -133,7 +131,7 @@ pretrained_dict = torch.load(weights, map_location=torch.device('cpu'))
 
 *cuda = 10.2.120*
 
-注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)模型。
+注：若原工程链接失效，可以直接下载已经转换好的[mnet_plate.onnx](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)模型。
 
 **步骤3** **onnx转om** 将步骤2中转换获得的onnx模型存放至**服务器端**的CarPlateRecognition/model/目录下，执行如下命令：
 
@@ -143,7 +141,7 @@ atc --model=./mnet_plate.onnx --output=./retinaface --framework=5 --soc_version=
 
 ### 3.2 车牌识别模型的转换
 
-**步骤1** **模型获取** 下载车牌识别预训练模型的[lpr.prototxt](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)文件和[lpr.caffemodel](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MMNET/model.zip)文件 。
+**步骤1** **模型获取** 下载车牌识别预训练模型的[lpr.prototxt](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件和[lpr.caffemodel](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CarPlateRecognition/model.zip)文件 。
 
 **步骤2** **模型存放** 将获取到的.prototxt文件和.caffemodel文件存放至**服务器端**的CarPlateRecognition/model/目录下。
 

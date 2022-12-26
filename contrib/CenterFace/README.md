@@ -78,7 +78,7 @@
 | OpenCV   | 3.4.0 |
 | gcc      | 7.5.0 |
 
-模型转换所需ATC工具环境搭建参考链接：[https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0004.html](https://gitee.com/link?target=https%3A%2F%2Fsupport.huaweicloud.com%2Ftg-cannApplicationDev330%2Fatlasatc_16_0004.html)
+模型转换所需ATC工具环境搭建参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 在编译运行项目前，需要设置环境变量：
 
@@ -92,7 +92,7 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOM
 
 ## 3.模型转换
 
-本项目推理模型采用[CenterFace](https://github.com/Star-Clouds/CenterFace)，onnx模型下载[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CenterFaceWithDynamicResolution/centerface_offical.onnx)，使用之前须使用转化工具ATC将模型转化为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)。ATC工具参考环境变量配置：
+本项目推理模型采用[CenterFace](https://github.com/Star-Clouds/CenterFace)，onnx模型下载[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/CenterFaceWithDynamicResolution/centerface_offical.onnx)，使用之前须使用转化工具ATC将模型转化为om模型，模型转换工具相关介绍参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。ATC工具参考环境变量配置：
 
 ```bash
 export install_path=/usr/local/Ascend/ascend-toolkit/latest

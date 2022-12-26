@@ -160,7 +160,7 @@ atc --model=./db.onnx --framework=5 --output_type=FP32 --output=db --input_forma
 atc --model=./crnn.onnx --framework=5 --output_type=FP32 --output=crnn --input_format=NCHW --input_shape="x:1,3,48,320" --soc_version=Ascend310 --insert_op_conf="rec_aipp.cfg"
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。更多ATC工具细节请参考[链接](https://www.hiascend.com/document/detail/zh/canncommercial/504/inferapplicationdev/atctool)。
+执行完模型转换脚本后，会生成相应的.om模型文件。更多ATC工具细节请参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
 
 ### 3.3 可用模型获取
 
