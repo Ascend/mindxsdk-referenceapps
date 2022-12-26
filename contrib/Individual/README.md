@@ -64,7 +64,7 @@
 
 ### 1.5 技术实现流程图
 
-![个体属性识别流程图](https://images.gitee.com/uploads/images/2021/0819/151524_0f54a517_9366121.png "屏幕截图.png")
+![个体属性识别流程图](image/flowchart.png)
 
 
 
