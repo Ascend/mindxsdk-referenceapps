@@ -160,7 +160,7 @@ git clone https://github.com/biubug6/Pytorch_Retinaface.git
 
 ## 4 模型转化
 
-下载后解包，得到`Retinaface.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+下载后解包，得到`Retinaface.onnx`，使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 模型转换步骤如下：
 

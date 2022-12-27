@@ -126,7 +126,7 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 pth权重文件和onnx文件的下载链接如下：
 [models](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/models.zip)
 
-      再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+      再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
     
     步骤如下：
 

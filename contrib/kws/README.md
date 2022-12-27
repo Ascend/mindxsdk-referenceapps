@@ -11,7 +11,7 @@
   声学模型采用CRNN-CTC,模型构建参考论文《CRNN-CTC Based Mandarin Keyword Spotting》<br/>
 
 ## 2 模型转换
-由于原模型是onnx模型（[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/kws/model.zip)），需借助ACT工具将onnx模型转换为om模型。模型转换应先按照[准备动作](https://support.huaweicloud.com/atc-model-convert-cann202infer/atlasatc_16_0005.html)  
+由于原模型是onnx模型（[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/kws/model.zip)），需借助ACT工具将onnx模型转换为om模型。模型转换应先按照[ATC模型转换指南](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)  
 配置好环境和设置环境变量，然后执行以下命令
 
 ```bash

@@ -108,7 +108,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ## 4 模型转换
 
-本项目中使用的模型是yolov4模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+本项目中使用的模型是yolov4模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 模型转换步骤如下：
 

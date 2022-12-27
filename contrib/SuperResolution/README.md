@@ -110,7 +110,7 @@ atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_for
 
 执行完模型转换脚本后，会在model目录下生成相应的VDSR_768_768.om模型文件。
 
-模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+模型转换使用了ATC工具，如需更多信息请参考 [这里](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 > pipeline中模型路径
 

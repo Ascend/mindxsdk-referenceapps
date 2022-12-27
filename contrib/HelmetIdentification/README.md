@@ -169,7 +169,7 @@ sh atc-env.sh
 
 其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件aipp_YOLOv5.config在输入图像进入模型前进行预处理。该配置文件保存在源码Models目录下。
 
-注：1. [aipp配置文件教程链接](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)
+注：1. [ATC模型转换工具指南](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
    2.atc-env.sh脚本内 Home 为onnx文件所在路径。
 
 
@@ -213,7 +213,7 @@ make -j
 
 编译成功后将产生**libmxpi_selectedframe.so**文件，文件生成位置在build目录下。将其复制至SDK的插件库中(./MindX_SDK/mxVision/lib/plugins)
 
- 注：[插件编译生成教程](https://support.huaweicloud.com/mindxsdk201/index.html)在《用户手册》深入开发章节
+ 注：[插件编译生成教程](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)在《SDK用户手册》深入开发章节
 
 3.pipline中涉及到的**绝对路径**都要修改成用户安装sdk文件相应的路径
 

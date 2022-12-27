@@ -87,7 +87,7 @@ env
 
 **步骤1** 在PaddleOCR上下载picodet_lcnet_x1_0_fgd_layout_cdla模型。[下载地址](https://github.com/PaddlePaddle/PaddleOCR/blob/dygraph/ppstructure/docs/models_list.md)
 
-**步骤2** 根据[PaddleOCR的inference模型转onnx模型](https://gitee.com/dailinrui/mindxsdk-referenceapps/blob/master/contrib/OCR/IDCardRecognition/MODEL.md#paddleocr%E7%9A%84inference%E6%A8%A1%E5%9E%8B%E8%BD%AConnx%E6%A8%A1%E5%9E%8B)将下载的paddle模型转成onnx模型。
+**步骤2** 根据[PaddleOCR的inference模型转onnx模型](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/contrib/OCR/IDCardRecognition/MODEL.md#paddleocr%E7%9A%84inference%E6%A8%A1%E5%9E%8B%E8%BD%AConnx%E6%A8%A1%E5%9E%8B)将下载的paddle模型转成onnx模型。
 
 转onnx模型用到的环境配置: paddle2onnx-0.9.2 with python>=2.7 , paddlepaddle>=1.8.0
 

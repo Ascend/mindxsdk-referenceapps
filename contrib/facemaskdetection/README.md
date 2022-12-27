@@ -80,7 +80,7 @@ export GST_DEBUG=3
 | 软件名称               | 版本  | 获取方式                                                     |      |      |      |
 | ---------------------- | ----- | ------------------------------------------------------------ | ---- | ---- | ---- |
 | face_mask_detection.pb | SSD   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/blob/master/models/face_mask_detection.pb) |      |      |      |
-| benchmark工具          | 1.0.0 | [软件获取](https://www.huaweicloud.com/ascend/cann-download) |      |      |      |
+| benchmark工具          | 1.0.0 | [arm](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/tool/benchmark.aarch64) [x86](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/tool/benchmark.x86_64)|      |      |      |
 | 后处理开源部分 | python   | [GitHub](https://github.com/AIZOOTech/FaceMaskDetection/tree/master/utils) |      |      |      |
 
 - 开源代码部分的部署

@@ -133,7 +133,7 @@ PYTHONPATH: python环境路径
 
 本项目中适用的模型是 OpenPose 模型，参考实现代码：https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch， 选用的模型是该 pytorch 项目中提供的模型，本项目运行前需要将 pytorch 模型转换为 onnx 模型，pytorch 模型和onnx 模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/model.zip。
 
-然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+然后使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
 
 自行转换模型，步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``python/models`` 文件夹下，文件名为：simplified_560_openpose_pytorch.onnx 。

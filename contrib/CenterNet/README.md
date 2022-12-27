@@ -84,7 +84,7 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 
 ```
 
-注：coco.names文件源于[链接](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch)。
+注：coco.names文件源于[链接](../Collision/model/coco.names)。
 
 ### 1.5 技术实现流程图
 
@@ -142,7 +142,7 @@ cp -r  NumCpp/include/NumCpp ./include/
 
 ## 3. 模型转换
 
-本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0699d3e48ff1447cafc85c2c9f007130 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0699d3e48ff1447cafc85c2c9f007130 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
 
 
 ### 3.1 业务流程加图像预处理的模型转换方法

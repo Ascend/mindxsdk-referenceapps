@@ -75,7 +75,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ### 3. 模型转换
 
-模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0037.html)。车道线检测模型转换所需的aipp配置文件均放置在/Ultra-Fast-Lane-Detection/model目录下。
+模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。车道线检测模型转换所需的aipp配置文件均放置在/Ultra-Fast-Lane-Detection/model目录下。
 
 ### 3.1 车牌检测模型的转换
 

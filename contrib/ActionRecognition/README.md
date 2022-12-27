@@ -420,7 +420,7 @@ terminate called after throwing an instance of 'cv::Exception'
 
 H264视频文件及ROI文件：[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/data.zip) ；
 
-RTSP取流地址（可以从网络摄像机获取，也可通过Live555等工具将本地视频文 件转换为rtsp流）。自主搭建RTSP拉流教程：[live555链接](https://bbs.huaweicloud.com/forum/thread-68720-1-1.html)，需要注意的是在搭建RTSP时，使用./genMakefiles <os-platform>命令生成编译文件时，输入的<os-platform>参数是根据cofig.<后缀>获取的，与服务器架构等有关。
+RTSP取流地址（可以从网络摄像机获取，也可通过Live555等工具将本地视频文 件转换为rtsp流）。自主搭建RTSP拉流教程：[live555链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)，需要注意的是在搭建RTSP时，使用./genMakefiles <os-platform>命令生成编译文件时，输入的<os-platform>参数是根据cofig.<后缀>获取的，与服务器架构等有关。
 
 RTSP视频拉流插件配置范例：
 
@@ -436,7 +436,7 @@ RTSP视频拉流插件配置范例：
 
 其中rtsp_Url的格式是 rtsp:://host:port/Data，host:port/路径映射到mediaServer/目录下，Data为视频文件的路径。
 
-RTSP拉流教程：[live555链接](https://bbs.huaweicloud.com/forum/thread-68720-1-1.html)中第七步视频循环推流，按照提示修改cpp文件可以使自主搭建的rtsp循环推流，如果不作更改，则为有限的视频流；同时第六步高分辨率帧花屏，修改mediaServer/DynamicRTSPServer.cpp文件，将OutPacketBuffer::maxSize增大，例如"500000"，避免出现”The input frame data was too large for our buffer“问题，导致丢帧。修改完后，需要重新运行以下命令：
+RTSP拉流教程：[live555链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)中第七步视频循环推流，按照提示修改cpp文件可以使自主搭建的rtsp循环推流，如果不作更改，则为有限的视频流；同时第六步高分辨率帧花屏，修改mediaServer/DynamicRTSPServer.cpp文件，将OutPacketBuffer::maxSize增大，例如"500000"，避免出现”The input frame data was too large for our buffer“问题，导致丢帧。修改完后，需要重新运行以下命令：
 
 ```cmake
 ./genMakefiles <os-platform>
@@ -459,7 +459,7 @@ sed -i 's/\r//g' xxx.sh
 
 ## 8 模型转换
 
-本项目中用到的模型有：ECONet，yolov3
+本项目中用到的模型有：ECONet，yolov3 [备份链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/models.zip)
 
 yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)  
 使用以下命令进行转换，请注意aipp配置文件名，此处使用的为自带sample中的相关文件（{Mind_SDK安装路径}/mxVision/samples/mxVision/models/yolov3/）
@@ -467,7 +467,7 @@ yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
 
-ECONet离线模型转换参考 [昇腾Gitee](https://gitee.com/ascend/modelzoo/tree/master/contrib/TensorFlow/Research/cv/econet/ECONet_tf_paper99)：下载冻结pb模型ucf101_best.pb，编辑trans_pb2om.sh文件，将--model 配置为ECONet模型所在目录，--output配置为模型输出路径，--insert_op_conf配置为aipp文件路径，在命令行输入
+ECONet离线模型转换参考 [昇腾Gitee](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0d7d0413cf89404d882d69e695a9bc4b/1)：下载冻结pb模型ucf101_best.pb，编辑trans_pb2om.sh文件，将--model 配置为ECONet模型所在目录，--output配置为模型输出路径，--insert_op_conf配置为aipp文件路径，在命令行输入
 
 ```bash
 chmod +x trans_pb2om.sh

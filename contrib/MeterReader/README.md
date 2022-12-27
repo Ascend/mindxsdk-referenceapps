@@ -157,7 +157,7 @@ MindX SDK开发套件部分可参考[MindX SDK开发套件安装指导](https://
 
 ### 3.1 模型转换
 
-使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[CANN 社区版](前言_昇腾CANN社区版(5.0.4.alpha002)(推理)_ATC模型转换_华为云 (huaweicloud.com)) 。
+使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[CANN 社区版](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md) 。
 
 下载[onnx模型压缩包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/MeterReader/models.zip)并解压
 * 将压缩包中的"det.onnx"模型拷贝至"\${MeterReader代码根目录}/models/yolov5"目录下

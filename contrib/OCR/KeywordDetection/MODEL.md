@@ -5,7 +5,7 @@
 ```
 https://github.com/MaybeShewill-CV/CRNN_Tensorflow
 
-参考: https://www.hiascend.com/zh/software/modelzoo/detail/1/4536a28cddcc4588ae89338a3693cfbb
+参考: https://www.hiascend.com/zh/software/modelzoo/models/detail/1/2838f191714846258fb54f51d1fe0ca5/1
 ```
 
 

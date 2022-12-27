@@ -127,7 +127,7 @@ atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_for
 
 执行完后，会在model目录下生成相应的VDSR_768_768.om模型文件。
 
-模型转换使用了ATC工具，如需更多信息请参考 [这里]( https://www.hiascend.com/document/detail/zh/CANNCommunityEdition/600alpha001/infacldevg/atctool/atlasatc_16_0001.html)
+模型转换使用了ATC工具，如需更多信息请参考 [这里](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 ## 3 V2接口运行
 

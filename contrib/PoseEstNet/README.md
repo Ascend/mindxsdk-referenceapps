@@ -141,7 +141,7 @@ ATC run success, welcome to the next use.
 经过上述操作，可以在“项目所在目录/models”找到yolov3.om模型和PoseEstNet.om模型，模型转换操作已全部完成
 
 ### 5.3 参考链接
-> 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://support.huawei.com/enterprise/zh/doc/EDOC1100191944/1afd5b7d)
+> 模型转换使用了ATC工具，如需更多信息请参考：[ATC工具使用指南-快速入门](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 
 

@@ -107,7 +107,7 @@ bash build.sh
 
 **步骤2**  下载标签文件coco.names
 
-下载文件[coco2014.names](https://gitee.com/ascend/ModelZoo-PyTorch/blob/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch/coco2014.names)，将下载的标签文件放入models目录中并修改文件名为**coco.names**
+下载文件[coco2014.names](../Collision/model/coco.names)，将下载的标签文件放入models目录中并修改文件名为**coco.names**
 
 **步骤3**  执行推理
 

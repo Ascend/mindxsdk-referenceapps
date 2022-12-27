@@ -237,7 +237,7 @@ bash run.sh
 ### 9.1 准备
 1.下载FDDB数据集注释，链接为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Faceboxes/data.zip，将注释放在data/ground_truth下面
 
-2.下载所需脚本box_overlaps.pyx、setup.py、convert.py、split.py、evaluate.py，放到script目录下，下载链接为：https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/face/FaceBoxes/FDDB_Evaluation
+2.下载所需脚本box_overlaps.pyx、setup.py、convert.py、split.py、evaluate.py，放到script目录下，下载链接为：https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/contrib/cv/face/FaceBoxes/FDDB_Evaluation
 
 3.将split.py与evaluate.py的代码进行修改：
 （1）split.py: 

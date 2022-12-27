@@ -101,7 +101,7 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 执行完模型转换脚本后，会生成相应的.om模型文件。
 模型转换使用了ATC工具，如需更多信息请参考:
 
- https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 > 相关参数修改
 

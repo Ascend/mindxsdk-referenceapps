@@ -121,11 +121,11 @@ pipeline流程如下图所示：
     
 选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
 
-pth 权重文件和 onnx 文件的下载链接
-https://www.hiascend.com/zh/software/modelzoo/detail/1/d360c03430f04185a4fe1aa74250bfea
+pth 权重文件和 onnx 文件的[下载链接](https://www.hiascend.com/zh/software/modelzoo/detail/1/d360c03430f04185a4fe1aa74250bfea) [备份链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ADNet/ATC%20ADNet.zip)
+
     
 模型转换工具（ATC）相关介绍如下
-https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html
+https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
     
 具体步骤如下
 

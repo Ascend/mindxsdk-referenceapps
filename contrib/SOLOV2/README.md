@@ -69,7 +69,7 @@ SOLOV2实例分割后处理插件基于 MindX SDK 开发，对图片中的不同
 
 ```
 
-注：coco.names文件源于[链接](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch)。
+注：coco.names文件源于[链接](../Collision/model/coco.names)。
 
 ### 1.5 技术实现流程图
 
@@ -143,7 +143,7 @@ pip install -v -e .
 
 ## 3. 模型转换
 
-本项目中采用的模型是SOLOV2 模型，参考实现代码：https://github.com/WXinlong/SOLO ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/f32ed480a95b4686a070fff964b4fceb 。下载地址中包含onnx文件，同时也有对应的om文件，可以直接使用。也可以用ATC模型转换工具将onnx转换为om文件。模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中采用的模型是SOLOV2 模型，参考实现代码：https://github.com/WXinlong/SOLO ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/f32ed480a95b4686a070fff964b4fceb 。下载地址中包含onnx文件，同时也有对应的om文件，可以直接使用。也可以用ATC模型转换工具将onnx转换为om文件。模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
 
 
 ### 3.1 模型转换方法

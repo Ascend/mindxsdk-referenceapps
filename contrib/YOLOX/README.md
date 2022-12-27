@@ -91,7 +91,7 @@ YOLOX 目标检测后处理插件基于 MindX SDK 开发，对图片中的不同
 
 ```
 
-注：coco.names文件与parse_coco.py文件分别源于[链接](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/built-in/cv/Yolov3_for_Pytorch)的coco2014.names文件和[项目](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/FireDetection)中test文件夹下的parse_COCO.py文件,将这两个文件下载之后，分别放到python/models目录下和python/test目录下。
+注：coco.names文件与parse_coco.py文件分别源于[链接](../Collision/model/coco.names)的coco2014.names文件和[项目](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/contrib/FireDetection)中test文件夹下的parse_COCO.py文件,将这两个文件下载之后，分别放到python/models目录下和python/test目录下。
 
 ### 1.5 技术实现流程图
 
@@ -142,7 +142,7 @@ ascend-toolkit-path: CANN 安装路径。
 
 ## 3. 模型转换
 
-本项目中采用的模型是 YOLOX 模型，参考实现代码：https://github.com/Megvii-BaseDetection/YOLOX ， 选用的模型是该 pytorch 项目中提供的模型 yolox-Nano.onnx，模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/YOLOX/yolox_nano.onnx 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html 。
+本项目中采用的模型是 YOLOX 模型，参考实现代码：https://github.com/Megvii-BaseDetection/YOLOX ， 选用的模型是该 pytorch 项目中提供的模型 yolox-Nano.onnx，模型下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/YOLOX/yolox_nano.onnx 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
 
 
 ### 3.1 业务流程加图像预处理的模型转换方法

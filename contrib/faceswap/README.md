@@ -60,7 +60,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 目标检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_detection.om) 点击`链接`，下载yolov4_detection.om,并将模型存放在工程/model目录下。
 ### 4.2 脸部特征点检测模型
 **步骤1**  
-在[Github_pfld_106_face_landmarks](https://github.com/Hsintao/pfld_106_face_landmarks) 上选择v3.onnx，下载特征点检测对应的onnx模型：[v3.onnx](https://github.com/Hsintao/pfld_106_face_landmarks/blob/master/output/v3.onnx) ；  
+在[Github_pfld_106_face_landmarks](https://github.com/Hsintao/pfld_106_face_landmarks) 上选择v3.onnx，下载特征点检测对应的onnx模型：[v3.onnx](https://github.com/Hsintao/pfld_106_face_landmarks/blob/master/output/v3.onnx) [备份链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/v3.onnx)；  
 **步骤2**
 将获取到的v3.onnx模型存放至”项目所在目录/model“文件夹下；   
 **步骤3**
@@ -85,15 +85,14 @@ atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310 --ins
 ```
 ATC run success, welcome to the next use. 
 ```
-注：1. aipp配置文件[教程](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0015.html)  
-&ensp;&ensp;&ensp;&ensp;2. 模型转换使用了ATC工具，如需更多信息请参考[ATC](https://support.huaweicloud.com/tg-cannApplicationDev330/atlasatc_16_0005.html)
+注：模型转换使用了ATC工具，如需更多信息请参考[ATC](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)
 
 ## 5 测试  
 1. 获取om模型   
 ```
 见4： 模型转换
 ```
-2. 配置[环境准备和依赖安装]（https://gitee.com/ascend/samples/tree/master/python/environment） 
+2. 配置
 ```   
 #执行如下命令，打开.bashrc文件
 cd $home
