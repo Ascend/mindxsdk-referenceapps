@@ -120,6 +120,7 @@ APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
     err |= configData.GetFileValue("VideoEncoder.iFrameInterval", config.iFrameInterval);
     
     if (err != APP_ERR_OK) {
+        LogError << "Some fields are empty or invalid in the config file.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     for (size_t i = 0; i < config.channelCount; ++i) {
