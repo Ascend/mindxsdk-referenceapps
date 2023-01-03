@@ -102,7 +102,7 @@ APP_ERROR GetValueFromFile(const ConfigData &configData, StreamConfig &config) {
     if (configData.GetFileValue("stream.channelCount", config.channelCount) != APP_ERR_OK) {
         return APP_ERR_COMM_INVALID_PARAM;
     }
-        if (configData.GetFileValue("stream.deviceId", config.deviceId) != APP_ERR_OK) {
+    if (configData.GetFileValue("stream.deviceId", config.deviceId) != APP_ERR_OK) {
         return APP_ERR_COMM_INVALID_PARAM;
     }
     if (configData.GetFileValue("stream.fpsMode", config.fpsMode) != APP_ERR_OK) {
