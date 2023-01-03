@@ -98,28 +98,56 @@ struct StreamConfig {
     }
 };
 
+APP_ERROR GetValueFromFile(const ConfigData &configData, StreamConfig &config) {
+    if (configData.GetFileValue("stream.channelCount", config.channelCount) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+        if (configData.GetFileValue("stream.deviceId", config.deviceId) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("stream.fpsMode", config.fpsMode) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("stream.resizeWidth", config.resizeWidth) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("stream.resizeHeight", config.resizeHeight) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoDecoder.inputVideoFormat", config.inputVideoFormat) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoDecoder.outputImageFormat", config.outputImageFormat) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.inputFormat", config.inputFormat) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.outputFormat", config.outputFormat) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.imageWidth", config.videoEncodeWidth) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.imageHeight", config.videoEncodeHeight) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.fpsMode", config.videoEncodeFpsMode) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    if (configData.GetFileValue("VideoEncoder.iFrameInterval", config.iFrameInterval) != APP_ERR_OK) {
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    return APP_ERR_OK;
+}
+
 APP_ERROR ParseFromConfig(const std::string &path, StreamConfig &config)
 {
     MxBase::ConfigUtil util;
     MxBase::ConfigData configData;
     util.LoadConfiguration(path, configData, MxBase::CONFIGFILE);
 
-    APP_ERROR err = APP_ERR_OK;
-    err |= configData.GetFileValue("stream.channelCount", config.channelCount);
-    err |= configData.GetFileValue("stream.deviceId", config.deviceId);
-    err |= configData.GetFileValue("stream.fpsMode", config.fpsMode);
-    err |= configData.GetFileValue("stream.resizeWidth", config.resizeWidth);
-    err |= configData.GetFileValue("stream.resizeHeight", config.resizeHeight);
-    err |= configData.GetFileValue("VideoDecoder.inputVideoFormat", config.inputVideoFormat);
-    err |= configData.GetFileValue("VideoDecoder.outputImageFormat", config.outputImageFormat);
-    err |= configData.GetFileValue("VideoEncoder.inputFormat", config.inputFormat);
-    err |= configData.GetFileValue("VideoEncoder.outputFormat", config.outputFormat);
-    err |= configData.GetFileValue("VideoEncoder.imageWidth", config.videoEncodeWidth);
-    err |= configData.GetFileValue("VideoEncoder.imageHeight", config.videoEncodeHeight);
-    err |= configData.GetFileValue("VideoEncoder.fpsMode", config.videoEncodeFpsMode);
-    err |= configData.GetFileValue("VideoEncoder.iFrameInterval", config.iFrameInterval);
-
-    if (err != APP_ERR_OK) {
+    if (GetValueFromFile(configData, config) != APP_ERR_OK) {
         LogError << "Some fields are empty or invalid in the config file.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
