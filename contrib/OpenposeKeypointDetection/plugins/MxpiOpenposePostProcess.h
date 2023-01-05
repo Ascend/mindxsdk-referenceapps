@@ -21,8 +21,8 @@
 #include "MxTools/PluginToolkit/metadata/MxpiMetadataManager.h"
 #include "MxTools/Proto/MxpiDataType.pb.h"
 #include "MxBase/ErrorCode/ErrorCode.h"
-#include "mxpiOpenposeProto.pb.h"
 #include "opencv2/opencv.hpp"
+#include "mxpiOpenposeProto.pb.h"
 
 
 /**
@@ -114,6 +114,7 @@ namespace MxPlugins {
          * @return APP_ERROR
          */
         APP_ERROR GroupKeypoints(const std::vector<cv::Mat>& pafHeatmap,
+                                 const std::vector<int> &visionInfos,
                                  const std::vector<std::vector<cv::Point> > &coor,
                                  const std::vector<std::vector<float> > &coorScore,
                                  std::vector<std::vector<PartPair> > &personList);
@@ -131,7 +132,8 @@ namespace MxPlugins {
                                  const std::vector<std::vector<cv::Point> > &coor,
                                  const std::vector<std::vector<float> > &coorScore,
                                  const std::vector<cv::Mat> &pafHeatmap,
-                                 std::vector<PartPair> &connections);
+                                 std::vector<PartPair> &connections,
+                                 const std::vector<int> &visionInfos);
 
         /**
          * @brief Compute expected confidence for each candidate skeleton
@@ -187,3 +189,4 @@ namespace MxPlugins {
     };
 }
 #endif // OPENPOSEPOSTPROCESS_MXPIOPENPOSEPOSTPROCESS_H
+
