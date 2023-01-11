@@ -5,6 +5,9 @@
 该Sample的主要处理流程为：
 Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
+参考设计来源：https://github.com/Yunyung/Global-Wheat-Detection-Competition
+数据集来源：https://www.kaggle.com/c/global-wheat-detection/data
+
 ### 1.1 支持的产品
 
 支持昇腾310芯片
