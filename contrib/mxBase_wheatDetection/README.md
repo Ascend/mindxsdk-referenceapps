@@ -163,3 +163,15 @@ cd 到mxBase_wheatDetection目录下
 ```
 ./mxBase_wheatDetection ./test/
 ```
+
+## 精度测试
+
+使用(https://github.com/Cartucho/mAP)进行map计算，需要参考readme将推理结果数据以下方式转换并存储为txt
+
+```
+<CLASS_NAME> <LEFT> <TOP> <RIGHT> <BOTTOM>
+```
+
+并将相关txt保存至input/detection-results/文件夹，对标签进行相同转换并保存至 input/ground-truth/文件夹。
+随后执行python main.py以计算map并生成相关绘图。
+使用GWHD2020数据集训练集进行测试，map为0.8，性能为14FPS.
