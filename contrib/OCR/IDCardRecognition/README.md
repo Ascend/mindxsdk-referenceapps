@@ -134,7 +134,7 @@ make -j
 
 **步骤1**：在官网下载bert词表vocab.txt[bert-base-uncased at main (huggingface.co)](https://huggingface.co/bert-base-uncased/tree/main)，放入目录**./plugins/TextInfoPlugin**下
 
-**步骤2**：[ctpn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_ctpn.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内。
+**步骤2**：[ctpn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/model_ctpn_.zip)，将```ctpn```模型放到```models/ctpn```文件夹内，[crnn模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/model/models_ocr.zip)，将```crnn```模型放到```models/paddlecrnn```文件夹内。
 
 **步骤3**：配置环境变量，根据自己的环境变量不同，需要配置不同的环境变量，下面给出参考示例：
 
