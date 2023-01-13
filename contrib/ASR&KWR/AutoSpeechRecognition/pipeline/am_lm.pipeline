@@ -8,11 +8,18 @@
 				"blocksize": "320324"
 			},
 			"factory": "appsrc",
-			"next": "mxpi_tensorinfer0"
+			"next": "mxpi_tensorinfer0:0"
+		},
+		"appsrc1": {
+			"props": {
+				"blocksize": "320324"
+			},
+			"factory": "appsrc",
+			"next": "mxpi_tensorinfer0:1"
 		},
 		"mxpi_tensorinfer0": {
 			"props": {
-				"dataSource": "appsrc0",
+				"dataSource": "appsrc0,appsrc1",
 				"modelPath": "model/am_conform_batch_one.om"
 			},
 			"factory": "mxpi_tensorinfer",
