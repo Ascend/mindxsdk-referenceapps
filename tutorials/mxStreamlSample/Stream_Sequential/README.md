@@ -24,8 +24,8 @@
 
 ### 依赖文件获取
 
-**步骤1** 在路径：“SDK安装路径/mxVision-3.0.0/sample/mxVision/models” 下找到resnet50文件夹，拷贝至：“样例项目所在目录/data/models”下。
-**步骤2** 在路径：“SDK安装路径/mxVision-3.0.0/sample/mxVision/models” 下找到yolov3文件夹，拷贝至：“样例项目所在目录/data/models”下。
+**步骤1**  在路径：“SDK安装路径/mxVision-3.0.0/sample/mxVision/models” 下找到resnet50文件夹，拷贝至：“样例项目所在目录/data/models”下。
+**步骤2**  在路径：“SDK安装路径/mxVision-3.0.0/sample/mxVision/models” 下找到yolov3文件夹，拷贝至：“样例项目所在目录/data/models”下。
 
 ### 模型获取
 
