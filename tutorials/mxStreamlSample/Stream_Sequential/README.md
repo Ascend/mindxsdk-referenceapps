@@ -48,7 +48,7 @@ source set_env.sh
 atc --model=./yolov3_tf.pb --framework=3 --output=yolov3_tf_bs1_fp16 --output_type=FP32 --soc_version=Asscend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=error --insert_op_conf=./aipp_yolov3_416_416.aippconfig
 
 # 在resnet50模型pb文件所在目录下执行命令：
-atc --model=./resnet50_tensorflow_1.7.pb --framework=3 --output=resnet50_aipp_tf --output_type=FP32 --soc_version=Asscend310 --input_shape="Placeholder:1,224,224,3" --input_format=NHWC --enable_small_channel=1 --log=error --insert_op_conf=./aipp_resnet50_224_224.aippconfig
+atc --model=./resnet50_tensorflow_1.7.pb --framework=3 --output=resnet50_aipp_tf --output_type=FP32 --soc_version=Ascend310 --input_shape="Placeholder:1,224,224,3" --input_format=NHWC --enable_small_channel=1 --log=error --insert_op_conf=./aipp_resnet50_224_224.aippconfig
 ```
 执行完模型转换脚本后，会生成对应的.om模型文件。
 
@@ -56,27 +56,9 @@ atc --model=./resnet50_tensorflow_1.7.pb --framework=3 --output=resnet50_aipp_tf
 
 ```
 # 将命名为test的jpg图片放在/data/images路径下后，执行命令：
-chmod +x run.sh
+chmod 777 run.sh
 bash run.sh
 ```
 
 ### 输出结果
-
 执行run.sh完毕后，打印图片目标识别和检测结果。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
