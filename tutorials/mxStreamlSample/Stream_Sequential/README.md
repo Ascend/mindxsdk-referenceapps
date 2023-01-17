@@ -56,7 +56,6 @@ atc --model=./resnet50_tensorflow_1.7.pb --framework=3 --output=resnet50_aipp_tf
 
 ```
 # 将命名为test的jpg图片放在/data/images路径下后，执行命令：
-chmod 777 run.sh
 bash run.sh
 ```
 
