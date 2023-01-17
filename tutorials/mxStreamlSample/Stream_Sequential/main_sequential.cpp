@@ -61,5 +61,5 @@ int main(int argc, char *argv[])
         LogInfo << "Result: "
                 << std::string(reinterpret_cast<char*>(output.bufferOutput->dataPtr), output.bufferOutput->dataSize);
     }
-    return 0;   
+    return 0;
 }
