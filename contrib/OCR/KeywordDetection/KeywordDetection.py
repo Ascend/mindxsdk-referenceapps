@@ -50,7 +50,7 @@ if __name__ == '__main__':
         print("Failed to send data to stream.")
         exit()
     inplugin_key = 1
-    #key
+    # read key word in txt
     key_file = open("./bert_key.txt", 'r')
     key_dict = []
     for key in key_file.readlines():

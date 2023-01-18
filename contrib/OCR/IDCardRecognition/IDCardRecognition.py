@@ -48,12 +48,14 @@ if __name__ == '__main__':
     uniqueId = streamManagerApi.SendDataWithUniqueId(streamName, inPluginId, dataInput)
     if uniqueId < 0:
         print("Failed to send data to stream.")
+        streamManagerApi.DestroyAllStreams()
         exit()
     # Obtain the inference result by specifying streamName and uniqueId.
     inferResult = streamManagerApi.GetResultWithUniqueId(streamName, uniqueId, 3000)
     if inferResult.errorCode != 0:
         print("GetResultWithUniqueId error. errorCode=%d, errorMsg=%s" % (
             inferResult.errorCode, inferResult.data.decode()))
+        streamManagerApi.DestroyAllStreams()
         exit()
     results = json.loads(inferResult.data.decode())
     print(results)

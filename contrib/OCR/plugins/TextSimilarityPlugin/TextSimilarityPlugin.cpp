@@ -1,3 +1,19 @@
+/*
+ * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 #include "TextSimilarityPlugin.h"
 #include <iostream>
 #include "MxBase/Log/Log.h"
@@ -235,15 +251,15 @@ APP_ERROR TextSimilarityPlugin::Process(std::vector<MxpiBuffer *> &mxpiBuffer)
     for(int i = 1; i< length1 - 1; i++) {
         for(int j = 1; j < length2 - 1; j++) {
             float temp = similarity(input1[i],input2[j]);
-            if(temp>thresh) {
-                LogInfo << "text:" << textsInfoVec0[0].text[i - 1]
-                       << " keyword:" << textsInfoVec1[0].text[j - 1] << " 相似度" << temp;
+            LogInfo << "text:(" << textsInfoVec0[0].text[i - 1]
+                    << ") keyword:(" << textsInfoVec1[0].text[j - 1] << ") similarity:" << temp;
+            if (temp > thresh) {
                 has_kay = true;
             }
         }
     }
 
-    LogInfo << "图片是否含有关键字：" << has_kay;
+    LogInfo << "has key(bool)?:" << has_kay;
     // Send the data to downstream plugin
     SendData(0, *inputMxpiBuffer0);
     LogInfo << "End to process TextInfoPlugin(" << elementName_ << ").";

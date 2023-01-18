@@ -15,6 +15,7 @@
 ### 1.2支持的版本
 
 支持1.75.T11.0.B116, 1.75.T15.0.B150, 20.1.0
+[SDK 2.0.2.B011](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OCR/Ascend-mindxsdk-mxvision_2.0.2.b011_linux-aarch64.run)
 
 版本号查询方法，在Atlas产品环境下，运行以下命令：
 
