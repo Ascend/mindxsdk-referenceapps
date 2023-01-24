@@ -194,8 +194,9 @@ if __name__ == '__main__':
         # 3, 128, 128
         print(img)
         # to bin
-        j = "%04d" % (COUNT)
-        filepath = OUT_PATH_BIN + "/"+str(j)+"_result.bin"
+        NAME = "%04d" % (COUNT)
+        NAME = str(NAME)
+        filepath = OUT_PATH_BIN + "/"+ NAME +"_result.bin"
         img.tofile(filepath)
 
         image =  img.copy()
@@ -216,7 +217,7 @@ if __name__ == '__main__':
         print(img_int)
     
         img_bgr = cv2.cvtColor(img_int, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(OUT_PATH + "/"+str(j)+"_result.jpg", img_bgr)
+        cv2.imwrite(OUT_PATH + "/"+ NAME +"_result.jpg", img_bgr)
 
 
 
