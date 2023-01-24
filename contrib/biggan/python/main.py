@@ -62,7 +62,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_noise = tensor_package_vec.tensorVec.add()
     tensorvec_noise.memType = 1
     tensorvec_noise.deviceId = 0
-    # bsÎª1£¬ 1*20ÎªÔëÉùÊäÈë³ß´ç£¬4Ö¸Ïòfloat32Êý¾Ý
+    # bsÎª1ï¿½ï¿½ 1*20Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß´ç£¬4Ö¸ï¿½ï¿½float32ï¿½ï¿½ï¿½ï¿½
     tensorvec_noise.tensorDataSize = int(1*1*20*4)
     tensorvec_noise.tensorDataType = 0
     for i in noise.shape:
@@ -73,7 +73,7 @@ def preprocess(l_path, n_path, num, count):
     tensorvec_label = tensor_package_vec.tensorVec.add()
     tensorvec_label.memType = 1
     tensorvec_label.deviceId = 0
-    # bsÎª1£¬ 5*148Îª±êÇ©ÊäÈë³ß´ç£¬4Ö¸Ïòfloat32Êý¾Ý
+    # bsÎª1ï¿½ï¿½ 5*148Îªï¿½ï¿½Ç©ï¿½ï¿½ï¿½ï¿½ß´ç£¬4Ö¸ï¿½ï¿½float32ï¿½ï¿½ï¿½ï¿½
     tensorvec_label.tensorDataSize = int(1*5*148*4) 
     tensorvec_label.tensorDataType = 0
 
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     OUT_PATH = '../result'
     OUT_PATH_BIN = "../result_bin"
     #  Dataset range
-    NUM = 1000    
+    NUM = 10000    
     #  Number of generated image
     COUNT = 0
 

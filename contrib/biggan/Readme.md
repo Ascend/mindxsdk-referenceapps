@@ -97,7 +97,7 @@
 
    1.2 命名问题：
 
-   ​        样例中以bs为1，数据数量为1000为例。因此，在模型获取，数据集生成时均需要统一为bs=1。
+   ​        样例中以bs为1，数据数量为10000为例。因此，在模型获取，数据集生成时均需要统一为bs=1。
 
    1.3 路径问题：
 
@@ -125,7 +125,7 @@ cd biggan
 **步骤3**  在准备好需要的文件后（如第3小节**前期数据和模型准备**所述），运行命令，生成数据集。
 
 ```
-python3 biggan_preprocess.py --batch-size 1 --num-inputs 1000
+python3 biggan_preprocess.py --batch-size 1 --num-inputs 10000
 ```
 
 **步骤4**   获取om模型，如第3小节**前期数据和模型准备**所述。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的  om 模型，则无需修改相关文件，否则修改 python目录下pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名。
@@ -136,7 +136,7 @@ python3 biggan_preprocess.py --batch-size 1 --num-inputs 1000
 cd python
 ```
 
-**步骤6**  main.py中默认为num为1000。也可根据用户需要在main.py脚本文件中自行设置数值，其中num需要等于**步骤3**中的num-inputs值。
+**步骤6**  main.py中默认为num为10000。也可根据用户需要在main.py脚本文件中自行设置数值，其中num需要等于**步骤3**中的num-inputs值。
 
 **步骤7**  在命令行输入：
 
@@ -144,7 +144,7 @@ cd python
 python3 main.py
 ```
 
-**步骤8**   结果无误时会在biggan目录下生成result与result_bin文件夹，文件夹中分别保存了count_result.jpg与count_result.bin格式的生成图像（以num=1000为例，count为0000-0999），bin文件用以精度测试。jpg生成图像如下图所示：
+**步骤8**   结果无误时会在biggan目录下生成result与result_bin文件夹，文件夹中分别保存了count_result.jpg与count_result.bin格式的生成图像（以num=10000为例，count为0000-9999），bin文件用以精度测试。jpg生成图像如下图所示：
 
 
 
@@ -169,10 +169,10 @@ python3 biggan_postprocess.py --result-path "./result_bin" --save-path "./postpr
 接着运行“biggan_eval_acc.py”文件
 
 ```
-python3 biggan_eval_acc.py --num-inception-images 1000 --batch-size 1 --dataset 'I128' 
+python3 biggan_eval_acc.py --num-inception-images 10000 --batch-size 1 --dataset 'I128' 
 ```
 
-这里的输出数量和生成时的数量相对应，默认为1000
+这里的输出数量和生成时的数量相对应，默认为10000
 
 ![4](ACCURACY.jpg)
 
@@ -193,3 +193,4 @@ python3 biggan_eval_acc.py --num-inception-images 1000 --batch-size 1 --dataset 
 ```
 env list
 ```
+
