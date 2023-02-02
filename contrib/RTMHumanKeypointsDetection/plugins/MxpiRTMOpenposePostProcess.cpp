@@ -852,12 +852,10 @@ std::vector<std::shared_ptr<void>> MxpiRTMOpenposePostProcess::DefineProperties(
 {
     std::vector<std::shared_ptr<void>> properties;
     // Set the type and related information of the properties, and the key is the name
-    auto parentNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string> {STRING, "dataSource", "parentName", "the name of previous plugin", "mxpi_modelinfer0", "NULL", "NULL"});
     auto imageDecoderNameProSptr = (std::make_shared<ElementProperty<string>>)(ElementProperty<string> {STRING, "imageSource", "inputName", "the name of imagedecoder", "mxpi_imagedecoder0", "NULL", "NULL"});
     auto inputHeightProSptr = (std::make_shared<ElementProperty<uint32_t>>)(ElementProperty<uint32_t> {UINT, "inputHeight", "inputHeightValue", "the height of the input image", 368, 0, 1000});
     auto inputWidthProSptr = (std::make_shared<ElementProperty<uint32_t>>)(ElementProperty<uint32_t> {UINT, "inputWidth", "inputWidthValue", "the width of the input image", 368, 0, 1000});
     properties.push_back(imageDecoderNameProSptr);
-    properties.push_back(parentNameProSptr);
     properties.push_back(inputHeightProSptr);
     properties.push_back(inputWidthProSptr);
     return properties;
