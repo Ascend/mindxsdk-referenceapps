@@ -141,7 +141,7 @@ ATC run success, welcome to the next use.
 
 准备一张待检测图片，并上传到FCOS文件夹下。然后修改main.py文件里面的图片路径为待检测的图片路径。并且从https://github.com/pjreddie/darknet/blob/master/data/coco.names   里面下载coco.names文件，并且将这个文件存放到models文件夹下。并且修改main.py里IMAGENAME为图片的路径：
 ```python
-IMAGENAME = '{image path}'
+IMAGENAME = '{image path}'  // 120行
 ```
 ### 步骤2
 

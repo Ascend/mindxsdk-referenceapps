@@ -111,7 +111,7 @@ if __name__ == '__main__':
         exit()
 
     # create pipeline
-    with open("./pipeline/FCOSdetectiontest.pipeline", 'rb') as f:
+    with open("./pipeline/FCOSdetection.pipeline", 'rb') as f:
         pipelineStr = f.read()
     ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
     if ret != 0:
