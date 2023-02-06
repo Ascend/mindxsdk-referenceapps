@@ -85,20 +85,26 @@
 
    ​         标签和噪声文件的生成共依赖五个文件：
 
-   ​         “biggan_preprocess.py”，“G_ema.pth” ——来源ModelZoo的ATC BigGAN仓库，在第二部分模型获取的ModelZoo文件下载路径可以一起获取。
+   ​         “biggan_preprocess.py”，“G_ema.pth”——来源ModelZoo的ATC BigGAN仓库，在第二部分模型获取的ModelZoo文件下载路径可以一起获取。
 
    ​         “BigGAN.py”， “layers.py”， “inception_utils.py” ——来源github仓库。
+
+   ​	注：如果需要精度测试，这一步需要添加另外四个文件：
+
+   ​		 “biggan_eval_acc.py”,  "biggan_postprocess.py"，"inception_v3_google.pth" , "I128_inception_moments.npz" ——来源Modelzoo的ATC BigGAN仓库，在第二部分模型获取的ModelZoo文件下载路径可以一起获取。
 
    ​          github文件下载路径：https://github.com/ajbrock/BigGAN-PyTorch.git 
 
    1.2 命名问题：
 
-   ​        样例中以bs为1，数据数量为1000为例。因此，在模型获取，数据集生成时均需要统一为bs=1。
+   ​        样例中以bs为1，数据数量为50000为例。因此，在模型获取，数据集生成时均需要统一为bs=1。
 
    1.3 路径问题：
 
    ​        “biggan_preprocess.py”，“G_ema.pth” ， “BigGAN.py”， “layers.py”， “inception_utils.py” 需要全部放在/biggan目录下。
-           生成的“prep_label_bs1”和“prep_noise_bs1”文件夹也需要全部放在/biggan目录下，否则运行“main.py”时会出错。
+   ​        生成的“prep_label_bs1”和“prep_noise_bs1”文件夹需要全部放在/biggan目录下，否则运行“main.py”时会出错。
+
+   ​		生成的“gen_y_bs1.npz”文件也需要放在/biggan目录下，否则精度测试时会报错。
 
 2. 模型获取
 
@@ -119,7 +125,7 @@ cd biggan
 **步骤3**  在准备好需要的文件后（如第3小节**前期数据和模型准备**所述），运行命令，生成数据集。
 
 ```
-python3 biggan_preprocess.py --batch-size 1 --num-inputs 1000
+python3 biggan_preprocess.py --batch-size 1 --num-inputs 50000
 ```
 
 **步骤4**   获取om模型，如第3小节**前期数据和模型准备**所述。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的  om 模型，则无需修改相关文件，否则修改 python目录下pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名。
@@ -130,7 +136,7 @@ python3 biggan_preprocess.py --batch-size 1 --num-inputs 1000
 cd python
 ```
 
-**步骤6**  main.py中默认为num为1000，count为11。也可根据用户需要在main.py脚本文件中自行设置数值，其中num需要等于**步骤3**中的num-inputs值，count需要小于num值。
+**步骤6**  main.py中默认为num为50000。也可根据用户需要在main.py脚本文件中自行设置数值，其中num需要等于**步骤3**中的num-inputs值。
 
 **步骤7**  在命令行输入：
 
@@ -138,7 +144,7 @@ cd python
 python3 main.py
 ```
 
-**步骤8**   结果无误时会在biggan目录下生成result文件夹，文件夹中保存了count_result.jpg格式的生成图像。如下图所示：
+**步骤8**   结果无误时会在biggan目录下生成result与result_bin文件夹，文件夹中分别保存了count_result.jpg与count_result.bin格式的生成图像，bin文件用以精度测试。jpg生成图像如下图所示：
 
 
 
@@ -146,7 +152,33 @@ python3 main.py
 
 注： 具体实现图片依赖于label标签和noise噪声文件，文件随机生成，最终生成图片因人而异。
 
-## 5.常见问题
+## 5.精度测试
+
+成功生成result_bin文件夹后，返回上级目录。
+
+```
+cd ..
+```
+
+可以发现result_bin文件夹，需要的依赖文件（“biggan_eval_acc.py”,  "biggan_postprocess.py"，"inception_v3_google.pth" , "I128_inception_moments.npz"，“gen_y_bs1.npz”）此时都在/biggan目录下，先运行“biggan_postprocess.py”文件，会在当前目录下生成“gen_img_bs1.npz”文件
+
+```
+python3 biggan_postprocess.py --result-path "./result_bin" --save-path "./postprocess_img" --batch-size 1 --save-npz
+```
+
+接着运行“biggan_eval_acc.py”文件
+
+```
+python3 biggan_eval_acc.py --num-inception-images 50000 --batch-size 1 --dataset 'I128' 
+```
+
+这里的输出数量和生成时的数量相对应，默认为50000
+
+![4](ACCURACY.png)
+
+出现上图结果即为精度测试成功
+
+## 6.常见问题
 
 **问题描述：**
 
@@ -161,3 +193,4 @@ python3 main.py
 ```
 env list
 ```
+
