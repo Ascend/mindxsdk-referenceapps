@@ -115,7 +115,7 @@ if __name__ == '__main__':
     OUT_PATH = '../result'
     OUT_PATH_BIN = "../result_bin"
     #  Dataset range
-    NUM = 10000    
+    NUM = 50000    
     #  Number of generated image
     COUNT = 0
 
