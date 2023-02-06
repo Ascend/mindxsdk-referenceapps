@@ -92,7 +92,7 @@ if __name__ == '__main__':
     stream_manager = StreamManagerApi()
     ret = stream_manager.InitManager()
     if ret != 0:
-        print(" Init Stream manager failure , ret=%s" % str(ret))
+        print(" Fail to init stream manager , ret=%s" % str(ret))
         exit()
 
     # create streams by pipeline config file
@@ -100,7 +100,7 @@ if __name__ == '__main__':
         pipelineStr = f.read()
     ret = stream_manager.CreateMultipleStreams(pipelineStr)
     if ret != 0:
-        print("Create Stream failure, ret=%s" % str(ret))
+        print("Fail to create stream manager, ret=%s" % str(ret))
         exit()
 
 
