@@ -86,7 +86,9 @@ python prune_paddle_model.py --model_dir ${input_model_dir} --model_filename ${p
 ```${pdiparams_file_name}``` 代表模型模型目录下模型参数，例如 ```model.pdiparams```   
 ```${new_model_dir}``` 代表模型输出的路径     
 
-**步骤3**   addle2ONNX/blob/develop/README.md)
+**步骤3**   
+
+参考工具[链接](https://github.com/PaddlePaddle/Paddle2ONNX/blob/develop/README.md)转换为onnx模型
 
 **步骤4** 
 将onnx模型转换为om模型
