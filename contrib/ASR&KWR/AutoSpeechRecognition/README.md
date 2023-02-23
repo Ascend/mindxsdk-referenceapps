@@ -35,8 +35,8 @@ npu-smi info
 .
 |-------- data
 |           |---- lm_tokens.txt                //字典文件
-|           |---- sample                       //样例数据集
-|           |---- npy                          //样例数据集
+|           |---- S0150_mic                       //样例数据集
+|           |---- npy                          //样例数据集（执行时生成）
 |                  |---- feat_data             //语音文件转换的npy文件
 |                  |---- len_data              //语音文件转换的npy文件
 |-------- model
@@ -62,6 +62,7 @@ npu-smi info
 | MindX SDK | 3.0.RC3  |
 | librosa   | 0.9.2    |
 | CANN      | 6.0.RC1  |
+| pypinyin  | 0.48.0   |
 
 1. 请确认环境已安装pip3后，使用pip3 install * 安装以上依赖
 
@@ -109,7 +110,8 @@ apt-get install liblzma-dev
 
 ### 4.1 数据集准备
 
-此模型使用的数据集为[AISHELL-1_sample样例数据集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ASR%26KWR/AutoSpeechRecognition/data_sample.zip)。下载后将内含的所有wav及txt文件放至"data/sample"目录下。<kbd>data/BAC009S0009W0121.wav</kbd>为其中一条语音，其对应的文字是：其中有两个是内因的指标。
+此模型使用的数据集为[AISHELL-1_sample样例数据集](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ASR%26KWR/AutoSpeechRecognition/data_sample.zip)。下载后将内含的所有wav及txt文件放至"data"目录下。<kbd>data/BAC009S0009W0121.wav</kbd>为其中一条语音，其对应的文字是：其中有两个是内因的指标。
+
 
 ### 4.2 执行以下脚本
 ```bash
@@ -117,6 +119,7 @@ bash run.sh
 ```
 运行样例数据集上的推理及精度、性能测试。
 
+或更高run.sh中python文件为main_sig.py以执行单个的样例功能
 ## 5 其它说明
 
 由于模型输入的限制，推理时wav语音的时长应控制在10s及其以下，超过10s的部分会被截断。
