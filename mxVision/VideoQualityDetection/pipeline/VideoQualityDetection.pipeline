@@ -18,7 +18,6 @@
                 "outputImageFormat": "YUV420SP_NV12",
                 "vdecChannelId": "0"
             },
-            "former": "mxpi_rtspsrc0",
             "next": "mxpi_qualitydetection0"
         },
         "mxpi_qualitydetection0": {
