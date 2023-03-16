@@ -28,20 +28,23 @@ paddlepaddle框架的ppyoloe模型推理时，前处理方案包括解码为BGR-
 .
 ├── run.sh                          # 编译运行main.cpp脚本
 ├── main.cpp                        # mxBasev2接口推理样例流程
-├── PPYoloePostProcess.h            # ppyoloe后处理插件编译头文件(需要被main.cpp引入)
-├── PPYoloePostProcess.cpp          # ppyoloe后处理插件实现
+├── plugin
+│     ├── PPYoloePostProcess.h      # ppyoloe后处理插件编译头文件(需要被main.cpp引入)
+│     ├── PPYoloePostProcess.cpp    # ppyoloe后处理插件实现
+│     └── CMakeLists.txt            # 用于编译后处理插件
 ├── model
 │     ├── coco.names                # 需要下载，下载链接在下方
 │     └── ppyoloe.cfg               # 模型后处理配置文件，配置说明参考《mxVision用户指南》中已有模型支持->模型后处理配置参数->YOLOv5模型后处理配置参数
 ├── pipeline
-│     └── Sample.pipeline           # 参考pipeline文件，用户需要根据自己需求和模型输入类型进行修改
+│     ├── Sample.pipeline           # 参考pipeline文件，用户需要根据自己需求和模型输入类型进行修改
+│     └── SampleYuv.pipeline        # 参考pipeline文件，用于配置yuv模型，用户需要根据自己需求和模型输入类型进行修改
 ├── test.jpg                        # 需要用户自行添加测试数据
 ├── CMakeLists.txt                  # 编译main.cpp所需的CMakeLists.txt, 编译插件所需的CMakeLists.txt请查阅用户指南  
 └── README.md
 
 ```
 
-注：coco.names文件源于[链接](../Collision/model/coco.names)的coco2014.names文件，下载之后，放到models目录下。
+注：coco.names文件源于[链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/contrib/Collision/model/coco.names)的coco2014.names文件，下载之后，放到models目录下。
 
 
 
@@ -70,7 +73,11 @@ SDK-path: mxVision SDK 安装路径
 ascend-toolkit-path: CANN 安装路径。
 ```  
 
-## 3. 模型转换
+## 3. 模型转换    
+
+关键依赖版本说明    
+paddle >=1.0.2    
+paddlepaddle >= 2.3.2    
 
 **步骤1** 
 建议通过[链接](https://github.com/PaddlePaddle/PaddleYOLO/blob/develop/docs/MODEL_ZOO_cn.md#PP-YOLOE)中 部署模型->PP-YOLOE+_l ->导出后的权重->(w/nms)下载paddle模型。
@@ -91,8 +98,8 @@ python prune_paddle_model.py --model_dir ${input_model_dir} --model_filename ${p
 参考工具[链接](https://github.com/PaddlePaddle/Paddle2ONNX/blob/develop/README.md)转换为onnx模型
 
 **步骤4** 
-将onnx模型转换为om模型
-配置aipp.cfg参考:
+将onnx模型转换为om模型   
+RGB输入模型配置aipp.cfg参考:
 ```
 aipp_op {
     aipp_mode : static
@@ -101,9 +108,32 @@ aipp_op {
     src_image_size_h : 640
 
     csc_switch : false
-    rbuv_swap_switch : true
+    rbuv_swap_switch : false
 }
 ```
+
+转换为YUVSP420输入模型参考
+```
+aipp_op {
+    aipp_mode : static
+    input_format : YUV420SP_U8
+    csc_switch : true
+    rbuv_swap_switch : false
+    matrix_r0c0 : 256
+    matrix_r0c1 : 0
+    matrix_r0c2 : 359
+    matrix_r1c0 : 256
+    matrix_r1c1 : -88
+    matrix_r1c2 : -183
+    matrix_r2c0 : 256
+    matrix_r2c1 : 454
+    matrix_r2c2 : 0
+    input_bias_0 : 0
+    input_bias_1 : 128
+    input_bias_2 : 128
+}
+```
+
 atc转换模型命令
 ```
 atc --framework=5 --model=${onnx_model} --output={output_name} --input_format=NCHW --input_shape="image:1, 3, 640, 640" --log=error --soc_version={soc_name} --insert_op_conf=${aipp_cfg_file} --output_type=FP32
@@ -135,16 +165,13 @@ atc --framework=5 --model=${onnx_model} --output={output_name} --input_format=NC
 放入待测图片。将一张图片放项目根路径下，命名为 test.jpg。
 
 **步骤3**   
-对main.cpp样例中加载的模型路径、模型配置文件路径进行检查，确保对应位置存在相关文件，包括：  
-string modelPath = "models/ppyoloe.om";  
-string ppyoloeConfigPath = "models/ppyoloe.cfg";  
-string ppyoloeLabelPath = "models/coco.names";  
+对main.cpp样例中加载的模型路径、模型配置文件路径进行检查，确保对应位置存在相关文件，请参考run.sh中的说明。
 
 **步骤4**   
 图片检测。在项目路径根目录下运行命令：
 
 ```
-bash run.sh
+bash run.sh -m model_path -c model_config_path -l model_label_path -i image_path [-y]
 ```     
 ### 4.2 pipeline推理业务流程
 

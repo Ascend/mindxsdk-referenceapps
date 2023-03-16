@@ -48,6 +48,7 @@ private:
                                 std::vector<ObjectInfo> &objectInfo, const ResizedImageInfo &resizedImageInfo);
     float objectnessThresh_ = DEFAULT_OBJECTNESS_THRESH;
     float iouThresh_ = DEFAULT_IOU_THRESH;
+    int paddingType_ = 1;
 };
 
 extern "C" {

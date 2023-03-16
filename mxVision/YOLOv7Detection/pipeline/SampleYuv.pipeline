@@ -11,18 +11,18 @@
             "next": "mxpi_imagedecoder0"
         },
         "mxpi_imagedecoder0": {
-           "props": {
-              "cvProcessor" : "opencv",
-              "outputDataFormat" : "RGB"
-          },
             "factory": "mxpi_imagedecoder",
             "next": "mxpi_imageresize0"
         },
         "mxpi_imageresize0": {
             "props": {
-                "cvProcessor" : "opencv",
-                "resizeHeight": "640",
-                "resizeWidth": "640"
+                "dataSource": "mxpi_imagedecoder0",
+                "resizeType": "Resizer_KeepAspectRatio_Fit",
+                "paddingType": "Padding_Around",
+                "paddingHeight": "640",
+                "paddingWidth": "640",
+                "RGBValue" : "114, 114, 114",
+                "interpolation" : "0"
             },
             "factory": "mxpi_imageresize",
             "next": "mxpi_tensorinfer0"
@@ -30,7 +30,7 @@
         "mxpi_tensorinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "../model/ppyoloe.om"
+                "modelPath": "../model/yolov7.om"
             },
             "factory": "mxpi_tensorinfer",
             "next": "mxpi_objectpostprocessor0"
@@ -38,9 +38,9 @@
         "mxpi_objectpostprocessor0": {
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
-                "postProcessConfigPath":"../model/ppyoloe.cfg",
+                "postProcessConfigPath":"../model/yolov7.cfg",
                 "labelPath": "../model/coco.names",
-                "postProcessLibPath": "libppyoloepostprocess.so"
+                "postProcessLibPath": "libyolov7postprocess.so"
             },
             "factory": "mxpi_objectpostprocessor",
             "next": "mxpi_dataserialize0"
@@ -52,7 +52,6 @@
             "factory": "mxpi_dataserialize",
             "next": "appsink0"
         },
-        
         "appsink0": {
             "props": {
                 "blocksize": "4096000"

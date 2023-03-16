@@ -28,21 +28,25 @@ Pytorch框架对yolov7模型推理时，前处理方案包括解码为BGR->等�
 .
 ├── run.sh                          # 编译运行main.cpp脚本
 ├── main.cpp                        # mxBasev2接口推理样例流程
-├── Yolov7PostProcess.h             # yolov7后处理插件编译头文件(需要被main.cpp引入)
-├── Yolov7PostProcess.cpp           # yolov7后处理插件实现
+├── plugin
+│     ├── Yolov7PostProcess.h       # yolov7后处理插件编译头文件(需要被main.cpp引入)
+│     ├── Yolov7PostProcess.cpp     # yolov7后处理插件实现
+│     └── CMakeLists.txt            # 用于编译后处理插件
 ├── model
 │     ├── coco.names                # 需要下载，下载链接在下方
 │     └── yolov7.cfg                # 模型后处理配置文件，配置说明参考《mxVision用户指南》中已有模型支持->模型后处理配置参数->YOLOv5模型后处理配置参数
 ├── pipeline
-│     └── Sample.pipeline           # 参考pipeline文件，用户需要根据自己需求和模型输入类型进行修改
+│     ├── Sample.pipeline           # 参考pipeline文件，用户需要根据自己需求和模型输入类型进行修改
+│     └── SampleYuv.pipeline        # 参考pipeline文件，用于配置yuv模型，用户需要根据自己需求和模型输入类型进行修改，
 ├── CMakeLists.txt                  # 编译main.cpp所需的CMakeLists.txt, 编译插件所需的CMakeLists.txt请查阅用户指南
 ├── test.jpg                        # 需要用户自行添加测试数据
 └── README.md
 
 ```
 
-注：coco.names文件源于[链接](../Collision/model/coco.names)的coco2014.names文件，下载之后，放到models目录下。
-
+注：coco.names文件源于[链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/contrib/Collision/model/coco.names)的coco2014.names文件，下载之后，放到models目录下。   
+另外，yolov7.cfg中新增了一个配置项PADDING_TYPE用于区分补边的情况，若采用dvpp补边则填写0，采用opencv补边则填写1，默认为1。    
+SampleYuv.pipeline中resize插件需要选用双线性插值的方式，需要根据310和310P环境填写interpolation的参数。
 
 
 ## 2 环境依赖
@@ -68,13 +72,65 @@ CANN 环境变量：
 ```
 SDK-path: mxVision SDK 安装路径
 ascend-toolkit-path: CANN 安装路径。
-```  
+```   
 
-## 3. 模型转换
+## 3. 模型转换    
+
+关键依赖版本说明    
+PyTorch >=1.8.0    
 
 请参考[链接](https://gitee.com/ascend/modelzoo-GPL/tree/master/built-in/ACL_Pytorch/Yolov7_for_Pytorch)对模型进行下载和转换为om。   
 注意：由于main.cpp样例在310P环境下解码后的图片为BGR格式，因此使用aipp转换至om时，请将上述链接中的教程中 4. 使用aipp预处理 aipp_op中的rbuv_swap_switch项设置为true。
-转换完成后，将该模型放到model路径下。
+转换完成后，将该模型放到model路径下。  
+
+转换为BGR输入参考
+```
+aipp_op{
+   aipp_mode : static
+   input_format : RGB888_U8
+   src_image_size_w : 640 
+   src_image_size_h : 640
+   
+   csc_switch : false
+   rbuv_swap_switch : true
+
+   min_chn_0 : 0
+   min_chn_1 : 0
+   min_chn_2 : 0
+   var_reci_chn_0: 0.0039215686274509803921568627451
+   var_reci_chn_1: 0.0039215686274509803921568627451
+   var_reci_chn_2: 0.0039215686274509803921568627451
+
+}
+```    
+转换为YUVSP420输入模型参考
+```
+aipp_op {
+    aipp_mode : static
+    input_format : YUV420SP_U8
+    csc_switch : true
+    rbuv_swap_switch : false
+    matrix_r0c0 : 256
+    matrix_r0c1 : 0
+    matrix_r0c2 : 359
+    matrix_r1c0 : 256
+    matrix_r1c1 : -88
+    matrix_r1c2 : -183
+    matrix_r2c0 : 256
+    matrix_r2c1 : 454
+    matrix_r2c2 : 0
+    input_bias_0 : 0
+    input_bias_1 : 128
+    input_bias_2 : 128
+
+    min_chn_0 : 0
+    min_chn_1 : 0
+    min_chn_2 : 0
+    var_reci_chn_0: 0.0039215686274509803921568627451
+    var_reci_chn_1: 0.0039215686274509803921568627451
+    var_reci_chn_2: 0.0039215686274509803921568627451
+}
+```
 
 ## 4. 编译与运行
 
@@ -93,16 +149,13 @@ ascend-toolkit-path: CANN 安装路径。
 放入待测图片。将一张图片放项目根路径下，命名为 test.jpg。   
 
 **步骤3**   
-对样例main.cpp中加载的模型路径、模型配置文件路径进行检查，确保对应位置存在相关文件，包括：   
-string modelPath = "models/yolov7.om";     
-string yolov7ConfigPath = "models/yolov7.cfg";   
-string yolov7LabelPath = "models/coco.names";   
+对样例main.cpp中加载的模型路径、模型配置文件路径进行检查，确保对应位置存在相关文件，请参考run.sh中的说明。
 
 **步骤4**    
 图片检测。在项目路径根目录下运行命令：  
 
 ```
-bash run.sh
+bash run.sh -m model_path -c model_config_path -l model_label_path -i image_path [-y]
 ```     
 ### 4.2 pipeline推理业务流程
 
