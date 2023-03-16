@@ -41,6 +41,9 @@
             "next":"mxpi_imageencoder0"
         },
         "mxpi_imageencoder0":{
+            "props": {
+                "encodeLevel": "10"
+            },
             "factory":"mxpi_imageencoder",
             "next":"appsink0"
         },
