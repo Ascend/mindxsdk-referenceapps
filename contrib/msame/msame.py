@@ -69,7 +69,7 @@ def infer(saves):
         types_output.append([])
         types_output[index].append(str(m.output_dtype(i)))
         index += 1
-    types_input = str(m.input_dtyp(0))
+    types_input = str(m.input_dtype(0))
     multi = 1
     f = []
     if args.input != '':
