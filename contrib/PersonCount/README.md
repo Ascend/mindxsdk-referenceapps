@@ -69,7 +69,7 @@
 ### 1.5 技术实现流程图
 
 （可放入流程图片）  
-![Image text](https://gitee.com/superman418/mindxsdk-referenceapps/raw/master/contrib/PersonCount/img/tech_arch.png)
+![Image text](./img/tech_arch.png)
 
 ## 2 环境依赖
 
@@ -97,7 +97,7 @@
 修改main.py中的DATASET_PATH变量，该变量指向待检测的图片路径。修改main.py中gt_path变量，改变了指向待检测图片的groundtruth.
 
 此外，如果想要得到pipeline中各个插件的具体运行时间，
-可以修改mxManufacture SDK的sdk.conf文件，使得enable_ps变量为true.
+可以修改SDK的sdk.conf文件，使得enable_ps变量为true.
 
 **步骤2** 设置环境变量
 
