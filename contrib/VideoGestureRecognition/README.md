@@ -166,7 +166,6 @@ Scanning dependencies of target sample
 
 >  ② 运行项目根目录下的`build.sh`
 ```bash
-chmod +x build.sh
 bash build.sh
 ```
 ### 执行脚本
@@ -174,7 +173,6 @@ bash build.sh
 执行`run.sh`脚本前请先确认可执行文件`sample`已生成。
 
 ```
-chmod +x run.sh
 bash run.sh
 ```
 
