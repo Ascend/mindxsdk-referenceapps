@@ -32,7 +32,10 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # Execute, transform YOLOv3 model.
 
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
-# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+
+# 说明1：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+# 说明2：若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1
+
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
