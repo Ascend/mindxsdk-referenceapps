@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 "props": {
                     "dataSource": "mxpi_tensorinfer0",
                     "postProcessConfigPath": "models/yolov3_tf_bs1_fp16.cfg",
-                    "labelPath": "models/coco.names",
+                    "labelPath": "${SDK安装路径}/samples/mxVision/models/yolov3/yolov3.names",
                     "postProcessLibPath": "${SDK安装路径}/lib/modelpostprocessors/libyolov3postprocess.so"
                 },
                 "factory": "mxpi_objectpostprocessor",
