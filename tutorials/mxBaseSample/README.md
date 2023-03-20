@@ -25,7 +25,7 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
 ```
-(2) 转换模型
+(2) 转换模型(若运行在310B上，模型转换时需将Ascend310修改为Ascend310B1)
 ```
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
