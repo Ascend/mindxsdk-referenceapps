@@ -36,7 +36,7 @@ paddlepaddle框架的ppyoloe模型推理时，前处理方案包括解码为BGR-
 │     ├── coco.names                # 需要下载，下载链接在下方
 │     └── ppyoloe.cfg               # 模型后处理配置文件，配置说明参考《mxVision用户指南》中已有模型支持->模型后处理配置参数->YOLOv5模型后处理配置参数
 ├── pipeline
-│     ├── Sample.pipeline           # 参考pipeline文件，用户需要根据自己需求和模型输入类型进行修改
+│     ├── Sample.pipeline           # 参考pipeline文件，用于配置rgb模型，用户需要根据自己需求和模型输入类型进行修改
 │     └── SampleYuv.pipeline        # 参考pipeline文件，用于配置yuv模型，用户需要根据自己需求和模型输入类型进行修改
 ├── test.jpg                        # 需要用户自行添加测试数据
 ├── CMakeLists.txt                  # 编译main.cpp所需的CMakeLists.txt, 编译插件所需的CMakeLists.txt请查阅用户指南  

@@ -129,12 +129,8 @@ void Yolov7PostProcess::ConstructBoxFromOutput(float *output, size_t offset, std
     int offsetLeft = (MODEL_INPUT_SIZE - tmpResizedWidth) / AVG_PARAM;
     int offsetTop = (MODEL_INPUT_SIZE - tmpResizedHeight) / AVG_PARAM;
     if (paddingType_ == 0) {
-        offsetTop = offsetTop % AVG_PARAM ? offsetTop : offsetTop - 1;
-        if (DeviceManager::IsAscend310() && resizedImageInfo.resizeType == RESIZER_MS_KEEP_ASPECT_RATIO) {
-            offsetLeft = (offsetLeft - 1 + ALIGN_LEFT) / ALIGN_LEFT * ALIGN_LEFT;
-        } else {
-            offsetLeft = offsetLeft < ALIGN_LEFT ? 0 : offsetLeft / ALIGN_LEFT * ALIGN_LEFT;
-        }
+        offsetTop = offsetTop % AVG_PARAM == 0 ? offsetTop : offsetTop - 1;
+        offsetLeft = offsetLeft < ALIGN_LEFT ? 0 : offsetLeft / ALIGN_LEFT * ALIGN_LEFT;
     }
     auto leftX = (output[index] - output[index + XOFFSET] / AVG_PARAM - offsetLeft) / division;
     auto leftY = (output[index + 1] - output[index + YOFFSET] / AVG_PARAM - offsetTop) / division;
