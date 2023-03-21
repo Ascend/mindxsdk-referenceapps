@@ -9,7 +9,7 @@
 昇腾310(推理)
 
 ### 1.2 支持的版本
-本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk) 。
+本样例配套的CANN版本为 [6.2](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [5.0RC1](https://www.hiascend.com/software/Mindx-sdk) 。
 
 ### 1.3 目录结构
 ```
@@ -59,7 +59,19 @@ pip install -r requiremenst.txt  #安装依赖,可能会因为网络问题而报
 
 **步骤2.5** 步骤2.4执行完成后会在克隆项目`models`目录下生成`DANet.onnx`和`Deeplabv3.onnx`,复制到本项目`models`下执行步骤3
 
-**步骤3** 在本项目`util`目录下运行模型转换脚本 `./model_conversion.sh`(如不是可执行脚本，先将其转换`chmod +x model_conversion.sh`), 执行完模型转换脚本后，会在`models`目录下生成相应的DANet和Deeplabv3的`om`模型文件
+**步骤3** 在本项目`models`目录下运行模型转换命令 
+
+首先需要引入环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+
+atc --framework=5 --model=DANet.onnx  --output=DANet --soc_version=Ascend310B1 --insert_op_conf=../config/configure.cfg --log=error
+
+atc --framework=5 --model=Deeplabv3.onnx  --output=Deeplabv3 --soc_version=Ascend310B1 --insert_op_conf=../config/configure.cfg --log=error
+```
+
+执行完模型转换命令后，会在`models`目录下生成相应的DANet和Deeplabv3的`om`模型文件
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
@@ -90,23 +102,8 @@ pip install -r requiremenst.txt  #安装依赖,可能会因为网络问题而报
 ## 3 模型推理
 
 ### 3.1 配置MindXSDK和Python环境变量
-```bash
-# 执行如下命令，打开.bashrc文件
-cd $HOME
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME= SDK安装路径
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-PYTHONPATH=${MX_SDK_HOME}/python
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-# 查看环境变量
-env
+```
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 ### 3.2 运行
 > 运行前请下载 [测试集图片](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/RemoteSensingSegmentation/data.zip) 放入目录`test_set`下, 随后进入工程目录，键入执行指令

@@ -102,7 +102,7 @@ if __name__ == '__main__':
     # Construct the input of the stream
     DATA_INPUT = MxDataInput()
     #dataset path needs to fixde as specific path
-    DATASET_PATH = '../tools/python_count/ShanghaiTech/part_B_images/'
+    DATASET_PATH = 'ShanghaiTech/part_B_images/'
     NAME_LIST = os.listdir(DATASET_PATH)
     PERSON_NUM_LIST = []
     GT_LIST = []
@@ -154,8 +154,8 @@ if __name__ == '__main__':
         #load ground truth information
         #gt_num represents the person number of ground truth.
         #the ground truth needs to fix as specific path.
-        gt_path = "../tools/python_count/ShanghaiTech/part_B_test/GT_IMG_" + str(i) + ".mat"
-        data1 = sio.loadmat(gt_path)
+        GT_PATH = "ShanghaiTech/part_B_test/GT_IMG_" + str(i) + ".mat"
+        data1 = sio.loadmat(GT_PATH)
         gt_num = int(data1['image_info'][0][0][0][0][1][0][0])
         GT_LIST.append(gt_num)
     #end time
