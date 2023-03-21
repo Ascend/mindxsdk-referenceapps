@@ -92,7 +92,7 @@ mkdir result
 默认的阈值参数为1。
 
 ```
-例：python main.py data/background.jpg data/portrait.jpg 1
+例：python3 main.py data/background.jpg data/portrait.jpg 1
 ```
 
 7. 查看结果  

@@ -126,8 +126,8 @@ atc --model=./VDSR.prototxt --weight=./VDSR.caffemodel --framework=0 --input_for
 2) 进入工程目录，键入执行指令，发起推理性能测试：
 
 ```python
-python main.py ${测试图片路径}
-例如: python main.py image/head.jpg
+python3 main.py ${测试图片路径}
+例如: python3 main.py image/head.jpg
     
 # 或者在main.py中配置 input_image_path 
 input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
