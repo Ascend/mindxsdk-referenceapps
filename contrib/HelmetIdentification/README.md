@@ -6,7 +6,7 @@
 
 ### 1.1 支持的产品
 
-昇腾310(推理)
+昇腾310(推理)、昇腾310B(推理)
 
 ### 1.2 支持的版本
 
@@ -29,7 +29,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   ├──Helmet_yolov5.cfg  #后处理配置文件
   ├──HelmetDetection.pipline # 安全帽识别推理流程pipline
   ├──imgclass.names  # 模型所有可识别类
-  ├──main-env.sh   # 环境变量设置脚本
   ├──main.py         # 推理运行程序
   ├──modify_yolov5s_slice.py  #slice算子修改脚本
   ├──dy_resize.py  # resize算子修改
@@ -38,7 +37,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
   ├──MxpiSelectedFrame # 跳帧插件
 ├── Test  
   ├──performance_test_main.py # 性能测试脚本  
-  ├──select.py # 测试集筛选脚本  
+  ├──test_select.py # 测试集筛选脚本  
   ├──parse_voc.py # 测试数据集解析脚本  
   ├──testmain.py # 测试主程序  
   ├──map_calculate.py # 精度计算程序
@@ -66,29 +65,12 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 
 
-在运行脚本main.py前（2.2章节），需要通过环境配置脚本main-env.sh设置环境变量,运行命令：
+在运行脚本main.py前（2.2章节），需要执行如下两个环境配置脚本设置环境变量,运行命令：
 
 ```shell
-source main-env.sh
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-- 环境变量介绍
-
-```bash
-export MX_SDK_HOME=${MX_SDK_HOME}
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin
-export PYTHONPATH=/usr/local/python3.9.2/bin:${MX_SDK_HOME}/python
-export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-export ASCEND_OPP_PATH=${install_path}/opp
-export GST_DEBUG=3
-```
-
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径;install_path替换为开发套件包所在路径。LD_LIBRARY_PATH用以加载开发套件包中llib库。GST_DEBUG用以mxpi_rtspsrc取流地址配置不正确时出现warning日志提示。
-
-
 
 ## 3.推理
 
@@ -141,13 +123,13 @@ python3 modify_yolov5s_slice.py YOLOv5_s.onnx
 
 可以得到修改好后的YOLOv5_s.onnx模型
 
-3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下：
+3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下。注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ```shell
 sh atc-env.sh
 ```
 
-提示 **ATC run success** 说明转换成功
+提示 **ATC run success** 说明转换成功。
 
 脚本中包含atc命令:
 
@@ -316,13 +298,13 @@ python3 performance_test_main.py
     ├── JPEGImages                 # 数据集原图片
   ```
 
-注：将数据集中的三个文件放置于项目的根目录Test文件下，与**select.py**同目录。
+注：将数据集中的三个文件放置于项目的根目录Test文件下，与**test_select.py**同目录。
 
 ###### 3.2.2测试数据集筛选
 
-依据数据集中ImageSets文件夹中test.txt文件，从原始数据集中筛选出测试数据集，该程序**select.py**放在源码根目录Test中，在同目录下创建文件夹TestImages用来存储筛选的数据。在该目录下运行命令：
+依据数据集中ImageSets文件夹中test.txt文件，从原始数据集中筛选出测试数据集，该程序**test_select.py**放在源码根目录Test中，在同目录下创建文件夹TestImages用来存储筛选的数据。在该目录下运行命令：
 ```shell
-python3.9.2 select.py
+python3.9.2 test_select.py
 ```
 
 程序运行后在根目录Test中会存放筛选出的测试集图片共1517张。
