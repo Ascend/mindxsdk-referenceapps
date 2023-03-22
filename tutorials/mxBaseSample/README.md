@@ -15,14 +15,10 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 **步骤3** 执行模型转换命令
 
 (1) 配置环境变量
-#### 设置环境变量（请确认install_path路径是否正确）
+#### 设置toolkit环境变量（请确认install_path路径是否正确）
 #### Set environment PATH (Please confirm that the install_path is correct).
 ```c
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，请根据实际安装路径修改。
 
 ```
 (2) 转换模型(若运行在310B上，模型转换时需将Ascend310修改为Ascend310B1)
@@ -33,14 +29,9 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 ## 编译与运行
 **步骤1** 修改CMakeLists.txt文件 将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
 
-**步骤2** 设置环境变量
-ASCEND_HOME Ascend安装的路径，一般为/usr/local/Ascend
-LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及libyolov3postprocess.so的路径
+**步骤2** 设置mxVision环境变量
 ```
-export ASCEND_HOME=/usr/local/Ascend
-export ASCEND_VERSION=nnrt/latest
-export ARCH_PATTERN=.
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
+. ${MX_SDK_HOME}/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
 
 **步骤3** cd到mxbase目录下，执行如下编译命令：
