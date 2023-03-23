@@ -11,7 +11,7 @@
 
 ### 1.1支持的产品
 
-本产品以昇腾310（推理）卡为硬件平台。
+本产品以昇腾310（推理）、310B（推理）卡为硬件平台。
 
 ### 1.2支持的版本
 
@@ -109,7 +109,7 @@ pip3 install mmdet
 
 ## 4 模型转换
 
-本项目使用的模型是FCOS目标检测模型这个模型是一个无anchor检测器。FCOS直接把预测特征图上的每个位置$(x,y)$当作训练样本，若这个位置在某个ground truth box的内部，则视为正样本，该位置的类别标签$c$对应这个box的类别，反之则视为负样本。这个网络的输出为目标框的左上角坐标、右下角坐标、类别和置信度。本项目的onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/6fcc4747a48245d29351c26cd052dd13)。下载后，里面自带的om模型是可以直接使用的，或者自行使用ATC工具将onnx模型转换成为om模型，模型转换工具的使用说明参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
+本项目使用的模型是FCOS目标检测模型这个模型是一个无anchor检测器。FCOS直接把预测特征图上的每个位置$(x,y)$当作训练样本，若这个位置在某个ground truth box的内部，则视为正样本，该位置的类别标签$c$对应这个box的类别，反之则视为负样本。这个网络的输出为目标框的左上角坐标、右下角坐标、类别和置信度。本项目的onnx模型可以直接[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Fcos/ATC%20Fcos.zip)。下载后，里面自带的om模型是可以直接使用的，或者自行使用ATC工具将onnx模型转换成为om模型，模型转换工具的使用说明参考[链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
 
 模型转换步骤如下：
 
@@ -117,10 +117,13 @@ pip3 install mmdet
 
 2.进入models文件夹目录下，设置环境变量如下：
 
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+```
 
 设置完环境变量之后，就进行模型的转换：
 
-模型转换语句如下：
+模型转换语句如下，注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ```
 atc --model=fcos.onnx --framework=5 --soc_version=Ascend310 --input_format=NCHW --input_shape="input:1,3,800,1333" --output=fcos_bs1 --precision_mode=allow_fp32_to_fp16
