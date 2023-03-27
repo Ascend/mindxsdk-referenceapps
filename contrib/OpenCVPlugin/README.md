@@ -17,7 +17,7 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.0.4。
+支持的SDK版本为 5.0.RC1, CANN 版本为昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
 
 
 ### 1.3 软件方案介绍 
@@ -105,7 +105,7 @@ OpenCVPlugin 插件流程图。
 | 软件名称 | 版本  |
 | -------- | ----- |
 | cmake    | 3.5+  |
-| mxVision | 2.0.4 |
+| mxVision | 5.0.RC1 |
 | python   | 3.9.2 |
 
 确保环境中正确安装mxVision SDK。

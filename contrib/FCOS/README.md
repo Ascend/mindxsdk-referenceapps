@@ -15,7 +15,7 @@
 
 ### 1.2支持的版本
 
-该项目支持的SDK版本为2.0.4，CANN版本为5.0.4。
+该项目支持的SDK版本为5.0.RC1，CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
 
 ### 1.3软件方案介绍
 
@@ -77,9 +77,9 @@
 
 | 软件名称            | 版本   | 说明                          | 获取方式                                                          |
 | ------------------- | ------ | ----------------------------- | ----------------------------------------------------------------- |
-| MindX SDK           | 2.0.4  | mxVision软件包                | [点击打开链接](https://www.hiascend.com/software/Mindx-sdk)       |
+| MindX SDK           | 5.0.RC1  | mxVision软件包                | [点击打开链接](https://www.hiascend.com/software/Mindx-sdk)       |
 | ubuntu              | 18.04  | 操作系统                      | 请上ubuntu官网获取                                                |
-| Ascend-CANN-toolkit | 5.0.4  | Ascend-cann-toolkit开发套件包 | [点击打开链接](https://www.hiascend.com/software/cann/commercial) |
+| Ascend-CANN-toolkit | 310使用6.3.RC1，310B使用6.2.RC1  | Ascend-cann-toolkit开发套件包 | [点击打开链接](https://www.hiascend.com/software/cann/commercial) |
 | mmdetection         | 2.25.0 | 用于评估准确度                | 请上mmdetection官网                                               |
 
 在项目开始运行前需要设置环境变量：
