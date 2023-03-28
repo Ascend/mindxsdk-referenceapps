@@ -96,8 +96,7 @@ def inference(
                 ymax + shift_size,
             ]
         )
-    return output_info
-
+    return output_info0
 
 if __name__ == "__main__":
     streamManagerApi = StreamManagerApi()
@@ -117,8 +116,10 @@ if __name__ == "__main__":
 
     # Construct the input of the stream
     PATH = "./testimages/FaceMaskDataset/test/"
+    start_time= time.time()
+    count = 0
     for item in os.listdir(PATH):
-        start_stamp = time.time()
+        count = count + 1
         img_path = os.path.join(PATH, item)
         print(img_path)
         img_name = item.split(".")[0]
@@ -197,7 +198,7 @@ if __name__ == "__main__":
         img = cv2.imread(img_path)
         output_info = inference(img, show_result=False)
         open(img_txt, "a+")
-        for i in enumerate(output_info):
+        for i, _ in enumerate(output_info):
             with open(img_txt, "a+") as f:
                 result = "{} {} {} {} {} {}".format(
                     id2class[output_info[i][0]],
@@ -212,4 +213,8 @@ if __name__ == "__main__":
 
         # destroy streams
 
+    end_time = time.time()
+    time_diff = end_time - start_time
+    res_fps = count / time_diff
+    print(f"result fps: {res_fps }")
     streamManagerApi.DestroyAllStreams()
