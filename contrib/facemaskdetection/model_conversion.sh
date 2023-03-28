@@ -22,16 +22,7 @@
 # 设置环境变量（请确认install_path路径是否正确）
 # Set environment PATH (Please confirm that the install_path is correct).
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-
-export ASCEND_OPP_PATH=${install_path}/opp
-
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # The path where Ascend-cann-toolkit is located
 
 
 atc --model=./face_mask_detection.pb --framework=3 --output=./aipp --output_type=FP32 --soc_version=Ascend310 --input_shape="data_1:1,260,260,3" --input_format=NHWC --insert_op_conf=./face_mask.aippconfig
