@@ -98,7 +98,7 @@ if __name__ == "__main__":
     k = 0
     text_list = []
     # if data is wav file
-    if dataRaw == True:
+    if dataRaw is True:
         # not needed if data is numpy file
         from pre_process import make_model_input
         for file in dirs:
@@ -300,7 +300,7 @@ if __name__ == "__main__":
                                 b_pass = False
                                 print("error char:(", i, ")无效样本\n**************")
                             break
-                    if(b_pass == False):
+                    if(b_pass is False):
                         continue
                     # 同音字过滤
                     bIsSim = simjug(r, h1)

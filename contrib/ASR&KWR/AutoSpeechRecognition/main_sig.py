@@ -48,7 +48,7 @@ if __name__ == "__main__":
         exit()
 
     # if data is wav file
-    if data_raw == True:
+    if data_raw is True:
         # not needed if data is numpy file
         from pre_process import make_model_input
         wav_file_path = os.path.join(cwd_path, "data/BAC009S0150W0087.wav")
