@@ -320,8 +320,8 @@ python match.py
 
 * 修改main.py原第64行代码
   ```python
-  64 show_animation = False
-  65 if not args.no_animation:
+  60 show_animation = False
+  61 if not args.no_animation:
   ```
 
 * 在main.py原第243行添加代码
@@ -379,6 +379,19 @@ python seg_evaluate.py
 **解决方案：**
 
 在转换模型时必须要在AIPP做色域转换，要不然模型输入不正确。
+
+### 6.2 精度推理报错
+
+若运行精度推理时出现如下报错：
+```
+AttributeError: 'FigureCanvasAgg' object has no attribute 'set_window_title'
+```
+原因是matplotlib版本变动，修改方式如下：
+```
+原始代码：fig.canvas.set_window_title(...)
+
+修改后：fig.canvas.manager.set_window_title(...)
+```
 
 
 

@@ -139,11 +139,8 @@ ex: python3 main.py image/test.jpg result/result.jpg
 python3 evaluate.py
 ```
 
-> ② 脚本运行请先赋予可执行权限
+> ② 脚本运行前请先赋予可执行权限
 ```bash
-# 赋予可执行权限
-chmod +x run.sh
-
 # 说明：-m 运行模式 {infer | evaluate} -i infer模式下输入图片的路径 -o infer模式下输出结果的路径
 # 推理模式
 bash run.sh -m infer -i image/test.jpg -o result/result.jpg
