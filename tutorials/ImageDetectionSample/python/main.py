@@ -164,7 +164,8 @@ if __name__ == '__main__':
 
     for item in bboxes.get('text'):
         text += item
-    cv2.putText(img, text, (bboxes.get('x0') + 10, bboxes.get('y0') + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
+    cv2.putText(img, text, (bboxes.get('x0') + 10, \
+        bboxes.get('y0') + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 1)
     cv2.rectangle(img, (bboxes.get('x0'), bboxes.get('y0')), (bboxes.get('x1'), bboxes.get('y1')), (255, 0, 0), 2)
 
     cv2.imwrite("./result.jpg", img)

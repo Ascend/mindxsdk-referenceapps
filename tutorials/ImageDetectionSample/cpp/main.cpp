@@ -207,7 +207,7 @@ int main(int argc, char* argv[])
     // 通过SendData函数传递输入信息到指定的工作元件模块
     // streamName是pipeline文件中业务流名称；inPluginId为输入端口编号，对应输入元件的编号
     ret = mxStreamManager->SendData(streamName, 0, dataBuffer);
-    if (ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         delete dataBuffer.dataPtr;
         LogError << "Fail to send data to stream, ret = " << ret << ".";
         return ret;
@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
     std::vector<std::string> keyVec = {"mxpi_objectpostprocessor0", "mxpi_imagedecoder0"};
     std::vector<MxStream::MxstProtobufOut> output = mxStreamManager->GetProtobuf(streamName, 0, keyVec);
     ret = PrintInfo(output);
-    if (ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to print the info of output, ret = " << ret << ".";
         return ret;
     }
