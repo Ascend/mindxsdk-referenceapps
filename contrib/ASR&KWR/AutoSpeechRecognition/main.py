@@ -23,13 +23,15 @@ from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, S
 from post_process import TextFeaturizer
 from pypinyin import lazy_pinyin
 
-def simJug(org,dst):
-    # input: '中心'
-    # output:['zhong', 'xin']
-    S1 = lazy_pinyin(org)
-    S2 = lazy_pinyin(dst)
-    bS = operator.eq(S1,S2)
-    return bS
+
+def simjug(org, dst):
+    # input : '中心'
+    # output : ['zhong', 'xin']
+    str1 = lazy_pinyin(org)
+    str2 = lazy_pinyin(dst)
+    boolStr = operator.eq(str1, str2)
+    return boolStr
+
 
 def levenshtein(u, v):
     prev = None
@@ -54,6 +56,7 @@ def levenshtein(u, v):
                 (n_s, n_d, n_i) = curr_ops[y - 1]
                 curr_ops[y] = (n_s, n_d, n_i + 1)
     return curr[len(v)] / float(len(v)), curr_ops[len(v)]
+
 
 if __name__ == "__main__":
 
@@ -100,11 +103,14 @@ if __name__ == "__main__":
         from pre_process import make_model_input
         for file in dirs:
             name = file.split('.')[0]
-            if file.endswith(".wav"):                
-                wav_file_path = os.path.join(cwd_path + "/data/S0150_mic/", file)
+            if file.endswith(".wav"):
+                wav_file_path = os.path.join(
+                    cwd_path + "/data/S0150_mic/", file)
                 feat_data, len_data = make_model_input([wav_file_path])
-                np.save(os.path.join(cwd_path, "data/npy/feat_data", name +  "_feat"), feat_data) 
-                np.save(os.path.join(cwd_path, "data/npy/len_data", name + "_len"), len_data)
+                np.save(os.path.join(cwd_path, "data/npy/feat_data",
+                        name + "_feat"), feat_data)
+                np.save(os.path.join(cwd_path, "data/npy/len_data",
+                        name + "_len"), len_data)
                 protobuf_vec = InProtobufVector()
                 mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
                 tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
@@ -176,7 +182,6 @@ if __name__ == "__main__":
                 text_list.append(''.join(name)+' '+''.join(text)+'\n')
                 wavCount += 1
 
-
     else:
         feat_path = os.path.join(cwd_path, "data/npy/feat_data")
         feat_path_list = os.listdir(feat_path)
@@ -184,8 +189,10 @@ if __name__ == "__main__":
         len_path_list = os.listdir(feat_path)
         for file in feat_path_list:
             name = file.split('_')[0]
-            feat_data = np.load(os.path.join(cwd_path, "data/npy/feat_data", file))
-            len_data = np.load(os.path.join(cwd_path, "data/npy/len_data", name + "_len.npy"))
+            feat_data = np.load(os.path.join(
+                cwd_path, "data/npy/feat_data", file))
+            len_data = np.load(os.path.join(
+                cwd_path, "data/npy/len_data", name + "_len.npy"))
             protobuf_vec = InProtobufVector()
             mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
             tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
@@ -200,7 +207,7 @@ if __name__ == "__main__":
             tensorVec.tensorDataType = 0  # float32
             for i in feat_data.shape:
                 tensorVec.tensorShape.append(i)
-            tensorVec.dataStr = feat_data.tobytes()   
+            tensorVec.dataStr = feat_data.tobytes()
             # add feature data #end
 
             # add length data #begin
@@ -259,13 +266,13 @@ if __name__ == "__main__":
     flags = os.O_RDWR | os.O_CREAT  # 注意根据具体业务的需要设置文件读写方式
     modes = stat.S_IWUSR | stat.S_IRUSR
     with os.fdopen(os.open(cwd_path + "/data/prediction.txt", flags, modes), 'w') as fout:
-        for item in text_list:       
+        for item in text_list:
             fout.writelines(item)
 
     import re
     f0 = open(cwd_path + "/data/prediction.txt", 'r+')
     h0 = f0.readlines()
-    for file in dirs:            
+    for file in dirs:
         if file.endswith(".txt"):
             name = file.split('.')[0]
             file1 = name + '.txt'
@@ -275,41 +282,42 @@ if __name__ == "__main__":
             for k in range(len_predi):
                 match = re.search(name, h0[k])
                 if match is not None:
-                    print ("当前语音文件名：", file1 + '\n')
-                    print ("正确文件内容: ", r)
+                    print("当前语音文件名：", file1 + '\n')
+                    print("正确文件内容: ", r)
 
                     h1 = h0[k].split(' ')[1]
                     r = [x for x in r]
                     h = [x for x in h1]
-                    
-                    #非中文过滤
+
+                    # 非中文过滤
                     str_1 = list(r)
                     b_pass = True
                     for i in str_1:
-                        if  '\u4e00' <= i <= '\u9fff':
+                        if '\u4e00' <= i <= '\u9fff':
                             continue
-                        else:                      
+                        else:
                             if(i != "\n"):
                                 b_pass = False
-                                print("error char:(",i,")无效样本\n**************")
+                                print("error char:(", i, ")无效样本\n**************")
                             break
                     if(b_pass == False):
-                        continue     
-                    #同音字过滤
-                    bIsSim = simJug(r,h1)
-                    print ("推理结果：", h1)
-                    print (bIsSim)
+                        continue
+                    # 同音字过滤
+                    bIsSim = simjug(r, h1)
+                    print("推理结果：", h1)
+                    print(bIsSim)
                     print("****************")
 
                     wer_n += len(h)
                     if(bIsSim):
                         continue
-                    cer_value, (s, d, i) = levenshtein(lazy_pinyin(h), lazy_pinyin(r))
+                    cer_value, (s, d, i) = levenshtein(
+                        lazy_pinyin(h), lazy_pinyin(r))
                     wer_s += s
                     wer_i += i
-                    wer_d += d                          
+                    wer_d += d
 
-    # if data is numpy file       
+    # if data is numpy file
     print('替换:{0},插入:{1},删除:{2},总字数:{3},字错率（CER）:{4}'.format(
-        wer_s, wer_i, wer_d, wer_n, (wer_s + wer_i + wer_d) / wer_n))           
-    print ("{}条语音的推理时长是：{}秒".format(wavCount, costAll))
+        wer_s, wer_i, wer_d, wer_n, (wer_s + wer_i + wer_d) / wer_n))
+    print("{}条语音的推理时长是：{}秒".format(wavCount, costAll))
