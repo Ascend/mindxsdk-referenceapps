@@ -25,5 +25,6 @@ target_link_libraries(sample
     glog
     mxbase
     cpprest
+    opencv_world
     ppyoloepostprocess
 )

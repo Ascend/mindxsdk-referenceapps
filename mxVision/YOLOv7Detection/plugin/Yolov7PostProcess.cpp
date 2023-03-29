@@ -19,9 +19,11 @@
 #include "MxBase/Log/Log.h"
 #include "MxBase/Maths/FastMath.h"
 #include "MxBase/CV/ObjectDetection/Nms/Nms.h"
+#include "MxBase/DeviceManager/DeviceManager.h"
 
 namespace MxBase {
 const int MODEL_INPUT_SIZE = 640;
+const int ALIGN_LEFT = 16;
 const int CONFIDENCE_IDX = 4;
 const int LABEL_START_OFFSET = 5;
 const int OUTPUT_DIMS = 3;
@@ -39,6 +41,7 @@ Yolov7PostProcess &Yolov7PostProcess::operator = (const Yolov7PostProcess &other
     ObjectPostProcessBase::operator = (other);
     objectnessThresh_ = other.objectnessThresh_;
     iouThresh_ = other.iouThresh_;
+    paddingType_ = other.paddingType_;
     return *this;
 }
 
@@ -57,6 +60,10 @@ APP_ERROR Yolov7PostProcess::Init(const std::map<std::string, std::shared_ptr<vo
     ret = configData_.GetFileValue<float>("IOU_THRESH", iouThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
         LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is :" << iouThresh_;
+    }
+    ret = configData_.GetFileValue<int>("PADDING_TYPE", paddingType_, 0, 1);
+    if (ret != APP_ERR_OK) {
+        LogWarn << GetError(ret) << "Fail to read PADDING_TYPE from config, default is :" << paddingType_;
     }
     LogDebug << "End to Init Yolov7PostProcess. ";
     return APP_ERR_OK;
@@ -77,6 +84,10 @@ APP_ERROR Yolov7PostProcess::Init(const std::map<std::string, std::string> &post
     ret = configData_.GetFileValue<float>("IOU_THRESH", iouThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
         LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is :" << iouThresh_;
+    }
+    ret = configData_.GetFileValue<int>("PADDING_TYPE", paddingType_, 0, 1);
+    if (ret != APP_ERR_OK) {
+        LogWarn << GetError(ret) << "Fail to read PADDING_TYPE from config, default is :" << paddingType_;
     }
     LogDebug << "End to Init Yolov7PostProcess. ";
     return APP_ERR_OK;
@@ -105,22 +116,32 @@ void Yolov7PostProcess::ConstructBoxFromOutput(float *output, size_t offset, std
     if (classId < 0) {
         return;
     }
+    int tmpResizedWidth = resizedImageInfo.widthResize;
+    int tmpResizedHeight = resizedImageInfo.heightResize;
     double division = 1;
     if (std::fabs(resizedImageInfo.keepAspectRatioScaling) > EPSILON) {
         division = resizedImageInfo.keepAspectRatioScaling;
     }
-    int offsetLeft = (MODEL_INPUT_SIZE - resizedImageInfo.widthResize) / AVG_PARAM;
-    int offsetTop = (MODEL_INPUT_SIZE - resizedImageInfo.heightResize) / AVG_PARAM;
+    if (tmpResizedWidth == tmpResizedHeight && tmpResizedHeight == MODEL_INPUT_SIZE) {
+        tmpResizedWidth = std::round(resizedImageInfo.widthOriginal * division);
+        tmpResizedHeight = std::round(resizedImageInfo.heightOriginal * division);
+    }
+    int offsetLeft = (MODEL_INPUT_SIZE - tmpResizedWidth) / AVG_PARAM;
+    int offsetTop = (MODEL_INPUT_SIZE - tmpResizedHeight) / AVG_PARAM;
+    if (paddingType_ == 0) {
+        offsetTop = offsetTop % AVG_PARAM == 0 ? offsetTop : offsetTop - 1;
+        offsetLeft = offsetLeft < ALIGN_LEFT ? 0 : offsetLeft / ALIGN_LEFT * ALIGN_LEFT;
+    }
     auto leftX = (output[index] - output[index + XOFFSET] / AVG_PARAM - offsetLeft) / division;
     auto leftY = (output[index + 1] - output[index + YOFFSET] / AVG_PARAM - offsetTop) / division;
     auto rightX = (output[index] + output[index + XOFFSET] / AVG_PARAM - offsetLeft) / division;
     auto rightY = (output[index + 1] + output[index + YOFFSET] / AVG_PARAM - offsetTop) / division;
 
     ObjectInfo obj;
-    obj.x0 = std::round(leftX);
-    obj.y0 = std::round(leftY);
-    obj.x1 = std::round(rightX);
-    obj.y1 = std::round(rightY);
+    obj.x0 = leftX < 0.0 ? 0.0 : leftX;
+    obj.y0 = leftY < 0.0 ? 0.0 : leftY;
+    obj.x1 = rightX > resizedImageInfo.widthOriginal ? resizedImageInfo.widthOriginal : rightX;
+    obj.y1 = rightY > resizedImageInfo.heightOriginal ? resizedImageInfo.heightOriginal : rightY;
     obj.confidence = maxProb;
     obj.classId = classId;
     obj.className = configData_.GetClassName(obj.classId);
@@ -158,6 +179,7 @@ APP_ERROR Yolov7PostProcess::Process(const std::vector<TensorBase> &tensors,
     }
     if (resizedImageInfos.size() != tensors.size()) {
         LogError << "The size of resizedImageInfos does not match the size of tensors.";
+        return APP_ERR_INPUT_NOT_MATCH;
     }
     uint32_t batchSize = tensors[0].GetShape()[0];
     size_t rows = tensors[0].GetSize() / ((classNum_ + LABEL_START_OFFSET) * batchSize);

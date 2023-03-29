@@ -24,6 +24,7 @@
 #include <map>
 
 #include <opencv2/opencv.hpp>
+#include "opencv2/imgproc.hpp"
 #include "MxBase/MxBase.h"
 #include "MxBase/MemoryHelper/MemoryHelper.h"
 #include "MxBase/DeviceManager/DeviceManager.h"
@@ -37,6 +38,9 @@ const int MODEL_INPUT_WIDTH = 640;
 const int MODEL_INPUT_HEIGHT = 640;
 const int AVG_PARAM = 2;
 const long MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1g
+const int RGB_EXTEND = 3;
+const int ARG_NUM = 10;
+const int YUV_DIVISION = 2;
 
 APP_ERROR CheckFileVaild(const std::string &filePath)
 {
@@ -131,45 +135,84 @@ APP_ERROR DvppPreprocessorYuv(ImageProcessor &imageProcessor, std::string &image
     return APP_ERR_OK;
 }
 
-APP_ERROR DvppPreprocessor(std::string &imagePath, vector<Tensor> &ppyoloeInputs,
+APP_ERROR OpenCVPreProcessor(std::string &imagePath, vector<Tensor> &ppyoloeInputs,
     std::vector<ResizedImageInfo> &imagePreProcessInfos, int deviceId)
 {
+    auto image = cv::imread(imagePath);
+    cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+    size_t originalWidth = image.cols;
+    size_t originalHeight = image.rows;
+    float scaleWidth = MODEL_INPUT_WIDTH * 1.0 / originalWidth;
+    float scaleHeight = MODEL_INPUT_HEIGHT * 1.0 / originalHeight;
+    cv::Mat resizedImg;
+    cv::resize(image, resizedImg, cv::Size(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT), 1, 1, cv::INTER_CUBIC);
+    uint32_t dataSize = MODEL_INPUT_HEIGHT * MODEL_INPUT_WIDTH * RGB_EXTEND;
+    MxBase::Size imageSize(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT);
+    uint8_t *pasteHostData = (uint8_t *)malloc(dataSize);
+    if (pasteHostData == nullptr) {
+        return APP_ERR_ACL_BAD_ALLOC;
+    }
+    for (size_t i = 0; i < dataSize; i++) {
+        pasteHostData[i] = resizedImg.data[i];
+    }
+    std::shared_ptr<uint8_t> dataPaste((uint8_t *)pasteHostData, free);
+    Image pastedImage(dataPaste, dataSize, -1, imageSize, ImageFormat::RGB_888);
+    pastedImage.ToDevice(deviceId);
+    ppyoloeInputs.push_back(pastedImage.ConvertToTensor());
+    ResizedImageInfo imagePreProcessInfo(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT, originalWidth, originalHeight,
+        RESIZER_STRETCHING, 0);
+    imagePreProcessInfos.push_back(imagePreProcessInfo);
+    return APP_ERR_OK;
+}
+
+APP_ERROR DvppPreprocessor(std::string &imagePath, vector<Tensor> &ppyoloeInputs,
+    std::vector<ResizedImageInfo> &imagePreProcessInfos, int deviceId, bool isYuvInput)
+{
     ImageProcessor imageProcessor(deviceId);
-    if (DeviceManager::IsAscend310P()) {
-        Image decodeImage;
-        APP_ERROR ret = imageProcessor.Decode(imagePath, decodeImage, ImageFormat::BGR_888);
-        if (ret != APP_ERR_OK) {
-            LogError << "ImageProcessor decode failed.";
-            return ret;
-        }
-        Image resizeImage;
-        uint32_t originalWidth = decodeImage.GetOriginalSize().width;
-        uint32_t originalHeight = decodeImage.GetOriginalSize().height;
-        ret = imageProcessor.Resize(decodeImage, MxBase::Size(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT), resizeImage,
-            Interpolation::BILINEAR_SIMILAR_OPENCV);
-        if (ret != APP_ERR_OK) {
-            LogError << "ImageProcessor resize failed.";
-            return ret;
-        }
-        ppyoloeInputs.push_back(resizeImage.ConvertToTensor());
-        ResizedImageInfo imagePreProcessInfo(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT, originalWidth, originalHeight,
-            RESIZER_STRETCHING, 0);
-        imagePreProcessInfos.push_back(imagePreProcessInfo);
-    } else {
+    if (isYuvInput) {
         return DvppPreprocessorYuv(imageProcessor, imagePath, ppyoloeInputs, imagePreProcessInfos, deviceId);
+    } else {
+        if (DeviceManager::IsAscend310P()) {
+            Image decodeImage;
+            APP_ERROR ret = imageProcessor.Decode(imagePath, decodeImage, ImageFormat::RGB_888);
+            if (ret != APP_ERR_OK) {
+                LogError << "ImageProcessor decode failed.";
+                return OpenCVPreProcessor(imagePath, ppyoloeInputs, imagePreProcessInfos, deviceId);
+            }
+            Image resizeImage;
+            uint32_t originalWidth = decodeImage.GetOriginalSize().width;
+            uint32_t originalHeight = decodeImage.GetOriginalSize().height;
+            ret = imageProcessor.Resize(decodeImage, MxBase::Size(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT), resizeImage,
+                Interpolation::BILINEAR_SIMILAR_OPENCV);
+            if (ret != APP_ERR_OK) {
+                LogError << "ImageProcessor resize failed.";
+                return ret;
+            }
+            ppyoloeInputs.push_back(resizeImage.ConvertToTensor());
+            ResizedImageInfo imagePreProcessInfo(MODEL_INPUT_WIDTH, MODEL_INPUT_HEIGHT, originalWidth, originalHeight,
+                RESIZER_STRETCHING, 0);
+            imagePreProcessInfos.push_back(imagePreProcessInfo);
+        } else {
+            return OpenCVPreProcessor(imagePath, ppyoloeInputs, imagePreProcessInfos, deviceId);
+        }
     }
     return APP_ERR_OK;
 }
 
-APP_ERROR E2eInfer(std::string imagePath, int32_t deviceId)
+APP_ERROR E2eInfer(std::map<std::string, std::string> pathMap, int32_t deviceId, bool isYuvInput)
 {
     vector<Tensor> ppyoloeInputs;
     std::vector<ResizedImageInfo> resizedImageInfos;
-    APP_ERROR ret = DvppPreprocessor(imagePath, ppyoloeInputs, resizedImageInfos, deviceId);
+    std::string imagePath = pathMap["imgPath"];
+    APP_ERROR ret = CheckFileVaild(imagePath);
     if (ret != APP_ERR_OK) {
         return ret;
     }
-    string modelPath = "model/ppyoloe.om";
+    ret = DvppPreprocessor(imagePath, ppyoloeInputs, resizedImageInfos, deviceId, isYuvInput);
+    if (ret != APP_ERR_OK) {
+        return ret;
+    }
+    string modelPath = pathMap["modelPath"];
     ret = CheckFileVaild(modelPath);
     if (ret != APP_ERR_OK) {
         return ret;
@@ -177,7 +220,7 @@ APP_ERROR E2eInfer(std::string imagePath, int32_t deviceId)
     Model ppyoloe(modelPath, deviceId);
 
     vector<Tensor> ppyoloeOutputs = ppyoloe.Infer(ppyoloeInputs);
-    if (ppyoloeInputs.size() == 0) {
+    if (ppyoloeOutputs.size() == 0) {
         LogError << "PPYOLOE infer failed.";
         return APP_ERR_COMM_FAILURE;
     }
@@ -185,8 +228,8 @@ APP_ERROR E2eInfer(std::string imagePath, int32_t deviceId)
         ppyoloeOutputs[i].ToHost();
     }
     std::vector<Rect> cropConfigVec;
-    string ppyoloeConfigPath = "model/ppyoloe.cfg";
-    string ppyoloeLabelPath = "model/ppyoloe.names";
+    string ppyoloeConfigPath = pathMap["modelConfigPath"];
+    string ppyoloeLabelPath = pathMap["modelLabelPath"];
 
     ret = CheckFileVaild(ppyoloeConfigPath);
     if (ret != APP_ERR_OK) {
@@ -201,16 +244,56 @@ APP_ERROR E2eInfer(std::string imagePath, int32_t deviceId)
     return APP_ERR_OK;
 }
 
+void usage()
+{
+    std::cout << "Usage: " << std::endl;
+    std::cout << "./sample -m model_path -c model_config_path -l model_label_path -i image_path [-y] " << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
     MxInit();
-    int32_t deviceId = 0;
-    std::string imgPath = "test.jpg";
-    APP_ERROR ret = CheckFileVaild(imgPath);
-    if (ret != APP_ERR_OK) {
-        return ret;
+    if (argc > ARG_NUM || argc < ARG_NUM - 1) {
+        usage();
+        return 0;
     }
-    ret = E2eInfer(imgPath, deviceId);
+    int32_t deviceId = 0;
+    bool isYuvInput = false;
+    std::map<std::string, std::string> pathMap;
+    int input;
+    const char* optString = "i:m:c:l:yh";
+    while ((input = getopt(argc, argv, optString)) != -1) {
+        switch (input) {
+            case 'm':
+                pathMap.insert({ "modelPath", optarg });
+                break;
+            case 'i':
+                pathMap.insert({ "imgPath", optarg });
+                break;
+            case 'c':
+                pathMap.insert({ "modelConfigPath", optarg });
+                break;
+            case 'l':
+                pathMap.insert({ "modelLabelPath", optarg });
+                break;
+            case 'y':
+                isYuvInput = true;
+                break;
+            case 'h':
+                usage();
+                return 0;
+            case '?':
+                usage();
+                return 0;
+        }
+    }
+    if (pathMap.count("modelPath") <= 0 || pathMap.count("imgPath") <= 0 || pathMap.count("modelConfigPath") <= 0 ||
+        pathMap.count("modelLabelPath") <= 0) {
+        LogError << "Invalid input params";
+        usage();
+        return 0;
+    }
+    APP_ERROR ret = E2eInfer(pathMap, deviceId, isYuvInput);
     if (ret != APP_ERR_OK) {
         LogError << "Failed to run E2eInfer";
     }

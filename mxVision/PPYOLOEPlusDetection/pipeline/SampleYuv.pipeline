@@ -11,16 +11,11 @@
             "next": "mxpi_imagedecoder0"
         },
         "mxpi_imagedecoder0": {
-           "props": {
-              "cvProcessor" : "opencv",
-              "outputDataFormat" : "RGB"
-          },
             "factory": "mxpi_imagedecoder",
             "next": "mxpi_imageresize0"
         },
         "mxpi_imageresize0": {
             "props": {
-                "cvProcessor" : "opencv",
                 "resizeHeight": "640",
                 "resizeWidth": "640"
             },
