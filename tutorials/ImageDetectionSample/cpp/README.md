@@ -126,10 +126,9 @@ Scanning dependencies of target sample
 
 ### 执行脚本
 
-执行run.sh脚本前请先确认可执行文件sample已生成。
+执行run.sh脚本前请先确认可执行文件sample已生成，并通过chmod+x run.sh给脚本添加可执行权限。
 
 ```
-chmod +x run.sh
 bash run.sh
 ```
 
