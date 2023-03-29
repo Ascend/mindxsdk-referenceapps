@@ -5,13 +5,15 @@
 
 ### 1.1 支持的产品
 
-以昇腾Atlas310卡为主要的硬件平台
+以昇腾Atlas310B卡为主要的硬件平台
 
 ### 1.2 支持的版本
 
-CANN:5.1RC2
-
-SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -66,7 +68,7 @@ SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
 | 软件名称     | 版本     |
 |----------|--------|
 | cmake    | 3.5+   |
-| mxVision | 5.1RC2 |
+| mxVision | 5.0RC1 |
 | Python   | 3.9    |
 | torch    | 1.10.0 |
 | ffmpeg   | 4.2.1  |
