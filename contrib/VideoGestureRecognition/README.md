@@ -45,7 +45,17 @@
 ```
 
 ### 依赖
-| 依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
+
+推荐系统为ubantu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
+
+| 第三方依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
 | ------------- | ------ | ------------------------------------------------------------ | -------------------------------------------- |
 | ffmpeg        | 4.2.1  | [Link](https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz) | 视频转码解码组件                             |
 
@@ -151,14 +161,8 @@ cmake ..
 
 make
 
-Scanning dependencies of target sample
-[ 11%] Building CXX object CMakeFiles/sample.dir/main.cpp.o
-[ 22%] Building CXX object CMakeFiles/sample.dir/StreamPuller/StreamPuller.cpp.o
-[ 33%] Building CXX object CMakeFiles/sample.dir/VideoDecoder/VideoDecoder.cpp.o
-[ 44%] Building CXX object CMakeFiles/sample.dir/ImageResizer/ImageResizer.cpp.o
-[ 66%] Building CXX object CMakeFiles/sample.dir/ResnetDetector/ResnetDetector.cpp.o
-[ 77%] Building CXX object CMakeFiles/sample.dir/MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp.o
-[ 88%] Building CXX object CMakeFiles/sample.dir/FrameSkippingSampling/FrameSkippingSampling.cpp.o
+....
+
 [100%] Linking CXX executable ../sample
 [100%] Built target sample
 # sample就是CMakeLists文件中指定生成的可执行文件。

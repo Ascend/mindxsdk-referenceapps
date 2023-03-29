@@ -95,7 +95,7 @@ enum TensorDataType {
     APP_ERROR CheckTensorValid() const;
 ```
 ## 样例说明
-参考[4-1插件开发调试指导](4-1插件开发调试指导.md)部署自定义插件样例，示例使用samplePluginPostProc作为工程名，远程目录名同样为samplePluginPostProc。  
+参考[4-1插件开发调试指导](4-1插件开发调试指导.md)部署自定义插件样例，示例使用[samplePluginPostProc](../../tutorials/samplePluginPostProc/)作为工程名，远程目录名同样为samplePluginPostProc。  
 - 更改mxVision/C++/main.cpp中94行所使用的pipeline为样例中的SamplePluginPost.pipeline
 - 更改mxVision/python/main.py中32行使用的pipeline为样例中的SamplePluginPost.pipeline
 - 相比4-1样例中的SamplePlugin.pipeline，本样例中pipeline使用新后处理框架下的模型推理插件mxpi_tensorinfer输出原始Tensor至自定义插件并完成后处理示例。

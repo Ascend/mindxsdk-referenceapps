@@ -7,10 +7,15 @@
 样例输出：输入图片的深度图（灰度图形式）
 
 ### 1.1 支持的产品
-昇腾310(推理)
+昇腾310B1(推理)
 
 ### 1.2 支持的版本
-本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk) 。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -41,15 +46,14 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 ```
 ## 2 环境依赖
 
-### 2.1 软件版本
-| 软件                 | 版本         | 说明                          | 获取方式                                                     |
-| ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.4       | mxVision软件包                  | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包    | [链接](https://www.hiascend.com/software/cann/commercial)    |
-| 操作系统             | Ubuntu 18.04 | 操作系统                        | Ubuntu官网获取                                               |
+### 2.1 准备工作
 
+> 设置环境变量
 
-### 2.2 准备工作
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 > 模型转换
 
@@ -60,22 +64,10 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 **步骤3** 将转换或下载得到的 `AdaBins_nyu.onnx` 放在 `model` 目录下
 
-**步骤4** 运行模型转换脚本 `model_conversion.sh` 或在 `model` 目录下执行以下命令
+**步骤4** `model` 目录下执行以下命令
 
 ```
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
-# 执行，转换AdaBins模型
-# Execute, transform AdaBins model.
-
-atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_version=Ascend310 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error
+atc --model=./AdaBins_nyu.onnx --framework=5 --output=./AdaBins_nyu.om --soc_version=Ascend310B1 --insert_op_conf=./aipp_adabins_640_480.aippconfig --log=error
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。
@@ -130,31 +122,6 @@ model_output_width = 320
    threshold_1 = 1.25
    threshold_2 = 1.25 ** 2
    threshold_3 = 1.25 ** 3
-```
-
-### 2.3 配置环境变量
-
-```bash
-# 执行如下命令，打开.bashrc文件
-cd $HOME
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME=${SDK安装路径}
-
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-PYTHONPATH=${MX_SDK_HOME}/python
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-# 查看环境变量
-env
 ```
 
 ## 3 运行

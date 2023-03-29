@@ -4,6 +4,14 @@
 ## 介绍
 提供DvppWrapper接口样例，对图片实现编码，解码，缩放，抠图，以及把样例图片编码为264视频文件。
 
+## 支持的版本
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
 ## 准备
 打开百度图片https://image.baidu.com/，输入任何关键字，然后搜索，右击任意图片，点击另存为。把图片保存在DvppWrapperSample目录下。
 
@@ -11,13 +19,9 @@
 **步骤1** 修改CMakeLists.txt文件 将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
 
 **步骤2** 设置环境变量
-ASCEND_HOME Ascend安装的路径，一般为/usr/local/Ascend
-LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径
 ```
-export ASCEND_HOME=/usr/local/Ascend
-export ASCEND_VERSION=nnrt/latest
-export ARCH_PATTERN=.
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 **步骤3** cd到DvppWrapperSample目录下，执行如下编译命令：

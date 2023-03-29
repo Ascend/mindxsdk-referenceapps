@@ -21,20 +21,25 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| cmake    | 3.5.1+ |
-| mxVision | 0.2    |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ## 3 准备
 
 **步骤1：** 参考安装教程《mxVision 用户指南》安装 mxVision SDK。
 
-**步骤2：** 配置 mxVision SDK 环境变量。
+**步骤2：** 配置环境变量。
 
-`export MX_SDK_HOME=${安装路径}/mxVision `
-
-注：本例中mxVision SDK安装路径为 /root/MindX_SDK。
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 **步骤3：** 在regular目录下创建目录models `mkdir models`， 根据《mxVision 用户指南》中“模型支持列表”章节获取Yolov3种类模型，并放到该目录下。
+
+`若在310B设备上运行该案例，模型转换命令 --soc_version 修改为310B1`
+
 
 **步骤4：** 修改regular/pipeline/regular.pipeline文件：
 
