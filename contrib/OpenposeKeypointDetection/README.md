@@ -8,13 +8,14 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310，Atlas310B卡为主要的硬件平台。
 
 
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
+mxVision 5.0.RC1
+Ascend-CANN-toolkit (310使用6.3.RC1, 310B使用6.2.RC1)
 
 
 
@@ -110,24 +111,13 @@
 
 确保环境中正确安装mxVision SDK。
 
-在编译运行项目前，需要设置环境变量：
-```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
-```
+在编译运行项目前，需要执行如下两个环境配置脚本设置环境变量：
 
-
-- 环境变量介绍
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_envv.sh # Ascend-cann-toolkit开发套件包默认安全路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 
 ```
-MX_SDK_HOME: mxVision SDK 安装路径
-LD_LIBRARY_PATH: lib库路径
-PYTHONPATH: python环境路径
-```
-
 
 ## 3. 模型转换
 
@@ -176,7 +166,7 @@ python scripts/convert_to_onnx.onnx --checkpoint-path=checkpoints/checkpoint_ite
 - 编辑 ``insert_op.cfg`` 文件，将 ``src_image_size_w`` 和 ``src_image_size_h`` 分别设置为上述转换 onnx 模型时指定的模型输入宽度和高度；
 - 编辑 ``model_conversion.sh`` 文件，将
 ```
-atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
+atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310B1 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
 ```
 命令中的 ``--model`` 属性改为上述转换得到的 onnx 模型文件名，将 ``--output`` 属性设置为输出 om 模型的名称，将 ``--input_shape`` 属性设置为指定的模型输入宽、高；
 
@@ -185,6 +175,7 @@ atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpo
 bash model_convertion.sh
 ```
 该命令执行成功后会在当前文件夹下生成指定名称的 om 模型文件。
+注意：若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 
 ## 4. 编译与运行
