@@ -15,11 +15,22 @@
 import os
 import time
 import stat
+import operator
 import numpy as np
 import MxpiDataType_pb2 as MxpiDataType
 
 from StreamManagerApi import StreamManagerApi, InProtobufVector, MxProtobufIn, StringVector
 from post_process import TextFeaturizer
+from pypinyin import lazy_pinyin
+
+
+def simjug(org, dst):
+    # input : '中心'
+    # output : ['zhong', 'xin']
+    str1 = lazy_pinyin(org)
+    str2 = lazy_pinyin(dst)
+    boolStr = operator.eq(str1, str2)
+    return boolStr
 
 
 def levenshtein(u, v):
@@ -46,19 +57,19 @@ def levenshtein(u, v):
                 curr_ops[y] = (n_s, n_d, n_i + 1)
     return curr[len(v)] / float(len(v)), curr_ops[len(v)]
 
+
 if __name__ == "__main__":
 
     # data type switch
-    DATA_RAW = True
-    STREAM_NAME = b'speech_recognition'
-    TENSOR_KEY = b'appsrc0'
-    FLAGS = os.O_RDWR | os.O_CREAT  
-    MODES = stat.S_IWUSR | stat.S_IRUSR
-    inPluginId, cost_all, wav_count = 0, 0, 0
+    dataRaw = True
 
     # get the path to the current directory
     cwd_path = os.getcwd()
     pipeline_path = os.path.join(cwd_path, "pipeline/am_lm.pipeline")
+
+    streamName = b'speech_recognition'
+    tensorKey = b'appsrc0'
+    inPluginId = 0
 
     streamManager = StreamManagerApi()
     ret = streamManager.InitManager()
@@ -74,23 +85,32 @@ if __name__ == "__main__":
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
 
-    path = os.path.join(cwd_path, "data/sample")
+    path = os.path.join(cwd_path, "data/S0150_mic")
     dirs = os.listdir(path)
+    if not os.path.isdir("data/npy"):
+        os.mkdir("data/npy")
+        os.mkdir("data/npy/len_data")
+        os.mkdir("data/npy/feat_data")
 
+    costAll = 0
+    wavCount = 0
     wer_s, wer_i, wer_d, wer_n = 0, 0, 0, 0
     k = 0
     text_list = []
     # if data is wav file
-    if DATA_RAW is True:
+    if dataRaw is True:
         # not needed if data is numpy file
         from pre_process import make_model_input
         for file in dirs:
             name = file.split('.')[0]
-            if file.endswith(".wav"):                
-                wav_file_path = os.path.join(cwd_path + "/data/sample/", file)
+            if file.endswith(".wav"):
+                wav_file_path = os.path.join(
+                    cwd_path + "/data/S0150_mic/", file)
                 feat_data, len_data = make_model_input([wav_file_path])
-                np.save(os.path.join(cwd_path, "data/npy/feat_data", name +  "_feat"), feat_data) 
-                np.save(os.path.join(cwd_path, "data/npy/len_data", name + "_len"), len_data)
+                np.save(os.path.join(cwd_path, "data/npy/feat_data",
+                        name + "_feat"), feat_data)
+                np.save(os.path.join(cwd_path, "data/npy/len_data",
+                        name + "_len"), len_data)
                 protobuf_vec = InProtobufVector()
                 mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
                 tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
@@ -122,13 +142,13 @@ if __name__ == "__main__":
                 # add length data #end
 
                 protobuf = MxProtobufIn()
-                protobuf.key = TENSOR_KEY
+                protobuf.key = tensorKey
                 protobuf.type = b'MxTools.MxpiTensorPackageList'
                 protobuf.protobuf = mxpi_tensor_package_list.SerializeToString()
                 protobuf_vec.push_back(protobuf)
                 start = time.time()
                 unique_id = streamManager.SendProtobuf(
-                    STREAM_NAME, inPluginId, protobuf_vec)
+                    streamName, inPluginId, protobuf_vec)
                 if unique_id < 0:
                     print("Failed to send data to stream.")
                     exit()
@@ -137,7 +157,7 @@ if __name__ == "__main__":
                 key_vec.push_back(b'mxpi_tensorinfer1')
                 # get inference result
                 infer_result = streamManager.GetProtobuf(
-                    STREAM_NAME, inPluginId, key_vec)
+                    streamName, inPluginId, key_vec)
                 if infer_result.size() == 0:
                     print("infer_result is null")
                     exit()
@@ -153,15 +173,14 @@ if __name__ == "__main__":
                 ids = np.frombuffer(
                     result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.int32)
                 end = time.time()
-                cost_all += (end - start)
+                costAll += (end - start)
                 # decode
                 lm_tokens_path = os.path.join(cwd_path, "data/lm_tokens.txt")
                 text_featurizer = TextFeaturizer(lm_tokens_path)
                 text = text_featurizer.deocde_without_start_end(ids)
                 # convert list to string and print recognition result
                 text_list.append(''.join(name)+' '+''.join(text)+'\n')
-                wav_count += 1
-
+                wavCount += 1
 
     else:
         feat_path = os.path.join(cwd_path, "data/npy/feat_data")
@@ -170,8 +189,10 @@ if __name__ == "__main__":
         len_path_list = os.listdir(feat_path)
         for file in feat_path_list:
             name = file.split('_')[0]
-            feat_data = np.load(os.path.join(cwd_path, "data/npy/feat_data", file))
-            len_data = np.load(os.path.join(cwd_path, "data/npy/len_data", name + "_len.npy"))
+            feat_data = np.load(os.path.join(
+                cwd_path, "data/npy/feat_data", file))
+            len_data = np.load(os.path.join(
+                cwd_path, "data/npy/len_data", name + "_len.npy"))
             protobuf_vec = InProtobufVector()
             mxpi_tensor_package_list = MxpiDataType.MxpiTensorPackageList()
             tensor_package_vec = mxpi_tensor_package_list.tensorPackageVec.add()
@@ -186,7 +207,7 @@ if __name__ == "__main__":
             tensorVec.tensorDataType = 0  # float32
             for i in feat_data.shape:
                 tensorVec.tensorShape.append(i)
-            tensorVec.dataStr = feat_data.tobytes()   
+            tensorVec.dataStr = feat_data.tobytes()
             # add feature data #end
 
             # add length data #begin
@@ -203,13 +224,13 @@ if __name__ == "__main__":
             # add length data #end
 
             protobuf = MxProtobufIn()
-            protobuf.key = TENSOR_KEY
+            protobuf.key = tensorKey
             protobuf.type = b'MxTools.MxpiTensorPackageList'
             protobuf.protobuf = mxpi_tensor_package_list.SerializeToString()
             protobuf_vec.push_back(protobuf)
             start = time.time()
             unique_id = streamManager.SendProtobuf(
-                STREAM_NAME, inPluginId, protobuf_vec)
+                streamName, inPluginId, protobuf_vec)
             if unique_id < 0:
                 print("Failed to send data to stream.")
                 exit()
@@ -218,7 +239,7 @@ if __name__ == "__main__":
             key_vec.push_back(b'mxpi_tensorinfer1')
             # get inference result
             infer_result = streamManager.GetProtobuf(
-                STREAM_NAME, inPluginId, key_vec)
+                streamName, inPluginId, key_vec)
             if infer_result.size() == 0:
                 print("infer_result is null")
                 exit()
@@ -233,45 +254,70 @@ if __name__ == "__main__":
             ids = np.frombuffer(
                 result.tensorPackageVec[0].tensorVec[0].dataStr, dtype=np.int32)
             end = time.time()
-            cost_all += (end - start)
+            costAll += (end - start)
             # decode
             lm_tokens_path = os.path.join(cwd_path, "data/lm_tokens.txt")
             text_featurizer = TextFeaturizer(lm_tokens_path)
             text = text_featurizer.deocde_without_start_end(ids)
             # convert list to string and print recognition result
             text_list.append(''.join(name)+' '+''.join(text)+'\n')
-            wav_count += 1
+            wavCount += 1
 
-    with os.fdopen(os.open(cwd_path + "/data/prediction.txt", FLAGS, MODES), 'w') as fout:
-        for item in text_list:       
+    flags = os.O_RDWR | os.O_CREAT  # 注意根据具体业务的需要设置文件读写方式
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(cwd_path + "/data/prediction.txt", flags, modes), 'w') as fout:
+        for item in text_list:
             fout.writelines(item)
 
     import re
     f0 = open(cwd_path + "/data/prediction.txt", 'r+')
     h0 = f0.readlines()
-    for file in dirs:            
+    for file in dirs:
         if file.endswith(".txt"):
             name = file.split('.')[0]
             file1 = name + '.txt'
-            f = open(cwd_path + "/data/sample/" + file1)
+            f = open(cwd_path + "/data/S0150_mic/" + file1)
             r = f.readline()
             len_predi = len(h0)
             for k in range(len_predi):
                 match = re.search(name, h0[k])
                 if match is not None:
-                    print ("当前语音文件名：", file1 + '\n')
-                    print ("正确文件内容: ", r)
+                    print("当前语音文件名：", file1 + '\n')
+                    print("正确文件内容: ", r)
+
                     h1 = h0[k].split(' ')[1]
                     r = [x for x in r]
                     h = [x for x in h1]
-                    print ("推理结果：", h1)
-                    cer_value, (s, d, i) = levenshtein(h, r)
+
+                    # 非中文过滤
+                    str_1 = list(r)
+                    b_pass = True
+                    for i in str_1:
+                        if '\u4e00' <= i <= '\u9fff':
+                            continue
+                        else:
+                            if(i != "\n"):
+                                b_pass = False
+                                print("error char:(", i, ")无效样本\n**************")
+                            break
+                    if(b_pass is False):
+                        continue
+                    # 同音字过滤
+                    bIsSim = simjug(r, h1)
+                    print("推理结果：", h1)
+                    print(bIsSim)
+                    print("****************")
+
+                    wer_n += len(h)
+                    if(bIsSim):
+                        continue
+                    cer_value, (s, d, i) = levenshtein(
+                        lazy_pinyin(h), lazy_pinyin(r))
                     wer_s += s
                     wer_i += i
                     wer_d += d
-                    wer_n += len(h)         
 
-    # if data is numpy file       
+    # if data is numpy file
     print('替换:{0},插入:{1},删除:{2},总字数:{3},字错率（CER）:{4}'.format(
-        wer_s, wer_i, wer_d, wer_n, (wer_s + wer_i + wer_d) / wer_n))           
-    print ("{}条语音的推理时长是：{}秒".format(wav_count, cost_all))
+        wer_s, wer_i, wer_d, wer_n, (wer_s + wer_i + wer_d) / wer_n))
+    print("{}条语音的推理时长是：{}秒".format(wavCount, costAll))
