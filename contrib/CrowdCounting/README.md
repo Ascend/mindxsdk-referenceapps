@@ -94,6 +94,7 @@ cd到CrowdCounting目录下，执行如下编译命令： bash build.sh
 ./crowd_counting  ./xxx.jpg
 ```
 
+检测结果保存在result.jpg中
 ## 5 软件依赖说明
 
 | 依赖软件 | 版本  |                              

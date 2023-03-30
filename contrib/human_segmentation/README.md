@@ -18,12 +18,17 @@
 ## 3 依赖
 
 | 软件名称 | 版本   |
-| :--------: | :------: |
-|ubantu 18.04|18.04.1 LTS   |
-|MindX SDK|2.0.4|
-|C++| 11.0|
-|opencv2| |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
+> 设置环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh
+. ${SDK安装路径}/mxVision/set_env.sh
+```
 
 ## 4 模型转换
 人体语义分割采用提供的human_segmentation.pb模型。由于原模型是基于tensorflow的人体语义分割模型，因此我们需要借助于ATC工具将其转化为对应的om模型。  
@@ -35,22 +40,10 @@
 
 在pb文件所在目录下执行以下命令  
 ```
-#设置环境变量（请确认install_path路径是否正确）  
-#Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest    
-
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH 
- 
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg  
-
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH  
-export ASCEND_OPP_PATH=${install_path}/opp    
-
 #执行，转换human_segmentation.pb模型
 #Execute, transform 转换human_segmentation.pb model.
  
-atc --input_shape="input_rgb:1,512,512,3" --input_format=NHWC --output=human_segmentation --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --framework=3 --model=./human_segmentation.pb
+atc --input_shape="input_rgb:1,512,512,3" --input_format=NHWC --output=human_segmentation --soc_version=Ascend310B1 --insert_op_conf=./insert_op.cfg --framework=3 --model=./human_segmentation.pb
 ```
 执行完模型转换脚本后，若提示如下信息说明模型转换成功，会在output参数指定的路径下生成human_segmentation.om模型文件。  
 ```
@@ -66,34 +59,7 @@ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5
 ```
 见4： 模型转换
 ```
-2. 配置
-
-```
-# 执行如下命令，打开.bashrc文件
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME=${SDK安装路径}
-
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
-```
-3. 配置SDK路径
-
-配置CMakeLists.txt文件中的`MX_SDK_HOME`环境变量
-```
-set(MX_SDK_HOME ${SDK安装路径}/mxVision)
-```
-4. 配置pipeline  
+2. 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
 ```
   #配置mxpi_tensorinfer插件的模型加载路径： modelPath
@@ -106,25 +72,23 @@ set(MX_SDK_HOME ${SDK安装路径}/mxVision)
             "next": "appsink0"
         },
 ```
-5. 获取测试需要的测试图片
+3. 获取测试需要的测试图片
 
 进入工程文件的data目录下，下载mp4格式的测试短视频，任意截取一张命名为test.jpg作为测试图片。
 ```
 wget https://c7xcode.obs.cn-north-4.myhuaweicloud.com/models/human_segmentation/person.mp4
 ```
-注：若想测试自己的.jpg图片可将其放如data目录下并修改main.cpp中int main函数的第一行std::string inputPicname = "test.jpg";将右边替换成自己图片的名称即可。
-编译项目文件
+注：若想测试自己的.jpg图片可将其放在data目录下并修改main.cpp中int main函数的第一行std::string inputPicname = "test.jpg";将右边替换成自己图片的名称即可。
 
-    新建立build目录，进入build执行cmake ..（..代表包含CMakeLists.txt的源文件父目录），在build目录下生成了编译需要的Makefile和中间文件。执行make构建工程，构建成功后就会生成可执行文件。
-   再执行make命令生成的smple就是CMakeLists文件中指定生成的可执行文件
+4. 编译项目文件
 
-
-
-5. 运行可执行文件
 ```
-
-切换至工程主目录，执行以下命令运行样例。
-执行run.sh文件
+切换至工程主目录，执行以下命令执行编译
+bash build.sh
+```
+5. 运行
+```
+bash run.sh
 ```
 
 6. 查看结果  
