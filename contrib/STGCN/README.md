@@ -136,7 +136,7 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 ```
 
 2、onnx转化为om
-根据实际路径修改convert_om.sh
+根据实际路径修改convert_om.sh，注意若推理芯片为310B，需将convert_om.sh脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 bash convert_om.sh [model_path] stgcn10
 参数说明：
