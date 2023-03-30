@@ -15,11 +15,13 @@
 
 ### 软件版本
 
-| 软件                | 版本         | 说明                          | 获取方式                                                     |
-| ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 5.0 RC1        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 6.2       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
-| 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取    
+推荐系统为ubantu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 目录结构
 

@@ -18,11 +18,15 @@
 ```
 ## 3 依赖
 
+
+推荐系统为ubantu 18.04。
+
 | 软件名称 | 版本   |
-| :--------: | :------: |
-|ubantu 18.04|18.04.1 LTS   |
-|MindX SDK|5.0rc1 |
-|Python| 3.9.2|
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
 
 请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 `apt-get install libpython3.9`

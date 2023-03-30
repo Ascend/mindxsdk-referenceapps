@@ -147,6 +147,7 @@ def main():
         this_rst_list = []
         md = sdk.model(FILE_PATH, DEVICE_ID)
         inputs = np.array(pil_img_list).astype(np.float32)
+        inputs = np.ascontiguousarray(np.expand_dims(inputs, axis=0))
         t = sdk.Tensor(inputs)
         t.to_device(0)
         start_time = time.time()

@@ -6,10 +6,14 @@
 样例输出：输入图片的语义分割图
 
 ### 1.1 支持的产品
-昇腾310(推理)
+昇腾310B1(推理)
 
 ### 1.2 支持的版本
-本样例配套的CANN版本为 [6.2](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [5.0RC1](https://www.hiascend.com/software/Mindx-sdk) 。
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 目录结构
 ```

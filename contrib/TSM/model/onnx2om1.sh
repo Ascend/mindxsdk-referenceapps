@@ -13,7 +13,7 @@
 # limitations under the License.
 #!/bin/bash
 
-atc --model=./jester.onnx --framework=5 --output=./jester --input_format=NCDHW  --soc_version=Ascend310  --precision_mode=allow_fp32_to_fp16 --op_select_implmode=high_precision
+atc --model=./jester.onnx --framework=5 --output=./jester --input_format=NCDHW  --soc_version=Ascend310B1  --precision_mode=allow_fp32_to_fp16 --op_select_implmode=high_precision
 
 if [ -f "./jester.om" ]; then
     echo "success"

@@ -21,20 +21,25 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| cmake    | 3.5.1+ |
-| mxVision | 0.2    |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ## 3 准备
 
 **步骤1：** 参考安装教程《mxVision 用户指南》安装 mxVision SDK。
 
-**步骤2：** 配置 mxVision SDK 环境变量。
+**步骤2：** 配置环境变量。
 
-`export MX_SDK_HOME=${安装路径}/mxVision `
-
-注：本例中mxVision SDK安装路径为 /root/MindX_SDK。
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 **步骤3：** 在regular目录下创建目录models `mkdir models`， 根据《mxVision 用户指南》中“模型支持列表”章节获取Yolov3种类模型，并放到该目录下。
+
+`若在310B设备上运行该案例，模型转换命令 --soc_version 修改为310B1`
+
 
 **步骤4：** 修改regular/pipeline/regular.pipeline文件：
 
@@ -87,48 +92,6 @@ sudo apt-get install g++-aarch64-linux-gnu
 
   ```
   bash build_zlib.sh
-  
-  build_zlib.sh脚本详情如下：
-  #!/bin/bash
-  # Simple log helper functions
-  info() { echo -e "\033[1;34m[INFO ][Depend  ] $1\033[1;37m" ; }
-  warn() { echo >&2 -e "\033[1;31m[WARN ][Depend  ] $1\033[1;37m" ; }
-  
-  #Build
-  fileName="zlib"
-  packageFQDN="zlib@1.2.11-h2"
-  packageName="zlib"
-  cd "$fileName" || {
-    warn "cd to ./opensource/$fileName failed"
-    exit 254
-  }
-  
-  info "Building dependency $packageFQDN."
-  chmod u+x configure
-  export LDFLAGS="-Wl,-z,noexecstack,-z,relro,-z,now,-s"
-  export CFLAGS="-fPIE -fstack-protector-all -fPIC -Wall -D_GLIBCXX_USE_CXX11_ABI=0"
-  export CPPFLAGS="-fPIE -fstack-protector-all -fPIC -Wall -D_GLIBCXX_USE_CXX11_ABI=0"
-  export CC=aarch64-linux-gnu-gcc
-  ./configure \
-    --prefix="$(pwd)/../tmp/$packageName" \
-    --shared || {
-    warn "Build $packageFQDN failed during autogen"
-    exit 254
-  }
-  
-  make -s -j || {
-    warn "Build $packageFQDN failed during make"
-    exit 254
-  }
-  
-  make install -j || {
-    warn "Build $packageFQDN failed during install"
-    exit 254
-  }
-  
-  cd ..
-  info "Build $packageFQDN done."
-  
   ```
 
 - 编译完成后，将生成文件拷贝至sdk的opensource
