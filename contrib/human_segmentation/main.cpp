@@ -169,7 +169,7 @@ APP_ERROR DrawPixels(const std::vector<std::vector<int>> pixels, const cv::Size 
 
     cv::Mat maskTmp = cv::Mat(size, CV_32FC1);
     for (uint32_t i = 0; i < size.height; i++) {
-        for (uint32_t j = 0; j < size.width; i++) {
+        for (uint32_t j = 0; j < size.width; j++) {
             if (pixels[i][j] == OBJECT_VALUE) {
                 maskTmp.at<float>(i, j) = PIXEL;
             } else {
@@ -177,12 +177,12 @@ APP_ERROR DrawPixels(const std::vector<std::vector<int>> pixels, const cv::Size 
             }
         }
     }
-    cv.cvtColor(maskTmp, mask, cv::COLOR_GRAY2RGB);
+    cv::cvtColor(maskTmp, mask, cv::COLOR_GRAY2RGB);
     mask.cv::Mat::convertTo(mask, CV_8UC3);
     return APP_ERR_OK;
 }
 
-APP_ERROR SaveResult(const std::shared-ptr<MxTools::MxpiVisionList> mxpiVisionList,
+APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionList,
                 const std::vector<MxBase::SemanticSegInfo> semanticSegInfos,
                 const std::string inputPicname)
 {
@@ -205,7 +205,7 @@ APP_ERROR SaveResult(const std::shared-ptr<MxTools::MxpiVisionList> mxpiVisionLi
     cv::Size size = {OUTPUT_MODEL_HEIGHT, OUTPUT_MODEL_WIDTH};
     //Mask diagram genertion
     for (uint32_t i = 0; i < semanticSegInfos.size(); i++) {
-        cv::Mat maskRGB = CV::Mat(size, CV_8UC3);
+        cv::Mat maskRGB = cv::Mat(size, CV_8UC3);
         ret = DrawPixels(semanticSegInfos[i].pixels, size, maskRGB);
         if(ret != APP_ERR_OK) {
             LogError << "Draw mask failed";
@@ -227,7 +227,7 @@ APP_ERROR SaveResult(const std::shared-ptr<MxTools::MxpiVisionList> mxpiVisionLi
 int main(int argc, char* argv[])
 {
     // Enter the image name, path
-    std::string inputPicname = "test.jpeg";
+    std::string inputPicname = "test.jpg";
     std::string inputPicPath = "./data/"+inputPicname;
     unsigned long idx = inputPicname.find(".jpg");
 
@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
     resizedImageInfo.widthResize = INPUT_MODEL_WIDTH;
     ResizedImageInfos.push_back(resizedImageInfo);
 
-    SemanticsegOutput(tensor, ResizedImageInfos, semanticSegInfos);
+    SemanticsegOutput(tensors, ResizedImageInfos, semanticSegInfos);
     SaveResult(mxpiVisionList, semanticSegInfos, inputPicname);
 
     mxStreamManager->DestroyAllStreams();
