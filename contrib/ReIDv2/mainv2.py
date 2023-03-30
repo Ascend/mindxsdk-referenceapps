@@ -29,7 +29,7 @@ import numpy as np
 from mindx.sdk import base
 from mindx.sdk.base import ImageProcessor
 from PIL import Image
-from mindx.sdk.base import Tensor, Model, Size, Rect, log, ImageProcessor, post, BTensor, Point
+from mindx.sdk.base import Tensor, Model, Size, Rect, log, ImageProcessor, post, Point
 
 IN_PLUGIN_ID = 0
 
@@ -168,7 +168,7 @@ def get_pipeline_results(filepath):
     for x in range(len1):
         yolov3_outputs[x].to_host()
         n = np.array(yolov3_outputs[x])
-        tensor = BTensor(n)
+        tensor = Tensor(n)
         inputs.append(tensor)
     yolov3_post_results = yolov3_post.process(inputs, [resizeinfo])
     cropresizevec = []

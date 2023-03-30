@@ -19,11 +19,8 @@ set(MX_SDK_HOME ${SDK安装路径}/mxVision)
 
 ### 配置环境变量
 执行以下命令：
-
 ```
-export MX_SDK_HOME="${CUR_PATH}/../../.."
-
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64":${LD_LIBRARY_PATH}
+. ${MX_SDK_HOME}/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
 
 ### 编译运行

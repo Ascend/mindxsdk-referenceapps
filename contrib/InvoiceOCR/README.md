@@ -104,6 +104,7 @@ npu-smi info
 | Python    | 3.9.2       |
 | CANN      | 5.0.4       |
 
+（如果需要在310B上运行，mxVision版本需要5.0.RC1，CANN版本需要6.2.RC1。）
 在编译运行项目前，需要设置环境变量：
 
 ```
@@ -142,19 +143,19 @@ ascend-toolkit-path:CANN安装路径
 
 此处提供训练后的中间模型供模型转换使用：[resnet50](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/resnet.air)、[db](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/db.onnx)、[crnn](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/crnn.onnx)
 
-在`./models/resnet50`目录下执行如下命令
+在`./models/resnet50`目录下执行如下命令(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 
 ```
 atc --model=./resnet.air --framework=1 --output=resnet50 --input_format=NCHW --input_shape="x:1,3,224,224" --enable_small_channel=1 --soc_version=Ascend310 --insert_op_conf="aipp.config"
 ```
 
-在`./models/db`目录下执行如下命令
+在`./models/db`目录下执行如下命令(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 
 ```
 atc --model=./db.onnx --framework=5 --output_type=FP32 --output=db --input_format=NCHW --input_shape="x:1,3,-1,-1" --dynamic_image_size="1216,1280;1280,1216;1120,1280;1280,1120;1024,1280;1280,1024;928,1280;1280,928;832,1280;1280,832;736,1280;1280,736;704,1280;1280,704;672,1280;1280,672;640,1280;1280,640;608,1280;1280,608;576,1280;1280,576;544,1280;1280,544;512,1280;1280,512;480,1280;1280,480;448,1280;1280,448" --soc_version=Ascend310 --insert_op_conf=./det_aipp.cfg
 ```
 
-在`./models/crnn`目录下执行如下命令
+在`./models/crnn`目录下执行如下命令(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 
 ```
 atc --model=./crnn.onnx --framework=5 --output_type=FP32 --output=crnn --input_format=NCHW --input_shape="x:1,3,48,320" --soc_version=Ascend310 --insert_op_conf="rec_aipp.cfg"
