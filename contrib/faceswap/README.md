@@ -10,12 +10,12 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行目标检测，脸
 ```
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310、昇腾Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)  
-支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)  
+本样例配套的CANN版本为[昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1](https://www.hiascend.com/software/cann/commercial)  
+支持的SDK版本为[5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)  
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 ### 1.3  技术实现流程图<br/>
 本项目的主要工作流程为，初始输入目标图像和原图像，第一阶段采用yolov4模型进行目标检测，接着利用后处理插件、抠图插件对检测结果进行处理，得到目标区域部分；
@@ -47,7 +47,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件名称 | 版本   | 
 | :--------: | :------: |
 |操作系统|18.04.1   |
-|MindX SDK|2.0.4|
+|MindX SDK|5.0.RC1|
 |Python| 3.9.2|
 |numpy | 1.21.0 |
 |opencv-python|4.5.2|
@@ -69,13 +69,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 # 设置环境变量（请确认install_path路径是否正确）
 # Set environment PATH (Please confirm that the install_path is correct).
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 
-# 执行，转换v3.onnx模型
+# 执行如下命令，转换v3.onnx模型。注意若推理芯片为310B，需将命令中的soc_version参数设置为Ascend310B1。
 # Execute, transform v3.onnx model.
 atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310 --insert_op_conf=V3ONNX.cfg --out_nodes="Gemm_169:0"
 ```
@@ -94,26 +90,9 @@ ATC run success, welcome to the next use.
 ```
 2. 配置
 ```   
-#执行如下命令，打开.bashrc文件
-cd $home
-vi .bashrc
-#在.bashrc文件中添加以下环境变量:
-
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export PYTHONPATH=${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-#保存退出.bashrc
-wq
-#执行如下命令使环境变量生效
-source ~/.bashrc
-
+#执行如下两个环境配置脚本设置环境变量，运行命令：
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 
 ```
 3. 配置pipeline  
