@@ -22,12 +22,15 @@
 #include "MxBase/PostProcessBases/SemanticSegPostProcessBase.h"
 
 namespace {
-    const uint32_t INPUT_MODEL_HEIGHT=512;
-    const uint32_t INPUT_MODEL_WIDTH=512;
-    const uint32_t OUTPUT_MODEL_HEIGHT=512;
-    const uint32_t OUTPUT_MODEL_WIDTH=512;
-    const uint32_t OBJECT_VALUE=2;
-    const uint32_t PIXEL=255;
+    const uint32_t INPUT_MODEL_HEIGHT = 512;
+    const uint32_t INPUT_MODEL_WIDTH = 512;
+    const uint32_t OUTPUT_MODEL_HEIGHT = 512;
+    const uint32_t OUTPUT_MODEL_WIDTH = 512;
+    const uint32_t OBJECT_VALUE = 2;
+    const uint32_t PIXEL = 255;
+    const double ALPHA = 1.0;
+    const double BETA = 0.5;
+    const double GAMMA = 0.0;
 }
 // Read the information in the file
 static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput& dataBuffer)
@@ -101,7 +104,7 @@ static std::string readpipelineconfig(const std::string &pipelineConfigPath)
 }
 
 // Gets the amount of tensor
-void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList,std::vector<MxBase::TensorBase> &tensors) {
+void GetTensors(const MxTools::MxpiTensorPackageList tensorPackageList, std::vector<MxBase::TensorBase> &tensors) {
     for (int i = 0; i < tensorPackageList.tensorpackagevec_size(); ++i) {
         for (int j = 0; j < tensorPackageList.tensorpackagevec(i).tensorvec_size(); j++) {
             MxBase::MemoryData memoryData = {};
@@ -183,8 +186,8 @@ APP_ERROR DrawPixels(const std::vector<std::vector<int>> pixels, const cv::Size 
 }
 
 APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionList,
-                const std::vector<MxBase::SemanticSegInfo> semanticSegInfos,
-                const std::string inputPicname)
+                     const std::vector<MxBase::SemanticSegInfo> semanticSegInfos,
+                     const std::string inputPicname)
 {
     APP_ERROR ret;
     auto& visionInfo = mxpiVisionList->visionvec(0).visioninfo();
@@ -203,7 +206,7 @@ APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionLi
     cv::Mat imgBgr = cv::Mat(visionInfo.heightaligned(), visionInfo.widthaligned(), CV_8UC3, memoryDst.ptrData);
 
     cv::Size size = {OUTPUT_MODEL_HEIGHT, OUTPUT_MODEL_WIDTH};
-    //Mask diagram genertion
+    // Mask diagram genertion
     for (uint32_t i = 0; i < semanticSegInfos.size(); i++) {
         cv::Mat maskRGB = cv::Mat(size, CV_8UC3);
         ret = DrawPixels(semanticSegInfos[i].pixels, size, maskRGB);
@@ -217,8 +220,8 @@ APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionLi
         cv::resize(maskRGB, oriMask, cv::Size(visionInfo.widthaligned(), visionInfo.heightaligned()));
         cv::imwrite(outputPath.str(), oriMask);
 
-        //Picture fusion
-        cv::addWeighted(imgBgr, 1, oriMask, 0.5, 0, dst);
+        // Picture fusion
+        cv::addWeighted(imgBgr, ALPHA, oriMask, BETA, GAMMA, dst);
         cv::imwrite("./result/result_" + inputPicname, dst);
     }
     return APP_ERR_OK;
@@ -284,7 +287,7 @@ int main(int argc, char* argv[])
     MxTools::MxpiTensor tensor = tensorPackage.tensorvec(0);
     std::vector<MxBase::TensorBase> tensors;
 
-    GetTensors(*tensorPackageList,tensors);
+    GetTensors(*tensorPackageList, tensors);
     std::vector<MxBase::ResizedImageInfo> ResizedImageInfos;
     std::vector<MxBase::SemanticSegInfo> semanticSegInfos;
     MxBase::ResizedImageInfo resizedImageInfo;
@@ -298,11 +301,3 @@ int main(int argc, char* argv[])
     mxStreamManager->DestroyAllStreams();
     return 0;
 }
-
-
-
-
-
-
-
-
