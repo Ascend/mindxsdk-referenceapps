@@ -102,7 +102,7 @@ passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量�
 2. 进入`passengerflowestimation/models`文件夹下面执行命令**（注：提前设置好环境变量）**：
 
 ```
-atc --model=${模型路径}/passengerflowestimation.onnx --framework=5 --output=${输出.om模型路径}/yolov4 --input_format=NCHW --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,3,608,608" --log=info --insert_op_conf=${aipp文件路径}/aipp_Passengerflowdetection.config 
+atc --model=passengerflowestimation.onnx --framework=5 --output=yolov4 --input_format=NCHW --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,3,608,608" --log=info --insert_op_conf=aipp_Passengerflowdetection.config 
 ```
 
 执行该命令后会在指定输出.om模型路径生成项目指定模型文件`passengerflowestimation.om`。若模型转换成功则输出：
