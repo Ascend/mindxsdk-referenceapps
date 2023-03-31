@@ -37,19 +37,19 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
 {
     char c[PATH_MAX + 1] = {0x00};
     size_t count = filePath.copy(c, PATH_MAX +1);
-    if(count != filePath.length()){
+    if (count != filePath.length()) {
         LogError << "Failed to copy file path(" << c << ").";
         return APP_ERR_COMM_FAILURE;
     }
     // Gets the absolute path to the file
     char path[PATH_MAX + 1] = { 0x00 };
-    if((strlen(c) > PATH_MAX) || (realpath(c,path) == nullptr)){
+    if ((strlen(c) > PATH_MAX) || (realpath(c,path) == nullptr)) {
         LogError << "Failed to get image, the image path is (" << filePath << ").";
         return APP_ERR_COMM_NO_EXIST;
     }
     // Open the file
     FILE *fp = fopen(path, "rb");
-    if(fp == nullptr){
+    if (fp == nullptr) {
         LogError << "Failed to open file (" << path << ").";
         return APP_ERR_COMM_OPEN_FAIL;
     }
@@ -58,16 +58,16 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
     long fileSize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     // If the contents of the file are not empty, write the contents of the file to dataBuffer
-    if(fileSize > 0){
+    if (fileSize > 0) {
         dataBuffer.dataSize = fileSize;
         dataBuffer.dataPtr = new (std::nothrow) uint32_t[fileSize]; // Memory is allocated based on file length
-        if(dataBuffer.dataPtr == nullptr){
+        if (dataBuffer.dataPtr == nullptr) {
             LogError << "allocate memory with \"new uint32_t\" failed.";
             fclose(fp);
             return APP_ERR_COMM_FAILURE;
         }
         uint32_t readRet = fread(dataBuffer.dataPtr, 1, fileSize, fp);
-        if(readRet <= 0){
+        if (readRet <= 0) {
             fclose(fp);
             return APP_ERR_COMM_READ_FAIL;
         }
@@ -83,7 +83,7 @@ static std::string readpipelineconfig(const std::string &pipelineConfigPath)
 {
     // Open the file in binary mode
     std::ifstream file(pipelineConfigPath.c_str(), std::ifstream::binary);
-    if(!file){
+    if (!file) {
         LogError << pipelineConfigPath << " file is not exists";
         return "";
     }
@@ -150,7 +150,7 @@ void SemanticsegOutput(const std::vector<MxBase::TensorBase>& tensors,
         for (uint32_t y = 0; y < inputModelHeight; y++) {
             for (uint32_t x = 0; x < inputModelWidth; x++) {
                 float* begin = tensorPtr +  y * outputModelWidth * classNum_ + x * classNum_;
-                results[y][x] = (*begin)*2;
+                results[y][x] = (*begin) * OBJECT_VALUE;
                 count++;
             }
         }
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
     std::string inputPicPath = "./data/"+inputPicname;
     unsigned long idx = inputPicname.find(".jpg");
 
-    if(idx == std::string::npos ){
+    if (idx == std::string::npos) {
         LogError << "The input is incorrect\n";
         return 0;
     }
@@ -242,7 +242,7 @@ int main(int argc, char* argv[])
     // Read the test.pipeline file information
     std::string pipelineConfigPath = "./test.pipeline";
     std::string pipelineConfig = readpipelineconfig(pipelineConfigPath);
-    if(pipelineConfig == ""){
+    if (pipelineConfig == "") {
         return APP_ERR_COMM_INIT_FAIL;
     }
     std::string streamName = "detection";
