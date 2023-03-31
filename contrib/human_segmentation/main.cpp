@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
     }
     // Load the information that pipeline gets to create a new stream business flow
     ret = mxStreamManager->CreateMultipleStreams(pipelineConfig); // The incoming profile
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "Fail to creat Stream.";
         return ret;
     }
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
     // Read the information of the picture into dataBuffer
     MxStream::MxstDataInput dataBuffer;
     ret = readfile(inputPicPath, dataBuffer);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to read image file, ret = " << ret << ".";
         return ret;
     }
