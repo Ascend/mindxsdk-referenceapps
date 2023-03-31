@@ -23,7 +23,7 @@ using namespace std;
 namespace {
     using namespace MxBase;
 
-    const uint32_t ENCODE_TEST_DEVICE_ID = 1;
+    const uint32_t ENCODE_TEST_DEVICE_ID = 0;
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
