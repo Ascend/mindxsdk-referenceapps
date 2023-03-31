@@ -26,11 +26,11 @@ OFFSET_5 = 5
 OFFSET_20 = 20
 
 
-def infer(input_image_path, stream_manager_api):
+def infer(input_image_path, stream_manager):
     """
     image super-resolution inference
     :param input_image_path: input image path
-    :param stream_manager_api: stream_manager_api
+    :param stream_manager: stream_manager
     :return: no return
     """
     if os.path.exists(input_image_path) != 1:
@@ -54,7 +54,7 @@ def infer(input_image_path, stream_manager_api):
     # inputs data to a specified stream based on stream_name
     stream_name = b'superResolution'
     in_plugin_id = 0
-    unique_id = stream_manager_api.SendData(stream_name, in_plugin_id, data_input)
+    unique_id = stream_manager.SendData(stream_name, in_plugin_id, data_input)
     if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
@@ -62,7 +62,7 @@ def infer(input_image_path, stream_manager_api):
     key = b"mxpi_tensorinfer0"
     key_vec = StringVector()
     key_vec.push_back(key)
-    infer_result = stream_manager_api.GetProtobuf(stream_name, in_plugin_id, key_vec)
+    infer_result = stream_manager.GetProtobuf(stream_name, in_plugin_id, key_vec)
     if infer_result.size() == 0:
         print("infer_result is null")
         exit()
