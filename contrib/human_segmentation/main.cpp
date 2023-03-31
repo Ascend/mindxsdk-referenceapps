@@ -43,7 +43,7 @@ static APP_ERROR  readfile(const std::string& filePath, MxStream::MxstDataInput&
     }
     // Gets the absolute path to the file
     char path[PATH_MAX + 1] = { 0x00 };
-    if ((strlen(c) > PATH_MAX) || (realpath(c,path) == nullptr)) {
+    if ((strlen(c) > PATH_MAX) || (realpath(c, path) == nullptr)) {
         LogError << "Failed to get image, the image path is (" << filePath << ").";
         return APP_ERR_COMM_NO_EXIST;
     }
@@ -199,7 +199,7 @@ APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionLi
     memorySrc.ptrData = (void*)visionData.dataptr();
     MxBase::MemoryData memoryDst(visionData.datasize(), MxBase::MemoryData::MEMORY_HOST_NEW);
     ret = MxBase::MemoryHelper::MxbsMallocAndCopy(memoryDst, memorySrc);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to malloc and copy host memory.";
         return ret;
     }
@@ -210,7 +210,7 @@ APP_ERROR SaveResult(const std::shared_ptr<MxTools::MxpiVisionList> mxpiVisionLi
     for (uint32_t i = 0; i < semanticSegInfos.size(); i++) {
         cv::Mat maskRGB = cv::Mat(size, CV_8UC3);
         ret = DrawPixels(semanticSegInfos[i].pixels, size, maskRGB);
-        if(ret != APP_ERR_OK) {
+        if (ret != APP_ERR_OK) {
             LogError << "Draw mask failed";
             return ret;
         }
@@ -233,7 +233,6 @@ int main(int argc, char* argv[])
     std::string inputPicname = "test.jpg";
     std::string inputPicPath = "./data/"+inputPicname;
     unsigned long idx = inputPicname.find(".jpg");
-
     if (idx == std::string::npos) {
         LogError << "The input is incorrect\n";
         return 0;
@@ -249,7 +248,7 @@ int main(int argc, char* argv[])
     // Create a new stream management MxStreamManager object and initialize it
     auto mxStreamManager = std::make_shared<MxStream::MxStreamManager>();
     APP_ERROR ret = mxStreamManager->InitManager(); // Initialize the flow management tool
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "Fail to init Stream manager.";
         return ret;
     }
@@ -270,7 +269,7 @@ int main(int argc, char* argv[])
     // The input information is passed through the SendData function to the specified working element module
     // StreamName is the name of the business flow in the pipeline file
     ret = mxStreamManager->SendData(streamName, 0, dataBuffer);
-    if(ret != APP_ERR_OK){
+    if (ret != APP_ERR_OK) {
         delete dataBuffer.dataPtr;
         LogError << "Fail to send data to stream, ret = " << ret << ".";
         return ret;
