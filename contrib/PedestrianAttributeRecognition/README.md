@@ -9,9 +9,10 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4.b011。 
-
-MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -78,7 +79,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件名称    | 版本   |
 | ----------- | ------ |
 | python      | 3.9.2  |
-| mxVision    | 2.0.4  |
 | pillow      | 8.0.1  |
 | pickle5     | 0.0.11 |
 
@@ -88,15 +88,10 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 在编译运行项目前，需要设置环境变量：
 
-- 环境变量介绍
-将${SDK安装路径}替换为自己的SDK安装路径; 
-```python
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+将${SDK_INSTALL_PATH}替换为自己的SDK安装路径; 
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 ## 3 模型转换
@@ -105,9 +100,10 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 获取yolov3_tf.pb文件，将yolov3的pb文件下载到本地，并将其放在“/model/yolov3”路径下，在终端移至该路径下，执行下面命令：。
 
-```python
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+```shell
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 ```
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
 更多的atc模型转换信息可以参考此链接样例：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 deepmar模型，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
@@ -157,14 +153,14 @@ aipp_op{
 下载好deepmar之后，将Deepmar_bs1.onnx文件拷贝到本样例的“model/deepmar”路径下，并在终端中移至该路径下，执行下面命令进行将onnx模型转om模型：
 
 ```python
-atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310  --insert_op_conf=aipp_deepmar.config
+atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_aipp_1 --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310B1  --insert_op_conf=aipp_deepmar.config
 ```
 对于无aipp设置的离线模型，可执行下面命令得到：
 
 ```python
-atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310
+atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --input_format=NCHW --input_shape="actual_input_1:1,3,224,224" --enable_small_channel=1 --log=error --soc_version=Ascend310B1
 ```
-
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310
 
 
 
@@ -184,7 +180,7 @@ atc --model=./Deepmar_bs1.onnx --framework=5 --output=./deepmar_bs1_unaipp --inp
 
 下载开源数据集Peta，[下载地址](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PedestrianAttributeRecognition/data.zip)，
 
-（1）将下载好的文件夹中”./dataset/peta/images/*.png“中的images文件夹放入样例代码中的dataset/image文件夹下；将PETA.mat文件放在样例代码的dataset文件夹下。
+（1）将下载好的文件夹中”./dataset/peta/images/*.png“中的images文件夹放入样例代码中的dataset/image文件夹下；将PETA.mat文件放在样例代码的dataset文件夹下，peta_dataset.pkl文件放在dataset目录下。
 
 （2）将Peta数据集中的png格式图片转为jpg格式图片
 
@@ -204,7 +200,7 @@ python dataset/transform_peta.py
 
 （4）精度测试
 
-修改下面代码：
+修改evaluate_for_deepmar.py下面的代码，LINE 39：
 
 ```python
     for idx in partition['test'][0]:

@@ -11,8 +11,10 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
-支持的CANN版本为5.0.4。
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -38,28 +40,6 @@
 │  build.sh
 │  README.md
 │  tree.txt
-│  
-├─mxBase
-│  │  build.sh
-│  │  CMakeLists.txt
-│  │  main.cpp
-│  │  
-│  ├─BertClassification
-│  │      BertClassification.cpp
-│  │      BertClassification.h
-│  │      
-│  ├─data
-│  │      vocab.txt
-│  │      
-│  ├─model
-│  │      bert_text_classification_labels.names
-│  │      
-│  ├─out
-│  │      prediction_label.txt
-│  │      
-│  └─test
-│          Test.cpp
-│          Test.h
 │          
 └─sdk
     │  build.sh
@@ -103,7 +83,6 @@
 | 软件名称 | 版本   |
 | -------- | ------ |
 | cmake    | 3.10.2   |
-| mxVision | 2.0.4  |
 | python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
@@ -111,25 +90,14 @@
 在编译运行项目前，需要设置环境变量：
 
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
-export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 - 环境变量介绍
 
 ```
-MX_SDK_HOME：MindX SDK mxVision的根安装路径，用于包含MindX SDK提供的所有库和头文件。
-LD_LIBRARY_PATH：提供了MindX SDK已开发的插件和相关的库信息。
-install_path：ascend-toolkit的安装路径。
-PATH：添加python的执行路径和atc转换工具的执行路径。
-LD_LIBRARY_PATH：添加ascend-toolkit和MindX SDK提供的库目录路径。
-ASCEND_OPP_PATH：atc转换工具需要的目录。 
+SDK_INSTALL_PATH：MindX SDK mxVision的根安装路径，用于包含MindX SDK提供的所有库和头文件。
 ```
 
 ## 3 模型转换
@@ -141,13 +109,13 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 
 cd $HOME/models/bert_text_classification
 
-atc --model=bert_text_classification.pb --framework=3 --input_format="ND" --output=bert_text_classification --input_shape="input_1:1,300;input_2:1,300" --out_nodes=dense_1/Softmax:0 --soc_version=Ascend310 --op_select_implmode="high_precision"
+atc --model=bert_text_classification.pb --framework=3 --input_format="ND" --output=bert_text_classification --input_shape="input_1:1,300;input_2:1,300" --out_nodes=dense_1/Softmax:0 --soc_version=Ascend310B1 --op_select_implmode="high_precision"
 
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
 **步骤3** 执行以下命令将转换好的模型复制到项目中model文件夹中：
 
 ```
 cp ./bert_text_classification.om $HOME/sdk/model/
-cp ./bert_text_classification.om $HOME/mxBase/model/
 ```
 
 **步骤4** 执行成功后终端输出为：
@@ -168,9 +136,6 @@ ATC run success, welcome to the next use.
 **步骤4** 将本项目代码的文件路径中出现的 ${SDK目录} 替换成自己SDK的存放目录，下面是需要替换的代码。
 
 ```
-mxBase目录下的CMakeList.txt中的第13行代码：
-set(MX_SDK_HOME ${SDK目录})
-
 sdk/pipeline目录下BertTextClassification.pipeline文件中的第26行：
 "postProcessLibPath": "${SDK目录}/lib/modelpostprocessors/libresnet50postprocess.so"
 ```
@@ -183,22 +148,6 @@ python3 main.py
 
 命令执行成功后在out目录下生成分类结果文件 prediction_label.txt，查看结果文件验证分类结果。
 
-**步骤6** mxBase项目在mxBase目录中，执行以下代码进行编译。
-
-```
-mkdir build
-cd build
-cmake ..
-make
-```
-
-编译完成后，将可执行文件 mxBase_text_classification 移动到mxBase目录下，执行下面代码运行
-
-```
-./mxBase_text_classification ./data/sample.txt
-```
-
-执行成功后在服务器的mxBase/out目录下生成分类结果文件 prediction_label.txt，查看结果文件验证分类结果。
 
 ## 5 精度测试
 
@@ -210,12 +159,6 @@ make
 
 ```
 python3 test.py
-```
-
-**步骤4** mxBase项目中，将mxBase目录下main.cpp中main方法的全部代码注释，替换为下面代码后执行（即main函数中仅包含以下代码），得到mxBase的精度测试结果。
-
-```
-Test::test_accuracy();
 ```
 
 ## 6 其他问题

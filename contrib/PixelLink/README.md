@@ -11,11 +11,10 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本，列出版本号查询方式。
-
-支持的SDK版本为2.0.4。
-
-版本号查询方法，在Atlas产品环境下，运行命令：npu-smi info进行查看。
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 
 ### 1.3 软件方案介绍
@@ -65,9 +64,7 @@
 | 软件名称  | 版本   |
 | -------- | ------ |
 | cmake    | 3.5+   |
-| mxVision | 2.0.4  |
 | python   | 3.9.2  |
-| CANN     | 5.0.4  |
 | Polygon3 | 3.0.9.1|
 
 
@@ -81,20 +78,13 @@
 在编译运行项目前，需要设置环境变量：
 
 步骤1：安装mxVision SDK。 
-步骤2：配置mxVision SDK环境变量、lib库环境变量以及python环境变量。
+步骤2：配置mxVision SDK环境变量
 
+将${SDK_INSTALL_PATH}替换为自己的SDK安装路径; 
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
-export MX_SDK_HOME=${安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
-```
-
-- 环境变量介绍
-- MX_SDK_HOME为SDK安装路径
-- LD_LIBRARY_PATH为lib库路径
-- PYTHONPATH为python环境路径
 
 
 ## 3 模型转换
@@ -107,10 +97,10 @@ pb模型提供在链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/min
 首先需要配置ATC环境，下载pb模型，放到相应的路径后，修改模型转换的cfg配置文件，配置文件已经上传至项目目录model下。使用命令
 
 ```
-atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 --soc_version=Ascend310 --input_shape="Placeholder:1,768,1280,3"
+atc --model=pixellink_tf.pb --framework=3 --output=pixellink --output_type=FP32 --soc_version=Ascend310B1 --input_shape="Placeholder:1,768,1280,3"
 --insert_op_conf=convert.cfg --log=info
 ```
-转化项目模型。
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310
 
 
 注意：转化时，可根据需要修改输出的模型名称。注意模型以及转化所需文件的路径，防止atc命令找不到相关文件。
