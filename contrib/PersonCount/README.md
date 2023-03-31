@@ -88,7 +88,7 @@
 
 **步骤1** 修改相应文件
 
-修改main.py中的DATASET_PATH变量，该变量指向待检测的图片路径。修改main.py中gt_path变量，改变了指向待检测图片的groundtruth.
+修改main.py与test.py中的DATASET_PATH变量，该变量指向待检测的图片路径。修改main.py中gt_path变量，改变了指向待检测图片的groundtruth.
 
 此外，如果想要得到pipeline中各个插件的具体运行时间，
 可以修改SDK的sdk.conf文件，使得enable_ps变量为true.
@@ -99,7 +99,9 @@
 
 **步骤3** 编译
 
-首先通过运行build.sh脚本文件生成后处理使用的共享库
+首先通过运行build.sh脚本文件生成后处理使用的动态库，动态库生成在Plugin1/build目录下
+
+修改生成的so动态库权限为440
 ```
 sh build.sh
 ```
@@ -110,7 +112,14 @@ atc --input_shape="blob1:8,3,800,1408" --weight="model/count_person.caffe.caffem
 
 **步骤4** 运行
 
-直接运行run.sh。
+```
+创建heat_map文件夹保存结果图片
+mkdir heat_map
 
-生成的热度图保存在当前目录的heat_map文件夹下，并且每张热度图的命名以原图片名称为前缀以heatmap为后缀。此外，我们还在文件夹accuracy and performance code提供了精度与性能测试代码，将test.py和test.sh拷贝到主目录中然后执行sh test.sh即可运行精度与性能测试代码。
+直接运行
+bash run.sh
+```
+生成的热度图保存在当前目录的heat_map文件夹下，并且每张热度图的命名以原图片名称为前缀以heatmap为后缀。
+
+此外，我们还在文件夹accuracy and performance code提供了精度与性能测试代码，将test.py拷贝到主目录中，然后执行`python3 test.py`即可运行精度与性能测试代码。
 

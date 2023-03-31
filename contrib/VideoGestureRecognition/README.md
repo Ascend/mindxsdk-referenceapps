@@ -65,7 +65,7 @@
 ```bash
 export PATH=/usr/local/ffmpeg/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
-export FFMPEG_path=/usr/local/ffmpeg/
+export FFMPEG_PATH=/usr/local/ffmpeg/
 ```
 
 #### FFmpeg
