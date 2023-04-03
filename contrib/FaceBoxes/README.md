@@ -204,7 +204,7 @@ git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
 2.在models目录下，使用atc将onnx模型转换为om模型文件，加入--insert_op_conf参数使用AIPP，放到models目录下，工具使用方法可以参考CANN 5.0.2 开发辅助工具指南 (推理) 。注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/FaceBoxes.aippconfig
-```
+
 ## 7 测试
 
 准备好要测试的图片，在test.py中修改好测试图片读取路径以及结果存放路径，并修改 run.sh 文件中的环境路径和项目路径以及要运行的python文件名test.py。
