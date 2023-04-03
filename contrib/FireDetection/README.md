@@ -1,3 +1,4 @@
+
 # 高速公路车辆火灾识别
 
 ## 1 介绍
@@ -23,8 +24,6 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 本 Sample 工程名称为 **FireDetection**，工程目录如下图所示：
 
 ```
-├── envs
-│   └── env.sh                   //基础环境变量
 ├── images                       //ReadMe图片资源
 │   └── image-flow.png
 ├── model
@@ -58,17 +57,11 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 | ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
 | Ascend-CANN-toolkit |  310使用6.3.RC1，310B使用6.2.RC1  | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 
-在运行项目需要的环境变量如下，运行前不需要特别设置，环境依赖已经写入脚本中，脚本在`FireDetection/envs`目录下：
+在运行项目需要执行如下命令配置MindX SDK的环境变量：
 
 ```bash
-# 基础环境变量——env.sh
-export MX_SDK_HOME="${SDK安装路径}/mxVision"
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-
+. ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-
-注：其中`${SDK安装路径}`替换为用户的SDK安装路径;`install_path`替换为ascend-toolkit开发套件包所在路径。`LD_LIBRARY_PATH`用以加载开发套件包中lib库。
 
 ## 3 模型转换以及依赖安装
 
