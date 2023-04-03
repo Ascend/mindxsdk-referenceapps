@@ -6,13 +6,15 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK版本为[2.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk)。
-
-MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)。
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -64,33 +66,19 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 环境依赖软件和版本如下表：
 
-| 软件                | 版本                                                         | 说明                          |
-| ------------------- | ------------------------------------------------------------ | ----------------------------- |
-| mxVision            | [mxVision 3.0.RC2](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) | mxVision软件包                |
-| Ascend-CANN-toolkit | [CANN 5.1.RC2](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) | Ascend-cann-toolkit开发套件包 |
-| 操作系统            | [Ubuntu 18.04](https://gitee.com/link?target=https%3A%2F%2Fubuntu.com%2F) | Linux操作系统                 |
-| OpenCV              | 4.6.0                                                        | 用于结果可视化                |
+| 软件    | 版本      | 
+| --------| ----------|
+|Pytorch  | 1.7.0|
+| OpenCV | 4.6.0   |
 
 在编译运行项目前，需要设置环境变量：
 
 在进行模型转换和编译运行前，需设置如下的环境变量：
 
 ```bash
-export PYTHONPATH=${MX_SDK_HOME}/python/:$PYTHONPATH
-export install_path=${install_path}
-. ${MX_SDK_HOME}/set_env.sh
-. ${install_path}/set_env.sh
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
-
-注：**${MX_SDK_HOME}** 替换为用户自己的MindX_SDK安装路径（例如："/home/xxx/MindX_SDK/mxVision"）；
-
- **${install_path}** 替换为开发套件包所在路径（例如：/usr/local/Ascend/ascend-toolkit/latest）。
-
-*版本要求：*
-
-*Python = 3.9.2
-
-*Pytorch = 1.7.0*
 
 ###  3. 模型转换
 
