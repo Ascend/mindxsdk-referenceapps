@@ -28,7 +28,6 @@
                 "deviceId": "xxx",
                 "vdecChannelId": "xxx"
             },
-            "former": "mxpi_rtspsrcxxx",
             "next": "queue1"
         },
 
@@ -83,8 +82,7 @@
         },
 
         "fakesinkxxx": {
-            "factory": "fakesink",
-            "former": "mxpi_videoencoderxxx"
+            "factory": "fakesink"
         }
    }
 }
