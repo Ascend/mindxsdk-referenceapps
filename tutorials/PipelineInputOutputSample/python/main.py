@@ -147,7 +147,7 @@ if __name__ == '__main__':
                 infer_result.errorCode, infer_result.data.decode()))
             exit()
         # 打印推理结果
-        print("result1: {}".format(infer_result.data.decode()))
+        print("result: {}".format(infer_result.data.decode()))
 
     elif INTERFACE_TYPE == 2:
         # 执行SendData - GetResult 样例
