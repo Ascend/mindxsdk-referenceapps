@@ -213,10 +213,9 @@ atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --inpu
 export MX_SDK_HOME=${CUR_PATH}/../../..
 ## 注意当前目录CUR_PATH与MX_SDK_HOME环境目录的相对位置
 ```
-直接运行
+为run.sh添加可执行权限，直接运行
 
 ```bash
-chmod +x run.sh
 bash run.sh
 ```
 
