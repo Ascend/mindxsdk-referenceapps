@@ -30,5 +30,5 @@ echo "Output OM file path: ${om_path}"
 
 atc --framework=5 --model="${onnx_path}" \
     --output="${om_path}" \
-    --soc_version=Ascend310 \
+    --soc_version=Ascend310B1 \
     --output_type="FP32"

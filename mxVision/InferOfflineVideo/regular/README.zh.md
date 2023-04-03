@@ -4,7 +4,7 @@
 
 ## 1 简介
 
-InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡为主要的硬件平台，用于在视频流中检测出目标。
+InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas310B卡为主要的硬件平台，用于在视频流中检测出目标。
 
 ## 2 环境依赖
 
@@ -36,10 +36,15 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 . ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
-**步骤3：** 在regular目录下创建目录models `mkdir models`， 根据《mxVision 用户指南》中“模型支持列表”章节获取Yolov3种类模型，并放到该目录下。
+**步骤3：** 转换模型
+进入models目录，下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)， 将下载的模型放入models文件夹中
 
-`若在310B设备上运行该案例，模型转换命令 --soc_version 修改为310B1`
-
+执行转换命令
+```
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+```
+执行完模型转换脚本后，会生成相应的.om模型文件。
 
 **步骤4：** 修改regular/pipeline/regular.pipeline文件：
 
@@ -50,6 +55,8 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 ③：如需配置多路输入视频流，需要配置多个拉流、解码、缩放、推理、序列化插件，然后将多个序列化插件的结果输出发送到串流插件mxpi_parallel2serial（有关串流插件使用请参考《mxVision 用户指南》中“串流插件”章节），最后连接到appsink0插件。
 
 ## 4 运行
+
+下载coco.names文件[链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/contrib/Collision/model/coco.names), 放在models目录下。
 
 运行
 `bash run.sh`

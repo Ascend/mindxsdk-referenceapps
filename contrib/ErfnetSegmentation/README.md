@@ -8,13 +8,15 @@ ErfNet是一个语义分割网络，ERFNet可以看作是对ResNet结构的又�
 
 ### 1.1 支持的产品
 
-Ascend 310
+Ascend 310B
 
 ### 1.2 支持的版本
 
-CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
-
-SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 代码目录结构与说明
 
@@ -54,24 +56,27 @@ ErfNet原论文使用街景图片来进行语义分割任务的测试，ErfNet�
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
-| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
-| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
-| python              | 3.9.2       |                               |                                                              |
+| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ 
 | numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
 | PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | opencv-python       | 4.6.0       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
 | pyquaternion | | |服务器中使用pip或conda安装 |
 
+> 配置环境变量。
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
+
 ## 3 准备
 
 ### 3.1 获取OM模型文件
 
-OM权重文件获取参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)。
+OM权重文件获取参考华为昇腾社区[ModelZoo](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ErfnetSegementation/ATC%20ErfNet%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)。
 获取到```ErfNet.onnx```模型后，将其放在model目录下。在model目录键入以下命令
 
 ```
@@ -80,7 +85,7 @@ bash onnx2om.sh
 
 能获得```ErfNet_bs1.om```模型文件。
 
-注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/a552b9d78220425f9a59f0ffdb083dfa)
+注: [ModelZoo](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ErfnetSegementation/ATC%20ErfNet%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)
 中的模型文件```ErfNet_bs1.om```不能用于本项目。
 
 ### 3.2 编译插件
