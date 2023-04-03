@@ -127,8 +127,8 @@ bash onnx2om.sh ./SuperRetina.onnx ./SuperRetina
 **步骤4**  在./python目录下运行predictor.py，首先按需求修改路径：
 
 ```bash
-    f1 = './data/samples/query.jpg'   # image path
-    f2 = './data/samples/refer.jpg'   # image path
+    F1 = './data/samples/query.jpg'   # image path
+    F2 = './data/samples/refer.jpg'   # image path
     merged = align_image_pair(f1, f2, model, show=True)
 ```
 
