@@ -24,7 +24,7 @@
 | opencv-python   | 3.4+  |
 | mmcv   |  -  |
 
-支持的SDK版本为 5.0.RC1, CANN 版本为 6.0.RC1。
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
 
 ## 3.预准备
 

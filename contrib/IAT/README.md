@@ -63,7 +63,7 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 | numpy         | 1.22.3           |
 | opencv-python | 4.5.5            |
 | onnxsim       | 0.4.10           |
-支持的SDK版本为 5.0.RC1, CANN 版本为 6.0.RC1。
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
 
 在编译运行项目前，需要设置环境变量：
 
