@@ -45,7 +45,17 @@
 ```
 
 ### 依赖
-| 依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
+
+推荐系统为ubuntu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
+
+| 第三方依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
 | ------------- | ------ | ------------------------------------------------------------ | -------------------------------------------- |
 | ffmpeg        | 4.2.1  | [Link](https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz) | 视频转码解码组件                             |
 
@@ -55,6 +65,7 @@
 ```bash
 export PATH=/usr/local/ffmpeg/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
+export FFMPEG_PATH=/usr/local/ffmpeg/
 ```
 
 #### FFmpeg
@@ -70,6 +81,12 @@ make install
 ```
 
 ### 准备工作
+> 配置环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 > 模型转换
 
@@ -82,19 +99,10 @@ make install
 在模型权重和网络文件所在目录下执行以下命令
 
 ```
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
 # 执行，转换Resnet18模型
 # Execute, transform Resnet18 model.
 
-atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel --framework=0 --output=gesture_yuv --soc_version=Ascend310 --insert_op_conf=./insert_op.cfg --input_shape="data:1,3,224,224" --input_format=NCHW
+atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel --framework=0 --output=gesture_yuv --soc_version=Ascend310B1 --insert_op_conf=./insert_op.cfg --input_shape="data:1,3,224,224" --input_format=NCHW
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。 执行完模型转换脚本后，会生成相应的.om模型文件。
@@ -108,51 +116,31 @@ atc --model=./resnet18_gesture.prototxt --weight=./resnet18_gesture.caffemodel -
 main.cpp中配置rtsp流源地址(需要自行准备可用的视频流，视频流格式为H264)。
 同样地测试视频也可下载（[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VideoGestureRecognition/data.zip)）。
 
+```rtspList.emplace_back("#{本地或rtsp流地址}"); ```
+
 提示：使用测试视频中的手势尺寸大致应为视频大小的二分之一，同时应当符合国际标准，背景要单一，手势要清晰，光线充足；视频切勿有遮挡，不清晰等情况。
 
 [Live555拉流教程](../../docs/参考资料/Live555离线视频转RTSP说明文档.md)
-```c++ rtspList.emplace_back("#{本地或rtsp流地址}"); ```
 
-[配置ResnetDetector插件的模型加载路径modelPath]
-```c++ reasonerConfig.resnetModelPath = "${Resnet18.om模型路径}"```
+配置ResnetDetector插件的模型加载路径modelPath
+```reasonerConfig.resnetModelPath = "${Resnet18.om模型路径}"```
 
 配置ResnetDetector插件的模型加载路径labelPath
-```c++ reasonerConfig.resnetLabelPath = "${resnet18.names路径}";```
+```reasonerConfig.resnetLabelPath = "${resnet18.names路径}";```
 
 其他可配置项DECODE_FRAME_QUEUE_LENGTH DECODE_FRAME_WAIT_TIME SAMPLING_INTERVAL MAX_SAMPLING_INTERVAL
-```c++ DECODE_FRAME_QUEUE_LENGTH = 100; DECODE_FRAME_WAIT_TIME = 10; SAMPLING_INTERVAL = 24; MAX_SAMPLING_INTERVAL = 100;```
-
-
-### 配置环境变量
-
 ```
-# 执行如下命令，打开.bashrc文件
-cd $HOME
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME=${SDK安装路径}
-FFMPEG_PATH=${FFMPEG安装路径}
-
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_PATH}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
+DECODE_FRAME_QUEUE_LENGTH = 100; 
+DECODE_FRAME_WAIT_TIME = 10; 
+SAMPLING_INTERVAL = 24; 
+MAX_SAMPLING_INTERVAL = 100;
 ```
 
 ### 配置SDK路径
 
-配置CMakeLists.txt文件中的`MX_SDK_HOME`与`FFMPEG_PATH`环境变量
+配置CMakeLists.txt文件中的`FFMPEG_PATH`环境变量
 
 ```
-set(MX_SDK_HOME ${SDK安装路径}/mxVision)
 set(FFMPEG_PATH {ffmpeg实际安装路径})
 
 ```
@@ -173,14 +161,8 @@ cmake ..
 
 make
 
-Scanning dependencies of target sample
-[ 11%] Building CXX object CMakeFiles/sample.dir/main.cpp.o
-[ 22%] Building CXX object CMakeFiles/sample.dir/StreamPuller/StreamPuller.cpp.o
-[ 33%] Building CXX object CMakeFiles/sample.dir/VideoDecoder/VideoDecoder.cpp.o
-[ 44%] Building CXX object CMakeFiles/sample.dir/ImageResizer/ImageResizer.cpp.o
-[ 66%] Building CXX object CMakeFiles/sample.dir/ResnetDetector/ResnetDetector.cpp.o
-[ 77%] Building CXX object CMakeFiles/sample.dir/MultiChannelVideoReasoner/MultiChannelVideoReasoner.cpp.o
-[ 88%] Building CXX object CMakeFiles/sample.dir/FrameSkippingSampling/FrameSkippingSampling.cpp.o
+....
+
 [100%] Linking CXX executable ../sample
 [100%] Built target sample
 # sample就是CMakeLists文件中指定生成的可执行文件。
@@ -188,7 +170,6 @@ Scanning dependencies of target sample
 
 >  ② 运行项目根目录下的`build.sh`
 ```bash
-chmod +x build.sh
 bash build.sh
 ```
 ### 执行脚本
@@ -196,7 +177,6 @@ bash build.sh
 执行`run.sh`脚本前请先确认可执行文件`sample`已生成。
 
 ```
-chmod +x run.sh
 bash run.sh
 ```
 

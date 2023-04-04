@@ -22,11 +22,6 @@ cur_path=$(cd "$(dirname "$0")" || exit; pwd)
 # build type
 build_type="Release"
 
-function prepare_env()
-{
-   export LD_LIBRARY_PATH=/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/:$LD_LIBRARY_PATH
-}
-
 function prepare_path() {
     if [ -d "$1" ]; then
       rm -rf "$1"
@@ -40,7 +35,6 @@ function prepare_path() {
 
 function build() {
     echo "current dir: $cur_path"
-    prepare_env
     path_build=${cur_path}/build
     prepare_path "$path_build"
 

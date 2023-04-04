@@ -11,9 +11,10 @@
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)。支持的SDK版本为[2.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk)。
-
-MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 特性及适用场景
 
@@ -79,42 +80,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 注：红色为本项目开发插件 蓝色为沿用其他项目开发插件 其余为SDK内置插件
 
-## 2 环境依赖
+## 1 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
-| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
-| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
-
-在编译运行项目前，需要设置环境变量：
-
-- 环境变量介绍
-
-```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=${install_path}
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-#用于设置python3.9.2库文件路径
-export LD_LIBRARY_PATH=/usr/local/python3.9.2/lib:$LD_LIBRARY_PATH
-#如果用户环境存在多个python3版本，则指定使用python3.9.2版本
-export PATH=/usr/local/python3.9.2/bin:$PATH
-```
-
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径;install_path替换为开发套件包所在路径。LD_LIBRARY_PATH用以加载开发套件包中lib库。
-
-
-
-## 3 依赖安装
-
-推理中涉及到第三方软件依赖如下表所示。
+推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
 
 | 依赖软件 | 版本       | 说明                           |                                                     使用教程 |
 | -------- | ---------- | ------------------------------ | -----------------------------------------------------------: |
@@ -122,9 +90,15 @@ export PATH=/usr/local/python3.9.2/bin:$PATH
 | ffmpeg   | 2021-07-21 | 实现mp4格式视频转为264格式视频 | [链接]([guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/pc端ffmpeg安装教程.md)) |
 | python   | 3.9.2      | 与SDK配套                      | [链接]([Linux（Ubuntu）系统安装Python (biancheng.net)](http://c.biancheng.net/view/4162.html)) |
 
+在编译运行项目前，需要设置环境变量：
 
+将${SDK_INSTALL_PATH}替换为自己的SDK安装路径; 
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
-## 4 模型转换
+## 2 模型转换
 
 本项目中适用的模型是yolov3模型，yolov3模型可以在昇腾官网ModelZoo直接下载：[YOLOv3-昇腾社区 (hiascend.com)]([ATC YOLOv3(FP16)-昇腾社区 (hiascend.com)](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4))。下载后使用模型转换工具 ATC 将 pb 模型转换为 om 模型，模型转换工具相关介绍参考链接：[https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md) 。
 
@@ -133,9 +107,9 @@ export PATH=/usr/local/python3.9.2/bin:$PATH
 从上述下载链接中下载yolov3模型解压缩文件yolov3_tf.pb至 ./model 文件夹下，进入 `./models` 文件夹下执行命令：
 
 ```
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 ```
-
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
 执行该命令后会在当前文件夹下生成项目需要的模型文件 yolov3.om。执行后终端输出为：
 
 ```
@@ -147,7 +121,7 @@ ATC run success, welcome to the next use.
 
 
 
-## 5 准备
+## 3 准备
 
 按照第3小结**软件依赖**安装live555和ffmpeg，按照 [Live555离线视频转RTSP说明文档]([guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md · Ascend/docs-openmind - Gitee.com](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555离线视频转RTSP说明文档.md))将mp4视频转换为h264格式。并将生成的264格式的视频上传到`live/mediaServer`目录下，然后修改collision.pipeline文件中mxpi_rtspsrc0的内容。
 
@@ -176,7 +150,7 @@ ATC run success, welcome to the next use.
                 "factory": "mxpi_videoencoder",
                 "next": "queue7"
             },
-## 6 编译与运行
+## 4 编译与运行
 
 **步骤1** 按照第2小结**环境依赖**中的步骤设置环境变量。
 
@@ -195,14 +169,14 @@ bash build.sh
 **步骤5** 运行。回到主目录下，在主目录下执行命令：
 
 ```
-python3.9.2 collision.py
+python3 collision.py
 ```
 
 命令执行成功后会在当前目录下生成检测结果视频文件out_collision.h264,查看文件验证目标跟踪结果。
 
 
 
-## 7 结果展示（部分截图）
+## 5 结果展示（部分截图）
 
 生成的out_collision.h264文件在本地我们可以用适配.h264文件格式的视频播放软件进行播放。也可以使用ffmpeg转换成.mp4格式进行本地播放。
 
@@ -214,7 +188,7 @@ ffmpeg -i out_collision.h264 -vcodec h264 out_collision.mp4
 
 
 
-## 8 常见问题
+## 6 常见问题
 
 视频编码参数配置错误
 

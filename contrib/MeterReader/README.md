@@ -6,11 +6,16 @@
 
 ### 1.1 支持的产品
 
-昇腾 310（推理）
+昇腾 310B1（推理）
 
 ### 1.2 支持的版本
 
-本样例配套的 CANN 版本为 5.0.4，MindX SDK 版本为 2.0.4。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 MindX SDK 安装前准备可参考[《用户指南》安装教程](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/quick_start/1-1%E5%AE%89%E8%A3%85SDK%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6.md)
 
@@ -83,7 +88,7 @@ MindX SDK 安装前准备可参考[《用户指南》安装教程](https://gitee
 
 ### 1.5 技术实现流程图
 <ol>
-<li>基础环境：Ascend 310、mxVision、Ascend-CANN-toolkit、Ascend Driver
+<li>基础环境：mxVision、Ascend-CANN-toolkit
 <li>模型转换：
 
 PyTorch模型转昇腾离线模型：yolov5.onnx  -->  yolov5.om
@@ -138,9 +143,9 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 |   软件名称     |    版本     |
 | :-----------: | :---------: |
 |    ubuntu     | 18.04.1 LTS |
-|   MindX SDK   |    2.0.4    |
+|   MindX SDK   |    5.0RC1   |
 |    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
+|     CANN      |    310使用6.3.RC1<br>310B使用6.2.RC1   |
 |     numpy     |   1.23.4    |
 | opencv-python |    4.6.0    |
 
@@ -149,8 +154,8 @@ MindX SDK开发套件部分可参考[MindX SDK开发套件安装指导](https://
 ### 2.2 导入基础环境
 
 ```bash
-. /usr/local/Ascend/ascend-toolkit/set_env.sh
-. ${SDK安装路径}/mxVision/set_env.sh
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 ## 3 模型转换及依赖安装
@@ -175,7 +180,7 @@ MindX SDK开发套件部分可参考[MindX SDK开发套件安装指导](https://
 
 进入"\${MeterReader代码根目录}/models/yolov5"目录，执行以下命令将"det.onnx"模型转换成"det.om"模型:
 ```bash
-atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg --soc_version=Ascend310 
+atc --model=det.onnx --framework=5 --output=det  --insert_op_conf=det_aipp.cfg --soc_version=Ascend310B1 
 ```
 
 出现以下语句表示命令执行成功，会在当前目录中得到"det.om"模型文件。
@@ -209,7 +214,7 @@ pip3 install paddle2onnx
 进入"\${MeterReader代码根目录}/models/deeplabv3"目录，执行以下命令将"seg.onnx"模型转换成"seg.om"模型
   ```bash
   cd ${MeterReader代码根目录}/models/deeplabv3
-  atc --model=seg.onnx --framework=5  --output=seg --insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310
+  atc --model=seg.onnx --framework=5  --output=seg --insert_op_conf=seg_aipp.cfg  --input_shape="image:1,3,512,512"  --input_format=NCHW --soc_version=Ascend310B1
   ```
 
 出现以下语句表示命令执行成功，会在当前目录中得到seg.om模型文件。
@@ -315,8 +320,8 @@ python match.py
 
 * 修改main.py原第64行代码
   ```python
-  64 show_animation = False
-  65 if not args.no_animation:
+  60 show_animation = False
+  61 if not args.no_animation:
   ```
 
 * 在main.py原第243行添加代码
@@ -374,6 +379,19 @@ python seg_evaluate.py
 **解决方案：**
 
 在转换模型时必须要在AIPP做色域转换，要不然模型输入不正确。
+
+### 6.2 精度推理报错
+
+若运行精度推理时出现如下报错：
+```
+AttributeError: 'FigureCanvasAgg' object has no attribute 'set_window_title'
+```
+原因是matplotlib版本变动，修改方式如下：
+```
+原始代码：fig.canvas.set_window_title(...)
+
+修改后：fig.canvas.manager.set_window_title(...)
+```
 
 
 

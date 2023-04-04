@@ -5,13 +5,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310、Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
+支持的SDK版本为5.0.RC1。
 
-CANN版本为5.0.4。
+CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
 
 ### 1.3 代码目录结构与说明
 
@@ -48,30 +48,18 @@ CANN版本为5.0.4。
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 20.2.rc1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 5.0.RC1        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 310使用6.3.RC1，310B使用6.2.RC1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 
 
-在编译运行项目前，需要设置环境变量：
+在编译运行项目前，需要执行如下两个环境配置脚本设置环境变量：
 
-- 环境变量介绍
-
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-export MX_SDK_HOME=${MX_SDK_HOME}
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/arm64-linux/atc/ccec_compiler/bin:${install_path}/arm64-linux/atc/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=/usr/local/python3.9.2/bin:${MX_SDK_HOME}/python
-export ${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${install_path}/acllib/lib64:/usr/local/Ascend/driver/lib64:${MX_SDK_HOME}/include:${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-export ASCEND_OPP_PATH=${install_path}/opp
-export GST_DEBUG=3
-```
-
-
 
 ## 依赖下载
 
@@ -92,21 +80,13 @@ export GST_DEBUG=3
 
 pb文件转换为om文件
 
-1. 设置环境变量：
+1. 执行如下脚本设置环境变量：
 
 ```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-
-export ASCEND_OPP_PATH=${install_path}/opp
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 ```
 
-2. 运行atc工具将pb模型文件转为om模型，运行命令如下：
+2. 运行atc工具将pb模型文件转为om模型，运行命令如下。注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ```
 atc --model=./face_mask_detection.pb --framework=3 --output=./aipp --output_type=FP32 --soc_version=Ascend310 --input_shape="data_1:1,260,260,3" --input_format=NHWC --insert_op_conf=./face_mask.aippconfig

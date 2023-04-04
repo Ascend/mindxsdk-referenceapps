@@ -10,7 +10,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+支持昇腾310B芯片
 
 ### 1.2 软件方案介绍
 
@@ -58,13 +58,13 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubantu 18.04。
 
 | 软件名称 | 版本   |
-| :--------: | :------: |
-|Ubantu|18.04|
-|MindX SDK|2.0.4|
-|Python|3.9.2|
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ## 模型转换
 
@@ -88,20 +88,18 @@ python export.py --weights best_v3.pt --img 416 --batch 1 --simplify
 **步骤3** 执行模型转换命令
 
 (1) 配置环境变量
-#### 设置环境变量（请确认install_path路径是否正确）
+#### 设置环境变量
 #### Set environment PATH (Please confirm that the install_path is correct).
-```c
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 (2) 转换模型
 
 ```
-atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version=Ascend310 --insert_op_conf=./aipp.aippconfig --input_shape="images:1,3,416,416" --output_type="Conv_1228:0:FP32;Conv_1276:0:FP32;Conv_1324:0:FP32" --out_nodes="Conv_1228:0;Conv_1276:0;Conv_1324:0"
+atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version=Ascend310B1 --insert_op_conf=./aipp.aippconfig --input_shape="images:1,3,416,416" --output_type="Conv_1228:0:FP32;Conv_1276:0:FP32;Conv_1324:0:FP32" --out_nodes="Conv_1228:0;Conv_1276:0;Conv_1324:0"
 ```
 ## 使用场景概括
 
@@ -132,31 +130,13 @@ atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version
 
 **步骤1** 
 
-修改CMakeLists.txt文件 
-```
-将set(MX_SDK_HOME ${SDK安装路径}) 中的${SDK安装路径}替换为实际的SDK安装路径
-```
-
-**步骤2** 
-
-ASCEND_HOME Ascend安装的路径，一般为/usr/local/Ascend
-LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及libyolov3postprocess.so的路径
-```
-export ASCEND_HOME=/usr/local/Ascend
-export ASCEND_VERSION=nnrt/latest
-export ARCH_PATTERN=.
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
-```
-
-**步骤3** 
-
 cd到mxBase_wheatDetection目录下，执行如下编译命令：
 
 ```
 bash build.sh
 ```
 
-**步骤4** 
+**步骤2** 
 
 制定jpg图片进行推理，将需要进行推理的图片放入mxBase_wheatDetection目录下的新文件夹中，例如mxBase_wheatDetection/test。 eg:推理图片为xxx.jpg
 cd 到mxBase_wheatDetection目录下

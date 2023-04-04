@@ -23,7 +23,7 @@ using namespace std;
 namespace {
     using namespace MxBase;
 
-    const uint32_t ENCODE_TEST_DEVICE_ID = 1;
+    const uint32_t ENCODE_TEST_DEVICE_ID = 0;
     const uint32_t ENCODE_IMAGE_HEIGHT = 1080;
     const uint32_t ENCODE_IMAGE_WIDTH = 1920;
     const uint32_t ENCODE_FRAME_INTERVAL = 25;
@@ -173,7 +173,7 @@ namespace {
         uint32_t x1 = (uint32_t)input.width * THREE_QUARTER;
         uint32_t y1 = (uint32_t)input.height * THREE_QUARTER;
         uint32_t y0 = (uint32_t)input.height * ONE_QUARTER;
-        CropRoiConfig config{x0, x1, y1, y0};
+        CropRoiConfig config {x0, x1, y1, y0};
         ret = g_dvppCommon->VpcCrop(input, output, config);
         if (ret != APP_ERR_OK) {
             LogError << "Failed to crop file: " << filepath;

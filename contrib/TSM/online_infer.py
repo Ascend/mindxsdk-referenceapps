@@ -148,6 +148,7 @@ def main():
                 img_tran[1] = (image[1] / 255-0.456) / 0.224
                 img_tran[2] = (image[2] / 255-0.406) / 0.225
             img_tran = np.array(img_tran).astype(np.float32)
+            img_tran = np.ascontiguousarray(np.expand_dims(img_tran, axis=0))
             img_tran = sdk.Tensor(img_tran)
             img_tran.to_device(DEVICE_ID)
             inputs = [img_tran, ] + buffer

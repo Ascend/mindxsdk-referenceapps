@@ -5,12 +5,21 @@
 [msame-C++工具链接](https://gitee.com/ascend/tools/tree/master/msame)
 
 ### 1.1 支持的产品   
-本项目以昇腾Atlas300I卡为主要的硬件平台。   
+本项目以昇腾Atlas300卡为主要的硬件平台。   
 
 ### 1.2 支持的版本   
-MindX SDK mxVision:2.0.4   
-mxVision version:2.0.4.b096   
-Plat: linux aarch64   
+
+推荐系统为ubuntu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
+
+
+
 ### 1.3 适用场景   
 
 使用于单输入或多输入模型推理   
@@ -43,14 +52,6 @@ Plat: linux aarch64
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称 | 版本   |
-| -------- | ------ |
-| Python   | 3.9.0  |
-| mxVision | 2.0.4  |
-| numpy    | 1.21.2 |
-
 软件依赖说明：
 
 | 依赖软件 | 版本   | 说明                   |
@@ -60,7 +61,8 @@ Plat: linux aarch64
 在编译运行项目前，需要设置环境变量：
 
 ```
-source set_env.sh
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 ## 3 依赖安装

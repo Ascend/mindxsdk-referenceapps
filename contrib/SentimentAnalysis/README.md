@@ -7,12 +7,18 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
-支持的CANN版本为5.0.4。
+推荐系统为ubuntu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
 
 ### 1.3 软件方案介绍
 
@@ -94,39 +100,13 @@
 ![image](sdk/flowChart.jpg)
 
 ## 2 环境依赖
-
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称 | 版本   |
-| -------- | ------ |
-| cmake    | 3.10.2   |
-| mxVision | 2.0.4  |
-| python   | 3.9.2  |
-
 确保环境中正确安装mxVision SDK。
 
 在编译运行项目前，需要设置环境变量：
 
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64:${LD_LIBRARY_PATH}
-export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-```
-
-- 环境变量介绍
-
-```
-MX_SDK_HOME：MindX SDK mxVision的根安装路径，用于包含MindX SDK提供的所有库和头文件。  
-LD_LIBRARY_PATH：提供了MindX SDK已开发的插件和相关的库信息。  
-install_path：ascend-toolkit的安装路径。  
-PATH：添加python的执行路径和atc转换工具的执行路径。  
-LD_LIBRARY_PATH：添加ascend-toolkit和MindX SDK提供的库目录路径。  
-ASCEND_OPP_PATH：atc转换工具需要的目录。 
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 ## 3 模型获取及转换
@@ -144,7 +124,7 @@ ASCEND_OPP_PATH：atc转换工具需要的目录。
 cd $HOME/models/sentiment_analysis
 
 ```
-atc --model=./sentiment_analysis.pb --framework=3 --input_format=ND --output=./sentiment_analysis --input_shape="Input-Token:1,500;Input-Segment:1,500" --out_nodes="dense_1/Softmax:0" --soc_version=Ascend310 --op_select_implmode="high_precision"
+atc --model=./sentiment_analysis.pb --framework=3 --input_format=ND --output=./sentiment_analysis --input_shape="Input-Token:1,500;Input-Segment:1,500" --out_nodes="dense_1/Softmax:0" --soc_version=Ascend310B1 --op_select_implmode="high_precision"
 ```
 
 执行成功后终端输出为：
@@ -166,14 +146,7 @@ cp ./sentiment_analysis.om $HOME/mxbase/model/
 
 **步骤3** 按照第 3 小节 模型获取及转换 中的步骤获得 om 模型文件。
 
-**步骤4** 将本项目代码的文件路径中出现的 ${SDK目录} 替换成自己SDK的存放目录，下面是需要替换的代码。
-
-```
-mxBase目录下的CMakeList.txt中的第13行代码 set(MX_SDK_HOME ${SDK目录})
-sdk/pipeline目录下sentiment_analysis.pipeline文件中的第26行 "postProcessLibPath": "${SDK目录}/lib/modelpostprocessors/libresnet50postprocess.so"
-```
-
-**步骤5** pipeline项目运行在sdk目录下执行命令：
+**步骤4** pipeline项目运行在sdk目录下执行命令：
 
 ```
 python3 main.py
@@ -181,18 +154,14 @@ python3 main.py
 
 命令执行成功后在out目录下生成分类结果文件 prediction_label.txt，查看结果文件验证分类结果。
 
-**步骤6** mxBase项目在mxBase目录中，执行以下代码进行编译。
+**步骤5** mxBase项目在mxBase目录中，执行以下命令进行编译运行。
 
 ```
 mkdir build
 cd build
 cmake ..
 make
-```
 
-编译完成后，将可执行文件 mxBase_sentiment_analysis 移动到mxBase目录下，执行下面代码运行
-
-```
 ./mxBase_sentiment_analysis ./data/sample.txt
 ```
 
@@ -202,7 +171,7 @@ make
 
 **步骤1** 按照第 4 小节 编译与运行 的步骤将样例运行成功。
 
-**步骤2** 从网址https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/BertTextClassification/data.zip下载后解压，将解压后的test.csv文件分别放在sdk/data目录和mxBase/data目录。
+**步骤2** 从网址 https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SentimentAnalysis/data.zip  下载后解压，将解压后的test.csv文件分别放在sdk/data目录和mxBase/data目录。
 
 **步骤3** pipeline项目中的精度测试文件为sdk/test目录下的test.py，将test.py移到sdk目录下，执行下面代码，得到pipeline的精度测试结果。
 
@@ -217,6 +186,9 @@ Test::test_accuracy();
 ```
 
 ## 5 其他问题
+
 1.本项目的设计限制输入样例为文本文件，其他文件如图片、音频不能进行推理。
+
 2.本项目的模型对中性数据进行分类时预测结果较差，可能有以下几个方面，一是对中性数据的分类本身有一定的难度；二是在训练模型时提供数据集中的中性数据较少，模型对于中性数据的分类效果并不好；三是在模型转换的过程中可能会存在精度的缺失。
 
+3.若使用者是采用的先将代码下载至本地，再上传至服务器的步骤运行代码，词表文件data/vocab.txt可能会编码异常，造成mxbase代码读取词表有误，精度下降的问题；建议使用者直接下载项目文件至服务器运行，避免该问题。

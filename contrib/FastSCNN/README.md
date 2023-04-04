@@ -8,13 +8,17 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台
+本项目以昇腾Atlas310B卡为主要的硬件平台
 
 ### 1.2 支持的版本
 
+推荐系统为ubantu 18.04。
 
-CANN：5.0.2
-SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 
 ### 1.3 软件方案介绍
@@ -68,52 +72,14 @@ SDK：mxVision 2.02（可通过cat SDK目录下的version.info查看）
 
 ​            
 
-## 2 环境依赖
-
-
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称 | 版本   |
-| -------- | ------ |
-| python   | 3.9.2  |
-| cv2      | 4.5.3  |
-| numpy    | 1.21.1 |
-
-
-
-
+## 2 设置环境变量
 
 在编译运行项目前，需要设置环境变量：
-- 环境变量介绍
-
-
-- MX_SDK_HOME 指向SDK安装包路径
-- LD_LIBRARY_PATH  用于指定查找共享库（动态链接库）时除了默认路径之外的其他路径。
-- PYTHONPATH   Python中一个重要的环境变量，用于在导入模块的时候搜索路径
-- GST_PLUGIN_SCANNER   用于查找plugin相关的依赖和库
-- GST_PLUGIN_PATH      用于查找plugin相关的依赖和库
-  
-
-  
-  
-
-具体执行命令
 
 ```
-export MX_SDK_HOME=${自己的SDK安装包路径}  
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/python:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/5.0.2/acllib/lib64:/usr/local/Ascend/driver/lib64
-
-
-export PYTHONPATH=/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python:/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl:${MX_SDK_HOME}/python/usr/local/Ascend/ascend-toolkit/latest/pyACL/python/site-packages/acl
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
-
-
-注：latest是软连接，这里指向CANN5.0.2版本
 
 ## 3.模型转换
 
@@ -132,25 +98,13 @@ pth权重文件和onnx文件的下载链接如下：
 
 1. 下载上述models压缩包，获取best_model.pth和fast_scnn_bs1.onnx模型文件放置FastSCNN/model目录下。
 
-2. 设置环境变量用以使用atc工具：
+2. 进入FastSCNN/model文件夹下执行命令：
 
    ```
-   export install_path=/usr/local/Ascend/ascend-toolkit/latest
-   export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-   export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-   export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH:$LD_LIBRARY_PATH
-   export ASCEND_OPP_PATH=${install_path}/opp
+   atc --framework=5 --model=fast_scnn_bs1.onnx --output=fast_scnn_bs1  --output_type=FP16 --input_format=NCHW --insert_op_conf=./aipp_FastSCnn.aippconfig --input_shape="image:1,3,1024,2048"  --log=debug --soc_version=Ascend310B1 
    ```
 
-   
-
-3. 进入FastSCNN/model文件夹下执行命令：
-
-   ```
-   atc --framework=5 --model=fast_scnn_bs1.onnx --output=fast_scnn_bs1  --output_type=FP16 --input_format=NCHW --insert_op_conf=./aipp_FastSCnn.aippconfig --input_shape="image:1,3,1024,2048"  --log=debug --soc_version=Ascend310 
-   ```
-
-4. 执行该命令会在当前目录下生成项目需要的模型文件fast_scnn_bs1.om。执行后终端输出为：
+3. 执行该命令会在当前目录下生成项目需要的模型文件fast_scnn_bs1.om。执行后终端输出为：
 
    ```
    ATC start working now, please wait for a moment.

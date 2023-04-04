@@ -8,14 +8,19 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310B卡为主要的硬件平台。
 
 
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4
-支持的cann版本为5.0.4
+推荐系统为ubuntu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 
 ### 1.3 软件方案介绍
@@ -58,31 +63,12 @@
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称 | 版本   |
-| -------- | ------ |
-| cmake    | 3.5+   |
-| mxVision | 2.0.4  |
-| python   | 3.9.2  |
-
 确保环境中正确安装mxVision SDK。
 
 在编译运行项目前，需要设置环境变量：
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64/stub:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
-```
-
-- 环境变量介绍
-
-```
-MX_SDK_HOME: mxVision SDK 安装路径
-LD_LIBRARY_PATH: lib库路径
-PYTHONPATH: python环境路径
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 
@@ -95,7 +81,7 @@ PYTHONPATH: python环境路径
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand`` 文件夹下，文件名为：yolov3_hand.onnx 。
 2. 进入 ``model/hand`` 文件夹下执行命令：
 ```
-bash model_convertion.sh
+atc --model=yolov3_hand.onnx --framework=5 --output=hand --input_format=NCHW --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input.1:1,3,416,416" --insert_op_conf=./aipp.cfg --log=info
 ```
 执行该命令后会在当前文件夹下生成项目需要的模型文件 hand.om。执行后终端输出为：
 ```
@@ -111,9 +97,9 @@ ATC run success, welcome to the next use.
 
 自行转换模型步骤如下：
 1. 从上述 onnx 模型下载链接中下载 onnx 模型至 ``model/hand_keypoint`` 文件夹下，文件名为：resnet_50_size-256.onnx 。
-2. 进入 ``model/hand`` 文件夹下执行命令：
+2. 进入 ``model/keypoint`` 文件夹下执行命令：
 ```
-bash model_convertion.sh
+atc --model=./resnet_50_size-256.onnx --framework=5 --output=hand_keypoint --soc_version=Ascend310B1 --input_shape="input:1, 3, 256, 256" --input_format=NCHW --insert_op_conf=./insert_op.cfg
 ```
 执行该命令后会在当前文件夹下生成项目需要的模型文件 hand_keypoint.om。执行后终端输出为：
 ```
@@ -122,17 +108,15 @@ ATC run success, welcome to the next use.
 ```
 
 ## 4. 运行
-**步骤1** 根据环境SDK的安装路径配置detection.pipeline中的{$MX_SDK_HOME}。
 
-**步骤2** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
+**步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
 
-**步骤3** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``model/hand`` 和 ``model/hand_keypoint`` 目录下。
+**步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``model/hand`` 和 ``model/hand_keypoint`` 目录下。
 
-**步骤4** 网上下载手势图片。
+**步骤3** 网上下载手势图片。
 
-**步骤5** 图片检测。将关于人手手势的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
+**步骤4** 图片检测。将关于人手手势的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
 ```
 python3 main.py test.jpg
 ```
 命令执行成功后在当前目录下生成检测结果文件 result_test.jpg，查看结果文件验证检测结果。
-

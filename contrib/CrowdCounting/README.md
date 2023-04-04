@@ -5,7 +5,7 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+支持昇腾310B芯片
 
 ### 1.2 支持的版本
 
@@ -57,14 +57,9 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 在编译运行项目前，需要设置环境变量：
 
-将下述环境变量中的{MX_INSTALL_PATH}替换为实际的安装路径，一般为/usr/local/Ascend/ascend-toolkit/latest
-
 ```
-export install_path={MX_INSTALL_PATH}
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 ## 3 模型转换
@@ -80,7 +75,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 将上述下载得文件统一放在CrowdCounting/model文件夹下，并使用ATC模型转换工具进行模型转换，参考如下指令:
 
 ```
-atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" --input_format=NCHW --output="count_person.caffe" --soc_version=Ascend310 --insert_op_conf=insert_op.cfg --framework=0 --model="count_person.caffe.prototxt" 
+atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" --input_format=NCHW --output="count_person.caffe" --soc_version=Ascend310B1 --insert_op_conf=insert_op.cfg --framework=0 --model="count_person.caffe.prototxt" 
 ```
 
 得到count_person.caffe.om文件
@@ -89,21 +84,9 @@ atc --input_shape="blob1:1,3,800,1408" --weight="count_person.caffe.caffemodel" 
 
 **步骤1** 
 
-修改CMakeLists.txt文件 将set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")中的"$ENV{MX_SDK_HOME}"替换为实际的SDK安装路径
-
-**步骤2** 
-
 cd到CrowdCounting目录下，执行如下编译命令： bash build.sh
 
-**步骤3** 
-
-设置环境变量 ASCEND_HOME Ascend安装的路径，将${MX_SDK_HOME}改为实际安装路径，一般为/usr/local/Ascend    LD_LIBRARY_PATH 指定程序运行时依赖的动态库查找路径，包括ACL，开源软件库，libmxbase.so以及模型后处理开发的动态链接库路径，比如：libyolov3postprocess.so
-
-```
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/driver/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
-```
-
-**步骤4**
+**步骤2**
 
 下载人群计数图像，需自行在网络找图，暂支持JPG格式，任意图像分辨率。再将该下载的图片作为推理图片放入CrowdCounting目录下，执行：
 
@@ -111,11 +94,12 @@ export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib/modelpostprocessors:${MX_SDK_HOME}/lib
 ./crowd_counting  ./xxx.jpg
 ```
 
+检测结果保存在result.jpg中
 ## 5 软件依赖说明
 
-| 依赖软件 | 版本  | 说明                                                         |
-| -------- | ----- | ------------------------------------------------------------ |
-| mxVision | 2.0.4 | 提供昇腾计算语言(AscendCL)的高级编程API，简化插件和推理应用开发。 |
-
+| 依赖软件 | 版本  |                              
+| -------- | ----- | 
+| mxVision | 5.0rc1 
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 

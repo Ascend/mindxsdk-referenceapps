@@ -180,9 +180,7 @@ APP_ERROR MxpiPostProcess::Init(std::map<std::string, std::shared_ptr<void>>& co
 {
     LogInfo << "MxpiPostProcess::Init start.";
     APP_ERROR ret = APP_ERR_OK;
-    // Get the property values by key 插件对应的属性值将通过“configParamMap”入参传入，可通过属性名称获取。
-    std::shared_ptr<string> parentNamePropSptr = std::static_pointer_cast<string>(configParamMap["dataSource"]);
-    parentName_ = *parentNamePropSptr.get();
+    parentName_ = dataSource_;
     this->index = 0;
     return APP_ERR_OK;
 }

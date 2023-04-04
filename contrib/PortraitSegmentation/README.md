@@ -18,13 +18,15 @@
 ```
 ## 3 依赖
 
+
+推荐系统为ubuntu 18.04。
+
 | 软件名称 | 版本   |
-| :--------: | :------: |
-|ubantu 18.04|18.04.1 LTS   |
-|MindX SDK|2.0.4|
-|Python| 3.9.2|
-|numpy | 1.18.2 |
-|opencv_python|3.4.0|
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+
 
 请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 `apt-get install libpython3.9`
@@ -38,22 +40,12 @@
 
 在pb文件所在目录下执行以下命令  
 ```
-#设置环境变量（请确认install_path路径是否正确）  
-#Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest    
-
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH 
- 
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg  
-
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH  
-export ASCEND_OPP_PATH=${install_path}/opp    
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
 
 #执行，转换Portrait.pb模型
 #Execute, transform Portrait.pb model.
   
-atc --model=portrait.pb  --input_shape="Inputs/x_input:1,224,224,3"  --framework=3  --output=portrait --insert_op_conf=insert_op.cfg --soc_version=Ascend310 
+atc --model=portrait.pb  --input_shape="Inputs/x_input:1,224,224,3"  --framework=3  --output=portrait --insert_op_conf=insert_op.cfg --soc_version=Ascend310B1 
 ```
 执行完模型转换脚本后，若提示如下信息说明模型转换成功，会在output参数指定的路径下生成portrait.om模型文件。  
 ```
@@ -71,27 +63,7 @@ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5
 ```
 2. 配置
 ```   
-#执行如下命令，打开.bashrc文件
-cd $home
-vi .bashrc
-#在.bashrc文件中添加以下环境变量:
-
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export PYTHONPATH=${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-#保存退出.bashrc
-#执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 3. 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
