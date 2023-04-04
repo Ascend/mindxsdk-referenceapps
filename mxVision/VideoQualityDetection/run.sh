@@ -15,7 +15,6 @@
 # limitations under the License.
 
 set -e
-
 export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib":"${MX_SDK_HOME}/opensource/lib":"${MX_SDK_HOME}/opensource/lib64":"/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64":${LD_LIBRARY_PATH}
 export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
 export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0":"${MX_SDK_HOME}/lib/plugins"
@@ -23,7 +22,7 @@ export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0":"${MX_SDK_H
 # complie
 g++ main.cpp -I "${MX_SDK_HOME}/include/" -I "${MX_SDK_HOME}/opensource/include/" -L "${MX_SDK_HOME}/lib/" \
 -L "${MX_SDK_HOME}/opensource/lib/" -std=c++11 -pthread -D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private -fPIC -fstack-protector-all \
--g -Wl,-z,relro,-z,now,-z,noexecstack -pie -Wall -lglog -lmxbase -lstreammanager -lcpprest -lprotobuf -o main
+-g -Wl,-z,relro,-z,now,-z,noexecstack -pie -Wall -lglog -lmxbase -lstreammanager -lcpprest -lmindxsdk_protobuf -o main
 
 # run
 ./main

@@ -69,6 +69,8 @@ ReID
 |Python|  3.9.12  |
 |numpy |  1.23.4  |
 |opencv_python| 4.6.0.66 |
+
+（如果需要在310B上运行，mxVision版本需要5.0.RC1，CANN版本需要6.2.RC1。）
 ```
 apt-get install libpython3.9
 ```
@@ -135,7 +137,7 @@ python3 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_tri
 ***1*** 设置环境变量
 > 请重复一次4.1中步骤3的“设置环境变量（请确认install_path路径是否正确）”操作
 
-***2*** 使用ATC将.onnx文件转成为.om文件
+***2*** 使用ATC将.onnx文件转成为.om文件(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 ```
 atc --framework=5 --model=ReID.onnx --output=ReID --input_format=NCHW --input_shape="image:1,3,256,128" --insert_op_conf=ReID_onnx2om.cfg --log=debug --soc_version=Ascend310
 ```
@@ -169,13 +171,6 @@ ATC run success, welcome to the next use.
 [Person Search Demo](https://github.com/songwsx/person_search_demo/tree/master/data/samples)
 ，也可以通过[Huawei Cloud](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ReID/ReID%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6.rar)
 获取，然后将获取的图片放在“项目所在目录/data/gallerySet”中 （gallery下的图片必须是1920*1080大小的jpg）
-
-```
-python3 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath='data/cropOwnDataset'
-```
-**步骤3** 根据“项目所在目录/data/cropOwnDataset”中的结果，选择自己想要查询的行人，按照market1501的命名方式命名（请务必按照这种命名方式命名，否则行人的标识会出现问题）  
-> 将同一个行人的不同照片重命名成“xxxx_xx”，其中前4位是行人ID，后2位是该照片ID，例：第1个行人的第2张照片：0001_02  
-> 将制作好的行人底库图片放在“项目所在目录/data/querySet”中
 
 
 5.2 运行

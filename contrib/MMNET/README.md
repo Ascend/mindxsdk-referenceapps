@@ -15,7 +15,10 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4，CANN版本为 20.2.0 
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 代码目录结构与说明
 
@@ -47,11 +50,10 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 ## 2 环境依赖
 
-| 软件名称  | 版本  |
-| --------- | ----- |
-| MindX SDK | 2.0.4 |
-| python    | 3.9.2   |
-| CANN      | 5.0.4  |
+| 软件名称 | 版本   |
+| -------- | ------ |
+| cmake    | 3.10.2   |
+| python   | 3.9.2  |
 | opencv2   |       |
 | numpy     |       |
 
@@ -106,9 +108,9 @@ aipp_op {
 在确保环境变量设置正确后，在pb文件所在目录下执行以下命令：
 
 ```
-atc --model=mmnet.pb --framework=3 --output=mmnet --soc_version=Ascend310 --insert_op_conf=mmnet.aippconf --input_shape="input_x:1,256,256,3"
+atc --model=mmnet.pb --framework=3 --output=mmnet --soc_version=Ascend310B1 --insert_op_conf=mmnet.aippconf --input_shape="input_x:1,256,256,3"
 ```
-
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
 执行完模型转换脚本后，若提示如下信息说明模型转换成功，会在output参数指定的路径下生成mmnet.om模型文件。
 
 ```python
