@@ -48,12 +48,11 @@
 
 ### 3.3 预准备
 
-脚本转换为unix格式以及添加脚本执行权限
-
+脚本转换为unix格式
 ```bash
 sed -i 's/\r$//' ./*.sh
-chmod +x ./*.sh
 ```
+给script目录下的脚本添加执行权限
 
 ### 3.4 模型转换
 yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)  

@@ -30,12 +30,13 @@
 
 ## 3.预准备
 
-脚本转换为unix格式以及添加脚本执行权限
+脚本转换为unix格式
 
 ```bash
 sed -i 's/\r$//' ./script/*.sh
-chmod +x ./script/*.sh
 ```
+
+给script目录下的脚本添加执行权限
 
 ## 4.编译
 
