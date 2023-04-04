@@ -20,12 +20,13 @@ bash model_conversion.sh
 将main.py 文件中 mxpi_objectpostprocessor0插件中的postProcessLibPath路径中的${SDK安装路径} 替换为自己的SDK安装路径
 
 ### 配置环境变量
-将${SDK安装路径}替换为自己的SDK安装路径; 将${MX_SDK_HOME}替换成对应路径
-
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
+. ${ascend_toolkit_path}/set_env.sh
+. ${SDK-path}/set_env.sh
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64
+# 环境变量介绍
+SDK-path: SDK mxVision 安装路径
+ascend-toolkit-path: CANN 安装路径
 ```
 
 ### 运行

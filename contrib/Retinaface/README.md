@@ -6,11 +6,11 @@ Retinaface基于MindX_SDK开发，在昇腾芯片上进行目标检测，并实�
 
 ### 1.1 支持的产品
 
-本产品以昇腾310（推理）卡为硬件平台。
+本项目以昇腾Atlas310、Atlas310B卡为主要硬件平台。
 
 ### 1.2 支持的版本
 
-该项目支持的SDK版本为2.0.4，CANN版本为5.0.4。
+支持的SDK版本为 5.0.RC1, CANN 版本为 6.0.RC1。
 
 ### 1.3 软件方案介绍
 
@@ -77,9 +77,9 @@ Retinaface基于MindX_SDK开发，在昇腾芯片上进行目标检测，并实�
 
 | 软件名称            | 版本  | 说明                          | 获取方式                                                  |
 | ------------------- | ----- | ----------------------------- | :-------------------------------------------------------- |
-| MindX SDK           | 2.0.4 | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk)       |
+| MindX SDK           | 5.0.RC1 | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk)       |
 | ubuntu              | 18.04 | 操作系统                      | 请上ubuntu官网获取                                        |
-| Ascend-CANN-toolkit | 5.0.4 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
+| Ascend-CANN-toolkit | 6.0.RC1 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
 
 
 
@@ -165,7 +165,7 @@ git clone https://github.com/biubug6/Pytorch_Retinaface.git
 模型转换步骤如下：
 
 1、`cd`到`model`文件夹，运行
-
+若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1
 ````
 bash run.sh
 ````
