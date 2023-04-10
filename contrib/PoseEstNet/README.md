@@ -49,8 +49,8 @@ PoseEstNet
 | 软件名称 | 版本   |
 | :--------: | :------:    |
 |cmake       | 3.5+        | 
-|mxVision    | 2.0.4       |
-|CANN        | 5.0.4       |
+|mxVision    | 5.0.RC     |
+|CANN        | 310使用6.3.RC1，310B使用6.2.RC1    |
 |Python      | 3.9.12      |
 
 注：MindX SDK使用python版本为3.9.12，如出现无法找到python对应lib库请在root下安装python3.9开发库  
@@ -86,7 +86,7 @@ apt-get install libpython3.9
 **步骤3** .om模型转换  
 以下操作均在“项目所在目录/models”路径下进行：  
 
-***1*** 使用ATC将.pb文件转成为.om文件
+***1*** 使用ATC将.pb文件转成为.om文件，注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
 ```
@@ -129,7 +129,7 @@ python3 tools/pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.y
 
 **步骤2** .onnx模型转.om模型
 
-***1*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(aipp_hrnet_256_256.aippconfig在本项目models目录下，需要自行复制到转模型环境的目录，注意文件路径）
+***1*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(aipp_hrnet_256_256.aippconfig在本项目models目录下，需要自行复制到转模型环境的目录，注意文件路径），注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 atc --framework=5 --model=PoseEstNet.onnx --output=PoseEstNet --input_format=NCHW --input_shape="image:1,3,256,256" --insert_op_conf=aipp_hrnet_256_256.aippconfig --log=debug --soc_version=Ascend310
 ```
@@ -185,10 +185,8 @@ ATC run success, welcome to the next use.
 ```
 步骤详见5： 数据集
 ```
-### 7.4 安装插件编译所需要的NumCpp库
+### 7.4 安装插件编译所需要的NumCpp库，[Github官网链接](https://github.com/dpilger26/NumCpp)，注意下载Version_2.8.0版本。下载后，进入plugins目录，将NumCpp解压至该目录。
 ```
-cd plugins
-git clone https://github.com/dpilger26/NumCpp
 mkdir include
 cp -r  NumCpp/include/NumCpp ./include/
 ```
@@ -224,7 +222,7 @@ PoseEstNet.pipeline:
                 "factory": "mxpi_objectpostprocessor",
                 "next": "mxpi_imagecrop0"
         },
-    # 配置mxpi_tensorinfer插件的PoseEstNet.om模型加载路径（lines 68-75 以及 92-99）
+    # 配置mxpi_tensorinfer插件的PoseEstNet.om模型加载路径（lines 68-75）
     lines 68-75：
         "mxpi_tensorinfer2":{
             "props": {

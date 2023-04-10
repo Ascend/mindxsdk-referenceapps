@@ -5,7 +5,7 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+本项目以昇腾Atlas310、Atlas310B卡为主要硬件平台。
 
 ### 1.2 支持的版本
 
@@ -17,7 +17,6 @@ eg：版本号查询方法，在Atlas产品环境下，运行命令：
 npu-smi info
 ```
 
-版本号为Mind SDK 3.0RC3
 
 ### 1.3 软件方案介绍
 
@@ -60,12 +59,11 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 | 软件名称      | 版本             |
 | ------------- | ---------------- |
 | ubuntu        | 18.04.1 LTS      |
-| MindX SDK     | mxVision-3.0.RC3 |
 | Python        | 3.9.2            |
-| CANN          | 5.1.RC2.alpha008 |
 | numpy         | 1.22.3           |
 | opencv-python | 4.5.5            |
 | onnxsim       | 0.4.10           |
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
 
 在编译运行项目前，需要设置环境变量：
 
@@ -136,6 +134,7 @@ onnxsim IAT_lol.onnx IAT_lol-sim.onnx
 ```
 atc --framework=5 --model=./IAT_lol-sim.onnx --input_shape="input_1:1,3,400,600" --output=IAT_lol-sim --soc_version=Ascend310
 ```
+(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 
 **步骤4** （运行及输出结果）
 

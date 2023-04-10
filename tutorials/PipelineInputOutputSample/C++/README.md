@@ -8,19 +8,12 @@
 
 将项目目录从mindxsdk-referenceapps\tutorials\PipelineInputOutputSample\C++移动到运行样例的目录下
 
-### 配置SDK路径
-配置CMakeLists.txt 中的'MX_SDK_HOME'环境变量，配置为MindX SDK的安装路径； ${SDK安装路径}替换为用户环境SDK安装路径。
-set(MX_SDK_HOME /usr/local/Ascend/mxVision)
-/usr/local/Ascend/mxVision 需要替换为自己的SDK安装路径
-
-```
-set(MX_SDK_HOME ${SDK安装路径}/mxVision)
-```
 
 ### 配置环境变量
 执行以下命令：
 ```
-. ${MX_SDK_HOME}/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
+. ${MX_SDK_HOME}/set_env.sh
+# ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
 
 ### 编译运行
@@ -31,7 +24,7 @@ set(MX_SDK_HOME ${SDK安装路径}/mxVision)
 
 返回上级目录 cd ..
 
-执行 ./sample 或者执行 ./sample 参数
+执行 ./IOsample 或者执行 ./IOsample 参数
 其中参数为 0,1,2 参数对应的调用插件可以参考快速指导
 
 ### 查看结果
