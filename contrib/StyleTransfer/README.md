@@ -10,6 +10,9 @@
 
 初始模型、推理模型及转换脚本下载：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
 
+适用于:
+Ascend 310  
+Ascend 310B
 ### 项目实现流程及适用场景
 
 ![avatar](./README_img/pic.png)
@@ -168,6 +171,8 @@ aipp_op{
 atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="maps"  --log=debug --soc_version=Ascend310B1 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
 此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 转换完成后存放在/models中。
 
 **步骤6** 下载测试集

@@ -11,7 +11,8 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 
 ### 1.1 支持的产品
 
-项目所用的硬件平台：Ascend310
+Ascend 310  
+Ascend 310B
 
 ### 1.2 支持的版本
 
@@ -111,6 +112,8 @@ aipp_op {
 atc --model=mmnet.pb --framework=3 --output=mmnet --soc_version=Ascend310B1 --insert_op_conf=mmnet.aippconf --input_shape="input_x:1,256,256,3"
 ```
 此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 执行完模型转换脚本后，若提示如下信息说明模型转换成功，会在output参数指定的路径下生成mmnet.om模型文件。
 
 ```python

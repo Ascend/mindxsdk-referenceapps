@@ -7,6 +7,10 @@
 - 对于行人底库：将底库图片调整大小，利用ReID模型提取相应的特征向量。    
 - 行人检索：将查询图片中行人的特征向量与底库中的特征向量，为每个查询图片中的行人检索最有可能的ID，通过识别框和文字信息进行可视化标记。
 
+适用于：
+Ascend 310  
+Ascend 310B
+
 ## 2 目录结构
 本工程名称为ReID，工程目录如下图所示：
 ```
@@ -68,6 +72,9 @@ apt-get install libpython3.9
 ```
 atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
 ```
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 - 执行完模型转换命令后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
 （可以通过修改output参数来重命名这个.om文件）
 ```

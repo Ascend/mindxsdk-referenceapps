@@ -5,7 +5,8 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片推理。
+Ascend 310  
+Ascend 310B
 
 ### 1.2 支持的版本
 
@@ -104,6 +105,8 @@
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 ```
 此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 更多的atc模型转换信息可以参考此链接样例：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 deepmar模型，对于无aipp设置的离线模型的转换，只需将atc转换时的 --insert_op_conf参数删除即可。
