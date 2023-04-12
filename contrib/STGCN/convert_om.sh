@@ -23,7 +23,7 @@ atc \
     --enable_small_channel=1 \
     --log=error \
     --input_format=NCHW \
-    --soc_version=Ascend310 \
+    --soc_version=Ascend310B1 \
     --op_select_implmode=high_precision \
     --output_type=FP32
 

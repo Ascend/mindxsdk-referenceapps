@@ -50,7 +50,7 @@ PoseEstNet
 | :--------: | :------:    |
 |cmake       | 3.5+        | 
 |mxVision    | 5.0.RC     |
-|CANN        | 310使用6.3.RC1，310B使用6.2.RC1    |
+|CANN        | 6.2.RC1   |
 |Python      | 3.9.12      |
 
 注：MindX SDK使用python版本为3.9.12，如出现无法找到python对应lib库请在root下安装python3.9开发库  
@@ -86,9 +86,9 @@ apt-get install libpython3.9
 **步骤3** .om模型转换  
 以下操作均在“项目所在目录/models”路径下进行：  
 
-***1*** 使用ATC将.pb文件转成为.om文件，注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
+***1*** 使用ATC将.pb文件转成为.om文件。
 ```
-atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
+atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
 ```
 ***2*** 执行完模型转换脚本后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
 （可以通过修改output参数来重命名这个.om文件）
@@ -129,9 +129,9 @@ python3 tools/pth2onnx.py --cfg experiments/veri/hrnet/w32_256x256_adam_lr1e-3.y
 
 **步骤2** .onnx模型转.om模型
 
-***1*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(aipp_hrnet_256_256.aippconfig在本项目models目录下，需要自行复制到转模型环境的目录，注意文件路径），注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
+***1*** 进入.onnx文件所在目录，使用ATC将.onnx文件转成为.om文件(aipp_hrnet_256_256.aippconfig在本项目models目录下，需要自行复制到转模型环境的目录，注意文件路径）。
 ```
-atc --framework=5 --model=PoseEstNet.onnx --output=PoseEstNet --input_format=NCHW --input_shape="image:1,3,256,256" --insert_op_conf=aipp_hrnet_256_256.aippconfig --log=debug --soc_version=Ascend310
+atc --framework=5 --model=PoseEstNet.onnx --output=PoseEstNet --input_format=NCHW --input_shape="image:1,3,256,256" --insert_op_conf=aipp_hrnet_256_256.aippconfig --log=debug --soc_version=Ascend310B1
 ```
 ***2*** 执行完模型转换脚本后，若提示如下信息说明模型转换成功（同样的，可以通过修改output参数来重命名这个.om文件）
 ```

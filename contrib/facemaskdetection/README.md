@@ -5,13 +5,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310、Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500 A2 / Atlas 200I DK A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
 支持的SDK版本为5.0.RC1。
 
-CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
+CANN版本为6.2.RC1。
 
 ### 1.3 代码目录结构与说明
 
@@ -49,7 +49,7 @@ CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
 | mxVision            | 5.0.RC1        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 310使用6.3.RC1，310B使用6.2.RC1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| Ascend-CANN-toolkit | 6.2.RC1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 
@@ -78,7 +78,7 @@ CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
 
 #### 步骤1 模型转换
 
-pb文件转换为om文件
+pb文件转换为om文件，若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
 
 1. 执行如下脚本设置环境变量：
 
@@ -86,10 +86,10 @@ pb文件转换为om文件
 . /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 ```
 
-2. 运行atc工具将pb模型文件转为om模型，运行命令如下。注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+2. 运行atc工具将pb模型文件转为om模型，运行命令如下。
 
 ```
-atc --model=./face_mask_detection.pb --framework=3 --output=./aipp --output_type=FP32 --soc_version=Ascend310 --input_shape="data_1:1,260,260,3" --input_format=NHWC --insert_op_conf=./face_mask.aippconfig
+atc --model=./face_mask_detection.pb --framework=3 --output=./aipp --output_type=FP32 --soc_version=Ascend310B1 --input_shape="data_1:1,260,260,3" --input_format=NHWC --insert_op_conf=./face_mask.aippconfig
 ```
 
 提示 **ATC run success** 说明转换成功

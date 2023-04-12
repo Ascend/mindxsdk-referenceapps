@@ -11,7 +11,7 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310、Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
@@ -22,7 +22,7 @@
 | 软件名称  | 版本  |
 | :-------: | :---: |
 | MindX SDK | 5.0.RC1 |
-| Ascend-CANN-toolkit    | (310使用6.3.RC1，310B使用6.2.RC1) |
+| Ascend-CANN-toolkit    | 6.2.RC1 |
 
 
 ### 1.3 软件方案介绍
@@ -95,7 +95,7 @@
 |    ubuntu     | 18.04.1 LTS |
 |   MindX SDK   |    5.0.RC1    |
 |    Python     |    3.9.2    |
-|     CANN      |    310使用6.3.RC1，310B使用6.2.RC1   |
+|     CANN      |    6.2.RC1   |
 |     numpy     |   1.22.3    |
 | opencv-python |    4.5.5    |
 |     cmake     |    3.5+     |
@@ -124,10 +124,10 @@ YOLOv3 模型参考[实现代码](https://www.hiascend.com/zh/software/modelzoo/
 
 **步骤3** 模型转换。
 
-在`./model/people/`目录下执行以下命令。注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1：
+在`./model/people/`目录下执行以下命令：
 
 ```bash
-atc --model=yolov3_tf.pb --framework=3 --output=yolov3_tf_aipp  --input_format=NHWC --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --insert_op_conf=yolov3_tf_aipp.cfg
+atc --model=yolov3_tf.pb --framework=3 --output=yolov3_tf_aipp  --input_format=NHWC --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --insert_op_conf=yolov3_tf_aipp.cfg
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 yolov3_tf_aipp.om。执行后终端输出为：
@@ -149,10 +149,10 @@ ATC run success, welcome to the next use.
 
 **步骤3** 模型转换。
 
-在`./model/keypoint/`目录下，执行以下命令。注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1：
+在`./model/keypoint/`目录下，执行以下命令：
 
 ```bash
-atc --framework=5 --model=3DMPPE-ROOTNET.onnx --output=3DMPPE-ROOTNET_bs1 --input_format=NCHW --input_shape="image:1,3,256,256;cam_param:1,1" --soc_version=Ascend310
+atc --framework=5 --model=3DMPPE-ROOTNET.onnx --output=3DMPPE-ROOTNET_bs1 --input_format=NCHW --input_shape="image:1,3,256,256;cam_param:1,1" --soc_version=Ascend310B1
 ```
 
 执行该命令后会在当前文件夹下生成项目需要的模型文件 3DMPPE-ROOTNET_bs1.om。执行后终端输出为：

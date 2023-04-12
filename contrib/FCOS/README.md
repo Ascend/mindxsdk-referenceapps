@@ -2,7 +2,7 @@
 
 ## 1 介绍
 
-本开发项目演示FCOS模型实现目标检测。本系统基于mxVision SDK进行开发，以昇腾Atlas310、Atlas310B卡为主要的硬件平台，主要实现目标检测。待检测的图片中物体不能被遮挡太严重，并且物体要完全出现在图片中。图片亮度不能过低。输入一张图片，最后会输出图片中能检测到的物体。项目主要流程：
+本开发项目演示FCOS模型实现目标检测。本系统基于mxVision SDK进行开发，以昇腾Atlas 500 A2为主要的硬件平台，主要实现目标检测。待检测的图片中物体不能被遮挡太严重，并且物体要完全出现在图片中。图片亮度不能过低。输入一张图片，最后会输出图片中能检测到的物体。项目主要流程：
 
 1.环境搭建；
 2.模型转换；
@@ -11,11 +11,11 @@
 
 ### 1.1支持的产品
 
-本产品以昇腾310（推理）、310B（推理）卡为硬件平台。
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2支持的版本
 
-该项目支持的SDK版本为5.0.RC1，CANN版本昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1。
+该项目支持的SDK版本为5.0.RC1，CANN版本为6.2.RC1。
 
 ### 1.3软件方案介绍
 
@@ -79,7 +79,7 @@
 | ------------------- | ------ | ----------------------------- | ----------------------------------------------------------------- |
 | MindX SDK           | 5.0.RC1  | mxVision软件包                | [点击打开链接](https://www.hiascend.com/software/Mindx-sdk)       |
 | ubuntu              | 18.04  | 操作系统                      | 请上ubuntu官网获取                                                |
-| Ascend-CANN-toolkit | 310使用6.3.RC1，310B使用6.2.RC1  | Ascend-cann-toolkit开发套件包 | [点击打开链接](https://www.hiascend.com/software/cann/commercial) |
+| Ascend-CANN-toolkit | 6.2.RC1 | Ascend-cann-toolkit开发套件包 | [点击打开链接](https://www.hiascend.com/software/cann/commercial) |
 | mmdetection         | 2.25.0 | 用于评估准确度                | 请上mmdetection官网                                               |
 
 在项目开始运行前需要设置环境变量：
@@ -123,10 +123,10 @@ pip3 install mmdet
 
 设置完环境变量之后，就进行模型的转换：
 
-模型转换语句如下，注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+模型转换语句如下。
 
 ```
-atc --model=fcos.onnx --framework=5 --soc_version=Ascend310 --input_format=NCHW --input_shape="input:1,3,800,1333" --output=fcos_bs1 --precision_mode=allow_fp32_to_fp16
+atc --model=fcos.onnx --framework=5 --soc_version=Ascend310B1 --input_format=NCHW --input_shape="input:1,3,800,1333" --output=fcos_bs1 --precision_mode=allow_fp32_to_fp16
 ```
 
 执行完该命令之后，会在models文件夹下生成.om模型，并且转换成功之后会在终端输出：
