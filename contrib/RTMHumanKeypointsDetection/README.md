@@ -9,8 +9,7 @@
 昇腾310(推理)
 
 ### 1.2 支持的版本
-
-本样例配套的CANN版本为[5.0.5.alpha001](https://www.hiascend.com/software/cann)。支持的SDK版本为[3.0.RC2](https://www.hiascend.com/software/Mindx-sdk)。
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -119,6 +118,8 @@ ascend-toolkit-path: CANN 安装路径
 | ffmpeg   | 实现mp4格式视频转为264格式视频 | [链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/参考资料/pc端ffmpeg安装教程.md#https://ffmpeg.org/download.html) |
 
 ## 3 模型转换
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
 
 本项目主要用到了用于人体关键点检测的OpenPose模型，OpenPose模型相关文件可以[点击此处](https://github.com/Daniil-Osokin/lightweight-human-pose-estimation.pytorch)下载。本项目在MindX SDK中需要使用om模型，我们需要对模型进行转换。首先需要将pytorch模型转换为onnx模型，然后使用ATC模型转换工具将onnx模型转换为om模型。
 

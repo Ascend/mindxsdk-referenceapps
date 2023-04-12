@@ -10,6 +10,9 @@
 参考[Cmake介绍](./Cmake介绍.md)修改CMakeLists.txt文件。
 
 ### 2.1.2.1 模型转换
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 **步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"，如：  

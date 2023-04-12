@@ -129,6 +129,8 @@ onnxsim IAT_lol.onnx IAT_lol-sim.onnx
 
 ​     3.onnx 文件转换 om 文件
 
+ 若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 ​	将环境从原模型环境切换到当前项目环境，然后运行：
 
 ```
