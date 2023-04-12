@@ -26,13 +26,13 @@ OFFSET_5 = 5
 OFFSET_20 = 20
 
 
-def infer(input_image_path, streamManagerapi):
-	"""
-	image super-resolution inference
-	:param input_image_path: input image path
-	:param streamManagerapi: streamManagerapi
-	:return: no return
-	"""
+def infer(input_image_path, stream_manager):
+    """
+    image super-resolution inference
+    :param input_image_path: input image path
+    :param stream_manager: stream_manager
+    :return: no return
+    """
     if os.path.exists(input_image_path) != 1:
         print("The input image does not exist.")
         exit()
@@ -48,49 +48,49 @@ def infer(input_image_path, streamManagerapi):
     ilr_image_bytes = io.BytesIO()
     ilr.save(ilr_image_bytes, format='JPEG')
     input_image_data = ilr_image_bytes.getvalue()
-    dataInput = MxDataInput()
-    dataInput.data = input_image_data
+    data_input = MxDataInput()
+    data_input.data = input_image_data
 
-    # inputs data to a specified stream based on streamName
-    streamName = b'superResolution'
-    inPluginId = 0
-    uniqueId = streamManagerapi.SendData(streamName, inPluginId, dataInput)
-    if uniqueId < 0:
+    # inputs data to a specified stream based on stream_name
+    stream_name = b'superResolution'
+    in_plugin_id = 0
+    unique_id = stream_manager.SendData(stream_name, in_plugin_id, data_input)
+    if unique_id < 0:
         print("Failed to send data to stream.")
         exit()
     # Obtain the inference result
     key = b"mxpi_tensorinfer0"
-    keyVec = StringVector()
-    keyVec.push_back(key)
-    inferResult = streamManagerapi.GetProtobuf(streamName, inPluginId, keyVec)
-    if inferResult.size() == 0:
-        print("inferResult is null")
+    key_vec = StringVector()
+    key_vec.push_back(key)
+    infer_result = stream_manager.GetProtobuf(stream_name, in_plugin_id, key_vec)
+    if infer_result.size() == 0:
+        print("infer_result is null")
         exit()
-    if inferResult[0].errorCode != 0:
+    if infer_result[0].errorCode != 0:
         print("GetProtobuf error. errorCode=%d, errorMsg=%s" % (
-            inferResult[0].errorCode, inferResult[0].messageName.decode()))
+            infer_result[0].errorCode, infer_result[0].messageName.decode()))
         exit()
     # get the infer result
-    inferList0 = MxpiDataType.MxpiTensorPackageList()
-    inferList0.ParseFromString(inferResult[0].messageBuf)
-    inferVisionData = inferList0.tensorPackageVec[0].tensorVec[0].dataStr
+    infer_list = MxpiDataType.MxpiTensorPackageList()
+    infer_list.ParseFromString(infer_result[0].messageBuf)
+    vision_data = infer_list.tensorPackageVec[0].tensorVec[0].dataStr
 
-    output_img_data = np.frombuffer(inferVisionData, dtype=np.float32)
+    output_img_data = np.frombuffer(vision_data, dtype=np.float32)
     output_y = colorize(output_img_data, value_min=None, value_max=None)
     output_y = output_y.reshape(DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT)
     sr_img_y = Image.fromarray(np.uint8(output_y), mode="L")
 
     hr_img_y, _, _ = hr.convert("YCbCr").split()
     # calculate peak signal-to-noise ratio
-    PSNR = calc_psnr(sr_img_y, hr_img_y)
-    psnr_all.append(PSNR)
-    print('PSNR: {:.2f}'.format(PSNR))
+    psnr = calc_psnr(sr_img_y, hr_img_y)
+    psnr_all.append(psnr)
+    print('PSNR: {:.2f}'.format(psnr))
 
 
 if __name__ == '__main__':
     # init stream manager
-    streamManagerApi = StreamManagerApi()
-    ret = streamManagerApi.InitManager()
+    stream_manager_api = StreamManagerApi()
+    ret = stream_manager_api.InitManager()
     if ret != 0:
         print("Failed to init Stream manager, ret=%s" % str(ret))
         exit()
@@ -137,24 +137,24 @@ if __name__ == '__main__':
         }
     }
     pipelineStr = json.dumps(pipeline).encode()
-    ret = streamManagerApi.CreateMultipleStreams(pipelineStr)
+    ret = stream_manager_api.CreateMultipleStreams(pipelineStr)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
         exit()
     # test image set path
-    test_image_set_path = "testSet/91-images-jpg"
+    TEST_IMAGE_SET_PATH = "testSet/91-images-jpg"
     # parse command arguments
     if len(sys.argv) == 2:
         if sys.argv[1] == '':
             print('test image set path is not valid, use default config.')
         else:
-            test_image_set_path = sys.argv[1]
+            TEST_IMAGE_SET_PATH = sys.argv[1]
     # check input paths
-    if os.path.exists(test_image_set_path) != 1:
-        print('The image set path {} does not exist.'.format(test_image_set_path))
+    if os.path.exists(TEST_IMAGE_SET_PATH) != 1:
+        print('The image set path {} does not exist.'.format(TEST_IMAGE_SET_PATH))
         exit()
     # get all image files
-    image_files = os.listdir(test_image_set_path)
+    image_files = os.listdir(TEST_IMAGE_SET_PATH)
     # sort by file name
     image_files.sort(key=lambda x: str(x[:-4]))
     print(image_files)
@@ -162,9 +162,9 @@ if __name__ == '__main__':
     # save the peak signal-to-noise ratio of each image in the test set
     psnr_all = []
     for test_image_path in image_files:
-        image_file = test_image_set_path + "/" + test_image_path
-        infer(image_file, streamManagerApi)
+        image_file = TEST_IMAGE_SET_PATH + "/" + test_image_path
+        infer(image_file, stream_manager_api)
     print("average psnr = " + str(sum(psnr_all)/len(psnr_all)))
     print(psnr_all)
     # destroy streams
-    streamManagerApi.DestroyAllStreams()
+    stream_manager_api.DestroyAllStreams()

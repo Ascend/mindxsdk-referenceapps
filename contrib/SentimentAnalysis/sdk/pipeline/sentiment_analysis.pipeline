@@ -23,7 +23,7 @@
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "config/sentiment_analysis_aipp_tf.cfg",
                 "labelPath": "config/sentiment_analysis_label.names",
-                "postProcessLibPath": "${SDK目录}lib/modelpostprocessors/libresnet50postprocess.so"
+                "postProcessLibPath": "libresnet50postprocess.so"
             },
             "factory": "mxpi_classpostprocessor",
             "next": "appsink0"

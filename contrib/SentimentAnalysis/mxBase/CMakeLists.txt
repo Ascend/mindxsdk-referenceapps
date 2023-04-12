@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(mxBase_sentiment_analysis)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 include_directories(./SentimentAnalysis)
 file(GLOB_RECURSE SentimentAnalysis ${PROJECT_SOURCE_DIR}/SentimentAnalysis/*cpp)
 include_directories(./test)
@@ -10,7 +11,7 @@ set(TARGET mxBase_text_classification)
 add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z,now,-z,noexecstack -s -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
-set(MX_SDK_HOME ${SDK目录})
+set(MX_SDK_HOME "$ENV{MX_SDK_HOME}")
 include_directories(
         ${MX_SDK_HOME}/include
         ${MX_SDK_HOME}/opensource/include

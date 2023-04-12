@@ -26,15 +26,12 @@
 
 ### 支持的产品以及环境依赖
 
-支持 Atlas 200dk开发者套件、Ascend 310推理芯片。
-
-```
-|   软件名称    |    版本     |
-| :-----------: | :---------: |
-|    ubuntu     |  18.04.5 LTS |
-|   MindX SDK   |    2.0.4    |
+推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
+| 软件名称 | 版本   |
+| -------- | ------ |
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 |    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
 |     numpy     |   1.22.3    |
 | opencv-python |    4.5.5    |
 ```
@@ -90,11 +87,7 @@ StyleTransfer
 ### python第三方库
 
 ```
-numpy == 1.16.6
-
 Pillow == 8.2.0
-
-opencv-python == 4.5.2
 
 sympy == 1.4
 
@@ -113,21 +106,18 @@ PyYAML == 5.4.1
 
 **步骤1** 将pth模型转换为onnx模型
 
-首先在ModelZoo下载CycleGAN模型。
+下载CycleGAN模型相关文件。
 
-下载地址：https://www.hiascend.com/zh/software/modelzoo/detail/1/3ba3b04fd4964d9b81974381b73f491d
+下载地址：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/StyleTransfer/ATC%20CycleGAN%20%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip
 
 模型获取解压后，将CycleGAN文件夹下的所有文件及文件夹全部都放在StyleTransfer/models文件夹中
 
 **步骤2** 设置环境变量
 
-运行MindXSDK与ascend-toolkit下的set_env.sh设置环境变量
-MindXSDK：${MX_SDK_HOME}/set_env.sh
-
-ascend-toolkit：/usr/local/Ascend/ascend-toolkit/set_env.sh
-```
-bash set_env.sh 
-
+将${SDK_INSTALL_PATH}替换为自己的SDK安装路径; 
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 **步骤3** 将原始pth模型转化为onnx模型
@@ -175,9 +165,9 @@ aipp_op{
 
 仍然在/models目录中操作
 ```
-atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="maps"  --log=debug --soc_version=Ascend310 --insert_op_conf=aipp_CycleGAN_pth.config
+atc --framework=5   --model=./onnxmodel/model_Ga.onnx  --output=sat2map   --input_format=NCHW   --input_shape="img_sat_maps:1,3,256,256" --out_nodes="maps"  --log=debug --soc_version=Ascend310B1 --insert_op_conf=aipp_CycleGAN_pth.config
 ```
-
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
 转换完成后存放在/models中。
 
 **步骤6** 下载测试集

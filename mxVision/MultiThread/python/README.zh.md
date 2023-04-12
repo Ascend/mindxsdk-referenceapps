@@ -20,24 +20,38 @@
 | 软件名称 | 版本   |
 | -------- | ------ |
 | cmake    | 3.5.1+ |
-| mxVision | 0.2    |
 | Python   | 3.9.2  |
 | opencv-python   | 3.4+  |
 | mmcv   |  -  |
+
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
+
 ## 3.预准备
 
-脚本转换为unix格式以及添加脚本执行权限
+脚本转换为unix格式
 
 ```bash
 sed -i 's/\r$//' ./*.sh
-chmod +x ./*.sh
 ```
+给script目录下的脚本添加执行权限
 
 配置环境变量
 
 ```bash
 export MX_SDK_HOME=${安装路径}/mxVision
 ```
+
+## 4 模型转换
+
+yolov3模型下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)  
+使用以下命令进行转换，请注意aipp配置文件名，此处使用的为自带sample中的相关文件（{Mind_SDK安装路径}/mxVision/samples/mxVision/models/yolov3/）
+
+```
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+
+# 说明：若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1
+```
+
 
 ## 5.运行
 

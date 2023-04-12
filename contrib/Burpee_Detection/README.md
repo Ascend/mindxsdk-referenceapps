@@ -112,6 +112,8 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 ### 3.1 模型转换
 
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：[ATC模型转换工具指南](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md) 。
 
 步骤如下：

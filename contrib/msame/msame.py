@@ -65,11 +65,11 @@ def infer(saves):
         os.makedirs(_output)
     m = sdk.model(_filepath, device_id)
     index = 0
-    for i in m.output_dtype:
+    for i in range(m.output_num):
         types_output.append([])
-        types_output[index].append(str(i))
+        types_output[index].append(str(m.output_dtype(i)))
         index += 1
-    types_input = str(m.input_dtype[0])
+    types_input = str(m.input_dtype(0))
     multi = 1
     f = []
     if args.input != '':
@@ -82,7 +82,7 @@ def infer(saves):
             else:
                 print("Error: file doesn't exit")
                 sys.exit(0)
-    if len(m.input_shape) == 1:
+    if m.input_num == 1:
         if os.path.isdir(args.input):
             isf = 0
             for fi in os.listdir(args.input):
@@ -167,12 +167,12 @@ def get_multi_dir(m, input_type, dirs):
 def get_input_num(m, input_type):
     inputsize = []
     index = 0
-    for j in m.input_shape:
+    for j in range(m.input_num):
         inputsize.append(1)
-        for k in j:
+        for k in m.input_shape(j):
             inputsize[index] *= k
         index += 1
-    types_input = str(m.input_dtype[0])
+    types_input = str(m.input_dtype(0))
     files_name = []
     tis = []
     t = []
@@ -215,23 +215,25 @@ def get_input_num(m, input_type):
 
 def t_save(path, m, t, saves, types_output):
     multi = 1
-    for p in m.input_shape[0]:
+    for p in m.input_shape(0):
         multi = multi * p
     if t[0][0].shape[0] != multi :
         print("Error : Please check the input shape and input dtype")
         sys.exit(0)
-    if len(m.input_shape) == 1:
-        tim = sdk.Tensor(t[0][0])
+    if m.input_num == 1:
+        tim = sdk.Tensor(t[0][0].reshape(m.input_shape(0)))
         tim.to_device(device_id)
     else:
-        if len(t) != len(m.input_shape):
+        if len(t) != m.input_num:
             print("Error : Please check the input shape and input dtype")
             sys.exit(0)
         tim = []
+        idx = 0
         for bs in t:
-            bs = sdk.Tensor(bs[0])
+            bs = sdk.Tensor(bs[0].reshape(m.input_shape(idx)))
             bs.to_device(device_id)
             tim.append(bs)
+            idx += 1
     last_time = time.time()
     outputs = m.infer(tim)
     now_time = time.time()

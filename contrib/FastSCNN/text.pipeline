@@ -29,7 +29,7 @@
       "mxpi_tensorinfer0": {
           "props": {
               "dataSource": "mxpi_imageresize0",
-              "modelPath": "../FastScnn_python/models/fast255.om"
+              "modelPath": "model/fast_scnn_bs1.om"
           },
           "factory": "mxpi_tensorinfer",
           "next": "mxpi_dataserialize0"

@@ -5,12 +5,12 @@ CenterNet 目标检测后处理插件基于 MindX SDK 开发，对图片中的�
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310、Atlas310B卡为主要硬件平台。
 
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.0.4。
+支持的SDK版本为 5.0.RC1, CANN 版本310使用6.3.RC1，310B使用6.2.RC1。
 
 
 ### 1.3 软件方案介绍 
@@ -106,7 +106,6 @@ CenterNet 的后处理插件接收模型推理插件输出的特征图。本项�
 | 软件名称 | 版本  |
 | -------- | ----- |
 | cmake    | 3.5+  |
-| mxVision | 2.0.4 |
 | python   | 3.9.2 |
 
 确保环境中正确安装mxVision SDK。
@@ -142,6 +141,9 @@ cp -r  NumCpp/include/NumCpp ./include/
 
 ## 3. 模型转换
 
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 本项目中采用的模型是 CenterNet 模型，参考实现代码：https://github.com/xingyizhou/CenterNet ，模型下载链接：https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0699d3e48ff1447cafc85c2c9f007130 。 本项目使用模型转换工具 ATC 将 onnx 模型转换为 om 模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
 
 
@@ -156,6 +158,7 @@ cp -r  NumCpp/include/NumCpp ./include/
 ```
 atc --framework=5 --model=CenterNet.onnx  --output=CenterNet_pre_post --input_format=NCHW --input_shape="actual_input:1,3,512,512" --out_nodes="Conv_949:0;Conv_952:0;Conv_955:0" --log=info --soc_version=Ascend310 --insert_op_conf=./aipp-configs/aipp_bgr.config
 ```
+(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)
 
 若终端输出：
 ```

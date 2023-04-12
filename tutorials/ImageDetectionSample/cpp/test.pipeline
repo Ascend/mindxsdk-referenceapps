@@ -38,7 +38,7 @@
             "props": {
                 "dataSource": "mxpi_tensorinfer0",
                 "postProcessConfigPath": "model/yolov3_tf_bs1_fp16.cfg",
-                "labelPath": "${SDK安装路径}/samples/mxVision/models/yolov3/coco.names",
+                "labelPath": "${SDK安装路径}/samples/mxVision/models/yolov3/yolov3.names",
                 "postProcessLibPath": "${libyolov3postprocess.so路径}"
             },
             "factory": "mxpi_objectpostprocessor",

@@ -69,7 +69,7 @@ public:
         const std::vector<ResizedImageInfo> &resizedImageInfos = {},
         const std::map<std::string, std::shared_ptr<void>> &configParamMap = {});
 
-    bool IsValidTensors(const std::vector<TensorBase> &tensors) const override;
+    bool IsValidTensors(const std::vector<TensorBase> &tensors) const;
 
     uint64_t GetCurrentVersion() override
     {

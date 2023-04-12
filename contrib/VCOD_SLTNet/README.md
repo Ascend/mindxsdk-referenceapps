@@ -7,18 +7,16 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 
 ### 1.2 支持的版本
 
-支持的SDK版本：SDK3.0 RC2
-
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```
-npu-smi info
-```
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 
 ### 1.3 软件方案介绍
@@ -73,9 +71,6 @@ npu-smi info
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK  | mxVision-3.0.RC2 |
-| Python |   3.9.2     |
-|  CANN        |  5.1RC2    |
 | PyTorch | 1.12.1 |
 | numpy | 1.21.5 |
 | imageio | 2.22.3| 
@@ -84,6 +79,12 @@ npu-smi info
 | timm | 0.4.12 |
 | tqdm | 4.64.1 |
 
+> 配置环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 ## 3. 数据准备
 
@@ -209,7 +210,7 @@ python -m onnxsim --input-shape="1,9,352,352" --dynamic-input-shape sltnet.onnx 
 步骤三、onnx模型转om模型
 
 ```
-atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310 --log=error
+atc --framework=5 --model=sltnet.onnx --output=sltnet --input_shape="image:1,9,352,352" --soc_version=Ascend310B1 --log=error
 ```
 
 注意：

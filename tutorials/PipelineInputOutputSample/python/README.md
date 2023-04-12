@@ -12,13 +12,13 @@
 进入到移动后的工程路径下
 
 ### 配置环境变量
-将${SDK安装路径}替换为自己的SDK安装路径; 将${MX_SDK_HOME}替换成对应路径
 
+执行以下命令：
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
+. ${MX_SDK_HOME}/set_env.sh
+# ${MX_SDK_HOME}替换为用户的SDK安装路径
+```
 
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64
-```
 
 ### 运行
 

@@ -1,6 +1,7 @@
 #ifndef MXBASE_SENTIMENT_ANALYSIS_H
 #define MXBASE_SENTIMENT_ANALYSIS_H
 
+#include <string>
 #include "MxBase/ModelInfer/ModelInferenceProcessor.h"
 #include "MxBase/Tensor/TensorContext/TensorContext.h"
 

@@ -3,13 +3,16 @@
 ## 2.1.1 样例介绍
 
 提供了一个图像检测sample样例，实现对本地图片进行YOLOv3目标检测，并把可视化结果保存到本地。
-[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/master/tutorials/ImageDetectionSample)
+[样例获取](https://gitee.com/ascend/mindxsdk-referenceapps/tree/310B/tutorials/ImageDetectionSample)
 
 ## 2.1.2 运行前准备
 参考[IDE开发环境搭建](./1-2IDE开发环境搭建.md)章节搭建好项目运行环境。
 参考[Cmake介绍](./Cmake介绍.md)修改CMakeLists.txt文件。
 
 ### 2.1.2.1 模型转换
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 **步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："样例项目所在目录/model/"，如：  
@@ -87,26 +90,14 @@ python pipeline在脚本main.py内部，其中模型路径和工程中model文�
 ![image.png](img/1623835106290.png 'image.png')
 ## 2.3 yolov3模型转换脚本
 以下为yolov3模型转换脚本示例，使用时请确认参数中的路径是实际的相关路径。
+设置环境变量（请确认ascend_toolkit_path路径是否正确）
+
 ```
-#!/bin/bash
+. ${ascend_toolkit_path}/set_env.sh
+```
 
-# 该脚本用来将pb模型文件转换成.om模型文件
-# This is used to convert pb model file to .om model file.
-
-
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
-
-# 执行，转换YOLOv3模型
-# Execute, transform YOLOv3 model.
-
+执行atc命令，转换YOLOv3模型
+```
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```

@@ -1,7 +1,7 @@
 {
     "detection":{
         "stream_config":{
-            "deviceId":"1"
+            "deviceId":"0"
         },
         "appsrc0":{
             "props":{

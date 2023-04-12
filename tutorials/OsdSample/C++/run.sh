@@ -1,4 +1,5 @@
-# Copyright(C) 2022. Huawei Technologies Co.,Ltd. All rights reserved.
+#!/bin/bash
+# Copyright 2023 Huawei Technologies Co., Ltd
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -10,13 +11,26 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
-#!/bin/bash
+# limitations under the License.mitations under the License.
 
-atc --model=./jester.onnx --framework=5 --output=./jester --input_format=NCDHW  --soc_version=Ascend310B1  --precision_mode=allow_fp32_to_fp16 --op_select_implmode=high_precision
+set -e 
 
-if [ -f "./jester.om" ]; then
-    echo "success"
-else
-    echo "fail!"
-fi
+current_folder="$( cd "$(dirname "$0")" ;pwd -P )"
+
+function build() {
+    build_path=$current_folder/build
+    if [ -d "$build_path" ]; then
+        rm -rf "$build_path"
+    else
+        echo "file $build_path is not exist."
+    fi
+    mkdir -p "$build_path"
+    cd "$build_path"
+    cmake ..
+    make -j
+    cd ..
+    exit 0
+}
+
+build
+exit 0
