@@ -141,6 +141,9 @@ ascend-toolkit-path:CANN安装路径
 
 ### 3.2 模型转换
 
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 此处提供训练后的中间模型供模型转换使用：[resnet50](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/resnet.air)、[db](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/db.onnx)、[crnn](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/Financial_bills-OCR/crnn.onnx)
 
 在`./models/resnet50`目录下执行如下命令(若用例执行在310B上，则--soc_version=Ascend310需修改为Ascend310B1)

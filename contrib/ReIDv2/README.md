@@ -75,6 +75,9 @@ ReID
 apt-get install libpython3.9
 ```
 ## 4 模型转换
+
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 行人重识别先采用了yolov3模型将图片中的行人检测出来，然后利用ReID模型获取行人的特征向量。由于yolov3模型和ReID模型分别是基于Pytorch和Tensorflow的深度模型，我们需要借助ATC工具分别将其转换成对应的.om模型。
 
 4.1 yolov3的模型转换：  
