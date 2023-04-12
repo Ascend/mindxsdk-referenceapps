@@ -6,11 +6,11 @@
 
 ### 1.1 支持的产品
 
-昇腾310(推理)、昇腾310B(推理)
+本项目以昇腾Atlas 500 A2 / Atlas 200I DK A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的CANN版本为[6.2.RC1](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -59,7 +59,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
 | mxVision            | 5.0.RC1       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 310使用6.3.RC1，310B使用6.2.RC1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| Ascend-CANN-toolkit |    6.2.RC1     | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | opencv-python       | 4.5.2.54     | 用于识别结果画框              | python3 -m pip install opencv-python                       |
 
@@ -78,7 +78,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ##### 1.1模型与软件依赖
 
- 所用模型与软件依赖如下表所示。
+ 所用模型与软件依赖如下表所示。若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
 
 | 软件名称                | 版本     | 获取方式                                                     |
 | ----------------------- | -------- | ------------------------------------------------------------ |
@@ -123,7 +123,7 @@ python3 modify_yolov5s_slice.py YOLOv5_s.onnx
 
 可以得到修改好后的YOLOv5_s.onnx模型
 
-3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下。注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+3. 最后运行atc-env脚本将onnx转为om模型，运行命令如下。
 
 ```shell
 sh atc-env.sh
@@ -134,7 +134,7 @@ sh atc-env.sh
 脚本中包含atc命令:
 
 ```shell
---model=${Home}/YOLOv5_s.onnx --framework=5 --output=${Home}/YOLOv5_s  --insert_op_conf=./aipp_YOLOv5.config --input_format=NCHW --log=info --soc_version=Ascend310 --input_shape="images:1,3,640,640"
+--model=${Home}/YOLOv5_s.onnx --framework=5 --output=${Home}/YOLOv5_s  --insert_op_conf=./aipp_YOLOv5.config --input_format=NCHW --log=info --soc_version=Ascend310B1 --input_shape="images:1,3,640,640"
 ```
 
 其参数如下表所示

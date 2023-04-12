@@ -10,11 +10,11 @@ faceswap应用基于MindX SDK开发，在昇腾芯片上进行目标检测，脸
 ```
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310、昇腾Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1](https://www.hiascend.com/software/cann/commercial)  
+本样例配套的CANN版本为[6.2.RC1](https://www.hiascend.com/software/cann/commercial)  
 支持的SDK版本为[5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)  
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 ### 1.3  技术实现流程图<br/>
@@ -71,9 +71,9 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 . /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 
-# 执行如下命令，转换v3.onnx模型。注意若推理芯片为310B，需将命令中的soc_version参数设置为Ascend310B1。
+# 执行如下命令，转换v3.onnx模型。
 # Execute, transform v3.onnx model.
-atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310 --insert_op_conf=V3ONNX.cfg --out_nodes="Gemm_169:0"
+atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310B1 --insert_op_conf=V3ONNX.cfg --out_nodes="Gemm_169:0"
 ```
 
 其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件V3ONNX.cfg在输入图像进入模型前对其进行预处理。该配置文件保存在项目/model目录下。  

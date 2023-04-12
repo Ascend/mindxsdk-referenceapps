@@ -25,5 +25,5 @@ atc \
   --out_nodes="Transpose_217:0;Transpose_233:0;Transpose_249:0"  \
   --enable_small_channel=1 \
   --insert_op_conf=./aipp_yolov5.cfg \
-  --soc_version=Ascend310 \
+  --soc_version=Ascend310B1 \
   --log=info

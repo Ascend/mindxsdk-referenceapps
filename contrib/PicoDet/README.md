@@ -5,7 +5,7 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片、昇腾310B芯片
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
@@ -73,7 +73,7 @@ npu-smi info
 
 | 软件名称       | 版本  |
 | -------------- | ----- |
-| ascend-toolkit | 310使用6.3.RC1，310B使用6.2.RC1 |
+| ascend-toolkit | 6.2.RC1 |
 | mxVision       | 5.0.RC1 |
 | python         | 3.9.2 |
 
@@ -92,11 +92,11 @@ npu-smi info
 
 ### 3.2 模型转换
 
-将下载好的onnx模型放入models目录下，执行转换命令，注意若推理芯片为310B，需如下命令中的soc_version参数设置为Ascend310B1。
+将下载好的onnx模型放入models目录下，执行转换命令。
 ：
 
 ```
-atc --model=picodet_s_320_coco.onnx --output=picodet --output_type=FP32 --soc_version=Ascend310 --input_shape="image:1,3,320,320"  --insert_op_conf=picodet.aippconfig --input_format=NCHW --framework=5
+atc --model=picodet_s_320_coco.onnx --output=picodet --output_type=FP32 --soc_version=Ascend310B1 --input_shape="image:1,3,320,320"  --insert_op_conf=picodet.aippconfig --input_format=NCHW --framework=5
 ```
 
 ## 4 编译与运行

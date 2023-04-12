@@ -2,7 +2,7 @@
 
 ## 1 介绍
 
-本开发项目演示Faceboxes模型实现目标检测。本系统基于mxVision SDK进行开发，以昇腾Atlas300卡、昇腾Atlas310B卡为主要的硬件平台，主要应用于在CPU上实现实时的目标检测，检测图像中的场景中目标不能被遮挡严重且亮度过低，并且不能有与目标形态相似的动物出现。项目的主要流程为：
+本开发项目演示Faceboxes模型实现目标检测。本系统基于mxVision SDK进行开发，以昇腾Atlas 500 A2为主要的硬件平台，主要应用于在CPU上实现实时的目标检测，检测图像中的场景中目标不能被遮挡严重且亮度过低，并且不能有与目标形态相似的动物出现。项目的主要流程为：
 
 1.环境搭建；
 2.模型转换；
@@ -30,7 +30,7 @@
   | mxVision | 5.0.RC1 |
   | Python   | 3.9.2 |
   | Pytorch   | 1.9.0 |
-  | CANN   | 310使用6.3.RC1，310B使用6.2.RC1 |
+  | CANN   | 6.2.RC1 |
   | OpenCV   | 4.5.3 |
   | gcc      | 7.5.0 |
   | ffmpeg   | 3.4.8 |
@@ -201,9 +201,9 @@ git clone https://github.com/zisianw/FaceBoxes.PyTorch.git
 . /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 . ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-2.在models目录下，使用atc将onnx模型转换为om模型文件，加入--insert_op_conf参数使用AIPP，放到models目录下，工具使用方法可以参考CANN 5.0.2 开发辅助工具指南 (推理) 。注意若推理芯片为310B，需将模型转换atc命令中的soc_version参数设置为Ascend310B1。
+2.在models目录下，使用atc将onnx模型转换为om模型文件，加入--insert_op_conf参数使用AIPP，放到models目录下，工具使用方法可以参考CANN 5.0.2 开发辅助工具指南 (推理) 。
 ```
-atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310 --insert_op_conf=../config/FaceBoxes.aippconfig
+atc --framework=5 --model=faceboxes-b0_bs1.onnx --output=faceboxes-b0_bs1 --input_format=NCHW --input_shape="image:1,3,1024,1024" --log=debug --soc_version=Ascend310B1 --insert_op_conf=../config/FaceBoxes.aippconfig
 
 ## 7 测试
 
