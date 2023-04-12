@@ -6,7 +6,7 @@ VehicleRetrogradeRecognition交通逆行识别后处理插件基于MindXSDK开�
 
 ### 1.1 支持的产品
 
-昇腾310B(推理)
+昇腾Atlas 500 A2
 
 ### 1.2 支持的版本
 

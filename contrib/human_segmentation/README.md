@@ -4,6 +4,12 @@
   本开发样例基于MindX SDK实现了端到端的人体语义分割功能。其主要功能是使用human_segmentation模型对输入图片中的人像进行语义分割操作，然后输出mask掩膜图，将其与原图结合，生成标注出人体部分的人体语义分割图片。  
 样例输入：带有人体的jpg。  
 样例输出：对人体位置进行标注的新图片。<br/>
+
+### 1.1 支持的产品
+
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
+
+
 ## 2 目录结构
 本工程名称为human_segmentation，工程目录如下图所示：
 ```
@@ -31,6 +37,7 @@
 ```
 
 ## 4 模型转换
+
 人体语义分割采用提供的human_segmentation.pb模型。由于原模型是基于tensorflow的人体语义分割模型，因此我们需要借助于ATC工具将其转化为对应的om模型。  
 **步骤1**  [下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/human_segmentation/model.zip)  
 

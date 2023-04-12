@@ -7,6 +7,9 @@
   - https://gitee.com/ascend/samples/tree/master/cplusplus/contrib/AI_painting
 
 
+### 1.1 支持的产品
+
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
   
 ## 2 依赖
 
