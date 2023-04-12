@@ -20,7 +20,7 @@
 
 ### 1.3 实现流程
 
-- 基础环境：Ascend 310、mxVision、Ascend-CANN-toolkit、Ascend Driver
+- 基础环境：Ascend 310 / Ascend 310B、mxVision、Ascend-CANN-toolkit、Ascend Driver
 - 模型转换：将ONNX模型（.onnx）转换为昇腾离线模型（.om）
 - 昇腾离线模型推理流程代码开发
 
@@ -78,9 +78,9 @@
 |   软件名称    |    版本     |
 | :-----------: | :---------: |
 |    ubantu     | 18.04.1 LTS |
-|   MindX SDK   |    2.0.4    |
+|   MindX SDK   |    5.0.RC1   |
 |    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
+|     CANN      |    310使用6.3.RC1，310B使用6.2.RC1    |
 |     numpy     |   1.21.2    |
 | opencv-python |  4.5.3.56   |
 | mindspore (cpu) |     1.9.0   |
@@ -112,7 +112,8 @@ ascend-toolkit-path: CANN 安装路径
 ```bash
 # 进入对应目录
 cd ./snapshots/DGNet/
-# 执行以下命令将ONNX模型（.onnx）转换为昇腾离线模型（.om）
+# 执行以下命令将ONNX模型（.onnx）转换为昇腾离线模型（.om），注意若推理芯片为310B，需将命令中的soc_version参数设置为Ascend310B1。
+
 atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352,352" --log=debug --soc_version=Ascend310
 ```
 

@@ -1,16 +1,17 @@
+
 # 高速公路车辆火灾识别
 
 ## 1 介绍
 
-高速公路车辆火灾识别基于 MindX SDK 开发，在 Ascend 310 芯片上进行目标检测，将检测结果保存成图片。项目主要流程为：通过 live555 服务器进行拉流输入视频，然后进行视频解码将 H.264 格式的视频解码为图片，图片缩放后经过模型推理进行火焰和烟雾检测，识别结果经过后处理后利用 cv 可视化识别框，如果检测到烟雾和火灾进行告警。
+高速公路车辆火灾识别基于 MindX SDK 开发，可在 Ascend 310 及 Ascend 310B 芯片上进行目标检测，将检测结果保存成图片。项目主要流程为：通过 live555 服务器进行拉流输入视频，然后进行视频解码将 H.264 格式的视频解码为图片，图片缩放后经过模型推理进行火焰和烟雾检测，识别结果经过后处理后利用 cv 可视化识别框，如果检测到烟雾和火灾进行告警。
 
 ### 1.1 支持的产品
 
-昇腾 310（推理）
+昇腾 310（推理）、昇腾 310B（推理）
 
 ### 1.2 支持的版本
 
-本样例配套的 CANN 版本为 [5.0.4](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的 CANN 版本为 [昇腾Atlas310卡使用6.3.RC1，Atlas310B卡使用6.2.RC1](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -23,8 +24,6 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 本 Sample 工程名称为 **FireDetection**，工程目录如下图所示：
 
 ```
-├── envs
-│   └── env.sh                   //基础环境变量
 ├── images                       //ReadMe图片资源
 │   └── image-flow.png
 ├── model
@@ -54,21 +53,15 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fmindx-sdk%2Fmxvision) |
+| MindX SDK           |    5.0.RC1    | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fmindx-sdk%2Fmxvision) |
 | ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+| Ascend-CANN-toolkit |  310使用6.3.RC1，310B使用6.2.RC1  | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 
-在运行项目需要的环境变量如下，运行前不需要特别设置，环境依赖已经写入脚本中，脚本在`FireDetection/envs`目录下：
+在运行项目需要执行如下命令配置MindX SDK的环境变量：
 
 ```bash
-# 基础环境变量——env.sh
-export MX_SDK_HOME="${SDK安装路径}/mxVision"
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-
+. ${MX_SDK_HOME}/mxVision/set_env.sh   # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-
-注：其中`${SDK安装路径}`替换为用户的SDK安装路径;`install_path`替换为ascend-toolkit开发套件包所在路径。`LD_LIBRARY_PATH`用以加载开发套件包中lib库。
 
 ## 3 模型转换以及依赖安装
 
@@ -110,7 +103,7 @@ export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
 
   运行结果：生成`best_s_t.onnx`文件。
 
-- **步骤5** 将`best_s_t.onnx`文件重命名为`firedetection.onnx`，然后运行当前目录`FireDetection\model`下的`model_conver.sh`
+- **步骤5** 将`best_s_t.onnx`文件重命名为`firedetection.onnx`，然后运行当前目录`FireDetection\model`下的`model_conver.sh`。注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
   ```bash
   bash model_conver.sh

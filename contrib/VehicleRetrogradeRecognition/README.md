@@ -6,13 +6,15 @@ VehicleRetrogradeRecognition交通逆行识别后处理插件基于MindXSDK开�
 
 ### 1.1 支持的产品
 
-昇腾310(推理)
+昇腾310B(推理)
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)。支持的SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
-
-MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -70,29 +72,12 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ## 2 环境依赖
 
-推荐系统为ubantu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
-| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
-
 在编译运行项目前，需要设置环境变量：
 
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=${install_path}
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:$LD_LIBRARY_PATH
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
-
-注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径;install_path替换为开发套件包所在路径。LD_LIBRARY_PATH用以加载开发套件包中lib库。
-
 
 
 ## 3 软件依赖
@@ -109,7 +94,7 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 ## 4 模型转换
 
 **步骤1** 模型获取
-在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)
+下载[YOLOv4模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleRetrogradeRecognition/models.zip)
 
 **步骤2** 模型存放
 将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/models/"。
@@ -118,23 +103,14 @@ export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME
 在onnx文件所在目录下执行一下命令
 
 ```
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
 # 执行，转换YOLOv4模型
 # Execute, transform YOLOv4 model.
 
 YOLOv4:
-atc --model=./yolov4_dynamic_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp_yolov4_576_576.config --input_shape="input:1,3,576,576" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
+atc --model=./yolov4_dynamic_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov4_576_576.config --input_shape="input:1,3,576,576" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
 ```
 
-执行完模型转换脚本后，会生成相应的.om模型文件。我们也提供了原模型以及已经转换好的YOLOv4 om模型：[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleRetrogradeRecognition/models.zip)
+执行完模型转换脚本后，会生成相应的.om模型文件。
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
@@ -229,7 +205,7 @@ bash build.sh
 bash run.sh
 ```
 
-命令执行成功后会在当前目录下生成检测结果视频文件out.h264,然后执行命令：
+命令执行成功后会在当前目录下生成检测结果视频文件out.h264,然后在pc端ffmpeg软件执行命令：
 
 ```
 ffmpeg -f h264 -i out.h264 -vcodec copy out.mp4

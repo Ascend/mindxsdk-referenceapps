@@ -28,6 +28,7 @@ function build_plugin() {
     cd "$build_path"
     cmake ..
     make -j
+    make install
     cd ..
     exit 0
 }

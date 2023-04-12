@@ -96,8 +96,7 @@ def inference(
                 ymax + shift_size,
             ]
         )
-    return output_info
-
+    return output_info0
 
 if __name__ == "__main__":
     streamManagerApi = StreamManagerApi()
@@ -109,7 +108,7 @@ if __name__ == "__main__":
 
     # create streams by pipeline config file
     pipeline_path = b"main.pipeline"
-    tensor_key = b"appsrc0"
+    TENSOR_KEY = b"appsrc0"
     ret = streamManagerApi.CreateMultipleStreamsFromFile(pipeline_path)
     if ret != 0:
         print("Failed to create Stream, ret=%s" % str(ret))
@@ -117,8 +116,10 @@ if __name__ == "__main__":
 
     # Construct the input of the stream
     PATH = "./testimages/FaceMaskDataset/test/"
+    start_time = time.time()
+    COUNT = 0
     for item in os.listdir(PATH):
-        start_stamp = time.time()
+        COUNT = COUNT + 1
         img_path = os.path.join(PATH, item)
         print(img_path)
         img_name = item.split(".")[0]
@@ -128,14 +129,14 @@ if __name__ == "__main__":
         if os.path.exists(img_path) != 1:
             print("The test image does not exist.")
 
-        streamName = b"detection"
+        STREAM_NAME = b"detection"
         inPluginId = 0
 
         dataInput = MxDataInput()
         with open(img_path, "rb") as f:
             dataInput.data = f.read()
         # Inputs data to a specified stream based on streamName.
-        uniqueId = streamManagerApi.SendData(streamName, inPluginId, dataInput)
+        uniqueId = streamManagerApi.SendData(STREAM_NAME, inPluginId, dataInput)
         if uniqueId < 0:
             print("Failed to send data to stream.")
             exit()
@@ -143,7 +144,7 @@ if __name__ == "__main__":
         key_vec = StringVector()
         key_vec.push_back(b"mxpi_tensorinfer0")
         # get inference result
-        infer_result = streamManagerApi.GetProtobuf(streamName, inPluginId, key_vec)
+        infer_result = streamManagerApi.GetProtobuf(STREAM_NAME, inPluginId, key_vec)
         a = infer_result.size()
         if infer_result.size() == 0:
             print("infer_result is null")
@@ -197,7 +198,7 @@ if __name__ == "__main__":
         img = cv2.imread(img_path)
         output_info = inference(img, show_result=False)
         open(img_txt, "a+")
-        for i in enumerate(output_info):
+        for i, _ in enumerate(output_info):
             with open(img_txt, "a+") as f:
                 result = "{} {} {} {} {} {}".format(
                     id2class[output_info[i][0]],
@@ -212,4 +213,8 @@ if __name__ == "__main__":
 
         # destroy streams
 
+    end_time = time.time()
+    time_diff = end_time - start_time
+    res_fps = COUNT / time_diff
+    print(f"result fps: {res_fps}")
     streamManagerApi.DestroyAllStreams()

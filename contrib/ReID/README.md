@@ -33,15 +33,23 @@ ReID
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
-|CANN|5.0.4|
-|MindX SDK|2.0.4|
+|CANN|310使用6.3.RC1<br>310B使用6.2.RC1|
+|MindX SDK|5.0RC1|
 |Python| 3.9.2|
 |numpy | 1.21.0 |
 |opencv_python|4.5.2|  
+
 请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 ```
 apt-get install libpython3.9
 ```
+### 设置环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
+
 ## 4 模型转换
 行人重识别先采用了yolov3模型将图片中的行人检测出来，然后利用ReID模型获取行人的特征向量。由于yolov3模型和ReID模型分别是基于Pytorch和Tensorflow的深度模型，我们需要借助ATC工具分别将其转换成对应的.om模型。
 
@@ -55,21 +63,12 @@ apt-get install libpython3.9
 
 **步骤3** .om模型转换  
 以下操作均在“项目所在目录/models”路径下进行：  
-- 设置环境变量（请确认install_path路径是否正确）
-```
-export install_path=/usr/local/Ascend/ascend-toolkit/latest    
 
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:$PYTHONPATH
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:${install_path}/acllib/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-export ASCEND_AICPU_PATH=/usr/local/Ascend/ascend-toolkit/latest/
-```
 - 使用ATC将.pb文件转成为.om文件
 ```
-atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
+atc --model=yolov3_tensorflow_1.5.pb --framework=3 --output=yolov3 --output_type=FP32 --soc_version=Ascend310B1 --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0" --log=info --insert_op_conf=aipp_nv12.cfg
 ```
-- 执行完模型转换脚本后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
+- 执行完模型转换命令后，若提示如下信息说明模型转换成功，可以在该路径下找到名为yolov3.om模型文件。
 （可以通过修改output参数来重命名这个.om文件）
 ```
 ATC run success, welcome to the next use.
@@ -112,7 +111,7 @@ git clone https://github.com/michuanhaohao/reid-strong-baseline
 &ensp;&ensp;&ensp;&ensp;&ensp; [Google Drive](https://drive.google.com/drive/folders/1hn0sXLZ5yJcxtmuY-ItQfYD7hBtHwt7A)
 &ensp;&ensp;&ensp;&ensp;&ensp; [Huawei Cloud](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ReID/ReID%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6.rar)
 
-***3*** 获取ReID_pth2onnx.py：[获取链接](https://gitee.com/ascend/modelzoo/blob/master/contrib/ACL_PyTorch/Research/cv/classfication/ReID_for_Pytorch/ReID_pth2onnx.py)  
+***3*** 获取ReID_pth2onnx.py：[获取链接](https://gitee.com/ascend/ModelZoo-PyTorch/blob/master/ACL_PyTorch/contrib/cv/classfication/ReID_for_Pytorch/ReID_pth2onnx.py)  
 &ensp; 将该脚本放在“项目所在目录/models”路径下，执行下列命令，生成.onnx模型文件
 ```
 python3 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_triplet_with_center.yml' MODEL.PRETRAIN_CHOICE "('self')" TEST.WEIGHT "('market_resnet50_model_120_rank1_945.pth')"
@@ -125,12 +124,9 @@ python3 ReID_pth2onnx.py --config_file='reid-strong-baseline/configs/softmax_tri
 
 **步骤2** .onnx模型转.om模型
 
-***1*** 设置环境变量
-> 请重复一次4.1中步骤3的“设置环境变量（请确认install_path路径是否正确）”操作
-
-***2*** 使用ATC将.onnx文件转成为.om文件
+使用ATC将.onnx文件转成为.om文件
 ```
-atc --framework=5 --model=ReID.onnx --output=ReID --input_format=NCHW --input_shape="image:1,3,256,128" --insert_op_conf=ReID_onnx2om.cfg --log=debug --soc_version=Ascend310
+atc --framework=5 --model=ReID.onnx --output=ReID --input_format=NCHW --input_shape="image:1,3,256,128" --insert_op_conf=ReID_onnx2om.cfg --log=debug --soc_version=Ascend310B1
 ```
 - 执行完模型转换脚本后，若提示如下信息说明模型转换成功，可以在“项目所在目录/models”路径下找到名为ReID.om模型文件。（同样的，可以通过修改output参数来重命名这个.om文件）
 ```
@@ -194,31 +190,7 @@ python3 makeYourOwnDataset.py --imageFilePath='data/ownDataset' --outputFilePath
 ```
 步骤详见5： 数据集
 ```
-6.3 配置环境变量
-```   
-#执行如下命令，打开.bashrc文件
-cd $home
-vi .bashrc
-#在.bashrc文件中添加以下环境变量:
-
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export PYTHONPATH=${MX_SDK_HOME}/python
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-#保存退出.bashrc
-#执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
-```
-6.4 配置pipeline  
+6.3 配置pipeline  
 根据所需场景，配置pipeline文件，调整路径参数等。
 ```
     # 配置mxpi_tensorinfer插件的yolov3.om模型加载路径（lines 26-33）
@@ -264,7 +236,7 @@ env
         }, 
 
 ```
-6.5 执行
+6.4 执行
 ```
 python3 main.py --queryFilePath='data/querySet' --galleryFilePath='data/gallerySet' --matchThreshold=0.3
 ```

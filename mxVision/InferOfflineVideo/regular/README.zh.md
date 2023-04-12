@@ -4,7 +4,7 @@
 
 ## 1 简介
 
-InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡为主要的硬件平台，用于在视频流中检测出目标。
+InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas310B卡为主要的硬件平台，用于在视频流中检测出目标。
 
 ## 2 环境依赖
 
@@ -21,20 +21,30 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| cmake    | 3.5.1+ |
-| mxVision | 0.2    |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ## 3 准备
 
 **步骤1：** 参考安装教程《mxVision 用户指南》安装 mxVision SDK。
 
-**步骤2：** 配置 mxVision SDK 环境变量。
+**步骤2：** 配置环境变量。
 
-`export MX_SDK_HOME=${安装路径}/mxVision `
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
-注：本例中mxVision SDK安装路径为 /root/MindX_SDK。
+**步骤3：** 转换模型
+进入models目录，下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)， 将下载的模型放入models文件夹中
 
-**步骤3：** 在regular目录下创建目录models `mkdir models`， 根据《mxVision 用户指南》中“模型支持列表”章节获取Yolov3种类模型，并放到该目录下。
+执行转换命令
+```
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+# 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+```
+执行完模型转换脚本后，会生成相应的.om模型文件。
 
 **步骤4：** 修改regular/pipeline/regular.pipeline文件：
 
@@ -45,6 +55,8 @@ InferOfflineVideo基于mxVision SDK开发的参考用例，以昇腾Atlas300卡�
 ③：如需配置多路输入视频流，需要配置多个拉流、解码、缩放、推理、序列化插件，然后将多个序列化插件的结果输出发送到串流插件mxpi_parallel2serial（有关串流插件使用请参考《mxVision 用户指南》中“串流插件”章节），最后连接到appsink0插件。
 
 ## 4 运行
+
+下载coco.names文件[链接](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/contrib/Collision/model/coco.names), 放在models目录下。
 
 运行
 `bash run.sh`
@@ -87,48 +99,6 @@ sudo apt-get install g++-aarch64-linux-gnu
 
   ```
   bash build_zlib.sh
-  
-  build_zlib.sh脚本详情如下：
-  #!/bin/bash
-  # Simple log helper functions
-  info() { echo -e "\033[1;34m[INFO ][Depend  ] $1\033[1;37m" ; }
-  warn() { echo >&2 -e "\033[1;31m[WARN ][Depend  ] $1\033[1;37m" ; }
-  
-  #Build
-  fileName="zlib"
-  packageFQDN="zlib@1.2.11-h2"
-  packageName="zlib"
-  cd "$fileName" || {
-    warn "cd to ./opensource/$fileName failed"
-    exit 254
-  }
-  
-  info "Building dependency $packageFQDN."
-  chmod u+x configure
-  export LDFLAGS="-Wl,-z,noexecstack,-z,relro,-z,now,-s"
-  export CFLAGS="-fPIE -fstack-protector-all -fPIC -Wall -D_GLIBCXX_USE_CXX11_ABI=0"
-  export CPPFLAGS="-fPIE -fstack-protector-all -fPIC -Wall -D_GLIBCXX_USE_CXX11_ABI=0"
-  export CC=aarch64-linux-gnu-gcc
-  ./configure \
-    --prefix="$(pwd)/../tmp/$packageName" \
-    --shared || {
-    warn "Build $packageFQDN failed during autogen"
-    exit 254
-  }
-  
-  make -s -j || {
-    warn "Build $packageFQDN failed during make"
-    exit 254
-  }
-  
-  make install -j || {
-    warn "Build $packageFQDN failed during install"
-    exit 254
-  }
-  
-  cd ..
-  info "Build $packageFQDN done."
-  
   ```
 
 - 编译完成后，将生成文件拷贝至sdk的opensource

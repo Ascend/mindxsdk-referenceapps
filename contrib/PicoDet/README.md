@@ -5,11 +5,11 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+支持昇腾310芯片、昇腾310B芯片
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
+支持的SDK版本为5.0.RC1。
 
 eg：版本号查询方法，在Atlas产品环境下，运行命令：
 
@@ -73,8 +73,8 @@ npu-smi info
 
 | 软件名称       | 版本  |
 | -------------- | ----- |
-| ascend-toolkit | 5.0.4 |
-| mxVision       | 2.0.4 |
+| ascend-toolkit | 310使用6.3.RC1，310B使用6.2.RC1 |
+| mxVision       | 5.0.RC1 |
 | python         | 3.9.2 |
 
 在编译运行项目前，需要设置环境变量：
@@ -92,7 +92,8 @@ npu-smi info
 
 ### 3.2 模型转换
 
-将下载好的onnx模型放入models目录下，执行转换命令：
+将下载好的onnx模型放入models目录下，执行转换命令，注意若推理芯片为310B，需如下命令中的soc_version参数设置为Ascend310B1。
+：
 
 ```
 atc --model=picodet_s_320_coco.onnx --output=picodet --output_type=FP32 --soc_version=Ascend310 --input_shape="image:1,3,320,320"  --insert_op_conf=picodet.aippconfig --input_format=NCHW --framework=5
@@ -109,7 +110,7 @@ bash build.sh
 
 下载文件[coco2014.names](../Collision/model/coco.names)，将下载的标签文件放入models目录中并修改文件名为**coco.names**
 
-**步骤3**  执行推理
+**步骤3**  执行推理。注意推理图片文件夹和结果保存文件夹需要手动创建，同时，picodet.pipeline文件第4行的deviceId需根据实际使用的芯片Id进行修改。
 
 ```
 python3.9 main.py ${推理图片文件夹} ${结果保存文件夹}

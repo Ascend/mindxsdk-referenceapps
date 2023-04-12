@@ -13,7 +13,7 @@ SZ-Taxi数据集：https://github.com/lehaifeng/T-GCN/tree/master/data
 SZ-Taxi数据集包含深圳市的出租车动向，包括道路邻接矩阵和道路交通速度信息。
 
 ### 1.1 支持的产品
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310卡、昇腾310B卡为主要的硬件平台。
 
 ### 1.2 软件方案介绍
 
@@ -55,9 +55,9 @@ eg：推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| mxVision | 2.0.4 |
+| mxVision | 5.0.RC1 |
 | Python | 3.9 |
-| CANN | 5.1.RC1 |
+| CANN | 310使用6.3.RC1，310B使用6.2.RC1 |
 
 - 环境变量介绍
 在编译运行项目前，需要设置环境变量：
@@ -136,7 +136,7 @@ https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/con
 ```
 
 2、onnx转化为om
-根据实际路径修改convert_om.sh
+根据实际路径修改convert_om.sh，注意若推理芯片为310B，需将convert_om.sh脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 bash convert_om.sh [model_path] stgcn10
 参数说明：

@@ -8,7 +8,7 @@
 
 ### 1.1 支持的产品
 
-Atlas300推理芯片
+Atlas310B推理芯片
 
 ### 1.2 代码目录结构与说明
 
@@ -31,19 +31,23 @@ Atlas300推理芯片
 
 ## 2 环境依赖
 
-### 2.1 环境变量
-
-模型转换和工程运行的环境变量已写入对应的shell脚本中
-
-### 2.2 软件依赖
+### 2.1 软件依赖
 
 |     依赖软件     | 版本  |
 |------------------|-------|
-|      CANN        | 20.2.rc1| 
-|     python       | 3.9.2 | 
-|    MindX_SDK     | 2.0.4 |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 |   opencv-python  | 4.5.3 |
 |      numpy       | 1.21.2|  
+
+### 2.2 设置环境变量
+
+```
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
+
 
 ## 3 运行
 

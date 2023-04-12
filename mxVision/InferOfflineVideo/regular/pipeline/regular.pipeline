@@ -34,9 +34,9 @@
         "mxpi_modelinfer0": {
             "props": {
                 "dataSource": "mxpi_imageresize0",
-                "modelPath": "./models/yolov3/yolov3_tf_bs1_fp16.om",
-                "postProcessConfigPath": "./models/yolov3/yolov3_tf_bs1_fp16.cfg",
-                "labelPath": "./models/yolov3/coco.names",
+                "modelPath": "./models/yolov3_tf_bs1_fp16.om",
+                "postProcessConfigPath": "./models/yolov3_tf_bs1_fp16.cfg",
+                "labelPath": "./models/coco.names",
                 "postProcessLibPath": "libMpYOLOv3PostProcessor.so",
                 "deviceId": "0"
             },
