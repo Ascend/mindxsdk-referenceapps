@@ -5,7 +5,7 @@
 [msame-C++工具链接](https://gitee.com/ascend/tools/tree/master/msame)
 
 ### 1.1 支持的产品   
-本项目以昇腾Atlas300卡为主要的硬件平台。   
+本项目以昇腾Atlas 500 A2/Atlas 200I DK A2为主要的硬件平台。   
 
 ### 1.2 支持的版本   
 

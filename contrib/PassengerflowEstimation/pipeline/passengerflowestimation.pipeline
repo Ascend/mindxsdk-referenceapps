@@ -92,7 +92,7 @@
             "mxpi_selectobject0": {
                 "props": {
                     "dataSource": "mxpi_objectpostprocessor0"
-                }
+                },
                 "factory": "mxpi_selectobject",
                 "next": "motV2"
             },

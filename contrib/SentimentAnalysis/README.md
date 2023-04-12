@@ -7,7 +7,7 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500 A2/Atlas 200I DK A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
@@ -110,6 +110,8 @@
 ```
 
 ## 3 模型获取及转换
+
+> 若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料
 
 **步骤1**  请参考https://github.com/percent4/keras_bert_text_classification 提供的源码，按照其README.md准备好自己的分类的数据完成模型的训练，数据参考https://gitee.com/ascend/samples/tree/master/python/contrib/SentimentAnalysis/data/coarse-big-corpus/coarse ，需转成csv格式，也可以直接使用https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SentimentAnalysis/data.zip 解压后data目录下的train.csv,训练完成后的到h5模型。h5模型的获取还可以通过https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SentimentAnalysis/model.zip ，解压获得
 
