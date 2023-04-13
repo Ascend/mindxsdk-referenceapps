@@ -12,7 +12,10 @@
 
 适用于:
 Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
 Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
+
 ### 项目实现流程及适用场景
 
 ![avatar](./README_img/pic.png)

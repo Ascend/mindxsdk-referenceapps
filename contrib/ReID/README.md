@@ -9,7 +9,9 @@
 
 适用于：
 Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
 Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
 
 ## 2 目录结构
 本工程名称为ReID，工程目录如下图所示：

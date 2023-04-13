@@ -6,7 +6,10 @@
 其中包含Rcf模型的后处理模块开发。 主要处理流程为： Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 #### 1.1 支持的产品
-昇腾310B1(推理)
+Ascend 310  
+>搭载于Atlas 500
+Ascend 310B
+>搭载于Atlas 500 A2
 
 #### 1.2 支持的版本
 | 软件名称 | 版本   |

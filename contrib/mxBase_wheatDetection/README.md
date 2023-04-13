@@ -11,7 +11,9 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 ### 1.1 支持的产品
 
 Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
 Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
 
 ### 1.2 软件方案介绍
 

@@ -12,7 +12,9 @@ MMNet致力于解决移动设备上人像抠图的问题，旨在以最小的模
 ### 1.1 支持的产品
 
 Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
 Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
 
 ### 1.2 支持的版本
 
