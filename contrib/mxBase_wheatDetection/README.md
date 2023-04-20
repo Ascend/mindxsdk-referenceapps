@@ -10,7 +10,10 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 
 ### 1.1 支持的产品
 
-支持昇腾310B芯片
+Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
+Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
 
 ### 1.2 软件方案介绍
 
@@ -101,6 +104,9 @@ python export.py --weights best_v3.pt --img 416 --batch 1 --simplify
 ```
 atc --model=./best_v3_t.onnx --framework=5 --output=./onnx_best_v3 --soc_version=Ascend310B1 --insert_op_conf=./aipp.aippconfig --input_shape="images:1,3,416,416" --output_type="Conv_1228:0:FP32;Conv_1276:0:FP32;Conv_1324:0:FP32" --out_nodes="Conv_1228:0;Conv_1276:0;Conv_1324:0"
 ```
+此命令适用于310B1硬件，使用310时指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
+
 ## 使用场景概括
 
 ### 适用条件

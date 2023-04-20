@@ -8,7 +8,10 @@
 
 ### 1.1 支持的产品
 
-Atlas310B推理芯片
+Ascend 310  
+>搭载于Atlas 500/Atlas 200 DK
+Ascend 310B
+>搭载于Atlas 500 A2/Atlas 200I DK A2
 
 ### 1.2 代码目录结构与说明
 
@@ -68,6 +71,8 @@ unzip model.zip
 cd ../scripts
 bash atc_run.sh
 ```
+此命令适用于310B1硬件，使用310时修改指定soc_version=Ascend310  
+若使用A200I DK A2运行，推荐使用PC转换模型，具体方法可参考A200I DK A2资料。
 
 ### 3.2 获取测试图片
 
