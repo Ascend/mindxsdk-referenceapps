@@ -242,7 +242,6 @@ APP_ERROR MxpiPostProcess::GenerateVisionListOutput(const MxpiTensorPackageList 
             imgrgb.at<cv::Vec3b>(x, y) = cv::Vec3b {pixel_8bit, pixel_8bit, pixel_8bit};
         }
     }
-    cv::transpose(imgrgb, imgrgb);
     LogInfo << INFER_RESULT_PATH + std::to_string(this->index) + ".png" << " saved !";
     cv::imwrite(INFER_RESULT_PATH + std::to_string(this->index++) + ".png", imgrgb);
 
