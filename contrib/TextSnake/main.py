@@ -160,7 +160,6 @@ if __name__ == '__main__':
         img_show, contours = rescale_result(img_show, contours, H, W)
         VIS_DIR = "result.jpg"
         pred_vis = visualize_detection(img_show, contours)
-        mkdirs(VIS_DIR)
         cv2.imwrite(VIS_DIR, pred_vis)
         steam_manager_api.DestroyAllStreams()
 

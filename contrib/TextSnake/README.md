@@ -5,11 +5,17 @@ TextSnake 弯曲形状文字检测基于 MindX SDK 开发，对图片中的任�
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.0.4。
+推荐系统为ubuntu 18.04。
+
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 软件方案介绍
 
@@ -68,14 +74,8 @@ pipeline流程如下图所示：
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
-
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK | 2.0.4 |
-| Ascend-CANN-toolkit | 5.0.4 |
-| ubuntu | 18.04.1 LTS |
-| python   | 3.9.2  |
 | cv2   | 4.1.2  |
 | numpy   | 1.15.1 |
 | onnx   | 1.8.0 |
@@ -86,13 +86,7 @@ pipeline流程如下图所示：
 | easydict   | 1.8 |
 | tdqm   | 4.62.3 |
 
-
-
-
-
-
 在编译运行项目前，需要设置环境变量：
-
 
 具体执行命令
 
@@ -110,7 +104,7 @@ pipeline流程如下图所示：
 选用的模型为 pytorch 模型，可从 Ascend modelzoo 获取模型压缩包，在运行项目之前需要将 pytorch 模型转为 onnx 模型，再由 onnx 模型转为 om 模型。
 
 pth 权重文件和 onnx 文件的下载链接
-https://www.hiascend.com/zh/software/modelzoo/models/detail/1/74fab02660d635f86325f2ffb56cff1b
+https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/TextSnake/ATC%20TextSnake%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip
 
     
 具体步骤如下
@@ -120,7 +114,7 @@ https://www.hiascend.com/zh/software/modelzoo/models/detail/1/74fab02660d635f863
 2. 进入TextSnake/model文件夹下执行命令
 
 ```
-atc --model=TextSnake.onnx --framework=5 --output=TextSnake_bs1 --input_format=NCHW --input_shape="image:1,3,512,512" --log=info --soc_version=Ascend310
+atc --model=TextSnake.onnx --framework=5 --output=TextSnake_bs1 --input_format=NCHW --input_shape="image:1,3,512,512" --log=info --soc_version=Ascend310B1
  ```
 
 3. 执行该命令会在当前目录下生成项目需要的模型文件TextSnake_bs1.om。执行后终端输出为
