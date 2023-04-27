@@ -16,8 +16,8 @@ limitations under the License.
 
 import os
 import sys
-import cv2
 import time
+import cv2
 import numpy as np
 from PIL import Image
 from StreamManagerApi import StreamManagerApi, MxDataInput, StringVector
