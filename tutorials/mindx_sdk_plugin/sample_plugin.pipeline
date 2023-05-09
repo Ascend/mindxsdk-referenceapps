@@ -1,7 +1,7 @@
 {
     "classification+detection": {
         "stream_config": {
-            "deviceId": "3"
+            "deviceId": "0"
         },
         "mxpi_imagedecoder0": {
             "factory": "mxpi_imagedecoder",
@@ -31,7 +31,7 @@
         },
         "mxpi_sampleplugin0": {
             "props": {
-                "dataSource": "mxpi_objectpostprocessor0",
+                "dataSource": "mxpi_objectpostprocessor0"
             },
             "factory": "mxpi_sampleplugin",
             "next": "mxpi_dataserialize0"
