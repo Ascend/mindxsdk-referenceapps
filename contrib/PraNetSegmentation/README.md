@@ -10,13 +10,17 @@ PraNet是一种针对息肉分割任务需求设计的，名为并行反向注�
 
 ### 1.1 支持的产品
 
-Ascend 310
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
+推荐系统为ubuntu 18.04。
 
-SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
+| 软件名称 | 版本   |
+| -------- | ------ |
+| python    | 3.9.2     | 
+| MindX SDK     |    5.0RC1    |
+| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
 
 ### 1.3 代码目录结构与说明
 
@@ -57,35 +61,27 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
-
-| 软件名称            | 版本        | 说明                          | 获取方式                                                     |
-| ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
-| ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
-| python              | 3.9.2       |                               |                                                              |
-| numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
-| opencv-python       | 4.5.5.64       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
-| PIL       | 9.0.1       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |
-| onnx         |    1.12.0    | 模型转化库                | 服务器中使用pip或conda安装                                   |
-| tabulate         |    0.8.10    | 格式化输出                | 服务器中使用pip或conda安装                                   |
+| 软件名称            | 版本        | 说明                          |
+| ------------------- | ----------- | ----------------------------- |
+| numpy               | 1.22.4      | 维度数组运算依赖库            |
+| opencv-python       | 4.5.5.64       | 图像处理依赖库                |
+| PIL       | 9.0.1       | 图像处理依赖库                |
+| onnx         |    1.12.0    | 模型转化库                |
+| tabulate         |    0.8.10    | 格式化输出                |
 
 
-键入
+在编译运行项目前，需要设置环境变量：
 
-```bash
-source ${SDK−path}/set_env.sh
-source ${ascend-toolkit-path}/set_env.sh
 ```
-
-以激活环境，其中```SDK-path```是SDK mxVision安装路径，```ascend-toolkit-path```是CANN安装路径。
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
+```
 
 ## 3 准备工作
 
 ### 3.1 获取OM模型文件
 
-OM权重文件下载参考华为昇腾社区[ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
+模型文件下载[链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PranetSegementation/ATC%20PraNet%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)
 获取到```PraNet-19.onnx```模型后，将其放在model目录下。在model目录键入以下命令
 
 ```
@@ -94,7 +90,7 @@ bash onnx2om.sh
 
 能获得```PraNet-19_bs1.om```模型文件。
 
-注: [ModelZoo](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/e08e0552334ec81d8e632fafbb22a9f0)
+注: [链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PranetSegementation/ATC%20PraNet%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)
 中的模型文件```PraNet-19_bs1.om```不能用于本项目。
 
 ### 3.2 编译插件

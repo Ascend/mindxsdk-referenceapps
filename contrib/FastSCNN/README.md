@@ -8,7 +8,7 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310B卡为主要的硬件平台
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 ### 1.2 支持的版本
 
@@ -121,17 +121,15 @@ pth权重文件和onnx文件的下载链接如下：
 
 **步骤 1**  将任意一张jpg格式的图片存到当前目录下(/FastSCNN)，命名为test.jpg。如果pipeline文件（或测试图片）不在当前目录下（/FastSCNN），需要修改main.py的pipeline（或测试图片）路径指向到所在目录。
 
-**步骤 2**  设置环境变量，如第2小节**环境依赖**所述，设置MX_SDK_HOME，LD_LIBRARY_PATH，PYTHONPATH，GST_PLUGIN_SCANNER，GST_PLUGIN_PATH五个环境变量。
+**步骤 2**   按照模型转换获取om模型，放置在FastSCNN/models路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值(原尺寸为2048*1024)。
 
-**步骤 3**   按照模型转换获取om模型，放置在FastSCNN/models路径下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 main.py 中pipeline的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值(原尺寸为2048*1024)。
-
-**步骤 4**  在命令行输入 如下代码运行整个工程：
+**步骤 3**  在命令行输入 如下代码运行整个工程：
 
 ```
 python3.9.2 main.py
 ```
 
-**步骤 5** 图片检测。运行结束输出mask.png实现语义分割功能（通过不同颜色区分不同事物）。
+**步骤 4** 图片检测。运行结束输出mask.png实现语义分割功能（通过不同颜色区分不同事物）。
 
 
 
@@ -179,9 +177,11 @@ cd cityscapes/leftImg8bit/val/frankfurt/
 cd ${用户路径}/FastSCNN/cityscapes/gtFine/val/frankfurt/
 ```
 
-           在当前目录上传label.py用以挑选后缀为labelIds的文件。
+
+在当前目录上传label.py用以挑选后缀为labelIds的文件。
     
-            运行label.py。
+运行label.py。
+
 
 ```
 python3.9.2 label.py
@@ -207,7 +207,12 @@ with open(image_path, 'rb') as f:
             + '_' + filename.split('_')[2] + "_gtFine_labelIds.png"
 ```
 
-**步骤 6**  测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
+**步骤 6**  运行精度脚本
+```
+python3.9.2 evaluate.py
+```
+
+测试精度（mIoU，PA）运行结束在显示屏输出精度，如下图所示：
 
 ![50](./evaluation_50.png)
 

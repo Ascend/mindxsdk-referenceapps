@@ -39,14 +39,6 @@
                 "dataSource": "mxpi_tensorinfer0"
             },
             "factory": "pranetpostprocess",
-            "next": "mxpi_imageencoder0"
-        },
-        "mxpi_imageencoder0": {
-	        "props": {
-                "deviceId": "0",
-                "dataSource": "pranetpostprocess0"
-            },
-            "factory": "mxpi_imageencoder",
             "next": "appsink0"
         },
         "appsink0": {

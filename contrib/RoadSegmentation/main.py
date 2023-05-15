@@ -16,6 +16,7 @@ limitations under the License.
 
 import os
 import sys
+import time
 import cv2
 import numpy as np
 from PIL import Image
@@ -87,6 +88,8 @@ if __name__ == '__main__':
     if uniqueId < 0:
         print("Failed to send data to stream.")
         exit()
+    SLEEP_TIME = 2
+    time.sleep(SLEEP_TIME)
 
     # destroy streams  
     streamManagerApi.DestroyAllStreams()

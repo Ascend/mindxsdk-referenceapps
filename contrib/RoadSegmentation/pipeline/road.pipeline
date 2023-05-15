@@ -43,7 +43,8 @@
         },
         "mxpi_imageencoder0": {
 	        "props": {
-                "deviceId": "0"
+                "deviceId": "0",
+                "encodeLevel" : "25"
             },
             "factory": "mxpi_imageencoder",
             "next": "appsink0"
@@ -51,7 +52,7 @@
         "appsink0": {
             "props": {
                 "blocksize": "4096000",
-	"location":"./testout.jpg"
+	            "location":"./testout.jpg"
             },
             "factory": "filesink"
         }
