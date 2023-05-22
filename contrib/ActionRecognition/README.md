@@ -28,7 +28,7 @@
   | 软件名称 | 版本  |
   | -------- | ----- |
   | cmake    | 3.5.+ |
-  | mxVision | 2.0.4 |
+  | mxVision | 5.0.RC1 |
   | Python   | 3.9.2 |
   | OpenCV   | 3.4.0 |
   | gcc      | 7.5.0 |
@@ -162,9 +162,9 @@
 
 **步骤5：** 配置环境变量MX_SDK_HOME：
 
-```bash
-export MX_SDK_HOME=/MindX_SDK/mxVision/								
-# 此处MX_SDK_HOME请使用MindX_SDK的实际路径
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
 
 **步骤6**：在插件代码目录下创建build文件夹，使用cmake命令进行编译，生成.so文件。下面以单人独处插件的编译过程作为范例：
@@ -475,3 +475,6 @@ chmod +x trans_pb2om.sh
 ```
 
 完成ECONet模型转换。模型下载或转换完成后，按照目录结构放置模型。
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+

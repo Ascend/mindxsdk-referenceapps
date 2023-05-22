@@ -8,14 +8,14 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
 
 
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
-
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 
 ### 1.3 软件方案介绍
@@ -186,6 +186,10 @@ bash model_convertion.sh
 ```
 该命令执行成功后会在当前文件夹下生成指定名称的 om 模型文件。
 
+备注：Atlas 310B的环境上，模型转换的命令为：
+```
+atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310B --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
+```
 
 ## 4. 编译与运行
 

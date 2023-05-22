@@ -4,12 +4,12 @@ EfficientDet 目标检测后处理插件基于 MindXSDK 开发，对图片中的
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
-
+本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.0.4。
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 
 ### 1.3 软件方案介绍
@@ -109,19 +109,16 @@ EfficientDet 的后处理插件接收模型推理插件输出的两个特征图�
 | 软件名称 | 版本   |
 | -------- | ------ |
 | cmake    | 3.5+   |
-| mxVision | 2.0.4  |
+| mxVision | 5.0.RC1  |
 | python   | 3.9.2  |
 | webcolors| 1.11.1 |
 
 确保环境中正确安装mxVision SDK。
 
 在编译运行项目前，需要设置环境变量：
-```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
 
 
@@ -185,6 +182,8 @@ python3 convert_to_onnx.py --compound_coef=0 --load_weights=weights/efficientdet
 bash model_convertion_d{compound_coef}.sh
 ```
 该命令执行成功后会在 ``python/models`` 文件夹下生成对应名称为 efficient-det-d{compound_coef}-mindxsdk-order的 om 模型文件。
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ## 4. 编译与运行
 

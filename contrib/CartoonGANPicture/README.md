@@ -8,19 +8,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
+
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
-
-在Atlas产品环境下，可通过运行一下命令查询版本号：
-
-```
-npu-smi info
-```
-
-
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 1.3 软件方案介绍
 
@@ -75,7 +69,7 @@ npu-smi info
 | 软件名称       | 版本   |
 | -------------- | ------ |
 | cmake          | 3.10.2 |
-| mxVision       | 2.0.4  |
+| mxVision       | 5.0.RC1|
 | ascend-toolkit | 5.0.4  |
 
 ## 3 模型转换
@@ -90,15 +84,11 @@ npu-smi info
 
 设置如下环境变量：
 
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
-# 设置环境变量（请确认install_path路径是否正确）
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest #默认安装路径
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-```
 
 ### 3.3 模型转换
 
@@ -108,7 +98,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 atc --output_type=FP32 --input_shape="train_real_A:1,256,256,3"  --input_format=NHWC --output="cartoonization" --soc_version=Ascend310 --insert_op_conf=insert_op.cfg --framework=3 --model="cartoonization.pb" --precision_mode=allow_fp32_to_fp16
 ```
 
-
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ## 4 编译与运行
 
