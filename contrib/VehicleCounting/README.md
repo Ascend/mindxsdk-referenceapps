@@ -2,9 +2,10 @@
 ## 1 介绍
 车流量统计是指对视频中的车辆进行计数，实现对本地视频（H264）进行车辆动向并计数，最后生成可视化结果。车流统计分为五个步骤：车辆视频流读取、车辆检测、车辆动向、车辆计数以及结果可视化。本项目实现了对单双向车道，固定摄像头的交通视频进行车流量统计。
 ### 1.1 支持的产品
-支持昇腾310芯片
+支持昇腾310或310B芯片
 ### 1.2 支持的版本
-本样例配套的CANN版本为5.0.4，MindX SDK版本为2.0.4
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 ### 1.3 软件方案介绍
 车流统计项目实现：输入类型是视频数据（需要将视频转换为.264的视频格式），ffmpeg打开视频流获取视频帧信息，图像经过尺寸大小变换，满足模型的输入尺寸要求；将尺寸变换后的图像数据依次输入Yolov4检测模型进行推理，模型输出经过后处理后，使用SORT算法进行车辆动向得到车辆动向，再设置标志对车辆进行计数，最后得到某时刻已经通过的车辆数。
 
@@ -71,8 +72,8 @@
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 5.0.4        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            |  5.0.RC1     | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 6.3.RC1或6.2.RC1 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 | ffmpeg             | 4.2.1        | 视频转码解码组件              | [安装教程](https://bbs.huaweicloud.com/forum/thread-142431-1-1.html)|                                               
 | pc端ffmpeg         | 2021-09-01   | 将视频文件格式转换为.264      | [安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99/pc%E7%AB%AFffmpeg%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B.md)|
@@ -82,7 +83,7 @@
 ## 3 模型转换
 
 **步骤1** 模型获取
-在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)）
+在ModelZoo上下载: (https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps/contrib/VehicleCounting/modle.rar)
 
 **步骤2** 模型存放
 将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/model/"。
@@ -94,19 +95,19 @@
 # 设置环境变量（请确认install_path路径是否正确）
 # Set environment PATH (Please confirm that the install_path is correct).
 
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
+```
 # 执行，转换YOLOv4/YOLOv3模型
 # Execute, transform YOLOv4/YOLOv3 model.
 
 YOLOv4:
 atc --model=./yolov4_dynamic_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp_yolov4_608_608.config --input_shape="input:1,3,608,608" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
 YOLOv3:
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.config --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.config --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;convv_sbbox/BiasAdd:0"
+
+
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
@@ -115,6 +116,8 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 模型转换使用了ATC工具，如需更多信息请参考:
 
  https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ## 4 编译与运行
 **步骤1** 通过pc端ffmpeg软件将输入视频格式转换为.264格式，如下所示为MP4转换为h.264命令：
@@ -223,7 +226,6 @@ Scanning dependencies of target stream_pull_test
 **步骤6** 运行
 将**步骤1**转换的视频文件test1.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
 ```
-chmod +x run.sh
 bash run.sh
 ```
 **步骤7** 查看结果

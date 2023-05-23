@@ -9,7 +9,8 @@
 
 ### 1.1 支持的产品
 
-支持昇腾310芯片
+本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
+
 
 ### 1.2 支持的版本
 
@@ -83,43 +84,28 @@ npu-smi info
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |Ubuntu|18.04.1 LTS   |
-|MindX SDK|2.0.4|
 |Python|3.9.2|
-|CANN|5.0.4|
 |numpy|1.22.3|
 |opencv-python|4.5.5|
+
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 在编译运行项目前，需要设置环境变量：
 
 - 环境变量介绍
 
-```bash
-# 执行如下命令，打开.bashrc文件
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-export MX_SDK_HOME=${SDK安装路径}
-
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-export PYTHONPATH=${MX_SDK_HOME}/python:$PYTHONPATH
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
 ```
+
 
 ## 3 模型获取
 
 ### 3.1 yolo模型转换
 
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
+**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 
@@ -140,8 +126,11 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+
+
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。 执行后终端输出为：
@@ -149,6 +138,9 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+
 
 ### 3.2 googlenet模型转换
 
@@ -184,7 +176,7 @@ ATC run success, welcome to the next use.
 
  https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
-
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ### 3.3 可用模型获取
 
@@ -215,11 +207,8 @@ bash build.sh
 
 **步骤2**
 
-修改so文件权限：
+修改libvehiclepostprocess.so文件权限为640：
 
-```bash
-chmod 640 ./lib/libvehiclepostprocess.so
-```
 
 **步骤3** 
 

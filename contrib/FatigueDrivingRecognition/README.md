@@ -11,19 +11,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310卡为主要的硬件平台。
+本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-SDK版本为2.0.4，查询方法
-```
-cat ${SDK安装路径}/mxVision/version.info
-```
-CANN版本为22.0.2，查询方法：在Atlas产品环境下，运行命令：
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
-```
-npu-smi info
-```
 
 ### 1.3 软件方案介绍
 
@@ -96,20 +90,19 @@ npu-smi info
 | 软件名称 | 版本  |
 | -------- | ----- |
 | cmake    | 3.5+  |
-| mxVision | 2.0.4 |
 | python   | 3.9.2 |
+
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 确保环境中正确安装mxVision SDK。
 
 在编译运行项目前，需要设置环境变量：
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
+```
 
-```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
-```
 
 - 环境变量介绍
 
@@ -161,6 +154,9 @@ bash atc-env.sh
 ```
 
 提示 **ATC run success** 说明转换成功
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
+
 
 ## 4 编译与运行
 **步骤1** 按照第 2 小节 **环境依赖** 中的步骤设置环境变量。
