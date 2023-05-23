@@ -224,7 +224,6 @@ Scanning dependencies of target stream_pull_test
 **步骤6** 运行
 将**步骤1**转换的视频文件test1.264放到data/目录下，执行run.sh脚本前请先确认可执行文件stream_pull_test已生成，执行如下命令运行
 ```
-chmod +x run.sh
 bash run.sh
 ```
 **步骤7** 查看结果

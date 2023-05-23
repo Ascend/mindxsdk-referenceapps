@@ -202,11 +202,8 @@ bash build.sh
 
 **步骤2**
 
-修改so文件权限：
+修改libvehiclepostprocess.so文件权限为640：
 
-```bash
-chmod 640 ./lib/libvehiclepostprocess.so
-```
 
 **步骤3** 
 
