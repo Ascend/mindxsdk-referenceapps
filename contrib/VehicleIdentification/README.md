@@ -126,8 +126,11 @@ export ASCEND_OPP_PATH=${install_path}/opp
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+
+
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。 执行后终端输出为：
@@ -135,6 +138,8 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
+
+备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 
 ### 3.2 googlenet模型转换
