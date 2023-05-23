@@ -105,7 +105,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 3.1 yolo模型转换
 
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
+**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 

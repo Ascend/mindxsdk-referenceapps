@@ -83,7 +83,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 ## 3 模型转换
 
 **步骤1** 模型获取
-在ModelZoo上下载[YOLOv4模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)（或者[YOLOv3模型](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)）
+在ModelZoo上下载: (https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps/contrib/VehicleCounting/modle.rar)
 
 **步骤2** 模型存放
 将获取到的YOLOv4模型onnx文件存放至："样例项目所在目录/model/"。
