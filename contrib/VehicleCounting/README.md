@@ -105,7 +105,9 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 YOLOv4:
 atc --model=./yolov4_dynamic_bs.onnx --framework=5 --output=yolov4_bs --input_format=NCHW --soc_version=Ascend310 --insert_op_conf=./aipp_yolov4_608_608.config --input_shape="input:1,3,608,608" --out_nodes="Conv_434:0;Conv_418:0;Conv_402:0"
 YOLOv3:
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.config --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.config --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;convv_sbbox/BiasAdd:0"
+
+
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
