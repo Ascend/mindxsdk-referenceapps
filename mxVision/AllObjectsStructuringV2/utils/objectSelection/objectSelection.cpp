@@ -17,7 +17,7 @@
 #include "objectSelection.h"
 
 APP_ERROR ObjectSelector::Process(MultiObjectTracker &tracker, std::vector<TrackLet> &trackLetList,
-                             std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> &selectedObjectVec)
+                                  std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> &selectedObjectVec)
 {
     for (size_t i = 0; i < trackLetList.size(); i++) {
         if (trackLetList[i].trackInfo.trackFlag == MxBase::LOST_OBJECT) {

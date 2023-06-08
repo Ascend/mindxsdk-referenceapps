@@ -35,7 +35,7 @@ public:
 
     APP_ERROR DeInit();
 
-    APP_ERROR Process(std::vector<MxBase::Tensor> & inferOutputs, KeyPointAndAngle & keyPointAndAngle); 
+    APP_ERROR Process(std::vector<MxBase::Tensor> &inferOutputs, KeyPointAndAngle &keyPointAndAngle);
 };
 
 #endif // FACELANDMARK_FACELANDMARKPOSTPROCESS_H

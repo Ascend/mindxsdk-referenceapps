@@ -44,6 +44,11 @@ struct TrackLet {
 };
 
 class MultiObjectTracker {
+public:
+    void Process(FrameImage &frameImage, std::vector<MxBase::ObjectInfo> &detectedObjectInfos, std::vector<TrackLet> &trackLetList);
+
+    std::pair<FrameImage, MxBase::ObjectInfo> GetTrackLetBuffer(uint32_t trackID);
+
 private:
     std::vector<TrackLet> trackLetList_ = {};
     std::map<uint32_t, std::pair<FrameImage, MxBase::ObjectInfo>> trackLetBuffer_;
@@ -78,11 +83,6 @@ private:
     void updateLostTrackLet_();
 
     void updateTrackLetBuffer_(const FrameImage& frameImage, TrackLet& trackLet);
-
-public:
-    void Process(FrameImage &frameImage, std::vector<MxBase::ObjectInfo> &detectedObjectInfos, std::vector<TrackLet> &trackLetList);
-
-    std::pair<FrameImage, MxBase::ObjectInfo> GetTrackLetBuffer(uint32_t trackID);
 
 };
 

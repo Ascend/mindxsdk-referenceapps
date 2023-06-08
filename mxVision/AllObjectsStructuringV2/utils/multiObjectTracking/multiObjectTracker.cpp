@@ -73,7 +73,7 @@ APP_ERROR MultiObjectTracker::matchProcess_(std::vector<MxBase::ObjectInfo> &det
     }
     
     return APP_ERR_OK;
-}                           
+}                        
 
 APP_ERROR MultiObjectTracker::trackObjectUpdate_(std::vector<MxBase::ObjectInfo> &detectedObjectInfo, std::vector<cv::Point> &matchedTrackedDetected,
                                                  std::vector<MxBase::ObjectInfo> &unmatchedObjectQueue)
@@ -113,7 +113,7 @@ APP_ERROR MultiObjectTracker::trackObjectUpdate_(std::vector<MxBase::ObjectInfo>
 
 MxBase::DetectBox MultiObjectTracker::ConvertToDetectBox(const MxBase::ObjectInfo &objectInfo)
 {
-    MxBase::DetectBox detectBox{};
+    MxBase::DetectBox detectBox {};
     float height = detecInfo.y1 - detecInfo.y0;
     float width = detecInfo.x1 - detecInfo.x0;
     detectBox.x = objectInfo.x0;
@@ -198,7 +198,7 @@ void MultiObjectTracker::updateMatchedTrackLet_(FrameImage &frameImage, const st
 void MultiObjectTracker::addNewDetectedObject_(FrameImage &frameImage, std::vector<MxBase::ObjectInfo> &unmatchedObjectQueue)
 {
     for (auto detectObject: unmatchedObjectQueue) {
-        TrackLet trackLet{};
+        TrackLet trackLet {};
         generatedId_++;
         trackLet.tackInfo.trackId = generatedId_;
         trackLet.tackInfo.age = 1;
