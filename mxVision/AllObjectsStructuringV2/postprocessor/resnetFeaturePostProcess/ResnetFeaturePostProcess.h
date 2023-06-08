@@ -19,10 +19,6 @@
 #include "MxBase/MxBase.h"
 #include "MxBase/Maths/FastMath.h"
 
-namespace {
-    const int FEATURE_SIZE = 4;
-}
-
 class ResnetFeaturePostProcess {
 public:
     float ActivateOutput(float data, bool isAct);

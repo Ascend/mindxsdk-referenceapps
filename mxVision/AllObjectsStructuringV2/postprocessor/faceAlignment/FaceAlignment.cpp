@@ -29,12 +29,12 @@ void FaceAlignment::DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataI
 }
 
 APP_ERROR FaceAlignment::FaceeAlignmentProcess(std::vector<MxBase::Image> &intputImageVec, std::vector<MxBase::Image> &outputImageVec,
-                          std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID = 0)
+                                               std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID = 0)
 {
     std::vector<MxBase::DvppDataInfo> inputDataInfoVec;
     std::vector<MxBase::DvppDataInfo> outputDataInfoVec;
 
-    //Image --> Dvpp
+    // Image --> Dvpp
     for (size_t i = 0; i < intputImageVec.size(); i++)
     {
         MxBase::DvppDataInfo inputDataInfo;

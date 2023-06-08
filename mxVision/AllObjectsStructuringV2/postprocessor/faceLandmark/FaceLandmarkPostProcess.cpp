@@ -38,14 +38,14 @@ APP_ERROR FaceLandmarkPostProcess::Init()
     return APP_ERR_OK;
 }
 
-APP_ERROR FaceLandmarkPostProcess::DeInit() 
+APP_ERROR FaceLandmarkPostProcess::DeInit()
 {
     return APP_ERR_OK;
 }
 
 
 APP_ERROR FaceLandmarkPostProcess::Process(std::vector<MxBase::Tensor>& inferOutputs,
-                      KeyPointAndAngle& keyPointAndAngle)
+                                           KeyPointAndAngle& keyPointAndAngle)
 {
     LogDebug << "Start to Process FaceLandmarkPostProcess";
     APP_ERROR ret = APP_ERR_OK;

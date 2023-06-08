@@ -23,7 +23,7 @@ namespace {
     const uint32_t LEFTTOPX = 3;
     const uint32_t LEFTTOPY = 4;
     const uint32_t RIGHTBOTX = 5;
-    const uint32_t RIGHTBOTY= 6;
+    const uint32_t RIGHTBOTY = 6;
 }
 
 SsdVggPostProcess::SsdVggPostProcess() {}
@@ -86,7 +86,7 @@ APP_ERROR SsdVggPostProcess::Process(const MxBase::Image& originImage, const std
     int *objectNum = static_cast<int *>(inferOutputs[0].GetData());
     float *objectInfo = static_cast<float *>(inferOutputs[1].GetData());
 
-    for (int i = 0; i < (int)*objectNum; i++) {
+    for (int i = 0; i < *objectNum; i++) {
         uint32_t classId = static_cast<uint32_t>(objectInfo[i * INFONUM + CLASSID]);
         float confidence = objectInfo[i * INFONUM + CONFIDENCE];
         if (classId >= classNum_ || confidence < scoreThresh_) {
@@ -106,5 +106,3 @@ APP_ERROR SsdVggPostProcess::Process(const MxBase::Image& originImage, const std
     LogDebug << "End to Process SsdVggPostprocess";
     return ret;
 }
-
-

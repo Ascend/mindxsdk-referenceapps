@@ -18,7 +18,7 @@
 #define FACELANDMARK_FACELANDMARKPOSTPROCESS_H
 #include "MxBase/MxBase.h"
 
-struct KeyPointAndAngle{
+struct KeyPointAndAngle {
     std::vector<float> keyPoints;
     float angleYaw = 0.0;
     float anglePitch = 0.0;
@@ -35,9 +35,8 @@ public:
 
     APP_ERROR DeInit();
 
-    APP_ERROR Process(std::vector<MxBase::Tensor>& inferOutputs,
-                      KeyPointAndAngle& keyPointAndAngle); 
+    APP_ERROR Process(std::vector<MxBase::Tensor> &inferOutputs, KeyPointAndAngle &keyPointAndAngle); 
 };
 
-#endif //FACELANDMARK_FACELANDMARKPOSTPROCESS_H
+#endif // FACELANDMARK_FACELANDMARKPOSTPROCESS_H
 

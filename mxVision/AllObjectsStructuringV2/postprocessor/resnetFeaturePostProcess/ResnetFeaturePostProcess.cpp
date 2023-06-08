@@ -19,6 +19,10 @@
 #include <algorithm>
 #include "ResnetFeaturePostProcess.h"
 
+namespace {
+    const int FEATURE_SIZE = 4;
+}
+
 float ResnetFeaturePostProcess::ActivateOutput(float data, bool isAct)
 {
     if (isAct == true)
@@ -33,7 +37,6 @@ float ResnetFeaturePostProcess::ActivateOutput(float data, bool isAct)
 
 APP_ERROR ResnetFeaturePostProcess::ResnetfeaturePostProcess(std::vector<MxBase::Tensor>& inferOutputs, std::vector<float>& features, bool isSigmoid)
 {
-   
     if (inferOutputs.empty())
     {
         LogError << "result Infer failed with empty output..." << std::endl;

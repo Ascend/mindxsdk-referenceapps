@@ -39,5 +39,5 @@ private:
     MxBase::ConfigData configData_;
 };
 
-#endif //SSDVGG_SSDVGGPOSTPROCESS_H
+#endif // SSDVGG_SSDVGGPOSTPROCESS_H
 
