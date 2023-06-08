@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef FACELANDMARK_FACELANDMARKPOSTPROCESS_H
-#define FACELANDMARK_FACELANDMARKPOSTPROCESS_H
+#ifndef MAIN_OBJECTSELECTION_H
+#define MAIN_OBJECTSELECTION_H
+
 #include "MxBase/MxBase.h"
+#include "../multiObjectTracking/multiObjectTracker.h"
+#include "../allobjectsStructure.h"
 
-struct KeyPointAndAngle {
-    std::vector<float> keyPoints;
-    float angleYaw = 0.0;
-    float anglePitch = 0.0;
-    float angleRoll = 0.0;
-};
-
-class FaceLandmarkPostProcess {
+class ObjectSelector {
 public:
-    FaceLandmarkPostProcess();
+    static APP_ERROR Process(MultiObjectTracker &tracker, std::vector<TrackLet> &trackLetList,
+                             std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> &selectedObjectVec);
+}
 
-    ~FaceLandmarkPostProcess() {}
-
-    APP_ERROR Init();
-
-    APP_ERROR DeInit();
-
-    APP_ERROR Process(std::vector<MxBase::Tensor> & inferOutputs, KeyPointAndAngle & keyPointAndAngle); 
-};
-
-#endif // FACELANDMARK_FACELANDMARKPOSTPROCESS_H
-
+#endif /* MAIN_OBJECTSELECTION_H */
