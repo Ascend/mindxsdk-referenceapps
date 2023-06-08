@@ -73,7 +73,7 @@ APP_ERROR MultiObjectTracker::matchProcess_(std::vector<MxBase::ObjectInfo> &det
     }
     
     return APP_ERR_OK;
-}                        
+}                   
 
 APP_ERROR MultiObjectTracker::trackObjectUpdate_(std::vector<MxBase::ObjectInfo> &detectedObjectInfo, std::vector<cv::Point> &matchedTrackedDetected,
                                                  std::vector<MxBase::ObjectInfo> &unmatchedObjectQueue)

@@ -83,7 +83,6 @@ private:
     void updateLostTrackLet_();
 
     void updateTrackLetBuffer_(const FrameImage& frameImage, TrackLet& trackLet);
-
 };
 
 #endif /* MAIN_MULTIOBJECTTRACKER_H */
