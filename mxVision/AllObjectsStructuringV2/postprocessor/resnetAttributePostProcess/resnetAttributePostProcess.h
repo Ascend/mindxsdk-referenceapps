@@ -1,5 +1,5 @@
 /*
- * Copyright(C) 2021. Huawei Technologies Co.,Ltd. All rights reserved.
+ * Copyright(C) 2023. Huawei Technologies Co.,Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,15 @@ float CONFIDENCE = 0.5;
 
 class ResnetAttributePostProcess
 {
+public:
+    resnetAttributePostProcess();
+
+    ~resnetAttributePostProcess() = default;
+
+    APP_ERROR Init(std::string configPath, std::string labelPath);
+
+    App_ERROR Process(std::vector<MxBase::Tensor> &resnetInferResVec, std::vecor<std::vector<ResnetAttr>> &attributeResVec);
+
 private:
     site_t attrbuteNum_;
     std::string activationFunc_;
@@ -51,15 +60,6 @@ private:
     void MakeNameMap(std::ifstream &in, std::string &stringRead);
 
     void MakeValueMap(std::ifstream &in, std::string &stringRead);
-
-public:
-    resnetAttributePostProcess();
-
-    ~resnetAttributePostProcess() = default;
-
-    APP_ERROR Init(std::string configPath, std::string labelPath);
-
-    App_ERROR Process(std::vector<MxBase::Tensor> &resnetInferResVec, std::vecor<std::vector<ResnetAttr>> &attributeResVec);
 };
 
 #endif
