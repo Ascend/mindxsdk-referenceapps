@@ -52,6 +52,36 @@ const size_t numChannel = 80;
 const size_t numWoker = 10;
 const size_t numLines = 8;
 
+std::string yoloModelPath = "model.om";
+std::string yoloConfigPath = "configure.cfg";
+std::string yoloLabelPath = "label.names";
+
+std::string vehicleAttrModelPath = "model.om";
+std::string vehicleAttrConfigPath = "configure.cfg";
+std::string vehicleAttrLabelPath = "label.names";
+
+std::string carPlateDetectModelPath = "model.om";
+std::string carPlateDetectConfigPath = "configure.cfg";
+std::string carPlateDetectLabelPath = "label.names";
+
+std::string carPlateRecModelPath = "model.om";
+std::string carPlateRecConfigPath = "configure.cfg";
+std::string carPlateRecLabelPath = "label.names";
+
+std::string pedestrianAttrModelPath = "model.om";
+std::string pedestrianAttrConfigPath = "configure.cfg";
+std::string pedestrianAttrLabelPath = "label.names";
+
+std::string pedestrianFeatureModelPath = "model.om";
+
+std::string faceLandmarkModelPath = "model.om";
+
+std::string faceAttributeModelPath = "model.om";
+std::string faceAttributeConfigPath = "configure.cfg";
+std::string faceAttributeLabelPath = "label.names";
+
+std::string faceFeatureModelPath = "model.om";
+
 uint32_t deviceID = 0;
 std::vector<uint32_t> deviceIDs(numChannel, deviceID);
 
@@ -262,4 +292,291 @@ float activateOutput(float data, bool isAct)
     {
         return data;
     }
+}
+
+void resNetFeatureProcess(std::vector<MxBase::Tensor> &inferOutputs, std::vector<float> &feature, bool isSigmoid)
+{
+    const int FEATURE_SIZE = 4;
+    if (inferOutputs.empty())
+    {
+        printf("result Infer failed with empty output...\n");
+        retrun;
+    }
+
+    size_t featureSize = inferOutputs[0].GetByteSize() / FEATURE_SIZE;
+    float *castData = static_cast<float *>(inferOutputs[0].GetData());
+
+    for (size_t i = 0; i < featureSize; i++)
+    {
+        features.push_back(activateOutput(castData[i], isSigmoid));
+    }
+    return;
+}
+
+void yoloImagePreProcessor()
+{
+}
+
+template <size_t NUM>
+void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>> *&pl,
+                              MxBase::ImageProcessor *&imageProcessor,
+                              MultiObjectTracker *&multiObjectTracker,
+                              MxBase::Model *&yoloModel,
+                              MxBase::Yolov3PostProcess *&yoloPostProcessor,
+                              MxBase::Model *&vehicleAttrModel,
+                              ResnetAttributePostProcess *&vehicleAttrPostprocessor,
+                              MxBase::Model *&carPlateDetectionModel,
+                              SsdVggPostProcess *&carPlateDetectPostProcessor,
+                              MxBase::Model *&carPlateRecognitionModel,
+                              CarPlateRecognitionPostProcess *&carPlateRecognitionPostProcessor,
+                              MxBase::Model *&pedestrianAttrModel,
+                              ResnetAttributePostProcess *&pedestrianAttrPostProcessor,
+                              MxBase::Model *&pedestrianFeatureModel,
+                              MxBase::Model *&faceLandmarkModel,
+                              FaceLandmarkPostProcess *&faceLandmarkPostProcessor,
+                              FaceAlignment *&faceAlignmentProcessor,
+                              MxBase::Model *&faceAttributeModel,
+                              ResnetAttributePostProcess *&faceAttributeProcessor,
+                              MxBase::Model *&faceFeatureModel,
+                              MxBase::BlockingQueue<FrameImage> &decodedFrameQueue,
+                              std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, NUM> &selectedObjectBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &vehicleAttrInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &carPlateDetectionInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &carPlateRecognitionInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &pedestrianAttrInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &pedestrianFeatureInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &faceLandmarkInputImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &faceAlignedImageBuffer,
+                              std::array<std::vector<PreprocessedImage>, NUM> &faceFeatureInputImageBuffer,
+                              std::array<std::vector<MxBase::Tensor>, NUM> &outputs,
+                              uint32_t &deviceID, std::array<FrameImage, NUM> &buffer,
+                              std::array<MxBase::Image, NUM> &resizedImageBuffer, tf::Executor &executor)
+{
+    pl = new tf::Pipeline{numLines,
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                                                                                                }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          },
+
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
+                                                                        [&, batch](tf::Pipeflow &pf) {
+
+                                                                        }
+
+                          }};
+}
+
+int main(int argc, char *argv[])
+{
+    MxBase::MxInit();
+
+    av_register_all();
+
+    avformat_network_init();
+
+    initResources();
+    sleep(5);
+
+    std::vecor<std::string> filePaths(numChannel);
+
+    std::fill(filePaths.begin(), filePaths.end(), "../test.264");
+
+    AVFormatContext *pFormatCtx[numChannel];
+    AVPacket pkt[numChannel];
+    std::vector<uint32_t> frameIDs(numChannel, deviceID);
+
+    MxBase::VideoDecodeConfig config;
+    MxBase::VideoDecodeCallBack cPtr = CallBackVdec;
+    config.width = 1920;
+    config.height = 1080;
+    config.callbackFunc = cPtr;
+    config.skipInterval = 3;
+    config.inputVideoFormat = MxBase::StreamFormat::H264_MAIN_LEVEL;
+
+    MxBase::VideoDecoder *videoDecoder[numChannel];
+
+    tf::Executor executor(256);
+
+    tf::Taskflow taskflow;
+    tf::Task init = task.emplace([]()
+                                 { print("ready\n"); })
+                        .name("starting pipeline");
+    tf::Task stop = task.emplace([]()
+                                 { print("stopped\n"); })
+                        .name("pipeline stopped");
+
+    for (size_t i = 0; i < numChannel; ++i)
+    {
+        executor.async([&, i]()
+                       {
+            pFormatCtx[i] = nullptr;
+            videoDecoder[i] = new MxBase::VideoDecoder(config, deviceIDs[i], i);
+
+            StreamPull(pFormatCtx[i], filePaths[i]);
+            if (pFormatCtx[i] == nullptr) {
+                printf("is nullptr\n");
+            }
+            VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWoker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
+
+            delete videoDecoder[i]; });
+    }
+
+    tf::Task detectTask[numWoker] = {};
+    std::array<std::array<FrameImage, numLines>, numWoker> yoloFrameBuffer;
+    std::array<std::array<MxBase::Image, numLines>, numWoker> yoloResizedImageBuffer;
+    std::array<std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, numLines>, numWoker> selectedObjectBuffer;
+
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> vehicleAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> carPlateDetectionInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> carPlateRecognitionInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> pedestrianAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> pedestrianFeatureInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceAlignedImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceFeatureInputImageBuffer;
+
+    std::array<std::array<std::vector<MxBase::Tensor>, numLines>, numWoker> yoloResults;
+    tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>>
+        fullPipelines[numWoker];
+
+    for (int workerIndex = 0; wokerIndex < numWoker; wokerIndex++)
+    {
+        printf("====================dispatch yolo pipeline=========================\n");
+        dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex],
+                                 imageProcessors[workerIndex],
+                                 multiObjectTrackers[wokerIndex],
+                                 yoloModels[wokerIndex],
+                                 yoloPostProcessors[wokerIndex],
+                                 vehicleAttrModels[workerIndex],
+                                 vehicleAttrPostProcessors[wokerIndex],
+                                 carPlateDetectModels[wokerIndex],
+                                 carPlateDetectPostProcessors[wokerIndex],
+                                 carPlateRecModels[wokerIndex],
+                                 carPlateRecPostProcessors[wokerIndex],
+                                 pedestrianAttrModels[wokerIndex],
+                                 pedestrianAttrPostProcessors[wokerIndex],
+                                 pedestrianFeatureModels[wokerIndex],
+                                 faceLandmarkModels[wokerIndex],
+                                 faceLandmarkPostProcessors[wokerIndex],
+                                 faceAlignmentProcessors[wokerIndex],
+                                 faceAttributeModels[wokerIndex],
+                                 faceAttributeProcessors[wokerIndex],
+                                 faceFeatureModels[wokerIndex],
+                                 decodedFrameQueueList[wokerIndex],
+                                 selectedObjectBuffer[wokerIndex],
+                                 vehicleAttrInputImageBuffer[wokerIndex],
+                                 carPlateDetectionInputImageBuffer[wokerIndex],
+                                 carPlateRecognitionInputImageBuffer[wokerIndex],
+                                 pedestrianAttrInputImageBuffer[wokerIndex],
+                                 pedestrianFeatureInputImageBuffer[wokerIndex],
+                                 faceAttrInputImageBuffer[wokerIndex],
+                                 faceAlignedImageBuffer[wokerIndex],
+                                 faceFeatureInputImageBuffer[wokerIndex],
+                                 yoloResults[wokerIndex], deviceIDs[wokerIndex],
+                                 yoloFrameBuffer[wokerIndex],
+                                 yoloResizedImageBuffer[wokerIndex],
+                                 executor);
+
+        detectTask[wokerIndex] = taskflow.composed_of(*fullPipelines[wokerIndex]).name("pipeline1");
+        init.precede(detectTask[wokerIndex]);
+        detectTask[wokerIndex].precede(stop);
+    }
+
+    auto start = std::chrono::steady_clock::now();
+    printf("Tasks dispatched\n");
+    taskflow.dump(std::cout);
+    executor.run(taskflow);
+
+    executor.wait_for_all();
+
+    printf("All tasks finished\n");
+    auto end = std::chrono::steady_clock::now();
+
+    printf("numChannel: %zu, numWoker: %zu\n", numChannel, numWoker);
+    printf("Elapsed time in microseconds: %ld us\n", std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 }
