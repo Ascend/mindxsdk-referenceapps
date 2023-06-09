@@ -45,9 +45,9 @@
 
 ```
 ### 依赖
-| 依赖软件      | 版本   | 下载地址                                                     | 说明                                         |
-| ------------- | ------ | ------------------------------------------------------------ | -------------------------------------------- |
-| ffmpeg        | 4.2.1  | [Link](https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz) | 视频转码解码组件                             |
+ffmpeg 4.2.1
+mxVision 5.0.RC1
+Ascend-CANN-toolkit (310使用6.3.RC1, 310B使用6.2.RC1)
 
 **注意：**
 
@@ -96,6 +96,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
+# 注意：若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 ```
 
 执行完模型转换脚本后，会生成相应的.om模型文件。
@@ -146,26 +147,9 @@ reasonerConfig.enableIndependentThreadForEachDetectStep = true; // 为每个检�
 
 ### 配置环境变量
 
-```bash
-# 执行如下命令，打开.bashrc文件
-cd $HOME
-vi .bashrc
-# 在.bashrc文件中添加以下环境变量
-MX_SDK_HOME=${SDK安装路径}
-FFMPEG_HOME=${FFMPEG安装路径}
-
-LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:${FFMPEG_HOME}/lib:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:/usr/local/Ascend/driver/lib64/
-
-GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-
-GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-
-# 保存退出.bashrc文件
-# 执行如下命令使环境变量生效
-source ~/.bashrc
-
-#查看环境变量
-env
+```shell
+. /usr/local/Ascend/ascend-toolkit/set_envv.sh # Ascend-cann-toolkit开发套件包默认安全路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径shell
 ```
 
 ### 配置CMakeLists

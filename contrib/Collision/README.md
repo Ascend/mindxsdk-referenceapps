@@ -214,7 +214,36 @@ ffmpeg -i out_collision.h264 -vcodec h264 out_collision.mp4
 
 
 
-## 8 常见问题
+## 8 性能测试
+
+使用sdk自带的性能统计工具测试项目性能
+
+**步骤1：**修改sdk插件性能统计工具的配置文件，文件位于 *${MX_SDK_HOME}/config/sdk.conf* 
+
+```
+enable_ps=true #打开性能统计开关
+
+ps_log_dir=logs #生成日志地址路径
+
+ps_interval_time=1 #性能统计时间间隔，单位s
+```
+
+**步骤2：**执行运行命令
+
+```
+python3.9.2 collision.py
+```
+
+**步骤3：**在${ps_log_dir}下查看生成的性能日志，打开performance-statistics.log.tpr日式文件查看吞吐率，与推理视频帧率保持一致，满足实时性要求
+
+```
+{"streamName":"collision","throughput":33,"throughputRate":33,"type":"throughputRate"}
+{"streamName":"collision","throughput":31,"throughputRate":31,"type":"throughputRate"}
+```
+
+
+
+## 9 常见问题
 
 视频编码参数配置错误
 

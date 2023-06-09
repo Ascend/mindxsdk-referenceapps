@@ -8,11 +8,11 @@
 
 ### 1.1 支持产品
 
-昇腾310(推理)
+本项目以昇腾Atlas310，Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.4](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[2.0.4](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的CANN版本为[6.3.RC1(310), 6.2.RC1(310B)](https://www.hiascend.com/software/cann/commercial)，MindX SDK版本为[5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)。
 
@@ -50,8 +50,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 
 | 软件                | 版本                                                         | 说明                                               |
 | ------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
-| mxVision            | [mxVision 2.0.4](https://www.hiascend.com/software/Mindx-sdk) | mxVision软件包                                     |
-| Ascend-CANN-toolkit | [CANN 5.0.4](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包                      |
+| mxVision            | [mxVision 5.0.RC1](https://www.hiascend.com/software/Mindx-sdk) | mxVision软件包                                     |
+| Ascend-CANN-toolkit | [310使用6.3.RC1，310B使用6.2.RC1](https://www.hiascend.com/software/cann/commercial) | Ascend-cann-toolkit开发套件包  |
 | 操作系统            | [Ubuntu 18.04](https://ubuntu.com/)                          | Linux操作系统                                      |
 | OpenCV              | 4.3.0                                                        | 用于结果可视化                                     |
 
@@ -60,15 +60,8 @@ MindX SDK安装前准备可参考[《用户指南》](https://gitee.com/ascend/m
 在进行模型转换和编译运行前，需设置如下的环境变量：
 
 ```shell
-export MX_SDK_HOME=${MX_SDK_HOME}  #需要在这添加自己SDK的安装路径
-export LD_LIBRARY_PATH=${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${MX_SDK_HOME}/opensource/lib64:/usr/local/Ascend/ascend-toolkit/latest/acllib/lib64:${LD_LIBRARY_PATH}
-export GST_PLUGIN_SCANNER=${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner
-export GST_PLUGIN_PATH=${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins
-export PYTHONPATH=${MX_SDK_HOME}/python:${PYTHONPATH}
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH:.
-export ASCEND_OPP_PATH=${install_path}/opp
-
+. /usr/local/Ascend/ascend-toolkit/set_envv.sh # Ascend-cann-toolkit开发套件包默认安全路径，根据实际安装路径修改
+. ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径. 
 ```
 
 
@@ -76,6 +69,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 ### 3. 模型转换
 
 模型转换使用的是ATC工具，具体使用教程可参考[《ATC工具使用指南》](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。车道线检测模型转换所需的aipp配置文件均放置在/Ultra-Fast-Lane-Detection/model目录下。
+注意若推理芯片为310B，需将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ### 3.1 车牌检测模型的转换
 

@@ -41,41 +41,41 @@ PPYoloePostProcess &PPYoloePostProcess::operator = (const PPYoloePostProcess &ot
 
 APP_ERROR PPYoloePostProcess::Init(const std::map<std::string, std::shared_ptr<void>> &postConfig)
 {
-    LogDebug << "Start to Init PPYoloePostProcess. ";
+    LogDebug << "Start to Init PPYoloePostProcess.";
     APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessorBase";
+        LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
         return ret;
     }
     ret = configData_.GetFileValue<float>("OBJECTNESS_THRESH", objectnessThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
-        LogWarn << GetError(ret) << "Fail to read OBJECTNESS_THRESH from config, default is :" << objectnessThresh_;
+        LogWarn << GetError(ret) << "Fail to read OBJECTNESS_THRESH from config, default is : " << objectnessThresh_;
     }
     ret = configData_.GetFileValue<float>("IOU_THRESH", iouThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
-        LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is :" << iouThresh_;
+        LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is : " << iouThresh_;
     }
-    LogDebug << "End to Init PPYoloePostProcess. ";
+    LogDebug << "End to Init PPYoloePostProcess.";
     return APP_ERR_OK;
 }
 
 APP_ERROR PPYoloePostProcess::Init(const std::map<std::string, std::string> &postConfig)
 {
-    LogDebug << "Start to Init PPYoloePostProcess. ";
+    LogDebug << "Start to Init PPYoloePostProcess.";
     APP_ERROR ret = ObjectPostProcessBase::Init(postConfig);
     if (ret != APP_ERR_OK) {
-        LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessorBase";
+        LogError << GetError(ret) << "Fail to superInit in ObjectPostProcessBase.";
         return ret;
     }
     ret = configData_.GetFileValue<float>("OBJECTNESS_THRESH", objectnessThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
-        LogWarn << GetError(ret) << "Fail to read OBJECTNESS_THRESH from config, default is :" << objectnessThresh_;
+        LogWarn << GetError(ret) << "Fail to read OBJECTNESS_THRESH from config, default is : " << objectnessThresh_;
     }
     ret = configData_.GetFileValue<float>("IOU_THRESH", iouThresh_, 0.0f, 1.0f);
     if (ret != APP_ERR_OK) {
-        LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is :" << iouThresh_;
+        LogWarn << GetError(ret) << "Fail to read IOU_THRESH from config, default is : " << iouThresh_;
     }
-    LogDebug << "End to Init PPYoloePostProcess. ";
+    LogDebug << "End to Init PPYoloePostProcess.";
     return APP_ERR_OK;
 }
 
@@ -95,8 +95,9 @@ void PPYoloePostProcess::ConstructBoxFromOutput(float *output, float *boxOutput,
             classId = labelIdx;
         }
     }
-    if (classId < 0 || resizedImageInfo.widthOriginal == 0 || resizedImageInfo.heightOriginal == 0)
+    if (classId < 0 || resizedImageInfo.widthOriginal == 0 || resizedImageInfo.heightOriginal == 0) {
         return;
+    }
     float xGain = resizedImageInfo.widthResize * 1.0 / resizedImageInfo.widthOriginal;
     float yGain = resizedImageInfo.heightResize * 1.0 / resizedImageInfo.heightOriginal;
     auto leftX = boxOutput[offset * BOX_DIM] / xGain;
@@ -104,10 +105,10 @@ void PPYoloePostProcess::ConstructBoxFromOutput(float *output, float *boxOutput,
     auto rightX = (boxOutput[offset * BOX_DIM + RIGHTX_IDX]) / xGain;
     auto rightY = (boxOutput[offset * BOX_DIM + RIGHTY_IDX]) / yGain;
     ObjectInfo obj;
-    obj.x0 = std::round(leftX);
-    obj.y0 = std::round(leftY);
-    obj.x1 = std::round(rightX);
-    obj.y1 = std::round(rightY);
+    obj.x0 = leftX;
+    obj.y0 = leftY;
+    obj.x1 = rightX;
+    obj.y1 = rightY;
     obj.confidence = maxProb;
     obj.classId = classId;
     obj.className = configData_.GetClassName(obj.classId);
@@ -140,7 +141,7 @@ APP_ERROR PPYoloePostProcess::Process(const std::vector<TensorBase> &tensors,
         return APP_ERR_INPUT_NOT_MATCH;
     }
     if (tensors[1].GetShape()[1] != classNum_) {
-        LogError << "The model output tensor[1][1] != classNum_";
+        LogError << "The model output tensor[1][1] != classNum_.";
         return APP_ERR_INPUT_NOT_MATCH;
     }
     uint32_t batchSize = tensors[0].GetShape()[0];
@@ -167,9 +168,9 @@ APP_ERROR PPYoloePostProcess::Process(const std::vector<TensorBase> &tensors,
 extern "C" {
 std::shared_ptr<MxBase::PPYoloePostProcess> GetObjectInstance()
 {
-    LogInfo << "Begin to get PPYoloePostProcess instance";
+    LogInfo << "Begin to get PPYoloePostProcess instance.";
     auto instance = std::make_shared<MxBase::PPYoloePostProcess>();
-    LogInfo << "End to get PPYoloePostProcess instance";
+    LogInfo << "End to get PPYoloePostProcess instance.";
     return instance;
 }
 }
