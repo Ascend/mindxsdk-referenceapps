@@ -88,7 +88,7 @@ APP_ERROR FaceAlignment::FaceeAlignmentProcess(std::vector<MxBase::Image> &intpu
             DestoryMemory(outputDataInfoVec);
             return ret;
         }
-
+        MxBase::MemoryHelper::MxbsFree(srcData);
         MxBase::Image outputImage(static_cast<shared_ptr<uint8_t*>>(uint8_t *dstData.ptrData), dstData.size, deviceID, outImageSize,
                                 static_cast<MxBase::ImageFormat>(outputDataInfo.format));
         outputImageVec.push_back(outputImage);
