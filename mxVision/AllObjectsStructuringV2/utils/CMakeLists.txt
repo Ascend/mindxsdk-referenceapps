@@ -1,0 +1,2 @@
+add_add_subdirectory(multiObjectTracking)
+add_add_subdirectory(objectSelection)
