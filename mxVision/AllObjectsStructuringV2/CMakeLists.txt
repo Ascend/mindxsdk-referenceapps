@@ -44,7 +44,7 @@ include_directories(${MX_SDK_HOME}/aarch64-linux/include/)
 link_directories(${ACL_LIB_DIR})
 link_directories(${OPENSOURCE_DIR}/lib)
 link_directories(${MXBASE_LIB_DIR})
-link_directories(${MXBASE_POST_LIB_DIR)
+link_directories(${MXBASE_POST_LIB_DIR})
 
     
 link_directories(../../../opencv4.5.5/lib64)
