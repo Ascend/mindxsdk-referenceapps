@@ -30,9 +30,12 @@ class FaceAlignment
 {
 public:
     APP_ERROR Process(std::vector<MxBase::Image> &intputImageVec, std::vector<MxBase::Image> &outputImageVec,
-                      std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID) private : void DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataInfoVec);
+                      std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID);
 
-    MxBase::WarpAffinr warpAffinr_;
+private:
+    void DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataInfoVec);
+
+    MxBase::WarpAffine warpAffine;
 };
 
 #endif /* FACEALIGNMENT_FACEALIGNMENT_H */

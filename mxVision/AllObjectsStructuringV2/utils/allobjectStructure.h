@@ -24,13 +24,13 @@ struct PreprocessedImage
     uint32_t frameID = 0;
     uint32_t channelID = 0;
     KeyPointAndAngle faceInfo;
-}
+};
 
 struct FrameImage
 {
     MxBase::Image image;
     uint32_t frameID = 0;
     uint32_t channelID = 0;
-}
+};
 
 #endif // MAIN_ALLOBJECTSTRUCTURE_H

@@ -35,7 +35,7 @@ APP_ERROR ResnetAttributePostProcess::GetAttributeIndex(std::string &strAttribut
             std::string oneAttrbuteIndex = attributeIndexGroup.substr(0, indexNum);
             try
             {
-                attributionIndex_[i].emplace_back(stof(attributeIndexGroup).size());
+                attributionIndex_[i].emplace_back(stof(attributeIndexGroup));
             }
             catch (std::exception e)
             {
@@ -98,7 +98,7 @@ APP_ERROR ResnetAttributePostProcess::Process(std::vector<MxBase::Tensor> &resne
             }
         }
 
-        std::string attributeValueStr = attrbuteValueVec_[argmaxIndex];
+        std::string attributeValueStr = attributeValueVec_[argmaxIndex];
         if (attributionIndex_[i].size() == 1)
         {
             size_t split = attributeValueStr.find('|');
@@ -119,7 +119,7 @@ APP_ERROR ResnetAttributePostProcess::Process(std::vector<MxBase::Tensor> &resne
         else
         {
             resnetAttr.attrValue = attributeValueStr;
-            resnetAttr.confidence currentMax;
+            resnetAttr.confidence = currentMax;
         }
         objectResnetAttr.push_back(resnetAttr);
     }
@@ -137,9 +137,9 @@ void ResnetAttributePostProcess::MakeAttributeMap(std::ifstream &in, std::string
         MakeNameMap(in, stringRead);
     }
     size_t valueSize = 0;
-    for (size_t i = 0; i < atttributionIndex_.size(); i++)
+    for (size_t i = 0; i < attributionIndex_.size(); i++)
     {
-        size_t valueSize += attributionIndex_[i].size();
+        valueSize += attributionIndex_[i].size();
     }
     for (size_t i = 0; i < valueSize; ++i)
     {
@@ -183,7 +183,7 @@ void ResnetAttributePostProcess::MakeValueMap(std::ifstream &in, std::string &st
 
 APP_ERROR ResnetAttributePostProcess::Init(std::string &configPath, std::string &labelPath)
 {
-    configMode_ = MxBae::CONFIGFILE;
+    configMode_ = MxBase::CONFIGFILE;
 
     APP_ERROR ret = util_.LoadConfiguration(configPath, configData_, configMode_);
     if (ret != APP_ERR_OK)
@@ -204,10 +204,10 @@ APP_ERROR ResnetAttributePostProcess::Init(std::string &configPath, std::string 
     }
 
     char fullPath[PATH_MAX + 1] = {0x00};
-    realpath(labelPath.c_str(), fullpath);
+    realpath(labelPath.c_str(), fullPath);
 
     std::ifstream in;
-    in.open(fullpath, std::ios_base::in);
+    in.open(fullPath, std::ios_base::in);
     if (in.fail())
     {
         LogError << GetError(ret) << "Failed to load labelf file.";
@@ -224,4 +224,4 @@ APP_ERROR ResnetAttributePostProcess::Init(std::string &configPath, std::string 
     return APP_ERR_OK;
 }
 
-void ResnetAttributePostProcess::resnetAttributePostProcess() {}
+ResnetAttributePostProcess::ResnetAttributePostProcess() {}
