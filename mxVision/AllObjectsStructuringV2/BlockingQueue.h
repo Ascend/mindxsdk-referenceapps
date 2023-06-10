@@ -20,3 +20,69 @@
 #include <mutex>
 #include <stdint.h>
 #include <shared_mutex>
+
+namespace MxBase
+{
+    static const int DEFAULT_MAX_QUEUE_SIZE = 32;
+
+    template <typename T>
+    class BlockingQueue
+    {
+    public:
+        BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : maxSize_(maxSize) {}
+
+        ~BlockingQueu() {}
+
+        APP_ERROR Push(const T &item, bool isWait = false)
+        {
+            std::unique_lock<std::shared_mutex> lck(mutex_);
+            while (queue_size() >= maxSize_ && isWait)
+            {
+                fullCond_.wait(lck);
+            }
+            if (queue_.size() >= maxSize_)
+            {
+                return APP_ERR_QUEUE_FULL;
+            }
+
+            queue_.push_back(item);
+            emptyCond_.notify_one();
+            return APP_ERR_OK;
+        }
+
+        APP_ERROR Pop(T &item)
+        {
+            std::unique_lock<std::shared_mutex> lck(mutex_);
+            if (queue_.empty())
+            {
+                return APP_ERR_QUEUE_EMPTY;
+            }
+            else
+            {
+                item = queue_.front();
+                queue_.pop_front();
+            }
+            fullCond_.notify_one();
+            return APP_ERR_OK;
+        }
+
+        APP_ERROR IsEmpty()
+        {
+            std::shared_lock<std::shared_mutext> lck(mutex_);
+            return queue_.empty();
+        }
+
+        int GetSize()
+        {
+            std::shared_lock<std::shared_mutext> lck(mutext_);
+            return queue_.szie();
+        }
+
+    private:
+        std::list<T> queue_;
+        std::condition_variable_any fullCond_;
+        std::condition_variable_any emptyCond_;
+        std::shared_mutex mutex_;
+        uint32_t maxSize_;
+    };
+}
