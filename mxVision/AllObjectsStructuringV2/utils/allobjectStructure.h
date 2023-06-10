@@ -1,9 +1,9 @@
 #ifndef MAIN_ALLOBJECTSTRUCTURE_H
 #define MAIN_ALLOBJECTSTRUCTURE_H
-#include "mxBase/MxBase.h"
-#include "mxBase/postprocess/include/ObjectPostProcessors/Yolov3PostProcess.h"
-#include "../postprocess/faceLandmark/FaceLandmarkPostProcess.h"
-#include "../posrprocess/faceAlignment/FaceAlignment.h"
+#include "MxBase/MxBase.h"
+#include "MxBase/postprocess/include/ObjectPostProcessors/Yolov3PostProcess.h"
+#include "../postprocessor/faceLandmark/FaceLandmarkPostProcess.h"
+#include "../postprocessor/faceAlignment/FaceAlignment.h"
 
 enum SCENARIOS
 {
