@@ -128,7 +128,7 @@ ResnetAttributePostProcess *faceAttributeProcessors[numWorker];
 MxBase::Model *faceFeatureModels[numWorker];
 
 MxBase::BlockingQueue<FrameImage> decodedFrameQueueList[numWorker];
-int decodeEOF[numChannel]{};
+int decodeEOF[numChannel];
 std::shared_mutex signalMutex_[numChannel];
 
 bool taskStop = false;
@@ -347,7 +347,7 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
                           std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
                           MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
-    MxBase::ResizedImageInfo resizedImageInfo{};
+    MxBase::ResizedImageInfo resizedImageInfo;
     resizedImageInfo.heightOriginal = frameImage.image.GetSize().height;
     resizedImageInfo.widthOriginal = frameImage.image.GetSize().width;
     resizedImageInfo.heightResize = resizedImage.GetSize().height;
@@ -778,7 +778,6 @@ void initResources()
 {
     for (int batch = 0; batch < numWorker; ++batch)
     {
-
         imageProcessors[batch] = new MxBase::ImageProcessor(deviceID);
         yoloModels[batch] = new MxBase::Model(yoloModelPath, deviceID);
         yoloPostProcessors[batch] = new MxBase::Yolov3PostProcess();
@@ -1099,7 +1098,7 @@ int main(int argc, char *argv[])
 
     MxBase::VideoDecoder *videoDecoder[numChannel];
 
-    tf::Executor executor(256);
+    tf::Executor executor(EXECUTOR_NUM);
 
     tf::Taskflow taskflow;
     tf::Task init = taskflow.emplace([]()
@@ -1121,7 +1120,6 @@ int main(int argc, char *argv[])
                 printf("is nullptr\n");
             }
             VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWorker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
-
             delete videoDecoder[i]; });
     }
 

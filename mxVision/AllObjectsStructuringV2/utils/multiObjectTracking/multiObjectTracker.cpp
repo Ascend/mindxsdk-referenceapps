@@ -135,7 +135,7 @@ APP_ERROR MultiObjectTracker::trackObjectUpdate_(std::vector<MxBase::ObjectInfo>
 
 MxBase::DetectBox MultiObjectTracker::ConvertToDetectBox(const MxBase::ObjectInfo &objectInfo)
 {
-    MxBase::DetectBox detectBox{};
+    MxBase::DetectBox detectBox;
     float height = objectInfo.y1 - objectInfo.y0;
     float width = objectInfo.x1 - objectInfo.x0;
     detectBox.x = objectInfo.x0;
@@ -229,7 +229,7 @@ void MultiObjectTracker::addNewDetectedObject_(FrameImage &frameImage, std::vect
 {
     for (auto &detectObject : unmatchedObjectQueue)
     {
-        TrackLet trackLet{};
+        TrackLet trackLet;
         generatedId_++;
         trackLet.trackInfo.trackId = generatedId_;
         trackLet.trackInfo.age = 1;
