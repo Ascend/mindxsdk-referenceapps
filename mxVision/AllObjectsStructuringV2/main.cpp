@@ -101,7 +101,7 @@ SsdVggPostProcess *carPlateDetectPostProcessors[numWoker];
 
 // car plate recognition
 MxBase::Model *carPlateRecModels[numWoker];
-carPlateRecognitionPostProcess *carPlateRecPostProcessors[numWoker];
+CarPlateRecognitionPostProcess *carPlateRecPostProcessors[numWoker];
 
 // pedestrian attribution
 MxBase::Model *pedestrianAttrModels[numWoker];
@@ -128,6 +128,8 @@ MxBase::BlockingQueue<FrameImage> decodedFrameQueueList[numWoker];
 int decodeEOF[numChannel]{};
 std::shared_mutex signalMutex_[numChannel];
 
+bool taskStop = false;
+
 void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx, int &decodeEOF, int32_t &deviceID, uint32_t channelID)
 {
     MxBase::DeviceContext context = {};
@@ -147,7 +149,7 @@ void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx
             printf("[streamPuller] channel StreamPuller is EOF, over!\n");
             {
                 std::unique_lock<std::shared_mutex> lock(signalMutex_[channelID]);
-                decodeEof = 1;
+                decodeEOF = 1;
             }
             av_packet_unref(&pkt);
             return;
@@ -182,10 +184,10 @@ void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx
         {
             printf("MxbsMallocAndCopy failed!\n");
         }
-        std::shared_ptr<uint_u> imageData((uint8_t *)data.ptrData, hostDeleter);
+        std::shared_ptr<uint8_t> imageData((uint8_t *)data.ptrData, hostDeleter);
 
         MxBase::Image(imageData, pkt.size);
-        frameImage, image = subImage;
+        frameImage.image = subImage;
         av_packet_unref(&pkt);
     }
 
@@ -223,8 +225,8 @@ void VideoDeocde(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQu
         MxBase::Image subImage;
         FrameImage frame;
         frame.image = subImage;
-        frame.frameId = frameID;
-        frame.channelId = channelID;
+        frame.frameID = frameID;
+        frame.channelID = channelID;
 
         GetFrame(pkt, frame, pFormatCtx, decodeEOF, deviceID, channelID);
 
@@ -242,7 +244,7 @@ void VideoDeocde(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQu
         {
             printf("videoDecoder Decode failed. ret is: %d\n", ret);
         }
-        frameId += 1;
+        frameID += 1;
         i++;
         std::this_thread::sleep_for(std::chrono::milliseconds(30)); // 手动控制帧率
     }
@@ -251,10 +253,10 @@ void VideoDeocde(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQu
 APP_ERROR CallBackVdec(MxBase::Image &decodedImage, uint32_t channelID, uint32_t frameID, void *userData)
 {
     FrameImage frameImage;
-    frameImage.channelId = channelID;
-    frameImage.frameId = frameID;
+    frameImage.channelID = channelID;
+    frameImage.frameID = frameID;
 
-    auto *decidedVec = static_cast<MxBase::BlockingQueue<FrameImage> *>(userData);
+    auto *decodedVec = static_cast<MxBase::BlockingQueue<FrameImage> *>(userData);
     if (decodedVec == nullptr)
     {
         printf("decodedVec has been released.\n");
@@ -265,11 +267,11 @@ APP_ERROR CallBackVdec(MxBase::Image &decodedImage, uint32_t channelID, uint32_t
     size_t tmpSize = decodedVec->GetSize();
     if (tmpSize >= static_cast<int>(maxQueueSize * maxQueuePercent))
     {
-        printf("[warning][decodedFrameQueue: %d], is almost full (80%), current size: %zu\n", channelId, tmpSize);
+        printf("[warning][decodedFrameQueue: %d], is almost full (80%), current size: %zu\n", channelID, tmpSize);
     }
     if (tmpSize <= static_cast<int>(maxQueueSize * minQueuePercent))
     {
-        printf("[warning][decodedFrameQueue: %d], is almost empty (20%), current size: %zu\n", channelId, tmpSize);
+        printf("[warning][decodedFrameQueue: %d], is almost empty (20%), current size: %zu\n", channelID, tmpSize);
     }
 
     return APP_ERR_OK;
@@ -300,10 +302,10 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
     if (inferOutputs.empty())
     {
         printf("result Infer failed with empty output...\n");
-        retrun;
+        return;
     }
 
-    size_t featureSize = inferOutputs[0].GetByteSize() / FEATURE_SIZE;
+    size_t featureSize = i = inferOutputs[0].GetByteSize() / FEATURE_SIZE;
     float *castData = static_cast<float *>(inferOutputs[0].GetData());
 
     for (size_t i = 0; i < featureSize; i++)
@@ -316,7 +318,7 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
 void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &frameImage, MxBase::Image &resizedImage)
 {
     MxBase::Size size(416, 416);
-    MxBase::interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
+    MxBase::Interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
     APP_ERROR ret = imageProcessor->Resize(frameImage.image, size, resizedImage, interpolation);
     if (ret != APP_ERR_OK)
     {
@@ -337,13 +339,13 @@ void yoloModelInfer(MxBase::Model *&yoloModel, MxBase::Image &resizedImage, std:
     }
 }
 
-void yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImage, MxBase::Image &resizedImage,
-                     std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
-                     MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
+APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImage, MxBase::Image &resizedImage,
+                          std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
+                          MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
     MxBase::ResizedImageInfo resizedImageInfo{};
     resizedImageInfo.heightOriginal = frameImage.image.GetSize().height;
-    resizedImageInfo.widthtOriginal = frameImage.image.GetSize().width;
+    resizedImageInfo.widthOriginal = frameImage.image.GetSize().width;
     resizedImageInfo.heightResize = resizedImage.GetSize().height;
     resizedImageInfo.widthResize = resizedImage.GetSize().width;
     std::vector<MxBase::ResizedImageInfo> resizedImageInfos = {resizedImageInfo};
@@ -351,7 +353,7 @@ void yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImag
     std::vector<MxBase::TensorBase> tensors;
     for (auto &yolov4Output : outputs)
     {
-        MxBase::MemoryData memoryData(yolov4Output.Getdata(), yolov4Output.GetByteSize());
+        MxBase::MemoryData memoryData(yolov4Output.GetData(), yolov4Output.GetByteSize());
         int dType = static_cast<int>(yolov4Output.GetDataType());
         MxBase::TensorBase tensorBase(memoryData, true, yolov4Output.GetShape(), (MxBase::TensorDataType)dType);
         std::vector<uint32_t> shapeArray = yolov4Output.GetShape();
@@ -369,8 +371,8 @@ void yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImag
     selectedObjectsPerFrame.second.clear();
     for (size_t i = 0; i < objectInfos.size(); i++)
     {
-        printf("[info] channelID:%d, frameID:%d, object size: %zu \n", frameImage.channelId, frameImage.frameId, objectInfos[i].size());
-        std::vecor<TrackLet> trackLetList;
+        printf("[info] channelID:%d, frameID:%d, object size: %zu \n", frameImage.channelID, frameImage.frameID, objectInfos[i].size());
+        std::vector<TrackLet> trackLetList;
         multiObjectTracker->Process(frameImage, objectInfos[i], trackLetList);
 
         std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> tmpSelectedObjectVec;
@@ -378,8 +380,8 @@ void yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImag
         if (!tmpSelectedObjectVec.empty())
         {
             selectedObjectsPerFrame.first.image = tmpSelectedObjectVec[0].first.image;
-            selectedObjectsPerFrame.first.frameId = tmpSelectedObjectVec[0].first.frameId;
-            selectedObjectsPerFrame.first.channelId = tmpSelectedObjectVec[0].first.channelId;
+            selectedObjectsPerFrame.first.frameID = tmpSelectedObjectVec[0].first.frameID;
+            selectedObjectsPerFrame.first.channelID = tmpSelectedObjectVec[0].first.channelID;
 
             for (auto &object : tmpSelectedObjectVec)
             {
@@ -393,20 +395,20 @@ void yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &frameImag
 
 void parseSelected(MxBase::ImageProcessor *&imageProcessor,
                    std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjects,
-                   std::vector<PreProcessedImage> &vehicleAttrInputImageVec,
-                   std::vector<PreProcessedImage> &carPlateDetectionInputImageVec,
-                   std::vector<PreProcessedImage> &pedestrianAttrInputImageVec,
-                   std::vector<PreProcessedImage> &pedestrianFeatureInputImageVec,
-                   std::vector<PreProcessedImage> &facelandmarkInputImageVec,
-                   std::vector<PreProcessedImage> &faceFeatureInputImageVec)
+                   std::vector<PreprocessedImage> &vehicleAttrInputImageVec,
+                   std::vector<PreprocessedImage> &carPlateDetectionInputImageVec,
+                   std::vector<PreprocessedImage> &pedestrianAttrInputImageVec,
+                   std::vector<PreprocessedImage> &pedestrianFeatureInputImageVec,
+                   std::vector<PreprocessedImage> &facelandmarkInputImageVec,
+                   std::vector<PreprocessedImage> &faceFeatureInputImageVec)
 {
-    auto frameID = selectedObjects.first.frameId;
-    auto channelID = selectedObjects.first.channelId;
+    auto frameID = selectedObjects.first.frameID;
+    auto channelID = selectedObjects.first.channelID;
 
     for (auto &objectInfo : selectedObjects.second)
     {
         printf("selected object,frame ID: %d, channel ID: %d\n", frameID, channelID);
-        printf("objectInfo.className: %s, objectInfo.confidence: %f\n", objectInfo.className, objectInfo.confidence);
+        printf("objectInfo.className: %s, objectInfo.confidence: %f\n", objectInfo.className.c_str(), objectInfo.confidence);
         printf("objectInfo, x0: %f, x1: %f, y0: %f, y1: %f,\n", objectInfo.x0, objectInfo.x1, objectInfo.y0, objectInfo.y1);
     }
 
@@ -423,7 +425,7 @@ void parseSelected(MxBase::ImageProcessor *&imageProcessor,
     MxBase::Size pedestrianFeatureSize(128, 384);
     MxBase::Size faceLandmarkSize(96, 96);
 
-    std::vector<std::pair<MxBase::Rect, MxBase::size>> cropResizeVec;
+    std::vector<std::pair<MxBase::Rect, MxBase::Size>> cropResizeVec;
     std::vector<MxBase::Image> outputImageVec;
     std::vector<SCENARIOS> imageSequenceVec;
     for (auto &objectInfo : selectedObjects.second)
@@ -483,11 +485,11 @@ void parseSelected(MxBase::ImageProcessor *&imageProcessor,
         for (size_t i = 0; i < outputImageVec.size(); i++)
         {
             SCENARIOS scenarioType = imageSequenceVec[i];
-            PreProcessedImage inputImage;
+            PreprocessedImage inputImage;
             inputImage.image = outputImageVec[i];
             inputImage.channelID = channelID;
             inputImage.frameID = frameID;
-            inputImage.scenrio = scenarioType;
+            inputImage.scenario = scenarioType;
             switch (scenarioType)
             {
             case VEHICLE_ATTR:
@@ -529,10 +531,10 @@ void vehicleAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     printf("Vehicle Attribution Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
     for (auto &attributeRes : attributeResVec)
     {
-        print("====================\n");
+        printf("====================\n");
         for (auto &attribute : attributeRes)
         {
-            print("%s\n", attribute.attrValue.c_str());
+            printf("%s\n", attribute.attrValue.c_str());
         }
     }
 }
@@ -541,8 +543,8 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
                               MxBase::Model *&carPlateModel, SsdVggPostProcess *&carPlateDetectionPostProcessor,
                               std::vector<PreprocessedImage> &carPlateRecognitionInputImageVec)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
     MxBase::Size carPlateDetectionSize(272, 72);
 
     std::vector<MxBase::Tensor> carPlateInputTensor = {preprocessedImage.image.ConvertToTensor()};
@@ -554,7 +556,7 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
 
     std::vector<MxBase::ObjectInfo> objectInfos;
     std::vector<std::pair<MxBase::Rect, MxBase::Size>> carPlateRecCropConfigVec;
-    std::vectot<MxBase::Image> carPlateRexCropResizedImageVec;
+    std::vector<MxBase::Image> carPlateRexCropResizedImageVec;
 
     carPlateDetectionPostProcessor->Process(preprocessedImage.image, carPlateOutputTensorRes, objectInfos);
     for (const auto &objectInfo : objectInfos)
@@ -564,7 +566,7 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
         cropConfigRec.y0 = static_cast<uint32_t>(objectInfo.y0);
         cropConfigRec.x1 = static_cast<uint32_t>(objectInfo.x1);
         cropConfigRec.y1 = static_cast<uint32_t>(objectInfo.y1);
-        carPlateRecCropConfigVec.empalce_back(std::make_pair(cropConfigRec, carPlateDetectionSize));
+        carPlateRecCropConfigVec.emplace_back(std::make_pair(cropConfigRec, carPlateDetectionSize));
     }
 
     if (!carPlateRecCropConfigVec.empty())
@@ -580,7 +582,7 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
 
     for (auto &image : carPlateRexCropResizedImageVec)
     {
-        PreprocessedImage CarPlateRecognitionInputImage;
+        PreprocessedImage carPlateRecognitionInputImage;
         carPlateRecognitionInputImage.image = image;
         carPlateRecognitionInputImage.frameID = frameID;
         carPlateRecognitionInputImage.channelID = channelID;
@@ -591,8 +593,8 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
 void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&carPlateRecModel,
                                 CarPlateRecognitionPostProcess *&carPlateRecPostProcessor)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
 
     std::vector<MxBase::Tensor> carPlateRecTensorVec;
     std::vector<MxBase::Tensor> carPlateRecOutputVec;
@@ -612,8 +614,8 @@ void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Mo
 void pedestrianAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&PedestrianAttrModel,
                                   ResnetAttributePostProcess *&pedestrianAttrPostProcessor)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
 
     std::vector<MxBase::Tensor> attrInputTensor = {preprocessedImage.image.ConvertToTensor()};
     std::vector<MxBase::Tensor> attrOutputTensorRes = PedestrianAttrModel->Infer(attrInputTensor);
@@ -626,20 +628,20 @@ void pedestrianAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::
     pedestrianAttrPostProcessor->Process(attrOutputTensorRes, attrbuteResVec);
 
     printf("Pedestrian Attribution Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
-    for (auto &attributeRes : attributeResVec)
+    for (auto &attributeRes : attrbuteResVec)
     {
-        print("====================\n");
+        printf("====================\n");
         for (auto &attribute : attributeRes)
         {
-            print("%s\n", attribute.attrValue.c_str());
+            printf("%s\n", attribute.attrValue.c_str());
         }
     }
 }
 
 void pedestrianFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&pedetrianReIDModel)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
 
     std::vector<MxBase::Tensor> pedReIDTensor = {preprocessedImage.image.ConvertToTensor()};
     std::vector<MxBase::Tensor> resnetOutput = pedetrianReIDModel->Infer(pedReIDTensor);
@@ -665,8 +667,8 @@ void pedestrianFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mode
 void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceLandmarkModel,
                          FaceLandmarkPostProcess *&faceLandmarkPostProcessor)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
 
     MxBase::Tensor faceInfoTensor = preprocessedImage.image.ConvertToTensor();
     std::vector<MxBase::Tensor> faceInfoInputs = {faceInfoTensor};
@@ -693,8 +695,8 @@ void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&f
 void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImageProcessor *&imageProcessor,
                           FaceAlignment *&faceAlignment, std::vector<PreprocessedImage> &faceAlignedImageVec)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
     KeyPointAndAngle faceInfo = preprocessedImage.faceInfo;
 
     MxBase::Image faceAlignmentResizeImage;
@@ -702,7 +704,8 @@ void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImagePro
     auto ret = imageProcessor->Resize(preprocessedImage.image, faceAlignmentSize, faceAlignmentResizeImage);
     if (ret != APP_ERR_OK)
     {
-        printf("faceAlignmentProcess, resized failed\n") return;
+        printf("faceAlignmentProcess, resized failed\n");
+        return;
     }
 
     std::vector<MxBase::Image> faceAlignmentResizeImageVec;
@@ -740,11 +743,11 @@ void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImagePro
 void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceAttrModel,
                                ResnetAttributePostProcess *&faceAttributePostProcessor, MxBase::Model *&faceFeatureModel)
 {
-    auto frameID = preprocessedImage.frameId;
-    auto channelID = preprocessedImage.channelId;
+    auto frameID = preprocessedImage.frameID;
+    auto channelID = preprocessedImage.channelID;
 
     MxBase::Tensor attributeTensor = preprocessedImage.image.ConvertToTensor();
-    std::vector<MxBase::tensor> attributeInputs = {attributeTensor};
+    std::vector<MxBase::Tensor> attributeInputs = {attributeTensor};
     std::vector<MxBase::Tensor> attributeOutputs = faceAttrModel->Infer(attributeInputs);
 
     for (auto output : attributeOutputs)
@@ -756,7 +759,7 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     faceAttributePostProcessor->Process(attributeOutputs, faceAttrVec);
 
     printf("Face Attribution Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
-    for (auto &attributeRes : attributeResVec)
+    for (auto &attributeRes : faceAttrVec)
     {
         print("====================\n");
         for (auto &attribute : attributeRes)
@@ -830,7 +833,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                 {
                                                                                     if (i % numChannel == batch)
                                                                                     {
-                                                                                        std::shared_lock<std::shared_mutext> signalLock(signalMutex_[i]);
+                                                                                        std::shared_lock<std::shared_mutex> signalLock(signalMutex_[i]);
                                                                                         isEmpty = isEmpty && (decodeEOF[i] == 1);
                                                                                     }
                                                                                 }
@@ -1007,7 +1010,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                     faceAlignmentProcess(
                                                                                         preprocessedImage,
                                                                                         imageProcessor,
-                                                                                        FaceAlignmentProcessor,
+                                                                                        faceAlignmentProcessor,
                                                                                         faceAlignedImageBuffer[pf.line()]);
                                                                                 }
                                                                             }
@@ -1046,7 +1049,7 @@ int main(int argc, char *argv[])
     initResources();
     sleep(5);
 
-    std::vecor<std::string> filePaths(numChannel);
+    std::vector<std::string> filePaths(numChannel);
 
     std::fill(filePaths.begin(), filePaths.end(), "../test.264");
 
@@ -1067,11 +1070,11 @@ int main(int argc, char *argv[])
     tf::Executor executor(256);
 
     tf::Taskflow taskflow;
-    tf::Task init = task.emplace([]()
-                                 { print("ready\n"); })
+    tf::Task init = taskflow.emplace([]()
+                                     { printf("ready\n"); })
                         .name("starting pipeline");
-    tf::Task stop = task.emplace([]()
-                                 { print("stopped\n"); })
+    tf::Task stop = taskflow.emplace([]()
+                                     { printf("stopped\n"); })
                         .name("pipeline stopped");
 
     for (size_t i = 0; i < numChannel; ++i)
@@ -1112,49 +1115,49 @@ int main(int argc, char *argv[])
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>>
-        fullPipelines[numWoker];
+        *fullPipelines[numWoker];
 
-    for (int workerIndex = 0; wokerIndex < numWoker; wokerIndex++)
+    for (int workerIndex = 0; workerIndex < numWoker; workerIndex++)
     {
         printf("====================dispatch yolo pipeline=========================\n");
         dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex],
                                  imageProcessors[workerIndex],
-                                 multiObjectTrackers[wokerIndex],
-                                 yoloModels[wokerIndex],
-                                 yoloPostProcessors[wokerIndex],
+                                 multiObjectTrackers[workerIndex],
+                                 yoloModels[workerIndex],
+                                 yoloPostProcessors[workerIndex],
                                  vehicleAttrModels[workerIndex],
-                                 vehicleAttrPostProcessors[wokerIndex],
-                                 carPlateDetectModels[wokerIndex],
-                                 carPlateDetectPostProcessors[wokerIndex],
-                                 carPlateRecModels[wokerIndex],
-                                 carPlateRecPostProcessors[wokerIndex],
-                                 pedestrianAttrModels[wokerIndex],
-                                 pedestrianAttrPostProcessors[wokerIndex],
-                                 pedestrianFeatureModels[wokerIndex],
-                                 faceLandmarkModels[wokerIndex],
-                                 faceLandmarkPostProcessors[wokerIndex],
-                                 faceAlignmentProcessors[wokerIndex],
-                                 faceAttributeModels[wokerIndex],
-                                 faceAttributeProcessors[wokerIndex],
-                                 faceFeatureModels[wokerIndex],
-                                 decodedFrameQueueList[wokerIndex],
-                                 selectedObjectBuffer[wokerIndex],
-                                 vehicleAttrInputImageBuffer[wokerIndex],
-                                 carPlateDetectionInputImageBuffer[wokerIndex],
-                                 carPlateRecognitionInputImageBuffer[wokerIndex],
-                                 pedestrianAttrInputImageBuffer[wokerIndex],
-                                 pedestrianFeatureInputImageBuffer[wokerIndex],
-                                 faceAttrInputImageBuffer[wokerIndex],
-                                 faceAlignedImageBuffer[wokerIndex],
-                                 faceFeatureInputImageBuffer[wokerIndex],
-                                 yoloResults[wokerIndex], deviceIDs[wokerIndex],
-                                 yoloFrameBuffer[wokerIndex],
-                                 yoloResizedImageBuffer[wokerIndex],
+                                 vehicleAttrPostProcessors[workerIndex],
+                                 carPlateDetectModels[workerIndex],
+                                 carPlateDetectPostProcessors[workerIndex],
+                                 carPlateRecModels[workerIndex],
+                                 carPlateRecPostProcessors[workerIndex],
+                                 pedestrianAttrModels[workerIndex],
+                                 pedestrianAttrPostProcessors[workerIndex],
+                                 pedestrianFeatureModels[workerIndex],
+                                 faceLandmarkModels[workerIndex],
+                                 faceLandmarkPostProcessors[workerIndex],
+                                 faceAlignmentProcessors[workerIndex],
+                                 faceAttributeModels[workerIndex],
+                                 faceAttributeProcessors[workerIndex],
+                                 faceFeatureModels[workerIndex],
+                                 decodedFrameQueueList[workerIndex],
+                                 selectedObjectBuffer[workerIndex],
+                                 vehicleAttrInputImageBuffer[workerIndex],
+                                 carPlateDetectionInputImageBuffer[workerIndex],
+                                 carPlateRecognitionInputImageBuffer[workerIndex],
+                                 pedestrianAttrInputImageBuffer[workerIndex],
+                                 pedestrianFeatureInputImageBuffer[workerIndex],
+                                 faceAttrInputImageBuffer[workerIndex],
+                                 faceAlignedImageBuffer[workerIndex],
+                                 faceFeatureInputImageBuffer[workerIndex],
+                                 yoloResults[workerIndex], deviceIDs[workerIndex],
+                                 yoloFrameBuffer[workerIndex],
+                                 yoloResizedImageBuffer[workerIndex],
                                  executor);
 
-        detectTask[wokerIndex] = taskflow.composed_of(*fullPipelines[wokerIndex]).name("pipeline1");
-        init.precede(detectTask[wokerIndex]);
-        detectTask[wokerIndex].precede(stop);
+        detectTask[workerIndex] = taskflow.composed_of(*fullPipelines[workerIndex]).name("pipeline1");
+        init.precede(detectTask[workerIndex]);
+        detectTask[workerIndex].precede(stop);
     }
 
     auto start = std::chrono::steady_clock::now();
