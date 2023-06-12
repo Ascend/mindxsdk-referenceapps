@@ -23,13 +23,13 @@
 
 namespace MxBase
 {
-    static const int DEFAULT_MAX_QUEUE_SIZE = 32;
+    const int DEFAULT_MAX_QUEUE_SIZE = 32;
 
     template <typename T>
     class BlockingQueue
     {
     public:
-        BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : maxSize_(maxSize) {}
+        explicit BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : maxSize_(maxSize) {}
 
         ~BlockingQueue() {}
 
