@@ -24,6 +24,10 @@ const int FACE_ALIGNMENT_INPUT_WIDTH = 112;
 const int FACE_ALIGNMENT_INPUT_HEIGHT = 112;
 
 const int EXECUTOR_NUM = 256;
+const int INIT_RESOURCE_TIME = 5;
+const int FRAME_WIDTH = 1920;
+const int FRAME_HEIGHT = 1080;
+const int SKIP_INTERVAL = 3;
 
 enum SCENARIOS
 {

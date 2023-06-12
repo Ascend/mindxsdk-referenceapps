@@ -865,29 +865,28 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                               uint32_t &deviceID, std::array<FrameImage, NUM> &buffer,
                               std::array<MxBase::Image, NUM> &resizedImageBuffer, tf::Executor &executor)
 {
-    pl = new tf::Pipeline{numLines,
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
-                                                                        {
-                                                                            bool isEmpty = true;
-                                                                            if (decodedFrameQueue.IsEmpty())
-                                                                            {
-                                                                                for (size_t i = 0; i < numWorker; i++)
-                                                                                {
-                                                                                    if (i % numChannel == batch)
-                                                                                    {
-                                                                                        std::shared_lock<std::shared_mutex> signalLock(signalMutex_[i]);
-                                                                                        isEmpty = isEmpty && (decodeEOF[i] == 1);
-                                                                                    }
-                                                                                }
-                                                                                if (isEmpty)
-                                                                                {
-                                                                                    taskStop = true;
-                                                                                    pf.stop();
-                                                                                }
-                                                                            }
-                                                                        }
+    pl = new tf::Pipeline{numLines, tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                                                                                  {
+                                                                                      bool isEmpty = true;
+                                                                                      if (decodedFrameQueue.IsEmpty())
+                                                                                      {
+                                                                                          for (size_t i = 0; i < numWorker; i++)
+                                                                                          {
+                                                                                              if (i % numChannel == batch)
+                                                                                              {
+                                                                                                  std::shared_lock<std::shared_mutex> signalLock(signalMutex_[i]);
+                                                                                                  isEmpty = isEmpty && (decodeEOF[i] == 1);
+                                                                                              }
+                                                                                          }
+                                                                                          if (isEmpty)
+                                                                                          {
+                                                                                              taskStop = true;
+                                                                                              pf.stop();
+                                                                                          }
+                                                                                      }
+                                                                                  }
 
-                          },
+                                    },
 
                           tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
@@ -1078,7 +1077,7 @@ int main(int argc, char *argv[])
     avformat_network_init();
 
     initResources();
-    sleep(5);
+    sleep(INIT_RESOURCE_TIME);
 
     std::vector<std::string> filePaths(numChannel);
 
@@ -1090,10 +1089,10 @@ int main(int argc, char *argv[])
 
     MxBase::VideoDecodeConfig config;
     MxBase::VideoDecodeCallBack cPtr = CallBackVdec;
-    config.width = 1920;
-    config.height = 1080;
+    config.width = FRAME_WIDTH;
+    config.height = FRAME_HEIGHT;
     config.callbackFunc = cPtr;
-    config.skipInterval = 3;
+    config.skipInterval = SKIP_INTERVAL;
     config.inputVideoFormat = MxBase::StreamFormat::H264_MAIN_LEVEL;
 
     MxBase::VideoDecoder *videoDecoder[numChannel];
