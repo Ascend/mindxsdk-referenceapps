@@ -4,7 +4,7 @@ projcet(C++Sample)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(TARGET C++Sample)
-add_compile_options(-std=c++11, -fPIE -fstack-protector-all -fPIC- Wl,z,relro,-z,now,-z,noexecstack -s -pie -Wall)
+add_compile_options(-std=c++11 -fPIE -fstack-protector-all -fPIC -Wl,-z,relro,-z,now,-z,noexecstack -s -pie -Wall)
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0 -Dgoogle=mindxsdk_private)
 
 set(MX_SDK_HOME $ENV{MX_SDK_HOME})
@@ -14,7 +14,7 @@ if (NOT DEFINED ENV{MX_SDK_HOME})
     message(STATUS "set default MX_SDK_HOME: ${MX_SDK_HOME}")
 else ()
     message(STATUS "env MX_SDK_HOME: ${MX_SDK_HOME}")
-endif ()
+endif()
 
 include_directories(
         ${MX_SDK_HOME}/include
@@ -29,12 +29,11 @@ link_directories(
         ${MX_SDK_HOME}/opensource/lib
         ${MX_SDK_HOME}/lib/modelpostprocessors
         /usr/local/Ascend/ascend-toolkit/latest/acllib/lib64
-        /usr/local/Ascend/driver/lib64
+        /usr/local/Ascend/driver/lib64/
 )
 
 add_executable(sample main.cpp)
-target_link_libraries(
-        sample
+target_link_libraries(sample
         glog
         mxbase
         yolov3postprocess
