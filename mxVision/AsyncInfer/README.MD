@@ -18,8 +18,17 @@ eg: 推荐系统为ubuntu 18.04 或者centos7.6，环境依赖软件和版本如
 （依赖搭建安装或者获取方式的具体步骤）
 
 ### 1.3 代码目录结构与说明
+```
+|-- AsyncInfer
+|   |-- imgs_bak
+|   |-- model
+|   |   |-- resnet50
+|   |   |-- yolov3
+|-- main.cpp
+|-- CMakeLists.txt
+|-- README.MD
+```
 
-（代码目录和结构）
 
 ## 2. 编译与运行
 

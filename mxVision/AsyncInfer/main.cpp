@@ -243,7 +243,6 @@ APP_ERROR PrepareData() {
     }
 
     for (int i = 0; i < totalImgs; i++) {
-
         Image resizedImage;
         resizeImageBatch[i % BATCH_SIZE].push_back(resizedImage);
 
@@ -300,7 +299,7 @@ APP_ERROR AsyncYoloV3PostProcessPro(vector <Tensor> &yoloV3Outputs, int batchInd
                                             params->ResizeImageBatch[dataIndex].GetOriginalSize().height,
                                             params->DecodeImageBatch[dataIndex].GetOriginalSize().width,
                                             params->DecodeImageBatch[dataIndex].GetOriginalSize().height);
-    vector <ImagePreProcessInfo> imagePreProcessInfos{imagePreProcessInfo};
+    vector<ImagePreProcessInfo> imagePreProcessInfos{imagePreProcessInfo};
 
     SDKYoloV3PostProcess(yoloV3Config, yoloV3LabelPath, yoloV3Outputs, params->CropConfigRectBatch[dataIndex],
                          imagePreProcessInfos);
@@ -458,11 +457,13 @@ int SplitImage(const std::string &imgDir) {
         LogError << "Open image dir failed, please check the input image dir existed.";
         exit(1);
     }
+    int d_type_0 = 10;
+    int d_type_1 = 4;
     std::vector <std::string> imgVec;
     while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
-        } else if (ptr->d_type == 10 || ptr->d_type == 4) {
+        } else if (ptr->d_type == d_type_0 || ptr->d_type == d_type_1) {
             continue;
         } else {
             std::string filePath = imgDir + "/" + ptr->d_name;
