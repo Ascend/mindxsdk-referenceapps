@@ -81,7 +81,7 @@ APP_ERROR FaceAlignment::Process(std::vector<MxBase::Image> &intputImageVec, std
         MxBase::Size outImageSize(outputDataInfo.widthStride, outputDataInfo.heightStride);
 
         MxBase::MemoryData srcData(static_cast<void *>(outputDataInfo.data), outputDataInfo.dataSize, MxBase::MemoryData::MEMORY_DEVICE);
-        MxBase::MemoryData dstData(outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_HOST_MALLOC);
+        MxBase::MemoryData dstData(outputDataInfo.dataSize, MxBase::MemoryData::MEMORY_HOST_MALLOC);
         APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dstData, srcData);
         if (ret != APP_ERR_OK)
         {

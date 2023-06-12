@@ -60,7 +60,7 @@ target_link_libraries(main
             mxbase 
             cpprest 
             yolov3postprocess 
-            resnetAttributePostProcess 
+            ResnetAttributePostProcess 
             SsdVggPostProcess 
             CarPlateRecognitionPostProcess 
             Threads::Threads
