@@ -879,7 +879,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                               uint32_t &deviceID, std::array<FrameImage, NUM> &buffer,
                               std::array<MxBase::Image, NUM> &resizedImageBuffer, tf::Executor &executor)
 {
-    pl = new tf::Pipeline{numLines, tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+    pl = new tf::Pipeline {numLines, tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                                   {
                                                                                       bool isEmpty = true;
                                                                                       if (decodedFrameQueue.IsEmpty())
