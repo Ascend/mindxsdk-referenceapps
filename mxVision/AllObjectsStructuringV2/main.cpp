@@ -133,6 +133,29 @@ std::shared_mutex signalMutex_[numChannel];
 
 bool taskStop = false;
 
+tf::Task detectTask[numWorker] = {};
+std::array<std::array<FrameImage, numLines>, numWorker> yoloFrameBuffer;
+std::array<std::array<MxBase::Image, numLines>, numWorker> yoloResizedImageBuffer;
+std::array<std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, numLines>, numWorker> selectedObjectBuffer;
+
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> vehicleAttrInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateDetectionInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateRecognitionInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianAttrInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianFeatureInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAttrInputImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAlignedImageBuffer;
+std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceFeatureInputImageBuffer;
+
+MxBase::VideoDecodeConfig config;
+MxBase::VideoDecodeCallBack cPtr = CallBackVdec;
+config.width = FRAME_WIDTH;
+config.height = FRAME_HEIGHT;
+config.callbackFunc = cPtr;
+config.skipInterval = SKIP_INTERVAL;
+config.inputVideoFormat = MxBase::StreamFormat::H264_MAIN_LEVEL;
+MxBase::VideoDecoder *videoDecoder[numChannel];
+
 void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx, int &decodeEOF, int32_t deviceID, uint32_t channelID)
 {
     MxBase::DeviceContext context = {};
@@ -1087,18 +1110,7 @@ int main(int argc, char *argv[])
     AVPacket pkt[numChannel];
     std::vector<uint32_t> frameIDs(numChannel, deviceID);
 
-    MxBase::VideoDecodeConfig config;
-    MxBase::VideoDecodeCallBack cPtr = CallBackVdec;
-    config.width = FRAME_WIDTH;
-    config.height = FRAME_HEIGHT;
-    config.callbackFunc = cPtr;
-    config.skipInterval = SKIP_INTERVAL;
-    config.inputVideoFormat = MxBase::StreamFormat::H264_MAIN_LEVEL;
-
-    MxBase::VideoDecoder *videoDecoder[numChannel];
-
     tf::Executor executor(EXECUTOR_NUM);
-
     tf::Taskflow taskflow;
     tf::Task init = taskflow.emplace([]()
                                      { printf("ready\n"); })
@@ -1113,7 +1125,6 @@ int main(int argc, char *argv[])
                        {
             pFormatCtx[i] = nullptr;
             videoDecoder[i] = new MxBase::VideoDecoder(config, deviceIDs[i], i);
-
             StreamPull(pFormatCtx[i], filePaths[i]);
             if (pFormatCtx[i] == nullptr) {
                 printf("is nullptr\n");
@@ -1121,84 +1132,29 @@ int main(int argc, char *argv[])
             VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWorker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
             delete videoDecoder[i]; });
     }
-
-    tf::Task detectTask[numWorker] = {};
-    std::array<std::array<FrameImage, numLines>, numWorker> yoloFrameBuffer;
-    std::array<std::array<MxBase::Image, numLines>, numWorker> yoloResizedImageBuffer;
-    std::array<std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, numLines>, numWorker> selectedObjectBuffer;
-
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> vehicleAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateDetectionInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateRecognitionInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianFeatureInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAlignedImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceFeatureInputImageBuffer;
-
     std::array<std::array<std::vector<MxBase::Tensor>, numLines>, numWorker> yoloResults;
-    tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
-                 tf::Pipe<std::function<void(tf::Pipeflow &)>>>
-        *fullPipelines[numWorker];
+    tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
+                 tf::Pipe<std::function<void(tf::Pipeflow &)>>> *fullPipelines[numWorker];
 
     for (int workerIndex = 0; workerIndex < numWorker; workerIndex++)
     {
         printf("====================dispatch yolo pipeline=========================\n");
-        dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex],
-                                 imageProcessors[workerIndex],
-                                 multiObjectTrackers[workerIndex],
-                                 yoloModels[workerIndex],
-                                 yoloPostProcessors[workerIndex],
-                                 vehicleAttrModels[workerIndex],
-                                 vehicleAttrPostProcessors[workerIndex],
-                                 carPlateDetectModels[workerIndex],
-                                 carPlateDetectPostProcessors[workerIndex],
-                                 carPlateRecModels[workerIndex],
-                                 carPlateRecPostProcessors[workerIndex],
-                                 pedestrianAttrModels[workerIndex],
-                                 pedestrianAttrPostProcessors[workerIndex],
-                                 pedestrianFeatureModels[workerIndex],
-                                 faceLandmarkModels[workerIndex],
-                                 faceLandmarkPostProcessors[workerIndex],
-                                 faceAlignmentProcessors[workerIndex],
-                                 faceAttributeModels[workerIndex],
-                                 faceAttributeProcessors[workerIndex],
-                                 faceFeatureModels[workerIndex],
-                                 decodedFrameQueueList[workerIndex],
-                                 selectedObjectBuffer[workerIndex],
-                                 vehicleAttrInputImageBuffer[workerIndex],
-                                 carPlateDetectionInputImageBuffer[workerIndex],
-                                 carPlateRecognitionInputImageBuffer[workerIndex],
-                                 pedestrianAttrInputImageBuffer[workerIndex],
-                                 pedestrianFeatureInputImageBuffer[workerIndex],
-                                 faceAttrInputImageBuffer[workerIndex],
-                                 faceAlignedImageBuffer[workerIndex],
-                                 faceFeatureInputImageBuffer[workerIndex],
-                                 yoloResults[workerIndex], deviceIDs[workerIndex],
-                                 yoloFrameBuffer[workerIndex],
-                                 yoloResizedImageBuffer[workerIndex],
-                                 executor);
+        dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex], imageProcessors[workerIndex], multiObjectTrackers[workerIndex], yoloModels[workerIndex], yoloPostProcessors[workerIndex], vehicleAttrModels[workerIndex], vehicleAttrPostProcessors[workerIndex], carPlateDetectModels[workerIndex], carPlateDetectPostProcessors[workerIndex], carPlateRecModels[workerIndex], carPlateRecPostProcessors[workerIndex], pedestrianAttrModels[workerIndex], pedestrianAttrPostProcessors[workerIndex],
+                                 pedestrianFeatureModels[workerIndex], faceLandmarkModels[workerIndex], faceLandmarkPostProcessors[workerIndex], faceAlignmentProcessors[workerIndex], faceAttributeModels[workerIndex], faceAttributeProcessors[workerIndex], faceFeatureModels[workerIndex], decodedFrameQueueList[workerIndex], selectedObjectBuffer[workerIndex], vehicleAttrInputImageBuffer[workerIndex], carPlateDetectionInputImageBuffer[workerIndex],
+                                 carPlateRecognitionInputImageBuffer[workerIndex], pedestrianAttrInputImageBuffer[workerIndex], pedestrianFeatureInputImageBuffer[workerIndex], faceAttrInputImageBuffer[workerIndex], faceAlignedImageBuffer[workerIndex], faceFeatureInputImageBuffer[workerIndex], yoloResults[workerIndex], deviceIDs[workerIndex], yoloFrameBuffer[workerIndex], yoloResizedImageBuffer[workerIndex], executor);
 
         detectTask[workerIndex] = taskflow.composed_of(*fullPipelines[workerIndex]).name("pipeline1");
         init.precede(detectTask[workerIndex]);
         detectTask[workerIndex].precede(stop);
     }
-
     auto start = std::chrono::steady_clock::now();
     printf("Tasks dispatched\n");
     taskflow.dump(std::cout);
     executor.run(taskflow);
-
     executor.wait_for_all();
-
     printf("All tasks finished\n");
     auto end = std::chrono::steady_clock::now();
-
     printf("numChannel: %zu, numWorker: %zu\n", numChannel, numWorker);
     printf("Elapsed time in microseconds: %ld us\n", std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 }
