@@ -16,7 +16,8 @@
 
 #include "SsdVggPostProcess.h"
 
-namespace {
+namespace
+{
     const uint32_t INFONUM = 8;
     const uint32_t CLASSID = 1;
     const uint32_t CONFIDENCE = 2;
@@ -35,31 +36,37 @@ APP_ERROR SsdVggPostProcess::Init(const std::map<std::string, std::string> &post
     std::string postProcessConfigPath;
     std::string lablePath;
     if (postConfig.find("postProcessConfigPath") != postConfig.end() &&
-    !(postConfig.find("postProcessConfigPath")->second).empty()) {
+        !(postConfig.find("postProcessConfigPath")->second).empty())
+    {
         postProcessConfigPath = postConfig.find("postProcessConfigPath")->second;
     }
-    if (postConfig.find("lablePath") != postConfig.end() &&
-        !(postConfig.find("lablePath")->second).empty()) {
-        lablePath = postConfig.find("lablePath")->second;
+    if (postConfig.find("labelPath") != postConfig.end() &&
+        !(postConfig.find("labelPath")->second).empty())
+    {
+        lablePath = postConfig.find("labelPath")->second;
     }
 
     ret = util_.LoadConfiguration(postProcessConfigPath, configData_, MxBase::CONFIGFILE);
-    if (ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK)
+    {
         LogError << GetError(ret) << "Fail to get postprocess config";
         return ret;
     }
     ret = configData_.LoadLabels(lablePath);
-    if (ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK)
+    {
         LogError << GetError(ret) << "Fail to get postprocess labels";
         return ret;
     }
     ret = configData_.GetFileValue<uint32_t>("CLASS_NUM", classNum_);
-    if (ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK)
+    {
         LogError << GetError(ret) << "Fail to get CLASS_NUM";
         return ret;
     }
     ret = configData_.GetFileValue<float>("SCORE_THRESH", scoreThresh_);
-    if (ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK)
+    {
         LogError << GetError(ret) << "Fail to get SCORE_THRESH";
         return ret;
     }
@@ -72,8 +79,8 @@ APP_ERROR SsdVggPostProcess::DeInit()
     return APP_ERR_OK;
 }
 
-APP_ERROR SsdVggPostProcess::Process(const MxBase::Image& originImage, const std::vector<MxBase::Tensor>& inferOutputs,
-                                     std::vector<MxBase::ObjectInfo>& objectInfos)
+APP_ERROR SsdVggPostProcess::Process(const MxBase::Image &originImage, const std::vector<MxBase::Tensor> &inferOutputs,
+                                     std::vector<MxBase::ObjectInfo> &objectInfos)
 {
     LogDebug << "Start to Process SsdVggPostprocess";
     APP_ERROR ret = APP_ERR_OK;
@@ -86,10 +93,12 @@ APP_ERROR SsdVggPostProcess::Process(const MxBase::Image& originImage, const std
     int *objectNum = static_cast<int *>(inferOutputs[0].GetData());
     float *objectInfo = static_cast<float *>(inferOutputs[1].GetData());
 
-    for (int i = 0; i < *objectNum; i++) {
+    for (int i = 0; i < *objectNum; i++)
+    {
         uint32_t classId = static_cast<uint32_t>(objectInfo[i * INFONUM + CLASSID]);
         float confidence = objectInfo[i * INFONUM + CONFIDENCE];
-        if (classId >= classNum_ || confidence < scoreThresh_) {
+        if (classId >= classNum_ || confidence < scoreThresh_)
+        {
             continue;
         }
 
@@ -99,8 +108,8 @@ APP_ERROR SsdVggPostProcess::Process(const MxBase::Image& originImage, const std
         objInfo.classId = classId;
         objInfo.x0 = objectInfo[i * INFONUM + LEFTTOPX] * originImage.GetOriginalSize().width;
         objInfo.y0 = objectInfo[i * INFONUM + LEFTTOPY] * originImage.GetOriginalSize().height;
-        objInfo.x1 = objectInfo[i * INFONUM + RIGHTBOTX]* originImage.GetOriginalSize().width;
-        objInfo.y1 = objectInfo[i * INFONUM + RIGHTBOTY]* originImage.GetOriginalSize().height;
+        objInfo.x1 = objectInfo[i * INFONUM + RIGHTBOTX] * originImage.GetOriginalSize().width;
+        objInfo.y1 = objectInfo[i * INFONUM + RIGHTBOTY] * originImage.GetOriginalSize().height;
         objectInfos.push_back(objInfo);
     }
     LogDebug << "End to Process SsdVggPostprocess";
