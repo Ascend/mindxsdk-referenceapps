@@ -798,7 +798,10 @@ void initResources()
         imageProcessors[batch] = new MxBase::ImageProcessor(deviceID);
         yoloModels[batch] = new MxBase::Model(yoloModelPath, deviceID);
         yoloPostProcessors[batch] = new MxBase::Yolov3PostProcess();
-        yoloPostProcessors[batch]->Init({{"postProcessConfigPath", yoloConfigPath}, {"labelPath", yoloLabelPath}});
+        std::map<std::string, std::string> yoloPostConfig;
+        yoloPostConfig.insert(std::pair << std::string, std::string >> ("postProcessConfigPath", yoloConfigPath));
+        yoloPostConfig.insert(std::pair << std::string, std::string >> ("labelPath", yoloLabelPath));
+        yoloPostProcessors[batch]->Init(yoloPostConfig);
         multiObjectTrackers[batch] = new MultiObjectTracker();
 
         // vehicle attribution
@@ -809,7 +812,10 @@ void initResources()
         // car plate detection
         carPlateDetectModels[batch] = new MxBase::Model(carPlateDetectModelPath, deviceID);
         carPlateDetectPostProcessors[batch] = new SsdVggPostProcess();
-        carPlateDetectPostProcessors[batch]->Init({{"postProcessConfigPath", carPlateDetectConfigPath}, {"labelPath", carPlateDetectLabelPath}});
+        std::map<std::string, std::string> SsdVggPostConfig;
+        SsdVggPostConfig.insert(std::pair << std::string, std::string >> ("postProcessConfigPath", yoloConfigPath));
+        SsdVggPostConfig.insert(std::pair << std::string, std::string >> ("labelPath", yoloLabelPath));
+        carPlateDetectPostProcessors[batch]->Init(SsdVggPostConfig);
 
         // car plate recognition
         carPlateRecModels[batch] = new MxBase::Model(carPlateRecModelPath, deviceID);
