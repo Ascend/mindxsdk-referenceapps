@@ -54,7 +54,7 @@ float minQueuePercent = 0.2;
 float maxQueuePercent = 0.8;
 
 const size_t numChannel = 80;
-const size_t numWoker = 10;
+const size_t numWorker = 10;
 const size_t numLines = 8;
 
 std::string yoloModelPath = "model.om";
@@ -91,45 +91,45 @@ uint32_t deviceID = 0;
 std::vector<uint32_t> deviceIDs(numChannel, deviceID);
 
 // yolo detection
-MxBase::ImageProcessor *imageProcessors[numWoker];
-MxBase::Model *yoloModels[numWoker];
-MxBase::Yolov3PostProcess *yoloPostProcessors[numWoker];
-MultiObjectTracker *multiObjectTrackers[numWoker];
+MxBase::ImageProcessor *imageProcessors[numWorker];
+MxBase::Model *yoloModels[numWorker];
+MxBase::Yolov3PostProcess *yoloPostProcessors[numWorker];
+MultiObjectTracker *multiObjectTrackers[numWorker];
 
 // vehicle attribution
-MxBase::Model *vehicleAttrModels[numWoker];
-ResnetAttributePostProcess *vehicleAttrPostProcessors[numWoker];
+MxBase::Model *vehicleAttrModels[numWorker];
+ResnetAttributePostProcess *vehicleAttrPostProcessors[numWorker];
 
 // car plate detection
-MxBase::Model *carPlateDetectModels[numWoker];
-SsdVggPostProcess *carPlateDetectPostProcessors[numWoker];
+MxBase::Model *carPlateDetectModels[numWorker];
+SsdVggPostProcess *carPlateDetectPostProcessors[numWorker];
 
 // car plate recognition
-MxBase::Model *carPlateRecModels[numWoker];
-CarPlateRecognitionPostProcess *carPlateRecPostProcessors[numWoker];
+MxBase::Model *carPlateRecModels[numWorker];
+CarPlateRecognitionPostProcess *carPlateRecPostProcessors[numWorker];
 
 // pedestrian attribution
-MxBase::Model *pedestrianAttrModels[numWoker];
-ResnetAttributePostProcess *pedestrianAttrPostProcessors[numWoker];
+MxBase::Model *pedestrianAttrModels[numWorker];
+ResnetAttributePostProcess *pedestrianAttrPostProcessors[numWorker];
 
 // pedestrian feature
-MxBase::Model *pedestrianFeatureModels[numWoker];
+MxBase::Model *pedestrianFeatureModels[numWorker];
 
 // face landmarks
-MxBase::Model *faceLandmarkModels[numWoker];
-FaceLandmarkPostProcess *faceLandmarkPostProcessors[numWoker];
+MxBase::Model *faceLandmarkModels[numWorker];
+FaceLandmarkPostProcess *faceLandmarkPostProcessors[numWorker];
 
 // face alignment
-FaceAlignment *faceAlignmentProcessors[numWoker];
+FaceAlignment *faceAlignmentProcessors[numWorker];
 
 // face attribution
-MxBase::Model *faceAttributeModels[numWoker];
-ResnetAttributePostProcess *faceAttributeProcessors[numWoker];
+MxBase::Model *faceAttributeModels[numWorker];
+ResnetAttributePostProcess *faceAttributeProcessors[numWorker];
 
 // face feature
-MxBase::Model *faceFeatureModels[numWoker];
+MxBase::Model *faceFeatureModels[numWorker];
 
-MxBase::BlockingQueue<FrameImage> decodedFrameQueueList[numWoker];
+MxBase::BlockingQueue<FrameImage> decodedFrameQueueList[numWorker];
 int decodeEOF[numChannel]{};
 std::shared_mutex signalMutex_[numChannel];
 
@@ -164,7 +164,7 @@ void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx
     }
     else
     {
-        if (pkt.szie <= 0)
+        if (pkt.size <= 0)
         {
             printf("Invalid pkt.size: %d\n", pkt.size);
             av_packet_unref(&pkt);
@@ -286,7 +286,7 @@ void StreamPull(AVFormatContext *&pFormatCtx, std::string filePath)
 {
     pFormatCtx = avformat_alloc_context();
     pFormatCtx = CreateFormatContext(filePath);
-    av_dump_formart(pFormatCtx, 0, filePath.c_str(), 0);
+    av_dump_format(pFormatCtx, 0, filePath.c_str(), 0);
 }
 
 float activateOutput(float data, bool isAct)
@@ -794,13 +794,13 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
 
 void initResources()
 {
-    for (int batch = 0; batch < numYoloWoker; ++batch)
+    for (int batch = 0; batch < numWorker; ++batch)
     {
 
         imageProcessors[batch] = new MxBase::ImageProcessor(deviceID);
         yoloModels[batch] = new MxBase::Model(yoloModelPath, deviceID);
         yoloPostProcessors[batch] = new MxBase::Yolov3PostProcess();
-        yoloPostProcessors[batch]->Init({"postProcessConfigPath", yoloConfigPath} {"labelPath", yoloLabelPath});
+        yoloPostProcessors[batch]->Init({{"postProcessConfigPath", yoloConfigPath}, {"labelPath", yoloLabelPath}});
         multiObjectTrackers[batch] = new MultiObjectTracker();
 
         // vehicle attribution
@@ -811,7 +811,7 @@ void initResources()
         // car plate detection
         carPlateDetectModels[batch] = new MxBase::Model(carPlateDetectModelPath, deviceID);
         carPlateDetectPostProcessors[batch] = new SsdVggPostProcess();
-        carPlateDetectPostProcessors[batch]->Init({"postProcessConfigPath", carPlateDetectConfigPath} {"labelPath", carPlateDetectLabelPath});
+        carPlateDetectPostProcessors[batch]->Init({{"postProcessConfigPath", carPlateDetectConfigPath}, {"labelPath", carPlateDetectLabelPath}});
 
         // car plate recognition
         carPlateRecModels[batch] = new MxBase::Model(carPlateRecModelPath, deviceID);
@@ -885,7 +885,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                             bool isEmpty = true;
                                                                             if (decodedFrameQueue.IsEmpty())
                                                                             {
-                                                                                for (size_t i = 0; i < numWoker; i++)
+                                                                                for (size_t i = 0; i < numWorker; i++)
                                                                                 {
                                                                                     if (i % numChannel == batch)
                                                                                     {
@@ -1144,26 +1144,26 @@ int main(int argc, char *argv[])
             if (pFormatCtx[i] == nullptr) {
                 printf("is nullptr\n");
             }
-            VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWoker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
+            VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWorker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
 
             delete videoDecoder[i]; });
     }
 
-    tf::Task detectTask[numWoker] = {};
-    std::array<std::array<FrameImage, numLines>, numWoker> yoloFrameBuffer;
-    std::array<std::array<MxBase::Image, numLines>, numWoker> yoloResizedImageBuffer;
-    std::array<std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, numLines>, numWoker> selectedObjectBuffer;
+    tf::Task detectTask[numWorker] = {};
+    std::array<std::array<FrameImage, numLines>, numWorker> yoloFrameBuffer;
+    std::array<std::array<MxBase::Image, numLines>, numWorker> yoloResizedImageBuffer;
+    std::array<std::array<std::pair<FrameImage, std::vector<MxBase::ObjectInfo>>, numLines>, numWorker> selectedObjectBuffer;
 
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> vehicleAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> carPlateDetectionInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> carPlateRecognitionInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> pedestrianAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> pedestrianFeatureInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceAttrInputImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceAlignedImageBuffer;
-    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWoker> faceFeatureInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> vehicleAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateDetectionInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> carPlateRecognitionInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> pedestrianFeatureInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAttrInputImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceAlignedImageBuffer;
+    std::array<std::array<std::vector<PreprocessedImage>, numLines>, numWorker> faceFeatureInputImageBuffer;
 
-    std::array<std::array<std::vector<MxBase::Tensor>, numLines>, numWoker> yoloResults;
+    std::array<std::array<std::vector<MxBase::Tensor>, numLines>, numWorker> yoloResults;
     tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
@@ -1171,9 +1171,9 @@ int main(int argc, char *argv[])
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>>
-        *fullPipelines[numWoker];
+        *fullPipelines[numWorker];
 
-    for (int workerIndex = 0; workerIndex < numWoker; workerIndex++)
+    for (int workerIndex = 0; workerIndex < numWorker; workerIndex++)
     {
         printf("====================dispatch yolo pipeline=========================\n");
         dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex],
@@ -1226,6 +1226,6 @@ int main(int argc, char *argv[])
     printf("All tasks finished\n");
     auto end = std::chrono::steady_clock::now();
 
-    printf("numChannel: %zu, numWoker: %zu\n", numChannel, numWoker);
+    printf("numChannel: %zu, numWorker: %zu\n", numChannel, numWorker);
     printf("Elapsed time in microseconds: %ld us\n", std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 }

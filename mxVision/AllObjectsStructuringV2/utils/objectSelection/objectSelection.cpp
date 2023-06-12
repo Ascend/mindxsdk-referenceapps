@@ -25,8 +25,8 @@ APP_ERROR ObjectSelector::Process(MultiObjectTracker &tracker, std::vector<Track
         {
             auto trackID = trackLetList[i].trackInfo.trackId;
             LogInfo << "Object track id: " << trackID << " lost, need to process it.";
-            std::pair<FrameImage, MaxBase::ObjectInfo> trackLetRes = tracker.GetTrackLetBuffer(trackID);
-            LogInfo << "Get trackLet buffer, frame id is " << trackLetRes.first.frameId;
+            std::pair<FrameImage, MxBase::ObjectInfo> trackLetRes = tracker.GetTrackLetBuffer(trackID);
+            LogInfo << "Get trackLet buffer, frame id is " << trackLetRes.first.frameID;
             selectedObjectVec.emplace_back(trackLetRes);
         }
     }
