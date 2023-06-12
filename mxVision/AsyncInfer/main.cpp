@@ -30,18 +30,18 @@ int BATCH_SIZE = 4;
 int DATA_SIZE = 50;
 int STREAM_NUM = 4;
 
-std::vector<MxBase::Image> ImageVec;
+std::vector <MxBase::Image> ImageVec;
 ImageProcessor imageProcessor(g_deviceId);
 
-std::vector<AscendStream> AscendStreamVec;
-std::vector<AscendStream> StreamVec_;
+std::vector <AscendStream> AscendStreamVec;
+std::vector <AscendStream> StreamVec_;
 
-std::vector<Image> decodeImageVec;
-std::vector<Image> resizeImageVec;
-std::vector<std::vector<Rect> > cropConfigVecVec;
-std::vector<std::vector<Image> > cropResizeImageVecVec;
-std::vector<Tensor> tensorImgVec;
-std::vector<Tensor> resnetTensorVec;
+std::vector <Image> decodeImageVec;
+std::vector <Image> resizeImageVec;
+std::vector <std::vector<Rect>> cropConfigVecVec;
+std::vector <std::vector<Image>> cropResizeImageVecVec;
+std::vector <Tensor> tensorImgVec;
+std::vector <Tensor> resnetTensorVec;
 
 std::string yoloPath = "./model/yolov3/yolov3_tf_bs1_fp16.om";
 Model yoloV3(yoloPath, g_deviceId);
@@ -49,52 +49,58 @@ Model yoloV3(yoloPath, g_deviceId);
 std::string resnetPath = "./model/resnet50/resnet50_aipp_tf.om";
 Model resnet50(resnetPath, g_deviceId);
 
-std::vector<std::vector<Image>> decodeImageBatch(BATCH_SIZE);
-std::vector<std::vector<Image>> resizeImageBatch(BATCH_SIZE);
-std::vector<std::vector<Tensor>> tensorImageBatch(BATCH_SIZE);
-std::vector<std::vector<Tensor>> resnetTensorBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Tensor>>> resnetInputBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Tensor>>> yoloV3OutputTensorBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Tensor>>> resnetOutputTensorBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Image>>> cropResizeImageBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Rect>>> cropConfigRectBatch(BATCH_SIZE);
-std::vector<std::vector<std::vector<Tensor>>> yoloV3InputTensorBatch(BATCH_SIZE);
+std::vector <std::vector<Image>> decodeImageBatch(BATCH_SIZE);
+std::vector <std::vector<Image>> resizeImageBatch(BATCH_SIZE);
+std::vector <std::vector<Tensor>> tensorImageBatch(BATCH_SIZE);
+std::vector <std::vector<Tensor>> resnetTensorBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Tensor>>>
+resnetInputBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Tensor>>>
+yoloV3OutputTensorBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Tensor>>>
+resnetOutputTensorBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Image>>>
+cropResizeImageBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Rect>>>
+cropConfigRectBatch(BATCH_SIZE);
+std::vector <std::vector<std::vector < Tensor>>>
+yoloV3InputTensorBatch(BATCH_SIZE);
 
-int SplitImage(const std::string& imgDir);
+int SplitImage(const std::string &imgDir);
 
-struct Params{
-    std::vector<Image>& DecodeImageBatch;
-    std::vector<Image>& ResizeImageBatch;
-    std::vector<Tensor>& TensorImageBatch;
-    std::vector<Tensor>& ResnetTensorBatch;
-    std::vector<std::vector<Tensor>>& ResnetInputBatch;
-    std::vector<std::vector<Image>>& CropResizeImageBatch;
-    std::vector<std::vector<Tensor>>& YoloV3OutputTensorBatch;
-    std::vector<std::vector<Tensor>>& ResnetOutputTensorBatch;
-    std::vector<std::vector<Rect>>& CropConfigRectBatch;
-    std::vector<std::vector<Tensor>>& yoloV3InputTensorBatch;
+struct Params {
+    std::vector <Image> &DecodeImageBatch;
+    std::vector <Image> &ResizeImageBatch;
+    std::vector <Tensor> &TensorImageBatch;
+    std::vector <Tensor> &ResnetTensorBatch;
+    std::vector <std::vector<Tensor>> &ResnetInputBatch;
+    std::vector <std::vector<Image>> &CropResizeImageBatch;
+    std::vector <std::vector<Tensor>> &YoloV3OutputTensorBatch;
+    std::vector <std::vector<Tensor>> &ResnetOutputTensorBatch;
+    std::vector <std::vector<Rect>> &CropConfigRectBatch;
+    std::vector <std::vector<Tensor>> &yoloV3InputTensorBatch;
 };
 
 struct AsyncYoloV3PostProcessParam {
-    vector<Tensor>& yoloV3Outputs;
+    vector <Tensor> &yoloV3Outputs;
     int batchIndex;
-    Params* params;
+    Params *params;
     int dataIndex;
 };
 
 struct AsyncResnetYoloV3PostProcessParam {
-    vector<Tensor> resnetOutput;
+    vector <Tensor> resnetOutput;
 };
 
 struct ConvertToTensorParam {
     bool isYolo;
-    Params* params;
+    Params *params;
     int dataIndex;
 };
 
 struct E2eInferParams {
     int batchIdx;
-    Params* params;
+    Params *params;
 };
 
 struct MallocYoloTensor {
@@ -114,19 +120,18 @@ struct HoldResourceParam {
     Tensor outTensor3;
     Tensor resnetOutput1;
     Tensor resnetOutput2;
-    vector<Tensor>* yoloV3Outputs;
-    ConvertToTensorParam* convertToTensorParam1;
-    ConvertToTensorParam* convertToTensorParam2;
-    MallocYoloTensor* mallocYoloTensor;
-    MallocResNetTensor* mallocResNetTensor;
-    vector<Tensor>* resnetoutput;
-    AsyncResnetYoloV3PostProcessParam* asyncResnetYoloV3PostProcessParam;
-    AsyncYoloV3PostProcessParam* asyncYoloV3PostProcessParam;
+    vector <Tensor> *yoloV3Outputs;
+    ConvertToTensorParam *convertToTensorParam1;
+    ConvertToTensorParam *convertToTensorParam2;
+    MallocYoloTensor *mallocYoloTensor;
+    MallocResNetTensor *mallocResNetTensor;
+    vector <Tensor> *resnetoutput;
+    AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam;
+    AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam;
 };
 
-void HoldResourceCallback(void* args)
-{
-    HoldResourceParam* input = static_cast<HoldResourceParam* >(args);
+void HoldResourceCallback(void *args) {
+    HoldResourceParam *input = static_cast<HoldResourceParam * >(args);
     delete input->yoloV3Outputs;
     delete input->convertToTensorParam1;
     delete input->convertToTensorParam2;
@@ -138,26 +143,25 @@ void HoldResourceCallback(void* args)
     delete input;
 }
 
-std::vector<E2eInferParams* > E2eInferParamsVec;
+std::vector<E2eInferParams *> E2eInferParamsVec;
 
-void SDKYoloV3PostProcess(std::string& yoloV3ConfigPath, std::string& yoloV3LabelPath, vector<Tensor>& yoloV3Outputs,
-                          std::vector<Rect>& cropConfigVec, std::vector<ImagePreProcessInfo>& imagePreProcessInfos)
-{
-    std::map<std::string, std::string> postConfig;
+void SDKYoloV3PostProcess(std::string &yoloV3ConfigPath, std::string &yoloV3LabelPath, vector <Tensor> &yoloV3Outputs,
+                          std::vector <Rect> &cropConfigVec, std::vector <ImagePreProcessInfo> &imagePreProcessInfos) {
+    std::map <std::string, std::string> postConfig;
     postConfig.insert(pair<std::string, std::string>("postProcessConfigPath", yoloV3ConfigPath));
     postConfig.insert(pair<std::string, std::string>("labelPath", yoloV3LabelPath));
 
     Yolov3PostProcess yolov3PostProcess;
     yolov3PostProcess.Init(postConfig);
 
-    std::vector<TensorBase> tensors;
+    std::vector <TensorBase> tensors;
     for (size_t i = 0; i < yoloV3Outputs.size(); i++) {
         MemoryData memoryData(yoloV3Outputs[i].GetData(), yoloV3Outputs[i].GetByteSize());
         TensorBase tensorBase(memoryData, true, yoloV3Outputs[i].GetShape(), TENSOR_DTYPE_INT32);
         tensors.push_back(tensorBase);
     }
 
-    std::vector<std::vector<ObjectInfo>> objectInfos;
+    std::vector <std::vector<ObjectInfo>> objectInfos;
 
     yolov3PostProcess.Process(tensors, objectInfos, imagePreProcessInfos);
 
@@ -187,8 +191,7 @@ void SDKYoloV3PostProcess(std::string& yoloV3ConfigPath, std::string& yoloV3Labe
     }
 }
 
-void ResnetYoloV3PostProcess(vector<Tensor> resnetOutput_)
-{
+void ResnetYoloV3PostProcess(vector <Tensor> resnetOutput_) {
     int classNum_ = 1000; // 类别个数
 
     if (resnetOutput_.empty()) {
@@ -212,17 +215,16 @@ void ResnetYoloV3PostProcess(vector<Tensor> resnetOutput_)
     cout << "confidence = " << confidence << endl;
 }
 
-APP_ERROR PrepareData()
-{
+APP_ERROR PrepareData() {
     string imagePath_ = "./imgs_bak";
     int totalImgs = SplitImage(imagePath_);
-    std::vector<std::vector<std::string>> imgFileVecs(BATCH_SIZE);
+    std::vector <std::vector<std::string>> imgFileVecs(BATCH_SIZE);
     for (size_t i = 0; i < imgFileVecs.size(); i++) {
         std::ifstream imgFileStream;
         std::string imagePath = imagePath_ + "/imgSplitFile" + std::to_string(i);
         imgFileStream.open(imagePath);
         std::string imgFile;
-        std::vector<std::string> imgVecs;
+        std::vector <std::string> imgVecs;
         while (getline(imgFileStream, imgFile)) {
             imgFileVecs[i].push_back(imgFile);
         }
@@ -240,7 +242,7 @@ APP_ERROR PrepareData()
         }
     }
 
-    for (int i = 0; i< totalImgs; i++) {
+    for (int i = 0; i < totalImgs; i++) {
 
         Image resizedImage;
         resizeImageBatch[i % BATCH_SIZE].push_back(resizedImage);
@@ -251,22 +253,22 @@ APP_ERROR PrepareData()
         Tensor resnetTensor;
         resnetTensorBatch[i % BATCH_SIZE].push_back(resnetTensor);
 
-        vector<Tensor> resnetInput;
+        vector <Tensor> resnetInput;
         resnetInputBatch[i % BATCH_SIZE].push_back(resnetInput);
 
-        std::vector<Image> cropResizedImageVec;
+        std::vector <Image> cropResizedImageVec;
         cropResizeImageBatch[i % BATCH_SIZE].push_back(cropResizedImageVec);
 
-        vector<Tensor> yoloV3Outputs;
+        vector <Tensor> yoloV3Outputs;
         yoloV3OutputTensorBatch[i % BATCH_SIZE].push_back(yoloV3Outputs);
 
-        vector<Tensor> resnetOutput;
+        vector <Tensor> resnetOutput;
         resnetOutputTensorBatch[i % BATCH_SIZE].push_back(resnetOutput);
 
-        vector<Rect> cropConfigVec;
+        vector <Rect> cropConfigVec;
         cropConfigRectBatch[i % BATCH_SIZE].push_back(cropConfigVec);
 
-        vector<Tensor> yoloV3InputVec;
+        vector <Tensor> yoloV3InputVec;
         yoloV3InputTensorBatch[i % BATCH_SIZE].push_back(yoloV3InputVec);
     }
 
@@ -285,8 +287,7 @@ APP_ERROR PrepareData()
     return APP_ERR_OK;
 }
 
-APP_ERROR AsyncYoloV3PostProcessPro(vector<Tensor>& yoloV3Outputs, int batchIndex, Params* params, int dataIndex)
-{
+APP_ERROR AsyncYoloV3PostProcessPro(vector <Tensor> &yoloV3Outputs, int batchIndex, Params *params, int dataIndex) {
     for (size_t i = 0; i < yoloV3Outputs.size(); i++) {
         ret = yoloV3Outputs[i].ToHost();
     }
@@ -299,9 +300,10 @@ APP_ERROR AsyncYoloV3PostProcessPro(vector<Tensor>& yoloV3Outputs, int batchInde
                                             params->ResizeImageBatch[dataIndex].GetOriginalSize().height,
                                             params->DecodeImageBatch[dataIndex].GetOriginalSize().width,
                                             params->DecodeImageBatch[dataIndex].GetOriginalSize().height);
-    vector<ImagePreProcessInfo> imagePreProcessInfos{imagePreProcessInfo};
+    vector <ImagePreProcessInfo> imagePreProcessInfos{imagePreProcessInfo};
 
-    SDKYoloV3PostProcess(yoloV3Config, yoloV3LabelPath, yoloV3Outputs, params->CropConfigRectBatch[dataIndex], imagePreProcessInfos);
+    SDKYoloV3PostProcess(yoloV3Config, yoloV3LabelPath, yoloV3Outputs, params->CropConfigRectBatch[dataIndex],
+                         imagePreProcessInfos);
     if (params->CropConfigRectBatch[dataIndex].empty() || params->CropConfigRectBatch[dataIndex].size() == 0) {
         std::cout << "Failed to run yolov3 postProcess." << std::endl;
         return 0;
@@ -309,38 +311,34 @@ APP_ERROR AsyncYoloV3PostProcessPro(vector<Tensor>& yoloV3Outputs, int batchInde
     params->CropResizeImageBatch[dataIndex].resize(params->CropConfigRectBatch[dataIndex].size());
 }
 
-void AsyncYoloV3PostProcessCallbackFunc(void* args)
-{
-    ret = AsyncYoloV3PostProcessPro(static_cast<AsyncYoloV3PostProcessParam*>(args)->yoloV3Outputs,
-                                    static_cast<AsyncYoloV3PostProcessParam*>(args)->batchIndex,
-                                    static_cast<AsyncYoloV3PostProcessParam*>(args)->params,
-                                    static_cast<AsyncYoloV3PostProcessParam*>(args)->dataIndex);
+void AsyncYoloV3PostProcessCallbackFunc(void *args) {
+    ret = AsyncYoloV3PostProcessPro(static_cast<AsyncYoloV3PostProcessParam *>(args)->yoloV3Outputs,
+                                    static_cast<AsyncYoloV3PostProcessParam *>(args)->batchIndex,
+                                    static_cast<AsyncYoloV3PostProcessParam *>(args)->params,
+                                    static_cast<AsyncYoloV3PostProcessParam *>(args)->dataIndex);
     if (ret != APP_ERR_OK) {
         LogError << "Async execute yolov3 postprocess failed.";
     }
 }
 
-APP_ERROR AsyncResNetYoloV3PostPrcessPro(std::vector<Tensor>& resnetOutput_)
-{
-    for (size_t i = 0; i < resnetOutput_.size(); i++){
+APP_ERROR AsyncResNetYoloV3PostPrcessPro(std::vector <Tensor> &resnetOutput_) {
+    for (size_t i = 0; i < resnetOutput_.size(); i++) {
         resnetOutput_[i].ToHost();
     }
     ResnetYoloV3PostProcess(resnetOutput_);
     return APP_ERR_OK;
 }
 
-void AsyncResNetYoloV3PostProcessCallbackFunc(void* args)
-{
-    AsyncResnetYoloV3PostProcessParam* input = static_cast<AsyncResnetYoloV3PostProcessParam*>(args);
+void AsyncResNetYoloV3PostProcessCallbackFunc(void *args) {
+    AsyncResnetYoloV3PostProcessParam *input = static_cast<AsyncResnetYoloV3PostProcessParam *>(args);
     ret = AsyncResNetYoloV3PostPrcessPro(input->resnetOutput);
     if (ret != APP_ERR_OK) {
         LogError << GetError(ret) << "Async execute resnet yolov3 postprocess failed.";
     }
 }
 
-void ConvertToTensorProcess(void* args)
-{
-    ConvertToTensorParam* convertToTensorParam = static_cast<ConvertToTensorParam* >(args);
+void ConvertToTensorProcess(void *args) {
+    ConvertToTensorParam *convertToTensorParam = static_cast<ConvertToTensorParam * >(args);
     int dataIndex = convertToTensorParam->dataIndex;
     if (convertToTensorParam->isYolo) {
         convertToTensorParam->params->TensorImageBatch[dataIndex] =
@@ -355,23 +353,20 @@ void ConvertToTensorProcess(void* args)
     }
 }
 
-void YoloMalloc(void* args)
-{
-    MallocYoloTensor* input = static_cast<MallocYoloTensor* >(args);
+void YoloMalloc(void *args) {
+    MallocYoloTensor *input = static_cast<MallocYoloTensor * >(args);
     MxBase::Tensor::TensorMalloc(input->output1);
     MxBase::Tensor::TensorMalloc(input->output2);
     MxBase::Tensor::TensorMalloc(input->output3);
 }
 
-void ResNetMalloc(void* args)
-{
-    MallocResNetTensor* input = static_cast<MallocResNetTensor* >(args);
+void ResNetMalloc(void *args) {
+    MallocResNetTensor *input = static_cast<MallocResNetTensor * >(args);
     MxBase::Tensor::TensorMalloc(input->output1);
     MxBase::Tensor::TensorMalloc(input->output2);
 }
 
-APP_ERROR E2eInferAsync(int batchIndex, Params* param)
-{
+APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
     for (int i = 0; i < param->DecodeImageBatch.size(); i++) {
 
         ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(416, 416), param->ResizeImageBatch[i],
@@ -381,9 +376,9 @@ APP_ERROR E2eInferAsync(int batchIndex, Params* param)
             return ret;
         }
 
-        ConvertToTensorParam* convertToTensorParam1 = new ConvertToTensorParam{true, param, i};
+        ConvertToTensorParam *convertToTensorParam1 = new ConvertToTensorParam{true, param, i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
-                                                         static_cast<void*>(convertToTensorParam1));
+                                                         static_cast<void *>(convertToTensorParam1));
 
         cout << "====================== 图像前处理结束 =======================" << endl << endl;
         cout << "====================== 目标检测模型推理 ======================" << endl;
@@ -392,73 +387,76 @@ APP_ERROR E2eInferAsync(int batchIndex, Params* param)
         MxBase::Tensor outTensor2({1, 26, 26, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
         MxBase::Tensor outTensor3({1, 52, 52, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocYoloTensor* mallocYoloTensor = new MallocYoloTensor{outTensor1, outTensor2, outTensor3};
-        ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void*>(mallocYoloTensor));
+        MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor{outTensor1, outTensor2, outTensor3};
+        ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void *>(mallocYoloTensor));
 
-        vector<Tensor>* yoloV3outputs = new vector<Tensor>{outTensor1, outTensor2, outTensor3};
+        vector <Tensor> *yoloV3outputs = new vector <Tensor>{outTensor1, outTensor2, outTensor3};
         ret = yoloV3.Infer(param->yoloV3InputTensorBatch[i], *yoloV3outputs, AscendStreamVec[batchIndex]);
 
-        AsyncYoloV3PostProcessParam* asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam{*yoloV3outputs,
+        AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam{*yoloV3outputs,
                                                                                                    batchIndex,
                                                                                                    param,
                                                                                                    i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(AsyncYoloV3PostProcessCallbackFunc,
-                                                         static_cast<void* >(asyncYoloV3PostProcessParam));
+                                                         static_cast<void * >(asyncYoloV3PostProcessParam));
         ret = imageProcessor.CropResize(param->DecodeImageBatch[i], param->CropConfigRectBatch[i], Size(224, 224),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
 
         ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam{false, param, i};
-        ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess, static_cast<void*>(convertToTensorParam2));
+        ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
+                                                         static_cast<void *>(convertToTensorParam2));
 
         std::cout << "===================== resnet推理开始 ====================" << std::endl;
 
         MxBase::Tensor resnetOutput1({1, 1001}, MxBase::TensorDType::FLOAT32, g_deviceId);
         MxBase::Tensor resnetOutput2({1}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocResNetTensor* mallocResNetTensor = new MallocResNetTensor{resnetOutput1, resnetOutput2};
-        ret = AscendStreamVec[batchIndex].LaunchCallBack(ResNetMalloc, static_cast<void*>(mallocResNetTensor));
-        vector<Tensor>* resnetoutput = new vector<Tensor>{resnetOutput1, resnetOutput2};
+        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor{resnetOutput1, resnetOutput2};
+        ret = AscendStreamVec[batchIndex].LaunchCallBack(ResNetMalloc, static_cast<void *>(mallocResNetTensor));
+        vector <Tensor> *resnetoutput = new vector <Tensor>{resnetOutput1, resnetOutput2};
 
         resnet50.Infer(param->ResnetInputBatch[i], *resnetoutput, AscendStreamVec[batchIndex]);
 
-        AsyncResnetYoloV3PostProcessParam* asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam{
+        AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam{
                 *resnetoutput
         };
 
         ret = AscendStreamVec[batchIndex].LaunchCallBack(AsyncResNetYoloV3PostProcessCallbackFunc,
-                                                         static_cast<void*>(asyncResnetYoloV3PostProcessParam));
+                                                         static_cast<void *>(asyncResnetYoloV3PostProcessParam));
 
-        HoldResourceParam* holdResourceParam = new HoldResourceParam{outTensor1, outTensor2, outTensor3, resnetOutput1,
-                                                                     resnetOutput2, yoloV3outputs};
-        ret = AscendStreamVec[batchIndex].LaunchCallBack(HoldResourceCallback, static_cast<void*>(holdResourceParam));
+        HoldResourceParam *holdResourceParam = new HoldResourceParam{outTensor1, outTensor2, outTensor3, resnetOutput1,
+                                                                     resnetOutput2, yoloV3outputs,
+                                                                     convertToTensorParam1,
+                                                                     convertToTensorParam2, mallocYoloTensor,
+                                                                     mallocResNetTensor, resnetoutput,
+                                                                     asyncResnetYoloV3PostProcessParam,
+                                                                     asyncYoloV3PostProcessParam};
+        ret = AscendStreamVec[batchIndex].LaunchCallBack(HoldResourceCallback, static_cast<void *>(holdResourceParam));
 
     }
 
     return ret;
 }
 
-void AsyncE2eInferProcess(void* args)
-{
-    E2eInferParams* e2EInferParams = static_cast<E2eInferParams* >(args);
+void AsyncE2eInferProcess(void *args) {
+    E2eInferParams *e2EInferParams = static_cast<E2eInferParams * >(args);
     E2eInferAsync(e2EInferParams->batchIdx, e2EInferParams->params);
 }
 
-APP_ERROR AsyncE2eInfer(AscendStream& stream, E2eInferParams* e2EInferParams)
-{
-    ret = stream.LaunchCallBack(AsyncE2eInferProcess, static_cast<void* >(e2EInferParams));
+APP_ERROR AsyncE2eInfer(AscendStream &stream, E2eInferParams *e2EInferParams) {
+    ret = stream.LaunchCallBack(AsyncE2eInferProcess, static_cast<void * >(e2EInferParams));
     return ret;
 }
 
-int SplitImage(const std::string& imgDir)
-{
+int SplitImage(const std::string &imgDir) {
     int totalImg = 0;
-    DIR* dir = nullptr;
+    DIR *dir = nullptr;
     struct dirent *ptr = nullptr;
     if ((dir = opendir(imgDir.c_str())) == nullptr) {
         LogError << "Open image dir failed, please check the input image dir existed.";
         exit(1);
     }
-    std::vector<std::string> imgVec;
+    std::vector <std::string> imgVec;
     while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
@@ -473,7 +471,7 @@ int SplitImage(const std::string& imgDir)
     closedir(dir);
     sort(imgVec.begin(), imgVec.end());
 
-    std::vector<std::vector<std::string>> fileNum(BATCH_SIZE);
+    std::vector <std::vector<std::string>> fileNum(BATCH_SIZE);
     for (size_t i = 0; i < imgVec.size(); i++) {
         fileNum[i % BATCH_SIZE].push_back(imgVec[i]);
     }
@@ -482,7 +480,7 @@ int SplitImage(const std::string& imgDir)
         std::ofstream imgFile;
         std::string fileName = imgDir + "/imgSplitFile" + std::to_string(i);
         imgFile.open(fileName, ios::out | ios::trunc);
-        for (const auto& img : fileNum[i]) {
+        for (const auto &img: fileNum[i]) {
             imgFile << img << std::endl;
         }
         imgFile.close();
@@ -491,17 +489,16 @@ int SplitImage(const std::string& imgDir)
     return totalImg;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     MxInit();
 
     PrepareData();
 
     for (int i = 0; i < BATCH_SIZE; i++) {
-        Params* params = new Params{decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i], resnetTensorBatch[i],
+        Params *params = new Params{decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i], resnetTensorBatch[i],
                                     resnetInputBatch[i], cropResizeImageBatch[i], yoloV3OutputTensorBatch[i],
                                     resnetOutputTensorBatch[i], cropConfigRectBatch[i], yoloV3InputTensorBatch[i]};
-        E2eInferParams* e2EInferParams = new E2eInferParams{i, params};
+        E2eInferParams *e2EInferParams = new E2eInferParams{i, params};
         E2eInferParamsVec.push_back(e2EInferParams);
     }
 
