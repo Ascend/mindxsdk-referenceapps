@@ -53,9 +53,9 @@ size_t maxQueueSize = 32;
 float minQueuePercent = 0.2;
 float maxQueuePercent = 0.8;
 
-const size_t numChannel = 80;
-const size_t numWorker = 10;
-const size_t numLines = 8;
+const size_t numChannel = 1;
+const size_t numWorker = 1;
+const size_t numLines = 1;
 
 std::string yoloModelPath = "model.om";
 std::string yoloConfigPath = "configure.cfg";
@@ -920,7 +920,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                 });
                                                                             if (!decodedFrameQueue.IsEmpty())
                                                                             {
-                                                                                decodedFrameQueue.Pop(buffer[pf.kine()]);
+                                                                                decodedFrameQueue.Pop(buffer[pf.line()]);
                                                                             }
                                                                             yoloImagePreProcess(imageProcessor, buffer[pf.line()], resizedImageBuffer[pf.line()]);
                                                                         }
