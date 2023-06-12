@@ -70,8 +70,6 @@ std::string carPlateDetectConfigPath = "configure.cfg";
 std::string carPlateDetectLabelPath = "label.names";
 
 std::string carPlateRecModelPath = "model.om";
-std::string carPlateRecConfigPath = "configure.cfg";
-std::string carPlateRecLabelPath = "label.names";
 
 std::string pedestrianAttrModelPath = "model.om";
 std::string pedestrianAttrConfigPath = "configure.cfg";
@@ -823,7 +821,7 @@ void initResources()
         pedestrianAttrPostProcessors[batch]->Init(pedestrianAttrConfigPath, pedestrianAttrLabelPath);
 
         // pedestrian feature
-        pedestrianFeatureModels[batch] = new MxBase::Model(pedestrianAttrLabelPath, deviceID);
+        pedestrianFeatureModels[batch] = new MxBase::Model(pedestrianFeatureModelPath, deviceID);
 
         // face landmarks
         faceLandmarkModels[batch] = new MxBase::Model(faceLandmarkModelPath, deviceID);

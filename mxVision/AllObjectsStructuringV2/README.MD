@@ -2,16 +2,16 @@
 
 ## 1 介绍
 
-全目标结构化V2样例基于mxVision SDK进行开发，以XXXXX为主要的硬件平台，主要支持以下功能：
+全目标结构化V2样例基于mxVision SDK进行开发，以310P为主要的硬件平台，主要支持以下功能：
 
 1. 目标检测：在视频流中检测出目标，本样例选用基于Yolov4-tiny的目标检测，能达到快速精准检测。
 2. 动态目标识别和属性分析：能够识别出检测出的目标类别，并对其属性进行分析。
-3. 人体属性分类+PersonReID：能够根据人体属性和PersonReID进行分类.
-4. 目标属性分类+FaceReID：能够根据目标属性和FaceReID进行分类.
-5. 车辆属性分类：能够对车辆的属性进行分类。
+3. 行人属性分类+PersonReID：能够根据人体属性和PersonReID进行分类。（行人属性，行人特征）
+4. 人脸属性分类+FaceReID：能够根据目标属性和FaceReID进行分类。(人脸属性，人脸特征)
+5. 车辆属性分类：能够对车辆的属性进行分类。(车辆属性，车辆特征以及车牌检测/识别)
 
 ### 1.1 支持的产品
-(硬件)
+310P
 
 ### 1.2 支持的版本
 (软件 包括第三方依赖)
@@ -32,6 +32,9 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 ### 1.3 代码目录结构与说明
 ```
 ├── AllObjectsStructuring
+|   ├── include
+|   │   ├── taskflow
+|   ├── models
 |   ├── postprocessor
 |   │   ├── carPlateDetectionPostProcess // 车牌检测
 |   |   |   ├── CarPlateDetectionPostProcess.cpp
@@ -73,8 +76,15 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 └── README.zh.md
 ```
 
+## 2 模型下载与转换
+
+**步骤1：** 在项目根目录下 AllObjectStructuring2/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuring/AllObjectsStructuring_models.zip)，并放到项目根目录下 AllObjectStructuring2/models/ 目录下。
+
+
 
 ## 2 编译与运行
+项目依赖于ffmpeg
+
 
 在编译运行项目前，需要设置环境变量：
 
@@ -86,6 +96,7 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 列出具体执行命令（简化）
 . ${sdk_path}/set_env.sh
 . ${ascend_toolkit_path}/set_env.sh
+
 ```
 
 （描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
