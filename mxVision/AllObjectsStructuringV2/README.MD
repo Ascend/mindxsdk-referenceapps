@@ -100,32 +100,36 @@ atc --model=./facefeature/face_feature_batch_1.prototxt --weight=./facefeature/f
 
 
 ## 3 安装依赖
+**步骤1：** 根据下面链接安装ffmpeg以及h264
+https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
 
+**步骤2：** 安装taskflow。
+在根目录下创建include目录，从github上下载taskflow的源码（https://github.com/taskflow/taskflow/releases）。解压后将taskflow目录复制到include目录中。
 
-## 4 编译与运行
-项目依赖于ffmpeg
+## 4 修改模型路径和测试视频
 
-
-在编译运行项目前，需要设置环境变量：
-
-（请列出所需环境变量，作用，若不涉及个人变量，列出实际设置环境变量的命令）
-
-- 环境变量介绍
-
+## 5 编译与运行
+导入下面的环境变量。
+**步骤1：** 配置环境变量。
 ```
-列出具体执行命令（简化）
 . ${sdk_path}/set_env.sh
 . ${ascend_toolkit_path}/set_env.sh
-
+export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
 ```
 
-（描述项目安装运行的全部步骤，，如果不涉及个人路径，请直接列出具体执行命令）
+**步骤2**：在插件代码目录下创建build文件夹，使用cmake命令进行编译，生成.so文件。下面以单人独处插件的编译过程作为范例：
 
-示例步骤如下：
+```bash
+## 创建build目录
+mkdir build
+## 使用cmake命令进行编译
+cmake ..
+make -j
+```
 
 
 
-## 3 常见问题
+## 6 常见问题
 
 请按照问题重要程度，详细列出可能要到的问题，和解决方法。
 
