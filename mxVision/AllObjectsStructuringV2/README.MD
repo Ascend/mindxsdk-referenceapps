@@ -98,6 +98,8 @@ atc --model=./faceattr/face_attribute_batch_1.prototxt --weight=./faceattr/face_
 
 atc --model=./facefeature/face_feature_batch_1.prototxt --weight=./facefeature/face_feature.caffemodel --framework=0 -output=./facefeature/face_feature_batch_1 --insert_op_conf=./facefeature/aipp.cfg --soc_version=Ascend310P3
 
+atc --model=./motorattr/vehicle_attribute.pb --framework=3 -output=./motorattr/vehicle_attribute --insert_op_conf=./motorattr/aipp.cfg --soc_version=Ascend310P3
+
 
 ## 3 安装依赖
 **步骤1：** 根据下面链接安装ffmpeg以及h264
