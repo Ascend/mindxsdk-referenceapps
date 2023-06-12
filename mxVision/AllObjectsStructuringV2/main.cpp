@@ -256,6 +256,7 @@ void VideoDecode(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQu
 APP_ERROR CallBackVdec(MxBase::Image &decodedImage, uint32_t channelID, uint32_t frameID, void *userData)
 {
     FrameImage frameImage;
+    frameImage.image = decodedImage;
     frameImage.channelID = channelID;
     frameImage.frameID = frameID;
 
@@ -799,8 +800,8 @@ void initResources()
         yoloModels[batch] = new MxBase::Model(yoloModelPath, deviceID);
         yoloPostProcessors[batch] = new MxBase::Yolov3PostProcess();
         std::map<std::string, std::string> yoloPostConfig;
-        yoloPostConfig.insert(std::pair << std::string, std::string >> ("postProcessConfigPath", yoloConfigPath));
-        yoloPostConfig.insert(std::pair << std::string, std::string >> ("labelPath", yoloLabelPath));
+        yoloPostConfig.insert(std::pair<std::string, std::string>("postProcessConfigPath", yoloConfigPath));
+        yoloPostConfig.insert(std::pair<std::string, std::string>("labelPath", yoloLabelPath));
         yoloPostProcessors[batch]->Init(yoloPostConfig);
         multiObjectTrackers[batch] = new MultiObjectTracker();
 
@@ -813,8 +814,8 @@ void initResources()
         carPlateDetectModels[batch] = new MxBase::Model(carPlateDetectModelPath, deviceID);
         carPlateDetectPostProcessors[batch] = new SsdVggPostProcess();
         std::map<std::string, std::string> SsdVggPostConfig;
-        SsdVggPostConfig.insert(std::pair << std::string, std::string >> ("postProcessConfigPath", yoloConfigPath));
-        SsdVggPostConfig.insert(std::pair << std::string, std::string >> ("labelPath", yoloLabelPath));
+        SsdVggPostConfig.insert(std::pair<std::string, std::string>("postProcessConfigPath", carPlateDetectConfigPath));
+        SsdVggPostConfig.insert(std::pair<std::string, std::string>("labelPath", carPlateDetectLabelPath));
         carPlateDetectPostProcessors[batch]->Init(SsdVggPostConfig);
 
         // car plate recognition
@@ -919,8 +920,9 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                 });
                                                                             if (!decodedFrameQueue.IsEmpty())
                                                                             {
-                                                                                yoloImagePreProcess(imageProcessor, buffer[pf.line()], resizedImageBuffer[pf.line()]);
+                                                                                decodedFrameQueue.Pop(buffer[pf.kine()]);
                                                                             }
+                                                                            yoloImagePreProcess(imageProcessor, buffer[pf.line()], resizedImageBuffer[pf.line()]);
                                                                         }
 
                           },
