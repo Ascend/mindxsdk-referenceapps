@@ -321,7 +321,7 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
 
 void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &frameImage, MxBase::Image &resizedImage)
 {
-    MxBase::Size size(416, 416);
+    MxBase::Size size(YOLO_INPUT_WIDTH, YOLO_INPUT_HEIGHT);
     MxBase::Interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
     APP_ERROR ret = imageProcessor->Resize(frameImage.image, size, resizedImage, interpolation);
     if (ret != APP_ERR_OK)
@@ -423,11 +423,11 @@ void parseSelected(MxBase::ImageProcessor *&imageProcessor,
     facelandmarkInputImageVec.clear();
     faceFeatureInputImageVec.clear();
 
-    MxBase::Size vehicleAttrSize(224, 224);
-    MxBase::Size carPlateDetectionSize(480, 640);
-    MxBase::Size pedestrianAttrSize(192, 256);
-    MxBase::Size pedestrianFeatureSize(128, 384);
-    MxBase::Size faceLandmarkSize(96, 96);
+    MxBase::Size vehicleAttrSize(VEHICLE_ATTR_INPUT_WIDTH, VEHICLE_ATTR_INPUT_HEIGHT);
+    MxBase::Size carPlateDetectionSize(CAR_PLATE_DETECT_INPUT_WIDTH, CAR_PLATE_DETECT_INPUT_HEIGHT);
+    MxBase::Size pedestrianAttrSize(PED_ATTR_INPUT_WIDTH, PED_ATTR_INPUT_HEIGHT);
+    MxBase::Size pedestrianFeatureSize(PED_FEATURE_INPUT_WIDTH, PED_FEATURE_INPUT_HEIGHT);
+    MxBase::Size faceLandmarkSize(FACE_LANDMARK_INPUT_WIDTH, FACE_LANDMARK_INPUT_HEIGHT);
 
     std::vector<std::pair<MxBase::Rect, MxBase::Size>> cropResizeVec;
     std::vector<MxBase::Image> outputImageVec;
@@ -549,7 +549,7 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
 {
     auto frameID = preprocessedImage.frameID;
     auto channelID = preprocessedImage.channelID;
-    MxBase::Size carPlateRecSize(272, 72);
+    MxBase::Size carPlateRecSize(CAR_PLATE_REC_INPUT_WIDTH, CAR_PLATE_REC_INPUT_HEIGHT);
 
     std::vector<MxBase::Tensor> carPlateInputTensor = {preprocessedImage.image.ConvertToTensor()};
     std::vector<MxBase::Tensor> carPlateOutputTensorRes = carPlateModel->Infer(carPlateInputTensor);
@@ -696,7 +696,7 @@ void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImagePro
     KeyPointAndAngle faceInfo = preprocessedImage.faceInfo;
 
     MxBase::Image faceAlignmentResizeImage;
-    MxBase::Size faceAlignmentSize(112, 112);
+    MxBase::Size faceAlignmentSize(FACE_ALIGNMENT_INPUT_WIDTH, FACE_ALIGNMENT_INPUT_HEIGHT);
     auto ret = imageProcessor->Resize(preprocessedImage.image, faceAlignmentSize, faceAlignmentResizeImage);
     if (ret != APP_ERR_OK)
     {
