@@ -31,7 +31,7 @@
 
 #include "postprocessor/resnetAttributePostProcess/resnetAttributePostProcess.h"
 #include "postprocessor/carPlateDetectionPostProcess/SsdVggPostProcess.h"
-#include "postprocessor/carPlateRecognitionPostProcess/carPlateRecognitionPostProcess.h"
+#include "postprocessor/carPlateRecognitionPostProcess/CarPlateRecognitionPostProcess.h"
 #include "postprocessor/faceLandmark/FaceLandmarkPostProcess.h"
 #include "postprocessor/faceAlignment/FaceAlignment.h"
 #include "utils/objectSelection/objectSelection.h"
@@ -98,7 +98,7 @@ MultiObjectTracker *multiObjectTrackers[numWoker];
 
 // vehicle attribution
 MxBase::Model *vehicleAttrModels[numWoker];
-ResNetAttributePostProcess *vehicleAttrPostProcessors[numWoker];
+ResnetAttributePostProcess *vehicleAttrPostProcessors[numWoker];
 
 // car plate detection
 MxBase::Model *carPlateDetectModels[numWoker];
@@ -191,7 +191,7 @@ void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx
         }
         std::shared_ptr<uint8_t> imageData((uint8_t *)data.ptrData, hostDeleter);
 
-        MxBase::Image(imageData, pkt.size);
+        MxBase::Image subImage(imageData, pkt.size);
         frameImage.image = subImage;
         av_packet_unref(&pkt);
     }
@@ -219,7 +219,7 @@ AVFormatContext *CreateFormatContext(std::string filePath)
     return formatContext;
 }
 
-void VideoDeocde(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQueue<FrameImage> &decodedFrameList,
+void VideoDecode(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQueue<FrameImage> &decodedFrameList,
                  uint32_t channelID, uint32_t &frameID, uint32_t &deviceID,
                  MxBase::VideoDecoder *&videoDecoder, int &decodeEOF, tf::Executor &executor)
 {
@@ -286,7 +286,7 @@ void StreamPull(AVFormatContext *&pFormatCtx, std::string filePath)
 {
     pFormatCtx = avformat_alloc_context();
     pFormatCtx = CreateFormatContext(filePath);
-    av_dump_formar(pFormatCtx, 0, filePath.c_str(), 0);
+    av_dump_formart(pFormatCtx, 0, filePath.c_str(), 0);
 }
 
 float activateOutput(float data, bool isAct)
@@ -301,7 +301,7 @@ float activateOutput(float data, bool isAct)
     }
 }
 
-void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::vector<float> &feature, bool isSigmoid)
+void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::vector<float> &features, bool isSigmoid)
 {
     const int FEATURE_SIZE = 4;
     if (inferOutputs.empty())
@@ -310,7 +310,7 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
         return;
     }
 
-    size_t featureSize = i = inferOutputs[0].GetByteSize() / FEATURE_SIZE;
+    size_t featureSize = inferOutputs[0].GetByteSize() / FEATURE_SIZE;
     float *castData = static_cast<float *>(inferOutputs[0].GetData());
 
     for (size_t i = 0; i < featureSize; i++)
@@ -766,10 +766,10 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     printf("Face Attribution Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
     for (auto &attributeRes : faceAttrVec)
     {
-        print("====================\n");
+        printf("====================\n");
         for (auto &attribute : attributeRes)
         {
-            print("%s\n", attribute.attrValue.c_str());
+            printf("%s\n", attribute.attrValue.c_str());
         }
     }
 
@@ -790,6 +790,57 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     //         print("%s\n", attribute.attrValue.c_str());
     //     }
     // }
+}
+
+void initResources()
+{
+    for (int batch = 0; batch < numYoloWoker; ++batch)
+    {
+
+        imageProcessors[batch] = new MxBase::ImageProcessor(deviceID);
+        yoloModels[batch] = new MxBase::Model(yoloModelPath, deviceID);
+        yoloPostProcessors[batch] = new MxBase::Yolov3PostProcess();
+        yoloPostProcessors[batch]->Init({"postProcessConfigPath", yoloConfigPath} {"labelPath", yoloLabelPath});
+        multiObjectTrackers[batch] = new MultiObjectTracker();
+
+        // vehicle attribution
+        vehicleAttrModels[batch] = new MxBase::Model(vehicleAttrModelPath, deviceID);
+        vehicleAttrPostProcessors[batch] = new ResnetAttributePostProcess();
+        vehicleAttrPostProcessors[batch]->Init(vehicleAttrConfigPath, vehicleAttrLabelPath);
+
+        // car plate detection
+        carPlateDetectModels[batch] = new MxBase::Model(carPlateDetectModelPath, deviceID);
+        carPlateDetectPostProcessors[batch] = new SsdVggPostProcess();
+        carPlateDetectPostProcessors[batch]->Init({"postProcessConfigPath", carPlateDetectConfigPath} {"labelPath", carPlateDetectLabelPath});
+
+        // car plate recognition
+        carPlateRecModels[batch] = new MxBase::Model(carPlateRecModelPath, deviceID);
+        carPlateRecPostProcessors[batch] = new CarPlateRecognitionPostProcess();
+
+        // pedestrian attribution
+        pedestrianAttrModels[batch] = new MxBase::Model(pedestrianAttrModelPath, deviceID);
+        pedestrianAttrPostProcessors[batch] = new ResnetAttributePostProcess();
+        pedestrianAttrPostProcessors[batch]->Init(pedestrianAttrConfigPath, pedestrianAttrLabelPath);
+
+        // pedestrian feature
+        pedestrianFeatureModels[batch] = new MxBase::Model(pedestrianAttrLabelPath, deviceID);
+
+        // face landmarks
+        faceLandmarkModels[batch] = new MxBase::Model(faceLandmarkModelPath, deviceID);
+        faceLandmarkPostProcessors[batch] = new FaceLandmarkPostProcess();
+        faceLandmarkPostProcessors[batch]->Init();
+
+        // face alignment
+        faceAlignmentProcessors[batch] = new FaceAlignment();
+
+        // face attribution
+        faceAttributeModels[batch] = new MxBase::Model(faceAttributeModelPath, deviceID);
+        faceAttributeProcessors[batch] = new ResnetAttributePostProcess();
+        faceAttributeProcessors[batch]->Init(faceAttributeConfigPath, faceAttributeLabelPath);
+
+        // face feature
+        faceFeatureModels[batch] = new MxBase::Model(faceFeatureModelPath, deviceID);
+    }
 }
 
 template <size_t NUM>
@@ -860,7 +911,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                 [&]()
                                                                                 {
                                                                                     auto end = std::chrono::steady_clock::now();
-                                                                                    return !decodedFrameQueue.IsEmpty() || (std::chrono::during_cast<std::chrono::milliseconds>(end - start).count >= 200);
+                                                                                    return !decodedFrameQueue.IsEmpty() || (std::chrono::during_cast<std::chrono::milliseconds>(end - start).count() >= 200);
                                                                                 });
                                                                             if (!decodedFrameQueue.IsEmpty())
                                                                             {
@@ -881,7 +932,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
                                                                         [&, batch](tf::Pipeflow &pf)
                                                                         {
-                                                                            yoloPostProcess(batch, outputs[pf.line()], buffer[pf.line()],
+                                                                            yoloPostProcess(outputs[pf.line()], buffer[pf.line()],
                                                                                             resizedImageBuffer[pf.line()], selectedObjectBuffer[pf.line()],
                                                                                             yoloPostProcessor, multiObjectTracker);
                                                                         }
@@ -922,7 +973,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL,
                                                                         [&, batch](tf::Pipeflow &pf)
                                                                         {
-                                                                            i(!carPlateDetectionInputImageBuffer[pf.line()].empty())
+                                                                            if (!carPlateDetectionInputImageBuffer[pf.line()].empty())
                                                                             {
                                                                                 for (auto &preprocessedImage : carPlateDetectionInputImageBuffer[pf.line()])
                                                                                 {
@@ -995,7 +1046,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                             {
                                                                                 for (auto &preprocessedImage : faceLandmarkInputImageBuffer[pf.line()])
                                                                                 {
-                                                                                    faceLandmarkPostProcess(
+                                                                                    faceLandmarkProcess(
                                                                                         preprocessedImage,
                                                                                         faceLandmarkModel,
                                                                                         faceLandmarkPostProcessor);

@@ -27,23 +27,26 @@
 const int FLOAT_TO_INT = 1000;
 const int HITS_THREAHOLD = 2;
 
-struct TrackInfo {
+struct TrackInfo
+{
     uint32_t trackId;
     uint32_t age;
     uint32_t hits;
     MxBase::TrackFlag trackFlag;
 };
 
-struct TrackLet {
+struct TrackLet
+{
     std::string parentName;
     uint32_t memberId;
-    TrackInfo tackInfo;
+    TrackInfo trackInfo;
     MxBase::KalmanTracker kalman;
     MxBase::ObjectInfo detecInfo;
     uint32_t lostAge;
 };
 
-class MultiObjectTracker {
+class MultiObjectTracker
+{
 public:
     void Process(FrameImage &frameImage, std::vector<MxBase::ObjectInfo> &detectedObjectInfos, std::vector<TrackLet> &trackLetList);
 
@@ -82,7 +85,7 @@ private:
 
     void updateLostTrackLet_();
 
-    void updateTrackLetBuffer_(const FrameImage& frameImage, TrackLet& trackLet);
+    void updateTrackLetBuffer_(const FrameImage &frameImage, TrackLet &trackLet);
 };
 
 #endif /* MAIN_MULTIOBJECTTRACKER_H */

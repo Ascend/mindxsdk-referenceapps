@@ -39,7 +39,7 @@ void MultiObjectTracker::Process(FrameImage &frameImage, std::vector<MxBase::Obj
     {
         for (auto &trackLet : trackLetList_)
         {
-            trackLet.tackInfo.trackFlag = MxBase::LOST_OBJECT;
+            trackLet.trackInfo.trackFlag = MxBase::LOST_OBJECT;
         }
     }
 
@@ -47,7 +47,7 @@ void MultiObjectTracker::Process(FrameImage &frameImage, std::vector<MxBase::Obj
 
     for (auto itr = trackLetList_.begin(); itr != trackLetList_.end();)
     {
-        if (itr->tackInfo.trackFlag != MxBase::LOST_OBJECT)
+        if (itr->trackInfo.trackFlag != MxBase::LOST_OBJECT)
         {
             trackLetList.push_back(*itr);
             ++itr;
@@ -189,7 +189,7 @@ void MultiObjectTracker::filterLowThreshold_(const MxBase::HungarianHandle &hung
         }
         else
         {
-            trackLetList_[i].tackInfo.trackFlag = MxBase::LOST_OBJECT;
+            trackLetList_[i].trackInfo.trackFlag = MxBase::LOST_OBJECT;
         }
     }
 }
@@ -210,11 +210,11 @@ void MultiObjectTracker::updateMatchedTrackLet_(FrameImage &frameImage, const st
         int traceIndex = matchedTrackedDetected[i].x;
         int detectIndex = matchedTrackedDetected[i].y;
 
-        trackLetList_[traceIndex].tackInfo.age++;
-        trackLetList_[traceIndex].tackInfo.hits++;
-        if (trackLetList_[traceIndex].tackInfo.hits > HITS_THREAHOLD)
+        trackLetList_[traceIndex].trackInfo.age++;
+        trackLetList_[traceIndex].trackInfo.hits++;
+        if (trackLetList_[traceIndex].trackInfo.hits > HITS_THREAHOLD)
         {
-            trackLetList_[traceIndex].tackInfo.trackFlag = MxBase::TRACKED_OBJECT;
+            trackLetList_[traceIndex].trackInfo.trackFlag = MxBase::TRACKED_OBJECT;
         }
         trackLetList_[traceIndex].lostAge = 0;
         trackLetList_[traceIndex].detecInfo = detectedObjectInfos[detectIndex];
@@ -231,11 +231,11 @@ void MultiObjectTracker::addNewDetectedObject_(FrameImage &frameImage, std::vect
     {
         TrackLet trackLet{};
         generatedId_++;
-        trackLet.tackInfo.trackId = generatedId_;
-        trackLet.tackInfo.age = 1;
-        trackLet.tackInfo.hits = 1;
+        trackLet.trackInfo.trackId = generatedId_;
+        trackLet.trackInfo.age = 1;
+        trackLet.trackInfo.hits = 1;
         trackLet.lostAge = 0;
-        trackLet.tackInfo.trackFlag = MxBase::NEW_OBJECT;
+        trackLet.trackInfo.trackFlag = MxBase::NEW_OBJECT;
         trackLet.detecInfo = detectObject;
         MxBase::DetectBox detectBox = ConvertToDetectBox(detectObject);
         trackLet.kalman.CvKalmanInit(detectBox);
@@ -249,24 +249,24 @@ void MultiObjectTracker::updateLostTrackLet_()
 {
     for (auto &trackLet : trackLetList_)
     {
-        if (trackLet.tackInfo.trackFlag == MxBase::LOST_OBJECT)
+        if (trackLet.trackInfo.trackFlag == MxBase::LOST_OBJECT)
         {
             trackLet.lostAge++;
-            trackLet.tackInfo.age++;
+            trackLet.trackInfo.age++;
         }
     }
 }
 
 void MultiObjectTracker::updateTrackLetBuffer_(const FrameImage &frameImage, TrackLet &trackLet)
 {
-    auto trackID = trackLet.tackInfo.trackId;
-    if (trackLet.tackInfo.trackFlag == MxBase::NEW_OBJECT)
+    auto trackID = trackLet.trackInfo.trackId;
+    if (trackLet.trackInfo.trackFlag == MxBase::NEW_OBJECT)
     {
         trackLetBuffer_.insert(std::make_pair(trackID, std::make_pair(frameImage, trackLet.detecInfo)));
         return;
     }
 
-    if (trackLet.tackInfo.trackFlag == MxBase::TRACKED_OBJECT)
+    if (trackLet.trackInfo.trackFlag == MxBase::TRACKED_OBJECT)
     {
         trackLetBuffer_[trackID].first = frameImage;
         trackLetBuffer_[trackID].second = trackLet.detecInfo;

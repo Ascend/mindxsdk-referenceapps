@@ -33,7 +33,7 @@ struct CarPlateAttr
     std::string attrName;
     std::string attrValue;
     float confidence;
-}
+};
 
 class CarPlateRecognitionPostProcess
 {

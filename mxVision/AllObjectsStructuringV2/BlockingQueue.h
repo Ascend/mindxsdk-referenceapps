@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mxBase/ErrorCode/ErrorCode.h"
+#include "MxBase/ErrorCode/ErrorCode.h"
 #include <condition_variable>
 #include <list>
 #include <mutex>
@@ -36,7 +36,7 @@ namespace MxBase
         APP_ERROR Push(const T &item, bool isWait = false)
         {
             std::unique_lock<std::shared_mutex> lck(mutex_);
-            while (queue_size() >= maxSize_ && isWait)
+            while (queue_.size() >= maxSize_ && isWait)
             {
                 fullCond_.wait(lck);
             }
@@ -75,7 +75,7 @@ namespace MxBase
         int GetSize()
         {
             std::shared_lock<std::shared_mutex> lck(mutex_);
-            return queue_.szie();
+            return queue_.size();
         }
 
     private:
