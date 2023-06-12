@@ -40,6 +40,11 @@
 #include "taskflow/algorithm/pipeline.hpp"
 #include "BlockingQueue.h"
 
+extern "C"
+{
+#include "libavformat/avformat.h"
+}
+
 std::string CLASSNAMEPERSON = "person";
 std::string CLASSNAMEVEHICLE = "motor-vehicle";
 std::string CLASSNAMEFACE = "face";
@@ -119,7 +124,7 @@ FaceAlignment *faceAlignmentProcessors[numWoker];
 
 // face attribution
 MxBase::Model *faceAttributeModels[numWoker];
-ResNetAttributePostProcess *faceAttributeProcessors[numWoker];
+ResnetAttributePostProcess *faceAttributeProcessors[numWoker];
 
 // face feature
 MxBase::Model *faceFeatureModels[numWoker];

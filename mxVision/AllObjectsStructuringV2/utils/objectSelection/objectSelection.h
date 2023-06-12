@@ -26,6 +26,6 @@ class ObjectSelector
 public:
     static APP_ERROR Process(MultiObjectTracker &tracker, std::vector<TrackLet> &trackLetList,
                              std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> &selectedObjectVec);
-}
+};
 
 #endif /* MAIN_OBJECTSELECTION_H */

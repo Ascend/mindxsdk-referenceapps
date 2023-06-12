@@ -137,7 +137,7 @@ MxBase::DetectBox MultiObjectTracker::ConvertToDetectBox(const MxBase::ObjectInf
 {
     MxBase::DetectBox detectBox{};
     float height = objectInfo.y1 - objectInfo.y0;
-    float width = objectInfoobjectInfo.x1 - objectInfo.x0;
+    float width = objectInfo.x1 - objectInfo.x0;
     detectBox.x = objectInfo.x0;
     detectBox.y = objectInfo.y0;
     detectBox.height = height;
