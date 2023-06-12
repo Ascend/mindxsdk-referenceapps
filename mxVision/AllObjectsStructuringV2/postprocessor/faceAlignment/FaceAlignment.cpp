@@ -28,8 +28,8 @@ void FaceAlignment::DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataI
     }
 }
 
-APP_ERROR FaceAlignment::FaceeAlignmentProcess(std::vector<MxBase::Image> &intputImageVec, std::vector<MxBase::Image> &outputImageVec,
-                                               std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID = 0)
+APP_ERROR FaceAlignment::Process(std::vector<MxBase::Image> &intputImageVec, std::vector<MxBase::Image> &outputImageVec,
+                                 std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID = 0)
 {
     std::vector<MxBase::DvppDataInfo> inputDataInfoVec;
     std::vector<MxBase::DvppDataInfo> outputDataInfoVec;
@@ -64,9 +64,9 @@ APP_ERROR FaceAlignment::FaceeAlignmentProcess(std::vector<MxBase::Image> &intpu
         return APP_ERR_INVALID_PARAM;
     }
 
-    // do warpAffinr
+    // do warpAffine
     outputDataInfoVec.resize(inputDataInfoVec.size());
-    APP_ERROR ret = warpAffinr_.Process(inputDataInfoVec, outputDataInfoVec, KeyPointInfoVec, picHeight, picWidth);
+    APP_ERROR ret = warpAffine_.Process(inputDataInfoVec, outputDataInfoVec, KeyPointInfoVec, picHeight, picWidth);
     if (ret != APP_ERR_OK)
     {
         LogError << "Face warp affine failed!";
@@ -83,14 +83,15 @@ APP_ERROR FaceAlignment::FaceeAlignmentProcess(std::vector<MxBase::Image> &intpu
         MxBase::MemoryaData srcData(static_cast<void *>(outputDataInfo.data), outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_DEVICE);
         MxBase::MemoryaData dstData(outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_HOST_MALLOC);
         APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dstData, srcData);
-        if (ret != APP_ERR_OK) {
+        if (ret != APP_ERR_OK)
+        {
             LogError << "MxbsMallocAndCopy failed!";
             DestoryMemory(outputDataInfoVec);
             return ret;
         }
         MxBase::MemoryHelper::MxbsFree(srcData);
-        MxBase::Image outputImage(static_cast<shared_ptr<uint8_t*>>(uint8_t *dstData.ptrData), dstData.size, deviceID, outImageSize,
-                                static_cast<MxBase::ImageFormat>(outputDataInfo.format));
+        MxBase::Image outputImage(static_cast<shared_ptr<uint8_t *>>(uint8_t * dstData.ptrData), dstData.size, deviceID, outImageSize,
+                                  static_cast<MxBase::ImageFormat>(outputDataInfo.format));
         outputImageVec.push_back(outputImage);
     }
 

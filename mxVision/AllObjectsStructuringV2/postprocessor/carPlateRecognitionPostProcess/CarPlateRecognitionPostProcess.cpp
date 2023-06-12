@@ -27,14 +27,10 @@ APP_ERROR CarPlateRecognitionPostProcess::Init()
     return APP_ERR_OK;
 }
 
-APP_ERROR CarPlateRecognitionPostProcess::DeInit()
-{
-    return APP_ERR_OK;
-}
-
-APP_ERROR CarPlateRecognitionPostProcess::Process(const std::vector<MxBase::Tensor> &inferOutputs, std::vector<CarPlateAttr> &carPlateRes)
+APP_ERROR CarPlateRecognitionPostProcess::Process(const std::vector<MxBase::Tensor> &inferOutputs, std::vector<CarPlateAttr> &attributeResVec)
 {
     LogDebug << "Start to Process CarPlateRecognitionPostProcess";
+    std::string carPlateRes;
     for (size_t i = 0; i < inferOutputs.size(); i++)
     {
         auto *output = static_cast<float *>(inferOutputs[i].GetData());

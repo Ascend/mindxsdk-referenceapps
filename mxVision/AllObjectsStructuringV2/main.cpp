@@ -135,7 +135,7 @@ std::shared_mutex signalMutex_[numChannel];
 
 bool taskStop = false;
 
-void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx, int &decodeEOF, int32_t &deviceID, uint32_t channelID)
+void GetFrame(AVPacket &pkt, FrameImage &frameImage, AVFormatContext *pFormatCtx, int &decodeEOF, int32_t deviceID, uint32_t channelID)
 {
     MxBase::DeviceContext context = {};
     context.devId = static_cast<int>(deviceID);
@@ -911,7 +911,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                 [&]()
                                                                                 {
                                                                                     auto end = std::chrono::steady_clock::now();
-                                                                                    return !decodedFrameQueue.IsEmpty() || (std::chrono::during_cast<std::chrono::milliseconds>(end - start).count() >= 200);
+                                                                                    return !decodedFrameQueue.IsEmpty() || (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() >= 200);
                                                                                 });
                                                                             if (!decodedFrameQueue.IsEmpty())
                                                                             {

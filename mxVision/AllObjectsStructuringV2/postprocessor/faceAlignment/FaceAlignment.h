@@ -35,7 +35,7 @@ public:
 private:
     void DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataInfoVec);
 
-    MxBase::WarpAffine warpAffine;
+    MxBase::WarpAffine warpAffine_;
 };
 
 #endif /* FACEALIGNMENT_FACEALIGNMENT_H */
