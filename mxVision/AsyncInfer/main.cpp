@@ -368,8 +368,9 @@ void ResNetMalloc(void *args) {
 
 APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
     for (int i = 0; i < param->DecodeImageBatch.size(); i++) {
-
-        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(416, 416), param->ResizeImageBatch[i],
+        uint32_t sizeValue1 = 416;
+        uint32_t sizeValue2 = 224;
+        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue, sizeValue), param->ResizeImageBatch[i],
                                     Interpolation::HUAWEI_HIGH_ORDER_FILTER, AscendStreamVec[batchIndex]);
         if (ret != APP_ERR_OK) {
             std::cout << "imageProcessor Resize failed. ret is " << ret << std::endl;
@@ -399,7 +400,8 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                                                                                    i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(AsyncYoloV3PostProcessCallbackFunc,
                                                          static_cast<void * >(asyncYoloV3PostProcessParam));
-        ret = imageProcessor.CropResize(param->DecodeImageBatch[i], param->CropConfigRectBatch[i], Size(224, 224),
+        ret = imageProcessor.CropResize(param->DecodeImageBatch[i], param->CropConfigRectBatch[i],
+                                        Size(sizeValue2, sizeValue2),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
 
         ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam{false, param, i};
