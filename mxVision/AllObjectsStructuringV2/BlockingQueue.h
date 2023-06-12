@@ -31,7 +31,7 @@ namespace MxBase
     public:
         BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : maxSize_(maxSize) {}
 
-        ~BlockingQueu() {}
+        ~BlockingQueue() {}
 
         APP_ERROR Push(const T &item, bool isWait = false)
         {
@@ -68,13 +68,13 @@ namespace MxBase
 
         APP_ERROR IsEmpty()
         {
-            std::shared_lock<std::shared_mutext> lck(mutex_);
+            std::shared_lock<std::shared_mutex> lck(mutex_);
             return queue_.empty();
         }
 
         int GetSize()
         {
-            std::shared_lock<std::shared_mutext> lck(mutext_);
+            std::shared_lock<std::shared_mutex> lck(mutex_);
             return queue_.szie();
         }
 
