@@ -32,10 +32,10 @@ APP_ERROR ResnetAttributePostProcess::GetAttributeIndex(std::string &strAttribut
         size_t indexNum = attributeIndexGroup.find(',');
         while (indexNum != std::string::npos)
         {
-            std::string oneAttrbuteIndex = attributeIndexGroup.substr(0, indexNum);
+            std::string oneAttributeIndex = attributeIndexGroup.substr(0, indexNum);
             try
             {
-                attributionIndex_[i].emplace_back(stof(attributeIndexGroup));
+                attributionIndex_[i].emplace_back(stof(oneAttributeIndex));
             }
             catch (std::exception e)
             {
@@ -44,7 +44,7 @@ APP_ERROR ResnetAttributePostProcess::GetAttributeIndex(std::string &strAttribut
             }
             indexNum++;
             attributeIndexGroup = attributeIndexGroup.substr(indexNum, attributeIndexGroup.size());
-            return APP_ERR_COMM_INVALID_PARAM;
+            indexNum = attributeIndexGroup.find(',');
         }
 
         try
@@ -210,7 +210,7 @@ APP_ERROR ResnetAttributePostProcess::Init(std::string &configPath, std::string 
     in.open(fullPath, std::ios_base::in);
     if (in.fail())
     {
-        LogError << GetError(ret) << "Failed to load labelf file.";
+        LogError << GetError(ret) << "Failed to load label file.";
         return APP_ERR_COMM_OPEN_FAIL;
     }
 
