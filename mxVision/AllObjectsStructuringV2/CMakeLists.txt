@@ -62,14 +62,14 @@ target_link_libraries(main
             yolov3postprocess 
             resnetAttributePostProcess 
             SsdVggPostProcess 
-            carPlateRecognitionPostProcess 
-            Threads:Threads
+            CarPlateRecognitionPostProcess 
+            Threads::Threads
             ${FFMPEG_LIBRARIES}
             opencv_world
-            multiObjectTracker
-            objectSelection
-            faceAlignment
-            faceLandMark
+            MultiObjectTracker
+            ObjectSelection
+            FaceAlignment
+            FaceLandmark
 )
 
 install(TARGETS ${TARGET} RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/)

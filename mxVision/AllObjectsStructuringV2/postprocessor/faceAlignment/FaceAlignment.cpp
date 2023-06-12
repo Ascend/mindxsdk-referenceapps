@@ -54,8 +54,8 @@ APP_ERROR FaceAlignment::Process(std::vector<MxBase::Image> &intputImageVec, std
         inputDataInfo.widthStride = inputImageSize.width;
         inputDataInfo.heightStride = inputImageSize.height;
         inputDataInfo.dataSize = intputImage.GetDataSize();
-        inputDataInfo.data = intputImage.GetData();
-        inputDataInfoVec.push_back(inputDataInfo)
+        inputDataInfo.data = intputImage.GetData().get();
+        inputDataInfoVec.push_back(inputDataInfo);
     }
     if (inputDataInfoVec.empty())
     {
@@ -78,10 +78,10 @@ APP_ERROR FaceAlignment::Process(std::vector<MxBase::Image> &intputImageVec, std
     for (size_t i = 0; i < outputDataInfoVec.size(); i++)
     {
         MxBase::DvppDataInfo outputDataInfo = outputDataInfoVec[i];
-        MxBase::Size outImageSize(outputDataInfoVec.widthStride, outputDataInfoVec.heightStride);
+        MxBase::Size outImageSize(outputDataInfo.widthStride, outputDataInfo.heightStride);
 
-        MxBase::MemoryaData srcData(static_cast<void *>(outputDataInfo.data), outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_DEVICE);
-        MxBase::MemoryaData dstData(outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_HOST_MALLOC);
+        MxBase::MemoryData srcData(static_cast<void *>(outputDataInfo.data), outputDataInfo.dataSize, MxBase::MemoryData::MEMORY_DEVICE);
+        MxBase::MemoryData dstData(outputDataInfo.dataSize, MxBase::MemoryaData::MEMORY_HOST_MALLOC);
         APP_ERROR ret = MxBase::MemoryHelper::MxbsMallocAndCopy(dstData, srcData);
         if (ret != APP_ERR_OK)
         {
@@ -90,7 +90,7 @@ APP_ERROR FaceAlignment::Process(std::vector<MxBase::Image> &intputImageVec, std
             return ret;
         }
         MxBase::MemoryHelper::MxbsFree(srcData);
-        MxBase::Image outputImage(static_cast<shared_ptr<uint8_t *>>(uint8_t * dstData.ptrData), dstData.size, deviceID, outImageSize,
+        MxBase::Image outputImage(static_cast<std::shared_ptr<uint8_t>>((uint8_t *)dstData.ptrData), dstData.size, deviceID, outImageSize,
                                   static_cast<MxBase::ImageFormat>(outputDataInfo.format));
         outputImageVec.push_back(outputImage);
     }
