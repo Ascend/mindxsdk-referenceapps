@@ -19,11 +19,12 @@
 
 eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如下表：
 
-| 软件名称 | 版本   |
-| -------- | ------ |
-| XXX软件  | 版本号 |
-|          |        |
-|          |        |
+  | 软件名称 | 版本  |
+  | -------- | ----- |
+  | cmake    | 3.10.2 |
+  | mxVision | 5.0RC2 |
+  | gcc      | 7.5.0 |
+  | ffmpeg   | 4.3.2 |
 
 ### 1.3 代码目录结构与说明
 ```
@@ -126,7 +127,7 @@ numLines 并行度，数值为numChannel/numWorker
 export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
 ```
 
-**步骤2**：在插件代码目录下创建build文件夹，使用cmake命令进行编译，生成.so文件。下面以单人独处插件的编译过程作为范例：
+**步骤2**：在插件代码目录下创建build文件夹，使用cmake命令进行编译，生成可执行文件：
 
 ```bash
 ## 创建build目录
