@@ -25,10 +25,6 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 |          |        |
 |          |        |
 
-
-#### 依赖安装
-（依赖搭建安装或者获取方式的具体步骤）
-
 ### 1.3 代码目录结构与说明
 ```
 ├── AllObjectsStructuring
@@ -78,10 +74,10 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 
 ## 2 模型下载与转换
 
-**步骤1：** 在项目根目录下 AllObjectStructuring2/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuring/AllObjectsStructuring_models.zip)，并放到项目根目录下 AllObjectStructuring2/models/ 目录下。
+**步骤1：** 在项目根目录下 AllObjectStructuring2/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuringV2/AllObjectsStructuringV2_models.zip)，并放到项目根目录下 AllObjectStructuring2/models/ 目录下。
 
 **步骤2：** 执行以下命令使用atc命令进行模型转换
-
+```bash
 atc --model=./yolov4_improve/yolov4-tiny-customized.pb --framework=3 --input_shape="inputs:1,416,416,3" -output=./yolov4_improve/yolov4_detection_1batch --insert_op_conf=./yolov4_improve/aipp_yolov4.cfg --soc_version=Ascend310P3
 
 atc --model=./pedestrianattribute/pedestrian_attribute.prototxt --weight=./pedestrianattribute/pedestrian_attribute.caffemodel --framework=0 -output=./pedestrianattribute/pede_attr --insert_op_conf=./pedestrianattribute/aipp.cfg --soc_version=Ascend310P3
@@ -99,16 +95,27 @@ atc --model=./faceattr/face_attribute_batch_1.prototxt --weight=./faceattr/face_
 atc --model=./facefeature/face_feature_batch_1.prototxt --weight=./facefeature/face_feature.caffemodel --framework=0 -output=./facefeature/face_feature_batch_1 --insert_op_conf=./facefeature/aipp.cfg --soc_version=Ascend310P3
 
 atc --model=./motorattr/vehicle_attribute.pb --framework=3 -output=./motorattr/vehicle_attribute --insert_op_conf=./motorattr/aipp.cfg --soc_version=Ascend310P3
-
+```
 
 ## 3 安装依赖
 **步骤1：** 根据下面链接安装ffmpeg以及h264
 https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
 
-**步骤2：** 安装taskflow。
-在根目录下创建include目录，从github上下载taskflow的源码（https://github.com/taskflow/taskflow/releases）。解压后将taskflow目录复制到include目录中。
+**步骤2：** 安装taskflow, 在根目录下创建include目录，从github上下载taskflow的源码,解压后将taskflow目录复制到include目录中。
+（https://github.com/taskflow/taskflow/releases）。
 
 ## 4 修改模型路径和测试视频
+
+**步骤1：** 在main.cpp中修改生成的对应模型以及配置路径。如yoloModelPath，yoloConfigPath，yoloLabelPath等。
+
+**步骤2：** 在main.cpp中修改测试视频，当前使用本地的文件作为视频流输入。（../test.264）
+
+
+**步骤3：** 在main.cpp中修改视频路数以及并行度。
+numChannel 视频路数
+numWorker woker数量
+numLines 并行度，数值为numChannel/numWorker
+
 
 ## 5 编译与运行
 导入下面的环境变量。
