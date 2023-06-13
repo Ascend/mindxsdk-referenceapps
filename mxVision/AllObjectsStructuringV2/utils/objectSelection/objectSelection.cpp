@@ -19,12 +19,14 @@
 APP_ERROR ObjectSelector::Process(MultiObjectTracker &tracker, std::vector<TrackLet> &trackLetList,
                                   std::vector<std::pair<FrameImage, MxBase::ObjectInfo>> &selectedObjectVec)
 {
-    for (size_t i = 0; i < trackLetList.size(); i++) {
-        if (trackLetList[i].trackInfo.trackFlag == MxBase::LOST_OBJECT) {
+    for (size_t i = 0; i < trackLetList.size(); i++)
+    {
+        if (trackLetList[i].trackInfo.trackFlag == MxBase::LOST_OBJECT)
+        {
             auto trackID = trackLetList[i].trackInfo.trackId;
             LogInfo << "Object track id: " << trackID << " lost, need to process it.";
-            std::pair<FrameImage, MaxBase::ObjectInfo trackLetRes = tracker.GetTrackLetBuffer(trackID);
-            LogInfo << "Get trackLet buffer, frame id is " << trackLetRes.first.frameId;
+            std::pair<FrameImage, MxBase::ObjectInfo> trackLetRes = tracker.GetTrackLetBuffer(trackID);
+            LogInfo << "Get trackLet buffer, frame id is " << trackLetRes.first.frameID;
             selectedObjectVec.emplace_back(trackLetRes);
         }
     }

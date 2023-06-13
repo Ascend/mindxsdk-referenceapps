@@ -18,7 +18,6 @@
 #include <algorithm>
 #include "CarPlateRecognitionPostProcess.h"
 
-
 CarPlateRecognitionPostProcess::CarPlateRecognitionPostProcess() {}
 
 APP_ERROR CarPlateRecognitionPostProcess::Init()
@@ -28,18 +27,16 @@ APP_ERROR CarPlateRecognitionPostProcess::Init()
     return APP_ERR_OK;
 }
 
-APP_ERROR CarPlateRecognitionPostProcess::DeInit()
-{
-    return APP_ERR_OK;
-}
-
-APP_ERROR CarPlateRecognitionPostProcess::Process(const std::vector<MxBase::Tensor>& inferOutputs, std::string& carPlateRes)
+APP_ERROR CarPlateRecognitionPostProcess::Process(const std::vector<MxBase::Tensor> &inferOutputs, std::vector<CarPlateAttr> &attributeResVec)
 {
     LogDebug << "Start to Process CarPlateRecognitionPostProcess";
-    for (size_t i = 0; i < inferOutputs.size(); i++) {
-        auto* output = static_cast<float*>(inferOutputs[i].GetData());
+    std::string carPlateRes;
+    for (size_t i = 0; i < inferOutputs.size(); i++)
+    {
+        auto *output = static_cast<float *>(inferOutputs[i].GetData());
         int maxIndex = std::max_element(output, output + CAR_PLATE_CHARS_NUM) - output;
-        if (CAR_PLATE_CHARS_NUM <= maxIndex) {
+        if (CAR_PLATE_CHARS_NUM <= maxIndex)
+        {
             continue;
         }
         carPlateRes += CAR_PLATE_CHARS[maxIndex];

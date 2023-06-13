@@ -19,21 +19,23 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include "MxBase/CV/WarpAffinr/WarpAffinr.h" // MxBase::KeyPointInfo & MxBase::WarpAffinr
+#include "MxBase/CV/WarpAffine/WarpAffine.h" // MxBase::KeyPointInfo & MxBase::WarpAffinr
 #include "MxBase/MxBase.h"
 #include "MxBase/E2eInfer/Image/Image.h"    // V2 Image
 #include "MxBase/E2eInfer/Size/Size.h"      // V2 Size
 #include "MxBase/ErrorCode/ErrorCode.h"     // APP_ERROR & APP_ERR_OK
 #include "MxBase/DvppWrapper/DvppWrapper.h" // MxBase::DvppDataInfo
 
-class FaceAlignment {
+class FaceAlignment
+{
 public:
     APP_ERROR Process(std::vector<MxBase::Image> &intputImageVec, std::vector<MxBase::Image> &outputImageVec,
-                          std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID)
+                      std::vector<MxBase::KeyPointInfo> &KeyPointInfoVec, int picHeight, int picWidth, int deviceID);
+
 private:
     void DestoryMemory(std::vector<MxBase::DvppDataInfo> &outputDataInfoVec);
 
-    MxBase::WarpAffinr warpAffinr_;
+    MxBase::WarpAffine warpAffine_;
 };
 
 #endif /* FACEALIGNMENT_FACEALIGNMENT_H */

@@ -35,23 +35,23 @@ float CONFIDENCE = 0.5;
 class ResnetAttributePostProcess
 {
 public:
-    resnetAttributePostProcess();
+    ResnetAttributePostProcess();
 
-    ~resnetAttributePostProcess() = default;
+    ~ResnetAttributePostProcess() = default;
 
-    APP_ERROR Init(std::string configPath, std::string labelPath);
+    APP_ERROR Init(std::string &configPath, std::string &labelPath);
 
-    App_ERROR Process(std::vector<MxBase::Tensor> &resnetInferResVec, std::vecor<std::vector<ResnetAttr>> &attributeResVec);
+    APP_ERROR Process(std::vector<MxBase::Tensor> &resnetInferResVec, std::vector<std::vector<ResnetAttr>> &attributeResVec);
 
 private:
-    site_t attrbuteNum_;
+    size_t attributeNum_;
     std::string activationFunc_;
     std::vector<std::vector<int>> attributionIndex_;
     MxBase::ConfigData configData_;
     MxBase::ConfigUtil util_;
     MxBase::ConfigMode configMode_;
-    std::vector < std::string >> attributeNameVec_;
-    std::vector < std::string >> attributeValueVec_;
+    std::vector<std::string> attributeNameVec_;
+    std::vector<std::string> attributeValueVec_;
 
     APP_ERROR GetAttributeIndex(std::string &attrAttributeIndex);
 

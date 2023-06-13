@@ -25,10 +25,18 @@ const std::string CAR_PLATE_CHARS[CAR_PLATE_CHARS_NUM] = {
     "川", "贵", "云", "藏", "陕", "甘", "青", "宁", "新", "0", "1",
     "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D",
     "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R",
-    "S", "T", "U", "V", "W", "X", "Y", "Z"
+    "S", "T", "U", "V", "W", "X", "Y", "Z"};
+
+struct CarPlateAttr
+{
+    uint32_t attrID;
+    std::string attrName;
+    std::string attrValue;
+    float confidence;
 };
 
-class CarPlateRecognitionPostProcess {
+class CarPlateRecognitionPostProcess
+{
 public:
     CarPlateRecognitionPostProcess();
 
@@ -36,7 +44,7 @@ public:
 
     APP_ERROR Init();
 
-    APP_ERROR Process(const std::vector<MxBase::Tensor> &inferOutputs, std::string& carPlateRes);
+    APP_ERROR Process(const std::vector<MxBase::Tensor> &inferOutputs, std::vector<CarPlateAttr> &carPlateRes);
 };
 
 #endif // CARPLATERECOGNITIONPOSTPROCESS_CARPLATERECOGNITIONPOSTPROCESS_H

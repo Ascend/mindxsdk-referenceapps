@@ -1,2 +1,2 @@
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
-add_library(objectSelection SHARED objectSelection.cpp objectSelection.h)
+add_library(ObjectSelection SHARED objectSelection.cpp objectSelection.h)
