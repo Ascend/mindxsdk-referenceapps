@@ -92,7 +92,6 @@ ATC run success, welcome to the next use.
 4.2.2 模型转换环境需求
 ```
 - 框架需求
-  CANN == 5.0.4
   torch == 1.5.0
   torchvision == 0.6.0
   onnx == 1.7.0
