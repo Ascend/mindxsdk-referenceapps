@@ -263,7 +263,7 @@ void VideoDecode(AVFormatContext *&pFormatCtx, AVPacket &pkt, MxBase::BlockingQu
         }
         frameID += 1;
         i++;
-        std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控制帧率
+        std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控制帧率，如需通过rtsp获取视频流，请将其注释
     }
 }
 
@@ -879,7 +879,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                               uint32_t &deviceID, std::array<FrameImage, NUM> &buffer,
                               std::array<MxBase::Image, NUM> &resizedImageBuffer, tf::Executor &executor)
 {
-    pl = new tf::Pipeline {numLines, tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+    pl = new tf::Pipeline{numLines, tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                                   {
                                                                                       bool isEmpty = true;
                                                                                       if (decodedFrameQueue.IsEmpty())
@@ -902,7 +902,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                                     },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             auto start = std::chrono::steady_clock::now();
                                                                             executor.loop_until(
@@ -920,14 +920,14 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             yoloModelInfer(yoloModel, resizedImageBuffer[pf.line()], outputs[pf.line()]);
                                                                         }
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             yoloPostProcess(outputs[pf.line()], buffer[pf.line()],
                                                                                             resizedImageBuffer[pf.line()], selectedObjectBuffer[pf.line()],
@@ -936,7 +936,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             parseSelected(imageProcessor, selectedObjectBuffer[pf.line()],
                                                                                           vehicleAttrInputImageBuffer[pf.line()],
@@ -949,7 +949,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!vehicleAttrInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -965,7 +965,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!carPlateDetectionInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -983,7 +983,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!carPlateRecognitionInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -999,7 +999,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!pedestrianAttrInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -1015,7 +1015,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!pedestrianFeatureInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -1030,7 +1030,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!faceLandmarkInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -1046,7 +1046,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!faceLandmarkInputImageBuffer[pf.line()].empty())
                                                                             {
@@ -1063,7 +1063,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
 
                           },
 
-                          tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
+                          tf::Pipe<std::function<void(tf::Pipeflow &)>>{tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             if (!faceAlignedImageBuffer[pf.line()].empty())
                                                                             {
@@ -1082,21 +1082,26 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           }};
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     MxBase::MxInit();
     av_register_all();
     avformat_network_init();
     initResources();
     sleep(INIT_RESOURCE_TIME);
     std::vector<std::string> filePaths(numChannel);
-    std::fill(filePaths.begin(), filePaths.end(), "../test.264");
+    std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
     AVFormatContext *pFormatCtx[numChannel];
     AVPacket pkt[numChannel];
     std::vector<uint32_t> frameIDs(numChannel, deviceID);
     tf::Executor executor(EXECUTOR_NUM);
     tf::Taskflow taskflow;
-    tf::Task init = taskflow.emplace([]() { printf("ready\n"); }).name("starting pipeline");
-    tf::Task stop = taskflow.emplace([]() { printf("stopped\n"); }).name("pipeline stopped");
+    tf::Task init = taskflow.emplace([]()
+                                     { printf("ready\n"); })
+                        .name("starting pipeline");
+    tf::Task stop = taskflow.emplace([]()
+                                     { printf("stopped\n"); })
+                        .name("pipeline stopped");
     MxBase::VideoDecodeConfig config;
     MxBase::VideoDecodeCallBack cPtr = CallBackVdec;
     config.width = FRAME_WIDTH;
@@ -1105,8 +1110,10 @@ int main(int argc, char *argv[]) {
     config.skipInterval = SKIP_INTERVAL;
     config.inputVideoFormat = MxBase::StreamFormat::H264_MAIN_LEVEL;
     MxBase::VideoDecoder *videoDecoder[numChannel];
-    for (size_t i = 0; i < numChannel; ++i) {
-        executor.async([&, i]() {
+    for (size_t i = 0; i < numChannel; ++i)
+    {
+        executor.async([&, i]()
+                       {
             pFormatCtx[i] = nullptr;
             videoDecoder[i] = new MxBase::VideoDecoder(config, deviceIDs[i], i);
             StreamPull(pFormatCtx[i], filePaths[i]);
@@ -1120,7 +1127,8 @@ int main(int argc, char *argv[]) {
     tf::Pipeline<tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>, tf::Pipe<std::function<void(tf::Pipeflow &)>>,
                  tf::Pipe<std::function<void(tf::Pipeflow &)>>> *fullPipelines[numWorker];
-    for (int workerIndex = 0; workerIndex < numWorker; workerIndex++) {
+    for (int workerIndex = 0; workerIndex < numWorker; workerIndex++)
+    {
         printf("====================dispatch yolo pipeline=========================\n");
         dispatchParallelPipeline(workerIndex, fullPipelines[workerIndex], imageProcessors[workerIndex], multiObjectTrackers[workerIndex], yoloModels[workerIndex], yoloPostProcessors[workerIndex], vehicleAttrModels[workerIndex], vehicleAttrPostProcessors[workerIndex], carPlateDetectModels[workerIndex], carPlateDetectPostProcessors[workerIndex], carPlateRecModels[workerIndex], carPlateRecPostProcessors[workerIndex], pedestrianAttrModels[workerIndex], pedestrianAttrPostProcessors[workerIndex],
                                  pedestrianFeatureModels[workerIndex], faceLandmarkModels[workerIndex], faceLandmarkPostProcessors[workerIndex], faceAlignmentProcessors[workerIndex], faceAttributeModels[workerIndex], faceAttributeProcessors[workerIndex], faceFeatureModels[workerIndex], decodedFrameQueueList[workerIndex], selectedObjectBuffer[workerIndex], vehicleAttrInputImageBuffer[workerIndex], carPlateDetectionInputImageBuffer[workerIndex],

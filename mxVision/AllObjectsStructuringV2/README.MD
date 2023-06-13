@@ -137,7 +137,35 @@ cmake ..
 make -j
 ```
 
+## 6 通过网络拉流来获取视频输入
+**步骤1：** 将本地获取视频流的代码注释掉。
 
+```
+std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控制帧率，如需通过rtsp获取视频流，请将其注释
+std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
+
+```
+
+**步骤2：** 添加拉流代码
+```
+for (size_t i = 0; i < numChannel; i++) {
+    int port = ${port} + ${nums};
+    filePaths[i] = "rtsp://${ip_address}:" + std::to_string(port) + "/test.264"
+}
+
+```
+port:起始端口
+nums:端口数量
+ip_address:ip地址
+
+
+```bash
+## 创建build目录
+mkdir build
+## 使用cmake命令进行编译
+cmake ..
+make -j
+```
 
 ## 6 常见问题
 
