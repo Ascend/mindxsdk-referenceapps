@@ -11,7 +11,7 @@ Init > ReadImage >Resize > Inference >PostProcess >DeInit
 set(MX_SDK_HOME ${SDK安装路径})需要将${SDK安装路径}替换为具体的SDK安装路径
 ```
 ### 2.1.2.1 模型转换
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)
+**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至："项目目录中的models文件夹中"。
 
