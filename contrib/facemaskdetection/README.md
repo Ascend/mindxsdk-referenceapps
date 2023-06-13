@@ -94,20 +94,6 @@ atc --model=./face_mask_detection.pb --framework=3 --output=./aipp --output_type
 
 提示 **ATC run success** 说明转换成功
 
-其参数如下表所示
-
-| 参数名           | 参数描述                                                     |
-| ---------------- | ------------------------------------------------------------ |
-| --model          | 原始模型文件路径与文件名                                     |
-| -- framework     | 原始框架类型。当取值为3时，即为tensorflow网络模型            |
-| --output         | 转换后的离线模型的路径以及文件名。                           |
-| --soc_version    | 模型转换时指定芯片版本。昇腾AI处理器的版本，可从ATC工具安装路径的“/usr/local/Ascend/ascend-toolkit/latest/arm64-linux/atc/data/platform_config”目录下 查看。 ".ini"文件的文件名即为对应的${soc_version} |
-| --input_shape    | 模型输入的shape信息，例如: "input_name1:n1,c1,h1,w1.input_name必须是转换前的网络模型中的节点名称。 |
-| --input_format   | 当原始框架是TensorFlow时，支持NCHW、NHWC、ND、NCDHW、NDHWC五种输入格式，默认为NHWC。 |
-| --insert_op_conf | 插入算子的配置文件路径与文件名，例如aipp预处理算子。         |
-
-其中--insert_op_conf参数为aipp预处理算子配置文件路径。该配置文件face_mask.aippconfig在输入图像进入模型前进行预处理。该配置文件保存在源码models目录下。
-
 ####  步骤2 模型推理
 
 ##### pipline编写
