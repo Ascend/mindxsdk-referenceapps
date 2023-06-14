@@ -116,7 +116,7 @@ env
 
 #### 2.3.1 YOLOv3模型转换
 
-YOLOv3 模型参考[实现代码](https://www.hiascend.com/zh/software/modelzoo/detail/1/ba2a4c054a094ef595da288ecbc7d7b4)。使用模型转换工具 ATC 将pb模型转换为 om 模型，模型转换工具相关介绍[参考链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
+YOLOv3 模型参考[实现代码](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)。使用模型转换工具 ATC 将pb模型转换为 om 模型，模型转换工具相关介绍[参考链接](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md)。
 
 **步骤1** 在ModelZoo上下载[YOLOv3模型](https://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.com/model/2021-12-30_tf/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310/zh/1.1/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)。
 
