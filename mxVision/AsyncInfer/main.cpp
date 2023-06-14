@@ -43,10 +43,10 @@ std::vector <std::vector<Image>> cropResizeImageVecVec;
 std::vector <Tensor> tensorImgVec;
 std::vector <Tensor> resnetTensorVec;
 
-std::string yoloPath = "./model/yolov3/yolov3_tf_bs1_fp16.om";
+std::string yoloPath = "./model/yolov3/yolov3_tf_aipp.om";
 Model yoloV3(yoloPath, g_deviceId);
 
-std::string resnetPath = "./model/resnet50/resnet50_aipp_tf.om";
+std::string resnetPath = "./model/resnet50/resnet50_tensorflow_1.7.om";
 Model resnet50(resnetPath, g_deviceId);
 
 std::vector <std::vector<Image>> decodeImageBatch(BATCH_SIZE);
@@ -111,7 +111,6 @@ struct MallocYoloTensor {
 
 struct MallocResNetTensor {
     Tensor output1;
-    Tensor output2;
 };
 
 struct HoldResourceParam {
@@ -119,7 +118,6 @@ struct HoldResourceParam {
     Tensor outTensor2;
     Tensor outTensor3;
     Tensor resnetOutput1;
-    Tensor resnetOutput2;
     vector <Tensor> *yoloV3Outputs;
     ConvertToTensorParam *convertToTensorParam1;
     ConvertToTensorParam *convertToTensorParam2;
@@ -233,7 +231,7 @@ APP_ERROR PrepareData() {
     for (size_t i = 0; i < decodeImageBatch.size(); i++) {
         for (size_t j = 0; j < imgFileVecs[i].size(); j++) {
             Image decodeImage;
-            ret = imageProcessor.Decode(imgFileVecs[i][j], decodeImage);
+            ret = imageProcessor.Decode(imgFileVecs[i][j], decodeImage, ImageFormat::RGB_888);
             if (ret != APP_ERR_OK) {
                 std::cout << "imageProcessor Decode failed." << std::endl;
                 return -1;
@@ -362,21 +360,20 @@ void YoloMalloc(void *args) {
 void ResNetMalloc(void *args) {
     MallocResNetTensor *input = static_cast<MallocResNetTensor * >(args);
     MxBase::Tensor::TensorMalloc(input->output1);
-    MxBase::Tensor::TensorMalloc(input->output2);
 }
 
 APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
     for (int i = 0; i < param->DecodeImageBatch.size(); i++) {
         uint32_t sizeValue1 = 416;
         uint32_t sizeValue2 = 224;
-        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue, sizeValue), param->ResizeImageBatch[i],
+        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue1, sizeValue1), param->ResizeImageBatch[i],
                                     Interpolation::HUAWEI_HIGH_ORDER_FILTER, AscendStreamVec[batchIndex]);
         if (ret != APP_ERR_OK) {
             std::cout << "imageProcessor Resize failed. ret is " << ret << std::endl;
             return ret;
         }
 
-        ConvertToTensorParam *convertToTensorParam1 = new ConvertToTensorParam{true, param, i};
+        ConvertToTensorParam *convertToTensorParam1 = new ConvertToTensorParam {true, param, i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
                                                          static_cast<void *>(convertToTensorParam1));
 
@@ -387,13 +384,13 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
         MxBase::Tensor outTensor2({1, 26, 26, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
         MxBase::Tensor outTensor3({1, 52, 52, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor{outTensor1, outTensor2, outTensor3};
+        MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor {outTensor1, outTensor2, outTensor3};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void *>(mallocYoloTensor));
 
-        vector <Tensor> *yoloV3outputs = new vector <Tensor>{outTensor1, outTensor2, outTensor3};
+        vector <Tensor> *yoloV3outputs = new vector <Tensor> {outTensor1, outTensor2, outTensor3};
         ret = yoloV3.Infer(param->yoloV3InputTensorBatch[i], *yoloV3outputs, AscendStreamVec[batchIndex]);
 
-        AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam{*yoloV3outputs,
+        AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam {*yoloV3outputs,
                                                                                                    batchIndex,
                                                                                                    param,
                                                                                                    i};
@@ -403,22 +400,21 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                         Size(sizeValue2, sizeValue2),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
 
-        ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam{false, param, i};
+        ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam {false, param, i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
                                                          static_cast<void *>(convertToTensorParam2));
 
         std::cout << "===================== resnet推理开始 ====================" << std::endl;
 
         MxBase::Tensor resnetOutput1({1, 1001}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor resnetOutput2({1}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor{resnetOutput1, resnetOutput2};
+        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor {resnetOutput1};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ResNetMalloc, static_cast<void *>(mallocResNetTensor));
-        vector <Tensor> *resnetoutput = new vector <Tensor>{resnetOutput1, resnetOutput2};
+        vector <Tensor> *resnetoutput = new vector <Tensor> {resnetOutput1};
 
         resnet50.Infer(param->ResnetInputBatch[i], *resnetoutput, AscendStreamVec[batchIndex]);
 
-        AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam{
+        AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam {
                 *resnetoutput
         };
 
@@ -426,8 +422,7 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                                          static_cast<void *>(asyncResnetYoloV3PostProcessParam));
 
         HoldResourceParam *holdResourceParam = new HoldResourceParam{outTensor1, outTensor2, outTensor3, resnetOutput1,
-                                                                     resnetOutput2, yoloV3outputs,
-                                                                     convertToTensorParam1,
+                                                                     yoloV3outputs, convertToTensorParam1,
                                                                      convertToTensorParam2, mallocYoloTensor,
                                                                      mallocResNetTensor, resnetoutput,
                                                                      asyncResnetYoloV3PostProcessParam,
@@ -527,6 +522,17 @@ int main(int argc, char *argv[]) {
     }
     for (int i = 0; i < BATCH_SIZE; i++) {
         AscendStreamVec[i].DestroyAscendStream();
+    }
+
+    for (int i = 0; i < BATCH_SIZE; i++) {
+        std::string filePath = "./imgs_bak/imgSplitFile" + std::to_string(i);
+        auto ret = remove(filePath.c_str());
+        if (ret != 0) {
+            std::cout << "remove file [" << filePath << "] failed." << endl;
+            return -1;
+        } else {
+            std::cout << "remove file [" << filePath << "] failed." << endl;
+        }
     }
     return 0;
 }
