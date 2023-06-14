@@ -373,7 +373,7 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
             return ret;
         }
 
-        ConvertToTensorParam *convertToTensorParam1 = new ConvertToTensorParam{true, param, i};
+        ConvertToTensorParam *convertToTensorParam1 = new ConvertToTensorParam {true, param, i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
                                                          static_cast<void *>(convertToTensorParam1));
 
@@ -384,13 +384,13 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
         MxBase::Tensor outTensor2({1, 26, 26, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
         MxBase::Tensor outTensor3({1, 52, 52, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor{outTensor1, outTensor2, outTensor3};
+        MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor {outTensor1, outTensor2, outTensor3};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void *>(mallocYoloTensor));
 
-        vector <Tensor> *yoloV3outputs = new vector <Tensor>{outTensor1, outTensor2, outTensor3};
+        vector <Tensor> *yoloV3outputs = new vector <Tensor> {outTensor1, outTensor2, outTensor3};
         ret = yoloV3.Infer(param->yoloV3InputTensorBatch[i], *yoloV3outputs, AscendStreamVec[batchIndex]);
 
-        AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam{*yoloV3outputs,
+        AsyncYoloV3PostProcessParam *asyncYoloV3PostProcessParam = new AsyncYoloV3PostProcessParam {*yoloV3outputs,
                                                                                                    batchIndex,
                                                                                                    param,
                                                                                                    i};
@@ -400,7 +400,7 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                         Size(sizeValue2, sizeValue2),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
 
-        ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam{false, param, i};
+        ConvertToTensorParam *convertToTensorParam2 = new ConvertToTensorParam {false, param, i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ConvertToTensorProcess,
                                                          static_cast<void *>(convertToTensorParam2));
 
@@ -408,13 +408,13 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
 
         MxBase::Tensor resnetOutput1({1, 1001}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor{resnetOutput1};
+        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor {resnetOutput1};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ResNetMalloc, static_cast<void *>(mallocResNetTensor));
-        vector <Tensor> *resnetoutput = new vector <Tensor>{resnetOutput1};
+        vector <Tensor> *resnetoutput = new vector <Tensor> {resnetOutput1};
 
         resnet50.Infer(param->ResnetInputBatch[i], *resnetoutput, AscendStreamVec[batchIndex]);
 
-        AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam{
+        AsyncResnetYoloV3PostProcessParam *asyncResnetYoloV3PostProcessParam = new AsyncResnetYoloV3PostProcessParam {
                 *resnetoutput
         };
 
