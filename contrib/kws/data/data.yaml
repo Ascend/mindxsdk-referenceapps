@@ -1,8 +1,0 @@
-data:
-  name: Aishell-1
-  num_mel_bins: 80
-  frame_length: 25
-  frame_shift: 10
-  keyword_list: 上海 北京 政策 中国 记者 城市
-  data_info_dir: ../data/info
-

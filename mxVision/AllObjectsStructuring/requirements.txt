@@ -1,5 +1,0 @@
-numpy
-opencv-python
-Pillow==8.0.1
-protobuf==3.9.0
-websocket-server==0.4

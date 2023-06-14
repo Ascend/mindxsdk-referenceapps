@@ -8,13 +8,12 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
-
+本项目以Atlas310B卡为主要的硬件平台。
 
 ### 1.2 支持的版本
 
 mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
+Ascend-CANN-toolkit （310B使用6.2.RC1）
 
 ### 1.3 软件方案介绍
 
@@ -70,7 +69,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 | -------------- | ------ |
 | cmake          | 3.10.2 |
 | mxVision       | 5.0.RC1|
-| ascend-toolkit | 5.0.4  |
+| ascend-toolkit | 6.2.RC1 |
 
 ## 3 模型转换
 
