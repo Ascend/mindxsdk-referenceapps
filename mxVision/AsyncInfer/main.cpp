@@ -366,7 +366,7 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
     for (int i = 0; i < param->DecodeImageBatch.size(); i++) {
         uint32_t sizeValue1 = 416;
         uint32_t sizeValue2 = 224;
-        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue1, sizeValue), param->ResizeImageBatch[i],
+        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue1, sizeValue1), param->ResizeImageBatch[i],
                                     Interpolation::HUAWEI_HIGH_ORDER_FILTER, AscendStreamVec[batchIndex]);
         if (ret != APP_ERR_OK) {
             std::cout << "imageProcessor Resize failed. ret is " << ret << std::endl;
