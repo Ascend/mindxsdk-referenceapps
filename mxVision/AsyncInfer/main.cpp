@@ -231,7 +231,7 @@ APP_ERROR PrepareData() {
     for (size_t i = 0; i < decodeImageBatch.size(); i++) {
         for (size_t j = 0; j < imgFileVecs[i].size(); j++) {
             Image decodeImage;
-            ret = imageProcessor.Decode(imgFileVecs[i][j], decodeImage);
+            ret = imageProcessor.Decode(imgFileVecs[i][j], decodeImage, ImageFormat::RGB_888);
             if (ret != APP_ERR_OK) {
                 std::cout << "imageProcessor Decode failed." << std::endl;
                 return -1;
@@ -360,14 +360,13 @@ void YoloMalloc(void *args) {
 void ResNetMalloc(void *args) {
     MallocResNetTensor *input = static_cast<MallocResNetTensor * >(args);
     MxBase::Tensor::TensorMalloc(input->output1);
-    MxBase::Tensor::TensorMalloc(input->output2);
 }
 
 APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
     for (int i = 0; i < param->DecodeImageBatch.size(); i++) {
         uint32_t sizeValue1 = 416;
         uint32_t sizeValue2 = 224;
-        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue, sizeValue), param->ResizeImageBatch[i],
+        ret = imageProcessor.Resize(param->DecodeImageBatch[i], Size(sizeValue1, sizeValue), param->ResizeImageBatch[i],
                                     Interpolation::HUAWEI_HIGH_ORDER_FILTER, AscendStreamVec[batchIndex]);
         if (ret != APP_ERR_OK) {
             std::cout << "imageProcessor Resize failed. ret is " << ret << std::endl;
