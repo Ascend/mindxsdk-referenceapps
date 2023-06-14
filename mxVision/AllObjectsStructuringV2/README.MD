@@ -145,8 +145,11 @@ std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
 
 ```
+**步骤2：** 根据下面的文档，创建网络视频流
+https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md
 
-**步骤2：** 添加拉流代码
+
+**步骤3：** 添加拉流代码
 ```
 for (size_t i = 0; i < numChannel; i++) {
     int port = ${port} + ${nums};
