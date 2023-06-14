@@ -43,10 +43,10 @@ std::vector <std::vector<Image>> cropResizeImageVecVec;
 std::vector <Tensor> tensorImgVec;
 std::vector <Tensor> resnetTensorVec;
 
-std::string yoloPath = "./model/yolov3/yolov3_tf_bs1_fp16.om";
+std::string yoloPath = "./model/yolov3/yolov3_tf_aipp.om";
 Model yoloV3(yoloPath, g_deviceId);
 
-std::string resnetPath = "./model/resnet50/resnet50_aipp_tf.om";
+std::string resnetPath = "./model/resnet50/resnet50_tensorflow_1.7.om";
 Model resnet50(resnetPath, g_deviceId);
 
 std::vector <std::vector<Image>> decodeImageBatch(BATCH_SIZE);
@@ -111,7 +111,6 @@ struct MallocYoloTensor {
 
 struct MallocResNetTensor {
     Tensor output1;
-    Tensor output2;
 };
 
 struct HoldResourceParam {
@@ -119,7 +118,6 @@ struct HoldResourceParam {
     Tensor outTensor2;
     Tensor outTensor3;
     Tensor resnetOutput1;
-    Tensor resnetOutput2;
     vector <Tensor> *yoloV3Outputs;
     ConvertToTensorParam *convertToTensorParam1;
     ConvertToTensorParam *convertToTensorParam2;
@@ -410,11 +408,10 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
         std::cout << "===================== resnet推理开始 ====================" << std::endl;
 
         MxBase::Tensor resnetOutput1({1, 1001}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor resnetOutput2({1}, MxBase::TensorDType::FLOAT32, g_deviceId);
 
-        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor{resnetOutput1, resnetOutput2};
+        MallocResNetTensor *mallocResNetTensor = new MallocResNetTensor{resnetOutput1};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(ResNetMalloc, static_cast<void *>(mallocResNetTensor));
-        vector <Tensor> *resnetoutput = new vector <Tensor>{resnetOutput1, resnetOutput2};
+        vector <Tensor> *resnetoutput = new vector <Tensor>{resnetOutput1};
 
         resnet50.Infer(param->ResnetInputBatch[i], *resnetoutput, AscendStreamVec[batchIndex]);
 
@@ -426,8 +423,7 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                                          static_cast<void *>(asyncResnetYoloV3PostProcessParam));
 
         HoldResourceParam *holdResourceParam = new HoldResourceParam{outTensor1, outTensor2, outTensor3, resnetOutput1,
-                                                                     resnetOutput2, yoloV3outputs,
-                                                                     convertToTensorParam1,
+                                                                     yoloV3outputs, convertToTensorParam1,
                                                                      convertToTensorParam2, mallocYoloTensor,
                                                                      mallocResNetTensor, resnetoutput,
                                                                      asyncResnetYoloV3PostProcessParam,
@@ -527,6 +523,17 @@ int main(int argc, char *argv[]) {
     }
     for (int i = 0; i < BATCH_SIZE; i++) {
         AscendStreamVec[i].DestroyAscendStream();
+    }
+
+    for (int i = 0; i < BATCH_SIZE; i++) {
+        std::string filePath = "./imgs_bak/imgSplitFile" + std::to_string(i);
+        auto ret = remove(filePath.c_str());
+        if (ret != 0) {
+            std::cout << "remove file [" << filePath << "] failed." << endl;
+            return -1;
+        } else {
+            std::cout << "remove file [" << filePath << "] failed." << endl;
+        }
     }
     return 0;
 }
