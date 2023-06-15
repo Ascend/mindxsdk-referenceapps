@@ -379,9 +379,9 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
         cout << "====================== 图像前处理结束 =======================" << endl << endl;
         cout << "====================== 目标检测模型推理 ======================" << endl;
 
-        MxBase::Tensor outTensor1( {1, 13, 13, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor outTensor2( {1, 26, 26, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor outTensor3( {1, 52, 52, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor1({ 1, 13, 13, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor2({ 1, 26, 26, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor3({ 1, 52, 52, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
 
         MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor {outTensor1, outTensor2, outTensor3};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void *>(mallocYoloTensor));
