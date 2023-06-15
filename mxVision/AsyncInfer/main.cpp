@@ -27,7 +27,6 @@ APP_ERROR ret = APP_ERR_OK;
 int32_t g_deviceId = 1;
 
 int BATCH_SIZE = 4;
-int DATA_SIZE = 50;
 int STREAM_NUM = 4;
 
 std::vector <MxBase::Image> ImageVec;
