@@ -502,7 +502,7 @@ int main(int argc, char *argv[]) {
 
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < BATCH_SIZE; i++) {
-        ret = AsyncE2eInfer(StreamVec_[i % BATCH_SIZE], E2eInferParamsVec[i]);
+        ret = AsyncE2eInfer(StreamVec_[i % STREAM_NUM], E2eInferParamsVec[i]);
     }
     for (int i = 0; i < STREAM_NUM; i++) {
         StreamVec_[i].Synchronize();
