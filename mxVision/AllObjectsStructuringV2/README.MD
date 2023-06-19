@@ -153,7 +153,6 @@ const size_t numLines = 10;
 ```
 
 ## 5 编译与运行
-导入下面的环境变量。
 **步骤1：** 配置环境变量。
 ```
 . ${sdk_path}/set_env.sh
@@ -170,6 +169,8 @@ cd build
 ## 使用cmake命令进行编译
 cmake ..
 make -j
+## 编译运行
+./main
 ```
 
 ## 6 通过网络拉流来获取视频输入
@@ -224,6 +225,8 @@ cd build
 ## 使用cmake命令进行编译
 cmake ..
 make -j
+## 编译运行
+./main
 ```
 
 ## 6 常见问题
