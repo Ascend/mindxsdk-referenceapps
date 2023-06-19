@@ -11,20 +11,17 @@
 5. 车辆属性分类：能够对车辆的属性进行分类。(车辆属性，车辆特征以及车牌检测/识别)
 
 ### 1.1 支持的产品
-310P
+310P: Atlas 300I pro Atlas 300V pro
 
 ### 1.2 支持的版本
-(软件 包括第三方依赖)
-请列出环境依赖软件和版本。
-
 eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如下表：
 
-  | 软件名称 | 版本  |
-  | -------- | ----- |
-  | cmake    | 3.10.2 |
-  | mxVision | 5.0RC2 |
+  | 软件名称 | 版本 |
+  | -------- | -----|
+  | cmake    | 3.10.2|
+  | mxVision | 5.0RC2|
   | gcc      | 7.5.0 |
-  | ffmpeg   | 4.3.2 |
+  | ffmpeg   | 4.2.1 |
 
 ### 1.3 代码目录结构与说明
 ```
@@ -99,10 +96,14 @@ atc --model=./motorattr/vehicle_attribute.pb --framework=3 -output=./motorattr/v
 ```
 
 ## 3 安装依赖
-**步骤1：** 根据下面链接安装ffmpeg以及h264
-https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
+**步骤1：** 安装ffmpeg，源码下载地址： https://github.com/FFmpeg/FFmpeg/archive/n4.2.1.tar.gz
+```shell
+./configure --prefix=/usr/local/ffmpeg --enable-shared
+make -j8
+make install
+```
 
-**步骤2：** 安装taskflow, 在根目录下创建include目录，从github上下载taskflow的源码,解压后将taskflow目录复制到include目录中。[taskflow](https://github.com/taskflow/taskflow/releases)
+**步骤2：** 安装[taskflow](https://github.com/taskflow/taskflow/releases), 在根目录下创建include目录，从github上下载taskflow的源码,解压后将taskflow目录复制到include目录中。
 
 ## 4 修改模型路径和测试视频
 
