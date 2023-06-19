@@ -102,12 +102,20 @@ atc --model=./motorattr/vehicle_attribute.pb --framework=3 -output=./motorattr/v
 **步骤1：** 根据下面链接安装ffmpeg以及h264
 https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
 
-**步骤2：** 安装taskflow, 在根目录下创建include目录，从github上下载taskflow的源码,解压后将taskflow目录复制到include目录中。
-（https://github.com/taskflow/taskflow/releases）。
+**步骤2：** 安装taskflow, 在根目录下创建include目录，从github上下载taskflow的源码,解压后将taskflow目录复制到include目录中。[taskflow](https://github.com/taskflow/taskflow/releases)
 
 ## 4 修改模型路径和测试视频
 
 **步骤1：** 在main.cpp中修改生成的对应模型以及配置路径。如yoloModelPath，yoloConfigPath，yoloLabelPath等。
+```shell
+std::string yoloModelPath = "../models/yolov4_improve/yolov4_detection_1batch.om";
+std::string yoloConfigPath = "../models/yolov4_improve/yolov4.cfg";
+std::string yoloLabelPath = "../models/yolov4_improve/coco.names";
+
+std::string vehicleAttrModelPath = "../models/motorattr/vehicle_attribute.om";
+...
+
+```
 
 **步骤2：** 在main.cpp中修改测试视频，当前使用本地的文件作为视频流输入。（../test.264）
 
@@ -115,7 +123,7 @@ https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
 numChannel 视频路数
 numWorker woker数量
-numLines 并行度，数值为numChannel/numWorker
+numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数
 
 
 ## 5 编译与运行
@@ -152,7 +160,7 @@ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/ref
 **步骤3：** 添加拉流代码
 ```
 for (size_t i = 0; i < numChannel; i++) {
-    int port = ${port} + ${nums};
+    int port = ${port} + i;
     filePaths[i] = "rtsp://${ip_address}:" + std::to_string(port) + "/test.264"
 }
 
@@ -174,12 +182,11 @@ make -j
 
 请按照问题重要程度，详细列出可能要到的问题，和解决方法。
 
-### 3.1 XXX问题
+### 3.1 模型路径错误问题
 
 **问题描述：**
 
-截图或报错信息
+Failed to get model, the model path is invalidate.
 
 **解决方案：**
-
-详细描述解决方法。
+可执行文件main和模型相对路径不匹配，确认可执行文件和model目录相对路径，或者在main.cpp中直接使用模型全路径。
