@@ -118,12 +118,12 @@ std::string vehicleAttrModelPath = "../models/motorattr/vehicle_attribute.om";
 ```
 
 **步骤2：** 在main.cpp中修改测试视频，当前使用本地的文件作为视频流输入。（../test.264）
-
+todo:添加代码
 
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
 numChannel 视频路数
 numWorker woker数量
-numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数
+numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数。（通过查询npu-smi info，查询内存和AICore用量，根据实际情况调整，worker和并行度）
 
 
 ## 5 编译与运行
