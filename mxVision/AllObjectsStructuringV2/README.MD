@@ -108,12 +108,29 @@ https://bbs.huaweicloud.com/forum/thread-141644-1-1.html
 
 **步骤1：** 在main.cpp中修改生成的对应模型以及配置路径。如yoloModelPath，yoloConfigPath，yoloLabelPath等。
 ```shell
-std::string yoloModelPath = "../models/yolov4_improve/yolov4_detection_1batch.om";
-std::string yoloConfigPath = "../models/yolov4_improve/yolov4.cfg";
-std::string yoloLabelPath = "../models/yolov4_improve/coco.names";
+std::string yoloModelPath = "./models/yolov4_improve/yolov4_detection_1batch.om";
+std::string yoloConfigPath = "./models/yolov4_improve/yolov4.cfg";
+std::string yoloLabelPath = "./models/yolov4_improve/coco.names";
 
-std::string vehicleAttrModelPath = "../models/motorattr/vehicle_attribute.om";
-...
+std::string vehicleAttrModelPath = "./models/motorattr/vehicle_attribute.om";
+std::string vehicleAttrConfigPath = "./models/motorattr/vehicle_attribute.cfg";
+std::string vehicleAttrLabelPath = "./models/motorattr/vehicle_attribute_coco.names";
+
+std::string carPlateDetectModelPath = "./models/car_plate_detection/car_plate_detection.om";
+std::string carPlateDetectConfigPath = "./models/car_plate_detection/car_plate_detection.cfg";
+std::string carPlateDetectLabelPath = "./models/car_plate_detection/car_plate_detection.names";
+std::string carPlateRecModelPath = "./models/car_plate_recognition/car_plate_recognition.om";
+
+std::string pedestrianAttrModelPath = "./models/pedestrianattribute/pede_attr.om";
+std::string pedestrianAttrConfigPath = "./models/pedestrianattribute/pedes_attr.cfg";
+std::string pedestrianAttrLabelPath = "./models/pedestrianattribute/coco.names";
+std::string pedestrianFeatureModelPath = "./models/pedereid/pede_reid.om";
+
+std::string faceLandmarkModelPath = "./models/facequality/face_quality_improve.om";
+std::string faceAttributeModelPath = "./models/faceattr/face_attribute_batch_1.om";
+std::string faceAttributeConfigPath = "./models/faceattr/yolov3-tiny-addpad.cfg";
+std::string faceAttributeLabelPath = "./models/faceattr/coco.names";
+std::string faceFeatureModelPath = "./models/facefeature/face_feature_batch_1.om";
 
 ```
 
@@ -123,7 +140,7 @@ todo:添加代码
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
 numChannel 视频路数
 numWorker woker数量
-numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数。（通过查询npu-smi info，查询内存和AICore用量，根据实际情况调整，worker和并行度）
+numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数。（通过查询npu-smi info，查询内存和AICore用量，根据实际情况调整worker和并行度）
 
 
 ## 5 编译与运行
@@ -135,7 +152,7 @@ numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视�
 export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
 ```
 
-**步骤2**：在插件代码目录下创建build文件夹，使用cmake命令进行编译，生成可执行文件：
+**步骤2**：在项目根目录下创建build文件夹，使用cmake命令进行编译，生成可执行文件：
 
 ```bash
 ## 创建build目录
@@ -157,7 +174,19 @@ std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rts
 https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md
 
 
-**步骤3：** 添加拉流代码
+**步骤3：** 在main.cpp中添加拉流代码
+```
+    std::vector<std::string> filePaths(numChannel);
+    std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
+    AVFormatContext *pFormatCtx[numChannel];
+    AVPacket pkt[numChannel];
+    std::vector<uint32_t> frameIDs(numChannel, deviceID);
+    tf::Executor executor(EXECUTOR_NUM);
+    tf::Taskflow taskflow;
+...
+
+```
+将fill这一行代码注释后，在下面添加以下代码，用于网络拉流。
 ```
 for (size_t i = 0; i < numChannel; i++) {
     int port = ${port} + i;
@@ -165,6 +194,7 @@ for (size_t i = 0; i < numChannel; i++) {
 }
 
 ```
+
 port:起始端口
 nums:端口数量
 ip_address:ip地址
@@ -176,6 +206,8 @@ mkdir build
 ## 使用cmake命令进行编译
 cmake ..
 make -j
+## 编译运行
+./main
 ```
 
 ## 6 常见问题
