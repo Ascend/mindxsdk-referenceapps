@@ -134,8 +134,11 @@ std::string faceFeatureModelPath = "./models/facefeature/face_feature_batch_1.om
 
 ```
 
-**步骤2：** 在main.cpp中修改测试视频，当前使用本地的文件作为视频流输入。（../test.264）
-todo:添加代码
+**步骤2：** 在main.cpp中修改测试视频路径，当前使用本地的文件作为视频流输入。
+```
+std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
+```
+
 
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
 numChannel 视频路数
