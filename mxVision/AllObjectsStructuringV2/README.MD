@@ -180,8 +180,7 @@ std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
 
 ```
-**步骤2：** 根据下面的文档，创建网络视频流
-https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md
+**步骤2：** 根据下面的文档，[创建网络视频流](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)
 
 
 **步骤3：** 在main.cpp中添加拉流代码
@@ -196,7 +195,7 @@ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/ref
 ...
 
 ```
-将fill这一行代码注释后，在下面添加以下代码，用于网络拉流。
+将std::fill这一行代码注释后，在下面添加以下代码，用于网络拉流。
 ```
 for (size_t i = 0; i < numChannel; i++) {
     int port = ${port} + i;
@@ -204,20 +203,27 @@ for (size_t i = 0; i < numChannel; i++) {
 }
 
 ```
-
 port:起始端口
 nums:端口数量
 ip_address:ip地址
+如果是不同名称的264视频，则手动批量添加、
+```
+std::vector<std::string> filePaths(numChannel);
+filepaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+filepaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+...
 
+```
+
+**步骤4**：编译运行
 
 ```bash
 ## 创建build目录
 mkdir build
+cd build
 ## 使用cmake命令进行编译
 cmake ..
 make -j
-## 编译运行
-./main
 ```
 
 ## 6 常见问题
