@@ -109,29 +109,29 @@ make install
 
 **步骤1：** 在main.cpp中修改生成的对应模型以及配置路径。如yoloModelPath，yoloConfigPath，yoloLabelPath等。
 ```shell
-std::string yoloModelPath = "./models/yolov4_improve/yolov4_detection_1batch.om";
-std::string yoloConfigPath = "./models/yolov4_improve/yolov4.cfg";
-std::string yoloLabelPath = "./models/yolov4_improve/coco.names";
+std::string yoloModelPath = "../models/yolov4_improve/yolov4_detection_1batch.om";
+std::string yoloConfigPath = "../models/yolov4_improve/yolov4.cfg";
+std::string yoloLabelPath = "../models/yolov4_improve/coco.names";
 
-std::string vehicleAttrModelPath = "./models/motorattr/vehicle_attribute.om";
-std::string vehicleAttrConfigPath = "./models/motorattr/vehicle_attribute.cfg";
-std::string vehicleAttrLabelPath = "./models/motorattr/vehicle_attribute_coco.names";
+std::string vehicleAttrModelPath = "../models/motorattr/vehicle_attribute.om";
+std::string vehicleAttrConfigPath = "../models/motorattr/vehicle_attribute.cfg";
+std::string vehicleAttrLabelPath = "../models/motorattr/vehicle_attribute_coco.names";
 
-std::string carPlateDetectModelPath = "./models/car_plate_detection/car_plate_detection.om";
-std::string carPlateDetectConfigPath = "./models/car_plate_detection/car_plate_detection.cfg";
-std::string carPlateDetectLabelPath = "./models/car_plate_detection/car_plate_detection.names";
-std::string carPlateRecModelPath = "./models/car_plate_recognition/car_plate_recognition.om";
+std::string carPlateDetectModelPath = "../models/car_plate_detection/car_plate_detection.om";
+std::string carPlateDetectConfigPath = "../models/car_plate_detection/car_plate_detection.cfg";
+std::string carPlateDetectLabelPath = "../models/car_plate_detection/car_plate_detection.names";
+std::string carPlateRecModelPath = "../models/car_plate_recognition/car_plate_recognition.om";
 
-std::string pedestrianAttrModelPath = "./models/pedestrianattribute/pede_attr.om";
-std::string pedestrianAttrConfigPath = "./models/pedestrianattribute/pedes_attr.cfg";
-std::string pedestrianAttrLabelPath = "./models/pedestrianattribute/coco.names";
-std::string pedestrianFeatureModelPath = "./models/pedereid/pede_reid.om";
+std::string pedestrianAttrModelPath = "../models/pedestrianattribute/pede_attr.om";
+std::string pedestrianAttrConfigPath = "../models/pedestrianattribute/pedes_attr.cfg";
+std::string pedestrianAttrLabelPath = "../models/pedestrianattribute/coco.names";
+std::string pedestrianFeatureModelPath = "../models/pedereid/pede_reid.om";
 
-std::string faceLandmarkModelPath = "./models/facequality/face_quality_improve.om";
-std::string faceAttributeModelPath = "./models/faceattr/face_attribute_batch_1.om";
-std::string faceAttributeConfigPath = "./models/faceattr/yolov3-tiny-addpad.cfg";
-std::string faceAttributeLabelPath = "./models/faceattr/coco.names";
-std::string faceFeatureModelPath = "./models/facefeature/face_feature_batch_1.om";
+std::string faceLandmarkModelPath = "../models/facequality/face_quality_improve.om";
+std::string faceAttributeModelPath = "../models/faceattr/face_attribute_batch_1.om";
+std::string faceAttributeConfigPath = "../models/faceattr/yolov3-tiny-addpad.cfg";
+std::string faceAttributeLabelPath = "../models/faceattr/coco.names";
+std::string faceFeatureModelPath = "../models/facefeature/face_feature_batch_1.om";
 
 ```
 
@@ -142,10 +142,15 @@ std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rts
 
 
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
-numChannel 视频路数
-numWorker woker数量
-numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数。（通过查询npu-smi info，查询内存和AICore用量，根据实际情况调整worker和并行度）
-
++ numChannel 视频路数
++ numWorker woker数量
++ numLines 并行度，数值为numChannel/numWorker:单个worker能够处理视频的路数。
+```
+const size_t numChannel = 70;
+const size_t numWorker = 7;
+const size_t numLines = 10;
+# 说明：通过查询npu-smi info，查询内存和AICore用量，根据实际情况调整worker和并行度
+```
 
 ## 5 编译与运行
 导入下面的环境变量。
@@ -161,6 +166,7 @@ export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
 ```bash
 ## 创建build目录
 mkdir build
+cd build
 ## 使用cmake命令进行编译
 cmake ..
 make -j
