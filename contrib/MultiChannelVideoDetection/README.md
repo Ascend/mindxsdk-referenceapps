@@ -55,6 +55,7 @@ Ascend-CANN-toolkit (310使用6.3.RC1, 310B使用6.2.RC1)
 ```bash
 export PATH=/usr/local/ffmpeg/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/ffmpeg/lib:$LD_LIBRARY_PATH
+export FFMPEG_HOME=/usr/local/ffmpeg/
 ```
 
 #### FFmpeg

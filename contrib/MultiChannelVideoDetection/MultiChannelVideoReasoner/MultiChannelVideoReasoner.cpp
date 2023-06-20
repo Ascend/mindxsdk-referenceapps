@@ -1028,8 +1028,8 @@ APP_ERROR MultiChannelVideoReasoner::SaveDetectResult(const YoloResultWrapper &r
 {
     auto startTime = std::chrono::high_resolution_clock::now();
     APP_ERROR ret = Util::SaveResult(result.videoFrame, results,
-                           videoFrameInfos[result.rtspIndex],
-                           result.frameId, result.rtspIndex);
+                                     videoFrameInfos[result.rtspIndex],
+                                     result.frameId, result.rtspIndex);
     if (ret != APP_ERR_OK) {
         return ret;
     }
