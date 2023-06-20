@@ -905,7 +905,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           tf::Pipe<std::function<void(tf::Pipeflow &)>> {tf::PipeType::SERIAL, [&, batch](tf::Pipeflow &pf)
                                                                         {
                                                                             auto start = std::chrono::steady_clock::now();
-                                                                            executor.loop_until(
+                                                                            executor.corun_until(
                                                                                 [&]()
                                                                                 {
                                                                                     auto end = std::chrono::steady_clock::now();
