@@ -27,7 +27,6 @@ APP_ERROR ret = APP_ERR_OK;
 int32_t g_deviceId = 1;
 
 int BATCH_SIZE = 4;
-int DATA_SIZE = 50;
 int STREAM_NUM = 4;
 
 std::vector <MxBase::Image> ImageVec;
@@ -380,9 +379,9 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
         cout << "====================== 图像前处理结束 =======================" << endl << endl;
         cout << "====================== 目标检测模型推理 ======================" << endl;
 
-        MxBase::Tensor outTensor1({1, 13, 13, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor outTensor2({1, 26, 26, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
-        MxBase::Tensor outTensor3({1, 52, 52, 255}, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor1({ 1, 13, 13, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor2({ 1, 26, 26, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
+        MxBase::Tensor outTensor3({ 1, 52, 52, 255 }, MxBase::TensorDType::FLOAT32, g_deviceId);
 
         MallocYoloTensor *mallocYoloTensor = new MallocYoloTensor {outTensor1, outTensor2, outTensor3};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(YoloMalloc, static_cast<void *>(mallocYoloTensor));
@@ -502,7 +501,7 @@ int main(int argc, char *argv[]) {
 
     auto startTime = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < BATCH_SIZE; i++) {
-        ret = AsyncE2eInfer(StreamVec_[i % BATCH_SIZE], E2eInferParamsVec[i]);
+        ret = AsyncE2eInfer(StreamVec_[i % STREAM_NUM], E2eInferParamsVec[i]);
     }
     for (int i = 0; i < STREAM_NUM; i++) {
         StreamVec_[i].Synchronize();
