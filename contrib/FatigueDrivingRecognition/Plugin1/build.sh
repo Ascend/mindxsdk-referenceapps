@@ -28,6 +28,7 @@ function build_plugin() {
     cmake ..
     make -j
     cd ..
+    chmod plugins/libmxpi_pfldpostprocess.so 640
     cp plugins/libmxpi_pfldpostprocess.so "${MX_SDK_HOME}"/lib/plugins/
     exit 0
 }

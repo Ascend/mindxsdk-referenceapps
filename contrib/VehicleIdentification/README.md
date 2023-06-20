@@ -9,20 +9,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500A2卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
 
 
 ### 1.2 支持的版本
 
-支持21.0.4版本
-
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```bash
-npu-smi info
-```
-可以查询支持SDK的版本号
-
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 1.3 软件方案介绍
 
@@ -88,9 +81,6 @@ npu-smi info
 |numpy|1.22.3|
 |opencv-python|4.5.5|
 
-mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
-
 在编译运行项目前，需要设置环境变量：
 
 - 环境变量介绍
@@ -117,7 +107,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 
 
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
