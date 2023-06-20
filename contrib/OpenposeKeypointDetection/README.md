@@ -8,14 +8,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
-
+本项目以昇腾Atlas 500 A2为主要的硬件平台。
 
 
 ### 1.2 支持的版本
 
 mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
+Ascend-CANN-toolkit 6.2.RC1
 
 
 ### 1.3 软件方案介绍
@@ -105,27 +104,14 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 | 软件名称 | 版本   |
 | -------- | ------ |
 | cmake    | 3.5+   |
-| mxVision | 2.0.4  |
 | python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
 
 在编译运行项目前，需要设置环境变量：
 ```
-export MX_SDK_HOME=${SDK安装路径}/mxVision
-export LD_LIBRARY_PATH="${MX_SDK_HOME}/lib:${MX_SDK_HOME}/opensource/lib:${LD_LIBRARY_PATH}"
-export PYTHONPATH="${MX_SDK_HOME}/python:${PYTHONPATH}"
-export GST_PLUGIN_SCANNER="${MX_SDK_HOME}/opensource/libexec/gstreamer-1.0/gst-plugin-scanner"
-export GST_PLUGIN_PATH="${MX_SDK_HOME}/opensource/lib/gstreamer-1.0:${MX_SDK_HOME}/lib/plugins"
-```
-
-
-- 环境变量介绍
-
-```
-MX_SDK_HOME: mxVision SDK 安装路径
-LD_LIBRARY_PATH: lib库路径
-PYTHONPATH: python环境路径
+. /usr/local/Ascend/ascend-toolkit/set_env.sh #toolkit默认安装路径，根据实际安装路径修改
+. ${SDK_INSTALL_PATH}/mxVision/set_env.sh
 ```
 
 
@@ -175,9 +161,7 @@ python scripts/convert_to_onnx.onnx --checkpoint-path=checkpoints/checkpoint_ite
 - 进入 ``python/models`` 目录；
 - 编辑 ``insert_op.cfg`` 文件，将 ``src_image_size_w`` 和 ``src_image_size_h`` 分别设置为上述转换 onnx 模型时指定的模型输入宽度和高度；
 - 编辑 ``model_conversion.sh`` 文件，将
-```
-atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
-```
+
 命令中的 ``--model`` 属性改为上述转换得到的 onnx 模型文件名，将 ``--output`` 属性设置为输出 om 模型的名称，将 ``--input_shape`` 属性设置为指定的模型输入宽、高；
 
 - 执行命令：
@@ -186,9 +170,8 @@ bash model_convertion.sh
 ```
 该命令执行成功后会在当前文件夹下生成指定名称的 om 模型文件。
 
-备注：Atlas 310B的环境上，模型转换的命令为：
 ```
-atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310B --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
+atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpose_pytorch_560 --soc_version=Ascend310B1 --input_shape="data:1, 3, 560, 560" --input_format=NCHW --insert_op_conf=./insert_op.cfg
 ```
 
 ## 4. 编译与运行
@@ -197,7 +180,7 @@ atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpo
 
 **步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``python/models`` 目录下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 ``python/pipeline/Openpose.pipeline`` 中的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值；将 mxpi_openposepostprocess0 插件中的 inputWidth 和 inputHeight 属性改成转换模型过程中设置的模型输入尺寸值。
 
-**步骤3** 编译。在项目目录下执行命令：
+**步骤3** 编译。在项目目录下执行命令：运行前修改插件权限为640
 ```
 bash build.sh
 cp plugins/build/libmxpi_openposepostprocess.so ~/MindX_SDK/mxVision/lib/plugins/

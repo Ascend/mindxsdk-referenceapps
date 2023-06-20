@@ -105,7 +105,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 3.1 yolo模型转换
 
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
+**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 
@@ -114,15 +114,6 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 在`./models/yolo`目录下执行一下命令
 
 ```bash
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 

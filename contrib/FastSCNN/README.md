@@ -83,18 +83,19 @@
 
 ## 3.模型转换
 
-      本项目使用的模型是FastSCNN模型。
+本项目使用的模型是FastSCNN模型。
     
-      选用的模型为pytorch模型，获取权重文件方法：可从Ascend modelzoo FastSCNN_ACL_Pytorch 模型压缩包获取
+选用的模型为pytorch模型，获取权重文件方法：可从Ascend modelzoo FastSCNN_ACL_Pytorch 模型压缩包获取
     
-      在运行项目之前需要姜pytorch模型转为onnx模型，参考实现代码
+在运行项目之前需要姜pytorch模型转为onnx模型，参考实现代码
+
 [转模型](https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/segmentation/FastSCNN#31-pth%E8%BD%ACom%E6%A8%A1%E5%9E%8B)
 pth权重文件和onnx文件的下载链接如下：
 [models](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/models.zip)
 
-      再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
+再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
     
-    步骤如下：
+步骤如下：
 
 1. 下载上述models压缩包，获取best_model.pth和fast_scnn_bs1.onnx模型文件放置FastSCNN/model目录下。
 
