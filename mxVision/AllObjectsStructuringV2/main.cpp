@@ -333,10 +333,23 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
     return;
 }
 
+bool checkImageValid(MxBase::Image &image) {
+    if (image.GetOriginalSize().width == 0 || image.GetOriginalSize().width == 0) {
+        printf("image width or height is 0, please check.\n");
+        return false;
+    }
+
+    return true;
+}
+
 void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &frameImage, MxBase::Image &resizedImage)
 {
     MxBase::Size size(YOLO_INPUT_WIDTH, YOLO_INPUT_HEIGHT);
     MxBase::Interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
+    if (not checkImageValid(frameImage.image)) {
+        printf("frame image is invalid, skip preProcess and continue\n")
+        return;
+    }
     APP_ERROR ret = imageProcessor->Resize(frameImage.image, size, resizedImage, interpolation);
     if (ret != APP_ERR_OK)
     {
@@ -346,6 +359,10 @@ void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &fr
 
 void yoloModelInfer(MxBase::Model *&yoloModel, MxBase::Image &resizedImage, std::vector<MxBase::Tensor> &outputs)
 {
+    if (not checkImageValid(resizedImage)) {
+        printf("resized image is invalid, skip infer and continue\n")
+        return;
+    }
     MxBase::Tensor imageToTensor = resizedImage.ConvertToTensor();
     std::vector<MxBase::Tensor> inputs = {};
     inputs.push_back(imageToTensor);
@@ -361,6 +378,14 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
                           std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
                           MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
+    if (not checkImageValid(resizedImage)) {
+        printf("resized image is invalid, skip postprocess and continue\n")
+        return APP_ERR_FAILURE;
+    }
+    if (not checkImageValid(frameImage.image)) {
+        printf("frameImage is invalid, skip postprocess and continue\n")
+        return APP_ERR_FAILURE;
+    }
     MxBase::ResizedImageInfo resizedImageInfo;
     resizedImageInfo.heightOriginal = frameImage.image.GetSize().height;
     resizedImageInfo.widthOriginal = frameImage.image.GetSize().width;
