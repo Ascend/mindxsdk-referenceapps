@@ -395,6 +395,9 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                                                                                    i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(AsyncYoloV3PostProcessCallbackFunc,
                                                          static_cast<void * >(asyncYoloV3PostProcessParam));
+
+        AscendStreamVec[batchIndex].Synchronize();
+
         ret = imageProcessor.CropResize(param->DecodeImageBatch[i], param->CropConfigRectBatch[i],
                                         Size(sizeValue2, sizeValue2),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
