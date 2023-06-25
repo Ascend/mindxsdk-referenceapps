@@ -495,9 +495,10 @@ int main(int argc, char *argv[]) {
     PrepareData();
 
     for (int i = 0; i < BATCH_SIZE; i++) {
-        Params *params = new Params{decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i], resnetTensorBatch[i],
-                                    resnetInputBatch[i], cropResizeImageBatch[i], yoloV3OutputTensorBatch[i],
-                                    resnetOutputTensorBatch[i], cropConfigRectBatch[i], yoloV3InputTensorBatch[i]};
+        Params *params = new Params{ decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i],
+                                     resnetTensorBatch[i], resnetInputBatch[i], cropResizeImageBatch[i],
+                                     yoloV3OutputTensorBatch[i], resnetOutputTensorBatch[i], cropConfigRectBatch[i],
+                                     yoloV3InputTensorBatch[i] };
         E2eInferParams *e2EInferParams = new E2eInferParams{i, params};
         E2eInferParamsVec.push_back(e2EInferParams);
     }
