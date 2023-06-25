@@ -395,6 +395,9 @@ APP_ERROR E2eInferAsync(int batchIndex, Params *param) {
                                                                                                    i};
         ret = AscendStreamVec[batchIndex].LaunchCallBack(AsyncYoloV3PostProcessCallbackFunc,
                                                          static_cast<void * >(asyncYoloV3PostProcessParam));
+
+        AscendStreamVec[batchIndex].Synchronize();
+
         ret = imageProcessor.CropResize(param->DecodeImageBatch[i], param->CropConfigRectBatch[i],
                                         Size(sizeValue2, sizeValue2),
                                         param->CropResizeImageBatch[i], AscendStreamVec[batchIndex]);
@@ -492,9 +495,10 @@ int main(int argc, char *argv[]) {
     PrepareData();
 
     for (int i = 0; i < BATCH_SIZE; i++) {
-        Params *params = new Params{decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i], resnetTensorBatch[i],
-                                    resnetInputBatch[i], cropResizeImageBatch[i], yoloV3OutputTensorBatch[i],
-                                    resnetOutputTensorBatch[i], cropConfigRectBatch[i], yoloV3InputTensorBatch[i]};
+        Params *params = new Params{
+            decodeImageBatch[i], resizeImageBatch[i], tensorImageBatch[i],
+            resnetTensorBatch[i], resnetInputBatch[i], cropResizeImageBatch[i], yoloV3OutputTensorBatch[i],
+            resnetOutputTensorBatch[i], cropConfigRectBatch[i], yoloV3InputTensorBatch[i] };
         E2eInferParams *e2EInferParams = new E2eInferParams{i, params};
         E2eInferParamsVec.push_back(e2EInferParams);
     }

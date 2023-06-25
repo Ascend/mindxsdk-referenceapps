@@ -47,6 +47,7 @@ ResNet50模型下载: http://ascend-repo-modelzoo.obs.cn-east-2.myhuaweicloud.co
 ```bash
 ## 创建build目录
 mkdir build
+cd build
 
 ## 使用cmake命令进行编译
 cmake ..
