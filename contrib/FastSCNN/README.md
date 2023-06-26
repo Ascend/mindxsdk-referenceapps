@@ -61,8 +61,7 @@
 ```
 
 ##    1.5 技术实现流程图
-
-            FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1*19*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成mask.png。
+FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1*19*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成mask.png。
 
 实现流程图如下图所示：
 
@@ -136,7 +135,8 @@ python3.9.2 main.py
 
 ##### 测试精度：
 
-**步骤 1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
+**步骤 1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录（https://www.cityscapes-dataset.com/downloads/）
+下载**leftImg8bit_trainvaltest.zip**与**gtFine_trainvaltest.zip**
 将标注文件压缩文件解压至FastSCNN/目录下。确保下载完数据集和标注文件后的目录结构为如下：
 
 ```

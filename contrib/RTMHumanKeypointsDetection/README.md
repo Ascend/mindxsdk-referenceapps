@@ -72,11 +72,11 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 22.04，环境依赖软件和版本如下表：
 
 | 依赖软件  | 版本               | 说明                          |
 | --------- | ------------------ | ----------------------------- |
-| ubuntu    | ubuntu 18.04.6 LTS | 操作系统                      |
+| ubuntu    | ubuntu 22.04.6 LTS | 操作系统                      |
 | CANN      | 5.0.5.alpha001     | Ascend-cann-toolkit开发套件包 |
 | MindX SDK | 3.0.RC2            | mxVision软件包                |
 

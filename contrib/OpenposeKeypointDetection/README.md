@@ -180,10 +180,10 @@ atc --model=./simplified_560_openpose_pytorch.onnx --framework=5 --output=openpo
 
 **步骤2** 按照第 3 小节 **模型转换** 中的步骤获得 om 模型文件，放置在 ``python/models`` 目录下。若未从 pytorch 模型自行转换模型，使用的是上述链接提供的 onnx 模型或者 om 模型，则无需修改相关文件，否则修改 ``python/pipeline/Openpose.pipeline`` 中的相关配置，将 mxpi_tensorinfer0 插件 modelPath 属性值中的 om 模型名改成实际使用的 om 模型名；将 mxpi_imageresize0 插件中的 resizeWidth 和 resizeHeight 属性改成转换模型过程中设置的模型输入尺寸值；将 mxpi_openposepostprocess0 插件中的 inputWidth 和 inputHeight 属性改成转换模型过程中设置的模型输入尺寸值。
 
-**步骤3** 编译。在项目目录下执行命令：运行前修改插件权限为640
+**步骤3** 编译。在项目目录下执行命令：**运行前修改插件权限为640**
 ```
 bash build.sh
-cp plugins/build/libmxpi_openposepostprocess.so ~/MindX_SDK/mxVision/lib/plugins/
+cp plugins/build/libmxpi_openposepostprocess.so ${SDK_INSTALL_PATH}/mxVision/lib/plugins/
 ```
 
 **步骤4** 图片检测。将一张包含人体的图片放在项目目录下，命名为 test.jpg。在该图片上进行检测，执行命令：
@@ -200,7 +200,7 @@ python3 main.py
 pip3.9 install pycocotools
 ```
 
-2. 下载 COCO VAL 2017 数据集，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下。下载 COCO VAL 2017 标注文件，下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/OpenposeKeypointDetection/data.zip ，将标注文件压缩文件解压至 ``python/dataset`` 目录下。确保下载完数据集和标注文件后的 python 目录结构为：
+2. 下载 COCO keypoint VAL 2017 数据集与标注文件，下载链接：https://cocodataset.org/，在 ``python`` 目录下创建 ``dataset`` 目录，将数据集压缩文件解压至 ``python/dataset`` 目录下确保下载完数据集和标注文件后的 python 目录结构为：
 ```
 .
 ├── dataset
