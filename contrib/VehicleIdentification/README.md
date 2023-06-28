@@ -95,7 +95,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 3.1 yolo模型转换
 
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
+**步骤1** 下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 
@@ -151,8 +151,6 @@ ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
 
-
-
 模型转换使用了ATC工具，如需更多信息请参考:
 
  https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
@@ -160,8 +158,9 @@ ATC run success, welcome to the next use.
 备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ### 3.3 可用模型获取
+YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
-此处提供转换好的YOLOV3模型，车型识别模型（googlenet）的om文件：[**下载地址**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
+车型识别模型（googlenet）：[**下载地址**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
 
 注：**下载后请将两个模型请放置于models的对应目录下（`models/yolo`和`models/googlenet`）**
 

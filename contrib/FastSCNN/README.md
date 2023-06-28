@@ -86,9 +86,8 @@ FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通
     
 选用的模型为pytorch模型，获取权重文件方法：可从Ascend modelzoo FastSCNN_ACL_Pytorch 模型压缩包获取
     
-在运行项目之前需要姜pytorch模型转为onnx模型，参考实现代码
+在运行项目之前需要姜pytorch模型转为onnx模型，参考[实现代码](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/contrib/cv/segmentation/FastSCNN)
 
-[转模型](https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/segmentation/FastSCNN#31-pth%E8%BD%ACom%E6%A8%A1%E5%9E%8B)
 pth权重文件和onnx文件的下载链接如下：
 [models](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/models.zip)
 
