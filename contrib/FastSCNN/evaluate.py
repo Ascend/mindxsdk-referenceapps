@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     # 构建流的输入对象
     dataInput = MxDataInput()
-    filepath = "./cityscapes/leftImg8bit/val/frankfurt"
+    filepath = "./cityscapes/leftImg8bit/val/frankfurt/"
     if os.path.exists(filepath) != 1:
         print("The filepath does not exist !")
         exit()
@@ -118,6 +118,8 @@ if __name__ == '__main__':
 
     # 从流中取出对应插件的输出数据
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
+        if infer.metadataVec.size() == 0:
+            continue
         print("result.metadata size: ", infer.metadataVec.size())
         infer_result = infer.metadataVec[0]
         if infer_result.errorCode != 0:
