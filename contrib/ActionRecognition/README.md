@@ -173,8 +173,6 @@ make -j
 或者使用插件代码目录下的build.sh脚本，例：
 
 ```bash
-## 前提条件是正确设置export MX_SDK_HOME
-chmod +x build.sh
 ./build.sh
 ```
 
@@ -352,7 +350,6 @@ export MX_SDK_HOME=${CUR_PATH}/../../..
 直接运行
 
 ```bash
-chmod +x run.sh
 bash run.sh
 ```
 
@@ -462,7 +459,6 @@ atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_ver
 ECONet离线模型转换参考 [昇腾Gitee](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/0d7d0413cf89404d882d69e695a9bc4b/1)：下载冻结pb模型ucf101_best.pb，编辑trans_pb2om.sh文件，将--model 配置为ECONet模型所在目录，--output配置为模型输出路径，--insert_op_conf配置为aipp文件路径，在命令行输入
 
 ```bash
-chmod +x trans_pb2om.sh
 ./trans_pb2om.sh
 ```
 
