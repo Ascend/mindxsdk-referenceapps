@@ -118,8 +118,6 @@ if __name__ == '__main__':
 
     # 从流中取出对应插件的输出数据
         infer = streamManagerApi.GetResult(streamName, b'appsink0', keyVec)
-        if infer.metadataVec.size() == 0:
-            continue
         print("result.metadata size: ", infer.metadataVec.size())
         infer_result = infer.metadataVec[0]
         if infer_result.errorCode != 0:
