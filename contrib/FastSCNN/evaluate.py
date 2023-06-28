@@ -88,12 +88,12 @@ if __name__ == '__main__':
 
     # 构建流的输入对象
     dataInput = MxDataInput()
-    filepath = "./cityscapes/leftImg8bit/val/frankfurt/"
-    if os.path.exists(filepath) != 1:
-        print("The filepath does not exist !")
+    FILE_PATH = "./cityscapes/leftImg8bit/val/frankfurt/"
+    if os.path.exists(FILE_PATH) != 1:
+        print("The FILE_PATH does not exist !")
         exit()
-    for filename in os.listdir(filepath):
-        image_path = filepath + filename
+    for filename in os.listdir(FILE_PATH):
+        image_path = FILE_PATH + filename
         if image_path.split('.')[-1] != 'jpg':
             continue
         with open(image_path, 'rb') as f:
