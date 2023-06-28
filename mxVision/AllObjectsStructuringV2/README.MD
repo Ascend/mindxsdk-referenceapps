@@ -241,3 +241,12 @@ Failed to get model, the model path is invalidate.
 
 **解决方案：**
 可执行文件main和模型相对路径不匹配，确认可执行文件和model目录相对路径，或者在main.cpp中直接使用模型全路径。
+
+### 3.2 拉2k/4k视频流时，显示decoded image is invalid
+
+**问题描述：**
+
+decoded image is invalid
+
+**解决方案：**
+根据实际视频流宽高信息修改allobjectStructure.h中FRAME_WIDTH和FRAME_HEIGHT。

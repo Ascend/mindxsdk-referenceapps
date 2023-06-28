@@ -344,10 +344,13 @@ bool checkImageValid(MxBase::Image &image) {
 
 void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &frameImage, MxBase::Image &resizedImage)
 {
+    if (frameImage.image.GetData() == nullptr) {
+        printf("decoded image is invalid\n");
+    }
     MxBase::Size size(YOLO_INPUT_WIDTH, YOLO_INPUT_HEIGHT);
     MxBase::Interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
     if (not checkImageValid(frameImage.image)) {
-        printf("frame image is invalid, skip preProcess and continue\n")
+        printf("frame image is invalid, skip preProcess and continue\n");
         return;
     }
     APP_ERROR ret = imageProcessor->Resize(frameImage.image, size, resizedImage, interpolation);
@@ -359,8 +362,11 @@ void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &fr
 
 void yoloModelInfer(MxBase::Model *&yoloModel, MxBase::Image &resizedImage, std::vector<MxBase::Tensor> &outputs)
 {
+    if (resizedImage.image.GetData() == nullptr) {
+        printf("resized image is invalid\n");
+    }
     if (not checkImageValid(resizedImage)) {
-        printf("resized image is invalid, skip infer and continue\n")
+        printf("resized image is invalid, skip infer and continue\n");
         return;
     }
     MxBase::Tensor imageToTensor = resizedImage.ConvertToTensor();
@@ -378,12 +384,15 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
                           std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
                           MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
+    if (resizedImage.image.GetData() == nullptr) {
+        printf("resized image is invalid\n");
+    }
     if (not checkImageValid(resizedImage)) {
-        printf("resized image is invalid, skip postprocess and continue\n")
+        printf("resized image is invalid, skip postprocess and continue\n");
         return APP_ERR_FAILURE;
     }
     if (not checkImageValid(frameImage.image)) {
-        printf("frameImage is invalid, skip postprocess and continue\n")
+        printf("frameImage is invalid, skip postprocess and continue\n");
         return APP_ERR_FAILURE;
     }
     MxBase::ResizedImageInfo resizedImageInfo;
@@ -1107,11 +1116,28 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           }};
 }
 
+bool check_paramas_valid() {
+    if (numChannel < 1) {
+        LogError << "Invalid num channel, please check";
+        return false;
+    }
+    
+    if (numChannel / numWorker != numLines) {
+        LogError << "numChannel / numWoker != numLines, please check.";
+        retrun false;
+    }
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
     MxBase::MxInit();
     av_register_all();
     avformat_network_init();
+    if (not check_params_valid()){
+        LogError << "params are invalid, please check."
+        return 1;
+    }
     initResources();
     sleep(INIT_RESOURCE_TIME);
     std::vector<std::string> filePaths(numChannel);
