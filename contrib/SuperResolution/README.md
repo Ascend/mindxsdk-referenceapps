@@ -15,7 +15,7 @@
 
 ### 软件版本
 
-推荐系统为ubuntu 18.04。
+推荐系统为ubuntu 22.04。
 
 | 软件名称 | 版本   |
 | -------- | ------ |
@@ -143,7 +143,7 @@ input_image_path = 'image/${测试图片文件名}'   # 仅支持jpg格式
 
 PSNR（峰值信噪比）经常用作图像压缩等领域中信号重建质量的测量方法。
 
-1）准备测试集：下载验证图片集，[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SuperResolution/testImageSet.zip)，从zip文件中取出两个图片集91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
+1）准备测试集：下载验证图片集，[General-100](http://mmlab.ie.cuhk.edu.hk/projects/FSRCNN.html),[91-images](https://www.kaggle.com/datasets/ll01dm/t91-image-dataset),[备用](https://drive.google.com/file/d/0B7tU5Pj1dfCMWjhhaE1HR3dqcGs/view?resourcekey=0-bp1OwS1HzuCuelcMG0sRvQ)，下载91-images和General-100放置到testSet目录下，其中91-images包含91张t\*.bmp图片，General-100包含100张im_\*.bmp图片
 
 2）图片格式转换：参考`testSet/bmp2jpg.py`脚本，将两个图片集中bmp图片转换为jpg图片
 

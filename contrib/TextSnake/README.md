@@ -9,7 +9,7 @@ TextSnake 弯曲形状文字检测基于 MindX SDK 开发，对图片中的任�
 
 ### 1.2 支持的版本
 
-推荐系统为ubuntu 18.04。
+推荐系统为ubuntu 22.04。
 
 | 软件名称 | 版本   |
 | -------- | ------ |
@@ -179,12 +179,7 @@ python3 main.py
 
 ## 5  测试精度
 
-**步骤 1** 安装数据集用以测试精度。数据集 TotalText 需要自行下载。
-数据集图片部分：
-https://drive.google.com/file/d/1bC68CzsSVTusZVvOkk7imSZSbgD1MqK2/view?usp=sharing totaltext.zip
-
-数据集ground truth部分：
-https://drive.google.com/file/d/19quCaJGePvTc3yPZ7MAGNijjKfy77-ke/view?usp=sharing groundtruth_text.zip
+**步骤 1** 安装数据集用以测试精度。数据集 TotalText 需要自行下[源码仓](https://github.com/princewang1994/TextSnake.pytorch/blob/master/dataset/total_text/download.sh):
 
 将下载好的数据集调整成以下路径的形式
 ```

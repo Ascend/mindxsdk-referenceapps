@@ -14,7 +14,7 @@
 
 - 具体实现细节可以参考基于PyTorch深度学习框架的代码：https://github.com/GewelsJI/DGNet/tree/main/lib_pytorch
 
-- 所使用的公开数据集是NC4K，可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/data.tar
+- 所使用的公开数据集是NC4K，可以在此处下载：https://github.com/JingZhang617/COD-Rank-Localize-and-Segment
 
 - 所使用的模型是EfficientNet-B4版本的DGNet模型，原始的PyTorch模型文件可以在此处下载：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/DGNet.zip
 
@@ -125,7 +125,7 @@ atc --framework=5 --model=DGNet.onnx --output=DGNet --input_shape="image:1,3,352
 
 **步骤0** 
 
-参考1.2节中说明下载一份测试数据集合：下载链接：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/snapshots/data.tar
+参考1.2节中说明下载一份测试数据集
 
 **步骤1** 
 

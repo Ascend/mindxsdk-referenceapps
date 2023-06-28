@@ -9,20 +9,13 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
+本项目以昇腾Atlas 500A2卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
 
 
 ### 1.2 支持的版本
 
-支持21.0.4版本
-
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```bash
-npu-smi info
-```
-可以查询支持SDK的版本号
-
+mxVision 5.0.RC1
+Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 1.3 软件方案介绍
 
@@ -88,9 +81,6 @@ npu-smi info
 |numpy|1.22.3|
 |opencv-python|4.5.5|
 
-mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
-
 在编译运行项目前，需要设置环境变量：
 
 - 环境变量介绍
@@ -105,7 +95,7 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ### 3.1 yolo模型转换
 
-**步骤1** 在ModelZoo上下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
+**步骤1** 下载YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
 **步骤2** 将获取到的YOLOv3模型pb文件存放至`./models/yolo/`。
 
@@ -114,19 +104,10 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 在`./models/yolo`目录下执行一下命令
 
 ```bash
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=/usr/local/python3.9.2/bin:${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
-
 # 执行，转换YOLOv3模型
 # Execute, transform YOLOv3 model.
 
-atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B1 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input/input_data:1,416,416,3" --out_nodes="conv_lbbox/BiasAdd:0;conv_mbbox/BiasAdd:0;conv_sbbox/BiasAdd:0"
 
 
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
@@ -170,8 +151,6 @@ ATC start working now, please wait for a moment.
 ATC run success, welcome to the next use.
 ```
 
-
-
 模型转换使用了ATC工具，如需更多信息请参考:
 
  https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
@@ -179,8 +158,9 @@ ATC run success, welcome to the next use.
 备注：若推理芯片为310B，需要将atc-env脚本中模型转换atc命令中的soc_version参数设置为Ascend310B1。
 
 ### 3.3 可用模型获取
+YOLOv3模型。[下载地址](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/ActionRecognition/ATC%20YOLOv3%28FP16%29%20from%20TensorFlow%20-%20Ascend310.zip)
 
-此处提供转换好的YOLOV3模型，车型识别模型（googlenet）的om文件：[**下载地址**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
+车型识别模型（googlenet）：[**下载地址**](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/VehicleIdentification/models.zip)
 
 注：**下载后请将两个模型请放置于models的对应目录下（`models/yolo`和`models/googlenet`）**
 

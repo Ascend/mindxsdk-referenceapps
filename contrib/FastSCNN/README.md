@@ -61,8 +61,7 @@
 ```
 
 ##    1.5 技术实现流程图
-
-            FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1*19*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成mask.png。
+FastSCNN语义分割模型的后处理的输入是mxpi_tensor0推理结束后通过appsink0输出的tensor数据，尺寸为[1*19*1024*2048]，将张量数据通过pred取出推测的结果值，argmax函数确定每个像素点概率最大的类型。每一类的rgb数值存在于cityscapepallete数组中，查找每个像素点的类型进行上色，最后将像素点组成的图片保存成mask.png。
 
 实现流程图如下图所示：
 
@@ -83,18 +82,18 @@
 
 ## 3.模型转换
 
-      本项目使用的模型是FastSCNN模型。
+本项目使用的模型是FastSCNN模型。
     
-      选用的模型为pytorch模型，获取权重文件方法：可从Ascend modelzoo FastSCNN_ACL_Pytorch 模型压缩包获取
+选用的模型为pytorch模型，获取权重文件方法：可从Ascend modelzoo FastSCNN_ACL_Pytorch 模型压缩包获取
     
-      在运行项目之前需要姜pytorch模型转为onnx模型，参考实现代码
-[转模型](https://gitee.com/ascend/modelzoo/tree/master/contrib/ACL_PyTorch/Research/cv/segmentation/FastSCNN#31-pth%E8%BD%ACom%E6%A8%A1%E5%9E%8B)
+在运行项目之前需要姜pytorch模型转为onnx模型，参考[实现代码](https://gitee.com/ascend/ModelZoo-PyTorch/tree/master/ACL_PyTorch/contrib/cv/segmentation/FastSCNN)
+
 pth权重文件和onnx文件的下载链接如下：
 [models](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/models.zip)
 
-      再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
+再由onnx模型转为om模型，模型转换工具（ATC）相关介绍如下：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md 。
     
-    步骤如下：
+步骤如下：
 
 1. 下载上述models压缩包，获取best_model.pth和fast_scnn_bs1.onnx模型文件放置FastSCNN/model目录下。
 
@@ -135,7 +134,8 @@ python3.9.2 main.py
 
 ##### 测试精度：
 
-**步骤 1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录，下载路径为：https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FastScnn/dataset.zip
+**步骤 1** 安装数据集用以测试精度。数据集cityscapes需要下载到当前目录（https://www.cityscapes-dataset.com/downloads/）
+下载**leftImg8bit_trainvaltest.zip**与**gtFine_trainvaltest.zip**
 将标注文件压缩文件解压至FastSCNN/目录下。确保下载完数据集和标注文件后的目录结构为如下：
 
 ```

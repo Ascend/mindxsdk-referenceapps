@@ -11,12 +11,11 @@
 
 ### 1.1 支持的产品
 
-本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。本项目以昇腾Atlas310或Atlas310B卡为主要的硬件平台。
-
+本项目以昇腾Atlas 500A2卡为主要的硬件平台.
 ### 1.2 支持的版本
 
 mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
+Ascend-CANN-toolkit 6.2.RC1
 
 
 ### 1.3 软件方案介绍
@@ -85,15 +84,12 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 22.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本  |
 | -------- | ----- |
 | cmake    | 3.5+  |
 | python   | 3.9.2 |
-
-mxVision 5.0.RC1
-Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 
 确保环境中正确安装mxVision SDK。
 
@@ -101,15 +97,6 @@ Ascend-CANN-toolkit （310使用6.3.RC1，310B使用6.2.RC1）
 ```shell
 . /usr/local/Ascend/ascend-toolkit/set_env.sh # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
 . ${MX_SDK_HOME}/mxVision/set_env.sh # ${MX_SDK_HOME}替换为用户的SDK安装路径
-```
-
-
-- 环境变量介绍
-
-```
-MX_SDK_HOME: mxVision SDK 安装路径
-LD_LIBRARY_PATH: lib库路径
-PYTHONPATH: python环境路径
 ```
 
 ## 3 模型转换
