@@ -84,7 +84,7 @@ Ascend-CANN-toolkit 6.2.RC1
 
 ## 2 环境依赖
 
-推荐系统为ubuntu 22.04，环境依赖软件和版本如下表：
+推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称 | 版本  |
 | -------- | ----- |
@@ -103,10 +103,18 @@ Ascend-CANN-toolkit 6.2.RC1
 
 ##### 3.1 模型与软件依赖
 
-所用模型为yolov4模型与PFLD模型：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FatigueDrivingRecognition/model.zip)
+所用模型为：
 
-* yolov4模型为已经转换好的om模型，解压后的yolov4文件夹中包含yolov4模型及其相应的coco.names和cfg文件。将om模型和coco.names以及cfg文件放置到model文件夹中。
-* PFLD模型为[github项目](https://github.com/Hsintao/pfld_106_face_landmarks)中提供的模型
+yolov4模型：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_improve.zip)
+文件全部解压至model目录（310B芯片设备不使用PFLD模型压缩包中的yolov4模型，310可使用）
+```
+# 转换命令
+atc --model=./yolov4-tiny-customized.pb --framework=3 -output=./yolov4_detection --insert_op_conf=./aipp_yolov4.cfg --soc_version=Ascend310B1
+```
+
+
+PFLD模型：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FatigueDrivingRecognition/model.zip)
+PFLD模型为[github项目](https://github.com/Hsintao/pfld_106_face_landmarks)中提供的模型
 
 转换PFLD模型所需软件依赖如下表所示。
 
