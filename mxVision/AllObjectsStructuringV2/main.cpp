@@ -369,7 +369,7 @@ void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &fr
 
 void yoloModelInfer(MxBase::Model *&yoloModel, MxBase::Image &resizedImage, std::vector<MxBase::Tensor> &outputs)
 {
-    if (resizedImage.image.GetData() == nullptr) {
+    if (resizedImage.GetData() == nullptr) {
         printf("resized image is invalid\n");
     }
     if (not checkImageValid(resizedImage)) {
@@ -391,7 +391,7 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
                           std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
                           MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
-    if (resizedImage.image.GetData() == nullptr) {
+    if (resizedImage.GetData() == nullptr) {
         printf("resized image is invalid\n");
     }
     if (not checkImageValid(resizedImage)) {
@@ -1172,7 +1172,7 @@ bool check_params_valid() {
     
     if (numChannel / numWorker != numLines) {
         LogError << "numChannel / numWoker != numLines, please check.";
-        retrun false;
+        return false;
     }
     return true;
 }
