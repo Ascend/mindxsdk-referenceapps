@@ -21,6 +21,7 @@
 #include <iostream>
 #include <queue>
 #include <memory>
+#include <sys/stat.h>
 #include "unistd.h"
 
 #include "MxBase/Maths/FastMath.h"
@@ -84,6 +85,8 @@ std::string faceAttributeConfigPath = "configure.cfg";
 std::string faceAttributeLabelPath = "label.names";
 
 std::string faceFeatureModelPath = "model.om";
+
+std::map<std::string, std::string> resourcePaths;
 
 uint32_t deviceID = 0;
 std::vector<uint32_t> deviceIDs(numChannel, deviceID);
@@ -299,6 +302,10 @@ void StreamPull(AVFormatContext *&pFormatCtx, std::string filePath)
 {
     pFormatCtx = avformat_alloc_context();
     pFormatCtx = CreateFormatContext(filePath);
+    if (pFormatCtx == nullptr) {
+        LogError << "pFormatCtx is null, invalid stream, please check";
+        return;
+    }
     av_dump_format(pFormatCtx, 0, filePath.c_str(), 0);
 }
 
@@ -822,6 +829,47 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     printf("Face Feature Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
 }
 
+bool checkPathExists(std::string& filePath) {
+    char path[PATH_MAX + 1] = { 0x00};
+    char *ret = realpath(filePath.c_str(), path);
+    if (ret == nullptr) {
+        LogError << "realpath parsing failed";
+        return false;
+    }
+    struct stat buffer{};
+    return (stat(filePath.c_str(), &buffer) == 0);
+}
+
+bool checkResources(){
+    resourcePaths.insert(std::make_pair("yoloModelPath", yoloModelPath));
+    resourcePaths.insert(std::make_pair("yoloConfigPath", yoloConfigPath));
+    resourcePaths.insert(std::make_pair("yoloLabelPath", yoloLabelPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrModelPath", vehicleAttrModelPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrConfigPath", vehicleAttrConfigPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrLabelPath", vehicleAttrLabelPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectModelPath", carPlateDetectModelPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectConfigPath", carPlateDetectConfigPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectLabelPath", carPlateDetectLabelPath));
+    resourcePaths.insert(std::make_pair("carPlateRecModelPath", carPlateRecModelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrModelPath", pedestrianAttrModelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrLabelPath", pedestrianAttrLabelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrConfigPath", pedestrianAttrConfigPath));
+    resourcePaths.insert(std::make_pair("pedestrianFeatureModelPath", pedestrianFeatureModelPath));
+    resourcePaths.insert(std::make_pair("faceLandmarkModelPath", faceLandmarkModelPath));
+    resourcePaths.insert(std::make_pair("faceAttributeModelPath", faceAttributeModelPath));
+    resourcePaths.insert(std::make_pair("faceAttributeConfigPath", faceAttributeConfigPath));
+    resourcePaths.insert(std::make_pair("faceAttributeLabelPath", faceAttributeLabelPath));
+    resourcePaths.insert(std::make_pair("faceFeatureModelPath", faceFeatureModelPath));
+
+    for (auto& path: resourcePaths) {
+        if (not checkPathExists(path.second)){
+            LogError << path.first << " does not exist, please check";
+            return false;
+        }
+    }
+    return true;
+}
+
 void initResources()
 {
     for (int batch = 0; batch < numWorker; ++batch)
@@ -1116,7 +1164,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           }};
 }
 
-bool check_paramas_valid() {
+bool check_params_valid() {
     if (numChannel < 1) {
         LogError << "Invalid num channel, please check";
         return false;
@@ -1135,7 +1183,10 @@ int main(int argc, char *argv[])
     av_register_all();
     avformat_network_init();
     if (not check_params_valid()){
-        LogError << "params are invalid, please check."
+        LogError << "params are invalid, please check.";
+        return 1;
+    }
+    if (not checkResources()) {
         return 1;
     }
     initResources();
@@ -1170,6 +1221,7 @@ int main(int argc, char *argv[])
             StreamPull(pFormatCtx[i], filePaths[i]);
             if (pFormatCtx[i] == nullptr) {
                 printf("is nullptr\n");
+                return;
             }
             VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWorker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
             delete videoDecoder[i]; });
