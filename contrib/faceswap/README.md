@@ -56,8 +56,22 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 `apt-get install libpython3.9`
 
 ## 4 模型获取及转换
+
+```
+
+设置环境变量（请确认install_path路径是否正确）
+Set environment PATH (Please confirm that the install_path is correct).
+
+. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
+```
 ### 4.1 目标检测模型转换
-目标检测采用提供的离线模型yolov4_detection.om进行推理。由于文件上传限制，提供下载的[链接](https://mindx.sdk.obs.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_detection.om) 点击`链接`，下载yolov4_detection.om,并将模型存放在工程/model目录下。
+yolov4模型：[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/yolov4_improve.zip)
+文件全部解压至model目录
+```
+# 转换命令
+atc --model=./yolov4-tiny-customized.pb --framework=3 -output=./yolov4_detection --insert_op_conf=./aipp_yolov4.cfg --soc_version=Ascend310B1
+```
+
 ### 4.2 脸部特征点检测模型
 **步骤1**  
 在[Github_pfld_106_face_landmarks](https://github.com/Hsintao/pfld_106_face_landmarks) 上选择v3.onnx，下载特征点检测对应的onnx模型：[v3.onnx](https://github.com/Hsintao/pfld_106_face_landmarks/blob/master/output/v3.onnx) [备份链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/faceswap/v3.onnx)；  
@@ -66,11 +80,6 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 **步骤3**
 在model目录下执行以下命令：  
 ```
-# 设置环境变量（请确认install_path路径是否正确）
-# Set environment PATH (Please confirm that the install_path is correct).
-
-. /usr/local/Ascend/ascend-toolkit/set_env.sh   # Ascend-cann-toolkit开发套件包默认安装路径，根据实际安装路径修改
-
 # 执行如下命令，转换v3.onnx模型。
 # Execute, transform v3.onnx model.
 atc --model=v3.onnx --framework=5 --output=V3ONNXX --soc_version=Ascend310B1 --insert_op_conf=V3ONNX.cfg --out_nodes="Gemm_169:0"
