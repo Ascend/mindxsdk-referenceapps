@@ -448,7 +448,7 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
             }
         }
     }
-
+    objectInfos.clear();
     return ret;
 }
 
@@ -596,6 +596,7 @@ void vehicleAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
             printf("%s\n", attribute.attrValue.c_str());
         }
     }
+    attributeResVec.clear();
 }
 
 void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::ImageProcessor *&imageProcessor,
@@ -647,6 +648,9 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
         carPlateRecognitionInputImage.channelID = channelID;
         carPlateRecognitionInputImageVec.push_back(carPlateRecognitionInputImage);
     }
+    carPlateRexCropResizedImageVec.clear();
+    carPlateRecCropConfigVec.clear();
+    objectInfos.clear();
 }
 
 void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&carPlateRecModel,
@@ -668,6 +672,7 @@ void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Mo
     }
     std::vector<CarPlateAttr> attributeResVec;
     carPlateRecPostProcessor->Process(carPlateRecOutputVec, attributeResVec);
+    attributeResVec.clear();
 }
 
 void pedestrianAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&PedestrianAttrModel,
@@ -713,6 +718,7 @@ void pedestrianFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mode
     std::vector<float> featureVec;
     resNetFeaturePostProcess(resnetOutput, featureVec, true);
     printf("Pedestrian Feature Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
+    featureVec.clear();
 }
 
 void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceLandmarkModel,
@@ -741,6 +747,7 @@ void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&f
         printf("%f ", keyPoint);
     }
     printf("\n");
+    faceInfo.keyPoints.clear();
 }
 
 void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImageProcessor *&imageProcessor,
@@ -788,6 +795,10 @@ void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImagePro
         tmpPreprocessedImage.channelID = channelID;
         faceAlignedImageVec.push_back(tmpPreprocessedImage);
     }
+    faceAlignmentResizeImageVec.clear();
+    keyPointInfoVec.clear();
+    alignedResVec.clear();
+    preprocessedImage.faceInfo.keyPoints.clear();
 }
 
 void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceAttrModel,
@@ -827,6 +838,8 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     std::vector<float> featureVec;
     resNetFeaturePostProcess(featureOutputs, featureVec, true);
     printf("Face Feature Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
+    faceAttrVec.clear();
+    featureVec.clear();
 }
 
 bool checkPathExists(std::string& filePath) {
@@ -1042,6 +1055,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         vehicleAttrModel,
                                                                                         vehicleAttrPostprocessor);
                                                                                 }
+                                                                                vehicleAttrInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1060,6 +1074,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         carPlateDetectPostProcessor,
                                                                                         carPlateRecognitionInputImageBuffer[pf.line()]);
                                                                                 }
+                                                                                carPlateRecognitionInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1076,6 +1091,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         carPlateRecognitionModel,
                                                                                         carPlateRecognitionPostProcessor);
                                                                                 }
+                                                                                carPlateRecognitionInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1092,6 +1108,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         pedestrianAttrModel,
                                                                                         pedestrianAttrPostProcessor);
                                                                                 }
+                                                                                pedestrianAttrInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1107,6 +1124,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         preprocessedImage,
                                                                                         pedestrianFeatureModel);
                                                                                 }
+                                                                                pedestrianFeatureInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1140,6 +1158,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         faceAlignmentProcessor,
                                                                                         faceAlignedImageBuffer[pf.line()]);
                                                                                 }
+                                                                                faceLandmarkInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 

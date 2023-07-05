@@ -70,6 +70,9 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 └── README.zh.md
 ```
 
+### 1.4 约束
+视频要求h264
+
 ## 2 模型下载与转换
 
 **步骤1：** 在项目根目录下 AllObjectStructuring2/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuringV2/AllObjectsStructuringV2_models.zip)，并放到项目根目录下 AllObjectStructuring2/models/ 目录下。
@@ -181,6 +184,13 @@ std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
 
 ```
+如果是不同名称的264视频，则手动批量添加
+```
+std::vector<std::string> filePaths(numChannel);
+filepaths[0] = "../xxx/xxx.264"
+filepaths[1] = "../xxx/xxx.264"
+...
+
 **步骤2：** 根据下面的文档，[创建网络视频流](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)
 
 
