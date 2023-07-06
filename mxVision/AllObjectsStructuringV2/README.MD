@@ -142,6 +142,13 @@ std::string faceFeatureModelPath = "../models/facefeature/face_feature_batch_1.o
 ```
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
 ```
+如果是不同名称的264视频，则手动批量添加
+```
+std::vector<std::string> filePaths(numChannel);
+filepaths[0] = "../xxx/xxx.264"
+filepaths[1] = "../xxx/xxx.264"
+...
+```
 
 
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
@@ -182,14 +189,8 @@ make -j
 ```
 std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控制帧率，如需通过rtsp获取视频流，请将其注释
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
+```
 
-```
-如果是不同名称的264视频，则手动批量添加
-```
-std::vector<std::string> filePaths(numChannel);
-filepaths[0] = "../xxx/xxx.264"
-filepaths[1] = "../xxx/xxx.264"
-...
 
 **步骤2：** 根据下面的文档，[创建网络视频流](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)
 
@@ -206,13 +207,13 @@ filepaths[1] = "../xxx/xxx.264"
 ...
 
 ```
+
 将std::fill这一行代码注释后，在下面添加以下代码，用于网络拉流。
 ```
 for (size_t i = 0; i < numChannel; i++) {
     int port = ${port} + i;
     filePaths[i] = "rtsp://${ip_address}:" + std::to_string(port) + "/test.264"
 }
-
 ```
 + port:起始端口
 + nums:端口数量
