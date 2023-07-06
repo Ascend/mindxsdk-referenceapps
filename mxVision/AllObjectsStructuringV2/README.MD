@@ -71,7 +71,9 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 ```
 
 ### 1.4 约束
-视频要求h264
+视频约束
+- h264 
+- 1080P@25FPS
 
 ## 2 模型下载与转换
 
@@ -218,8 +220,8 @@ for (size_t i = 0; i < numChannel; i++) {
 + port:起始端口
 + nums:端口数量
 + ip_address:ip地址
-如果是不同名称的264视频，则手动批量添加
 ```
+# 如果是不同名称的264视频，则手动批量添加
 std::vector<std::string> filePaths(numChannel);
 filepaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
 filepaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
