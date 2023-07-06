@@ -147,8 +147,8 @@ std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rts
 如果是不同名称的264视频，则手动批量添加
 ```
 std::vector<std::string> filePaths(numChannel);
-filepaths[0] = "../xxx/xxx.264"
-filepaths[1] = "../xxx/xxx.264"
+filePaths[0] = "../xxx/xxx.264"
+filePaths[1] = "../xxx/xxx.264"
 ...
 ```
 
@@ -223,8 +223,8 @@ for (size_t i = 0; i < numChannel; i++) {
 ```
 # 如果是不同名称的264视频，则手动批量添加
 std::vector<std::string> filePaths(numChannel);
-filepaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
-filepaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+filePaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+filePaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
 ...
 
 ```
