@@ -843,17 +843,18 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
 }
 
 bool checkPathExists(std::string& filePath) {
-    char path[PATH_MAX + 1] = { 0x00};
-    char *ret = realpath(filePath.c_str(), path);
+
+    char* resolvedPath = new char(PATH_MAX);
+    char *ret = realpath(filePath, resolvedPath); 
     if (ret == nullptr) {
         LogError << "realpath parsing failed";
         return false;
     }
-    struct stat buffer{};
+    struct stat buffer {};
     return (stat(filePath.c_str(), &buffer) == 0);
 }
 
-bool checkResources(){
+bool checkResources() {
     resourcePaths.insert(std::make_pair("yoloModelPath", yoloModelPath));
     resourcePaths.insert(std::make_pair("yoloConfigPath", yoloConfigPath));
     resourcePaths.insert(std::make_pair("yoloLabelPath", yoloLabelPath));
@@ -875,7 +876,7 @@ bool checkResources(){
     resourcePaths.insert(std::make_pair("faceFeatureModelPath", faceFeatureModelPath));
 
     for (auto& path: resourcePaths) {
-        if (not checkPathExists(path.second)){
+        if (not checkPathExists(path.second)) {
             LogError << path.first << " does not exist, please check";
             return false;
         }
@@ -1201,7 +1202,7 @@ int main(int argc, char *argv[])
     MxBase::MxInit();
     av_register_all();
     avformat_network_init();
-    if (not check_params_valid()){
+    if (not check_params_valid()) {
         LogError << "params are invalid, please check.";
         return 1;
     }
