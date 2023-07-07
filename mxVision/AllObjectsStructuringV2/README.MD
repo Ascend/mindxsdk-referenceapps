@@ -70,6 +70,11 @@ eg：推荐系统为ubuntu 18.04或centos 7.6，环境依赖软件和版本如�
 └── README.zh.md
 ```
 
+### 1.4 约束
+视频约束
+- h264 
+- 1080P@25FPS
+
 ## 2 模型下载与转换
 
 **步骤1：** 在项目根目录下 AllObjectStructuring2/ 创建目录models `mkdir models` ，获取[模型](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/mxVision/AllObjectsStructuringV2/AllObjectsStructuringV2_models.zip)，并放到项目根目录下 AllObjectStructuring2/models/ 目录下。
@@ -139,6 +144,13 @@ std::string faceFeatureModelPath = "../models/facefeature/face_feature_batch_1.o
 ```
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
 ```
+如果是不同名称的264视频，则手动批量添加
+```
+std::vector<std::string> filePaths(numChannel);
+filePaths[0] = "../xxx/xxx.264"
+filePaths[1] = "../xxx/xxx.264"
+...
+```
 
 
 **步骤3：** 在main.cpp中修改视频路数以及并行度。
@@ -179,8 +191,9 @@ make -j
 ```
 std::this_thread::sleep_for(std::chrono::milliseconds(FPSSleep30)); // 手动控制帧率，如需通过rtsp获取视频流，请将其注释
 std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rtsp获取视频流，请将其注释。
-
 ```
+
+
 **步骤2：** 根据下面的文档，[创建网络视频流](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/reference_material/Live555%E7%A6%BB%E7%BA%BF%E8%A7%86%E9%A2%91%E8%BD%ACRTSP%E8%AF%B4%E6%98%8E%E6%96%87%E6%A1%A3.md)
 
 
@@ -196,22 +209,22 @@ std::fill(filePaths.begin(), filePaths.end(), "../test.264"); // 如需通过rts
 ...
 
 ```
+
 将std::fill这一行代码注释后，在下面添加以下代码，用于网络拉流。
 ```
 for (size_t i = 0; i < numChannel; i++) {
     int port = ${port} + i;
     filePaths[i] = "rtsp://${ip_address}:" + std::to_string(port) + "/test.264"
 }
-
 ```
 + port:起始端口
 + nums:端口数量
 + ip_address:ip地址
-如果是不同名称的264视频，则手动批量添加
 ```
+# 如果是不同名称的264视频，则手动批量添加
 std::vector<std::string> filePaths(numChannel);
-filepaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
-filepaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+filePaths[0] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
+filePaths[1] = "rtsp://xxx.xxx.xxx.xxx:xxxx/xxx.264"
 ...
 
 ```
@@ -241,3 +254,12 @@ Failed to get model, the model path is invalidate.
 
 **解决方案：**
 可执行文件main和模型相对路径不匹配，确认可执行文件和model目录相对路径，或者在main.cpp中直接使用模型全路径。
+
+### 3.2 拉2k/4k视频流时，显示decoded image is invalid
+
+**问题描述：**
+
+decoded image is invalid
+
+**解决方案：**
+根据实际视频流宽高信息修改allobjectStructure.h中FRAME_WIDTH和FRAME_HEIGHT。

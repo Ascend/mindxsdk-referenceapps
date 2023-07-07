@@ -21,6 +21,7 @@
 #include <iostream>
 #include <queue>
 #include <memory>
+#include <sys/stat.h>
 #include "unistd.h"
 
 #include "MxBase/Maths/FastMath.h"
@@ -84,6 +85,8 @@ std::string faceAttributeConfigPath = "configure.cfg";
 std::string faceAttributeLabelPath = "label.names";
 
 std::string faceFeatureModelPath = "model.om";
+
+std::map<std::string, std::string> resourcePaths;
 
 uint32_t deviceID = 0;
 std::vector<uint32_t> deviceIDs(numChannel, deviceID);
@@ -299,6 +302,10 @@ void StreamPull(AVFormatContext *&pFormatCtx, std::string filePath)
 {
     pFormatCtx = avformat_alloc_context();
     pFormatCtx = CreateFormatContext(filePath);
+    if (pFormatCtx == nullptr) {
+        LogError << "pFormatCtx is null, invalid stream, please check";
+        return;
+    }
     av_dump_format(pFormatCtx, 0, filePath.c_str(), 0);
 }
 
@@ -333,10 +340,26 @@ void resNetFeaturePostProcess(std::vector<MxBase::Tensor> &inferOutputs, std::ve
     return;
 }
 
+bool checkImageValid(MxBase::Image &image) {
+    if (image.GetOriginalSize().width == 0 || image.GetOriginalSize().width == 0) {
+        printf("image width or height is 0, please check.\n");
+        return false;
+    }
+
+    return true;
+}
+
 void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &frameImage, MxBase::Image &resizedImage)
 {
+    if (frameImage.image.GetData() == nullptr) {
+        printf("decoded image is invalid\n");
+    }
     MxBase::Size size(YOLO_INPUT_WIDTH, YOLO_INPUT_HEIGHT);
     MxBase::Interpolation interpolation = MxBase::Interpolation::HUAWEI_HIGH_ORDER_FILTER;
+    if (not checkImageValid(frameImage.image)) {
+        printf("frame image is invalid, skip preProcess and continue\n");
+        return;
+    }
     APP_ERROR ret = imageProcessor->Resize(frameImage.image, size, resizedImage, interpolation);
     if (ret != APP_ERR_OK)
     {
@@ -346,6 +369,13 @@ void yoloImagePreProcess(MxBase::ImageProcessor *&imageProcessor, FrameImage &fr
 
 void yoloModelInfer(MxBase::Model *&yoloModel, MxBase::Image &resizedImage, std::vector<MxBase::Tensor> &outputs)
 {
+    if (resizedImage.GetData() == nullptr) {
+        printf("resized image is invalid\n");
+    }
+    if (not checkImageValid(resizedImage)) {
+        printf("resized image is invalid, skip infer and continue\n");
+        return;
+    }
     MxBase::Tensor imageToTensor = resizedImage.ConvertToTensor();
     std::vector<MxBase::Tensor> inputs = {};
     inputs.push_back(imageToTensor);
@@ -361,6 +391,17 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
                           std::pair<FrameImage, std::vector<MxBase::ObjectInfo>> &selectedObjectsPerFrame,
                           MxBase::Yolov3PostProcess *&yoloPostProcessor, MultiObjectTracker *&multiObjectTracker)
 {
+    if (resizedImage.GetData() == nullptr) {
+        printf("resized image is invalid\n");
+    }
+    if (not checkImageValid(resizedImage)) {
+        printf("resized image is invalid, skip postprocess and continue\n");
+        return APP_ERR_FAILURE;
+    }
+    if (not checkImageValid(frameImage.image)) {
+        printf("frameImage is invalid, skip postprocess and continue\n");
+        return APP_ERR_FAILURE;
+    }
     MxBase::ResizedImageInfo resizedImageInfo;
     resizedImageInfo.heightOriginal = frameImage.image.GetSize().height;
     resizedImageInfo.widthOriginal = frameImage.image.GetSize().width;
@@ -407,7 +448,7 @@ APP_ERROR yoloPostProcess(std::vector<MxBase::Tensor> &outputs, FrameImage &fram
             }
         }
     }
-
+    objectInfos.clear();
     return ret;
 }
 
@@ -555,6 +596,7 @@ void vehicleAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
             printf("%s\n", attribute.attrValue.c_str());
         }
     }
+    attributeResVec.clear();
 }
 
 void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::ImageProcessor *&imageProcessor,
@@ -606,6 +648,9 @@ void carPlateDetectionProcess(PreprocessedImage &preprocessedImage, MxBase::Imag
         carPlateRecognitionInputImage.channelID = channelID;
         carPlateRecognitionInputImageVec.push_back(carPlateRecognitionInputImage);
     }
+    carPlateRexCropResizedImageVec.clear();
+    carPlateRecCropConfigVec.clear();
+    objectInfos.clear();
 }
 
 void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&carPlateRecModel,
@@ -627,6 +672,7 @@ void carPlateRecognitionProcess(PreprocessedImage &preprocessedImage, MxBase::Mo
     }
     std::vector<CarPlateAttr> attributeResVec;
     carPlateRecPostProcessor->Process(carPlateRecOutputVec, attributeResVec);
+    attributeResVec.clear();
 }
 
 void pedestrianAttributionProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&PedestrianAttrModel,
@@ -672,6 +718,7 @@ void pedestrianFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mode
     std::vector<float> featureVec;
     resNetFeaturePostProcess(resnetOutput, featureVec, true);
     printf("Pedestrian Feature Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
+    featureVec.clear();
 }
 
 void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceLandmarkModel,
@@ -700,6 +747,7 @@ void faceLandmarkProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&f
         printf("%f ", keyPoint);
     }
     printf("\n");
+    faceInfo.keyPoints.clear();
 }
 
 void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImageProcessor *&imageProcessor,
@@ -747,6 +795,10 @@ void faceAlignmentProcess(PreprocessedImage &preprocessedImage, MxBase::ImagePro
         tmpPreprocessedImage.channelID = channelID;
         faceAlignedImageVec.push_back(tmpPreprocessedImage);
     }
+    faceAlignmentResizeImageVec.clear();
+    keyPointInfoVec.clear();
+    alignedResVec.clear();
+    preprocessedImage.faceInfo.keyPoints.clear();
 }
 
 void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Model *&faceAttrModel,
@@ -786,6 +838,50 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
     std::vector<float> featureVec;
     resNetFeaturePostProcess(featureOutputs, featureVec, true);
     printf("Face Feature Result,frame ID: %d, channel ID: %d\n", frameID, channelID);
+    faceAttrVec.clear();
+    featureVec.clear();
+}
+
+bool checkPathExists(std::string& filePath) {
+    char* resolvedPath = new char(PATH_MAX);
+    char* ret;
+    ret = realpath(filePath, resolvedPath); 
+    if (ret == nullptr) {
+        LogError << "realpath parsing failed";
+        return false;
+    }
+    struct stat buffer {};
+    return (stat(filePath.c_str(), &buffer) == 0);
+}
+
+bool checkResources() {
+    resourcePaths.insert(std::make_pair("yoloModelPath", yoloModelPath));
+    resourcePaths.insert(std::make_pair("yoloConfigPath", yoloConfigPath));
+    resourcePaths.insert(std::make_pair("yoloLabelPath", yoloLabelPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrModelPath", vehicleAttrModelPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrConfigPath", vehicleAttrConfigPath));
+    resourcePaths.insert(std::make_pair("vehicleAttrLabelPath", vehicleAttrLabelPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectModelPath", carPlateDetectModelPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectConfigPath", carPlateDetectConfigPath));
+    resourcePaths.insert(std::make_pair("carPlateDetectLabelPath", carPlateDetectLabelPath));
+    resourcePaths.insert(std::make_pair("carPlateRecModelPath", carPlateRecModelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrModelPath", pedestrianAttrModelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrLabelPath", pedestrianAttrLabelPath));
+    resourcePaths.insert(std::make_pair("pedestrianAttrConfigPath", pedestrianAttrConfigPath));
+    resourcePaths.insert(std::make_pair("pedestrianFeatureModelPath", pedestrianFeatureModelPath));
+    resourcePaths.insert(std::make_pair("faceLandmarkModelPath", faceLandmarkModelPath));
+    resourcePaths.insert(std::make_pair("faceAttributeModelPath", faceAttributeModelPath));
+    resourcePaths.insert(std::make_pair("faceAttributeConfigPath", faceAttributeConfigPath));
+    resourcePaths.insert(std::make_pair("faceAttributeLabelPath", faceAttributeLabelPath));
+    resourcePaths.insert(std::make_pair("faceFeatureModelPath", faceFeatureModelPath));
+
+    for (auto& path: resourcePaths) {
+        if (not checkPathExists(path.second)) {
+            LogError << path.first << " does not exist, please check";
+            return false;
+        }
+    }
+    return true;
 }
 
 void initResources()
@@ -960,6 +1056,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         vehicleAttrModel,
                                                                                         vehicleAttrPostprocessor);
                                                                                 }
+                                                                                vehicleAttrInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -978,6 +1075,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         carPlateDetectPostProcessor,
                                                                                         carPlateRecognitionInputImageBuffer[pf.line()]);
                                                                                 }
+                                                                                carPlateRecognitionInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -994,6 +1092,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         carPlateRecognitionModel,
                                                                                         carPlateRecognitionPostProcessor);
                                                                                 }
+                                                                                carPlateRecognitionInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1010,6 +1109,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         pedestrianAttrModel,
                                                                                         pedestrianAttrPostProcessor);
                                                                                 }
+                                                                                pedestrianAttrInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1025,6 +1125,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         preprocessedImage,
                                                                                         pedestrianFeatureModel);
                                                                                 }
+                                                                                pedestrianFeatureInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1058,6 +1159,7 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                                                                                         faceAlignmentProcessor,
                                                                                         faceAlignedImageBuffer[pf.line()]);
                                                                                 }
+                                                                                faceLandmarkInputImageBuffer[pf.line()].clear();
                                                                             }
                                                                         }
 
@@ -1082,11 +1184,31 @@ void dispatchParallelPipeline(int batch, tf::Pipeline<tf::Pipe<std::function<voi
                           }};
 }
 
+bool check_params_valid() {
+    if (numChannel < 1) {
+        LogError << "Invalid num channel, please check";
+        return false;
+    }
+    
+    if (numChannel / numWorker != numLines) {
+        LogError << "numChannel / numWoker != numLines, please check.";
+        return false;
+    }
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
     MxBase::MxInit();
     av_register_all();
     avformat_network_init();
+    if (not check_params_valid()) {
+        LogError << "params are invalid, please check.";
+        return 1;
+    }
+    if (not checkResources()) {
+        return 1;
+    }
     initResources();
     sleep(INIT_RESOURCE_TIME);
     std::vector<std::string> filePaths(numChannel);
@@ -1119,6 +1241,7 @@ int main(int argc, char *argv[])
             StreamPull(pFormatCtx[i], filePaths[i]);
             if (pFormatCtx[i] == nullptr) {
                 printf("is nullptr\n");
+                return;
             }
             VideoDecode(pFormatCtx[i], pkt[i], decodedFrameQueueList[i % numWorker], i, frameIDs[i], deviceIDs[i], videoDecoder[i], decodeEOF[i], executor);
             delete videoDecoder[i]; });

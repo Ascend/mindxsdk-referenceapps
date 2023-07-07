@@ -18,7 +18,13 @@
 
 std::pair<FrameImage, MxBase::ObjectInfo> MultiObjectTracker::GetTrackLetBuffer(uint32_t trackID)
 {
-    return trackLetBuffer_[trackID];
+    std::map<uint32_t, std::pair<FrameImage, MxBase::ObjectInfo>>::iterator iter = trackLetBuffer_.find(trackID);
+    std::pair<FrameImage, MxBase::ObjectInfo> trackLetBufferPair;
+    if (iter != trackLetBuffer_.end()) {
+        trackLetBufferPair = iter->second;
+        trackLetBuffer_.erase(trackID);
+    }
+    return trackLetBufferPair;
 }
 
 void MultiObjectTracker::Process(FrameImage &frameImage, std::vector<MxBase::ObjectInfo> &detectedObjectInfos, std::vector<TrackLet> &trackLetList)
