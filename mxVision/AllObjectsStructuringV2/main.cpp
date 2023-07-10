@@ -843,9 +843,8 @@ void faceAttrAndFeatureProcess(PreprocessedImage &preprocessedImage, MxBase::Mod
 }
 
 bool checkPathExists(std::string& filePath) {
-    char* resolvedPath = new char(PATH_MAX);
-    char* ret;
-    ret = realpath(filePath, resolvedPath); 
+    char path[PATH_MAX + 1] = { 0x00 };
+    char *ret = realpath(filePath.c_str(), path);
     if (ret == nullptr) {
         LogError << "realpath parsing failed";
         return false;
