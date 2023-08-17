@@ -11,20 +11,20 @@
 
 class HandoutProcess : public ascendOCR::ModuleBase {
 public:
-	HandoutProcess();
-	~HandoutProcess();
-	APP_ERROR Init(ConfigParser &configParser, ascendOCR::ModuleInitParams &initParams);
-	APP_ERROR DeInit(void);
+    HandoutProcess();
+    ~HandoutProcess();
+    APP_ERROR Init(ConfigParser &configParser, ascendOCR::ModuleInitParams &initParams);
+    APP_ERROR DeInit(void);
 
 protected:
-	APP_ERROR Process(std::shared_ptr<void> inputData);
+    APP_ERROR Process(std::shared_ptr<void> inputData);
 
 private:
-	int imgId_ = 0;
-	std::string deviceType_;
-	APP_ERROR ParseConfig(ConfigParser &configParser);
-	bool saveInferResult;
-	std::string resultPath;
+    int imgId_ = 0;
+    std::string deviceType_;
+    APP_ERROR ParseConfig(ConfigParser &configParser);
+    bool saveInferResult;
+    std::string resultPath;
 };
 MODULE_REGIST(HandOutProcess)
 #endif
