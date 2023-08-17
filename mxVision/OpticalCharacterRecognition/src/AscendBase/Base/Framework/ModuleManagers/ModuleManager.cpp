@@ -31,7 +31,6 @@ namespace ascendOCR {
     {
         LogDebug << "ModuleManager: begin to init module instance." << moduleName;
         ModuleInitParams initParams;
-
         initParams.pipelineName = pipelineName;
         initParams.moduleName = moduleName;
         initParams.moduleName = instanceId;
@@ -178,7 +177,6 @@ namespace ascendOCR {
         std::shared_ptr<ModuleBase> moduleInstance;
         for (auto pipelineIter = pipelineMap_.begin(); pipelineIter != pipelineMap_.end(); pipelineIter++) {
             modulesInfoMap = pipelineIter->second;
-
             for (auto iter = modulesInfoMap.begin(); iter != modulesInfoMap.end(); iter++) {
                 ModulesInfo modulesInfo = iter->second;
                 for (uint32_t i = 0; i < modulesInfo.moduleVec.size(); i++) {
@@ -229,11 +227,9 @@ namespace ascendOCR {
             for (auto iter = modulesInfoMap.begin(); iter != modulesInfoMap.end(); iter++) {
                 ModulesInfo modulesInfo = iter->second;
                 std::vector<std::thread> threadVec;
-
                 for (auto &moduleInstance : modulesInfo.moduleVec) {
                     threadVec.emplace_back(ModuleManager::StopModule, moduleInstance);
                 }
-                
                 for (auto &t : threadVec) {
                     t.join();
                 }
