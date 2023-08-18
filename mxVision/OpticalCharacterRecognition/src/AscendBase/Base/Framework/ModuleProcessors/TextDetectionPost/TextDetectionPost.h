@@ -16,7 +16,7 @@
 #ifndef TEXTDETECTIONPOST_H
 #define TEXTDETECTIONPOST_H
 
-#include <opencv/imgproc.hpp>
+#include <opencv2/imgproc.hpp>
 #include "Log/Log.h"
 #include "Utils/Utils.h"
 #include "ErrorCode/ErrorCode.h"
@@ -43,7 +43,7 @@ public:
     ~TextDetectionPost() {};
 
     APP_ERROR CharacterDetectionOutput(std::vector<MxBase::Tensor> &singleResult,
-        std::vector<std::vector<TextObjectInfo>> &TextObjInfos, const std::vector<ResizeImageInfo> &ResizeImageInfos);
+        std::vector<std::vector<TextObjectInfo>> &textObjInfos, const std::vector<ResizedImageInfo> &resizeImageInfos);
 
 private:
     void FilterByMinSize(std::vector<cv::Point> &contour, std::vector<cv::Point2f> &box, float &minSide);
@@ -52,8 +52,8 @@ private:
 
     void FilterByClippedMinSize(std::vector<cv::Point2f> &box, float &minSide);
 
-    void ConstructInfo(std::vector<TextObjectInfo> &TextObjectInfo, std::vector<cv::Point2f> &box, 
-        const std::vector<ResizeImageInfo> &ResizeImageInfos, const uint32_t &index, float score);
+    void ConstructInfo(std::vector<TextObjectInfo> &textObjectInfo, std::vector<cv::Point2f> &box, 
+        const std::vector<ResizedImageInfo> &resizeImageInfos, const uint32_t &index, float score);
 
     const int NpClip(const int &coordinate, const int &sideLen);
 

@@ -1,5 +1,5 @@
 /*
-* Copyright 2021 Huawei Technologies Co., Ltd 2022-2022. All rights reserved.
+* Copyright (c) Huawei Technologies Co., Ltd 2022-2022. All rights reserved.
 * Description: signal control.
 * Author: MindX SDK
 * Create: 2022

@@ -26,7 +26,7 @@ static const int DEFAULT_MAX_QUEUE_SIZE = 256;
 
 template < typename T> class BlockingQueue {
 public:
-    BlockingQueue(uint32_t maxSizee = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stoped_(false) {}
+    BlockingQueue(uint32_t maxSize = DEFAULT_MAX_QUEUE_SIZE) : max_size_(maxSize), is_stoped_(false) {}
 
     ~BlockingQueue() {}
 
@@ -54,7 +54,7 @@ public:
         return APP_ERR_OK;
     }
 
-    APP_ERROR pop(T &item, unsigned int timeOutMs)
+    APP_ERROR Pop(T &item, unsigned int timeOutMs)
     {
         std::unique_lock<std::mutex> lock(mutex_);
         auto realTime = std::chrono::milliseconds(timeOutMs);
@@ -174,7 +174,7 @@ public:
         return &mutex_;
     }
 
-    APP_ERROR isFull()
+    APP_ERROR IsFull()
     {
         std::unique_lock<std::mutex> lock(mutex_);
         return queue_.size() >= max_size_;
@@ -188,7 +188,24 @@ public:
 
     APP_ERROR IsEmpty()
     {
-
+        std::unique_lock<std::mutex> lock(mutex_);
+        return queue_.empty();
     }
-}
+
+    void Clear()
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_.clear();
+    }
+
+private:
+    std::list<T> queue_;
+    std::mutex mutex_;
+    std::condition_variable empty_cond_;
+    std::condition_variable full_cond_;
+    uint32_t max_size_;
+
+    bool is_stoped_;
+};
+#endif
 

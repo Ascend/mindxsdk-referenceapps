@@ -30,12 +30,12 @@
 class ConfigParser {
 public:
     // Read the config file and save the useful information with the key-value pairs format in configData_
-    APP_ERROR ParseConfig(const std::string &filename);
+    APP_ERROR ParseConfig(const std::string &fileName);
     // Get the string value by key name
     APP_ERROR GetStringValue(const std::string &name, std::string &value) const;
     // Get the int value by key name
     APP_ERROR GetIntValue(const std::string &name, int &value) const;
-    // Get the bool balue by key name
+    // Get the bool value by key name
     APP_ERROR GetBoolValue(const std::string &name, bool &value) const;
     // Get the vector by key name, split by ","
     APP_ERROR GetVectorUint32Value(const std::string &name, std::vector<uint32_t> &vector) const;

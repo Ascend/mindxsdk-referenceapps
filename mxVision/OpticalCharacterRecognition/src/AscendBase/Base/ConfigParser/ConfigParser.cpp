@@ -22,9 +22,9 @@ namespace {
 const char COMMENT_CHARATER = '#';
 
 // Breaks the string at the separator (char) and returns a list of strings
-void Split(const std::string &instring, std::vector<std::string> &outVector, const char delimiter)
+void Split(const std::string &inString, std::vector<std::string> &outVector, const char delimiter)
 {
-    std::stringstream ss(instring);
+    std::stringstream ss(inString);
     std::string item;
     while (std::getline(ss, item, delimiter)) {
         outVector.push_back(item);
@@ -35,11 +35,11 @@ void Split(const std::string &instring, std::vector<std::string> &outVector, con
 // Remove spaces from both left and right based on the string
 inline void ConfigParser::Trim(std::string &str) const
 {
-    str.erase(std.begin, std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun(::isspace))));
-    str.erase(std::find_if(str.rbegin(), str.rend(), str::not1(std::ptr_fun(::isspace))).base(), str.end());
+    str.erase(str.begin(), std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun(::isspace))));
+    str.erase(std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun(::isspace))).base(), str.end());
     return;
 }
-APP_ERROR ConfigParser::ParseConfig(const std::string &filename)
+APP_ERROR ConfigParser::ParseConfig(const std::string &fileName)
 {
     // Open the input file
     std::ifstream inFile(fileName);
@@ -58,7 +58,7 @@ APP_ERROR ConfigParser::ParseConfig(const std::string &filename)
         endPos = line.size() - 1;
         pos = line.find(COMMENT_CHARATER); // Find the position of comment
         if (pos != -1) {
-            if(pos == 0) {
+            if (pos == 0) {
                 continue;
             }
             endPos = pos - 1;
@@ -69,10 +69,10 @@ APP_ERROR ConfigParser::ParseConfig(const std::string &filename)
             continue;
         }
         std::string na = newLine.substr(0, pos);
-        Trim(na); // Delete the ssapce of the key name
+        Trim(na); // Delete the space of the key name
         std::string value = newLine.substr(pos + 1, endPos + 1 - (pos + 1));
-        Trim(value);
-        configData_.insert(std::make_pair(na, value));
+        Trim(value); // Delete the space of value
+        configData_.insert(std::make_pair(na, value)); // Insert the key-value pairs into configData_
     }
     return APP_ERR_OK;
 }
@@ -107,11 +107,11 @@ APP_ERROR ConfigParser::GetBoolValue(const std::string &name, bool &value) const
         return APP_ERR_COMM_NO_EXIST;
     }
     std::string str = configData_.find(name)->second;
-    if(str == 'true') {
+    if (str == "true") {
         value = true;
-    } else if(str == 'false') {
+    } else if (str == "false") {
         value = false;
-    } else{
+    } else {
         return APP_ERR_COMM_INVALID_PARAM;
     }
     return APP_ERR_OK;

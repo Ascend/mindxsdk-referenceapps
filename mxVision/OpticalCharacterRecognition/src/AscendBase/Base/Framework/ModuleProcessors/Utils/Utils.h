@@ -1,5 +1,5 @@
 /*
-* Copyright 2021 Huawei Technologies Co., Ltd 2022-2022. All rights reserved.
+* Copyright (c) Huawei Technologies Co., Ltd 2022-2022. All rights reserved.
 * Description: Util data struct.
 * Author: MindX SDK
 * Create: 2022
@@ -27,7 +27,7 @@
 #include <opencv2/opencv.hpp>
 
 // class for text object detection
-class __attribute__((visibility("defualt"))) TextObjectInfo {
+class __attribute__((visibility("default"))) TextObjectInfo {
 public:
     float x0;
     float y0;
@@ -42,7 +42,7 @@ public:
 };
 
 //class for resized image info
-class __attribute__((visibility("defualt"))) ResizedImageInfo {
+class __attribute__((visibility("default"))) ResizedImageInfo {
 public:
     uint32_t widthResize; // memoryWidth
     uint32_t heightResize; // memoryHeight
@@ -52,7 +52,7 @@ public:
 };
 
 //class for text generation (i.e. translation, OCR)
-class __attribute__((visibility("defualt"))) TextsInfo {
+class __attribute__((visibility("default"))) TextsInfo {
 public:
     std::vector<std::string> text;
 };
@@ -71,22 +71,22 @@ public:
 
     static void LoadFromFilePair(const std::string &filename, std::vector<std::pair<uint64_t, uint64_t>> &vec);
 
-    static void SaveFromFilePair(const std::string &filename, std::vector<std::pair<uint64_t, uint64_t>> &vec);
+    static void SaveToFilePair(const std::string &filename, std::vector<std::pair<uint64_t, uint64_t>> &vec);
 
     static void LoadFromFileVec(const std::string &filename, std::vector<uint64_t> &vec);
 
-    static void SaveFromFileVec(const std::string &filename, std::vector<uint64_t> &vec);
+    static void SaveToFileVec(const std::string &filename, std::vector<uint64_t> &vec);
 
     static bool PairCompare(std::pair<uint64_t, uint64_t> p1, std::pair<uint64_t, uint64_t> p2);
 
     static bool GearCompare(std::pair<uint64_t, uint64_t> p1, std::pair<uint64_t, uint64_t> p2);
 
-    static bool UintCompair(uint64_t num1, uint64_t num2);
+    static bool UintCompare(uint64_t num1, uint64_t num2);
 
     static bool ModelCompare(MxBase::Model *model1, MxBase::Model *model2);
 
     static void GetAllFiles(const std::string &dirName, std::vector<std::string> &files);
-    static bool EndWith(std::string const & value, std::string const & ending);
+    static bool EndsWith(std::string const & value, std::string const & ending);
 
     static void StrSplit(const std::string &str, const std::string &pattern, std::vector<std::string> &vec);
 
