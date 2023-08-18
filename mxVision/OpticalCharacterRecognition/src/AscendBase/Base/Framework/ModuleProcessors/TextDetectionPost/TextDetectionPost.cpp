@@ -19,17 +19,17 @@
 #include "clipper.hpp"
 #include "TextDetectionPost.h"
 
-TextDetectionPost::TextDectionPost(void) {}
+TextDetectionPost::TextDetectionPost(void) {}
 
 APP_ERROR TextDetectionPost::CharacterDetectionOutput(std::vector<MxBase::Tensor> &singleResult, 
-        std::vector<std::vector<TextObjectInfo>> &textObjInfos, const std::vector<ResizeImageInfo> &resizeImageInfos)
+        std::vector<std::vector<TextObjectInfo>> &textObjInfos, const std::vector<ResizedImageInfo> &resizedImageInfos)
 {
     LogDebug << "TextDetectionPost start to write results.";
     uint32_t batchSize = singleResult.size();
     for (uint32_t i = 0; i < batchSize; i++) {
         auto ProbMap = (float *)(singleResult[0].GetData());
-        resizedH_ = ResizeImageInfos[i].heightResize;
-        resizedW_ = ResizeImageInfos[i].widthResize;
+        resizedH_ = resizedImageInfos[i].heightResize;
+        resizedW_ = resizedImageInfos[i].widthResize;
 
         std::vector<uchar> prob(resizedW_ * resizedH_, ' ');
         std::vector<float> fprob(resizedW_ * resizedH_, 0.f);
@@ -37,8 +37,8 @@ APP_ERROR TextDetectionPost::CharacterDetectionOutput(std::vector<MxBase::Tensor
             prob[j] = (uchar)(ProbMap[j] * MAX_VAL);
             fprob[j] = (float)ProbMap[j];
         }
-        cv::Mat mask(resizedH_, resizedW_,cv_8UC1, (uchar *)prob.data());
-        cv::Mat prediction(resizedH_, resizedW_, cv_32F, (float *)fprob.data());
+        cv::Mat mask(resizedH_, resizedW_,CV_8UC1, (uchar *)prob.data());
+        cv::Mat prediction(resizedH_, resizedW_, CV_32F, (float *)fprob.data());
         cv::Mat binmask;
 
         cv::threshold(mask, binmask, (float)(thresh_ * MAX_VAL), MAX_VAL, cv::THRESH_BINARY);
@@ -72,28 +72,28 @@ APP_ERROR TextDetectionPost::CharacterDetectionOutput(std::vector<MxBase::Tensor
                 continue;
             }
             // write box info into TextObjectInfo
-            ConstructInfo(textObjectInfo, box, ResizeImageInfos, i, score);
+            ConstructInfo(textObjectInfo, box, resizedImageInfos, i, score);
         }
         textObjInfos.emplace_back(std::move(textObjectInfo));
     }
 
-    return APP_ERROR_OK;
+    return APP_ERR_OK;
 }
 
 void TextDetectionPost::ConstructInfo(std::vector<TextObjectInfo> &textObjectInfo, std::vector<cv::Point2f> &box,
-    const std::vector<ResizeImageInfo> &resizeImageInfos, const uint32_t &index, float score)
+    const std::vector<ResizedImageInfo> &resizedImageInfos, const uint32_t &index, float score)
 {
-    uint32_t originWidth = resizeImageInfos[index].widthOriginal;
-    uint32_t originHeight = resizeImageInfos[index].heightOriginal;
+    uint32_t originWidth = resizedImageInfos[index].widthOriginal;
+    uint32_t originHeight = resizedImageInfos[index].heightOriginal;
     if (originWidth == 0 || originHeight == 0) {
-        LogError << GetError(APP_ERROR_DIVIDE_ZERO) << "the origin width or height must not equal to 0!";
+        LogError << GetError(APP_ERR_DIVIDE_ZERO) << "the origin width or height must not equal to 0!";
         return;
     }
     if (resizedW_ == 0 || resizedH_ == 0) {
-        LogError << GetError(APP_ERROR_DIVIDE_ZERO) << "the resized width or height must not equal to 0!";
+        LogError << GetError(APP_ERR_DIVIDE_ZERO) << "the resized width or height must not equal to 0!";
         return;
     }
-    float ratio = resizeImageInfos[index].ratio;
+    float ratio = resizedImageInfos[index].ratio;
 
     TextObjectInfo info;
     info.x0 = NpClip(std::round(box[POINT1].x / ratio), originWidth);
@@ -119,16 +119,16 @@ void TextDetectionPost::ConstructInfo(std::vector<TextObjectInfo> &textObjectInf
 void TextDetectionPost::FilterByMinSize(std::vector<cv::Point> &contour, std::vector<cv::Point2f> &box, float &minSide)
 {
     cv::Point2f cv_vertices[POINTNUM];
-    cv::RotateRect cvbox cv::minAreaRect(contour);
+    cv::RotatedRect cvbox = cv::minAreaRect(contour);
     float width = cvbox.size.width;
     float height = cvbox.size.height;
     minSide = std::min(width, height);
-    cvbox.points(cv_vertices)
+    cvbox.points(cv_vertices);
     // use vector to manage 4 vertices
     std::vector<cv::Point2f> vertices(cv_vertices, cv_vertices + POINTNUM);
     // sort the vertices by x-coordinates
-    std::sort(vertices.begin(),vertices.end(), SortByX);
-    std::sort(vertices.begin(), vertices.end() + POINT3, SortByY);
+    std::sort(vertices.begin(), vertices.end(), SortByX);
+    std::sort(vertices.begin(), vertices.begin() + POINT3, SortByY);
     std::sort(vertices.begin() + POINT3, vertices.end(), SortByY);
     //save the box
     box.push_back(vertices[POINT1]);
@@ -142,13 +142,13 @@ void TextDetectionPost::FilterByBoxScore(const cv::Mat &predictin, std::vector<c
     std::vector<cv::Point2f> tmpbox = box;
     std::sort(tmpbox.begin(), tmpbox.end(), SortByX);
 
-    // construct the max according to box coordinate.
-    int minX = NpClip(int(std::float(tmpbox.begin()->x)), resizedW_);
+    // construct the mask according to box coordinates.
+    int minX = NpClip(int(std::floor(tmpbox.begin()->x)), resizedW_);
     int maxX = NpClip(std::ceil(tmpbox.back().x), resizedW_);
     std::sort(tmpbox.begin(), tmpbox.end(), SortByY);
-    int minY = NpClip(int(std::float(tmpbox.begin()->y)), resizedH_);
-    int maxY = NpClip(std::ceil(tmpbox.back().y), resizedH_);
-    cv::Mat mask = cv::Mat::zeros(maxY- minY + 1, maxX - minX + 1, cv_8UC1);
+    int minY = NpClip(int(std::floor(tmpbox.begin()->y)), resizedH_);
+    int maxY = NpClip(int(std::ceil(tmpbox.back().y)), resizedH_);
+    cv::Mat mask = cv::Mat::zeros(maxY- minY + 1, maxX - minX + 1, CV_8UC1);
     cv::Mat predCrop;
     cv::Point abs_point[POINTNUM];
     for (int i = 0; i < POINTNUM; ++i) {
@@ -164,7 +164,7 @@ void TextDetectionPost::FilterByBoxScore(const cv::Mat &predictin, std::vector<c
     score = cv::mean(predCrop, mask)[0];
 }
 
-void TextDetectionPost::FilterByClippedMinSize(std::vector<cv::Point2f> &box, float &minSide)\
+void TextDetectionPost::FilterByClippedMinSize(std::vector<cv::Point2f> &box, float &minSide)
 {
     // calculate the clip distance
     float side01 = PointsL2Distance(box[POINT1], box[POINT2]);
@@ -176,7 +176,6 @@ void TextDetectionPost::FilterByClippedMinSize(std::vector<cv::Point2f> &box, fl
     float perimeter = side01 + side12 + side23 + side30;
     float k1 = (side01 + diag + side30) / INDEX2;
     float k2 = (side12 + diag + side23) / INDEX2;
-
     float area1 = std::sqrt(k1 * (k1 - side01) * (k1 - diag) * (k1 - side30));
     float area2 = std::sqrt(k2 * (k2 - side12) * (k2 - diag) * (k2 - side23));
 
@@ -188,7 +187,7 @@ void TextDetectionPost::FilterByClippedMinSize(std::vector<cv::Point2f> &box, fl
     for (auto point : box) {
         path.push_back(ClipperLib::IntPoint(int(point.x), int(point.y)));
     }
-    rect.AddPath(path, ClipperLib::jtRound, ClipperLib::etcClosedPolygon);
+    rect.AddPath(path, ClipperLib::jtRound, ClipperLib::etClosedPolygon);
     ClipperLib::Paths result;
     rect.Execute(result, distance);
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 Huawei Technologies Co., All rights reserved.
+* Copyright (c) 2020 Huawei Technologies Co., Ltd All rights reserved.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -21,8 +21,8 @@
 #include "ArgumentParser.h"
 
 namespace {
-    const int DEFAULT_LENGTH = 30;
-    const int MOD2 = 2;
+    const int DEFAULT_LENGTH = 30; // The length of delimiter for help information
+    const int MOD2 = 2; // Constant to make sure the parameters after ./main is pairs
 }
 
 ArgumentParser::ArgumentParser()
@@ -33,45 +33,45 @@ ArgumentParser::ArgumentParser()
 
 
 // Add options into the map
-void ArgumentParser::AddArgument(const std::string &argument, const std::string &defaults = "", const std::string &message="")
+void ArgumentParser::AddArgument(const std::string &argument, const std::string &defaults, const std::string &message)
 {
     argumentsMap_[argument] = std::make_pair(defaults, message);
 }
 
 
-// Construct a new Command Parser object according to the argumant
+// Construct a new Command Parser object according to the argument
 // Attention: This function may cause the program to exit directly
 ArgumentParser::ArgumentParser(int argc, const char **argv)
 {
     ParseArgs(argc, argv);
 }
 
-// Parse the input arguments
-void ArgumentParser::ParseArgs(int argc, const char **argv);
+// Attention: This function will cause the program to exit directly when calling DisplayHelpInformation()
+void ArgumentParser::ParseArgs(int argc, const char **argv)
 {
     if (argc % MOD2 == 0) {
         DisplayHelpInformation();
     }
-    for(int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         std::string input(argv[i]);
         if(input == "-h" || input == "-help") {
             DisplayHelpInformation();
         }
     }
-    for(int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         if (i + 1 < argc && argv[i][0] == '-' && argv[i + 1] [0] != '-') {
             ++i;
             continue;
         }
         DisplayHelpInformation();
     }
-    for(int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         if (argumentsMap_.find(argv[i]) == argumentsMap_.end()) {
             DisplayHelpInformation();
         }
         ++i;
     }
-    for(int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-') {
             if (i + 1 < argc && argv[i + 1][0] != '-') {
                 argumentsMap_[argv[i]].first = argv[i + 1];
@@ -93,7 +93,7 @@ const std::string &ArgumentParser::GetStringArgumentValue(const std::string &arg
 }
 
 // Get the int argument value
-const std::int ArgumentParser::GetIntArgumentValue(const std::string &argumentValue)
+const int ArgumentParser::GetIntArgumentValue(const std::string &argumentValue)
 {
     std::string valueStr = GetStringArgumentValue(argumentValue);
     if (!IsInteger(valueStr)) {
@@ -107,12 +107,12 @@ const std::int ArgumentParser::GetIntArgumentValue(const std::string &argumentVa
 }
 
 // Get the bool argument value
-const std::bool ArgumentParser::GetBoolArgumentValue(const std::string &argumentValue)
+const bool ArgumentParser::GetBoolArgumentValue(const std::string &argumentValue)
 {
     std::string valueStr = GetStringArgumentValue(argumentValue);
     if (valueStr == "true" || valueStr == "True" || valueStr == "TRUE") {
         return true;
-    } else if(valueStr == "false" || valueStr == "False" || valueStr == "FALSE") {
+    } else if (valueStr == "false" || valueStr == "False" || valueStr == "FALSE") {
         return false;
     } else {
         LogError << "GetBoolArgumentValue failed, make sure you set the correct value true or false,but not "
@@ -153,7 +153,7 @@ void ArgumentParser::DisplayHelpInformation() const
     }
     std::cout.setf(std::ios::right);
     std::cout << std::endl;
-    exit(0)；
+    exit(0);
 }
 
 bool ArgumentParser::IsInteger(std::string &str) const
@@ -185,7 +185,7 @@ bool ArgumentParser::IsDecimal(std::string &str) const
         }
     }
     if (dotNum <= 1) {
-        rturn true;
+        return true;
     } else {
         return false;
     }

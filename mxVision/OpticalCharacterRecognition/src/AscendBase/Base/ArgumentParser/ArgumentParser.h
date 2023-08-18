@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 Huawei Technologies Co., All rights reserved.
+* Copyright (c) 2020 Huawei Technologies Co. Ltd, All rights reserved.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -34,13 +34,13 @@ public:
     // Get the string argument value
     const std::string &GetStringArgumentValue(const std::string &argumentValue);
     // Get the int argument value
-    const std::int GetIntArgumentValue(const std::string &argumentValue);
+    const int GetIntArgumentValue(const std::string &argumentValue);
     // Get the bool argument value
-    const std::bool GetBoolArgumentValue(const std::string &argumentValue);
+    const bool GetBoolArgumentValue(const std::string &argumentValue);
 
 private:
-    std::map<std::string, std::pair<std::string, std::string>> argumentMap_;
-    // show the help information, then exit
+    std::map<std::string, std::pair<std::string, std::string>> argumentsMap_;
+    // Show the help information, then exit
     void DisplayHelpInformation() const;
     bool IsInteger(std::string &str) const;
     bool IsDecimal(std::string &str) const;
