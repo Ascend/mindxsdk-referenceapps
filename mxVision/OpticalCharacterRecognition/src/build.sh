@@ -2,7 +2,7 @@
 # Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
 # Description: mxOCR c++ build.
 # Author: MindX SDK
-# Created: 2022
+# Create: 2022
 # History: NA
 
 set -e
@@ -17,7 +17,7 @@ else
     export ARCH_PATTERN=x86_64-linux
 fi
 
-funciton main()
+function main()
 {
     local build_path=${current_path}/build
     [ -d "${build_path}" ] && rm -rf ${build_path}

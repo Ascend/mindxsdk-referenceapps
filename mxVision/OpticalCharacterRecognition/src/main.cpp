@@ -1,10 +1,10 @@
 /*
  * Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
  * Description: Main file.
- * Author:MindX SDK
+ * Author: MindX SDK
  * Create: 2022
  * History: NA
-*/
+ */
 
 #include "Utils.h"
 #include "Signal.h"
@@ -42,14 +42,14 @@ using namespace std;
 namespace{
 void SigHandler(int signal)
 {
-    if (signal == SIGNAL) {
+    if (signal == SIGINT) {
         Signal::signalRecieved = true;
     }
 }
 
 void ModuleDescGenerator(int device_num, std::vector<ascendOCR::ModuleDesc> &moduleDesc, bool isClassification)
 {
-    moduleDesc.push_back({ MT_HandOutProcess, 1});
+    moduleDesc.push_back({ MT_HandOutProcess, 1 });
     moduleDesc.push_back({ MT_DbnetPreProcess, static_cast<int>(std::ceil(0.6 * device_num)) });
     moduleDesc.push_back({ MT_DbnetInferProcess, static_cast<int>(std::ceil(1 * device_num)) });
     moduleDesc.push_back({ MT_DbnetPostProcess, static_cast<int>(std::ceil(2 * device_num)) });
@@ -92,11 +92,11 @@ void ModuleConnectDesc(std::vector<ascendOCR::ModuleConnectDesc> &connectDesc, b
 }
 
 void DescGenerator(std::string &configPath, std::vector<ascendOCR::ModuleConnectDesc> &connectDesc,
-    std::vector<ascendOCR::ModuleDesc> &moduleDesc,bool isClassification)
+    std::vector<ascendOCR::ModuleDesc> &moduleDesc, bool isClassification)
 {
     ConfigParser config;
     config.ParseConfig(configPath);
-    std::vetor<uint32_t> deviceIdVec;
+    std::vector<uint32_t> deviceIdVec;
     APP_ERROR ret = config.GetVectorUint32Value("deviceId", deviceIdVec);
     if (ret != APP_ERR_OK) {
         LogError << "Get Device ID failed.";
@@ -118,20 +118,20 @@ APP_ERROR InitModuleManager(ModuleManager &moduleManager, std::string &configPat
 
     LogInfo << "ModuleManager: begin to init.";
     APP_ERROR ret = moduleManager.Init(configPath, aclConfigPath);
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to init system manager, ret = " << ret;
         return APP_ERR_COMM_FAILURE;
     }
 
-    ret = moduleManager.RegisterModules(pipleine, moduleDesc.data(), (int)moduleDesc.size(), 0);
+    ret = moduleManager.RegisterModules(pipeline, moduleDesc.data(), (int)moduleDesc.size(), 0);
 
-    if(ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         return APP_ERR_COMM_FAILURE;
     }
 
-    ret = moduleManager.RegisterModuleConnects(pipeline, connectDesc.data(), (int) connectDesc.size());
+    ret = moduleManager.RegisterModuleConnects(pipeline, connectDesc.data(), (int)connectDesc.size());
 
-    if(ret != APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to connect module, ret = " << ret;
         return APP_ERR_COMM_FAILURE;
     }
@@ -142,7 +142,7 @@ APP_ERROR InitModuleManager(ModuleManager &moduleManager, std::string &configPat
 APP_ERROR DeInitModuleManager(ModuleManager &moduleManager)
 {
     APP_ERROR ret = moduleManager.DeInit();
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Fail to deinit system manager, ret = " << ret;
         return APP_ERR_COMM_FAILURE;
     }
@@ -150,7 +150,7 @@ APP_ERROR DeInitModuleManager(ModuleManager &moduleManager)
     return APP_ERR_OK;
 }
 
-inline void MainAssrt(int exp)
+inline void MainAssert(int exp)
 {
     if (exp != APP_ERR_OK) {
         exit(exp);
@@ -162,12 +162,12 @@ void MainProcess(const std::string &streamName, std::string config, bool isClass
     LogInfo << "streamName: "<<streamName;
     std::string aclConfig;
 
-    std::chrono::high_resolutiobn_clock::time_point endTime;
-    std::chrono::high_resolutiobn_clock::time_point startTime;
+    std::chrono::high_resolution_clock::time_point endTime;
+    std::chrono::high_resolution_clock::time_point startTime;
 
     ModuleManager moduleManager;
     try {
-        MainAssrt(InitModuleManager(moduleManager, config , aclConfig, streamName, isClassification));
+        MainAssert(InitModuleManager(moduleManager, config , aclConfig, streamName, isClassification));
     } catch (...) {
         LogError << "error occurred during init module.";
         return;
@@ -175,7 +175,7 @@ void MainProcess(const std::string &streamName, std::string config, bool isClass
 
     startTime = std::chrono::high_resolution_clock::now();
     try {
-        MainAssrt(moduleManager.RunPipeline());
+        MainAssert(moduleManager.RunPipeline());
     } catch (...) {
         LogError << "error occurred during start pipeline.";
         return;
@@ -191,10 +191,10 @@ void MainProcess(const std::string &streamName, std::string config, bool isClass
     }
     endTime = std::chrono::high_resolution_clock::now();
 
-    double costMs = std::chrono::dutation<double, std::milli>(endTime - startTime).count();
+    double costMs = std::chrono::duration<double, std::milli>(endTime - startTime).count();
 
     try {
-        MainAssrt(DeInitModuleManager(moduleManager));
+        MainAssert(DeInitModuleManager(moduleManager));
     } catch (...) {
         LogError << "error occurred during deinit module manager.";
         return;
@@ -214,7 +214,7 @@ int SplitImage(int threadNum, const std::string &imgDir, bool isClassification)
         LogError << "Open image dir failed, please check the input image dir existed.";
         exit(1);
     }
-    std::vecot<std::string> imgVec;
+    std::vector<std::string> imgVec;
     while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
@@ -224,13 +224,13 @@ int SplitImage(int threadNum, const std::string &imgDir, bool isClassification)
             std::string filePath = imgDir + "/" + ptr->d_name;
             imgVec.push_back(filePath);
             totalImg++;
-        }
+        };
     }
-    closdir(dir);
-    sort(imgVec.begin(),imgVec.end());
+    closedir(dir);
+    sort(imgVec.begin(), imgVec.end());
 
     std::vector<std::vector<std::string>> fileNum(threadNum);
-    for (size_t i = 0; i< imgVec.size(); i++) {
+    for (size_t i = 0; i < imgVec.size(); i++) {
         fileNum[i % threadNum].push_back(imgVec[i]);
     }
 
@@ -252,14 +252,14 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
     LogDebug << "Begin to parse and check command arguments.";
     argumentParser.AddArgument("-image_path", "./data/imagePath", "The path of input images, default: ./data/imagePath");
     argumentParser.AddArgument("-thread_num", "1", "The number of threads for the program, default: 1");
-    argumentParser.AddArgument("-direction_classification", "false", "perform text direction classfication "
+    argumentParser.AddArgument("-direction_classification", "false", "perform text direction classification "
                                                                      "using cls model, default: false");
     argumentParser.AddArgument("-config", "./data/config/setup.config", "The path of config file.");
     argumentParser.ParseArgs(argc, argv);
 
     std::string inputImagePath = argumentParser.GetStringArgumentValue("-image_path");
     APP_ERROR ret = Utils::CheckPath(inputImagePath, "Input images path");
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Parse the path of input images failed, please check if the path is correct.";
         return ret;
     }
@@ -272,7 +272,7 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
 
     std::string configFilePath = argumentParser.GetStringArgumentValue("-config");
     ret = Utils::CheckPath(configFilePath, "Config file path");
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Parse the path of config file failed, please check if the path is correct.";
         return ret;
     }
@@ -285,9 +285,9 @@ void saveModelGear(std::string modelPath, int32_t &deviceId, const std::string &
 {
     MxBase::Model model(modelPath, deviceId);
     std::vector<std::vector<uint64_t>> dynamicGearInfo = model.GetDynamicGearInfo();
-    std::vector<std::pair<uint32_t, uint64_t>> gearInfo;
+    std::vector<std::pair<uint64_t, uint64_t>> gearInfo;
     uint64_t batchInfo;
-    for (const auto &info : dynamicGearInfo) {
+    for (auto &info : dynamicGearInfo) {
         gearInfo.emplace_back(info[2], info[3]);
         batchInfo = info[0];
     }
@@ -296,15 +296,14 @@ void saveModelGear(std::string modelPath, int32_t &deviceId, const std::string &
     std::string savePath = "./temp/" + modelType + "/";
     Utils::MakeDir(savePath, false);
 
-    Utils::SaveToFilePair(savePath + bashName, gearInfo);
+    Utils::SaveToFilePair(savePath + baseName, gearInfo);
 }
 
 void saveModelBs(std::string modelPath, int32_t &deviceId, const std::string &modelType)
 {
     MxBase::Model model(modelPath, deviceId);
     std::vector<std::vector<uint64_t>> dynamicGearInfo = model.GetDynamicGearInfo();
-    std::vecot<uint64_t> batchInfo;
-
+    std::vector<uint64_t> batchInfo;
     for (auto &info : dynamicGearInfo) {
         batchInfo.emplace_back(info[0]);
     }
@@ -313,13 +312,14 @@ void saveModelBs(std::string modelPath, int32_t &deviceId, const std::string &mo
     std::string savePath = "./temp/" + modelType + "/";
     Utils::MakeDir(savePath, false);
 
-    Utils::SaveToFilePair(savePath + bashName, batchInfo);
+    Utils::SaveToFileVec(savePath + baseName, batchInfo);
 }
 
 APP_ERROR configGenerate(std::string &configPath, bool isClassification)
 {
     std::string modelConfigPath("./temp");
     Utils::MakeDir(modelConfigPath, true);
+    ConfigParser config;
     config.ParseConfig(configPath);
 
     std::vector<uint32_t> deviceIdVec;
@@ -328,7 +328,7 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
         LogError << "Get device id failed.";
         exit(-1);
     }
-    int32_t deviceId = deviceIdVec[0];
+    int32_t deviceId_ = deviceIdVec[0];
 
     std::string detModelPath;
     ret = config.GetStringValue("detModelPath", detModelPath);
@@ -341,18 +341,18 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
     if (isClassification) {
         std::string clsModelPath;
         ret = config.GetStringValue("clsModelPath", clsModelPath);
-        if (ret!= APP_ERR_OK) {
+        if (ret != APP_ERR_OK) {
             LogError << "Parse the config file path failed, please check if the path is correct.";
             return ret;
         }
-        saveModelGear(clsModelPath, deviceId_, "cls");
+        saveModelBs(clsModelPath, deviceId_, "cls");
     }
 
     std::string recModelPath;
     ret = config.GetStringValue("recModelPath", recModelPath);
     if (ret != APP_ERR_OK) {
         LogError << "Get recModelPath failed, please check the value of recModelPath";
-        rteurn APP_ERR_COMM_INVALID_PARAM;
+        return APP_ERR_COMM_INVALID_PARAM;
     }
 
     std::vector<std::string> files;
@@ -365,25 +365,26 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
 
     return APP_ERR_OK;
 }
+}
 
 
 APP_ERROR args_check(const std::string &configPath, bool isClassification)
 {
-    ConfigParser ConfigParser;
+    ConfigParser configParser;
     configParser.ParseConfig(configPath);
     std::string model_path;
 
     // device id check
     std::vector<uint32_t> deviceIdVec;
     APP_ERROR ret = configParser.GetVectorUint32Value("deviceId", deviceIdVec);
-    if (ret!= APP_ERR_OK || deviceIdVec.empty()) {
+    if (ret != APP_ERR_OK || deviceIdVec.empty()) {
         LogError << "Get device id failed, please check the value of deviceId";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     int32_t deviceId;
     for (auto &deviceId_ : deviceIdVec) {
         deviceId = (int32_t)deviceId_;
-        if (deviceId < 0 || deviceId_ > 7) {
+        if (deviceId_ < 0 || deviceId_ > 7) {
             LogError << "deviceId must between [0,7]";
             return APP_ERR_COMM_INVALID_PARAM;
         }
@@ -395,15 +396,15 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
         LogError << "Get device type failed, please check the value of deviceType";
         return APP_ERR_COMM_INVALID_PARAM;
     }
-    IF(deviceType != "310P") {
-        LogError << "Device type only support 310P, please check the value of device type";
+    if (deviceType != "310P") {
+        LogError << "Device type only support 310P, please check the value of device type.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     // det model check
     std::string detModelPath;
     ret = configParser.GetStringValue("detModelPath", detModelPath);
-    if (ret!= APP_ERR_OK) {
-        LogError << "Get detModelPath failed, please check the value of detModelPath";
+    if (ret != APP_ERR_OK) {
+        LogError << "detModelPath failed, please check the value of detModelPath";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(detModelPath, "detModelPath");
@@ -412,48 +413,48 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
         return APP_ERR_COMM_INVALID_PARAM;
     }
     try {
-        MxBase::Mdoel model(delModelPath, deviceId);
+        MxBase::Model model(detModelPath, deviceId);
         std::vector<std::vector<uint64_t>> dynamicGearInfo = model.GetDynamicGearInfo();
         if (dynamicGearInfo.empty()) {
-            LogError << "Please check the value of detModelPath";
+            LogError << "please check the value of detModelPath";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     } catch (...) {
-        LogError << "Please check the value of detModelPath";
+        LogError << "please check the value of detModelPath";
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
     if (isClassification) {
         ret = configParser.GetStringValue("clsModelPath", model_path);
         if (ret != APP_ERR_OK) {
-            LogError << "Please check the config file path failed, please check if the path is correct.";
+            LogError << "Parse the config file path failed, please check if the path is correct.";
             return ret;
         }
 
         try {
-            MxBase::Mdoel model(model_path, deviceId);
+            MxBase::Model model(model_path, deviceId);
             std::vector<std::vector<uint64_t>> dynamicGearInfo = model.GetDynamicGearInfo();
             LogError << "Cls: ";
             for (auto &info : dynamicGearInfo) {
                 LogError << info[2] << " ---- " << info[3];
             }
             if (dynamicGearInfo.empty()) {
-                LogError << "Please check the value of clsModelPath";
+                LogError << "please check the value of clsModelPath";
                 return APP_ERR_COMM_INVALID_PARAM;
             }
         } catch (...) {
-            LogError << "Please check the value of clsModelPath";
+            LogError << "please check the value of clsModelPath";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
     std::string recModelPath;
     ret = configParser.GetStringValue("recModelPath", recModelPath);
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Get recModelPath failed, please check the value of recModelPath";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(recModelPath, "recModelPath");
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "rec model path: " << recModelPath << " is not exist of can not read.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
@@ -462,14 +463,14 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     Utils::GetAllFiles(recModelPath, files);
     for (auto &file : files) {
         try {
-            MxBase::Model crnn(file,deviceId);
+            MxBase::Model crnn(file, deviceId);
             std::vector<std::vector<uint64_t>> dynamicGearInfo = crnn.GetDynamicGearInfo();
             if (dynamicGearInfo.empty()) {
-                LogError << "Please check the value of recModelPath";
+                LogError << "please check the value of recModelPath";
                 return APP_ERR_COMM_INVALID_PARAM;
             }
         } catch (...) {
-            LogError << "Please check the value of recModelPath";
+            LogError << "please check the value of recModelPath";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
@@ -483,24 +484,24 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     ret = Utils::CheckPath(recDictionary, "character label file");
     if (ret != APP_ERR_OK) {
         LogError << "Character label file: " << recDictionary << " does not exist or cannot be read";
-        return APP_ERR_COMM_INVALID_PARAM
+        return APP_ERR_COMM_INVALID_PARAM;
     }
 
     bool saveInferResult;
     ret = configParser.GetBoolValue("saveInferResult", saveInferResult);
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "Get saveInferResult failed, please check the value of saveInferResult";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     return APP_ERR_OK;
 }
 
-int main(int argc, const char * argv[]) 
+int main(int argc, const char *argv[]) 
 {
-    //Initialize
+    // Initialize
     MxBase::MxInit();
 
-    //Argument Parser
+    // Argument Parser
     ArgumentParser argumentParser;
     APP_ERROR ret = ParseCommandArgs(argc, argv, argumentParser);
     if (ret != APP_ERR_OK) {
@@ -509,10 +510,10 @@ int main(int argc, const char * argv[])
     }
     int threadNum = argumentParser.GetIntArgumentValue("-thread_num");
     std::string inputImagePath = argumentParser.GetStringArgumentValue("-image_path");
-    bool isDirectionClassification = argumentParser.GetBoolArfumentValue("-direction_classification");
-    int ImageNum = SplitImage(threadNum, inputImagePathj, isDirectionClassification);
+    bool isDirectionClassification = argumentParser.GetBoolArgumentValue("-direction_classification");
+    int ImageNum = SplitImage(threadNum, inputImagePath, isDirectionClassification);
 
-    // Parameter check
+    // Parameter Check
     if (threadNum > ImageNum) {
         LogError << "thread number [" << threadNum << "] can not bigger than total number of input images [" <<
             ImageNum << "].";
@@ -520,22 +521,22 @@ int main(int argc, const char * argv[])
     }
 
     if (threadNum < 1) {
-        LogError << "thread number [" << threadNum << "] can not smaller than 1.";
+        LogError << "thread number [" << threadNum << "] cannot be smaller than 1.";
         exit(-1);
     }
 
     if (threadNum > 4) {
-        LogError << "thread number [" << threadNum << "] can not greater than 4.";
+        LogError << "thread number [" << threadNum << "] cannot be great than 4.";
         exit(-1);
     }
 
     Signal::GetInstance().SetThreadNum(threadNum);
 
     std::string setupConfig = argumentParser.GetStringArgumentValue("-config");
-    MainAssrt(args_check(setupConfig, isDirectionClassification));
+    MainAssert(args_check(setupConfig, isDirectionClassification));
 
     ret = configGenerate(setupConfig, isDirectionClassification);
-    if (ret!= APP_ERR_OK) {
+    if (ret != APP_ERR_OK) {
         LogError << "config set up failed.";
         exit(-1);
     }
@@ -543,7 +544,7 @@ int main(int argc, const char * argv[])
     std::thread threadProcess[threadNum];
     std::string streamName[threadNum];
 
-    for (int i = 0; i< threadNum; ++i) {
+    for (int i = 0; i < threadNum; ++i) {
         streamName[i] = "imgSplitFile" + std::to_string(i) + Utils::BoolCast(isDirectionClassification);
         threadProcess[i] = std::thread(MainProcess, streamName[i], setupConfig, isDirectionClassification);
     }
@@ -551,14 +552,13 @@ int main(int argc, const char * argv[])
     for (int j = 0; j < threadNum; ++j) {
         threadProcess[j].join();
     }
-    
+
     std::string modelConfigPath("./temp");
     if (access(modelConfigPath.c_str(), 0) != -1) {
-        system(("rm -r" + modelConfigPath).c_str());
+        system(("rm -r " + modelConfigPath).c_str());
         LogInfo << modelConfigPath << " removed!";
     }
     LogInfo << "MxOCR Average Process Time: " << Signal::e2eProcessTime / ImageNum << "ms.";
     LogInfo << "program End.";
     return 0;
-}
 }
