@@ -53,7 +53,7 @@ void InitV2Param(V2Param &v2Param)
     v2Param.modelPath = yolov3ModelPath;
 };
 
-APP_ERROR YoloV3PostProcess(std::string oriImagePath, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
+APP_ERROR YoloV3PostProcess(std::string oriImagePath, MxBase::Image oriImage, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
                         std::vector<MxBase::Tensor>& yoloV3Outputs, std::vector<MxBase::Rect>& cropConfigVec)
 {
     /// This should made by user! This func only show used with sdk`s yolov3 so lib.
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
     // *****5模型后处理
     std::vector<MxBase::Rect> cropConfigVec;
-    ret = YoloV3PostProcess(argv[1], v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
+    ret = YoloV3PostProcess(argv[1], decodedImage, v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
 	if (ret != APP_ERR_OK)
 	{
 		LogError << "YoloV3PostProcess execute failed, ret=" << ret;
