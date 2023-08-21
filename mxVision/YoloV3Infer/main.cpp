@@ -53,7 +53,7 @@ void InitV2Param(V2Param &v2Param)
     v2Param.modelPath = yolov3ModelPath;
 };
 
-APP_ERROR YoloV3PostProcess(MxBase::Image oriImage, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
+APP_ERROR YoloV3PostProcess(std::string oriImagePath, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
                         std::vector<MxBase::Tensor>& yoloV3Outputs, std::vector<MxBase::Rect>& cropConfigVec)
 {
     /// This should made by user! This func only show used with sdk`s yolov3 so lib.
@@ -101,11 +101,8 @@ APP_ERROR YoloV3PostProcess(MxBase::Image oriImage, std::string& yoloV3ConfigPat
 		return ret;
 	}
 	
-	oriImage.ToHost();
-	cv::Mat imgYuv = cv::Mat(oriImage.GetSize().height * YUV_BYTE_NU / YUV_BYTE_DE,
-							 oriImage.GetSize().width, CV_8UC1, static_cast<void *>(oriImage.GetData().get()));
-	cv::Mat imgBgr = cv::Mat(oriImage.GetSize().height, oriImage.GetSize().width, CV_8UC3);
-	cv::cvtColor(imgYuv, imgBgr, cv::COLOR_YUV2BGR_NV12);
+	// get origin image
+	cv::Mat imgBgr = cv::imread(oriImagePath);
 
     // print result
     std::cout << "Size of objectInfos is " << objectInfos.size() << std::endl;
@@ -154,7 +151,7 @@ int main(int argc, char* argv[])
         LogWarn << "Please input image path, such as './cppv2_sample test.jpg'.";
         return APP_ERR_OK;
     }
-	
+	std::string imgPath = argv[1]; 
     APP_ERROR ret;
     
     // *****1初始化模型推理
@@ -177,7 +174,6 @@ int main(int argc, char* argv[])
     MxBase::Model yoloV3(modelPath, deviceId);
 
     // *****2读取图片
-    std::string imgPath = argv[1]; 
     MxBase::Image decodedImage;
     ret = imageProcessor.Decode(imgPath, decodedImage, ImageFormat::YUV_SP_420);
     if (ret != APP_ERR_OK) 
@@ -230,7 +226,7 @@ int main(int argc, char* argv[])
 
     // *****5模型后处理
     std::vector<MxBase::Rect> cropConfigVec;
-    ret = YoloV3PostProcess(decodedImage, v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
+    ret = YoloV3PostProcess(argv[1], v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
 	if (ret != APP_ERR_OK)
 	{
 		LogError << "YoloV3PostProcess execute failed, ret=" << ret;
