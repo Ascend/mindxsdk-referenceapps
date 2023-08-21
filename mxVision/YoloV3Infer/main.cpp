@@ -41,6 +41,11 @@ struct V2Param {
     std::string modelPath;
 };
 
+struct ImageInfo {
+	std::string oriImagePath;
+	MxBase::Image oriImage;
+}
+
 void InitV2Param(V2Param &v2Param)
 {
 	std::string yolov3ModelPath = "./model/yolov3_tf_bs1_fp16.om";
@@ -48,12 +53,12 @@ void InitV2Param(V2Param &v2Param)
 	std::string yolov3LabelPath = "./model/yolov3.names";
 	
     v2Param.deviceId = 0;
-    v2Param.labelPath = yolov3ModelPath;
+    v2Param.labelPath = yolov3LabelPath;
     v2Param.configPath = yolov3ConfigPath;
     v2Param.modelPath = yolov3ModelPath;
 };
 
-APP_ERROR YoloV3PostProcess(std::string oriImagePath, MxBase::Image oriImage, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
+APP_ERROR YoloV3PostProcess(ImageInfo imageInfo, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
                         std::vector<MxBase::Tensor>& yoloV3Outputs, std::vector<MxBase::Rect>& cropConfigVec)
 {
     /// This should made by user! This func only show used with sdk`s yolov3 so lib.
@@ -85,8 +90,8 @@ APP_ERROR YoloV3PostProcess(std::string oriImagePath, MxBase::Image oriImage, st
 
     auto shape = yoloV3Outputs[0].GetShape();
     MxBase::ResizedImageInfo imgInfo;
-    imgInfo.widthOriginal = oriImage.GetOriginalSize().width;
-    imgInfo.heightOriginal = oriImage.GetOriginalSize().height;
+    imgInfo.widthOriginal = imageInfo.oriImage.GetOriginalSize().width;
+    imgInfo.heightOriginal = imageInfo.oriImage.GetOriginalSize().height;
     imgInfo.widthResize = YOLOV3_RESIZE;
     imgInfo.heightResize = YOLOV3_RESIZE;
     imgInfo.resizeType = MxBase::RESIZER_STRETCHING;
@@ -102,7 +107,7 @@ APP_ERROR YoloV3PostProcess(std::string oriImagePath, MxBase::Image oriImage, st
 	}
 	
 	// get origin image
-	cv::Mat imgBgr = cv::imread(oriImagePath);
+	cv::Mat imgBgr = cv::imread(imageInfo.oriImagePath);
 
     // print result
     std::cout << "Size of objectInfos is " << objectInfos.size() << std::endl;
@@ -226,7 +231,11 @@ int main(int argc, char* argv[])
 
     // *****5模型后处理
     std::vector<MxBase::Rect> cropConfigVec;
-    ret = YoloV3PostProcess(argv[1], decodedImage, v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
+	ImageInfo imageInfo;
+	imageInfo.oriImagePath = argv[1];
+	imageInfo.oriImage = decodedImage;
+	
+    ret = YoloV3PostProcess(imageInfo, v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
 	if (ret != APP_ERR_OK)
 	{
 		LogError << "YoloV3PostProcess execute failed, ret=" << ret;
