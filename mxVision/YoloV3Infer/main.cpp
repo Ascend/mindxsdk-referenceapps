@@ -129,7 +129,7 @@ APP_ERROR YoloV3PostProcess(MxBase::Image oriImage, std::string& yoloV3ConfigPat
 			uint32_t x1 = objectInfos[i][j].x1;
 			
 			cv::putText(imgBgr, objectInfos[i][j].className, cv::Point(x0 + 10, y0 + 10), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 255,0), 4, 8);
-			cv::rectangle(imgBgr, cv::Rect(x0, y0, x1 - x0, y1 - y0); cv::Scalar(0, 255, 0), 4);
+			cv::rectangle(imgBgr, cv::Rect(x0, y0, x1 - x0, y1 - y0), cv::Scalar(0, 255, 0), 4);
         }
     }
     
@@ -154,11 +154,14 @@ int main(int argc, char* argv[])
         LogWarn << "Please input image path, such as './cppv2_sample test.jpg'.";
         return APP_ERR_OK;
     }
+	
     APP_ERROR ret;
     
     // *****1初始化模型推理
     V2Param v2Param;
     InitV2Param(v2Param);
+	int32_t deviceId = v2Param.deviceId;
+	std::string modelPath = v2Param.modelPath;
 
     // global init
     ret = MxInit();
