@@ -62,7 +62,7 @@ APP_ERROR YoloV3PostProcess(MxBase::Image oriImage, std::string& yoloV3ConfigPat
     std::map<std::string, std::string> postConfig;
 
     postConfig.insert(pair<std::string, std::string>("postProcessConfigPath", yoloV3ConfigPath));
-    postConfig.insert(pair<std::string, std::string>("lablePath", yoloV3LablePath));
+    postConfig.insert(pair<std::string, std::string>("labelPath", yoloV3LablePath));
 
     // init postProcess
     Yolov3PostProcess yolov3PostProcess;
