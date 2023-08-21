@@ -11,7 +11,7 @@ current_path=$(cd $(dirname $0); pwd)
 build_type="Release"
 
 os_type=$(arch)
-if ["${os_type}" = 'aarch64']; then
+if [ "${os_type}" = 'aarch64' ];then
     export ARCH_PATTERN=aarch64-linux
 else
     export ARCH_PATTERN=x86_64-linux
@@ -19,19 +19,19 @@ fi
 
 function main()
 {
-    local build_path=${current_path}/build
-    [ -d "${build_path}" ] && rm -rf ${build_path}
-    mkdir -p ${build_path}
-    cd ${build_path}
+  local build_path=${current_path}/build
+  [ -d "${build_path}" ] && rm -rf ${build_path}
+  mkdir -p ${build_path}
+  cd ${build_path}
 
-    cmake -DCMAKE_BUILD_TYPE=$build_type ..
-    make -j
+  cmake -DCMAKE_BUILD_TYPE=$build_type ..
+  make -j
 }
 
 main
 if [ $? -ne 0 ]; then
-    echo "Build failed."
-    exit 1
+  echo "Build failed."
+  exit 1
 fi
 
 exit 0

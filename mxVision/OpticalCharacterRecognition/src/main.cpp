@@ -39,7 +39,7 @@
 using namespace ascendOCR;
 using namespace std;
 
-namespace{
+namespace {
 void SigHandler(int signal)
 {
     if (signal == SIGINT) {
@@ -159,7 +159,7 @@ inline void MainAssert(int exp)
 
 void MainProcess(const std::string &streamName, std::string config, bool isClassification)
 {
-    LogInfo << "streamName: "<<streamName;
+    LogInfo << "streamName: "<< streamName;
     std::string aclConfig;
 
     std::chrono::high_resolution_clock::time_point endTime;
@@ -167,7 +167,7 @@ void MainProcess(const std::string &streamName, std::string config, bool isClass
 
     ModuleManager moduleManager;
     try {
-        MainAssert(InitModuleManager(moduleManager, config , aclConfig, streamName, isClassification));
+        MainAssert(InitModuleManager(moduleManager, config, aclConfig, streamName, isClassification));
     } catch (...) {
         LogError << "error occurred during init module.";
         return;
@@ -276,7 +276,7 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
         LogError << "Parse the path of config file failed, please check if the path is correct.";
         return ret;
     }
-    
+
     return APP_ERR_OK;
 }
 
@@ -325,7 +325,7 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
     std::vector<uint32_t> deviceIdVec;
     APP_ERROR ret = config.GetVectorUint32Value("deviceId", deviceIdVec);
     if (ret!= APP_ERR_OK || deviceIdVec.empty()) {
-        LogError << "Get device id failed.";
+        LogError << "Get Device ID failed.";
         exit(-1);
     }
     int32_t deviceId_ = deviceIdVec[0];
@@ -358,7 +358,7 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
     std::vector<std::string> files;
     Utils::GetAllFiles(recModelPath, files);
     for (const auto &file : files) {
-        if(Utils::EndsWith(file, ".om")) {
+        if (Utils::EndsWith(file, ".om")) {
             saveModelGear(file, deviceId_, "crnn");
         }
     }
@@ -404,12 +404,12 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     std::string detModelPath;
     ret = configParser.GetStringValue("detModelPath", detModelPath);
     if (ret != APP_ERR_OK) {
-        LogError << "detModelPath failed, please check the value of detModelPath";
+        LogError << "Get detModelPath failed, please check the value of detModelPath";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(detModelPath, "detModelPath");
     if (ret!= APP_ERR_OK) {
-        LogError << "Get detModelPath: " << detModelPath << "is not exist or can not read.";
+        LogError << "detModelPath: " << detModelPath << "is not exist or can not read.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     try {
@@ -496,7 +496,7 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     return APP_ERR_OK;
 }
 
-int main(int argc, const char *argv[]) 
+int main(int argc, const char *argv[])
 {
     // Initialize
     MxBase::MxInit();
@@ -521,12 +521,12 @@ int main(int argc, const char *argv[])
     }
 
     if (threadNum < 1) {
-        LogError << "thread number [" << threadNum << "] cannot be smaller than 1.";
+        LogError << "thread number [" << threadNum << "] cannot be smaller than 1";
         exit(-1);
     }
 
     if (threadNum > 4) {
-        LogError << "thread number [" << threadNum << "] cannot be great than 4.";
+        LogError << "thread number [" << threadNum << "] cannot be great than 4";
         exit(-1);
     }
 

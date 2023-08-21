@@ -8,7 +8,7 @@ add_definitions(-Dgoogle=mindxsdk_private)
 set(PROJECT_SRC_ROOT ${CMAKE_CURRENT_LIST_DIR})
 set(CMAKE_MODULE_PATH ${PROJECT_SRC_ROOT}/CMake)
 set(CMAKE_SKIP_BUILD_RPATH True)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SRC_ROOT/dist})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SRC_ROOT}/dist)
 add_compile_options(-std=c++11 -fPIE -fstack-protector-all -Wall)
 add_definitions(-DENABLE_DVPP_INTERFACE)
 
