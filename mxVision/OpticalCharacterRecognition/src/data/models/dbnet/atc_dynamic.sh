@@ -1,6 +1,6 @@
 #!/bin/bash
 
-atc --model=ch_ppocr_mobile_v2.0_cls_infer.onnx \
+atc --model=ch_ppocr_server_v2.0_det_infer.onnx \
     --framework=5 \
     --input_format=ND \
     --input_shape="x:-1,3,-1,-1" \
