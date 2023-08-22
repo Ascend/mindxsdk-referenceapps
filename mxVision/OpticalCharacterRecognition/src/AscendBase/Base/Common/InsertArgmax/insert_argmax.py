@@ -1,8 +1,8 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. ALL rights reserved.
-Description: add argmax operator at the end of CRNN/SVTR model
+Description: add argmax operator at the end of CRNN/SVTR model.
 Author: MindX SDK
 Create: 2022
 History: NA
@@ -62,30 +62,30 @@ if __name__ == '__main__':
     input_name = ''
     insert_index = 0
     for i in range(len(node)):
-        if node[i].op_type =='Softmax':
+        if node[i].op_type == 'Softmax':
             input_name = node[i].output[0]
             insert_index = 1
         if node[i].op_type == 'ArgMax':
             raise ValueError('ArgMax Op found. The model already has ArgMax Op. Please check the type of model. Input'
                              'model type should be CRNN or SVTR.')
         
-        if not input_name:
-            raise ValueError(
-                'Softmax Op not found. Please check the type of the model. Input model type should be CRNN or SVTR.')
-        axis = 2
-        keepdims = 0
-        argmax_operator = onnx.helper.make_node(
-            'ArgMax',
-            inputs=[input_name],
-            outputs=[output_name],
-            name='ArgMax_0',
-            axis=axis,
-            keepdims=keepdims
-        )
+    if not input_name:
+        raise ValueError(
+            'Softmax Op not found. Please check the type of the model. Input model type should be CRNN or SVTR.')
+    axis = 2
+    keepdims = 0
+    argmax_operator = onnx.helper.make_node(
+        'ArgMax',
+        inputs=[input_name],
+        outputs=[output_name],
+        name='ArgMax_0',
+        axis=axis,
+        keepdims=keepdims
+    )
 
-        node.insert(insert_index, argmax_operator)
-        if len(model.opset_import) > 1:
-            del model.opset_import[1]
+    node.insert(insert_index, argmax_operator)
+    if len(model.opset_import) > 1:
+        del model.opset_import[1]
 
     graph.output[0].type.tensor_type.elem_type = 7
     graph.output[0].type.tensor_type.shape.dim[0].dim_value = -1
@@ -118,3 +118,4 @@ if __name__ == '__main__':
             print(f'onnx check pass. The new model saved in {save_path}')
     else:
         print(f'The new model saved in {save_path}')
+        

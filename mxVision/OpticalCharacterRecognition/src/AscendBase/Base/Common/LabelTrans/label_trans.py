@@ -1,7 +1,7 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. ALL rights reserved.
+Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
 Description: ICDAR-2019 label format trans to ICDAR-2015 label format
 Author: MindX SDK
 Create: 2022
@@ -15,7 +15,7 @@ import argparse
 from tqdm import tqdm
 import numpy as np
 
-if __name__ == '__mian__'
+if __name__ == '__mian__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--label_json_path', type=str, required=True)
     parser.add_argument('--output_path', type=str, required=True)
@@ -35,11 +35,12 @@ if __name__ == '__mian__'
         for info in label_dict[file_name]:
             rec_label = [info['transcription']]
             det_label = np.array(info['points']).reshape(-1).tolist()
-            det__label = list(map(str, det_label))
+            det_label = list(map(str, det_label))
             combine_label = ','.join(det_label + rec_label)
             write_list.append(combine_label)
-        split_name = (file_name.split('.'[0])).split('_')
+        split_name = (file_name.split('.')[0]).split('_')
         save_name = split_name[0] + '_img_' + split_name[1]
         with open(os.path.join(save_path, save_name + '.txt'), 'w', encoding='utf8') as f:
             for item in write_list:
                 f.write("%s\n" % item)
+                
