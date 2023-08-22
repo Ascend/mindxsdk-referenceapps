@@ -28,14 +28,14 @@ APP_ERROR ClsPostProcess::DeInit(void)
     return APP_ERR_OK;
 }
 
-APP_ERROR ClsPostProcess::PostProcessCls(uint32_t frameSize, std::vector<MxBase::Tensor> &inferOutput,
-    std::vector<std::string> &textsInfos)
+APP_ERROR ClsPostProcess::PostProcessCls(uint32_t framesSize, std::vector<MxBase::Tensor> &inferOutput,
+    std::vector<cv::Mat> &imgMatVec)
 {
     std::vector<uint32_t> shape = inferOutput[0].GetShape();
     auto *tensorData = (float *)inferOutput[0].GetData();
     uint32_t dirVecSize = shape[1];
 
-    for (uint32_t i = 0; i < frameSize; i++) {
+    for (uint32_t i = 0; i < framesSize; i++) {
         uint32_t index = i * dirVecSize + 1;
         if (tensorData[index] > 0.9) {
             cv::rotate(imgMatVec[i], imgMatVec[i], cv::ROTATE_180);
@@ -50,14 +50,14 @@ APP_ERROR ClsPostProcess::Process(std::shared_ptr<void> commonData)
     std::shared_ptr<CommonData> data = std::static_pointer_cast<CommonData>(commonData);
     
     if (!data->eof) {
-        APP_ERROR ref = PostProcessCls(data->frameSize, data->outputTensorVec, data->imgMatVec);
+        APP_ERROR ret = PostProcessCls(data->frameSize, data->outputTensorVec, data->imgMatVec);
         if (ret != APP_ERR_OK) {
             return ret;
         }
     }
     auto endTime = std::chrono::high_resolution_clock::now();
     double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-    SendToNextModule(MT_CollectProcess, data, data->channelId);
+    SendToNextModule(MT_CrnnPreProcess, data, data->channelId);
 
     Signal::clsPostProcessTime += costTime;
     Signal::e2eProcessTime += costTime;

@@ -1,5 +1,5 @@
-#ifndef INC_MODULE_MANEGER_H
-#define INC_MODULE_MANEGER_H
+#ifndef INC_MODULE_MANAGER_H
+#define INC_MODULE_MANAGER_H
 
 #include "acl/acl.h"
 #include "Log/Log.h"
@@ -22,7 +22,7 @@ namespace ascendOCR {
 
     struct ModulesInformation {
         std::vector<std::shared_ptr<ModuleBase>> moduleVec;
-        std::vector<std::shared_pre<BlockingQueue<std::shared_ptr<void>>>> inputQueueVec;
+        std::vector<std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> inputQueueVec;
     };
 
     using ModulesInfo = ModulesInformation;
@@ -60,4 +60,4 @@ namespace ascendOCR {
     };
 }
 
-
+#endif

@@ -1,5 +1,5 @@
 #ifndef CPP_COLLECTPROCESS_H
-#define CPP_COLLECTROCESS_H
+#define CPP_COLLECTPROCESS_H
 
 #include <unordered_map>
 
@@ -34,5 +34,5 @@ private:
 
 MODULE_REGIST(CollectProcess)
 
-#enfif
+#endif
 

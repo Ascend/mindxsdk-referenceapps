@@ -1,4 +1,4 @@
-#include "HandoutProcess.h"
+#include "HandOutProcess.h"
 #include "DbnetPreProcess/DbnetPreProcess.h"
 #include <iostream>
 #include <fstream>
@@ -9,14 +9,14 @@
 
 using namespace ascendOCR;
 
-HandoutProcess::HandoutProcess()
+HandOutProcess::HandOutProcess()
 {
     withoutInputQueue_ = true;
     isStop_ = false;
 }
-HandoutProcess::~HandoutProcess() {}
+HandOutProcess::~HandOutProcess() {}
 
-APP_ERROR HandoutProcess::Init(ConfigParser &configParser, ModuleInitParams &initParams)
+APP_ERROR HandOutProcess::Init(ConfigParser &configParser, ModuleInitParams &initParams)
 {
     LogInfo << "Begin to init instance " << initParams.instanceId;
     InitParams(initParams);
@@ -29,13 +29,13 @@ APP_ERROR HandoutProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
     return APP_ERR_OK;
 }
 
-APP_ERROR HandoutProcess::DeInit(void)
+APP_ERROR HandOutProcess::DeInit(void)
 {
     LogInfo << "HandOutProcess[" << instanceId_ << "]: Deinit success.";
     return APP_ERR_OK;
 }
 
-APP_ERROR HandoutProcess::ParseConfig(ConfigParser &configParser)
+APP_ERROR HandOutProcess::ParseConfig(ConfigParser &configParser)
 {
     configParser.GetBoolValue("saveInferResult", saveInferResult);
     if (saveInferResult) {
@@ -44,21 +44,32 @@ APP_ERROR HandoutProcess::ParseConfig(ConfigParser &configParser)
     return APP_ERR_OK;
 }
 
-APP_ERROR HandoutProcess::Process(std::shared_prt<void> commonData)
+APP_ERROR HandOutProcess::Process(std::shared_ptr<void> commonData)
 {
     std::string imgConfig = "./data/config/" + pipelineName_;
     LogInfo << pipelineName_;
     std::ifstream imgFileCount;
     imgFileCount.open(imgConfig);
     std::string imgPathCount;
-    int imgPath = 0;
+    int imgTotal = 0;
+    while (getline(imgFileCount, imgPathCount)) {
+        imgTotal++;
+    }
+    imgFileCount.close();
+    LogError << imgTotal;
+    std::ifstream imgFile;
+    imgFile.open(imgConfig);
+    std::string imgPath;
+    std::regex reg("^([A-Za-z]+)_([0-9+].*$)");
+    std::cmatch m;
+    std::string basename;
     while (getline(imgFile, imgPath) && !Signal::signalRecieved) {
-        LogInfo << pipelineName_ << " read file: " << imgPath;
+        LogInfo << pipelineName_ << " read file:" << imgPath;
         basename = Utils::BaseName(imgPath);
         std::regex_match(basename.c_str(), m, reg);
         if (m.empty()) {
             LogError << "Please check the image name format of " << basename <<
-                ". The image name should be xxx_xxx.xxx";
+                ". the image name should be xxx_xxx.xxx";
             continue;
         }
         imgId_++;

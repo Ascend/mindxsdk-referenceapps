@@ -29,5 +29,5 @@ private:
 
 MODULE_REGIST(DbnetInferProcess)
 
-#enfif
+#endif
 

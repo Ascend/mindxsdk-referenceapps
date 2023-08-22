@@ -29,7 +29,7 @@ private:
     std::vector<MxBase::Tensor> crnnOutputs;
 
     APP_ERROR ParseConfig(ConfigParser &configParser);
-    std::vector<mxBase::Tensor> CrnnModelInfer(uint8_t *srcData, uint32_t BatchSize, int maxResizedW);
+    std::vector<MxBase::Tensor> CrnnModelInfer(uint8_t *srcData, uint32_t BatchSize, int maxResizedW);
 };
 
 MODULE_REGIST(CrnnInferProcess)

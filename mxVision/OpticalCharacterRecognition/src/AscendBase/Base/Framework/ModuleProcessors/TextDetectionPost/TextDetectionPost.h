@@ -43,7 +43,7 @@ public:
     ~TextDetectionPost() {};
 
     APP_ERROR CharacterDetectionOutput(std::vector<MxBase::Tensor> &singleResult,
-        std::vector<std::vector<TextObjectInfo>> &textObjInfos, const std::vector<ResizedImageInfo> &resizeImageInfos);
+        std::vector<std::vector<TextObjectInfo>> &textObjInfos, const std::vector<ResizedImageInfo> &resizedImageInfos);
 
 private:
     void FilterByMinSize(std::vector<cv::Point> &contour, std::vector<cv::Point2f> &box, float &minSide);
@@ -53,7 +53,7 @@ private:
     void FilterByClippedMinSize(std::vector<cv::Point2f> &box, float &minSide);
 
     void ConstructInfo(std::vector<TextObjectInfo> &textObjectInfo, std::vector<cv::Point2f> &box, 
-        const std::vector<ResizedImageInfo> &resizeImageInfos, const uint32_t &index, float score);
+        const std::vector<ResizedImageInfo> &resizedImageInfos, const uint32_t &index, float score);
 
     const int NpClip(const int &coordinate, const int &sideLen);
 

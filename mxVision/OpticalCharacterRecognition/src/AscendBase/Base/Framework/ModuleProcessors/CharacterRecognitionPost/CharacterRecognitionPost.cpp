@@ -52,7 +52,7 @@ void CharacterRecognitionPost::InitClassName(const std::string &fileName)
 
     classNum_ = labelVec_.size();
 
-    LogInfo << " InitClassName classNum_ " <<classNum_;
+    LogInfo << " InitClassName classNum_ " << classNum_;
 
     return;
 }
@@ -70,7 +70,7 @@ void CharacterRecognitionPost::CalcOutputIndex(void *resHostBuf, size_t batchSiz
 {
     LogDebug << "Start to Process CalcOutputIndex.";
 
-    auto *outputInfo = static_cast<int64_t *> (resHostBuf);
+    auto *outputInfo = static_cast<int64_t *>(resHostBuf);
 
     batchSize_ = batchSize;
     objectNum_ = objectNum;

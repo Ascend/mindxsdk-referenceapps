@@ -57,7 +57,7 @@ std::string Utils::BaseName(const std::string &filename)
 
     if (index + 1 >= len) {
         len--;
-        index = filename.substr(0, len).find_last_of('/\\');
+        index = filename.substr(0, len).find_last_of("/\\");
 
         if (len == 0) {
             return filename;
@@ -133,14 +133,14 @@ void Utils::GetAllFiles(const std::string &dirName, std::vector<std::string> &fi
     }
 }
 
-bool Utils::EndsWith(std::string const & value, std::string const & ending)
+bool Utils::EndsWith(const std::string & value, const std::string & ending)
 {
     if (ending.size() > value.size())
         return false;
-    return std::equal(ending.rbe(), ending.rend(), value.rbegin());
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-bool Utils::UintCompair(uint64_t num1, uint64_t num2)
+bool Utils::UintCompare(uint64_t num1, uint64_t num2)
 {
     return num1 < num2;
 }

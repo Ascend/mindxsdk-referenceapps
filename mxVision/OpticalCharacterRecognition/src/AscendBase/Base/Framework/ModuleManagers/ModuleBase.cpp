@@ -28,7 +28,7 @@ namespace ascendOCR {
         APP_ERROR ret;
         if (withoutInputQueue_ == true) {
             ret = Process(nullptr);
-            if (ret != APP_ERROR_OK) {
+            if (ret != APP_ERR_OK) {
                 LogError << "Fail to process data for " << moduleName_ << "[" << instanceId_ << "]"
                     << ", ret=" << ret << "(" << GetAppErrCodeInfo(ret) << ").";
             }
@@ -83,7 +83,7 @@ namespace ascendOCR {
         std::vector<std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> outputQueVec)
     {
         if (outputQueVec.size() == 0) {
-            LogError << "outputQueVec is Empty!" << moduleName;
+            LogError << "outputQueVec is Empty! " << moduleName;
             return;
         }
         ModuleOutputInfo outputInfo;
@@ -144,7 +144,8 @@ namespace ascendOCR {
         sendCount_++;
     }
 
-    APP_ERROR ModuleBase::Stop {
+    APP_ERROR ModuleBase::Stop()
+    {
         isStop_ = true;
         
         if (inputQueue_ != nullptr) {

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 Huawei Technologies Co., All rights reserved.
+* Copyright (c) 2020 Huawei Technologies Co., Ltd. All rights reserved.
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
 * You may obtain a copy of the License at
@@ -37,7 +37,7 @@ APP_ERROR TextDetectionPost::CharacterDetectionOutput(std::vector<MxBase::Tensor
             prob[j] = (uchar)(ProbMap[j] * MAX_VAL);
             fprob[j] = (float)ProbMap[j];
         }
-        cv::Mat mask(resizedH_, resizedW_,CV_8UC1, (uchar *)prob.data());
+        cv::Mat mask(resizedH_, resizedW_, CV_8UC1, (uchar *)prob.data());
         cv::Mat prediction(resizedH_, resizedW_, CV_32F, (float *)fprob.data());
         cv::Mat binmask;
 
@@ -137,7 +137,7 @@ void TextDetectionPost::FilterByMinSize(std::vector<cv::Point> &contour, std::ve
     box.push_back(vertices[POINT2]);
 }
 
-void TextDetectionPost::FilterByBoxScore(const cv::Mat &predictin, std::vector<cv::Point2f> &box, float &score)
+void TextDetectionPost::FilterByBoxScore(const cv::Mat &prediction, std::vector<cv::Point2f> &box, float &score)
 {
     std::vector<cv::Point2f> tmpbox = box;
     std::sort(tmpbox.begin(), tmpbox.end(), SortByX);
@@ -148,7 +148,7 @@ void TextDetectionPost::FilterByBoxScore(const cv::Mat &predictin, std::vector<c
     std::sort(tmpbox.begin(), tmpbox.end(), SortByY);
     int minY = NpClip(int(std::floor(tmpbox.begin()->y)), resizedH_);
     int maxY = NpClip(int(std::ceil(tmpbox.back().y)), resizedH_);
-    cv::Mat mask = cv::Mat::zeros(maxY- minY + 1, maxX - minX + 1, CV_8UC1);
+    cv::Mat mask = cv::Mat::zeros(maxY - minY + 1, maxX - minX + 1, CV_8UC1);
     cv::Mat predCrop;
     cv::Point abs_point[POINTNUM];
     for (int i = 0; i < POINTNUM; ++i) {

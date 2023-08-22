@@ -43,8 +43,8 @@ APP_ERROR CrnnPostProcess::ParseConfig(ConfigParser &configParser)
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(recDictionary, "character label file");
-    if (ret != APP_ERR_Ok) {
-        LogError << "character label file" << recDictionary << "is not exist of can not read.";
+    if (ret != APP_ERR_OK) {
+        LogError << "Character label file" << recDictionary << "is not exist of can not read.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     LogDebug << "dictPath: " << recDictionary;
@@ -68,12 +68,12 @@ APP_ERROR CrnnPostProcess::ParseConfig(ConfigParser &configParser)
     return APP_ERR_OK;
 }
 
-APP_ERROR CrnnPostProcess::PostProcessCrnn(uint32_t frameSize, std::vector<MxBase::Tensor> &inferOutput,
+APP_ERROR CrnnPostProcess::PostProcessCrnn(uint32_t framesSize, std::vector<MxBase::Tensor> &inferOutput,
     std::vector<std::string> &textsInfos)
 {
     auto *objectinfo = (int64_t *)inferOutput[0].GetData();
     auto objectNum = (size_t)inferOutput[0].GetShape()[1];
-    characterRecognitionPost_.CalcOutputIndex(objectinfo, frameSize, objectNum, textsInfos);
+    characterRecognitionPost_.CalcOutputIndex(objectinfo, framesSize, objectNum, textsInfos);
     return APP_ERR_OK;
 }
 
@@ -83,7 +83,7 @@ APP_ERROR CrnnPostProcess::Process(std::shared_ptr<void> commonData)
     std::shared_ptr<CommonData> data = std::static_pointer_cast<CommonData>(commonData);
     std::vector<std::string> recResVec;
     if (!data->eof) {
-        APP_ERROR ref = PostProcessCrnn(data->frameSize, data->outputTensorVec, data->inferRes);
+        APP_ERROR ret = PostProcessCrnn(data->frameSize, data->outputTensorVec, data->inferRes);
         if (ret != APP_ERR_OK) {
             return ret;
         }

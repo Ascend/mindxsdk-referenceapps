@@ -42,21 +42,20 @@ APP_ERROR CrnnInferProcess::ParseConfig(ConfigParser &configParser)
     }
     deviceId_ = (int32_t)deviceIdVec[instanceId_ % deviceIdVec.size()];
 
-    std::string recModelPath;
-    ret = configParser.GetStringValue("recModelPath", recModelPath);
+    std::string pathExpr;
+    ret = configParser.GetStringValue("recModelPath", pathExpr);
     if (ret != APP_ERR_OK) {
         LogError << "Get recModelPath failed, please check the value of recModelPath.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
-    ret = Utils::CheckPath(recModelPath, "recModelPath");
+    ret = Utils::CheckPath(pathExpr, "recModelPath");
     if (ret != APP_ERR_OK) {
-        LogError << "recModelPath: " << recModelPath << "is not exist or can not read.";
+        LogError << "rec model path: " << pathExpr << "is not exist or can not read.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
-    LogDebug << "recModelPath: " << recModelPath;
 
     std::vector<std::string> files;
-    Utils::GetAllFiles(recModelPath, files);
+    Utils::GetAllFiles(pathExpr, files);
     for (auto &file : files) {
         crnnNet_.push_back(new MxBase::Model(file, deviceId_));
         std::vector<std::vector<uint64_t>> dynamicGearInfo = crnnNet_[crnnNet_.size() - 1]->GetDynamicGearInfo();
@@ -71,7 +70,7 @@ APP_ERROR CrnnInferProcess::ParseConfig(ConfigParser &configParser)
 
 std::vector<MxBase::Tensor> CrnnInferProcess::CrnnModelInfer(uint8_t *srcData, uint32_t batchSize, int maxResizedW)
 {
-    LogDebug << "Infer: maxResizedW: " << maxResizedW << std::endl;
+    LogDebug << "infer: maxResizedW: " << maxResizedW << std::endl;
 
     std::vector<uint32_t> shape;
     shape.push_back(batchSize);
@@ -89,7 +88,7 @@ std::vector<MxBase::Tensor> CrnnInferProcess::CrnnModelInfer(uint8_t *srcData, u
     auto it = find(batchSizeList.begin(), batchSizeList.end(), batchSize);
     modelIndex = it - batchSizeList.begin();
 
-    LogDebug << "batchSize: " << betchSize;
+    LogDebug << "batchSize: " << batchSize;
     LogDebug << "modelIndex: " << modelIndex;
 
     // start to inference
@@ -101,7 +100,7 @@ std::vector<MxBase::Tensor> CrnnInferProcess::CrnnModelInfer(uint8_t *srcData, u
     for (auto &output : crnnOutputs) {
         output.ToHost();
     }
-    LogInfo << "End Crnn Model Infer Progress.";
+    LogInfo << "End Crnn Model Infer progress.";
     return crnnOutputs;
 }
 
@@ -112,13 +111,13 @@ APP_ERROR CrnnInferProcess::Process(std::shared_ptr<void> commonData)
     if (data->eof) {
         auto endTime = std::chrono::high_resolution_clock::now();
         double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-        Signal::recInferProcessTime += CostTime;
+        Signal::recInferProcessTime += costTime;
         Signal::e2eProcessTime += costTime;
         SendToNextModule(MT_CrnnPostProcess, data, data->channelId);
         return APP_ERR_OK;
     }
 
-    std::vector<MxBase::Tensor> crnnOutput = crnnModelInfer(data->imgBuffer, data->batchSize, data->maxResizedW);
+    std::vector<MxBase::Tensor> crnnOutput = CrnnModelInfer(data->imgBuffer, data->batchSize, data->maxResizedW);
     data->outputTensorVec = crnnOutput;
     auto endTime = std::chrono::high_resolution_clock::now();
     double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();

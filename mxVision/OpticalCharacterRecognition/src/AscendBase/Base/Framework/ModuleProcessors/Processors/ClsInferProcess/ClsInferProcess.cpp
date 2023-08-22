@@ -76,7 +76,7 @@ std::vector<MxBase::Tensor> ClsInferProcess::ClsModelInfer(uint8_t *srcData, uin
     MxBase::Tensor imageToTensor(srcData, shape, tensorDataType, deviceId_);
     inputs.push_back(imageToTensor);
 
-    LogDebug << "batchSize: " << betchSize;
+    LogDebug << "batchSize: " << batchSize;
 
     // start to inference
     auto inferStartTime = std::chrono::high_resolution_clock::now();
@@ -110,7 +110,7 @@ APP_ERROR ClsInferProcess::Process(std::shared_ptr<void> commonData)
         delete data->imgBuffer;
         data->imgBuffer = nullptr;
     }
-    SendToNextModule(MT_CrnnPostProcess, data, data->channelId);
+    SendToNextModule(MT_ClsPostProcess, data, data->channelId);
 
     auto endTime = std::chrono::high_resolution_clock::now();
     double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();

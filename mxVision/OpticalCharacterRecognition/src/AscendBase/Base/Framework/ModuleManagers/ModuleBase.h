@@ -35,7 +35,7 @@ namespace ascendOCR{
         ModuleBase() {};
         virtual ~ModuleBase() {};
         virtual APP_ERROR Init(ConfigParser &configParser, ModuleInitParams &initParams) = 0;
-        virtual APP_ERROR Deinit(void) = 0;
+        virtual APP_ERROR DeInit(void) = 0;
         APP_ERROR Run(void);
         APP_ERROR Stop(void);
         void SetInputVec(std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> inputQueue);
