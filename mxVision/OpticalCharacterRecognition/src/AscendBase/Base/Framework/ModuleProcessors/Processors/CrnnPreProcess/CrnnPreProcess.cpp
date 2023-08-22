@@ -25,7 +25,7 @@ APP_ERROR CrnnPreProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
     for (auto &file : files) {
         std::vector<std::string> nameInfo;
         Utils::StrSplit(file, ".", nameInfo);
-        batchSizeList.push_back(uint64_t(std::stoi(nameinfo[nameinfo.size() - 2])));
+        batchSizeList.push_back(uint64_t(std::stoi(nameInfo[nameInfo.size() - 2])));
         if (gearInfo.empty()) {
             Utils::LoadFromFilePair(file, gearInfo);
         }
@@ -38,7 +38,7 @@ APP_ERROR CrnnPreProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
     mStdHeight = gearInfo[0].first;
 
     LogInfo << recMinWidth << " " << recMaxWidth << " " << mStdHeight;
-    LofInfo << "CrnnPreProcess [" << instanceId_ << "]: Init success.";
+    LogInfo << "CrnnPreProcess [" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 
@@ -57,7 +57,7 @@ void CrnnPreProcess::GetGearInfo(int maxResizedW, std::pair<uint64_t, uint64_t> 
     }
 }
 
-int CrnnPreProcess::GetCrnnMaxWidth(std::vector<_crt_va_arg::Mat> frames, float maxWHRatio)
+int CrnnPreProcess::GetCrnnMaxWidth(std::vector<cv::Mat> frames, float maxWHRatio)
 {
     int maxResizedW = 0;
     for (auto &frame : frames) {
@@ -75,11 +75,10 @@ int CrnnPreProcess::GetCrnnMaxWidth(std::vector<_crt_va_arg::Mat> frames, float 
         maxResizedW = std::max(std::min(maxResizedW, recMaxWidth), recMinWidth);
     }
     std:pair<uint64_t, uint64_t> gear;
-    GetGearInfo(maxResizedWm gear);
+    GetGearInfo(maxResizedW, gear);
     return gear.second;
 }
-
-uint8_t *CrnnPreProcess::PreProcessCrnn(std::vector<cv::Mat> &frames, uint32_t BatchSize, int maxResizedW,
+uint8_t *CrnnPreProcess::PreprocessCrnn(std::vector<cv::Mat> &frames, uint32_t BatchSize, int maxResizedW,
     float maxWHRatio, std::vector<ResizedImageInfo> &resizedImageInfos)
 {
     cv::Mat resizedImg;
@@ -88,7 +87,7 @@ uint8_t *CrnnPreProcess::PreProcessCrnn(std::vector<cv::Mat> &frames, uint32_t B
     int resizedW;
     int imgH;
     int imgW;
-    uint32_t bufferLen = Utils::RgbImageSizeF32(maxResizedW, mStdHeight);
+    uint32_t bufferlen = Utils::RgbImageSizeF32(maxResizedW, mStdHeight);
     uint8_t *srcData = new uint8_t[bufferlen * BatchSize];
 
     int pos = 0;
@@ -117,7 +116,7 @@ uint8_t *CrnnPreProcess::PreProcessCrnn(std::vector<cv::Mat> &frames, uint32_t B
         ResizedInfo.widthResize = resizedW;
         ResizedInfo.heightResize = mStdHeight;
         ResizedInfo.widthOriginal = inImg.cols;
-        ResizedInfo.heightOriginal = inImg.row;
+        ResizedInfo.heightOriginal = inImg.rows;
         resizedImageInfos.emplace_back(std::move(ResizedInfo));
 
         outImg = resizedImg;
@@ -133,8 +132,8 @@ uint8_t *CrnnPreProcess::PreProcessCrnn(std::vector<cv::Mat> &frames, uint32_t B
         uint8_t *buffer = Utils::ImageNchw(channels, size);
 
         // component padding images
-        memcpy(srcData + pos, buffer, bufferLen);
-        pos += bufferLen;
+        memcpy(srcData + pos, buffer, bufferlen);
+        pos += bufferlen;
         delete[] buffer;
     }
     return srcData;
@@ -166,7 +165,7 @@ APP_ERROR CrnnPreProcess::Process(std::shared_ptr<void> commonData)
         data->eof = true;
         auto endTime = std::chrono::high_resolution_clock::now();
         double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();
-        Signal::recProProcessTime += costTime;
+        Signal::recPreProcessTime += costTime;
         Signal::e2eProcessTime += costTime;
         SendToNextModule(MT_CrnnInferProcess, data, data->channelId);
         return APP_ERR_OK;
@@ -187,13 +186,13 @@ APP_ERROR CrnnPreProcess::Process(std::shared_ptr<void> commonData)
             data->inferRes.begin() + std::min(startIndex + splitIndex[i], totalSize));
         int maxResizedW = GetCrnnMaxWidth(input, data->maxWHRatio);
 
-        uint8_t *crnnInput = CrnnPreProcess(input, splitIndex[i], maxResizedW, data->maxWHRatio, resizedImageInfosCrnn);
+        uint8_t *crnnInput = PreprocessCrnn(input, splitIndex[i], maxResizedW, data->maxWHRatio, resizedImageInfosCrnn);
         shareId++;
 
         dataNew->eof = false;
         dataNew->outputTensorVec = data->outputTensorVec;
         dataNew->imgName = data->imgName;
-        dataNew->inferRes = data->inferRes;
+        dataNew->inferRes = splitRes;
         dataNew->imgTotal = data->imgTotal;
         dataNew->maxResizedW = maxResizedW;
 

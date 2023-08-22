@@ -9,10 +9,10 @@
 #include "ErrorCode/ErrorCode.h"
 #include "Log/Log.h"
 
-class HandoutProcess : public ascendOCR::ModuleBase {
+class HandOutProcess : public ascendOCR::ModuleBase {
 public:
-    HandoutProcess();
-    ~HandoutProcess();
+    HandOutProcess();
+    ~HandOutProcess();
     APP_ERROR Init(ConfigParser &configParser, ascendOCR::ModuleInitParams &initParams);
     APP_ERROR DeInit(void);
 

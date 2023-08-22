@@ -33,5 +33,5 @@ private:
 
 MODULE_REGIST(ClsInferProcess)
 
-#enfif
+#endif
 

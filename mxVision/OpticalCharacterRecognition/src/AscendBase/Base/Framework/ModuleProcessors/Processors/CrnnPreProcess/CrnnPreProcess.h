@@ -9,10 +9,10 @@
 #include "ErrorCode/ErrorCode.h"
 #include "Log/Log.h"
 
-class CrnntPreProcess : public ascendOCR::ModuleBase {
+class CrnnPreProcess : public ascendOCR::ModuleBase {
 public:
-    CrnntPreProcess();
-    ~CrnntPreProcess();
+    CrnnPreProcess();
+    ~CrnnPreProcess();
     APP_ERROR Init(ConfigParser &configParser, ascendOCR::ModuleInitParams &initParams);
     APP_ERROR DeInit(void);
 
@@ -31,13 +31,13 @@ private:
 
     int GetCrnnMaxWidth(std::vector<cv::Mat> frames, float maxWHRatio);
 
-    uint8_t *PreProcessCrnn(std::vector<cv::Mat> &frames, uint32_t batchSize, int maxResizeW, float maxWHRatio,
+    uint8_t *PreprocessCrnn(std::vector<cv::Mat> &frames, uint32_t batchSize, int maxResizeW, float maxWHRatio,
         std::vector<ResizedImageInfo> &resizedImageInfos);
 
     void GetGearInfo(int maxResizedW, std::pair<uint64_t, uint64_t> &gear);
 };
 
-MODULE_REGIST(CrnntPreProcess)
+MODULE_REGIST(CrnnPreProcess)
 
-#enfif
+#endif
 

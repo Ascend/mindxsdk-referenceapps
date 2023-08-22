@@ -13,13 +13,17 @@
         {                                                                                 \
             ModuleFactory::RegisterModule(#class_name, class_name##Helper::CreatObjFunc); \
         }                                                                                 \
-        static class_name##Helper class_name##helper;                                     \
-        static std::string MT_##class_name = #class_name;                                 \
-        }
+        static void *CreatObjFunc()                                                       \
+        {                                                                                 \
+            return new class_name;                                                        \
+        }                                                                                 \
+    };                                                                                    \
+    static class_name##Helper class_name##helper;                                         \
+    static std::string MT_##class_name = #class_name;                                     \
+    }
 namespace ascendOCR {
     using Constructor = std::function<void *()>;
-    class ModuleFactory
-    {
+    class ModuleFactory {
     public:
         static void RegisterModule(std::string className, Constructor constructor)
         {

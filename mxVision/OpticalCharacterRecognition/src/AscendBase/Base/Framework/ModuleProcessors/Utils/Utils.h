@@ -26,7 +26,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
-// class for text object detection
+// Class for text object detection
 class __attribute__((visibility("default"))) TextObjectInfo {
 public:
     float x0;
@@ -41,7 +41,7 @@ public:
     std::string result;
 };
 
-//class for resized image info
+// Class for resized image info
 class __attribute__((visibility("default"))) ResizedImageInfo {
 public:
     uint32_t widthResize; // memoryWidth
@@ -51,7 +51,7 @@ public:
     float ratio; 
 };
 
-//class for text generation (i.e. translation, OCR)
+// Class for text generation (i.e. translation, OCR)
 class __attribute__((visibility("default"))) TextsInfo {
 public:
     std::vector<std::string> text;

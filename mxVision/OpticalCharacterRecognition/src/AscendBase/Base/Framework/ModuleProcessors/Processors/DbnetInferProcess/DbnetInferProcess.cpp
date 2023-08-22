@@ -77,7 +77,7 @@ APP_ERROR DbnetInferProcess::Process(std::shared_ptr<void> commonData)
     inputs.push_back(imageToTensor);
     
     // start to inference
-    auto startTime = std::chrono::high_resolution_clock::now();
+    auto inferStartTime = std::chrono::high_resolution_clock::now();
     dbNetoutputs = dbNet_->Infer(inputs);
     auto inferEndTime = std::chrono::high_resolution_clock::now();
     double inferCostTime = std::chrono::duration<double, std::milli>(inferEndTime - inferStartTime).count();
@@ -87,7 +87,7 @@ APP_ERROR DbnetInferProcess::Process(std::shared_ptr<void> commonData)
     LogDebug << "c: " << dbNetoutputs[0].GetShape()[1];
     LogDebug << "h: " << dbNetoutputs[0].GetShape()[2];
     LogDebug << "w: " << dbNetoutputs[0].GetShape()[3];
-    LogDebug << "End Model Infer Process.";
+    LogDebug << "End Model Infer progress...";
     LogDebug << "Current imgName: " << data->imgName;
     LogDebug << "Current resizeHeight: " << data->resizeHeight;
     LogDebug << "Current resizeWidth: " << data->resizeWidth;
@@ -97,14 +97,14 @@ APP_ERROR DbnetInferProcess::Process(std::shared_ptr<void> commonData)
         LogError << "Failed to get model output data.";
         return APP_ERR_INFER_GET_OUTPUT_FAIL;
     }
-    for (auto &output : deNetoutputs) {
+    for (auto &output : dbNetoutputs) {
         output.ToHost();
     }
 
     std::vector<MxBase::Tensor> res = { dbNetoutputs[0] };
     data->outputTensorVec = res;
 
-    if (data-imgBuffer != nullptr) {
+    if (data->imgBuffer != nullptr) {
         delete data->imgBuffer;
         data->imgBuffer = nullptr;
     }

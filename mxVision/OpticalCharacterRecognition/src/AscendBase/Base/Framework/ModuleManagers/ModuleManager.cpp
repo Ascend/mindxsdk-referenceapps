@@ -33,7 +33,7 @@ namespace ascendOCR {
         ModuleInitParams initParams;
         initParams.pipelineName = pipelineName;
         initParams.moduleName = moduleName;
-        initParams.moduleName = instanceId;
+        initParams.instanceId = instanceId;
 
         // Initialize the Init function of each module
         APP_ERROR ret = moduleInstance->Init(configParser_, initParams);
@@ -42,11 +42,11 @@ namespace ascendOCR {
                 instanceId << ".";
             return ret;
         }
-        LogDebug << "ModuleManager: module " << initParams.moduleName << "[" << instanceId << "] init success";
+        LogDebug << "ModuleManager: module " << initParams.moduleName << "[" << instanceId << "] init success.";
         return ret;
     }
 
-    APP_ERROR ModuleManager::RegisterModules(std::string pipelineName, ModuleDesc *moduleDesc, int moduleTypeCount,
+    APP_ERROR ModuleManager::RegisterModules(std::string pipelineName, ModuleDesc *modulesDesc, int moduleTypeCount,
         int defaultCount)
     {
         auto iter = pipelineMap_.find(pipelineName);
@@ -59,7 +59,7 @@ namespace ascendOCR {
 
         // create new object of module
         for (int i = 0; i < moduleTypeCount; i++) {
-            ModuleDesc moduleDesc = moduleDesc[i];
+            ModuleDesc moduleDesc = modulesDesc[i];
             int moduleCount = (moduleDesc.moduleCount == -1) ? defaultCount : moduleDesc.moduleCount;
             ModulesInfo modulesInfo;
             for (int j = 0; j < moduleCount; j++) {
@@ -73,7 +73,7 @@ namespace ascendOCR {
             modulesInfoMap[moduleDesc.moduleName] = modulesInfo;
         }
         pipelineMap_[pipelineName] = modulesInfoMap;
-        return APP_ERR_OK£»
+        return APP_ERR_OK;
     }
 
     APP_ERROR ModuleManager::RegisterModuleConnects(std::string pipelineName, ModuleConnectDesc *connectDesc,
@@ -86,7 +86,7 @@ namespace ascendOCR {
         }
         modulesInfoMap = iter->second;
 
-        std::shared_ptr<BlockingQueue<std::share_ptr<void>>> dataQueue = nullptr;
+        std::shared_ptr<BlockingQueue<std::shared_ptr<void>>> dataQueue = nullptr;
 
         // add connect
         for (int i = 0; i < moduleConnectCount; i++) {
@@ -142,7 +142,7 @@ namespace ascendOCR {
         return APP_ERR_OK;
     }
 
-    APP_ERROR ModuleManeger::RegisterOutputModule(std::string pipelineName, std::string moduleSend, std::string moduleRecv,
+    APP_ERROR ModuleManager::RegisterOutputModule(std::string pipelineName, std::string moduleSend, std::string moduleRecv,
         ModuleConnectType connectType, std::vector<std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> outputQueVec)
     {
         auto pipelineIter = pipelineMap_.find(pipelineName);
@@ -161,7 +161,7 @@ namespace ascendOCR {
                 moduleInstance->SetOutputInfo(moduleRecv, connectType, outputQueVec);
             }
         }
-        return APP_ERR_OK£»
+        return APP_ERR_OK;
     }
 
     APP_ERROR ModuleManager::InitPipelineModule()
@@ -193,7 +193,7 @@ namespace ascendOCR {
         return APP_ERR_OK;
     }
 
-    APP_ERROR ModuleManeger::DeInit(void)
+    APP_ERROR ModuleManager::DeInit(void)
     {
         LogInfo << "Begin to deinit module manager.";
         APP_ERROR ret = APP_ERR_OK;

@@ -26,7 +26,7 @@ APP_ERROR ClsPreProcess::Init(ConfigParser &configParser, ModuleInitParams &init
     clsHeight = 48;
     clsWidth = 192;
 
-    LofInfo << "ClsPreProcess [" << instanceId_ << "]: Init success.";
+    LogInfo << "ClsPreProcess [" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 
@@ -54,7 +54,7 @@ uint8_t *ClsPreProcess::PreprocessCls(std::vector<cv::Mat> &frames, uint32_t Bat
 {
     cv::Mat resizedImg;
     cv::Mat inImg;
-    uint32_t bufferLen = Utils::RgbImageSizeF32(clsWidth, clsHeight);
+    uint32_t bufferlen = Utils::RgbImageSizeF32(clsWidth, clsHeight);
     auto *srcData = new uint8_t[bufferlen * BatchSize];
 
     int pos = 0;
@@ -92,7 +92,7 @@ uint8_t *ClsPreProcess::PreprocessCls(std::vector<cv::Mat> &frames, uint32_t Bat
 
 std::vector<uint32_t> ClsPreProcess::GetClsBatchSize(uint32_t frameSize)
 {
-    int lastIndex - batchSizeList.size() - 1;
+    int lastIndex = batchSizeList.size() - 1;
     std::vector<uint32_t> splitList(frameSize / batchSizeList[lastIndex], batchSizeList[lastIndex]);
     frameSize = frameSize - batchSizeList[lastIndex] * (frameSize / batchSizeList[lastIndex]);
     if (!frameSize) {
@@ -118,6 +118,7 @@ APP_ERROR ClsPreProcess::Process(std::shared_ptr<void> commonData)
         auto endTime = std::chrono::high_resolution_clock::now();
         double costTime = std::chrono::duration<double, std::milli>(endTime - startTime).count();
         Signal::clsPreProcessTime += costTime;
+        Signal::e2eProcessTime += costTime;
         return APP_ERR_OK;
     }
 

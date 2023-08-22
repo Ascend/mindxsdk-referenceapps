@@ -22,7 +22,7 @@ APP_ERROR CollectProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
         return ret;
     }
 
-    LofInfo << "CollectProcess [" << instanceId_ << "]: Init success.";
+    LogInfo << "CollectProcess [" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 

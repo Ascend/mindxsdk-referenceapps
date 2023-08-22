@@ -103,7 +103,7 @@ void DbnetPreProcess::getMatchedGear(const cv::Mat &inImg, std::pair<uint64_t, u
     }
 }
 
-void DbnetProProcess::resize(const cv::Mat &inImg, cv::Mat &outImg, const std::pair<uint64_t, uint64_t> &gear,
+void DbnetPreProcess::resize(const cv::Mat &inImg, cv::Mat &outImg, const std::pair<uint64_t, uint64_t> &gear,
     float &ratio_)
 {
     int imgH = inImg.rows;
@@ -120,7 +120,7 @@ void DbnetProProcess::resize(const cv::Mat &inImg, cv::Mat &outImg, const std::p
             }
         } else {
             ratio = float(gearW) / float(imgW);
-            int resizeByW = int(ratio * float(imgW));
+            int resizeByW = int(ratio * float(imgH));
             if (resizeByW > gearH) {
                 ratio = float(gearH) / float(imgH);
             }
@@ -151,13 +151,14 @@ cv::Mat DbnetPreProcess::DecodeImgDvpp(std::string imgPath)
     imageProcessor->Decode(imgPath, decodedImage, MxBase::ImageFormat::BGR_888);
     decodedImage.ToHost();
 
-    MxBase::Size imgOriSize = decodedImage.GetSize();
+    MxBase::Size imgOriSize = decodedImage.GetOriginalSize();
+    MxBase::Size imgSize = decodedImage.GetSize();
     cv::Mat imgBGR;
     imgBGR.create(imgSize.height, imgSize.width, CV_8UC3);
     imgBGR.data = (uchar *)decodedImage.GetData().get();
     cv::Rect area(0, 0, imgOriSize.width, imgOriSize.height);
     imgBGR = imgBGR(area).clone();
-    return imgBGR
+    return imgBGR;
 }
 
 void DbnetPreProcess::normalizeByChannel(std::vector<cv::Mat> &bgr_channels)

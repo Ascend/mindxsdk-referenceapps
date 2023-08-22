@@ -37,6 +37,7 @@ APP_ERROR DbnetPostProcess::Init(ConfigParser &configParser, ModuleInitParams &i
 APP_ERROR DbnetPostProcess::DeInit(void)
 {
     LogInfo << "DbnetPostProcess[" instanceId_ << "]: DeInit success.";
+    return APP_ERR_OK;
 }
 
 APP_ERROR DbnetPostProcess::ParseConfig(ConfigParser &configParser)
@@ -64,10 +65,10 @@ APP_ERROR DbnetPostProcess::ParseConfig(ConfigParser &configParser)
     return APP_ERR_OK;
 }
 
-APP_ERROR DbnetPostProcess::Process(std::shared_ptr<void> CommonData)
+APP_ERROR DbnetPostProcess::Process(std::shared_ptr<void> commonData)
 {
     auto startTime = std::chrono::high_resolution_clock::now();
-    std::shares_ptr<CommonData> data = std::static_pointer_cast<CommonData>(commonData);
+    std::shared_ptr<CommonData> data = std::static_pointer_cast<CommonData>(commonData);
 
     std::vector<ResizedImageInfo> resizedImageInfos;
     ResizedImageInfo ResizedInfo;
@@ -92,13 +93,13 @@ APP_ERROR DbnetPostProcess::Process(std::shared_ptr<void> CommonData)
         std::vector<TextObjectInfo> textInfo = textObjInfos[i];
         for (uint32_t j = 0; j < textInfo.size(); j++) {
             LogDebug << "#Obj " << j;
-            LogDebug << "x0 " << textInfo[j].x0 << " y0" << textInfo[j].y0;
-            LogDebug << "x1 " << textInfo[j].x1 << " y1" << textInfo[j].y1;
-            LogDebug << "x2 " << textInfo[j].x2 << " y2" << textInfo[j].y2;
-            LogDebug << "x3 " << textInfo[j].x3 << " y3" << textInfo[j].y3;
+            LogDebug << "x0 " << textInfo[j].x0 << " y0 " << textInfo[j].y0;
+            LogDebug << "x1 " << textInfo[j].x1 << " y1 " << textInfo[j].y1;
+            LogDebug << "x2 " << textInfo[j].x2 << " y2 " << textInfo[j].y2;
+            LogDebug << "x3 " << textInfo[j].x3 << " y3 " << textInfo[j].y3;
             LogDebug << "confidence: " << textInfo[j].confidence;
 
-            cv::Mat resizeImg;
+            cv::Mat resizeimg;
             std::string str = std::to_string((int)textInfo[j].x1) + "," + std::to_string((int)textInfo[j].y1) + "," +
                 std::to_string((int)textInfo[j].x2) + "," + std::to_string((int)textInfo[j].y2) + "," +
                 std::to_string((int)textInfo[j].x3) + "," + std::to_string((int)textInfo[j].y3) + "," +
@@ -130,8 +131,8 @@ APP_ERROR DbnetPostProcess::Process(std::shared_ptr<void> CommonData)
             int imgW = img_warp.cols;
             if (imgH * 1.0 / imgW >= 1.5) {
                 cv::rotate(img_warp, img_warp, cv::ROTATE_90_COUNTERCLOCKWISE);
-                imgH = img_warp.rows();
-                imgW = img_warp.cols();
+                imgH = img_warp.rows;
+                imgW = img_warp.cols;
             }
             maxWHRatio = std::max(maxWHRatio, float(imgW) / float(imgH));
             resizeImgs.emplace_back(img_warp);
@@ -151,19 +152,6 @@ APP_ERROR DbnetPostProcess::Process(std::shared_ptr<void> CommonData)
     return APP_ERR_OK;
 }
 
-float DbnetPostProcess::CalcCropHeight(const TextObjectInfo &textObject)
-{
-    float x0 = std::abs(textObject.x0 - textObject.x3);
-    float y0 = std::abs(textObject.y0 - textObject.y3);
-    float line0 = sqrt(std::pow(x0, 2) + std::pow(y0, 2));
-
-    float x1 = std::abs(textObject.x1 - textObject.x2);
-    float y1 = std::abs(textObject.y1 - textObject.y2);
-    float line1 = sqrt(std::pow(x1, 2) + std::pow(y1, 2));
-
-    return line1 > line0 ? line1 : line0;
-}
-
 float DbnetPostProcess::CalcCropWidth(const TextObjectInfo &textObject)
 {
     float x0 = std::abs(textObject.x1 - textObject.x0);
@@ -172,7 +160,20 @@ float DbnetPostProcess::CalcCropWidth(const TextObjectInfo &textObject)
 
     float x1 = std::abs(textObject.x2 - textObject.x3);
     float y1 = std::abs(textObject.y2 - textObject.y3);
-    float line1 = sqrt(std::pow(x1, 2) + std::pow(y1, 2));
+    float line1 = std::sqrt(std::pow(x1, 2) + std::pow(y1, 2));
+
+    return line1 > line0 ? line1 : line0;
+}
+
+float DbnetPostProcess::CalcCropHeight(const TextObjectInfo &textObject)
+{
+    float x0 = std::abs(textObject.x0 - textObject.x3);
+    float y0 = std::abs(textObject.y0 - textObject.y3);
+    float line0 = sqrt(std::pow(x0, 2) + std::pow(y0, 2));
+
+    float x1 = std::abs(textObject.x1 - textObject.x2);
+    float y1 = std::abs(textObject.y1 - textObject.y2);
+    float line1 = std::sqrt(std::pow(x1, 2) + std::pow(y1, 2));
 
     return line1 > line0 ? line1 : line0;
 }

@@ -33,11 +33,11 @@ private:
 
     APP_ERROR ParseConfig(ConfigParser &configParser);
 
-    APP_ERROR PostProcessCrnn(uint32_t frameSize, std::vector<MxBase::Tensor> &inferOutput,
+    APP_ERROR PostProcessCrnn(uint32_t framesSize, std::vector<MxBase::Tensor> &inferOutput,
         std::vector<std::string> &textsInfos);
 };
 
 MODULE_REGIST(CrnnPostProcess)
 
-#enfif
+#endif
 
