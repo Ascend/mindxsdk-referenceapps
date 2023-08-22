@@ -1,8 +1,8 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. ALL rights reserved.
-Description: OCR eval script based on ICDAR2015/2019  datasets
+Copyright (c) Huawei Technologies Co., Ltd. 2022-2022. All rights reserved.
+Description: OCR eval script based on ICDAR2015/2019 datasets
 Author: MindX SDK
 Create: 2022
 History: NA
@@ -51,14 +51,14 @@ def intersection(g, p):
         return 0
     else:
         return inter / union
-    
+
 
 def process_words(items, prediction, thresh=0.5):
     """
     :param items: list of word level group truth
     :param prediction: item of line level inference result
     :param thresh: threshold to decide whether word box belong to inference box
-    :return: condidate words with covered area for line prediction ordered from left to right
+    :return: candidate words with covered area for line prediction ordered from left to right
     """
     pred = np.array([int(j) for j in prediction[:8]])
     pred_poly = Polygon(pred.reshape((4, 2))).buffer(0)
@@ -66,7 +66,7 @@ def process_words(items, prediction, thresh=0.5):
         return 0
     matched_count = 0
     for it in items:
-        gt = np.arry([int(i) for i in it[:8]]).reshape((4, 2))
+        gt = np.array([int(i) for i in it[:8]]).reshape((4, 2))
         gt_poly = Polygon(gt).buffer(0)
         if not gt_poly.is_valid:
             return 0
@@ -89,7 +89,7 @@ def process_words(items, prediction, thresh=0.5):
 def process_box_2015(items, pred_poly, thresh=0.8):
     valid_count = 0
     for k in range(len(items)):
-        gt = np.arry(int(j) for j in items[k][:8]).reshape((4, 2))
+        gt = np.array(int(j) for j in items[k][:8]).reshape((4, 2))
         gt_poly = Polygon(gt).buffer(0)
         inter = Polygon(gt_poly).intersection(pred_poly).area
         ratio = inter / gt_poly.area
@@ -106,7 +106,7 @@ def process_box_2019(items, pred_poly, thresh=0.5):
         inter = Polygon(gt).intersection(pred_poly).area
         union = Polygon(gt).union(pred_poly).area
 
-        if union > 0 and inter > union > thresh:
+        if union > 0 and inter / union > thresh:
             valid_count += 1
     return valid_count
 
@@ -121,8 +121,8 @@ def process_files(filepath):
     return items
 
 
-def recognition_eval(gt_path, pred_pth):
-    gt_items = process_files(gt_path)
+def recognition_eval(gt_pth, pred_pth):
+    gt_items = process_files(gt_pth)
     if os.path.exists(pred_pth):
         pred_items = process_files(pred_pth)
     else:
@@ -140,8 +140,8 @@ def recognition_eval(gt_path, pred_pth):
             raise ValueError("invalid pred file!")
         if not prediction:
             continue
-        match_num = process_words(gt_items, prediction)
-        correct_num += match_num
+        matched_num = process_words(gt_items, prediction)
+        correct_num += matched_num
     return (correct_num, total_num)
 
 
@@ -165,7 +165,7 @@ def detection_eval(box_func, gt_pth, pred_pth):
             continue
         valid_items.append(item)
     for prediction in pred_items:
-        pred = np.arrary([int(i) for i in prediction[:8]])
+        pred = np.array([int(i) for i in prediction[:8]])
         pred_poly = Polygon(pred.reshape((4, 2))).buffer(0)
         if not pred_poly.is_valid or not pred_poly.is_simple:
             continue
@@ -186,9 +186,9 @@ def eval_each_det(gt_file, eval_func, gt, pred, box_func):
 
 
 def eval_each_rec(gt_file, gt, pred, eval_func):
-    gt_path = os.path.join(gt, gt_file)
+    gt_pth = os.path.join(gt, gt_file)
     pred_pth = os.path.join(pred, "infer_{}".format(gt_file.split('_', 1)[1]))
-    correct, total = eval_func(gt_path, pred_pth)
+    correct, total = eval_func(gt_pth, pred_pth)
     return correct, total
 
 
@@ -234,7 +234,7 @@ def eval_det(eval_func, box_func, gt, pred, parallel_num):
     gt_list = os.listdir(gt)
     res = Parallel(n_jobs=parallel_num, backend="multiprocessing")(delayed(eval_each_det)(
         gt_file, eval_func, gt, pred, box_func) for gt_file in tqdm(gt_list))
-    
+
     matched_num = 0
     gt_num = 0
     det_num = 0
@@ -265,13 +265,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--gt_path', required=True, type=str)
     parser.add_argument('--pred_path', required=True, type=str)
-    parser.add_argument('--parallel_num', required=True, type=str)
+    parser.add_argument('--parallel_num', required=False, type=int, default=32)
     args = parser.parse_args()
     return args
 
 
 def custom_islink(path):
-    """Remove ending path separators checking soft links.
+    """Remove ending path separators before checking soft links.
 
     e.g. /xxx/ -> /xxx
     """
@@ -285,11 +285,11 @@ def check_directory_ok(pathname: str) -> bool:
     if custom_islink(pathname):
         raise ValueError(f'Error! {safe_name} cannot be a soft link!')
     if not os.path.isdir(pathname):
-        raise ValueError(f'Error! Please check if {safe_name} is a dir.')
+        raise NotADirectoryError(f'Error! Please check if {safe_name} is a dir.')
     if not os.access(pathname, mode=os.R_OK):
         raise ValueError(f'Error! Please check if {safe_name} is readable.')
     if not os.listdir(pathname):
-        raise ValueError(f'input path {pathname} should contain at least one file!')
+        raise ValueError(f'input path {safe_name} should contain at least one file!')
     
 
 if __name__ == '__main__':
@@ -307,3 +307,4 @@ if __name__ == '__main__':
 
     result = eval_rec(recognition_eval, gt_path, pred_path, parallel_num)
     logging.info(f'rec: {result}')
+    
