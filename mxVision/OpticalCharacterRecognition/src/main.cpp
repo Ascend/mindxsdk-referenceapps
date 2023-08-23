@@ -404,7 +404,7 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     std::string detModelPath;
     ret = configParser.GetStringValue("detModelPath", detModelPath);
     if (ret != APP_ERR_OK) {
-        LogError << "Get detModelPath failed, please check the value of detModelPath";
+        LogError << "Get detModelPath failed, please check the value of detModelPath.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(detModelPath, "detModelPath");
@@ -420,7 +420,7 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
             return APP_ERR_COMM_INVALID_PARAM;
         }
     } catch (...) {
-        LogError << "please check the value of detModelPath";
+        LogError << "please check the value of related parameters.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
@@ -439,18 +439,18 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
                 LogError << info[2] << " ---- " << info[3];
             }
             if (dynamicGearInfo.empty()) {
-                LogError << "please check the value of clsModelPath";
+                LogError << "please check the value of clsModelPath.";
                 return APP_ERR_COMM_INVALID_PARAM;
             }
         } catch (...) {
-            LogError << "please check the value of clsModelPath";
+            LogError << "please check the value of related parameters.";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
     std::string recModelPath;
     ret = configParser.GetStringValue("recModelPath", recModelPath);
     if (ret != APP_ERR_OK) {
-        LogError << "Get recModelPath failed, please check the value of recModelPath";
+        LogError << "Get recModelPath failed, please check the value of recModelPath.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(recModelPath, "recModelPath");
@@ -466,11 +466,11 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
             MxBase::Model crnn(file, deviceId);
             std::vector<std::vector<uint64_t>> dynamicGearInfo = crnn.GetDynamicGearInfo();
             if (dynamicGearInfo.empty()) {
-                LogError << "please check the value of recModelPath";
+                LogError << "please check the value of recModelPath.";
                 return APP_ERR_COMM_INVALID_PARAM;
             }
         } catch (...) {
-            LogError << "please check the value of recModelPath";
+            LogError << "please check the value of related parameters.";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
@@ -478,19 +478,19 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
     std::string recDictionary;
     ret = configParser.GetStringValue("dictPath", recDictionary);
     if (ret != APP_ERR_OK) {
-        LogError << "Get dictPath failed, please check the value of dictPath";
+        LogError << "Get dictPath failed, please check the value of dictPath.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     ret = Utils::CheckPath(recDictionary, "character label file");
     if (ret != APP_ERR_OK) {
-        LogError << "Character label file: " << recDictionary << " does not exist or cannot be read";
+        LogError << "Character label file: " << recDictionary << " does not exist or cannot be read.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
     bool saveInferResult;
     ret = configParser.GetBoolValue("saveInferResult", saveInferResult);
     if (ret != APP_ERR_OK) {
-        LogError << "Get saveInferResult failed, please check the value of saveInferResult";
+        LogError << "Get saveInferResult failed, please check the value of saveInferResult.";
         return APP_ERR_COMM_INVALID_PARAM;
     }
     return APP_ERR_OK;
@@ -521,12 +521,12 @@ int main(int argc, const char *argv[])
     }
 
     if (threadNum < 1) {
-        LogError << "thread number [" << threadNum << "] cannot be smaller than 1";
+        LogError << "thread number [" << threadNum << "] cannot be smaller than 1.";
         exit(-1);
     }
 
     if (threadNum > 4) {
-        LogError << "thread number [" << threadNum << "] cannot be great than 4";
+        LogError << "thread number [" << threadNum << "] cannot be great than 4.";
         exit(-1);
     }
 
