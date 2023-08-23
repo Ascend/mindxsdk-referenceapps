@@ -20,7 +20,7 @@ APP_ERROR DbnetPostProcess::Init(ConfigParser &configParser, ModuleInitParams &i
     InitParams(initParams);
     APP_ERROR ret = ParseConfig(configParser);
     if (ret != APP_ERR_OK) {
-        LogError << "DbnetPostProcess[" instanceId_ << "]: Fail to parse config params." << GetAppErrCodeInfo(ret);
+        LogError << "DbnetPostProcess[" << instanceId_ << "]: Fail to parse config params." << GetAppErrCodeInfo(ret);
         return ret;
     }
 
@@ -30,13 +30,13 @@ APP_ERROR DbnetPostProcess::Init(ConfigParser &configParser, ModuleInitParams &i
     } else {
         nextModule = MT_CrnnPreProcess;
     }
-    LogInfo << "DbnetPostProcess[" instanceId_ << "]: Init success.";
+    LogInfo << "DbnetPostProcess[" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 
 APP_ERROR DbnetPostProcess::DeInit(void)
 {
-    LogInfo << "DbnetPostProcess[" instanceId_ << "]: DeInit success.";
+    LogInfo << "DbnetPostProcess[" << instanceId_ << "]: DeInit success.";
     return APP_ERR_OK;
 }
 

@@ -106,7 +106,7 @@ namespace ascendOCR {
             // create input queue for recv module
             for (unsigned int j = 0; j < moduleInfoRecv.moduleVec.size(); j++) {
                 dataQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(MODULE_QUEUE_SIZE);
-                moduleInfoRecv.inputQueueVec.push_bak(dataQueue);
+                moduleInfoRecv.inputQueueVec.push_back(dataQueue);
             }
             RegisterInputVec(pipelineName, connectDesc.moduleRecv, moduleInfoRecv.inputQueueVec);
             RegisterOutputModule(pipelineName, connectDesc.moduleSend, connectDesc.moduleRecv, connectDesc.connectType,

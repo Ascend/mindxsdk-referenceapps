@@ -74,7 +74,7 @@ int CrnnPreProcess::GetCrnnMaxWidth(std::vector<cv::Mat> frames, float maxWHRati
         maxResizedW = std::max(resizedW, maxResizedW);
         maxResizedW = std::max(std::min(maxResizedW, recMaxWidth), recMinWidth);
     }
-    std:pair<uint64_t, uint64_t> gear;
+    std::pair<uint64_t, uint64_t> gear;
     GetGearInfo(maxResizedW, gear);
     return gear.second;
 }
@@ -120,7 +120,7 @@ uint8_t *CrnnPreProcess::PreprocessCrnn(std::vector<cv::Mat> &frames, uint32_t B
         resizedImageInfos.emplace_back(std::move(ResizedInfo));
 
         outImg = resizedImg;
-        outImg.convertTo(outImg, CV32FC3, 1.0 / 255);
+        outImg.convertTo(outImg, CV_32FC3, 1.0 / 255);
         outImg = (outImg - 0.5) / 0.5;
 
         // Gray channel means
