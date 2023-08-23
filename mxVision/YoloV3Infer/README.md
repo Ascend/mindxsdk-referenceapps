@@ -15,10 +15,9 @@
 
 | 硬件形态                             | 操作系统版本   |
 | ----------------------------------- | -------------- |
-| x86_64+Atlas 310P/310B 推理卡（型号3010） | Ubuntu 18.04.1 |
-| x86_64+Atlas 310P/310B 推理卡 （型号3010）| CentOS 7.6     |
-| ARM+Atlas 310P/310B 推理卡 （型号3000）   | Ubuntu 18.04.1 |
-| ARM+Atlas 310P/310B 推理卡 （型号3000）   | CentOS 7.6     |
+| x86_64+Atlas 310P 推理卡（型号3010） | Ubuntu 18.04.1 |
+| ARM+Atlas 310P 推理卡 （型号3000）   | Ubuntu 18.04.1 |
+| ARM+Atlas 310B 推理卡 （型号A500 A2）   | openEuler |
 
 - 软件依赖
 
@@ -69,9 +68,13 @@ export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
 export ASCEND_OPP_PATH=${install_path}/opp
 
 # 执行，转换YOLOv3模型
-# Execute, transform YOLOv3 model.
+# Execute, transform YOLOv3 model. 310P
 
 atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310P3 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
+
+# Execute, transform YOLOv3 model. 310B
+
+atc --model=./yolov3_tf.pb --framework=3 --output=./yolov3_tf_bs1_fp16 --soc_version=Ascend310B2 --insert_op_conf=./aipp_yolov3_416_416.aippconfig --input_shape="input:1,416,416,3" --out_nodes="yolov3/yolov3_head/Conv_6/BiasAdd:0;yolov3/yolov3_head/Conv_14/BiasAdd:0;yolov3/yolov3_head/Conv_22/BiasAdd:0"
 # 说明：out_nodes制定了输出节点的顺序，需要与模型后处理适配。
 ```
 
@@ -92,7 +95,7 @@ ATC run success, welcome to the next use.
 
 注：mxVision SDK安装路径一般建议使用 /home/{$username}/MindX_SDK。
 
-**步骤3：**准备模型，根据本文档上一章节转换样例需要的OM模型,并将模型保存到./model/目录下。
+**步骤3：** 准备模型，根据本文档上一章节转换样例需要的OM模型,并将模型保存到./model/目录下。
 
 **步骤4：** 修改配置根目录下的配置文件./CMakeLists.txt文件和run.sh脚本：
 
@@ -107,9 +110,9 @@ ATC run success, welcome to the next use.
 ## 5 运行
 
 - 简易运行样例
->`bash run.sh`
+> `bash run.sh`
 - 完成运行样例
->完成编译后，以测试图片作为参数运行生成的mxbaseV2_sample即可
+> 完成编译后，以测试图片作为参数运行生成的mxbaseV2_sample即可
 
 ## 6 其他
 对于需要自行开发后处理的用户，请修改YoloV3PostProcess函数完成对应功能
