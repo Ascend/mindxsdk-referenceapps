@@ -52,7 +52,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 │       │   │   │   │   ├── DbnetInferProcess    // Dbnet推理模块
 │       │   │   │   │   ├── DbnetPostProcess     // Dbnet后处理模块
 │       │   │   │   │   ├── ClsPreProcess        // Cls前处理模块
-│       │   │   │   │   ├── ClsInferProcess      // Cls推理模块
+│       │   │   │   │   ├── ClsInferProcess      // Cls推 理模块
 │       │   │   │   │   ├── ClsPostProcess       // Cls后处理模块
 │       │   │   │   │   ├── CrnnPreProcess       // Crnn前处理模块
 │       │   │   │   │   ├── CrnnInferProcess     // Crnn推理模块
@@ -92,7 +92,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 | 依赖软件          | 版本           | 依赖说明
 | -------------   |--------------| ---------------------|
 | CANN            | 6.3.RC3 | 提供基础acl/himpi接口 |
-| mxVision        | 5.0.RC3      | 提供基础mxBase的能力
+| mxVision        | 5.0.RC3      | 提供基础mxBase的能力 |
 
 
 ### 2.2 CANN环境变量设置
@@ -113,7 +113,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 
 Paddle PP-OCR server 2.0模型:
 
-| 名称      | 下载链接
+| 名称      | 下载链接 |
 | --------------- | -------------- |
 | Paddle PP-OCR server 2.0 DBNet   |  https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_server_v2.0_det_infer.tar|
 | Paddle PP-OCR server 2.0 Cls  | https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar|
@@ -167,7 +167,7 @@ rm -r train_full_images_1
 label文件格式转换为ICDAR2015格式, 转换脚本位于src/Common/LabelTrans/label_trans.py
 
 运行标签格式转换脚本工具需要依赖的三方库如下所示：
-***表3-1*** label_trans.py依赖python三方库
+**表3-1** label_trans.py依赖python三方库
 
 | 名称 | 版本 |
 | --- | --- |
@@ -207,7 +207,7 @@ paddle2onnx --model_dir ./ch_ppocr_server_v2.0_rec_infer/ --model_filename infer
 
 PP-OCR server 2.0 Cls模型转成onnx模型指令参考如下：
 ```
-paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer/ --model_filename inference.pdmodel --params_filename inference.pdiparams --save_file ./ch_ppocr_mobile_v2.0_cls_infer.onnx --opset_version 11 --enable_onnx_checker True
+paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer --model_filename inference.pdmodel --params_filename inference.pdiparams --save_file ./ch_ppocr_mobile_v2.0_cls_infer.onnx --opset_version 11 --enable_onnx_checker True
 ```
 
 ## 3.4 识别模型插入ArgMax算子
@@ -328,7 +328,7 @@ bash atc.sh
   *提示：编译完成后会生成可执行文件“main”，存放在“/home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/dist/”目录下。*
 
   ## 4.4 运行
-  **注意 C++ Demo 运行时日志打印调用的时mxVision里面的日志模块，mxVision默认打印日志级别为error，如果需要查看info日志，请将配置文件logging.conf中的console_level值设为0。**
+  **注意 C++ Demo 运行时日志打印调用的是mxVision里面的日志模块，mxVision默认打印日志级别为error，如果需要查看info日志，请将配置文件logging.conf中的console_level值设为0。**
   logging.conf文件路径：mxVison安装目录/mxVision/config/logging.conf
 
   ### 输入图像约束
@@ -336,12 +336,12 @@ bash atc.sh
   仅支持JPEG格式，图片名格式为前缀+下划线+数字的形式，如xxx_xx.jpg。
 
   ### 运行程序
-  **注意 在模型的挡位较多，或者设置并发数过大的情况下，有可能会导致超出device内存。请关注报错信息。**
+  **注意 在模型的档位较多，或者设置并发数过大的情况下，有可能会导致超出device内存。请关注报错信息。**
 
   执行如下命令，启动程序。
 
     ```
-    ./dist/main -image_path /xx/xx/icdar2019/images/ -thread_num 1 -direction_classification false -config ./data/condig/setup.config
+    ./dist/main -image_path /xx/xx/icdar2019/images/ -thread_num 1 -direction_classification false -config ./data/config/setup.config
     ```
 
     根据屏幕日志确认是否执行成功。
@@ -361,7 +361,7 @@ bash atc.sh
 
 ### 结果展示
 
-OCR识别结果保存在配置文件中指定路径的infer_img_x.txt中（x为图片id）
+OCR识别结果保存在配置文件中指定路径的infer_img_x.txt中（x 为图片id）
 每个infer_img_x.txt中保存了每个图片文本框四个顶点的坐标位置以及文本内容，格式如下:
   ```bash
   1183,1826,1711,1837,1710,1887,1181,1876,签发机关/Authority
