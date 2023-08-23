@@ -35,7 +35,7 @@ APP_ERROR DbnetPreProcess::Init(ConfigParser &configParser, ModuleInitParams &in
 
 APP_ERROR DbnetPreProcess::DeInit(void)
 {
-    LogInfo << "DbnetPreProcess [" << instanceId << "]: DeInit success.";
+    LogInfo << "DbnetPreProcess [" << instanceId_ << "]: DeInit success.";
     return APP_ERR_OK;
 }
 

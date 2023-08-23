@@ -56,7 +56,6 @@ APP_ERROR HandOutProcess::Process(std::shared_ptr<void> commonData)
         imgTotal++;
     }
     imgFileCount.close();
-    LogError << imgTotal;
     std::ifstream imgFile;
     imgFile.open(imgConfig);
     std::string imgPath;
