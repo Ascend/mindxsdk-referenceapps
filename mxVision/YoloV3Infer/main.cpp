@@ -239,6 +239,7 @@ int main(int argc, char* argv[])
     if (ret != APP_ERR_OK) 
     {
         LogError << "MxDeInit failed, ret=" << ret << ".";
+        return ret;
     }
 
     return APP_ERR_OK;
