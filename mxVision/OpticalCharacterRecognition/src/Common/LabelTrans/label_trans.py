@@ -15,7 +15,7 @@ import argparse
 from tqdm import tqdm
 import numpy as np
 
-if __name__ == '__mian__':
+if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--label_json_path', type=str, required=True)
     parser.add_argument('--output_path', type=str, required=True)
