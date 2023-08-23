@@ -89,7 +89,7 @@ def process_words(items, prediction, thresh=0.5):
 def process_box_2015(items, pred_poly, thresh=0.8):
     valid_count = 0
     for k in range(len(items)):
-        gt = np.array(int(j) for j in items[k][:8]).reshape((4, 2))
+        gt = np.array([int(j) for j in items[k][:8]]).reshape((4, 2))
         gt_poly = Polygon(gt).buffer(0)
         inter = Polygon(gt_poly).intersection(pred_poly).area
         ratio = inter / gt_poly.area
@@ -244,11 +244,7 @@ def eval_det(eval_func, box_func, gt, pred, parallel_num):
         det_num += result['det_num']
 
     precision = 0 if not det_num else float(matched_num) / det_num
-    print(float(matched_num))
-    print(det_num)
     recall = 0 if not gt_num else float(matched_num) / gt_num
-    print(float(matched_num))
-    print(gt_num)
     hmean = 0 if not precision + recall else 2 * float(precision * recall) / (precision + recall)
     result = {
         "precision:": precision,
