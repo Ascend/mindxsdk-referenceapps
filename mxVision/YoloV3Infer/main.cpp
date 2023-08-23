@@ -52,7 +52,7 @@ void InitV2Param(V2Param &v2Param)
 };
 
 APP_ERROR YoloV3PostProcess(ImageInfo imageInfo, std::string& yoloV3ConfigPath, std::string& yoloV3LablePath,
-                        std::vector<MxBase::Tensor>& yoloV3Outputs, std::vector<MxBase::Rect>& cropConfigVec)
+                        std::vector<MxBase::Tensor>& yoloV3Outputs)
 {
     /// This should made by user! This func only show used with sdk`s yolov3 so lib.
     std::cout << "******YoloV3PostProcess******" << std::endl;
@@ -223,17 +223,23 @@ int main(int argc, char* argv[])
     }
 
     // *****5模型后处理
-    std::vector<MxBase::Rect> cropConfigVec;
 	ImageInfo imageInfo;
 	imageInfo.oriImagePath = argv[1];
 	imageInfo.oriImage = decodedImage;
 	
-    ret = YoloV3PostProcess(imageInfo, v2Param.configPath, v2Param.labelPath, yoloV3Outputs, cropConfigVec);
+    ret = YoloV3PostProcess(imageInfo, v2Param.configPath, v2Param.labelPath, yoloV3Outputs);
 	if (ret != APP_ERR_OK)
 	{
 		LogError << "YoloV3PostProcess execute failed, ret=" << ret;
 		return ret;
 	}
+
+    // deinit
+    ret = MxDeInit();
+    if (ret != APP_ERR_OK) 
+    {
+        LogError << "MxDeInit failed, ret=" << ret << ".";
+    }
 
     return APP_ERR_OK;
 };
