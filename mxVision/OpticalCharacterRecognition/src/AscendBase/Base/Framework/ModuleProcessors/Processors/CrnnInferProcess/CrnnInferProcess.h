@@ -34,5 +34,5 @@ private:
 
 MODULE_REGIST(CrnnInferProcess)
 
-#enfif
+#endif
 
