@@ -8,7 +8,7 @@
 
 1.为金融、安防、互联网等客户提供基于Atlas做OCR的参考样例，验证可行性；
 
-2.作为客户基于mxbase开发OCR应用的编程样例（下称Demo），开放源代码给客户参考，降低客户准入门槛；
+2.作为客户基于mxBase开发OCR应用的编程样例（下称Demo），开放源代码给客户参考，降低客户准入门槛；
 
 3.提供新架构下系统优化案例，打造超高性能原型系统，为客户提供选择Atlas的理由。
 
@@ -16,17 +16,17 @@
 
 ## 1.2 支持的产品
 
-本系统采用Atlas 300I Pro， Atlas 300V Pro作为实验验证的硬件平台。
+本系统采用Atlas 300I Pro, Atlas 300V Pro作为实验验证的硬件平台。
 
 ## 1.3 软件方案介绍
 
 软件方案包含OCR的三个环节：文本检测，方向分类，字符识别。其中文本检测和字符识别是必要环节，方向分类为可选环节。
 
-本Demo支持基于Paddle PP-OCR server 2.0的DBNet（检测）和CRNN（识别）模型在310P芯片上进行静态分档推理。为了提高CPU、NPU资源利用率，实现极致性能，Demo采用了流水并行及多路并行处理方案。
+本Demo支持基于Paddle PP-OCR server 2.0的DBNet(检测)和CRNN(识别)模型在310P芯片上进行静态分档推理。为了提高CPU、NPU资源利用率，实现极致性能，Demo采用了流水并行及多路并行处理方案。
 
 ### 代码主要目录介绍
 
-本Demo根目录下src为源码目录，先将src的子目录介绍如下：
+本Demo根目录下src为源码目录，现将src的子目录介绍如下：
 **注意**：代码目录中的src/AscendBase/Base/Framework/ModuleProcessors/TextDetectionPost/下的clipper.cpp、clipper.hpp为开源第三方模块，Demo中不包含这两个文件，需用户自行下载这两个文件，然后放在对应位置。
 clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net/project/polyclipping/clipper_ver6.4.2.zip
 
@@ -45,7 +45,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 │       │   │   ├── ModuleManagers      // 业务流管理模块
 │       │   │   ├── ModuleProcessors    // 功能处理模块
 │       │   │   │   ├── CharacterRecognitionPost       // 字符识别后处理模块
-│       │   │   │   ├── CommonData       // 各功能模块间公用的数据结构
+│       │   │   │   ├── CommonData       // 各功能模块间共用的数据结构
 │       │   │   │   ├── Processors       // 各功能处理模块
 │       │   │   │   │   ├── HandOutProcess       // 图片分发模块
 │       │   │   │   │   ├── DbnetPreProcess      // Dbnet前处理模块
@@ -109,15 +109,15 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 
 # 3 模型转换及数据集获取
 
-### 3.1 Demo所用模型下载地址
+## 3.1 Demo所用模型下载地址
 
-Paddle PP-OCR server 2.0模型：
+Paddle PP-OCR server 2.0模型:
 
 | 名称      | 下载链接
 | --------------- | -------------- |
 | Paddle PP-OCR server 2.0 DBNet   |  https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_server_v2.0_det_infer.tar|
 | Paddle PP-OCR server 2.0 Cls  | https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar|
-| Paddle PP-OCR server 2.0 CRNN | https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar|
+| Paddle PP-OCR server 2.0 CRNN | https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_server_v2.0_rec_infer.tar|
 
 识别模型字典文件下载地址：
 https://raw.githubusercontent.com/PaddlePaddle/PaddleOCR/release/2.5/ppocr/utils/ppocr_keys_v1.txt
@@ -134,7 +134,7 @@ https://raw.githubusercontent.com/PaddlePaddle/PaddleOCR/release/2.5/ppocr/utils
 | 标注文件 | https://dataset-bj.cdn.bcebos.com/lsvt/train_full_labels.json|
 
 
-图片压缩包名为 train_full_images_0.tar.gz train_full_images_1.tar.gz
+图片压缩包名为 train_full_images_0.tar.gz 与 train_full_images_1.tar.gz
 
 标签文件名为 train_full_labels.json
 
@@ -164,7 +164,7 @@ rm -r train_full_images_0
 rm -r train_full_images_1
 ```
 #### 3.2.1.4 标签格式转换
-label文件格式转换为ICDAR2015格式，转换脚本位于src/Common/LabelTrans/label_trans.py
+label文件格式转换为ICDAR2015格式, 转换脚本位于src/Common/LabelTrans/label_trans.py
 
 运行标签格式转换脚本工具需要依赖的三方库如下所示：
 ***表3-1*** label_trans.py依赖python三方库
@@ -207,7 +207,7 @@ paddle2onnx --model_dir ./ch_ppocr_server_v2.0_rec_infer/ --model_filename infer
 
 PP-OCR server 2.0 Cls模型转成onnx模型指令参考如下：
 ```
-paddle2onnx --model_dir ./ch_ppocr_server_v2.0_rec_infer/ --model_filename inference.pdmodel --params_filename inference.pdiparams --save_file ./ch_ppocr_server_v2.0_rec_infer.onnx --opset_version 11 --enable_onnx_checker True
+paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer/ --model_filename inference.pdmodel --params_filename inference.pdiparams --save_file ./ch_ppocr_mobile_v2.0_cls_infer.onnx --opset_version 11 --enable_onnx_checker True
 ```
 
 ## 3.4 识别模型插入ArgMax算子
@@ -243,7 +243,7 @@ paddle2onnx --model_dir ./ch_ppocr_server_v2.0_rec_infer/ --model_filename infer
 ```
 请以实际安装路径为准
 
-### 3.5.1 文件检测模型转换
+### 3.5.1 文本检测模型转换
 将文本检测onnx模型转换成om模型，转换指令参考src/data/models/dbnet目录下面的对应的atc转换脚本：
 ```
 bash atc_dynamic.sh
@@ -254,7 +254,7 @@ bash atc_dynamic.sh
 ```
 bash atc_dynamic.sh
 ```
-可在该目录下新建static目录，将转换生成的模型可同意放置static目录内，用于配置文件recModelPath字段的配置。
+可在该目录下新建static目录，将转换生成的模型可统一放置static目录内，用于配置文件recModelPath字段的配置。
 ### 3.5.3 分类模型转换
 将onnx模型转换成om模型。转换指令参考src/demo/data/models/cls目录下面的对应的atc转换脚本：
 ```
@@ -262,7 +262,7 @@ bash atc.sh
 ```
 
 
-# 4 编译执行
+# 4 编译运行
 
 ## 4.1 系统方案各子模块功能介绍
 **表4-1** 系统方案各子模块功能：
@@ -271,14 +271,14 @@ bash atc.sh
 | --- | --- | --- |
 | 1 | 图片分发模块 | 从用户指定的文件夹读取图片，并分发给后续的模块。 |
 | 2 | DBNet模型前处理 | 主要负责解码和缩放，在310P芯片上使用dvpp解码。 |
-| 3 | DBNet模型推理 | 本模块负责将前处理好的图片输入进检测模型并获得模型出的Tensor。 |
+| 3 | DBNet模型推理 | 本模块负责将前处理好的图片输入进检测模型并获得模型推理出的Tensor。 |
 | 4 | DBNet模型后处理 | 本模块主要负责将输出的Tensor根据与训练一致的后处理流程将输入图片切割为包含文本的子图。 |
 | 5 | Cls模型前处理 | 对dbnet后处理之后切割的子图做resize和归一化操作以及分类模型推理时的batch划分 |
 | 6 | Cls模型推理 | 本模块负责将前处理好的图片输入进分类模型并获得模型推理出的Tensor。 |
-| 7 | Cls模型后处理 | 对模型输出的Tensor根据与训练一致的后处理流程将需要翻转的子图翻转480度。|
+| 7 | Cls模型后处理 | 将模型输出的Tensor根据与训练一致的后处理流程将需要翻转的子图翻转180度。|
 | 8 | Crnn模型前处理 | 对dbnet后处理之后切割的子图做resize和归一化操作以及识别模型推理时的batch划分 |
 | 9 | Crnn模型推理 | 本模块负责将前处理好的图片输入进识别模型并获得模型推理出的Tensor。支持动态batch和静态分档的推理。 |
-| 10 | Crnn模型后处理 | 将模型输出的Tensor根据字典转换识别为文字识别的结果。 |
+| 10 | Crnn模型后处理 | 将模型输出的Tensor根据字典转换为文字识别的结果。 |
 | 11 | 推理结果保存模块 | 保存推理结果，并在推理结束时发送停止信号。 |
 
 ## 4.2 配置
@@ -310,7 +310,7 @@ bash atc.sh
   saveInferResult = false // 是否保存推理结果到文件，默认不保存，如果需要，该值设置为true，并配置推理结果保存路径
   resultPath = ./result // 推理结果保存路径
   ```
-**注意**：推理结果写文件时追加写的，如果推理结果保存路径中已经存在推理结果文件，推理前请手动删除推理结果文件，如果有需要，提前做好备份。
+**注意**：推理结果写文件是追加写的，如果推理结果保存路径中已经存在推理结果文件，推理前请手动删除推理结果文件，如果有需要，提前做好备份。
 
 ## 4.3 编译
 
@@ -321,8 +321,8 @@ bash atc.sh
 - **步骤 3** 执行如下命令，构建代码。
 
   ```
-    cd /home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/;
-    bash build.sh
+   cd /home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/;
+   bash build.sh
   ```
 
   *提示：编译完成后会生成可执行文件“main”，存放在“/home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/dist/”目录下。*
@@ -348,7 +348,7 @@ bash atc.sh
 
     识别结果存放在“/home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/result”目录下。
 
-*提示：输入./dist/main -h可查看该命令所有信息。运行可使用的参数如表4-2 运行可使用的参数说明如示。*
+*提示：输入./dist/main -h可查看该命令所有信息。运行可使用的参数如表4-2 运行可使用的参数说明所示。*
 
 **表4-2** 运行可使用的参数说明
 
@@ -359,14 +359,14 @@ bash atc.sh
 | -direction_classification | 是否在检测模型之后使用方向分类模型。 | false |
 | -config | 配置文件setup.config的完整路径。 | ./data/config/setup.config |
 
-### 结果显示
+### 结果展示
 
 OCR识别结果保存在配置文件中指定路径的infer_img_x.txt中（x为图片id）
 每个infer_img_x.txt中保存了每个图片文本框四个顶点的坐标位置以及文本内容，格式如下:
   ```bash
   1183,1826,1711,1837,1710,1887,1181,1876,签发机关/Authority
   2214,1608,2821,1625,2820,1676,2212,1659,有效期至/Dateofexpin
-  1189,1590,1799,1606,1797,1656,1187,1641,签发日期/Dataofissue
+  1189,1590,1799,1606,1797,1656,1187,1641,签发日期/Dateofissue
   2238,1508,2805,1528,2802,1600,2235,1580,湖南/HUNAN
   2217,1377,2751,1388,2750,1437,2216,1426,签发地点/Placeofis
   ```
@@ -376,7 +376,7 @@ OCR识别结果保存在配置文件中指定路径的infer_img_x.txt中（x为�
 
 Demo动态库依赖可参见代码中“src”目录的“CMakeLists.txt”文件中“target_link_libraries”参数处。
 
-##表4-3** 动态库依赖说明
+**表4-3** 动态库依赖说明
 
 | 依赖软件 | 说明 | 
 | --- | --- |
@@ -411,9 +411,9 @@ Demo动态库依赖可参见代码中“src”目录的“CMakeLists.txt”文�
 
 ### 运行程序
 
-- **步骤 1** 将mxOCR压缩包下载至任意目录，如“/home/HwHiAiUser/mxOCR”,解压。
+- **步骤 1** 将mxOCR压缩包下载至任意目录，如“/home/HwHiAiUser/mxOCR”，解压。
 - **步骤 2** 运行ocr Demo生成推理结果文件。
-- **步骤 3** 执行如下命令，启动精度测试脚本，命令中各个参数请根据实际情况制定。
+- **步骤 3** 执行如下命令，启动精度测试脚本，命令中各个参数请根据实际情况指定。
 
   ```
   cd /home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/Common/EvalScript;
@@ -422,7 +422,7 @@ Demo动态库依赖可参见代码中“src”目录的“CMakeLists.txt”文�
 
   根据屏幕日志确认是否执行成功。
 
-*运行可使用的参数如表5-2 运行可使用的参数说明如示。*
+*运行可使用的参数如表5-2 运行可使用的参数说明所示。*
 
 **表5-2** 运行可使用的参数说明
 
