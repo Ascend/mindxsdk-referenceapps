@@ -434,10 +434,6 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
         try {
             MxBase::Model model(model_path, deviceId);
             std::vector<std::vector<uint64_t>> dynamicGearInfo = model.GetDynamicGearInfo();
-            LogError << "Cls: ";
-            for (auto &info : dynamicGearInfo) {
-                LogError << info[2] << " ---- " << info[3];
-            }
             if (dynamicGearInfo.empty()) {
                 LogError << "please check the value of clsModelPath.";
                 return APP_ERR_COMM_INVALID_PARAM;

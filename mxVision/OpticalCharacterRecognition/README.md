@@ -52,7 +52,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 │       │   │   │   │   ├── DbnetInferProcess    // Dbnet推理模块
 │       │   │   │   │   ├── DbnetPostProcess     // Dbnet后处理模块
 │       │   │   │   │   ├── ClsPreProcess        // Cls前处理模块
-│       │   │   │   │   ├── ClsInferProcess      // Cls推 理模块
+│       │   │   │   │   ├── ClsInferProcess      // Cls推理模块
 │       │   │   │   │   ├── ClsPostProcess       // Cls后处理模块
 │       │   │   │   │   ├── CrnnPreProcess       // Crnn前处理模块
 │       │   │   │   │   ├── CrnnInferProcess     // Crnn推理模块
@@ -241,26 +241,25 @@ paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer --model_filename infere
 ```
 . /usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
-请以实际安装路径为准
+请以实际安装路径为准。
 
 ### 3.5.1 文本检测模型转换
-将文本检测onnx模型转换成om模型，转换指令参考src/data/models/dbnet目录下面的对应的atc转换脚本：
+将文本检测onnx模型转换成om模型，转换指令参考src/data/models/dbnet目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
 ```
 bash atc_dynamic.sh
 ```
 
 ### 3.5.2 字符识别模型转换
-将字符识别onnx模型转换成om模型，转换指令参考src/data/models/crnn目录下面的对应的atc转换脚本：
+将字符识别onnx模型转换成om模型，转换指令参考src/data/models/crnn目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
 ```
 bash atc_dynamic.sh
 ```
 可在该目录下新建static目录，将转换生成的模型可统一放置static目录内，用于配置文件recModelPath字段的配置。
 ### 3.5.3 分类模型转换
-将onnx模型转换成om模型。转换指令参考src/demo/data/models/cls目录下面的对应的atc转换脚本：
+将onnx模型转换成om模型。转换指令参考src/demo/data/models/cls目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
 ```
 bash atc.sh
 ```
-
 
 # 4 编译运行
 
@@ -293,16 +292,16 @@ bash atc.sh
   deviceType = 310P //310P
   ```
 
-配置待模型路径
+配置模型路径
   ```bash
-  detModelPath = ./data/models/dbnet/dbnet_dy_dynamic_shape.om // DBNet模型路径
-  recModelPath = ./data/models/crnn/static // 识别模型路径，静态分档时仅需输入包含识别模型的文件夹的路径即可
-  clsModelPath = ./data/models/cls/cls_310P.om // 分类模型路径
+  detModelPath = ./data/models/dbnet/dbnet_dy_dynamic_shape.om // DbNet模型路径
+  recModelPath = ./data/models/crnn/static // CRNN模型路径，静态分档时仅需输入包含识别模型的文件夹的路径即可
+  clsModelPath = ./data/models/cls/cls_310P.om // CLS模型路径
   ```
 
 配置文本识别模型字符标签文件
   ```bash
-  dictPath = ./models/crnn/ppocr_keys_v1.txt // 识别模型字典文件
+  dictPath = ./data/models/crnn/ppocr_keys_v1.txt // 识别模型字典文件
   ```
 
 配置识别文字的输出结果路径
@@ -393,7 +392,7 @@ Demo动态库依赖可参见代码中“src”目录的“CMakeLists.txt”文�
 
 精度测试脚本运行依赖的三方库如表5-1所示
 
-**表6-1** 依赖python三方库
+**表5-1** 依赖python三方库
 
 | 名称 | 版本 |
 | --- | --- |
