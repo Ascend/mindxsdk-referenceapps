@@ -6,6 +6,8 @@ rm -rf build
 mkdir -p build
 cd build
 
+export LD_LIBRARY_PATH=/usr/lib64:${LD_LIBRARY_PATH}
+
 cmake ..
 make -j || {
     ret=$?
