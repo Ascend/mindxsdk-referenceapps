@@ -354,7 +354,7 @@ bash atc.sh
 | 选项 | 意义 | 默认值 |
 | --- | --- | --- |
 | -image_path | 输入图片所在的文件夹路径 | ./data/imagePath |
-| -thread_num | 运行程序的线程数，请根据环境内存设置合适值。 | 1 |
+| -thread_num | 运行程序的线程数，取值范围1-4，请根据环境内存设置合适值。 | 1 |
 | -direction_classification | 是否在检测模型之后使用方向分类模型。 | false |
 | -config | 配置文件setup.config的完整路径。 | ./data/config/setup.config |
 

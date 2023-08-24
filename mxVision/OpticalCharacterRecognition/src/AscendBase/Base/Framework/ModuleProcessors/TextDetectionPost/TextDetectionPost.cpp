@@ -86,11 +86,11 @@ void TextDetectionPost::ConstructInfo(std::vector<TextObjectInfo> &textObjectInf
     uint32_t originWidth = resizedImageInfos[index].widthOriginal;
     uint32_t originHeight = resizedImageInfos[index].heightOriginal;
     if (originWidth == 0 || originHeight == 0) {
-        LogError << GetError(APP_ERR_DIVIDE_ZERO) << "the origin width or height must not equal to 0!";
+        LogError << "The origin width or height must not equal to 0!" << GetErrorInfo(APP_ERR_COMM_INVALID_PARAM);
         return;
     }
     if (resizedW_ == 0 || resizedH_ == 0) {
-        LogError << GetError(APP_ERR_DIVIDE_ZERO) << "the resized width or height must not equal to 0!";
+        LogError << "The resized width or height must not equal to 0!" << GetErrorInfo(APP_ERR_COMM_INVALID_PARAM);
         return;
     }
     float ratio = resizedImageInfos[index].ratio;
