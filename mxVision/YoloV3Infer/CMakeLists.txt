@@ -23,7 +23,7 @@ link_directories(
         /usr/local/Ascend/driver/lib64/
 )
 
-add_executable(mxbaseV2_sample mainV2.cpp)
+add_executable(mxbaseV2_sample main.cpp)
 target_link_libraries(mxbaseV2_sample
         glog
         mxbase
