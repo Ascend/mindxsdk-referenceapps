@@ -18,13 +18,13 @@ APP_ERROR ClsPostProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
     LogInfo << "Begin to init instance " << initParams.instanceId;
 
     InitParams(initParams);
-    LogInfo << "ClsPostProcess[" instanceId_ << "]: Init success.";
+    LogInfo << "ClsPostProcess[" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 
 APP_ERROR ClsPostProcess::DeInit(void)
 {
-    LogInfo << "ClsPostProcess[" instanceId_ << "]: DeInit success.";
+    LogInfo << "ClsPostProcess[" << instanceId_ << "]: DeInit success.";
     return APP_ERR_OK;
 }
 

@@ -76,7 +76,7 @@ namespace ascendOCR {
         return APP_ERR_OK;
     }
 
-    APP_ERROR ModuleManager::RegisterModuleConnects(std::string pipelineName, ModuleConnectDesc *connectDesc,
+    APP_ERROR ModuleManager::RegisterModuleConnects(std::string pipelineName, ModuleConnectDesc *connectDescPtr,
         int moduleConnectCount)
     {
         auto iter = pipelineMap_.find(pipelineName);
@@ -90,7 +90,7 @@ namespace ascendOCR {
 
         // add connect
         for (int i = 0; i < moduleConnectCount; i++) {
-            ModuleConnectDesc connectDesc = connectDesc[i];
+            ModuleConnectDesc connectDesc = connectDescPtr[i];
             LogDebug << "Add Connect " << connectDesc.moduleSend << " " << connectDesc.moduleRecv << " type " <<
                 connectDesc.connectType;
             auto iterSend = modulesInfoMap.find(connectDesc.moduleSend);
@@ -106,7 +106,7 @@ namespace ascendOCR {
             // create input queue for recv module
             for (unsigned int j = 0; j < moduleInfoRecv.moduleVec.size(); j++) {
                 dataQueue = std::make_shared<BlockingQueue<std::shared_ptr<void>>>(MODULE_QUEUE_SIZE);
-                moduleInfoRecv.inputQueueVec.push_bak(dataQueue);
+                moduleInfoRecv.inputQueueVec.push_back(dataQueue);
             }
             RegisterInputVec(pipelineName, connectDesc.moduleRecv, moduleInfoRecv.inputQueueVec);
             RegisterOutputModule(pipelineName, connectDesc.moduleSend, connectDesc.moduleRecv, connectDesc.connectType,

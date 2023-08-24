@@ -35,7 +35,7 @@ namespace ascendOCR {
         APP_ERROR DeInit(void);
 
         APP_ERROR RegisterModules(std::string pipelineName, ModuleDesc *moduleDesc, int moduleTypeCount, int defaultCount);
-        APP_ERROR RegisterModuleConnects(std::string pipelineName, ModuleConnectDesc *connectDesc, int moduleConnectCount);
+        APP_ERROR RegisterModuleConnects(std::string pipelineName, ModuleConnectDesc *connectDescPtr, int moduleConnectCount);
         APP_ERROR RegisterInputVec(std::string pipelineName, std::string moduleName,
             std::vector<std::shared_ptr<BlockingQueue<std::shared_ptr<void>>>> inputQueVec);
         APP_ERROR RegisterOutputModule(std::string pipelineName, std::string moduleSend, std::string moduleRecv,

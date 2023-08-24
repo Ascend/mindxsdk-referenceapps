@@ -20,18 +20,18 @@ APP_ERROR CrnnPostProcess::Init(ConfigParser &configParser, ModuleInitParams &in
     InitParams(initParams);
     APP_ERROR ret = ParseConfig(configParser);
     if (ret != APP_ERR_OK) {
-        LogError << "CrnnPostProcess[" instanceId_ << "]: Fail to parse config params." << GetAppErrCodeInfo(ret);
+        LogError << "CrnnPostProcess[" << instanceId_ << "]: Fail to parse config params." << GetAppErrCodeInfo(ret);
         return ret;
     }
 
     characterRecognitionPost_.InitClassName(recDictionary);
-    LogInfo << "CrnnPostProcess[" instanceId_ << "]: Init success.";
+    LogInfo << "CrnnPostProcess[" << instanceId_ << "]: Init success.";
     return APP_ERR_OK;
 }
 
 APP_ERROR CrnnPostProcess::DeInit(void)
 {
-    LogInfo << "CrnnPostProcess[" instanceId_ << "]: DeInit success.";
+    LogInfo << "CrnnPostProcess[" << instanceId_ << "]: DeInit success.";
     return APP_ERR_OK;
 }
 
