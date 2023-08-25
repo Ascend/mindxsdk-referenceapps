@@ -345,7 +345,7 @@ bash atc.sh
 
     根据屏幕日志确认是否执行成功。
 
-    识别结果存放在“/home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/result”目录下。
+    识别结果默认存放在“/home/HwHiAiUser/mxOCR/OpticalCharacterRecognition/src/result”目录下。
 
 *提示：输入./dist/main -h可查看该命令所有信息。运行可使用的参数如表4-2 运行可使用的参数说明所示。*
 
@@ -357,6 +357,8 @@ bash atc.sh
 | -thread_num | 运行程序的线程数，取值范围1-4，请根据环境内存设置合适值。 | 1 |
 | -direction_classification | 是否在检测模型之后使用方向分类模型。 | false |
 | -config | 配置文件setup.config的完整路径。 | ./data/config/setup.config |
+
+*提示：image_path路径下包含的图片会根据thread_num数目进行数据集分割，分割结果存放在/**/**/OpticalCharacterRecognition/src/data/config目录下。*
 
 ### 结果展示
 
