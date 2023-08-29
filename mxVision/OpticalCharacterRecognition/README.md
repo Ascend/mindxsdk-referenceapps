@@ -91,7 +91,7 @@ clipper.cpp、clipper.hpp文件下载链接：https://udomain.dl.sourceforge.net
 
 | 依赖软件          | 版本           | 依赖说明
 | -------------   |--------------| ---------------------|
-| CANN            | 6.3.RC3 | 提供基础acl/himpi接口 |
+| CANN            | 7.0.RC1 | 提供基础acl/himpi接口 |
 | mxVision        | 5.0.RC3      | 提供基础mxBase的能力 |
 
 
