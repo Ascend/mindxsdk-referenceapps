@@ -550,6 +550,7 @@ int main(int argc, const char *argv[])
         LogInfo << modelConfigPath << " removed!";
     }
     LogInfo << "MxOCR Average Process Time: " << Signal::e2eProcessTime / ImageNum << "ms.";
+    MxBase::MxDeInit();
     LogInfo << "program End.";
     return 0;
 }
