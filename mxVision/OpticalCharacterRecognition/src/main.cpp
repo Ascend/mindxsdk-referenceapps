@@ -251,8 +251,8 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
 {
     LogDebug << "Begin to parse and check command arguments.";
     argumentParser.AddArgument("-image_path", "./data/imagePath", "The path of input images, default: ./data/imagePath");
-    argumentParser.AddArgument("-thread_num", "1", "The number of threads for the program, default: 1");
-    argumentParser.AddArgument("-direction_classification", "false", "perform text direction classification "
+    argumentParser.AddArgument("-thread_num", "1", "The number of threads for the program, default: 1, range: 1-4");
+    argumentParser.AddArgument("-direction_classification", "false", "Perform text direction classification "
                                                                      "using cls model, default: false");
     argumentParser.AddArgument("-config", "./data/config/setup.config", "The path of config file.");
     argumentParser.ParseArgs(argc, argv);
@@ -266,7 +266,12 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
 
     int threadNum = argumentParser.GetIntArgumentValue("-thread_num");
     if (threadNum < 1) {
-        LogError << "The number of threads cannot be less than one.";
+        LogError << "Thread number [" << threadNum << "] cannot be smaller than 1."
+        return APP_ERR_COMM_FAILURE;
+    }
+
+    if (threadNum > 4) {
+        LogError << "Thread number [" << threadNum << "] cannot be greater than 4."
         return APP_ERR_COMM_FAILURE;
     }
 
@@ -513,16 +518,6 @@ int main(int argc, const char *argv[])
     if (threadNum > ImageNum) {
         LogError << "thread number [" << threadNum << "] can not bigger than total number of input images [" <<
             ImageNum << "].";
-        exit(-1);
-    }
-
-    if (threadNum < 1) {
-        LogError << "thread number [" << threadNum << "] cannot be smaller than 1.";
-        exit(-1);
-    }
-
-    if (threadNum > 4) {
-        LogError << "thread number [" << threadNum << "] cannot be great than 4.";
         exit(-1);
     }
 
