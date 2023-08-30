@@ -83,12 +83,6 @@ passengerflowestimation基于MindXSDK开发，在昇腾芯片上进行客流量�
 ```
 . /usr/local/Ascend/ascend-toolkit/set_env.sh
 . ${SDK安装路径}/mxVision/set_env.sh
-
-export install_path=/usr/local/Ascend/ascend-toolkit/latest
-export PATH=${install_path}/atc/ccec_compiler/bin:${install_path}/atc/bin:$PATH
-export PYTHONPATH=${install_path}/atc/python/site-packages:${install_path}/atc/python/site-packages/auto_tune.egg/auto_tune:${install_path}/atc/python/site-packages/schedule_search.egg
-export LD_LIBRARY_PATH=${install_path}/atc/lib64:$LD_LIBRARY_PATH
-export ASCEND_OPP_PATH=${install_path}/opp
 ```
 
 注：其中SDK安装路径${MX_SDK_HOME}替换为用户的SDK安装路径。并且本项目用到了mxpi_opencvosd插件，使用mxpi_opencvosd插件前，需要使用osd相关的模型文件，请执行MindX SDK开发套件包安装目录下operators/opencvosd/generate_osd_om.sh脚本生成所需模型文件（在generate_osd_om.sh所在文件夹下执行`bash generate_osd_om.sh `，若这条命令执行失败，则将passengerflowestimation目录下的.om文件移动到generate_osd_om.sh所在的文件夹目录下MindXSDK安装路径/mxVision/operators/opencvosd下）。{install_path}替换为开发套件包所在路径。**（注：开头两行为每次一重新开启终端执行程序就需要输入，此外的其他为转换模型需要，若已经转换模型成功，则不需要输入这些）**
@@ -108,7 +102,7 @@ export ASCEND_OPP_PATH=${install_path}/opp
 
 ## 4 模型转换
 
-本项目中使用的模型是yolov4模型，onnx模型可以直接[下载](https://www.hiascend.com/zh/software/modelzoo/detail/1/abb7e641964c459398173248aa5353bc)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
+本项目中使用的模型是yolov4模型，onnx模型可以直接[下载](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/PassengerflowEstimation/ATC%20Yolov4%28FP16%29%20from%20Pytorch.zip)。下载后使用模型转换工具ATC将onnx模型转换为om模型，模型转换工具相关介绍参考链接：https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 模型转换步骤如下：
 
