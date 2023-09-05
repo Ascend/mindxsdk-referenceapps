@@ -42,6 +42,12 @@ APP_ERROR CrnnInferProcess::ParseConfig(ConfigParser &configParser)
     }
     deviceId_ = (int32_t)deviceIdVec[instanceId_ % deviceIdVec.size()];
 
+    configParser.GetBoolValue("staticRecModelMode", staticMethod);
+    LogDebug << "staticMethod: " << staticMethod;
+
+    configParser.GetIntValue("recHeight", mStdHeight);
+    LogDebug << "mStdHeight: " << mStdHeight;
+
     std::string pathExpr;
     ret = configParser.GetStringValue("recModelPath", pathExpr);
     if (ret != APP_ERR_OK) {
@@ -54,16 +60,20 @@ APP_ERROR CrnnInferProcess::ParseConfig(ConfigParser &configParser)
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
-    std::vector<std::string> files;
-    Utils::GetAllFiles(pathExpr, files);
-    for (auto &file : files) {
-        crnnNet_.push_back(new MxBase::Model(file, deviceId_));
-        std::vector<std::vector<uint64_t>> dynamicGearInfo = crnnNet_[crnnNet_.size() - 1]->GetDynamicGearInfo();
-        mStdHeight = dynamicGearInfo[0][2];
-        batchSizeList.push_back(dynamicGearInfo[0][0]);
+    if (staticMethod) {
+        std::vector<std::string> files;
+        Utils::GetAllFiles(pathExpr, files);
+        for (auto &file : files) {
+            crnnNet_.push_back(new MxBase::Model(file, deviceId_));
+            std::vector<std::vector<uint64_t>> dynamicGearInfo = crnnNet_[crnnNet_.size() - 1]->GetDynamicGearInfo();
+            mStdHeight = dynamicGearInfo[0][2];
+            batchSizeList.push_back(dynamicGearInfo[0][0]);
+        }
+        std::sort(batchSizeList.begin(), batchSizeList.end(), Utils::UintCompare);
+        std::sort(crnnNet_.begin(), crnnNet_.end(), Utils::ModelCompare);
+    } else {
+        crnnNet_.push_back(new MxBase::Model(pathExpr, deviceId_));
     }
-    std::sort(batchSizeList.begin(), batchSizeList.end(), Utils::UintCompare);
-    std::sort(crnnNet_.begin(), crnnNet_.end(), Utils::ModelCompare);
 
     return APP_ERR_OK;
 }
@@ -85,8 +95,10 @@ std::vector<MxBase::Tensor> CrnnInferProcess::CrnnModelInfer(uint8_t *srcData, u
 
     // choose the model
     int modelIndex = 0;
-    auto it = find(batchSizeList.begin(), batchSizeList.end(), batchSize);
-    modelIndex = it - batchSizeList.begin();
+    if (staticMethod) {
+        auto it = find(batchSizeList.begin(), batchSizeList.end(), batchSize);
+        modelIndex = it - batchSizeList.begin();
+    }
 
     LogDebug << "batchSize: " << batchSize;
     LogDebug << "modelIndex: " << modelIndex;
