@@ -23,9 +23,12 @@ private:
     int mStdHeight = 48;
     int recMinWidth = 320;
     int recMaxWidth = 2240;
+    bool staticMethod = true;
     bool isClassification = false;
     std::vector<std::pair<uint64_t, uint64_t>> gearInfo;
     std::vector<uint64_t> batchSizeList;
+
+    APP_ERROR ParseConfig(ConfigParser &configParser);
 
     std::vector<uint32_t> GetCrnnBatchSize(uint32_t frameSize);
 

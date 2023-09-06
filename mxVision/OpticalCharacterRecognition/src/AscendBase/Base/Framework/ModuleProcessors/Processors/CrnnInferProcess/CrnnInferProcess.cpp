@@ -11,7 +11,13 @@ CrnnInferProcess::CrnnInferProcess()
     isStop_ = false;
 }
 
-CrnnInferProcess::~CrnnInferProcess() {}
+CrnnInferProcess::~CrnnInferProcess() 
+{
+    for (int i = 0, i < crnnNet_.size(); i++) {
+        delete crnnNet_[i];
+    }
+    crnnNet_.clear();
+}
 
 APP_ERROR CrnnInferProcess::Init(ConfigParser &configParser, ModuleInitParams &initParams)
 {

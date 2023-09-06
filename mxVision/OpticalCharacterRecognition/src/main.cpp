@@ -353,18 +353,26 @@ APP_ERROR configGenerate(std::string &configPath, bool isClassification)
         saveModelBs(clsModelPath, deviceId_, "cls");
     }
 
-    std::string recModelPath;
-    ret = config.GetStringValue("recModelPath", recModelPath);
+    bool staticMethod = true;
+    ret = config.GetBoolValue("staticRecModelMode", staticMethod);
     if (ret != APP_ERR_OK) {
-        LogError << "Get recModelPath failed, please check the value of recModelPath";
+        LogError << "Get staticRecModelMode failed, please check the value of staticRecModelMode";
         return APP_ERR_COMM_INVALID_PARAM;
     }
+    if (staticMethod) {
+        std::string recModelPath;
+        ret = config.GetStringValue("recModelPath", recModelPath);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recModelPath failed, please check the value of recModelPath";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
 
-    std::vector<std::string> files;
-    Utils::GetAllFiles(recModelPath, files);
-    for (const auto &file : files) {
-        if (Utils::EndsWith(file, ".om")) {
-            saveModelGear(file, deviceId_, "crnn");
+        std::vector<std::string> files;
+        Utils::GetAllFiles(recModelPath, files);
+        for (const auto &file : files) {
+            if (Utils::EndsWith(file, ".om")) {
+                saveModelGear(file, deviceId_, "crnn");
+            }
         }
     }
 
@@ -448,6 +456,14 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
+
+    bool staticMethod;
+    ret = configParser.GetBoolValue("staticRecModelMode", staticMethod);
+    if (ret != APP_ERR_OK) {
+        LogError << "Get staticRecModelMode failed, please check the value of staticRecModelMode.";
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+
     std::string recModelPath;
     ret = configParser.GetStringValue("recModelPath", recModelPath);
     if (ret != APP_ERR_OK) {
@@ -460,18 +476,70 @@ APP_ERROR args_check(const std::string &configPath, bool isClassification)
         return APP_ERR_COMM_INVALID_PARAM;
     }
 
+    if (!staticMethod) {
+        try {
+            MxBase::Model crnn(recModelPath, deviceId);
+        } catch (...) {
+            LogError << "please check the value of recModelPath.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+    }
+
     std::vector<std::string> files;
     Utils::GetAllFiles(recModelPath, files);
     for (auto &file : files) {
         try {
             MxBase::Model crnn(file, deviceId);
-            std::vector<std::vector<uint64_t>> dynamicGearInfo = crnn.GetDynamicGearInfo();
-            if (dynamicGearInfo.empty()) {
-                LogError << "please check the value of recModelPath.";
-                return APP_ERR_COMM_INVALID_PARAM;
+            if (staticMethod) {
+                std::vector<std::vector<uint64_t>> dynamicGearInfo = crnn.GetDynamicGearInfo();
+                if (dynamicGearInfo.empty()) {
+                    LogError << "please check the value of recModelPath.";
+                    return APP_ERR_COMM_INVALID_PARAM;
+                }
             }
         } catch (...) {
             LogError << "please check the value of related parameters.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+    }
+
+    if (!staticMethod) {
+        int32_t recMinWidth = 0;
+        int32_t recMaxWidth = 0;
+        int32_t Height = 0;
+
+        ret = configParser.GetIntValue("recHeight", Height);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recHeight failed, please check the value of recHeight.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        if (Height < 1) {
+            LogError << "recHeight: " << Height << " is less than 1, not valid.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+
+        ret = configParser.GetIntValue("recMinWidth", recMinWidth);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recMinWidth failed, please check the value of recMinWidth.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        if (recMinWidth < 1) {
+            LogError << "recMinWidth: " << recMinWidth << " is less than 1, not valid.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+
+        ret = configParser.GetIntValue("recMaxWidth", recMaxWidth);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recMaxWidth failed, please check the value of recMaxWidth.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        if (recMaxWidth < 1) {
+            LogError << "recMaxWidth: " << recMaxWidth << " is less than 1, not valid.";
+                return APP_ERR_COMM_INVALID_PARAM;
+        }
+
+        if (recMaxWidth < recMinWidth) {
+            LogError << "recMinWidth must be smaller than recMaxWidth.";
             return APP_ERR_COMM_INVALID_PARAM;
         }
     }
