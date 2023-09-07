@@ -13,7 +13,7 @@ CrnnInferProcess::CrnnInferProcess()
 
 CrnnInferProcess::~CrnnInferProcess() 
 {
-    for (int i = 0, i < crnnNet_.size(); i++) {
+    for (int i = 0; i < crnnNet_.size(); i++) {
         delete crnnNet_[i];
     }
     crnnNet_.clear();

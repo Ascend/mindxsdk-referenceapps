@@ -266,12 +266,12 @@ APP_ERROR ParseCommandArgs(int argc, const char *argv[], ArgumentParser &argumen
 
     int threadNum = argumentParser.GetIntArgumentValue("-thread_num");
     if (threadNum < 1) {
-        LogError << "Thread number [" << threadNum << "] cannot be smaller than 1."
+        LogError << "Thread number [" << threadNum << "] cannot be smaller than 1.";
         return APP_ERR_COMM_FAILURE;
     }
 
     if (threadNum > 4) {
-        LogError << "Thread number [" << threadNum << "] cannot be greater than 4."
+        LogError << "Thread number [" << threadNum << "] cannot be greater than 4.";
         return APP_ERR_COMM_FAILURE;
     }
 
