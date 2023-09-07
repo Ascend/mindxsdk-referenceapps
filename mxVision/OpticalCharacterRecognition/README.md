@@ -22,7 +22,7 @@
 
 软件方案包含OCR的三个环节：文本检测，方向分类，字符识别。其中文本检测和字符识别是必要环节，方向分类为可选环节。
 
-本Demo支持基于Paddle PP-OCR server 2.0的DBNet(检测)和CRNN(识别)模型在310P芯片上进行静态分档推理。为了提高CPU、NPU资源利用率，实现极致性能，Demo采用了流水并行及多路并行处理方案。
+本Demo支持基于Paddle PP-OCR server 2.0的DBNet(检测)和CRNN(识别)模型在310P芯片上进行静态分档推理以及CRNN(识别)模型在310P芯片上进行动态shape推理。为了提高CPU、NPU资源利用率，实现极致性能，Demo采用了流水并行及多路并行处理方案。
 
 ### 代码主要目录介绍
 
@@ -235,9 +235,9 @@ paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer --model_filename infere
 | onnx | >=1.9.0 |
 | onnxruntime | >=1.13.1 |
 
-## 3.5 静态分档模型转换
+## 3.5 模型转换
 
-****进行静态分档模型转换前需设置CANN环境变量**** 默认的路径为
+****进行模型转换前需设置CANN环境变量**** 默认的路径为
 ```
 . /usr/local/Ascend/ascend-toolkit/set_env.sh
 ```
@@ -246,15 +246,22 @@ paddle2onnx --model_dir ./ch_ppocr_mobile_v2.0_cls_infer --model_filename infere
 ### 3.5.1 文本检测模型转换
 将文本检测onnx模型转换成om模型，转换指令参考src/data/models/dbnet目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
 ```
-bash atc_dynamic.sh
+bash atc.sh
 ```
 
 ### 3.5.2 字符识别模型转换
-将字符识别onnx模型转换成om模型，转换指令参考src/data/models/crnn目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
+字符识别支持静态分档模型和动态shape模型两种场景，可通过配置文件setup.config任选其一，详细说明见章节4.2。
+#### 3.5.2.1 静态分档模型
+在静态分档模型场景下，将字符识别onnx模型转换成om模型，转换指令参考src/data/models/crnn目录下面的对应的atc转换脚本atc.sh（ONNX模型路径以实际为准）：
+```
+bash atc.sh
+```
+可在该目录下新建static目录，将转换生成的模型可统一放置static目录内，用于配置文件recModelPath字段的配置。
+#### 3.5.2.2 动态shape模型
+在动态Shape模型场景下，字符识别onnx模型转换成om模型，转换指令参考src/data/models/crnn目录下面的对应的atc转换脚本atc_dynamic.sh（ONNX模型路径以实际为准）：
 ```
 bash atc_dynamic.sh
 ```
-可在该目录下新建static目录，将转换生成的模型可统一放置static目录内，用于配置文件recModelPath字段的配置。
 ### 3.5.3 分类模型转换
 将onnx模型转换成om模型。转换指令参考src/demo/data/models/cls目录下面的对应的atc转换脚本（ONNX模型路径以实际为准）：
 ```
@@ -276,7 +283,7 @@ bash atc.sh
 | 6 | Cls模型推理 | 本模块负责将前处理好的图片输入进分类模型并获得模型推理出的Tensor。 |
 | 7 | Cls模型后处理 | 将模型输出的Tensor根据与训练一致的后处理流程将需要翻转的子图翻转180度。|
 | 8 | Crnn模型前处理 | 对dbnet后处理之后切割的子图做resize和归一化操作以及识别模型推理时的batch划分 |
-| 9 | Crnn模型推理 | 本模块负责将前处理好的图片输入进识别模型并获得模型推理出的Tensor。支持动态batch和静态分档的推理。 |
+| 9 | Crnn模型推理 | 本模块负责将前处理好的图片输入进识别模型并获得模型推理出的Tensor。支持动态shape和静态分档的推理。 |
 | 10 | Crnn模型后处理 | 将模型输出的Tensor根据字典转换为文字识别的结果。 |
 | 11 | 推理结果保存模块 | 保存推理结果，并在推理结束时发送停止信号。 |
 
@@ -295,9 +302,17 @@ bash atc.sh
 配置模型路径
   ```bash
   detModelPath = ./data/models/dbnet/dbnet_dy_dynamic_shape.om // DbNet模型路径
-  recModelPath = ./data/models/crnn/static // CRNN模型路径，静态分档时仅需输入包含识别模型的文件夹的路径即可
+  recModelPath = ./data/models/crnn/static // CRNN模型路径，静态分档时仅需输入包含识别模型的文件夹的路径即可，动态shape时需要输入模型的路径
   clsModelPath = ./data/models/cls/cls_310P.om // CLS模型路径
   ```
+
+配置文本识别模型输入要求的高、宽的步长
+ ```bash
+ staticRecModelMode = true      // true时采用静态分档，false时采用动态shape
+ recHeight = 32      // 识别模型输入要求的高，需和crnn转om模型的参数对应   [仅需在使用动态shape模型时配置]
+ recMinWidth = 32      // 识别模型输入宽的最小值，需和crnn转om模型的参数对应   [仅需在使用动态shape模型时配置]
+ recMaxWidth = 4096     // 识别模型输入宽的最大值，需和crnn转om模型的参数对应   [仅需在使用动态shape模型时配置]
+ ```
 
 配置文本识别模型字符标签文件
   ```bash
