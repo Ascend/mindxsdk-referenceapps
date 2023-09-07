@@ -17,25 +17,32 @@ APP_ERROR CrnnPreProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
     LogInfo << "Begin to init instance " << initParams.instanceId;
 
     InitParams(initParams);
+    APP_ERROR ret = ParseConfig(configParser);
+    if (ret != APP_ERR_OK) {
+        LogError << "CrnnPreProcess[" << instanceId_ << "]: Fail to parse config params." << GetAppErrCodeInfo(ret);
+        return ret;
+    }
     isClassification = Utils::EndsWith(initParams.pipelineName, "true");
 
-    std::string tempPath("./temp/crnn");
-    std::vector<std::string> files;
-    Utils::GetAllFiles(tempPath, files);
-    for (auto &file : files) {
-        std::vector<std::string> nameInfo;
-        Utils::StrSplit(file, ".", nameInfo);
-        batchSizeList.push_back(uint64_t(std::stoi(nameInfo[nameInfo.size() - 2])));
-        if (gearInfo.empty()) {
-            Utils::LoadFromFilePair(file, gearInfo);
+    if (staticMethod) {
+        std::string tempPath("./temp/crnn");
+        std::vector<std::string> files;
+        Utils::GetAllFiles(tempPath, files);
+        for (auto &file : files) {
+            std::vector<std::string> nameInfo;
+            Utils::StrSplit(file, ".", nameInfo);
+            batchSizeList.push_back(uint64_t(std::stoi(nameInfo[nameInfo.size() - 2])));
+            if (gearInfo.empty()) {
+                Utils::LoadFromFilePair(file, gearInfo);
+            }
         }
-    }
 
-    std::sort(gearInfo.begin(), gearInfo.end(), Utils::PairCompare);
-    std::sort(batchSizeList.begin(), batchSizeList.end(), Utils::UintCompare);
-    recMaxWidth = gearInfo[gearInfo.size() - 1].second;
-    recMinWidth = gearInfo[0].second;
-    mStdHeight = gearInfo[0].first;
+        std::sort(gearInfo.begin(), gearInfo.end(), Utils::PairCompare);
+        std::sort(batchSizeList.begin(), batchSizeList.end(), Utils::UintCompare);
+        recMaxWidth = gearInfo[gearInfo.size() - 1].second;
+        recMinWidth = gearInfo[0].second;
+        mStdHeight = gearInfo[0].first;
+    }
 
     LogInfo << recMinWidth << " " << recMaxWidth << " " << mStdHeight;
     LogInfo << "CrnnPreProcess [" << instanceId_ << "]: Init success.";
@@ -45,6 +52,50 @@ APP_ERROR CrnnPreProcess::Init(ConfigParser &configParser, ModuleInitParams &ini
 APP_ERROR CrnnPreProcess::DeInit(void)
 {
     LogInfo << "CrnnPreProcess [" << instanceId_ << "]: Deinit success.";
+    return APP_ERR_OK;
+}
+
+APP_ERROR CrnnPreProcess::ParseConfig(ConfigParser &configParser)
+{
+    APP_ERROR ret = configParser.GetIntValue("recHeight", mStdHeight);
+    if (ret != APP_ERR_OK) {
+        LogError << "Get recHeight failed, please check the value of recHeight.";
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    LogDebug << "recHeight: " << mStdHeight;
+
+    ret = configParser.GetBoolValue("staticRecModelMode", staticMethod);
+    if (ret != APP_ERR_OK) {
+        LogError << "Get staticRecModelMode failed, please check the value of staticRecModelMode.";
+        return APP_ERR_COMM_INVALID_PARAM;
+    }
+    LogDebug << "staticRecModelMode: " << staticMethod;
+
+    if (!staticMethod) {
+        ret = configParser.GetIntValue("recMinWidth", recMinWidth);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recMinWidth failed, please check the value of recMinWidth.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        LogDebug << "recMinWidth: " << recMinWidth;
+        if (recMinWidth < 1) {
+            LogError << "recMinWidth: " << recMinWidth << " is less than 1, not valid.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+
+        recMaxWidth = std::ceil(float(recMinWidth) / 32.0) * 32;
+        ret = configParser.GetIntValue("recMaxWidth", recMaxWidth);
+        if (ret != APP_ERR_OK) {
+            LogError << "Get recMaxWidth failed, please check the value of recMaxWidth.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        if (recMaxWidth < 1) {
+            LogError << "recMaxWidth: " << recMaxWidth << " is less than 1, not valid.";
+            return APP_ERR_COMM_INVALID_PARAM;
+        }
+        recMaxWidth = std::floor(float(recMaxWidth) / 32.0) * 32;
+        LogDebug << "recMaxWidth: " << recMaxWidth;
+    }
     return APP_ERR_OK;
 }
 
@@ -75,7 +126,11 @@ int CrnnPreProcess::GetCrnnMaxWidth(std::vector<cv::Mat> frames, float maxWHRati
         maxResizedW = std::max(std::min(maxResizedW, recMaxWidth), recMinWidth);
     }
     std::pair<uint64_t, uint64_t> gear;
-    GetGearInfo(maxResizedW, gear);
+    if (staticMethod) {
+        GetGearInfo(maxResizedW, gear);
+    } else {
+        gear.second = std::ceil(maxResizedW / 32.0) * 32;
+    }
     return gear.second;
 }
 uint8_t *CrnnPreProcess::PreprocessCrnn(std::vector<cv::Mat> &frames, uint32_t BatchSize, int maxResizedW,
@@ -172,7 +227,9 @@ APP_ERROR CrnnPreProcess::Process(std::shared_ptr<void> commonData)
     }
 
     std::vector<uint32_t> splitIndex = { totalSize };
-    splitIndex = GetCrnnBatchSize(totalSize);
+    if (staticMethod) {
+        splitIndex = GetCrnnBatchSize(totalSize);
+    }
 
     int startIndex = 0;
     int shareId = 0;

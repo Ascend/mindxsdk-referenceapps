@@ -24,6 +24,7 @@ protected:
 private:
     int mStdHeight = 48;
     int32_t deviceId_ = 0;
+    bool staticMethod = true;
     std::vector<MxBase::Model *> crnnNet_;
     std::vector<uint32_t> batchSizeList;
     std::vector<MxBase::Tensor> crnnOutputs;
