@@ -9,7 +9,7 @@
 昇腾310(推理)
 
 ### 1.2 支持的版本
-本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk) 。
+本样例配套的CANN版本为 [7.0.rc1](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [5.0.rc3](https://www.hiascend.com/software/Mindx-sdk) 。
 
 ### 1.3 目录结构
 ```
