@@ -13,7 +13,9 @@
 
 ### 1.2 支持的版本
 
-支持21.0.4版本
+CANN：7.0.RC1
+
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 版本号查询方法，在Atlas产品环境下，运行命令：
 
@@ -83,9 +85,9 @@ npu-smi info
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |Ubuntu|18.04.1 LTS   |
-|MindX SDK|2.0.4|
+| MindX SDK | 5.0.RC3    |
+| CANN | 7.0.RC1 |
 |Python|3.9.2|
-|CANN|5.0.4|
 |numpy|1.22.3|
 |opencv-python|4.5.5|
 

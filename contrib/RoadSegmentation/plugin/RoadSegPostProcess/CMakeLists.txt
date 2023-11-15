@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.2)
+cmake_minimum_required(VERSION 3.14.1)
 project(roadsegpostprocess)
 
 add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)

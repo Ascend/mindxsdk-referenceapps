@@ -9,13 +9,9 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本为2.0.4。
+CANN：7.0.RC1
 
-eg：版本号查询方法，在Atlas产品环境下，运行命令：
-
-```
-npu-smi info
-```
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.3 软件方案介绍
 
@@ -72,10 +68,10 @@ npu-smi info
 推荐系统为ubuntu 18.04，环境依赖软件和版本如下表：
 
 | 软件名称       | 版本  |
-| -------------- | ----- |
-| ascend-toolkit | 5.0.4 |
-| mxVision       | 2.0.4 |
-| python         | 3.9.2 |
+| -------------- | ------ |
+| MindX SDK      | 5.0.RC3|
+| CANN           | 7.0.RC1|
+| python         | 3.9.2  |
 
 在编译运行项目前，需要设置环境变量：
 

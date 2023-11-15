@@ -20,9 +20,9 @@ AB 模块用于精细提取复杂背景中的噪声信息，对于复杂噪声�
 
 ### 1.2 支持的版本
 
-CANN：5.0.4
+CANN：7.0.RC1
 
-SDK：mxVision 2.0.4（可通过cat SDK目录下的 version.info 查看）
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.3 软件方案介绍
 
@@ -89,8 +89,8 @@ pipeline流程如下图所示：
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK | 2.0.4 |
-| Ascend-CANN-toolkit | 5.0.4 |
+| MindX SDK | 5.0.RC3    |
+| CANN | 7.0.RC1 |
 | ubuntu | 18.04.1 LTS |
 | python   | 3.9.2  |
 | cv2   | 4.5.5  |

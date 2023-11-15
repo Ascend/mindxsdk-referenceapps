@@ -46,8 +46,8 @@
 ```
 ### 依赖
 ffmpeg 4.2.1
-mxVision 5.0.RC1
-Ascend-CANN-toolkit (310使用6.3.RC1, 310B使用6.2.RC1)
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
+Ascend-CANN-toolkit (310使用7.0.RC1, 310B使用6.2.RC1)
 
 **注意：**
 
