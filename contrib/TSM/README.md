@@ -9,9 +9,9 @@
 
 ### 1.2 支持的版本
 
-CANN:5.1RC2
+CANN：7.0.RC1
 
-SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.3 软件方案介绍
 
@@ -66,7 +66,7 @@ SDK:3.0RC2(可通过cat SDK目录下的version.info查看)
 | 软件名称     | 版本     |
 |----------|--------|
 | cmake    | 3.5+   |
-| mxVision | 5.1RC2 |
+| mxVision | 5.0.RC3 |
 | Python   | 3.9    |
 | torch    | 1.10.0 |
 | ffmpeg   | 4.2.1  |
