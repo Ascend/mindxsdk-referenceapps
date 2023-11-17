@@ -33,11 +33,12 @@ ReID
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |ubantu 18.04|18.04.1 LTS   |
-|CANN|5.0.4|
-|MindX SDK|2.0.4|
+| MindX SDK | 5.0.RC3    |
+| CANN | 7.0.RC1 |
 |Python| 3.9.2|
 |numpy | 1.21.0 |
 |opencv_python|4.5.2|  
+
 请注意MindX SDK使用python版本为3.9.2，如出现无法找到python对应lib库请在root下安装python3.9开发库  
 ```
 apt-get install libpython3.9
@@ -84,7 +85,7 @@ ATC run success, welcome to the next use.
 4.2.2 模型转换环境需求
 ```
 - 框架需求
-  CANN == 5.0.4
+  CANN == 7.0.RC1
   torch == 1.5.0
   torchvision == 0.6.0
   onnx == 1.7.0

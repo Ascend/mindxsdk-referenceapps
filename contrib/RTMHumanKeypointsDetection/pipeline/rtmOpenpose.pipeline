@@ -52,7 +52,7 @@
             "next":"queue3",
             "factory":"mxpi_imageresize",
             "props":{
-                "interpolation":"0",
+                "interpolation":"1",
                 "resizeWidth":"512",
                 "resizeHeight":"512",
                 "dataSource":"mxpi_videodecoder0",

@@ -32,9 +32,9 @@
 |   软件名称    |    版本     |
 | :-----------: | :---------: |
 |    ubuntu     |  18.04.5 LTS |
-|   MindX SDK   |    2.0.4    |
+|   MindX SDK   |    5.0.RC3    |
 |    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
+|     CANN      |    7.0.RC1    |
 |     numpy     |   1.22.3    |
 | opencv-python |    4.5.5    |
 ```

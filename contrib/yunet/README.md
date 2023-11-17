@@ -10,7 +10,9 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 
 ### 1.2 支持的版本
 
-该项目支持的SDK版本为2.0.4，CANN版本为5.0.4。
+CANN：7.0.RC1
+
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.3 软件方案介绍
 
@@ -95,9 +97,9 @@ yunet基于MindXSDK开发，在昇腾芯片上进行人脸检测，并实现可�
 
 | 软件名称            | 版本  | 说明                          | 获取方式                                                  |
 | ------------------- | ----- | ----------------------------- | :-------------------------------------------------------- |
-| MindX SDK           | 2.0.4 | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk)       |
+| MindX SDK           | 5.0.RC3 | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk)       |
 | ubuntu              | 18.04 | 操作系统                      | 请上ubuntu官网获取                                        |
-| Ascend-CANN-toolkit | 5.0.4 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
+| Ascend-CANN-toolkit | 7.0.RC1 | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial) |
 
 
 

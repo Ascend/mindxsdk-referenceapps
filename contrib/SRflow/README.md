@@ -10,7 +10,7 @@ SRflow图像超分项目是基于MindX SDK 2.0.4  mxVision开发图像超分辨�
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为 [5.0.4](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [2.0.4](https://www.hiascend.com/software/Mindx-sdk) 。
+本样例配套的CANN版本为 [7.0.RC1](https://www.hiascend.com/software/cann/commercial) ，MindX SDK版本为 [5.0.RC3](https://www.hiascend.com/software/Mindx-sdk) 。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -46,8 +46,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 | 软件                | 版本         | 说明                          | 获取方式                                                     |
 | ------------------- | ------------ | ----------------------------- | ------------------------------------------------------------ |
-| mxVision            | 2.0.4        | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
-| Ascend-CANN-toolkit | 5.0.4        | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
+| mxVision            | 5.0.RC3      | mxVision软件包                | [链接](https://www.hiascend.com/software/Mindx-sdk) |
+| Ascend-CANN-toolkit | 7.0.RC1      | Ascend-cann-toolkit开发套件包 | [链接](https://www.hiascend.com/software/cann/commercial)    |
 | 操作系统            | Ubuntu 18.04 | 操作系统                      | Ubuntu官网获取                                               |
 
 ### 2.2 准备工作
@@ -65,7 +65,7 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 
 #### 2.2.2 模型下载
 
-该项目依赖于modelzoo中的模型srflow，可以直接下载[模型软件包](https://www.hiascend.com/zh/software/modelzoo/models/detail/1/46c524de25e040239fc2e4a7e15113b4)，将软件包目录下srflow_df2k_x8_bs1.om模型放入本项目，model地址下。
+该项目依赖于modelzoo中的模型srflow，可以直接下载[模型软件包](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/SRFlow/ATC%20SRFlow%28FP16%29%20from%20Pytorch%20-%20Ascend310.zip)，将软件包目录下srflow_df2k_x8_bs1.om模型放入本项目，model地址下。
 
 #### 2.2.3 修改脚本
 

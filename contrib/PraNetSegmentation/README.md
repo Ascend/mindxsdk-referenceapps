@@ -14,9 +14,9 @@ Ascend 310
 
 ### 1.2 支持的版本
 
-CANN：5.0.4（通过cat /usr/local/Ascend/ascend-toolkit/latest/acllib/version.info，获取版本信息）
+CANN：7.0.RC1
 
-SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 ### 1.3 代码目录结构与说明
 
@@ -61,9 +61,9 @@ SDK：2.0.4（可通过cat SDK目录下的version.info查看信息）
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           | 2.0.4       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
+| MindX SDK           | 5.0.RC3       | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2FMindx-sdk) |
 | ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit | 5.0.4       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+| Ascend-CANN-toolkit | 7.0.RC1       | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 | python              | 3.9.2       |                               |                                                              |
 | numpy               | 1.22.4      | 维度数组运算依赖库            | 服务器中使用pip或conda安装                                   |
 | opencv-python       | 4.5.5.64       | 图像处理依赖库                | 服务器中使用pip或conda安装                                   |

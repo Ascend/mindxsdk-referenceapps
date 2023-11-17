@@ -10,7 +10,9 @@
 
 ### 1.2 支持的版本
 
-本样例配套的 CANN 版本为 5.0.4，MindX SDK 版本为 2.0.4。
+CANN：7.0.RC1
+
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 MindX SDK 安装前准备可参考[《用户指南》安装教程](https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/quick_start/1-1%E5%AE%89%E8%A3%85SDK%E5%BC%80%E5%8F%91%E5%A5%97%E4%BB%B6.md)
 
@@ -138,9 +140,9 @@ onnx模型转昇腾离线模型：DeepLabv3.onnx  -->  DeepLabv3.om
 |   软件名称     |    版本     |
 | :-----------: | :---------: |
 |    ubuntu     | 18.04.1 LTS |
-|   MindX SDK   |    2.0.4    |
+|   MindX SDK   |    5.0.RC3    |
 |    Python     |    3.9.2    |
-|     CANN      |    5.0.4    |
+|     CANN      |    7.0.RC1    |
 |     numpy     |   1.23.4    |
 | opencv-python |    4.6.0    |
 

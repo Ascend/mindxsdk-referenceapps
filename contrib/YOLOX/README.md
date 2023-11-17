@@ -10,7 +10,9 @@ YOLOX 目标检测后处理插件基于 MindX SDK 开发，对图片中的不同
 
 ### 1.2 支持的版本
 
-支持的SDK版本为 2.0.4, CANN 版本为 5.0.4。
+CANN：7.0.RC1
+
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 
 ### 1.3 软件方案介绍 
@@ -114,7 +116,8 @@ YOLOX 的后处理插件接收模型推理插件输出的特征图，该特征�
 | 软件名称 | 版本   |
 | -------- | ------ |
 | cmake    | 3.5+   |
-| mxVision | 2.0.4  |
+| MindX SDK | 5.0.RC3    |
+| CANN | 7.0.RC1 |
 | python   | 3.9.2  |
 
 确保环境中正确安装mxVision SDK。
