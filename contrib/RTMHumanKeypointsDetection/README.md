@@ -377,7 +377,7 @@ I2022072916:59:22.39022427427main.cpp:116]Dealing frame id:2109
    生成检测结果文件，并输出 COCO 格式的评测结果：
    
    ```
-    Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.398
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.392
     Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.675
     Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.398
     Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.336
@@ -389,7 +389,7 @@ I2022072916:59:22.39022427427main.cpp:116]Dealing frame id:2109
     Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.586
    ```
    
-   可以看出，使用输入为512*512的模型。模型在COCO VAL 2017数据集上，IOU 阈值为 0.50:0.95 时的精度值为39.8%，而原模型的精度是40%，和原模型相差不到1%，所以满足精度要求。
+   可以看出，使用输入为512*512的模型。模型在COCO VAL 2017数据集上，IOU 阈值为 0.50:0.95 时的精度值为39.2%。
 
 
 
