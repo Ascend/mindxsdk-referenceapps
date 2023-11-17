@@ -12,13 +12,9 @@
 
 ### 1.2 支持的版本
 
-支持的SDK版本：SDK3.0 RC2
+CANN：7.0.RC1
 
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```
-npu-smi info
-```
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 
 ### 1.3 软件方案介绍
@@ -73,9 +69,9 @@ npu-smi info
 
 | 软件名称 | 版本   |
 | -------- | ------ |
-| MindX SDK  | mxVision-3.0.RC2 |
+| MindX SDK  | 5.0.RC3 |
 | Python |   3.9.2     |
-|  CANN        |  5.1RC2    |
+|  CANN        |  7.0RC1    |
 | PyTorch | 1.12.1 |
 | numpy | 1.21.5 |
 | imageio | 2.22.3| 

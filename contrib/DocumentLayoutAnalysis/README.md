@@ -13,15 +13,9 @@
 
 ### 1.2 支持的版本
 
-支持22.0.2版本
+CANN：7.0.RC1
 
-版本号查询方法，在Atlas产品环境下，运行命令：
-
-```bash
-  npu-smi info
-```
-
-可以查询支持SDK的版本号
+SDK：mxVision 5.0.RC3（可通过cat SDK目录下的 version.info 查看）
 
 
 ### 1.3 软件方案介绍
@@ -60,9 +54,9 @@
 | 软件名称 | 版本   |
 | :--------: | :------: |
 |Ubuntu|Ubuntu/Linaro 7.3.0-16ubuntu3|
-|MindX SDK|mxVision-3.0.RC2|
+|MindX SDK|5.0.RC3|
 |Python|3.9.2|
-|CANN|5.1RC2|
+|CANN|7.0RC1|
 |numpy|1.21.5|
 |opencv-python|4.5.5|
 
@@ -141,7 +135,7 @@ ATC run success, welcome to the next use.
 
 模型转换使用了ATC工具，如需更多信息请参考:
 
-https://support.huawei.com/enterprise/zh/doc/EDOC1100234054/ede80b10
+ https://gitee.com/ascend/docs-openmind/blob/master/guide/mindx/sdk/tutorials/%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99.md
 
 
 ## 4 编译与运行
