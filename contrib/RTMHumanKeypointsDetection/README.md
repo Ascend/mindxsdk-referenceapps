@@ -10,7 +10,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的CANN版本为[5.0.5.alpha001](https://www.hiascend.com/software/cann)。支持的SDK版本为[3.0.RC2](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的CANN版本为[7.0.RC1](https://www.hiascend.com/software/cann)。支持的SDK版本为[5.0.RC3](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -78,8 +78,8 @@ MindX SDK安装前准备可参考《用户指南》，[安装教程](https://git
 | 依赖软件  | 版本               | 说明                          |
 | --------- | ------------------ | ----------------------------- |
 | ubuntu    | ubuntu 18.04.6 LTS | 操作系统                      |
-| CANN      | 5.0.5.alpha001     | Ascend-cann-toolkit开发套件包 |
-| MindX SDK | 3.0.RC2            | mxVision软件包                |
+| CANN      | 7.0.RC1            | Ascend-cann-toolkit开发套件包 |
+| MindX SDK | 5.0.RC3            | mxVision软件包                |
 
 ### 2.1 依赖安装
 
