@@ -26,7 +26,7 @@
 ├── videos                             # 视频文件存放目录
 ├── requirements.txt                   # python依赖库
 ├── args.py                            # 命令解析脚本
-├── app.py						       # 主程序入口
+├── app.py                             # 主程序入口
 ├── run.sh                             # 程序启动脚本
 └── README.md
 ```
@@ -85,9 +85,10 @@ pip3 install -r requirements.txt
       -h/--help            display this help and exit
       -i/--host            listening ip address. The default value is 127.0.0.1
       -p/--port            listening port. The default value is 8888
+      -d/--device_id       choose device id. The default value 0.
 ```shell
 chmod u+x run.sh
-./run.sh -i 127.0.0.1 -p 8888 # ip和端口号可根据实际情况自行替换, ip通常指定为程序所在的服务器ip
+./run.sh -i 127.0.0.1 -p 8888 -d 0 # ip, 端口号和设备id可根据实际情况自行替换, ip通常指定为程序所在的服务器ip
 ```
 
 ## 4 查看结果

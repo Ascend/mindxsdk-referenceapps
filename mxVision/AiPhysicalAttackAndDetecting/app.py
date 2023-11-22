@@ -23,8 +23,8 @@ app = Flask(__name__, static_url_path='')
 base.mx_init()
 found_person = False
 found_patch = False
-cmu_detector = DetectObjWithYolov3OM()
-ultra_detector = DetectObjWithYolov3OMUltra()
+cmu_detector = None
+ultra_detector = None
 my_queue = Queue(maxsize=3)
 
 
@@ -90,6 +90,8 @@ def get_data():
 
 if __name__ == "__main__":
     input_args = input_args_parse()
+    cmu_detector = DetectObjWithYolov3OM(input_args.device_id)
+    ultra_detector = DetectObjWithYolov3OMUltra(input_args.device_id)
     my_process = Process(target=get_frame, args=(my_queue,))
     my_process.start()
     app.run(host=input_args.host, port=input_args.port)

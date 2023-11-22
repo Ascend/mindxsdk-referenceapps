@@ -15,11 +15,13 @@ Options:
   -h/--help        display this help and exit
   -i/--host        listening ip address. The default value is 127.0.0.1
   -p/--port        listening port. The default value is 8888
+  -d/--device_id   choose device id. The default value 0.
 EOF
 }
 
 unset host
 unset port
+unset device_id
 
 check_params()
 {
@@ -38,6 +40,9 @@ while [ "$1" != "" ]; do
         -p | --port )            shift
                                  port="$1"
                                  ;;
+        -p | --port )            shift
+                                 device_id="$1"
+                                 ;;
         -h | --help )            usage
                                  exit
                                  ;;
@@ -55,6 +60,9 @@ if [ "$host" ]; then
 fi
 if [ "$port" ]; then
     arguments="${arguments} -p ${port}"
+fi
+if [ "$device_id" ]; then
+    arguments="${arguments} -d ${device_id}"
 fi
 
 if [ "${arguments}" ]; then
