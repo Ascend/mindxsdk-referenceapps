@@ -3,7 +3,7 @@
 --------------------------
 
 ## 1 介绍
-    本参考设计主要实现了一个AI物理对抗攻击的检测系统, 通过读取视频或视频rtsp流, 检测视频帧中是否存在攻击patch, 并将结果发送到本地浏览器web页面展示.
+    本参考设计主要实现了一个AI物理对抗攻击的检测系统, 通过读取视频或本地摄像头rtsp流, 检测视频帧中是否存在攻击patch, 并将结果发送到本地浏览器web页面展示.
 
 ## 1.1 代码目录结构与说明
 ```
@@ -26,7 +26,7 @@
 ├── videos                             # 视频文件存放目录
 ├── requirements.txt                   # python依赖库
 ├── args.py                            # 命令解析脚本
-├── app.py						                 # 主程序入口
+├── app.py						       # 主程序入口
 ├── run.sh                             # 程序启动脚本
 └── README.md
 ```
@@ -75,7 +75,7 @@ pip3 install -r requirements.txt
 
 ### 3.1 配置输入源
     在config/config.ini文件中修改配置
-    若是视频流则将视频流rtsp地址配置在camera->rtsp
+    若是本地摄像头则将视频流rtsp地址配置在camera->rtsp
     若是本地视频则将视频放在video目录下, 并将视频名配置在video->video_path
     若同时配置了rtsp流地址和本地视频, 则优先读取rtsp流, 不会读取本地视频.
 
