@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+          function updateData() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/get_data", true);
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                document.getElementById("alert_left").innerHTML = response.left;
+                document.getElementById("alert_left").style.color = response.cll;
+                document.getElementById("alert_right").innerHTML = response.right;
+                document.getElementById("alert_right").style.color = response.clr;
+              }
+            };
+            xhr.send();
+          }
+
+          setInterval(updateData, 1000);
+        </script>
+        <title>
+            Adversarial detection from realtime video stream
+        </title>
+    </head>
+    <body bgcolor="#5758F0">
+        <style type="text/css">
+            .my_table{
+                height: 80px;
+                margin: 0 auto;
+            }
+        </style>
+        <table width="950" bgcolor="#6495ED" align="center">
+            <tr>
+                <td align="center">
+                    <span style="font-size:45px;font-weight:bold;color:white">华为AI物理攻击和检测系统</span>
+                </td>
+            </tr>
+        </table>
+        <table class="my_table">
+            <tr>
+                <td align="center" style="font-size:80px; color:white">&#8597</td>
+                <td align="center" style="font-size:80px; color:white">&#8597</td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table width="500" bgcolor="#6495ED">
+                        <tr>
+                            <td style="text-align:center;">
+                                <span style="font-size:30px;color:white">无人值守监控系统</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td align="center">
+                    <table width="500" bgcolor="#6495ED">
+                        <tr>
+                            <td style="text-align:center;">
+                                <span style="font-size:30px;color:white">AI攻击检测系统</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center;">
+                    <br>
+                </td>
+                <td style="text-align:center;">
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td><img src="{{url_for('video_feed0')}}" width="100%" align="center"></td>
+                <td><img src="{{url_for('video_feed1')}}" width="100%" align="center"></td>
+            </tr>
+            <tr>
+                <td>
+                    <br>
+                </td>
+                <td>
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table width="700" bgcolor="#FFFFFF">
+                        <tr>
+                            <td style="text-align:center;">
+                                <span id="alert_left" style="font-size:40px;color:red">警告：监控区域有人进入</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td align="center">
+                    <table width="700" bgcolor="#FFFFFF">
+                        <tr>
+                            <td style="text-align:center;">
+                                <span id="alert_right" style="font-size:40px;color:red">警告：监控区域发现对抗攻击</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                </td>
+            </tr>
+        </table>
+    <body>
+</html>
+</html>
