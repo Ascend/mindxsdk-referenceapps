@@ -40,7 +40,7 @@ while [ "$1" != "" ]; do
         -p | --port )            shift
                                  port="$1"
                                  ;;
-        -p | --port )            shift
+        -d | --device_id )       shift
                                  device_id="$1"
                                  ;;
         -h | --help )            usage
