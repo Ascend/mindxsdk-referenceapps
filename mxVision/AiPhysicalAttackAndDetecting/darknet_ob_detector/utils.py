@@ -98,7 +98,6 @@ def nms_cpu(boxes, confs, nms_thresh=0.5, min_mode=False):
 
 def plot_boxes_cv2(img, boxes, savename=None, class_names=None, color=None):
     found_person = False
-    img = np.copy(img)
     colors = np.array([[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]], dtype=np.float32)
 
     def get_color(c, x, max_val):

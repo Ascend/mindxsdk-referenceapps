@@ -91,7 +91,7 @@ chmod u+x run.sh
 ```
 
 ### 3.3 退出app
-    手动在终端执行 ctrl + c 退出程序.
+    手动在终端执行 ctrl + c 退出程序, 根据实际情况可能需要多次重复执行该操作.
 
  
 ## 4 查看结果
@@ -105,3 +105,13 @@ chmod u+x run.sh
 
 **解决方案:**
 打开本地网络和internet配置, 在代理处将程序运行所在的服务器ip加进去.
+
+### 5.2 执行run.sh报错
+**问题描述:**
+执行run.sh时, 报错: -bash: ./run.sh: /bin/bash^M bad interpreter*
+
+**解决方案:**
+将run.sh文件格式转为unix格式, 下面两种方法都行:
+1. 执行 dos2unix run.sh
+2. vim打开run.sh, 在编辑模式下输入set ff=unix, 然后wq保存退出.
+文件格式修改后, 重新执行run.sh即可.
