@@ -32,9 +32,9 @@ def get_video_source(path="config/config.ini") -> str:
         if "video_path" not in config["video"]:
             raise configparser.NoOptionError("video_path", "video")
     
-    video_source = os.path.join("videos", config["video"]["video_path"])
+    video_source = config["video"]["video_path"]
     if not os.path.exists(video_source):
-        raise FileNotFoundError("video not found in video dir, please check.")
+        raise FileNotFoundError("video not exist, please check.")
     return video_source
 
 
