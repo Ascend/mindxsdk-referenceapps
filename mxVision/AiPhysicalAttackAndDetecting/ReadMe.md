@@ -45,7 +45,7 @@
 
 | 名称      | 版本              | 说明                          |
 |-----------|------------------|-------------------------------|
-| 系统      | Ubuntu            | 操作系统                      |
+| 系统      | Ubuntu 22.04      | 操作系统                      |
 | CANN      | 7.0.RC1           | toolkit开发套件包或nnrt推理包  |
 | MindX SDK | 5.0.RC3           | mxVison软件包                 |
 
@@ -78,16 +78,27 @@ pip3 install -r requirements.txt
 - 若是本地视频则将视频路径配置在video->video_path
 - 若同时配置了rtsp流地址和本地视频路径, 则只读取rtsp流, 不会读取本地视频.
 
+```
+配置示例如下, 仅供参考之用, 不可直接复制使用, 运行程序时需要根据实际情况进行替换:
+[camera]
+rtsp = rtsp://127.0.0.1:8888/input.264  # 输入为本地rtsp流地址
+或者
+rtsp = rtsp://usernaem:password@127.0.0.1:8888/h264/ch1/main/av_stream  # 输入为摄像头rtsp流地址
+
+[video]
+video_path = ./test.mp4  # 输入为视频文件, 相对路径和绝对路径均可
+```
+
 ### 3.2 运行app
     运行脚本run.sh
     Options:
       -h/--help            display this help and exit
-      -i/--host            listening ip address. The default value is 127.0.0.1
+      -i/--host            listening ip address.
       -p/--port            listening port. The default value is 8888
       -d/--device_id       choose device id. The default value 0.
 ```shell
 chmod u+x run.sh
-./run.sh -i 127.0.0.1 -p 8888 -d 0 # ip, 端口号和设备id可根据实际情况自行替换, ip通常指定为程序所在的服务器ip
+./run.sh -i 127.0.0.1 -p 8888 -d 0 # 端口号和设备id可根据实际情况自行替换, ip须设置为程序所在的服务器ip地址
 ```
 
 ### 3.3 退出app

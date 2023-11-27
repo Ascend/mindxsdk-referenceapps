@@ -27,7 +27,7 @@ def check_args(_args):
 
 def input_args_parse():
     parser = argparse.ArgumentParser(description="AI Attack Detection")
-    parser.add_argument("--host", "-i", default="127.0.0.1", help="The host of the server")
+    parser.add_argument("--host", "-i", default="", help="The host of the server")
     parser.add_argument("--port", "-p", default=8888, type=int, help="The port of the server")
     parser.add_argument("--device_id", "-d", default=0, type=int, help="Device ID")
 
