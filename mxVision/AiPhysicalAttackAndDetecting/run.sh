@@ -57,6 +57,7 @@ done
 unset arguments
 if [ -z "$host" ]; then
     echo "Ip is none, please set the server ip address."
+    exit -1
 fi
 arguments="${arguments} -i ${host}"
 
