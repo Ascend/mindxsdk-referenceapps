@@ -13,7 +13,7 @@ Usage: ./run.sh [options]
 
 Options:
   -h/--help        display this help and exit
-  -i/--host        listening ip address. The default value is 127.0.0.1
+  -i/--host        listening ip address.
   -p/--port        listening port. The default value is 8888
   -d/--device_id   choose device id. The default value 0.
 EOF
@@ -55,9 +55,11 @@ while [ "$1" != "" ]; do
 done
 
 unset arguments
-if [ "$host" ]; then
-    arguments="${arguments} -i ${host}"
+if [ -z "$host" ]; then
+    echo "Ip is none, please set the server ip address."
 fi
+arguments="${arguments} -i ${host}"
+
 if [ "$port" ]; then
     arguments="${arguments} -p ${port}"
 fi
@@ -65,8 +67,4 @@ if [ "$device_id" ]; then
     arguments="${arguments} -d ${device_id}"
 fi
 
-if [ "${arguments}" ]; then
-    python3 app.py ${arguments}
-else
-    python3 app.py
-fi
+python3 app.py ${arguments}
