@@ -63,7 +63,7 @@
 | torch                  | 2.0.1    |
 | torchvision            | 0.15.2   |
 | opencv-python-headless | 4.7.0.72 |
-| nympy                  | 1.25.0   |
+| numpy                  | 1.25.0   |
 
 ### 安装
 ```shell
@@ -83,7 +83,7 @@ pip3 install -r requirements.txt
 [camera]
 rtsp = rtsp://127.0.0.1:8888/input.264  # 输入为本地rtsp流地址
 或者
-rtsp = rtsp://usernaem:password@127.0.0.1:8888/h264/ch1/main/av_stream  # 输入为摄像头rtsp流地址
+rtsp = rtsp://usernaem:password@127.0.0.1:8888/h264/ch1/main/av_stream  # 输入为摄像头rtsp流地址, 具体参数配置参考各厂商摄像头的使用说明书
 
 [video]
 video_path = ./test.mp4  # 输入为视频文件, 相对路径和绝对路径均可
