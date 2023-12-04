@@ -126,3 +126,22 @@ chmod u+x run.sh
 1. 执行 dos2unix run.sh
 2. vim打开run.sh, 在编辑模式下输入set ff=unix, 然后wq保存退出.
 文件格式修改后, 重新执行run.sh即可.
+
+### 5.3 程序运行过程中出现拉流丢帧进而程序报错中断
+**问题描述:**
+运行程序时, 出现类似或部分类似如下的报错:
+```
+[h264 @ 0x************] Reference 6>=2
+[h264 @ 0x************] error while decoding MB 69 0, bytestream 29200
+[h264 @ 0x************] co located POCs unavailable
+[h264 @ 0x************] co located POCs unavailable
+[h264 @ 0x************] reference picture missing during reorder
+[h264 @ 0x************] Missing reference picture, default is 65676
+```
+
+出现此类报错, 说明在拉流过程中因为cpu解码能力不足出现了丢帧情况, 需要降低cpu使用率.
+
+**解决方案:**
+1. 如果同时运行着其它程序, 试着关闭一些cpu使用率较高的程序, 再重新启动该程序.
+2. 如果在容器中运行的该程序, 推荐换成在物理机上运行该程序.
+3. 查看输入的视频或视频流的分辨率, 推荐视频分辨率不高于720P.
