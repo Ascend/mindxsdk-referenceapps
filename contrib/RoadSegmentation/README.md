@@ -16,8 +16,8 @@
 | 软件名称 | 版本   |
 | -------- | ------ |
 | python    | 3.9.2     | 
-| MindX SDK     |    5.0RC1    |
-| CANN | 310使用6.3.RC1<br>310B使用6.2.RC1 |
+| MindX SDK     |    5.0RC3    |
+| CANN | 7.0.RC1 |
 
 ### 1.3 软件方案介绍
 基于MindX SDK的路面分割业务流程：待检测图片通过 appsrc 插件输入，然后使用图像解码插件mxpi_imagedecoder对图片进行解码，再通过图像缩放插件mxpi_imageresize将图像缩放至满足检测模型要求的输入图像大小要求，缩放后的图像输入模型推理插件mxpi_tensorinfer得到检测结果，本项目开发的路面分割后处理插件处理推理结果，从中获取掩膜mask，然后与原始图片进行融合，之后通过图像编码插件mxpi_imageencoder将后处理插件的融合后的数据进行编码，最后使用输出插件appsink输出可视化的结果
@@ -140,9 +140,11 @@ python3.9 main.py test.jpg   #测试图片地址
 ## 5 常见问题
 
 1.图片解码失败
+
 **问题描述：**  在使用解码插件时，提示如下错误
 ![解码失败](../RoadSegmentation/image/imagedecoder_error.png)
 
 **解决方案：** 更换图片，详情[imagedecoder插件介绍](https://www.hiascend.com/document/detail/zh/mind-sdk/204/vision/mxvisionug/mxvisionug_0115.html)
+
 
 

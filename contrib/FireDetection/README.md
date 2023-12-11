@@ -11,7 +11,7 @@
 
 ### 1.2 支持的版本
 
-本样例配套的 CANN 版本为 [6.2.RC1](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [5.0.RC1](https://www.hiascend.com/software/Mindx-sdk)。
+本样例配套的 CANN 版本为 [7.0.RC1](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial)，MindX SDK 版本为 [5.0.RC3](https://www.hiascend.com/software/Mindx-sdk)。
 
 MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gitee.com/ascend/mindxsdk-referenceapps/blob/master/docs/quickStart/1-1安装SDK开发套件.md)
 
@@ -53,9 +53,9 @@ MindX SDK 安装前准备可参考《用户指南》，[安装教程](https://gi
 
 | 软件名称            | 版本        | 说明                          | 获取方式                                                     |
 | ------------------- | ----------- | ----------------------------- | ------------------------------------------------------------ |
-| MindX SDK           |    5.0.RC1    | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fmindx-sdk%2Fmxvision) |
+| MindX SDK           |    5.0.RC3    | mxVision软件包                | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fmindx-sdk%2Fmxvision) |
 | ubuntu              | 18.04.1 LTS | 操作系统                      | Ubuntu官网获取                                               |
-| Ascend-CANN-toolkit |  6.2.RC1  | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
+| Ascend-CANN-toolkit |  7.0.RC1  | Ascend-cann-toolkit开发套件包 | [链接](https://gitee.com/link?target=https%3A%2F%2Fwww.hiascend.com%2Fsoftware%2Fcann%2Fcommercial) |
 
 在运行项目需要执行如下命令配置MindX SDK的环境变量：
 

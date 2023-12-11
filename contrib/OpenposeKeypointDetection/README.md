@@ -13,8 +13,8 @@
 
 ### 1.2 支持的版本
 
-mxVision 5.0.RC1
-Ascend-CANN-toolkit 6.2.RC1
+mxVision 5.0.RC3
+Ascend-CANN-toolkit 7.0.RC1
 
 
 ### 1.3 软件方案介绍
