@@ -14,8 +14,8 @@
 本项目以昇腾Atlas 500A2卡为主要的硬件平台.
 ### 1.2 支持的版本
 
-mxVision 5.0.RC1
-Ascend-CANN-toolkit 6.2.RC1
+mxVision 5.0.RC3
+Ascend-CANN-toolkit 7.0.RC1
 
 
 ### 1.3 软件方案介绍
@@ -191,6 +191,8 @@ python3 test_video.py --online_flag True
 4. parallel_update.py测试的是一定时间内每秒处理视频的平均帧数，根据需要修改parallel_update.py中的时间参数。
 5. 如果为离线视频，将下面命令中的time替换为自己限制的测试时间，将frame_num1，frame_num2分别替换为两个测试的视频的帧数，并执行命令：
 
+- --online_flag 为bool类型入参，若想让其值为false，运行命令不设置该参数即可
+
 ```
 python3 parallel_update.py  --limit_of_time ${time} --frame_num_1 ${frame_num1} --frame_num_2  ${frame_num2} 
 ```
@@ -210,7 +212,7 @@ python3 parallel_update.py  --limit_of_time ${time} --online_flag True
 1. 下载测试数据集，[下载链接](https://mindx.sdk.obs.cn-north-4.myhuaweicloud.com/mindxsdk-referenceapps%20/contrib/FatigueDrivingRecognition/data.zip)，解压后包含一个txt文件，一个test文件夹和一个video文件夹。将解压出的label.txt文件上传到项目的当前目录。
 2. 按照第5小节 **软件依赖说明** 中的步骤安装live555并运行，并新建一个文件夹`${Home_live555}/live/mediaServer/dataset/` ，将上一步解压出的video文件夹中的264文件上传到 dataset文件夹下。其中`Home_live555`为live555安装路径。
 3. 将`pipeline/test.pipeline` 中`mxpi_objectpostprocessor0`中的`postProcessLibPath`属性里的MX_SDK_HOME替换为mxVision SDK 安装路径。
-4. 修改`run.sh`中的RTSP_URL修改为`rtsp://${host}:${port}/dataset`，其中`host`为服务器ip地址，`port`根据运行live555后终端显示的最后一行的提示进行确定。
+4. 修改`run.sh`中的RTSP_URL修改为`rtsp://${host}:${port}/dataset/`，其中`host`为服务器ip地址，`port`根据运行live555后终端显示的最后一行的提示进行确定。
 5. 执行命令：
 
 ```
